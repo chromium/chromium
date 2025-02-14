@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -74,9 +73,9 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_functions.h"
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
@@ -95,7 +94,7 @@ constexpr char
         "SafeBrowsing.NotificationContentDetection."
         "DisplayPersistentNotificationEvent";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kNotificationResourceActionIconMemorySizeHistogram[] =
     "Ash.NotificationResource.ActionIconSizeInKB";
@@ -109,7 +108,7 @@ constexpr char kNotificationReourceIconMemorySizeHistogram[] =
 constexpr char kNotificationResourceImageMemorySizeHistogram[] =
     "Ash.NotificationResource.ImageMemorySizeInKB";
 
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 
 // Whether a web notification should be displayed when chrome is in full
 // screen mode.
@@ -540,7 +539,6 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   std::optional<WebAppIconAndTitle> web_app_icon_and_title;
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_icon_and_title = FindWebAppIconAndTitle(web_app_hint_url);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_app_icon_and_title && notification_resources.badge.isNull()) {
     // ChromeOS: Enables web app theme color only if monochrome web app icon
     // has been specified. `badge` Notifications API icons must be masked with
@@ -551,8 +549,6 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   base::UmaHistogramMemoryKB(
       kNotificationReourceIconMemorySizeHistogram,
       notification_resources.notification_icon.computeByteSize() / 1024);
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   message_center::NotifierId notifier_id(
@@ -585,10 +581,10 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
       !image.drawsNothing()) {
     notification.set_type(message_center::NOTIFICATION_TYPE_IMAGE);
     notification.SetImage(gfx::Image::CreateFrom1xBitmap(image));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     base::UmaHistogramMemoryKB(kNotificationResourceImageMemorySizeHistogram,
                                image.computeByteSize() / 1024);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   if (web_app_icon_and_title && !web_app_icon_and_title->icon.isNull())
@@ -598,10 +594,10 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   // 1x bitmap - crbug.com/585815.
   if (const SkBitmap& badge = notification_resources.badge; !badge.isNull()) {
     notification.SetSmallImage(gfx::Image::CreateFrom1xBitmap(badge));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     base::UmaHistogramMemoryKB(kNotificationResourceBadgeMemorySizeHistogram,
                                badge.computeByteSize() / 1024);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   // Developer supplied action buttons.
@@ -613,11 +609,11 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
     // the 1x bitmap - crbug.com/585815.
     const SkBitmap& action_icon = notification_resources.action_icons[i];
     button.icon = gfx::Image::CreateFrom1xBitmap(action_icon);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     base::UmaHistogramMemoryKB(
         kNotificationResourceActionIconMemorySizeHistogram,
         action_icon.computeByteSize() / 1024);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     if (action->type == blink::mojom::NotificationActionType::TEXT) {
       button.placeholder = action->placeholder.value_or(
           l10n_util::GetStringUTF16(IDS_NOTIFICATION_REPLY_PLACEHOLDER));

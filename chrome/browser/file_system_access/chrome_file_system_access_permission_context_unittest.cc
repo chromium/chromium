@@ -500,9 +500,6 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
-#endif
 };
 
 class ChromeFileSystemAccessPermissionContextNoPersistenceTest

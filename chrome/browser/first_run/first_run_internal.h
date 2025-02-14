@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_FIRST_RUN_FIRST_RUN_INTERNAL_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 class FilePath;
