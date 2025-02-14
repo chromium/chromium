@@ -19,6 +19,7 @@ namespace net {
 bool SimdutfBase64Decode(std::string_view input,
                          std::string* output,
                          base::Base64DecodePolicy policy) {
+  CHECK(IsSimdutfBase64SupportEnabled());
   if (policy == base::Base64DecodePolicy::kStrict) {
     if (input.size() % 4 != 0) {
       // The input is not properly padded.
