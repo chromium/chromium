@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/lobster/lobster_image_download_response.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "base/base64.h"
@@ -86,16 +87,62 @@ TEST_F(LobsterImageActuatorTest,
   EXPECT_TRUE(ash::ToastManager::Get()->IsToastShown("lobster_toast"));
 }
 
-TEST_F(LobsterImageActuatorTest, WriteImageToPathCreatesNewFile) {
+TEST_F(LobsterImageActuatorTest, WritingImageToPathCreatesNewFile) {
   std::string data;
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<const LobsterImageDownloadResponse&> future;
 
-  WriteImageToPath(Path("./dummy_image.jpeg"), "a1b2c3", future.GetCallback());
+  WriteImageToPath(Path("./"), "dummy_image", 0, "a1b2c3",
+                   future.GetCallback());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(future.Get().success);
   EXPECT_TRUE(base::PathExists(Path("./dummy_image.jpeg")));
   ASSERT_TRUE(base::ReadFileToString(Path("./dummy_image.jpeg"), &data));
   EXPECT_EQ(data, "a1b2c3");
+}
+
+TEST_F(LobsterImageActuatorTest,
+       WriteImageWithExistingPathCreatesNewFileWithSuffix) {
+  base::test::TestFuture<const LobsterImageDownloadResponse&>
+      first_download_future;
+  base::test::TestFuture<const LobsterImageDownloadResponse&>
+      second_download_future;
+  base::test::TestFuture<const LobsterImageDownloadResponse&>
+      third_download_future;
+
+  // Write the first image to disk.
+  WriteImageToPath(Path("./"), "dummy_image", 0, "a1b2c3",
+                   first_download_future.GetCallback());
+  EXPECT_TRUE(first_download_future.Get().success);
+  EXPECT_TRUE(base::PathExists(Path("./dummy_image.jpeg")));
+
+  // Write the second image to disk with the same query.
+  ASSERT_FALSE(base::PathExists(Path("./dummy_image-1.jpeg")));
+
+  WriteImageToPath(Path("./"), "dummy_image", 0, "d4e5f6",
+                   second_download_future.GetCallback());
+  EXPECT_TRUE(second_download_future.Get().success);
+  EXPECT_TRUE(base::PathExists(Path("./dummy_image-1.jpeg")));
+
+  // Write the third image to disk with the same query.
+  ASSERT_FALSE(base::PathExists(Path("./dummy_image-2.jpeg")));
+
+  WriteImageToPath(Path("./"), "dummy_image", 0, "g7h8i9",
+                   third_download_future.GetCallback());
+  EXPECT_TRUE(third_download_future.Get().success);
+  EXPECT_TRUE(base::PathExists(Path("./dummy_image-2.jpeg")));
+
+  // Checks if the file contents are correct and not overridden.
+  std::string data_file_1, data_file_2, data_file_3;
+
+  ASSERT_TRUE(base::ReadFileToString(Path("./dummy_image.jpeg"), &data_file_1));
+  ASSERT_TRUE(
+      base::ReadFileToString(Path("./dummy_image-1.jpeg"), &data_file_2));
+  ASSERT_TRUE(
+      base::ReadFileToString(Path("./dummy_image-2.jpeg"), &data_file_3));
+
+  EXPECT_EQ(data_file_1, "a1b2c3");
+  EXPECT_EQ(data_file_2, "d4e5f6");
+  EXPECT_EQ(data_file_3, "g7h8i9");
 }
 
 }  // namespace

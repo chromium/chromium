@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/lobster/lobster_image_download_response.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,20 +17,17 @@
 
 namespace ash {
 
-namespace {
-
-using StatusCallback = base::OnceCallback<void(bool)>;
-
-}  // namespace
-
 void ASH_EXPORT CopyToClipboard(const std::string& image_bytes);
 
 bool ASH_EXPORT InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
                                              const std::string& image_bytes);
 
-void ASH_EXPORT WriteImageToPath(const base::FilePath& path,
-                                 const std::string& image_bytes,
-                                 StatusCallback status_callback);
+void ASH_EXPORT
+WriteImageToPath(const base::FilePath& save_dir,
+                 const std::string& query,
+                 uint32_t id,
+                 const std::string& image_bytes,
+                 LobsterImageDownloadResponseCallback status_callback);
 
 }  // namespace ash
 

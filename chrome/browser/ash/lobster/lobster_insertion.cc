@@ -35,7 +35,7 @@ ui::TextInputClient* GetFocusedTextInputClient() {
 }  // namespace
 
 LobsterInsertion::LobsterInsertion(const std::string& image_bytes,
-                                   ash::StatusCallback insert_status_callback)
+                                   StatusCallback insert_status_callback)
     : pending_image_bytes_(image_bytes),
       state_(State::kPending),
       insert_status_callback_(std::move(insert_status_callback)) {

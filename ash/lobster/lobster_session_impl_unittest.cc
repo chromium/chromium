@@ -242,7 +242,7 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandidateIfItIsInCache) {
 
   EXPECT_TRUE(future.Get());
   EXPECT_TRUE(
-      base::PathExists(GetDownloadPath().Append("a nice strawberry-1.jpeg")));
+      base::PathExists(GetDownloadPath().Append("a nice strawberry.jpeg")));
 }
 
 TEST_F(LobsterSessionImplTest,

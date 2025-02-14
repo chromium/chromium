@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/lobster/lobster_image_actuator.h"
@@ -26,9 +25,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "build/branding_buildflags.h"
 #include "components/feedback/feedback_constants.h"
@@ -45,7 +42,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kQueryCharLimit = 230;
 constexpr char kLobsterSuccessfulImageDownloadNotifierId[] =
     "ash.lobster_successful_image_download_notifier_id";
 constexpr char kLobsterFailedImageDownloadNotifierId[] =
@@ -109,23 +105,6 @@ std::u16string GetCopyToClipboardButtonLabel() {
 #else
   return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-std::string BuildDownloadFileName(const std::string& query, uint32_t id) {
-  std::string sanitized_file_name = query;
-
-  base::i18n::ReplaceIllegalCharactersInPath(&sanitized_file_name, '-');
-
-  return base::StringPrintf("%s-%d.jpeg",
-                            sanitized_file_name.substr(0, kQueryCharLimit), id);
-}
-
-base::FilePath CreateDownloadFilePath(const base::FilePath& download_dir,
-                                      const std::string& file_name) {
-  return download_dir.Append(
-      base::FeatureList::IsEnabled(features::kLobsterFileNamingImprovement)
-          ? file_name
-          : "");
 }
 
 std::string BuildFeedbackDescription(std::string_view query,
@@ -280,31 +259,29 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
             }
 
             const LobsterImageCandidate& image_candidate = (*result)[0];
-            base::FilePath download_image_path = CreateDownloadFilePath(
-                download_dir, BuildDownloadFileName(image_candidate.query,
-                                                    image_candidate.id));
             WriteImageToPath(
-                download_image_path, image_candidate.image_bytes,
+                download_dir, image_candidate.query, image_candidate.id,
+                image_candidate.image_bytes,
                 base::BindOnce(
                     [](StatusCallback status_callback,
-                       const base::FilePath& file_path,
-                       const std::string& image_bytes, bool success) {
-                      std::move(status_callback).Run(success);
+                       const std::string& image_bytes,
+                       const LobsterImageDownloadResponse& download_response) {
+                      std::move(status_callback).Run(download_response.success);
 
-                      if (success) {
-                        DisplaySuccessfulImageDownloadNotification(file_path,
-                                                                   image_bytes);
+                      if (download_response.success) {
+                        DisplaySuccessfulImageDownloadNotification(
+                            download_response.download_path, image_bytes);
                         RecordLobsterState(
                             LobsterMetricState::kCandidateDownloadSuccess);
                         return;
                       }
 
-                      DisplayFailedImageDownloadNotification(file_path);
+                      DisplayFailedImageDownloadNotification(
+                          download_response.download_path);
                       RecordLobsterState(
                           LobsterMetricState::kCandidateDownloadError);
                     },
-                    std::move(status_callback), download_image_path,
-                    image_candidate.image_bytes));
+                    std::move(status_callback), image_candidate.image_bytes));
           },
           client_.get(), download_dir, std::move(status_callback)));
 }
@@ -391,34 +368,33 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
             }
 
             const LobsterImageCandidate& image_candidate = (*result)[0];
-            base::FilePath image_download_path = CreateDownloadFilePath(
-                download_dir, BuildDownloadFileName(image_candidate.query,
-                                                    image_candidate.id));
             WriteImageToPath(
-                image_download_path, image_candidate.image_bytes,
+                download_dir, image_candidate.query, image_candidate.id,
+                image_candidate.image_bytes,
                 base::BindOnce(
                     [](LobsterClient* lobster_client,
-                       const base::FilePath& file_path,
                        const std::string& image_bytes,
-                       StatusCallback status_callback, bool success) {
-                      std::move(status_callback).Run(success);
+                       StatusCallback status_callback,
+                       const LobsterImageDownloadResponse& download_response) {
+                      std::move(status_callback).Run(download_response.success);
                       // Close the WebUI.
                       lobster_client->CloseUI();
 
-                      if (success) {
-                        DisplaySuccessfulImageDownloadNotification(file_path,
-                                                                   image_bytes);
+                      if (download_response.success) {
+                        DisplaySuccessfulImageDownloadNotification(
+                            download_response.download_path, image_bytes);
                         RecordLobsterState(
                             LobsterMetricState::kCommitAsDownloadSuccess);
                         return;
                       }
 
-                      DisplayFailedImageDownloadNotification(file_path);
+                      DisplayFailedImageDownloadNotification(
+                          download_response.download_path);
                       RecordLobsterState(
                           LobsterMetricState::kCommitAsDownloadError);
                     },
-                    lobster_client, image_download_path,
-                    image_candidate.image_bytes, std::move(status_callback)));
+                    lobster_client, image_candidate.image_bytes,
+                    std::move(status_callback)));
           },
           client_.get(), download_dir, std::move(status_callback)));
 }
