@@ -8968,9 +8968,6 @@ crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Failure Pass Timeout ]
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?gpu [ Pass Timeout ]
 
-# Flaky on headless shell
-crbug.com/378914068 [ Win ] external/wpt/client-hints/accept-ch-stickiness/http-equiv-same-origin-iframe.https.html [ Failure Pass ]
-
 # Flaky failure on Mac
 crbug.com/379847900 [ Mac ] fast/spatial-navigation/snav-overlapping-elements.html [ Failure Pass ]
 
