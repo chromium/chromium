@@ -285,15 +285,17 @@ float OverlayCandidateFactory::EstimateVisibleDamage(
       0.f, quad_damage.size().GetArea() - occluded_damage_estimate_total);
 }
 
+// static
 bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
-    const OverlayCandidate& candidate,
+    const DrawQuad& quad,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end,
     const base::flat_map<AggregatedRenderPassId,
                          raw_ptr<cc::FilterOperations, CtnExperimental>>&
-        render_pass_backdrop_filters) const {
-  gfx::RectF target_rect =
-      OverlayCandidate::DisplayRectInTargetSpace(candidate);
+        render_pass_backdrop_filters) {
+  const gfx::RectF target_rect =
+      quad.shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(quad.visible_rect));
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
     if (auto* render_pass_draw_quad =
@@ -312,14 +314,16 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
   return false;
 }
 
+// static
 bool OverlayCandidateFactory::IsOccluded(
-    const OverlayCandidate& candidate,
+    const DrawQuad& quad,
     QuadList::ConstIterator quad_list_begin,
-    QuadList::ConstIterator quad_list_end) const {
+    QuadList::ConstIterator quad_list_end) {
   // The rects are rounded as they're snapped by the compositor to pixel unless
   // it is AA'ed, in which case, it won't be overlaid.
-  gfx::Rect target_rect =
-      gfx::ToRoundedRect(OverlayCandidate::DisplayRectInTargetSpace(candidate));
+  const gfx::Rect target_rect = gfx::ToRoundedRect(
+      quad.shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(quad.visible_rect)));
 
   // Check that no visible quad overlaps the candidate.
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;

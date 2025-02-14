@@ -518,6 +518,12 @@ OverlayProcessorWin::TryDelegatedCompositing(
 
   // Try to promote all the quads in the root pass to overlay.
   for (const auto* quad : root_render_pass->quad_list.BackToFront()) {
+    if (OverlayCandidateFactory::IsOccludedByFilteredQuad(
+            *quad, root_render_pass->quad_list.begin(),
+            root_render_pass->quad_list.end(), render_pass_backdrop_filters)) {
+      return base::unexpected(DelegationStatus::kCompositedBackdropFilter);
+    }
+
     std::optional<OverlayCandidate> dc_layer;
     if (is_full_delegated_compositing) {
       // Try to promote videos like DCLayerOverlay does first, then fall back to
@@ -549,12 +555,6 @@ OverlayProcessorWin::TryDelegatedCompositing(
       } else {
         return base::unexpected(candidate_result.error());
       }
-    }
-
-    if (factory.IsOccludedByFilteredQuad(
-            dc_layer.value(), root_render_pass->quad_list.begin(),
-            root_render_pass->quad_list.end(), render_pass_backdrop_filters)) {
-      return base::unexpected(DelegationStatus::kCompositedBackdropFilter);
     }
 
     // Store metadata on RPDQ overlays for post-processing in
