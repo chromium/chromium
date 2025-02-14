@@ -25,6 +25,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_command_delegate_impl.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/scanner/scanner_feedback.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_session.h"
@@ -334,6 +335,9 @@ ScannerController::~ScannerController() = default;
 // static
 void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kScannerEnabled, true);
+  registry->RegisterIntegerPref(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
   registry->RegisterBooleanPref(prefs::kScannerFeedbackEnabled, true);
 }
 
@@ -344,6 +348,7 @@ void ScannerController::OnActiveUserSessionChanged(
 }
 
 bool ScannerController::CanShowUi() {
+  // TODO: b/395482378 - Add a check for the enterprise policy.
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
 
@@ -381,6 +386,7 @@ bool ScannerController::CanShowFeatureSettingsToggle() {
 }
 
 bool ScannerController::CanStartSession() {
+  // TODO: b/395482378 - Add a check for the enterprise policy.
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
 
@@ -495,6 +501,8 @@ void ScannerController::OnActionFinished(
     PrefService* prefs =
         session_controller_->GetUserPrefServiceForUser(account_id);
 
+    // TODO: b/391961194 - Update this check to use
+    // `prefs::kScannerEnterprisePolicyAllowed` instead.
     if (prefs && prefs->GetBoolean(prefs::kScannerFeedbackEnabled)) {
       toast_data.button_type = ToastData::ButtonType::kIconButton;
       toast_data.button_text = l10n_util::GetStringUTF16(
