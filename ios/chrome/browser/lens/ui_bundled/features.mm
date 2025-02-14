@@ -63,3 +63,7 @@ BASE_FEATURE(kLensGestureTextSelectionDisabled,
 BASE_FEATURE(kLensVsintParamEnabled,
              "LensVsintParamEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensUnaryClientDataHeaderEnabled,
+             "LensUnaryClientDataHeaderEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
