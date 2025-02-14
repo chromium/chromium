@@ -15,7 +15,6 @@ virtual/isolated-context/wpt_internal/*
 virtual/isolated-context-stable/wpt_internal/*
 virtual/forced-high-contrast-colors/wpt_internal/*
 virtual/trust-tokens/wpt_internal/*
-virtual/third-party-storage-partitioning/wpt_internal/*
 virtual/popover-hint-disabled/wpt_internal/*
 virtual/private-aggregation-developer-mode/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
@@ -1030,8 +1029,6 @@ virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/p
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechSynthesis*
 virtual/stable/external/wpt/soft-navigation-heuristics/disabled.html
-virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idbindex_getAllRecords.tentative.any.*
-virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idbobjectstore_getAllRecords.tentative.any.*
 virtual/third-party-storage-partitioning/external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-fixed-inline-002.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-*
