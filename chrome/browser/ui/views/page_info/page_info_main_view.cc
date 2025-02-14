@@ -415,7 +415,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
             page_info::kMerchantTrustEvaluationControlSurvey)) {
       ui_delegate_->GetMerchantTrustInfo(
           base::BindOnce(&PageInfoMainView::OnMerchantTrustDataFetched,
-                         base::Unretained(this)));
+                        weak_factory_.GetWeakPtr()));
     }
   } else {
     security_content_view_ = security_container_view_->AddChildView(
