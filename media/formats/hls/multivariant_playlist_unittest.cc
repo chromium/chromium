@@ -129,7 +129,7 @@ TEST(HlsMultivariantPlaylistTest, MediaPlaylistTag) {
     auto tag_line = "#" + std::string{TagNameToString(name)};
     auto fork = builder;
     fork.AppendLine(tag_line);
-    fork.ExpectError(ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag);
+    fork.ExpectOk();
   }
 }
 

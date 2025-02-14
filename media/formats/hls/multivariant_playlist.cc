@@ -131,7 +131,12 @@ MultivariantPlaylist::Parse(std::string_view source,
           continue;
         }
         case TagKind::kMediaPlaylistTag:
-          return ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag;
+          // TODO(crbug.com/395950145): It's really common for multivariant
+          // playlists to incorrectly add an "EXT-X-ENDLIST" tag at the end,
+          // which, while disallowed by spec, is accepted by most other HLS
+          // implementations. We can't fail parsing and thus playback as a
+          // result, in order to maintain compatibility.
+          continue;
         case TagKind::kMultivariantPlaylistTag:
           // Handled below
           break;
