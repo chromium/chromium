@@ -8,8 +8,8 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 
 namespace blink {
 
