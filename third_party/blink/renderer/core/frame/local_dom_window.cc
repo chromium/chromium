@@ -2313,6 +2313,9 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
     if (top_level_site != blob_url_site) {
       UseCounter::Count(document(),
                         WebFeature::kCrossTopLevelSiteBlobURLNavigation);
+      AuditsIssue::ReportPartitioningBlobURLIssue(
+          entered_window, completed_url.GetString(),
+          mojom::blink::PartitioningBlobURLInfo::kEnforceNoopenerForNavigation);
       if (base::FeatureList::IsEnabled(
               features::kEnforceNoopenerOnBlobURLNavigation) &&
           !base::CommandLine::ForCurrentProcess()->HasSwitch(

@@ -172,7 +172,10 @@ class CORE_EXPORT AuditsIssue {
                                  mojom::blink::GenericIssueErrorType error_type,
                                  int violating_node_id,
                                  const String& violating_node_attribute);
-
+  static void ReportPartitioningBlobURLIssue(
+      LocalDOMWindow* window,
+      WTF::String blob_url,
+      mojom::blink::PartitioningBlobURLInfo info);
   static void ReportStylesheetLoadingLateImportIssue(Document* document,
                                                      const KURL& url,
                                                      WTF::OrdinalNumber line,
