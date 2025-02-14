@@ -23,6 +23,12 @@ TEST(AccountSelectionViewBaseTest, GetInitialLetterAsUppercase) {
       u"ט");
   EXPECT_EQ(AccountSelectionViewBase::GetInitialLetterAsUppercase("中文文本"),
             u"中");
+  EXPECT_EQ(AccountSelectionViewBase::GetInitialLetterAsUppercase(
+                "h́ Text with combining character"),
+            u"H́");
+  EXPECT_EQ(AccountSelectionViewBase::GetInitialLetterAsUppercase(
+                "👩🏾‍⚕️ Emoji with skin tone (combining character)"),
+            u"👩🏾‍⚕️");
 }
 
 }  // namespace webid
