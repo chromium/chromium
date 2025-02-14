@@ -9,7 +9,6 @@
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom.h"
 
 namespace mojo {

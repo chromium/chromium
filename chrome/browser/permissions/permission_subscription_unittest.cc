@@ -19,8 +19,8 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/origin.h"
 
 using blink::PermissionType;

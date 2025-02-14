@@ -28,6 +28,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 
 class Profile;
