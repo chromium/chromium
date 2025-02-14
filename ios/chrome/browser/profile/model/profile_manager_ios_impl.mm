@@ -450,9 +450,8 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   if (is_new_profile) {
     if (success) {
       profile_attributes_storage_.UpdateAttributesForProfileWithName(
-          name, base::BindOnce([](ProfileAttributesIOS attrs) {
+          name, base::BindOnce([](ProfileAttributesIOS& attrs) {
             attrs.ClearIsNewProfile();
-            return attrs;
           }));
     } else {
       MarkProfileForDeletion(name);

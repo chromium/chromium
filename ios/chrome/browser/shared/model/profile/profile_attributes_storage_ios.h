@@ -32,9 +32,9 @@ class ProfileAttributesStorageIOS {
     kTerminate,
   };
 
-  // Callback that can modify and then return a ProfileAttributesIOS.
+  // Callback that can modify a ProfileAttributesIOS.
   using ProfileAttributesCallback =
-      base::OnceCallback<ProfileAttributesIOS(ProfileAttributesIOS)>;
+      base::OnceCallback<void(ProfileAttributesIOS&)>;
 
   // Iterator types for the IterateOverProfileAttributes(...) overloads.
   //

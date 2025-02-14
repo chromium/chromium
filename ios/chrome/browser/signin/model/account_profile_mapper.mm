@@ -120,11 +120,10 @@ void AttachGaiaIdToProfile(
   }
   profile_attributes_storage->UpdateAttributesForProfileWithName(
       profile_name, base::BindOnce(
-                        [](const GaiaId& gaia_id, ProfileAttributesIOS attr) {
+                        [](const GaiaId& gaia_id, ProfileAttributesIOS& attr) {
                           auto gaia_ids = attr.GetAttachedGaiaIds();
                           gaia_ids.insert(gaia_id);
                           attr.SetAttachedGaiaIds(gaia_ids);
-                          return attr;
                         },
                         gaia_id));
 }
@@ -144,11 +143,10 @@ void DetachGaiaIdFromProfile(
   }
   profile_attributes_storage->UpdateAttributesForProfileWithName(
       profile_name, base::BindOnce(
-                        [](const GaiaId& gaia_id, ProfileAttributesIOS attr) {
+                        [](const GaiaId& gaia_id, ProfileAttributesIOS& attr) {
                           auto gaia_ids = attr.GetAttachedGaiaIds();
                           gaia_ids.erase(gaia_id);
                           attr.SetAttachedGaiaIds(gaia_ids);
-                          return attr;
                         },
                         gaia_id));
 }

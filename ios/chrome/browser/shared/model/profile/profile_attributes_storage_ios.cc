@@ -116,8 +116,8 @@ void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
   const base::Value::Dict& values =
       CHECK_DEREF(prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name));
 
-  ProfileAttributesIOS attr =
-      std::move(callback).Run(ProfileAttributesIOS::WithAttrs(name, values));
+  ProfileAttributesIOS attr = ProfileAttributesIOS::WithAttrs(name, values);
+  std::move(callback).Run(attr);
   CHECK(!attr.IsDeletedProfile());
 
   base::Value::Dict updated_values = std::move(attr).GetStorage();

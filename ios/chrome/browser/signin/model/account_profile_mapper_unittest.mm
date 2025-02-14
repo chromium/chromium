@@ -923,11 +923,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // GetAttachedGaiaIds()), since the signin predates this mapping.
   system_identity_manager_->AddIdentity(google_identity);
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
-      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
             GaiaId(google_identity.gaiaID),
             base::SysNSStringToUTF8(google_identity.userFullName));
-        return attr;
       }));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
@@ -965,13 +964,12 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // managed identity being the primary one. This can happen if the identities
   // were added before multi-profile support was enabled.
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
-      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
             GaiaId(google_identity.gaiaID),
             base::SysNSStringToUTF8(google_identity.userFullName));
         attr.SetAttachedGaiaIds(
             {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
-        return attr;
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
@@ -1006,13 +1004,12 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // managed identity being the primary one. This can happen if the identities
   // were added before multi-profile support was enabled.
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
-      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
             GaiaId(google_identity.gaiaID),
             base::SysNSStringToUTF8(google_identity.userFullName));
         attr.SetAttachedGaiaIds(
             {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
-        return attr;
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
@@ -1032,9 +1029,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Now the managed identity signs out, i.e. stops being the primary identity
   // in the personal profile.
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
-      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(GaiaId(), "");
-        return attr;
       }));
 
   // The managed identity should have been reassigned to a new dedicated
@@ -1077,12 +1073,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // * Multi-profile gets enabled.
   // * The managed account is signed out.
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
-      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         // Note: No `attr.SetAuthenticationInfo(...)` call, so no primary
         // account.
         attr.SetAttachedGaiaIds(
             {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
-        return attr;
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 

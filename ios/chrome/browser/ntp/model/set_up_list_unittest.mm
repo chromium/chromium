@@ -97,11 +97,10 @@ class SetUpListTest : public PlatformTest {
         ->UpdateAttributesForProfileWithName(
             profile_->GetProfileName(),
             base::BindOnce(
-                [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
+                [](id<SystemIdentity> identity, ProfileAttributesIOS& attr) {
                   attr.SetAuthenticationInfo(
                       GaiaId(identity.gaiaID),
                       base::SysNSStringToUTF8(identity.userEmail));
-                  return attr;
                 },
                 identity));
   }

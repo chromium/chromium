@@ -203,9 +203,8 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   // Before notifying observers that the profile was loaded, mark it as
   // no-longer-new.
   profile_attributes_storage_.UpdateAttributesForProfileWithName(
-      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
-        return attrs;
       }));
 
   for (auto& observer : observers_) {
