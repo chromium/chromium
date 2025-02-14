@@ -432,6 +432,13 @@ using tab_groups::SharingState;
         }
       }
     }
+  } else {
+    [destructiveActions
+        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+          [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                             incognito:incognito
+                                            sourceView:cell];
+        }]];
   }
   [menuElements addObject:[UIMenu menuWithTitle:@""
                                           image:nil
