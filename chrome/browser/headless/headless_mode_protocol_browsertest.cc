@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "chrome/browser/headless/test/headless_browser_test_utils.h"
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
@@ -205,6 +206,25 @@ void HeadlessModeProtocolBrowserTest::OnConsoleAPICalled(
   }
 }
 
+// This is a very simple command line switches parser intended to process '--'
+// separated switches with or without values. It will not process nested command
+// line switches specifications like --js-flags=--expose-gc. Use with caution!
+void HeadlessModeProtocolBrowserTest::AppendCommandLineExtras(
+    base::CommandLine* command_line,
+    std::string_view extras) {
+  std::vector<std::string> switches = base::SplitStringUsingSubstr(
+      extras, "--", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const auto& a_switch : switches) {
+    if (size_t pos = a_switch.find('=', 1); pos != std::string::npos) {
+      command_line->AppendSwitchASCII(a_switch.substr(0, pos),
+                                      a_switch.substr(pos + 1));
+    } else {
+      command_line->AppendSwitch(a_switch);
+    }
+  }
+}
+
 HEADLESS_MODE_PROTOCOL_TEST(DomFocus, "input/dom-focus.js")
 HEADLESS_MODE_PROTOCOL_TEST(FocusEvent, "input/focus-event.js")
 
@@ -312,5 +332,13 @@ HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
 
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetWindowState,
                             "sanity/create-target-window-state.js")
+
+// Headless Mode uses Ozone only when running on Linux.
+#if BUILDFLAG(IS_LINUX)
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    OzoneScreenSizeOverride,
+    "sanity/ozone-screen-size-override.js",
+    "--ozone-override-screen-size=1234,5678")
+#endif
 
 }  // namespace headless
