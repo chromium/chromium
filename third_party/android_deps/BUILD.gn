@@ -497,7 +497,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_identity_credentials_java") {
-      aar_path = "cipd/libs/com_google_android_gms_play_services_identity_credentials/play-services-identity-credentials-16.0.0-alpha05.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_identity_credentials/play-services-identity-credentials-16.0.0-alpha04.aar"
       info_path = "libs/com_google_android_gms_play_services_identity_credentials/com_google_android_gms_play_services_identity_credentials.info"
       enable_bytecode_checks = false
       deps = [
@@ -967,6 +967,20 @@ if (!limit_android_deps) {
       ":org_jetbrains_kotlinx_kotlinx_coroutines_bom_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_guava_java") {
+    jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava/kotlinx-coroutines-guava-1.8.1.jar"
+    output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_guava"
+    supports_android = true
+    enable_bytecode_checks = false
+    deps = [
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_bom_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
