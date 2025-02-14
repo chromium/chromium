@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -55,7 +54,7 @@ std::unique_ptr<views::DialogDelegate> MakeCrostiniAppRestartDelegate(
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
   delegate->SetOwnedByWidget(true);
   delegate->SetShowCloseButton(false);
-  delegate->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+  delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   return delegate;
