@@ -50,6 +50,7 @@ class WebContents;
 
 namespace tabs {
 class TabStripCollection;
+class TabGroupTabCollection;
 }
 
 class TabGroupModelFactory {
@@ -60,6 +61,19 @@ class TabGroupModelFactory {
 
   static TabGroupModelFactory* GetInstance();
   std::unique_ptr<TabGroupModel> Create(TabGroupController* controller);
+};
+
+// Holds the collection object for the group. Have DetachedTabGroup object as a
+// container of the collection_ so client does not need to worry or deal with
+// the collection object.
+struct DetachedTabGroup {
+  explicit DetachedTabGroup(
+      std::unique_ptr<tabs::TabGroupTabCollection> collection);
+  DetachedTabGroup(const DetachedTabGroup&) = delete;
+  DetachedTabGroup& operator=(const DetachedTabGroup&) = delete;
+  ~DetachedTabGroup();
+  DetachedTabGroup(DetachedTabGroup&&);
+  std::unique_ptr<tabs::TabGroupTabCollection> collection_;
 };
 
 // Holds state for a tab that has been detached from the tab strip.
@@ -246,6 +260,16 @@ class TabStripModel : public TabGroupController {
       std::unique_ptr<tabs::TabModel> tab,
       int add_types,
       std::optional<tab_groups::TabGroupId> group = std::nullopt);
+
+  // Removes the group collection from the collection hierarchy and passes it to
+  // the client. The client can re-insert into another tabstrip using
+  // `InsertDetachedGroupAt` without destroying the group.
+  std::unique_ptr<DetachedTabGroup> DetachTabGroupForInsertion(
+      const tab_groups::TabGroupId group_id);
+
+  // Inserts a detached tab group into the tabstrip starting at `index`.
+  void InsertDetachedTabGroupAt(std::unique_ptr<DetachedTabGroup> group,
+                                int index);
 
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
@@ -762,6 +786,13 @@ class TabStripModel : public TabGroupController {
       bool create_historical_tab,
       TabStripModelChange::RemoveReason web_contents_remove_reason,
       tabs::TabInterface::DetachReason tab_detach_reason);
+
+  std::unique_ptr<DetachedTabGroup> DetachTabGroupImpl(
+      const tab_groups::TabGroupId& group);
+
+  void InsertDetachedTabGroupImpl(
+      std::unique_ptr<DetachedTabGroup> detached_group,
+      int index);
 
   // We batch send notifications. This has two benefits:
   //   1) This allows us to send the minimal number of necessary notifications.
