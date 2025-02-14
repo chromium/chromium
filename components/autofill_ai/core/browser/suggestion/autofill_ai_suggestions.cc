@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -112,6 +113,21 @@ std::vector<Suggestion> DedupeFillingSuggestions(
   return deduped_filling_suggestions;
 }
 
+autofill::Suggestion::Icon GetSuggestionIcon(
+    autofill::EntityType triggering_field_entity_type) {
+  switch (triggering_field_entity_type.name()) {
+    case autofill::EntityTypeName::kPassport:
+      return autofill::Suggestion::Icon::kIdCard;
+    case autofill::EntityTypeName::kLoyaltyCard:
+      return autofill::Suggestion::Icon::kLoyalty;
+    case autofill::EntityTypeName::kDriversLicense:
+      return autofill::Suggestion::Icon::kIdCard;
+    case autofill::EntityTypeName::kCar:
+      return autofill::Suggestion::Icon::kCar;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 std::vector<Suggestion> CreateLoadingSuggestions() {
@@ -201,6 +217,8 @@ std::vector<Suggestion> CreateFillingSuggestions(
     }
     auto payload = Suggestion::AutofillAiPayload(values_to_fill);
     suggestions.back().payload = payload;
+    suggestions.back().icon =
+        GetSuggestionIcon(triggering_field_attribute_type->entity_type());
   }
 
   if (suggestions.empty()) {

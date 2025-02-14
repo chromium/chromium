@@ -229,6 +229,7 @@ struct Suggestion {
   enum class Icon {
     kNoIcon,
     kAccount,
+    kCar,
     // TODO(crbug.com/40266549): Rename to Undo.
     kClear,
     kCreate,
@@ -246,8 +247,10 @@ struct Suggestion {
     kGooglePayDark,
     kHttpWarning,
     kHttpsInvalid,
+    kIdCard,
     kKey,
     kLocation,
+    kLoyalty,
     kMagic,
     kOfferTag,
     kPenSpark,
