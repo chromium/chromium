@@ -691,6 +691,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "PasswordsPrivateEventRouter",
     "PermissionDecisionAutoBlocker",
     "PermissionHelper",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "PermissionsEventRouter",
+#endif
     "PermissionsManager",
     "PermissionsUpdaterShutdownFactory",
     "PersonalDataManager",

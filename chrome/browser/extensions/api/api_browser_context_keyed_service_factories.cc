@@ -30,6 +30,7 @@
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
+#include "chrome/browser/extensions/api/permissions/permissions_event_router_factory.h"
 #include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/browser/extensions/api/processes/processes_api.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_event_router_factory.h"
@@ -108,6 +109,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::OmniboxAPI::GetFactoryInstance();
   extensions::PasswordsPrivateDelegateFactory::GetInstance();
   extensions::PasswordsPrivateEventRouterFactory::GetInstance();
+  extensions::PermissionsEventRouterFactory::GetInstance();
   extensions::PreferenceAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::GetFactoryInstance();
