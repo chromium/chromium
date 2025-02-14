@@ -1943,8 +1943,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "graphics/color_correction_test_utils.cc",
-    "graphics/color_correction_test_utils.h",
     "graphics/gpu/drawing_buffer_test_helpers.h",
     "graphics/paint/paint_controller_test.h",
     "graphics/test/fake_canvas_resource_host.h",
