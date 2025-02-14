@@ -21,6 +21,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -554,7 +555,116 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
   TestBrowserRedirectMV3(is_war_for_redirect_enabled);
 }
 
-// TODO(crbug.com/40060076): Add a test for a server redirect from A to B to C.
+// Verify browser process redirect of an extension to another extension's non
+// web accessible resource.
+IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
+                       Inaccessible) {
+  auto TestBrowserRedirectImpl = [&](const std::string& manifest,
+                                     bool is_war_for_redirect_enabled) {
+    std::string host = "example.com";
+
+    // Load extension.
+    TestExtensionDir test_dir;
+    test_dir.WriteManifest(manifest);
+    test_dir.WriteFile(FILE_PATH_LITERAL("accessible.html"), "accessible.html");
+    test_dir.WriteFile(FILE_PATH_LITERAL("inaccessible.html"),
+                       "inaccessible.html");
+    test_dir.WriteFile(
+        FILE_PATH_LITERAL("background.js"),
+        base::StringPrintf(
+            R"(
+            chrome.runtime.onInstalled.addListener(async () => {
+              await chrome.declarativeNetRequest.updateDynamicRules({
+                addRules: [{
+                  "id": 1,
+                  "action": {
+                    "type": "redirect",
+                    "redirect": {
+                      "url": `%s?${chrome.runtime.getURL('inaccessible.html')}`
+                    }
+                  },
+                  "condition": {
+                    "urlFilter": "example.com*/empty.html",
+                    "resourceTypes": ["main_frame"]
+                  }
+                }]
+              });
+
+              chrome.test.notifyPass();
+            });
+          )",
+            embedded_test_server()->GetURL(host, "/server-redirect").spec()));
+    extensions::ResultCatcher catcher;
+    const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+    ASSERT_TRUE(catcher.GetNextResult());
+
+    // Navigate to a webpage that eventually navigates to an extension resource.
+    auto server_redirect = [&](int expect_net_error, const char* resource) {
+      GURL gurl = embedded_test_server()->GetURL(host, "/empty.html");
+      auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+      content::TestNavigationObserver observer(web_contents);
+      EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+      observer.WaitForNavigationFinished();
+      EXPECT_EQ(expect_net_error == net::OK,
+                observer.last_navigation_succeeded());
+      EXPECT_EQ(expect_net_error, observer.last_net_error_code());
+      EXPECT_EQ(extension->GetResourceURL(resource),
+                observer.last_navigation_url());
+    };
+
+    server_redirect(
+        is_war_for_redirect_enabled ? net::ERR_BLOCKED_BY_CLIENT : net::OK,
+        "inaccessible.html");
+  };
+
+  using ManifestVersion = enum { MV3, MV2 };
+  auto TestBrowserRedirect = [&TestBrowserRedirectImpl](
+                                 ManifestVersion manifest_version,
+                                 bool is_war_for_redirect_enabled) {
+    std::string manifest_base = base::StringPrintf(
+        R"(
+          "name": "test",
+          "version": "1",
+          "manifest_version": %d
+        )",
+        manifest_version == MV3 ? 3 : 2);
+    std::string manifest;
+
+    switch (manifest_version) {
+      case MV3:
+        manifest =
+            R"(
+              "background": {"service_worker": "background.js"},
+              "permissions": [
+                "declarativeNetRequest",
+                "declarativeNetRequestWithHostAccess"
+              ],
+              "host_permissions": [
+                "<all_urls>"
+              ]
+            )";
+        break;
+      case MV2:
+        manifest =
+            R"(
+              "background": {"scripts": ["background.js"]},
+              "permissions": [
+                "declarativeNetRequest",
+                "declarativeNetRequestWithHostAccess",
+                "<all_urls>"
+              ]
+            )";
+        break;
+    }
+
+    manifest = base::StringPrintf("{%s, %s}", manifest_base, manifest);
+    TestBrowserRedirectImpl(manifest, is_war_for_redirect_enabled);
+  };
+
+  bool is_war_for_redirect_enabled = GetParam();
+  TestBrowserRedirect(MV3, is_war_for_redirect_enabled);
+  TestBrowserRedirect(MV2, is_war_for_redirect_enabled);
+}
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
