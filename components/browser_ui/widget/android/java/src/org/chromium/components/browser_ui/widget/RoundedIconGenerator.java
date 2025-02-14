@@ -25,6 +25,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
+import java.text.BreakIterator;
 import java.util.Locale;
 
 /**
@@ -116,6 +117,19 @@ public class RoundedIconGenerator {
     }
 
     /**
+     * Gets the initial letter for the given text.
+     *
+     * <p>Can be more than character long for non-BMP characters.
+     */
+    @VisibleForTesting
+    static String getInitialLetter(String text) {
+        if (text.isEmpty()) return "";
+        BreakIterator iter = BreakIterator.getCharacterInstance();
+        iter.setText(text);
+        return text.substring(iter.first(), iter.next()).toUpperCase(Locale.getDefault());
+    }
+
+    /**
      * Generates an icon based on |text| (using the first character).
      *
      * @param text The text to render the first character of on the icon.
@@ -127,8 +141,7 @@ public class RoundedIconGenerator {
 
         canvas.drawRoundRect(mBackgroundRect, mCornerRadiusPx, mCornerRadiusPx, mBackgroundPaint);
 
-        int length = Math.min(1, text.length());
-        String displayText = text.substring(0, length).toUpperCase(Locale.getDefault());
+        String displayText = getInitialLetter(text);
         // Using Align.CENTER, so X is in the middle of the icon.
         canvas.drawText(displayText, mIconWidthPx / 2f, mTextBaselineY, mTextPaint);
 
