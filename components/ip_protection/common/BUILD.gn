@@ -652,3 +652,47 @@ source_set("ip_protection_probabilistic_reveal_token_manager_unittest") {
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }
+
+source_set("ip_protection_issuer_token_data_storage") {
+  sources = [
+    "ip_protection_issuer_token_data_storage.cc",
+    "ip_protection_issuer_token_data_storage.h",
+  ]
+  public_deps = [
+    "//base",
+    "//sql",
+  ]
+  deps = [
+    ":ip_protection_issuer_token_fetcher",
+    "//third_party/sqlite",
+  ]
+}
+
+source_set("ip_protection_issuer_token_data_storage_unittest") {
+  testonly = true
+  sources = [ "ip_protection_issuer_token_data_storage_unittest.cc" ]
+  deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_issuer_token_data_storage",
+    ":ip_protection_issuer_token_fetcher",
+    ":tests_bundle_data",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+bundle_data("tests_bundle_data") {
+  visibility = [ ":ip_protection_issuer_token_data_storage_unittest" ]
+  testonly = true
+  sources = [
+    "//components/test/data/ip_protection/issuer_tokens_v0.too_old.sql",
+    "//components/test/data/ip_protection/issuer_tokens_v1.sql",
+    "//components/test/data/ip_protection/issuer_tokens_v2.too_new.sql",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
