@@ -2574,7 +2574,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that when a new credential is saved or an existing one is updated via
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
-// TODO(crbug.com/40874087): Flaky, please re-enable once fixed.
 - (void)testAutoScroll {
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
