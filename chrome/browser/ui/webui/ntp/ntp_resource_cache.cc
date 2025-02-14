@@ -47,6 +47,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -295,12 +296,28 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
+  replacements["cookieControlsHeader"] = "cookie-controls-title";
 
-  if (is_tracking_protection_3pcd_enabled ||
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           privacy_sandbox::kAlwaysBlock3pcsIncognito)) {
     replacements["hideBlockCookiesToggle"] = "hidden";
     replacements["hideTooltipIcon"] = "hidden";
+    replacements["hideUserBypassIcon"] = "";
+    replacements["cookieControlsHeader"] = "cookie-controls-header";
+
+    replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
+        IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER);
+    localized_strings.Set(
+        "cookieControlsDescription",
+        l10n_util::GetStringFUTF16(
+            IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP,
+            chrome::kUserBypassHelpCenterURL,
+            l10n_util::GetStringUTF16(
+                IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
+  } else if (is_tracking_protection_3pcd_enabled) {
+    replacements["hideBlockCookiesToggle"] = "hidden";
+    replacements["hideTooltipIcon"] = "hidden";
+    replacements["hideUserBypassIcon"] = "hidden";
 
     // Overwrite the cookies control title and description if 3pcd enabled.
     replacements["cookieControlsTitle"] =
@@ -312,13 +329,13 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
             chrome::kUserBypassHelpCenterURL,
             l10n_util::GetStringUTF16(
                 IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
-
   } else {
     replacements["hideBlockCookiesToggle"] = "";
     replacements["hideTooltipIcon"] =
         cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
     replacements["cookieControlsDescription"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
+    replacements["hideUserBypassIcon"] = "hidden";
   }
 
   replacements["cookieControlsToggleChecked"] =
