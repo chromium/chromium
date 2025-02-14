@@ -623,8 +623,7 @@ void AuthenticatorRequestDialogController::OnUserConfirmedPriorityMechanism() {
 }
 
 void AuthenticatorRequestDialogController::OnPasskeysChanged(
-    const std::vector<webauthn::PasskeyModelChange>& changes) {
-}
+    const std::vector<webauthn::PasskeyModelChange>& changes) {}
 
 void AuthenticatorRequestDialogController::OnPasskeyModelShuttingDown() {
   passkey_model_observation_.Reset();
@@ -769,6 +768,15 @@ void AuthenticatorRequestDialogController::
          (cred->value().source == AuthenticatorType::kEnclave &&
           !enclave_will_do_uv))) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
+    } else if (absl::holds_alternative<Mechanism::Password>(mechanism.type)) {
+      auto* password_controller =
+          webauthn::PasswordCredentialController::MaybeGet(
+              GetRenderFrameHost());
+      if (password_controller && password_controller->IsAuthRequired()) {
+        SetCurrentStep(Step::kSelectPriorityMechanism);
+      } else {
+        mechanism.callback.Run();
+      }
     } else if (cred != nullptr || !hints_.transport.has_value() ||
                transport_availability_.request_type !=
                    FidoRequestType::kGetAssertion ||
@@ -1355,12 +1363,6 @@ void AuthenticatorRequestDialogController::SetAccountPreselectedCallback(
     content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
         callback) {
   account_preselected_callback_ = callback;
-}
-
-void AuthenticatorRequestDialogController::SetPasswordSelectedCallback(
-    content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
-        callback) {
-  password_selected_callback_ = callback;
 }
 
 void AuthenticatorRequestDialogController::SetBluetoothAdapterPowerOnCallback(
@@ -2138,16 +2140,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
           AuthenticatorRequestDialogModel::GetMechanismDescription(
               cred, model_->priority_phone_name);
     }
-    for (const auto& password : passwords_) {
-      Mechanism mechanism(
-          Mechanism::Password(), password->username_value,
-          password->username_value, vector_icons::kPasswordManagerIcon,
-          base::BindRepeating(
-              &AuthenticatorRequestDialogController::OnPasswordSelected,
-              weak_factory_.GetWeakPtr(), password->username_value,
-              password->password_value));
-      mechanism.description = u"Password (UT)";
-      model_->mechanisms.emplace_back(std::move(mechanism));
+    if (!passwords_.empty()) {
+      PopulatePasswords();
     }
   }
 
@@ -2597,14 +2591,20 @@ void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
   SetCurrentStep(Step::kPasskeyUpgrade);
 }
 
-void AuthenticatorRequestDialogController::OnPasswordSelected(
-    std::u16string username,
-    std::u16string password) {
-  // TODO(crbug.com/392549444): Consider adding screen lock auth, etc. for
-  // password selection. Also `PasswordCredentialController` may be a better
-  // place to handle password related work. For prototyping this should be
-  // alright.
-  password_selected_callback_.Run(password_manager::CredentialInfo(
-      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD, username,
-      username, GURL(), password, url::SchemeHostPort()));
+void AuthenticatorRequestDialogController::PopulatePasswords() {
+  auto* password_controller =
+      webauthn::PasswordCredentialController::MaybeGet(GetRenderFrameHost());
+  CHECK(password_controller);
+  for (const auto& password : passwords_) {
+    Mechanism mechanism(
+        Mechanism::Password(), password->username_value,
+        password->username_value, vector_icons::kPasswordManagerIcon,
+        base::BindRepeating(
+            &webauthn::PasswordCredentialController::OnPasswordSelected,
+            password_controller->AsWeakPtr(), password->username_value,
+            password->password_value));
+    mechanism.description =
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSWORD_LABEL);
+    model_->mechanisms.emplace_back(std::move(mechanism));
+  }
 }

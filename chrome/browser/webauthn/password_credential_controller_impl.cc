@@ -56,6 +56,35 @@ void PasswordCredentialControllerImpl::FetchPasswords(
   form_fetcher_->AddConsumer(this);
 }
 
+bool PasswordCredentialControllerImpl::IsAuthRequired() {
+  // TODO(crbug.com/392549444): For the prototype, require screen lock only if
+  // it's enabled (e.g. via PWM settings). This may change.
+  auto* pwm_client = GetPasswordManagerClient(render_frame_host());
+  return pwm_client && pwm_client->GetPasswordFeatureManager()
+                           ->IsBiometricAuthenticationBeforeFillingEnabled();
+}
+
+void PasswordCredentialControllerImpl::SetPasswordSelectedCallback(
+    AuthenticatorRequestClientDelegate::PasswordSelectedCallback callback) {
+  password_selected_callback_ = callback;
+}
+
+void PasswordCredentialControllerImpl::OnPasswordSelected(
+    std::u16string username,
+    std::u16string password) {
+  // TODO(crbug.com/392549444): Consider adding screen lock auth, etc. for
+  // password selection. For prototyping this should be alright.
+
+  password_selected_callback_.Run(password_manager::CredentialInfo(
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD, username,
+      username, GURL(), password, url::SchemeHostPort()));
+}
+
+base::WeakPtr<PasswordCredentialController>
+PasswordCredentialControllerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 PasswordCredentialControllerImpl::PasswordCredentialControllerImpl(
     RenderFrameHost* render_frame_host)
     : DocumentUserData(render_frame_host) {}

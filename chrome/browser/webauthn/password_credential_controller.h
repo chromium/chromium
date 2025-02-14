@@ -14,11 +14,13 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace webauthn {
 
+using content::AuthenticatorRequestClientDelegate;
 using content::RenderFrameHost;
 using password_manager::FormFetcher;
 using password_manager::FormFetcherImpl;
@@ -41,6 +43,21 @@ class PasswordCredentialController {
 
   virtual void FetchPasswords(const GURL& url,
                               PasswordCredentialsReceivedCallback callback);
+
+  // Returns `true` if the user is required to pass screen lock before using a
+  // credential.
+  virtual bool IsAuthRequired();
+
+  virtual void SetPasswordSelectedCallback(
+      AuthenticatorRequestClientDelegate::PasswordSelectedCallback callback);
+
+  // Handles the given `username` and `password` with the
+  // `PasswordSelectedCallback`. If `SetPasswordSelectedCallback` is not called
+  // before `OnPasswordSelected`, this should be a no-op.
+  virtual void OnPasswordSelected(std::u16string username,
+                                  std::u16string password);
+
+  virtual base::WeakPtr<PasswordCredentialController> AsWeakPtr() = 0;
 
   static void set_instance_for_testing(PasswordCredentialController* instance);
 
