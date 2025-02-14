@@ -216,7 +216,8 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
 #if BUILDFLAG(IS_MAC)
     frame = media::VideoFrame::WrapUnacceleratedIOSurface(
         buffer_iter->second->get_gpu_memory_buffer_handle().Clone(),
-        buffer->info->visible_rect, buffer->info->timestamp);
+        buffer->info->visible_rect, buffer->info->visible_rect.size(),
+        buffer->info->timestamp);
     buffer_finished_callback =
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &VideoCaptureClient::OnClientBufferFinished,

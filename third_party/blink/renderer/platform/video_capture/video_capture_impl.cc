@@ -395,6 +395,7 @@ bool VideoCaptureImpl::ProcessBuffer(
                 buffer_context->CloneGpuMemoryBufferHandle(),
                 gfx::Rect(
                     video_frame_init_data.ready_buffer->info->visible_rect),
+                video_frame_init_data.ready_buffer->info->visible_rect.size(),
                 video_frame_init_data.ready_buffer->info->timestamp);
         break;
       }
@@ -611,7 +612,8 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
       shared_image, sync_token,
       base::BindOnce(&BufferContext::MailboxHolderReleased,
                      video_frame_init_data.buffer_context),
-      gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect), size,
+      gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
+      video_frame_init_data.ready_buffer->info->visible_rect.size(),
       video_frame_init_data.ready_buffer->info->timestamp);
 
   if (!frame) {

@@ -451,7 +451,8 @@ class MacGpuMemoryBufferHandleHolder : public BufferHandleHolder {
     }
     auto frame = media::VideoFrame::WrapUnacceleratedIOSurface(
         gmb_holder_.GetGpuMemoryBufferHandle().Clone(),
-        buffer->frame_info->visible_rect, buffer->frame_info->timestamp);
+        buffer->frame_info->visible_rect,
+        buffer->frame_info->visible_rect.size(), buffer->frame_info->timestamp);
 
     if (!frame) {
       VLOG(0) << "Failed to create a video frame.";
