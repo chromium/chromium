@@ -71,6 +71,7 @@ class BASE_EXPORT CommandLine {
   explicit CommandLine(const FilePath& program);
 
   // Construct a new command line from an argument list.
+  // TODO(tsepez): two-arg form should be UNSAFE_BUFFER_USAGE.
   CommandLine(int argc, const CharType* const* argv);
   explicit CommandLine(const StringVector& argv);
 
@@ -101,6 +102,7 @@ class BASE_EXPORT CommandLine {
   // CommandLineToArgvW to parse the command line and convert it back to
   // argc and argv. Tests who don't want this dependency on shell32 and need
   // to honor the arguments passed in should use this function.
+  // TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
   static void InitUsingArgvForTesting(int argc, const char* const* argv);
 #endif
 
@@ -109,7 +111,8 @@ class BASE_EXPORT CommandLine {
   // don't trust the CRT's parsing of the command line, but it still must be
   // called to set up the command line. Returns false if initialization has
   // already occurred, and true otherwise. Only the caller receiving a 'true'
-  // return value should take responsibility for calling Reset.
+  // return value should take responsibility for calling Reset().
+  // TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
   static bool Init(int argc, const char* const* argv);
 
   // Destroys the current process CommandLine singleton. This is necessary if
@@ -128,6 +131,7 @@ class BASE_EXPORT CommandLine {
   static bool InitializedForCurrentProcess();
 
   // Initialize from an argv vector.
+  // TODO(tsepez): two-arg form should be UNSAFE_BUFFER_USAGE.
   void InitFromArgv(int argc, const CharType* const* argv);
   void InitFromArgv(const StringVector& argv);
 

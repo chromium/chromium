@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/command_line.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
@@ -197,7 +193,8 @@ CommandLine::CommandLine(const FilePath& program) : argv_(1), begin_args_(1) {
 
 CommandLine::CommandLine(int argc, const CommandLine::CharType* const* argv)
     : argv_(1), begin_args_(1) {
-  InitFromArgv(argc, argv);
+  // SAFETY: required from caller.
+  UNSAFE_BUFFERS(InitFromArgv(argc, argv));
 }
 
 CommandLine::CommandLine(const StringVector& argv) : argv_(1), begin_args_(1) {
@@ -254,7 +251,8 @@ void CommandLine::InitUsingArgvForTesting(int argc, const char* const* argv) {
   // On Windows we need to convert the command line arguments to std::wstring.
   CommandLine::StringVector argv_vector;
   for (int i = 0; i < argc; ++i) {
-    argv_vector.push_back(UTF8ToWide(argv[i]));
+    // SAFETY: required from caller.
+    argv_vector.push_back(UTF8ToWide(UNSAFE_BUFFERS(argv[i])));
   }
   current_process_commandline_->InitFromArgv(argv_vector);
 }
@@ -273,7 +271,8 @@ bool CommandLine::Init(int argc, const char* const* argv) {
 #if BUILDFLAG(IS_WIN)
   current_process_commandline_->ParseFromString(::GetCommandLineW());
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  current_process_commandline_->InitFromArgv(argc, argv);
+  // SAFETY: required from caller.
+  UNSAFE_BUFFERS(current_process_commandline_->InitFromArgv(argc, argv));
 #else
 #error Unsupported platform
 #endif
@@ -319,7 +318,8 @@ void CommandLine::InitFromArgv(int argc,
                                const CommandLine::CharType* const* argv) {
   StringVector new_argv;
   for (int i = 0; i < argc; ++i) {
-    new_argv.push_back(argv[i]);
+    // SAFETY: required from caller.
+    new_argv.push_back(UNSAFE_BUFFERS(argv[i]));
   }
   InitFromArgv(new_argv);
 }
@@ -612,7 +612,7 @@ void CommandLine::ParseFromString(StringViewType command_line) {
 
   DPLOG_IF(FATAL, !args) << "CommandLineToArgvW failed on command line: "
                          << command_line;
-  StringVector argv(args, args + num_args);
+  StringVector argv(args, UNSAFE_TODO(args + num_args));
   InitFromArgv(argv);
   raw_command_line_string_ = StringViewType();
   LocalFree(args);
