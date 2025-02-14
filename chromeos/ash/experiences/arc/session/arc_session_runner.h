@@ -194,6 +194,11 @@ class ArcSessionRunner : public ArcSession::Observer {
   // A serial number for the current profile.
   std::string serial_number_;
 
+  // Tracks whether or not OnShutdown() is called for investigation.
+  // TODO(crbug.com/395161942, crbug.com/393644378): remove this
+  // after investigation is done.
+  bool is_shutdown_requested_ = false;
+
   bool resumed_ = false;
 
   float default_device_scale_factor_ = 1.0f;

@@ -418,6 +418,18 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   }
 
  private:
+  // TODO(crbug.com/395161942, crbug.com/393644378): Tracking
+  // internal state transition for the production behavior.
+  // We saw some unexpected behavior, but we didn't see the root cause
+  // yet. This is for additional logging purpose only. We should remove
+  // once we get the idea why unexpected behavior happens.
+  enum InternalState {
+    kNotInitialized,
+    kRunning,
+    kShutdown,
+    kDestroying,
+  };
+
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
 
@@ -562,6 +574,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Internal state machine. See also State enum class.
   State state_ = State::NOT_INITIALIZED;
+
+  // Internal state for investigation purpose.
+  // TODO(crbug.com/395161942, crbug.com/393644378): remove these once
+  // we figure out the cause.
+  InternalState internal_state_ = InternalState::kNotInitialized;
 
   base::ObserverList<ArcSessionManagerObserver>::UncheckedAndDanglingUntriaged
       observer_list_;

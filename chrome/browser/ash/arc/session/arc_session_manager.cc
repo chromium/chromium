@@ -10,12 +10,14 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -80,6 +82,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "ui/display/types/display_constants.h"
 
 // Enable VLOG level 1.
@@ -564,6 +567,7 @@ ArcSessionManager::~ArcSessionManager() {
     ash::SessionManagerClient::Get()->RemoveObserver(this);
   }
 
+  internal_state_ = InternalState::kDestroying;
   Shutdown();
   DCHECK(arc_session_runner_);
   arc_session_runner_->RemoveObserver(this);
@@ -789,6 +793,14 @@ bool ArcSessionManager::IsAllowed() const {
 }
 
 void ArcSessionManager::SetProfile(Profile* profile) {
+  if (internal_state_ != InternalState::kNotInitialized &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
+    // This should not be called twice, except in tests.
+    base::debug::DumpWithoutCrashing();
+  }
+  internal_state_ = InternalState::kRunning;
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!profile_);
   DCHECK(IsArcAllowedForProfile(profile));
@@ -925,6 +937,38 @@ void ArcSessionManager::Initialize() {
 
 void ArcSessionManager::Shutdown() {
   VLOG(1) << "Shutting down session manager";
+
+  // We expect this is called twice, once from ArcServiceLauncher
+  // then the internal state is switched to kRunning -> kShutdown,
+  // followed by the one from dtor, then the state is kDestroying.
+  // All cases should happen after stopping RunLoop.
+  bool expected = true;
+  if (base::RunLoop::IsRunningOnCurrentThread()) {
+    LOG(ERROR) << "Shutdown is called while message loop is running";
+    expected = false;
+  }
+  switch (internal_state_) {
+    case InternalState::kNotInitialized:
+      LOG(ERROR) << "Unexpected state: kNotInitialized";
+      expected = false;
+      break;
+    case InternalState::kRunning:
+      internal_state_ = InternalState::kShutdown;
+      break;
+    case InternalState::kShutdown:
+      LOG(ERROR) << "Unexpected state: kShutdown";
+      expected = false;
+      break;
+    case InternalState::kDestroying:
+      // Do nothing.
+      break;
+  }
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType) &&
+      !expected) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   enable_requested_ = false;
   ResetArcState();
   session_manager_observation_.Reset();
@@ -1410,6 +1454,12 @@ void ArcSessionManager::RequestDisableWithArcDataRemoval() {
 }
 
 void ArcSessionManager::RequestArcDataRemoval() {
+  if (internal_state_ != InternalState::kRunning &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
   DCHECK(data_remover_);
