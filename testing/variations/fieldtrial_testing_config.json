@@ -8154,6 +8154,21 @@
             ]
         }
     ],
+    "DisableBoostPriority": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableBoostPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableBruschettaInstallChecks": [
         {
             "platforms": [
