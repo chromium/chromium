@@ -59,7 +59,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
 
     size_t stride = 0u;
     viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
-    auto mapping = backing_->shared_image->Map();
+    auto mapping = backing_->shared_image()->Map();
     void* memory = mapping->GetMemoryForPlane(0).data();
     RasterBufferProvider::PlaybackToMemory(
         memory, format, resource_size_, stride, raster_source, raster_full_rect,
@@ -107,7 +107,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
             {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
              "BitmapRasterBufferProvider"}));
-    CHECK(backing->shared_image);
+    CHECK(backing->shared_image());
 
     backing->mailbox_sync_token =
         shared_image_interface_->GenVerifiedSyncToken();

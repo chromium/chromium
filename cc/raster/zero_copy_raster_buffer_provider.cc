@@ -52,7 +52,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     // If MappableSharedImage allocation failed (https://crbug.com/554541), then
     // we don't have anything to give to the display compositor, so we report a
     // zero mailbox that will result in checkerboarding.
-    if (!backing_->shared_image) {
+    if (!backing_->shared_image()) {
       return;
     }
 
@@ -62,7 +62,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     // TODO(danakj): This could be done with the worker context in Playback. Do
     // we need to do things in IsResourceReadyToDraw() and OrderingBarrier then?
     sii_->UpdateSharedImage(backing_->returned_sync_token,
-                            backing_->shared_image->mailbox());
+                            backing_->shared_image()->mailbox());
 
     backing_->mailbox_sync_token = sii_->GenUnverifiedSyncToken();
   }
@@ -80,25 +80,25 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     TRACE_EVENT0("cc", "ZeroCopyRasterBuffer::Playback");
 
     // Create a MappableSI if necessary.
-    if (!backing_->shared_image) {
+    if (!backing_->shared_image()) {
       gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
       backing_->set_shared_image(sii_->CreateSharedImage(
           {format_, resource_size_, resource_color_space_, usage,
            "ZeroCopyRasterTile"},
           gpu::kNullSurfaceHandle, kBufferUsage));
-      if (!backing_->shared_image) {
+      if (!backing_->shared_image()) {
         LOG(ERROR) << "Creation of MappableSharedImage failed.";
         return;
       }
     }
 
     std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
-        backing_->shared_image->Map();
+        backing_->shared_image()->Map();
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage Failed.";
-      backing_->shared_image->UpdateDestructionSyncToken(gpu::SyncToken());
-      backing_->shared_image.reset();
+      backing_->shared_image()->UpdateDestructionSyncToken(gpu::SyncToken());
+      backing_->clear_shared_image();
       return;
     }
 

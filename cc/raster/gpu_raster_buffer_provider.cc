@@ -326,7 +326,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   gpu::raster::RasterInterface* ri =
       client_->worker_context_provider_->RasterInterface();
   bool mailbox_needs_clear = false;
-  if (!backing_->shared_image) {
+  if (!backing_->shared_image()) {
     DCHECK(!backing_->returned_sync_token.HasData());
     auto* sii = client_->worker_context_provider_->SharedImageInterface();
 
@@ -344,7 +344,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
         sii->CreateSharedImage({shared_image_format_, resource_size_,
                                 color_space_, flags, "GpuRasterTile"},
                                gpu::kNullSurfaceHandle));
-    CHECK(backing_->shared_image);
+    CHECK(backing_->shared_image());
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
   } else {
@@ -376,7 +376,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       raster_source->background_color(), mailbox_needs_clear,
       playback_settings.msaa_sample_count, msaa_mode, use_lcd_text,
       playback_settings.visible, color_space_, playback_settings.hdr_headroom,
-      backing_->shared_image->mailbox().name);
+      backing_->shared_image()->mailbox().name);
 
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.InvScale(raster_source->recording_scale_factor());

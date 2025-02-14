@@ -61,10 +61,13 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     virtual ~Backing();
 
     void set_shared_image(scoped_refptr<gpu::ClientSharedImage> si) {
-      shared_image = std::move(si);
+      shared_image_ = std::move(si);
+    }
+    void clear_shared_image() { shared_image_.reset(); }
+    scoped_refptr<gpu::ClientSharedImage> shared_image() {
+      return shared_image_;
     }
 
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
 
     bool overlay_candidate = false;
@@ -85,6 +88,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
     // Note: Required and set only for software resources.
     scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
+
+   private:
+    scoped_refptr<gpu::ClientSharedImage> shared_image_;
   };
 
   // Scoped move-only object returned when getting a resource from the pool.
