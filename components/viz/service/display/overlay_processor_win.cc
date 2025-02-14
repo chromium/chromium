@@ -518,12 +518,6 @@ OverlayProcessorWin::TryDelegatedCompositing(
 
   // Try to promote all the quads in the root pass to overlay.
   for (const auto* quad : root_render_pass->quad_list.BackToFront()) {
-    if (OverlayCandidateFactory::IsOccludedByFilteredQuad(
-            *quad, root_render_pass->quad_list.begin(),
-            root_render_pass->quad_list.end(), render_pass_backdrop_filters)) {
-      return base::unexpected(DelegationStatus::kCompositedBackdropFilter);
-    }
-
     std::optional<OverlayCandidate> dc_layer;
     if (is_full_delegated_compositing) {
       // Try to promote videos like DCLayerOverlay does first, then fall back to
@@ -561,6 +555,12 @@ OverlayProcessorWin::TryDelegatedCompositing(
     // |UpdatePromotedRenderPassProperties| to support partially delegated
     // compositing.
     if (dc_layer->rpdq) {
+      if (render_pass_backdrop_filters.contains(
+              dc_layer->rpdq->render_pass_id)) {
+        // We don't delegate composting of backdrop filters to the OS.
+        return base::unexpected(DelegationStatus::kCompositedBackdropFilter);
+      }
+
       auto render_pass_it =
           std::ranges::find(render_passes, dc_layer->rpdq->render_pass_id,
                             &AggregatedRenderPass::id);
