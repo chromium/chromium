@@ -457,8 +457,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorFocusableBorderFocused, kColorTabBackgroundInactiveFrameActive,
       ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
 
+  mixer[kColorSharingRecentActivityDialogActivityContainer] = {
+      ui::kColorSysSurface5};
   mixer[kColorSharingRecentActivityDialogFaviconContainer] = {
-      kColorToolbarInkDropHover};
+      ui::kColorSysSurface};
 
   mixer[kColorTabGroupTabStripFrameActiveBlue] =
       ui::SelectBasedOnDarkInput(kColorTabBackgroundInactiveFrameActive,
