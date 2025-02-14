@@ -368,9 +368,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
       PasswordChangeDelegate::State::kChangingPassword, 1);
 }
 
-// TODO(crbug.com/382703186): Fix flakiness and re-enable.
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       DISABLED_GeneratedPasswordIsPreSaved) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
 
@@ -394,8 +392,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_EQ(base::UTF16ToUTF8(generated_password),
             GetElementValue(/*iframe_id=*/"null", "new_password_1"));
   CheckThatCredentialsStored(
-      /*username=*/"", base::UTF16ToUTF8(generated_password),
-      password_manager::PasswordForm::Type::kChangeSubmission);
+      /*username=*/"", base::UTF16ToUTF8(generated_password));
 }
 
 // Verify that after password change is stopped, password change delegate is not
