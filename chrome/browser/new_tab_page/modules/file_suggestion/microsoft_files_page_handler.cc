@@ -5,7 +5,9 @@
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.h"
 
 #include "base/files/file_path.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
@@ -81,6 +83,8 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
         })");
 
 const int kMaxResponseSize = 1024 * 1024;
+
+const int kNumberOfDaysPerWeek = 7;
 
 const char kFakeTrendingData[] =
     R"({
@@ -183,9 +187,9 @@ const char kNonInsightsFakeData[] =
     R"(openxmlformats-officedocument.wordprocessingml.document"
             },
             "fileSystemInfo": {
-              "lastAccessedDateTime": "2024-01-07T19:13:00Z"
+              "lastAccessedDateTime": "%s"
             },
-            "lastModifiedDateTime": "2024-01-07T19:13:00Z"
+            "lastModifiedDateTime": "%s"
           },
           {
             "id": "2",
@@ -196,9 +200,9 @@ const char kNonInsightsFakeData[] =
     R"(openxmlformats-officedocument.presentationml.presentation"
             },
             "fileSystemInfo": {
-              "lastAccessedDateTime": "2024-01-08T19:13:00Z"
+              "lastAccessedDateTime": "%s"
             },
-            "lastModifiedDateTime": "2024-01-08T17:13:00Z"
+            "lastModifiedDateTime": "%s"
           },
           {
             "id": "3",
@@ -209,9 +213,9 @@ const char kNonInsightsFakeData[] =
     R"(openxmlformats-officedocument.wordprocessingml.document"
             },
             "fileSystemInfo": {
-              "lastAccessedDateTime": "2024-01-05T18:13:00Z"
+              "lastAccessedDateTime": "%s"
             },
-            "lastModifiedDateTime": "2024-05-08T17:12:00Z"
+            "lastModifiedDateTime": "%s"
           }
         ]
       }
@@ -229,10 +233,10 @@ const char kNonInsightsFakeData[] =
               "mimeType": "application/vnd.)"
     R"(openxmlformats-officedocument.spreadsheetml.sheet"
             },
-            "lastModifiedDateTime": "2024-01-17T11:13:00Z",
+            "lastModifiedDateTime": "%s",
             "remoteItem": {
               "shared": {
-                "sharedDateTime": "2024-01-07T11:13:00Z",
+                "sharedDateTime": "%s",
                 "sharedBy": {
                   "user": {
                     "displayName": "User 1"
@@ -249,10 +253,10 @@ const char kNonInsightsFakeData[] =
               "mimeType": "application/vnd.)"
     R"(openxmlformats-officedocument.wordprocessingml.document"
             },
-            "lastModifiedDateTime": "2024-01-08T11:13:00Z",
+            "lastModifiedDateTime": "%s",
             "remoteItem": {
               "shared": {
-                "sharedDateTime": "2024-01-07T11:13:00Z",
+                "sharedDateTime": "%s",
                 "sharedBy": {
                   "user": {
                     "displayName": "User 2"
@@ -269,10 +273,10 @@ const char kNonInsightsFakeData[] =
               "mimeType": "application/vnd.)"
     R"(openxmlformats-officedocument.presentationml.presentation"
             },
-            "lastModifiedDateTime": "2024-01-20T09:13:00Z",
+            "lastModifiedDateTime": "%s",
             "remoteItem": {
               "shared": {
-                "sharedDateTime": "2024-01-05T11:13:00Z",
+                "sharedDateTime": "%s",
                 "sharedBy": {
                   "user": {
                     "displayName": "User 1"
@@ -312,6 +316,10 @@ GURL GetFileIconUrl(std::string extension) {
 // Remove the file extension that is appended to the file name.
 std::string GetFileName(std::string full_name, std::string file_extension) {
   return full_name.substr(0, full_name.size() - file_extension.size() - 1);
+}
+
+std::string GetTimeNowAsString() {
+  return TimeFormatAsIso8601(base::Time::Now());
 }
 
 }  // namespace
@@ -370,11 +378,18 @@ void MicrosoftFilesPageHandler::GetFiles(GetFilesCallback callback) {
     GetRecentlyUsedAndSharedFiles(std::move(callback));
   } else {
     // Parse data immediately when displaying fake data.
-    const auto* fake_data = ntp_features::kNtpSharepointModuleDataParam.Get() ==
-                                    ntp_features::NtpSharepointModuleDataType::
-                                        kTrendingInsightsFakeData
-                                ? kFakeTrendingData
-                                : kNonInsightsFakeData;
+    const std::string fake_data =
+        ntp_features::kNtpSharepointModuleDataParam.Get() ==
+                ntp_features::NtpSharepointModuleDataType::
+                    kTrendingInsightsFakeData
+            ? kFakeTrendingData
+            : base::StringPrintf(kNonInsightsFakeData, GetTimeNowAsString(),
+                                 GetTimeNowAsString(), GetTimeNowAsString(),
+                                 GetTimeNowAsString(), GetTimeNowAsString(),
+                                 GetTimeNowAsString(), GetTimeNowAsString(),
+                                 GetTimeNowAsString(), GetTimeNowAsString(),
+                                 GetTimeNowAsString(), GetTimeNowAsString(),
+                                 GetTimeNowAsString());
     data_decoder::DataDecoder::ParseJsonIsolated(
         fake_data,
         base::BindOnce(&MicrosoftFilesPageHandler::OnJsonParsed,
@@ -608,11 +623,11 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
       bool suggestion_has_formatted_time =
           *response_id == "recent"
               ? last_opened_time_str &&
-                    base::Time::FromString(last_opened_time_str->c_str(),
-                                           &sort_time)
+                    base::Time::FromUTCString(last_opened_time_str->c_str(),
+                                              &sort_time)
               : shared_by && shared_time_str &&
-                    base::Time::FromString(shared_time_str->c_str(),
-                                           &sort_time);
+                    base::Time::FromUTCString(shared_time_str->c_str(),
+                                              &sort_time);
       if (!id || !title || !item_url || !last_modified_time_str ||
           !suggestion_has_formatted_time) {
         std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
@@ -626,11 +641,24 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
         continue;
       }
 
+      // Skip any recent files that were opened more than a week ago. It's safe
+      // to assume any other file that comes after this one has a greater time
+      // difference because the Microsoft Graph response is sorted in descending
+      // order.
+      base::TimeDelta time_difference =
+          base::Time::Now().LocalMidnight() - sort_time.LocalMidnight();
+      if (*response_id == "recent" &&
+          time_difference.InDays() > kNumberOfDaysPerWeek) {
+        break;
+      }
+
       file_suggestion::mojom::FilePtr created_file =
           file_suggestion::mojom::File::New();
       created_file->id = *id;
-      // TODO(386385623): Create justification text for file type.
-      created_file->justification_text = "Recently shared or used";
+      created_file->justification_text =
+          *response_id == "shared"
+              ? "Shared by " + *shared_by
+              : CreateJustificationTextForRecentFile(sort_time);
       created_file->icon_url = GetFileIconUrl(file_extension);
       created_file->title = GetFileName(*title, file_extension);
       created_file->item_url = GURL(*item_url);
@@ -680,4 +708,22 @@ MicrosoftFilesPageHandler::SortAndRemoveDuplicates(
     }
   }
   return final_suggestions;
+}
+
+std::string MicrosoftFilesPageHandler::CreateJustificationTextForRecentFile(
+    base::Time opened_time) {
+  base::Time time_now = base::Time::Now();
+  base::TimeDelta time_difference =
+      time_now.LocalMidnight() - opened_time.LocalMidnight();
+  // The difference between the time now and `opened_time` in days.
+  int num_days_difference = time_difference.InDays();
+
+  switch (num_days_difference) {
+    case 0:
+      return "You opened today";
+    case 1:
+      return "You opened yesterday";
+    default:
+      return "You opened in the past week";
+  }
 }
