@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -45,11 +44,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using testing::_;
 using testing::NiceMock;
@@ -179,9 +178,9 @@ class ProfilePolicyConnectorTest : public testing::Test {
   // required.
   raw_ptr<MockCloudPolicyStore> cloud_policy_store_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedStubInstallAttributes test_install_attributes_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(ProfilePolicyConnectorTest, IsManagedForManagedUsers) {
@@ -201,7 +200,7 @@ TEST_F(ProfilePolicyConnectorTest, IsManagedForManagedUsers) {
   connector.Shutdown();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfilePolicyConnectorTest, IsManagedForActiveDirectoryUsers) {
   user_manager::ScopedUserManager scoped_user_manager_enabler(
       std::make_unique<ash::FakeChromeUserManager>());
@@ -280,7 +279,7 @@ TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
   // Cleanup.
   connector.Shutdown();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
   NiceMock<MockConfigurationPolicyProvider> mock_platform_provider;
@@ -330,7 +329,7 @@ TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
   g_browser_process->browser_policy_connector()->Shutdown();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfilePolicyConnectorTest, MachineLevelUserCloudPolicyForProfile) {
   // Setup mock MachineLevelUserCloudPolicyManager.
   NiceMock<MockConfigurationPolicyProvider>
@@ -359,7 +358,7 @@ TEST_F(ProfilePolicyConnectorTest, MachineLevelUserCloudPolicyForProfile) {
   g_browser_process->browser_policy_connector()->Shutdown();
   proxy_policy_provider.Shutdown();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfilePolicyConnectorTest, LocalTestProviderUseAndRevert) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());

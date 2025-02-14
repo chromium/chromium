@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/common/pref_names.h"
@@ -307,14 +306,6 @@ class ECHPolicyTest : public SSLPolicyTest {
     SetPolicy(&policies, key::kDnsOverHttpsMode, base::Value("secure"));
     SetPolicy(&policies, key::kDnsOverHttpsTemplates,
               base::Value(doh_server_.GetTemplate()));
-
-// On Lacros, the DnsOverHttpsTemplates policy gets mapped to the
-// kDnsOverHttpsEffectiveTemplatesChromeOS pref which is set in Ash.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    g_browser_process->local_state()->SetString(
-        prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-        doh_server_.GetTemplate());
-#endif
     return policies;
   }
 

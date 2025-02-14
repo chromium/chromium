@@ -6,9 +6,10 @@
 
 #include <asm-generic/errno-base.h>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
@@ -16,9 +17,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_pref_names.h"
-#endif
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace policy {
 class SystemFeaturesDisableListPolicyHandlerTest : public testing::Test {
@@ -162,7 +161,6 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest,
       expected_histogram);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SystemFeaturesDisableListPolicyHandlerTest,
        ShouldDisableOsSettingsWhenSet) {
   ApplyPolicySettings({"os_settings"});
@@ -181,6 +179,5 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest,
   EXPECT_TRUE(prefs_.GetValue(ash::prefs::kOsSettingsEnabled, &value));
   EXPECT_TRUE(value->GetBool());
 }
-#endif
 
 }  // namespace policy

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_NETWORKING_POLICY_CERT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_POLICY_NETWORKING_POLICY_CERT_SERVICE_FACTORY_H_
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {

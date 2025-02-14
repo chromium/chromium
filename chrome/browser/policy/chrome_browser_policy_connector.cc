@@ -17,7 +17,6 @@
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/configuration_policy_handler_list_factory.h"
@@ -65,9 +64,6 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/proxy_policy_provider.h"
 #endif
@@ -133,11 +129,11 @@ bool ChromeBrowserPolicyConnector::HasMachineLevelPolicies() {
   if (ProviderHasPolicies(GetPlatformProvider())) {
     return true;
   }
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (ProviderHasPolicies(machine_level_user_cloud_policy_manager())) {
     return true;
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   if (ProviderHasPolicies(command_line_provider_)) {
     return true;
   }
@@ -149,9 +145,7 @@ void ChromeBrowserPolicyConnector::Shutdown() {
   // Reset the controller before calling base class so that
   // shutdown occurs in correct sequence.
   chrome_browser_cloud_management_controller_.reset();
-#endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (machine_level_user_cloud_policy_manager_) {
     machine_level_user_cloud_policy_manager_->Shutdown();
     machine_level_user_cloud_policy_manager_ = nullptr;
@@ -225,9 +219,7 @@ void ChromeBrowserPolicyConnector::InitCloudManagementController(
   chrome_browser_cloud_management_controller()->MaybeInit(local_state,
                                                           url_loader_factory);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeBrowserPolicyConnector::
     SetMachineLevelUserCloudPolicyManagerForTesting(
         MachineLevelUserCloudPolicyManager* manager) {
@@ -238,7 +230,7 @@ void ChromeBrowserPolicyConnector::SetProxyPolicyProviderForTesting(
     ProxyPolicyProvider* proxy_policy_provider) {
   proxy_policy_provider_ = proxy_policy_provider;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool ChromeBrowserPolicyConnector::IsCommandLineSwitchSupported() const {
   if (g_command_line_enabled_for_testing) {
@@ -260,7 +252,7 @@ ChromeBrowserPolicyConnector::device_affiliation_ids() const {
   if (!device_affiliation_ids_for_testing_.empty()) {
     return device_affiliation_ids_for_testing_;
   }
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!machine_level_user_cloud_policy_manager_ ||
       !machine_level_user_cloud_policy_manager_->IsClientRegistered() ||
       !machine_level_user_cloud_policy_manager_->core() ||
@@ -275,7 +267,7 @@ ChromeBrowserPolicyConnector::device_affiliation_ids() const {
   return {ids.begin(), ids.end()};
 #else
   return {};
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeBrowserPolicyConnector::SetDeviceAffiliatedIdsForTesting(
@@ -390,6 +382,6 @@ void ChromeBrowserPolicyConnector::OnMachineLevelCloudPolicyManagerCreated(
         std::move(machine_level_user_cloud_policy_manager));
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

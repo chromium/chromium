@@ -4,19 +4,18 @@
 
 #include "system_features_disable_list_policy_handler.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace policy {
 
@@ -104,11 +103,9 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool os_settings_disabled = base::Contains(
       enums_list, base::Value(static_cast<int>(SystemFeature::kOsSettings)));
   prefs->SetBoolean(ash::prefs::kOsSettingsEnabled, !os_settings_disabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   prefs->SetValue(policy_prefs::kSystemFeaturesDisableList,
                   base::Value(std::move(enums_list)));
 }

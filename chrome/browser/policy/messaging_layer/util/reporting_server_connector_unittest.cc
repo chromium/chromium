@@ -32,15 +32,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using testing::_;
 using testing::ContainerEq;
@@ -79,7 +72,7 @@ class ReportingServerConnectorTest : public ::testing::Test {
  protected:
   void SetUp() override {
     test_env_ = std::make_unique<ReportingServerConnector::TestEnvironment>();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     install_attributes_.Get()->SetCloudManaged("fake-domain-name",
                                                "fake-device-id");
 #endif
@@ -125,7 +118,7 @@ class ReportingServerConnectorTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedStubInstallAttributes install_attributes_;
 #endif
 
@@ -205,16 +198,10 @@ TEST_F(ReportingServerConnectorTest,
 // This test verifies that we can upload from an unmanaged device when the
 // proper features are enabled.
 // TODO(b/281905099): remove feature dependencies after roll out.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
   // Set the device management state to unmanaged.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   install_attributes_.Get()->SetConsumerOwned();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto params = crosapi::mojom::BrowserInitParams::New();
-  params->is_device_enterprised_managed = false;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-#endif
 
   // Enable EnableReportingFromUnmanagedDevices feature. Required to
   // upload records from an unmanaged device.
@@ -255,6 +242,6 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
 
   EXPECT_TRUE(response_event.result().has_value());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace reporting
