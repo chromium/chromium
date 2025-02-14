@@ -152,9 +152,9 @@ void PixManager::OnPixCodeValidated(
   }
 
   initiate_payment_request_details_->pix_code_ = std::move(pix_code);
-  api_availability_check_start_time_ = base::TimeTicks::Now();
-  GetApiClient()->IsAvailable(base::BindOnce(
-      &PixManager::OnApiAvailabilityReceived, weak_ptr_factory_.GetWeakPtr()));
+  GetApiClient()->IsAvailable(
+      base::BindOnce(&PixManager::OnApiAvailabilityReceived,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 FacilitatedPaymentsApiClient* PixManager::GetApiClient() {
@@ -167,10 +167,10 @@ FacilitatedPaymentsApiClient* PixManager::GetApiClient() {
   return api_client_.get();
 }
 
-void PixManager::OnApiAvailabilityReceived(bool is_api_available) {
+void PixManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
+                                           bool is_api_available) {
   LogApiAvailabilityCheckResultAndLatency(
-      kPaymentsType, is_api_available,
-      (base::TimeTicks::Now() - api_availability_check_start_time_));
+      kPaymentsType, is_api_available, (base::TimeTicks::Now() - start_time));
   if (!is_api_available) {
     LogPixFlowExitedReason(PixFlowExitedReason::kApiClientNotAvailable);
     return;
@@ -215,15 +215,15 @@ void PixManager::OnRiskDataLoaded(base::TimeTicks start_time,
   }
   initiate_payment_request_details_->risk_data_ = risk_data;
 
-  get_client_token_loading_start_time_ = base::TimeTicks::Now();
-  GetApiClient()->GetClientToken(base::BindOnce(
-      &PixManager::OnGetClientToken, weak_ptr_factory_.GetWeakPtr()));
+  GetApiClient()->GetClientToken(base::BindOnce(&PixManager::OnGetClientToken,
+                                                weak_ptr_factory_.GetWeakPtr(),
+                                                base::TimeTicks::Now()));
 }
 
-void PixManager::OnGetClientToken(std::vector<uint8_t> client_token) {
-  LogGetClientTokenResultAndLatency(
-      kPaymentsType, !client_token.empty(),
-      (base::TimeTicks::Now() - get_client_token_loading_start_time_));
+void PixManager::OnGetClientToken(base::TimeTicks start_time,
+                                  std::vector<uint8_t> client_token) {
+  LogGetClientTokenResultAndLatency(kPaymentsType, !client_token.empty(),
+                                    (base::TimeTicks::Now() - start_time));
   if (client_token.empty()) {
     ShowErrorScreen();
     LogPixFlowExitedReason(PixFlowExitedReason::kClientTokenNotAvailable);
@@ -237,24 +237,23 @@ void PixManager::OnGetClientToken(std::vector<uint8_t> client_token) {
 }
 
 void PixManager::SendInitiatePaymentRequest() {
-  initiate_payment_network_start_time_ = base::TimeTicks::Now();
   if (FacilitatedPaymentsNetworkInterface* payments_network_interface =
           client_->GetFacilitatedPaymentsNetworkInterface()) {
     LogInitiatePaymentAttempt(kPaymentsType);
     payments_network_interface->InitiatePayment(
         std::move(initiate_payment_request_details_),
         base::BindOnce(&PixManager::OnInitiatePaymentResponseReceived,
-                       weak_ptr_factory_.GetWeakPtr()),
+                       weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
         client_->GetPaymentsDataManager()->app_locale());
   }
 }
 
 void PixManager::OnInitiatePaymentResponseReceived(
+    base::TimeTicks start_time,
     autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
     std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
         response_details) {
-  base::TimeDelta latency =
-      base::TimeTicks::Now() - initiate_payment_network_start_time_;
+  base::TimeDelta latency = base::TimeTicks::Now() - start_time;
   if (result !=
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     LogInitiatePaymentResultAndLatency(kPaymentsType, /*result=*/false,
@@ -282,11 +281,10 @@ void PixManager::OnInitiatePaymentResponseReceived(
   }
 
   LogInitiatePurchaseActionAttempt(kPaymentsType);
-  purchase_action_start_time_ = base::TimeTicks::Now();
   GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->secure_payload_,
       base::BindOnce(&PixManager::OnPurchaseActionResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 
   // Close the progress screen just after the platform screen appears.
   ui_timer_.Start(FROM_HERE, kProgressScreenDismissDelay,
@@ -294,7 +292,8 @@ void PixManager::OnInitiatePaymentResponseReceived(
                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PixManager::OnPurchaseActionResult(PurchaseActionResult result) {
+void PixManager::OnPurchaseActionResult(base::TimeTicks start_time,
+                                        PurchaseActionResult result) {
   switch (result) {
     case PurchaseActionResult::kCouldNotInvoke:
       LogPixFlowExitedReason(
@@ -309,7 +308,7 @@ void PixManager::OnPurchaseActionResult(PurchaseActionResult result) {
   }
   // Logs the general histograms.
   LogPixInitiatePurchaseActionResultAndLatency(
-      result, base::TimeTicks::Now() - purchase_action_start_time_);
+      result, base::TimeTicks::Now() - start_time);
   LogInitiatePurchaseActionResultUkm(result, ukm_source_id_);
 }
 
