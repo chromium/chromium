@@ -98,6 +98,7 @@ constexpr char kOpTypeReduceSumSquare[] = "ReduceSumSquare";
 constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeResample2d[] = "Resize";
 constexpr char kOpTypeReshape[] = "Reshape";
+constexpr char kOpTypeScatterND[] = "ScatterND";
 constexpr char kOpTypeSigmoid[] = "Sigmoid";
 constexpr char kOpTypeSlice[] = "Slice";
 constexpr char kOpTypeSoftmax[] = "Softmax";
@@ -1557,6 +1558,49 @@ GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   return base::ok();
 }
 
+void GraphBuilderOrt::AddScatterNDOperation(
+    const mojom::ScatterND& scatter_nd) {
+  const std::string node_name = GenerateNextOperationName(scatter_nd.label);
+  const std::string input_name =
+      GetOperandNameById(scatter_nd.input_operand_id);
+  const std::string indices_name =
+      GetOperandNameById(scatter_nd.indices_operand_id);
+  const std::string updates_name =
+      GetOperandNameById(scatter_nd.updates_operand_id);
+  const std::string output_name =
+      GetOperandNameById(scatter_nd.output_operand_id);
+
+  std::string int64_indices_name;
+  const OperandDataType indices_data_type =
+      GetOperand(scatter_nd.indices_operand_id).descriptor.data_type();
+
+  // ONNX only supports int64 indices.
+  switch (indices_data_type) {
+    case OperandDataType::kInt64: {
+      int64_indices_name = indices_name;
+      break;
+    }
+    case OperandDataType::kInt32:
+    case OperandDataType::kUint32: {
+      int64_indices_name = GenerateNextOperandName();
+      AppendCast(
+          indices_name, int64_indices_name,
+          ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
+      break;
+    }
+    default:
+      NOTREACHED() << "[WebNN] ScatterND only supports data type int32, uint32 "
+                      "and int64.";
+  }
+
+  std::array<const char*, 3> input_names = {
+      input_name.c_str(), int64_indices_name.c_str(), updates_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  model_builder_.AddNode(kOpTypeScatterND, node_name, input_names,
+                         output_names);
+}
+
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
   const std::string node_name = GenerateNextOperationName(slice.label);
@@ -1834,6 +1878,10 @@ GraphBuilderOrt::BuildModel() {
         RETURN_IF_ERROR(AddReshapeOperation(*operation->get_reshape()));
         break;
       }
+      case mojom::Operation::Tag::kScatterNd: {
+        AddScatterNDOperation(*operation->get_scatter_nd());
+        break;
+      }
       case mojom::Operation::Tag::kSigmoid: {
         AddUnaryOperation(*operation->get_sigmoid(), kOpTypeSigmoid);
         break;
@@ -1879,7 +1927,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReverse:
       case mojom::Operation::Tag::kScatterElements:
-      case mojom::Operation::Tag::kScatterNd:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kSoftsign:
       case mojom::Operation::Tag::kTanh:

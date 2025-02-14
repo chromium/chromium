@@ -194,6 +194,7 @@ class GraphBuilderOrt {
       const mojom::Resample2d& resample2d);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddReshapeOperation(
       const mojom::Reshape& reshape);
+  void AddScatterNDOperation(const mojom::ScatterND& scatter_nd);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddSliceOperation(
       const mojom::Slice& slice);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
