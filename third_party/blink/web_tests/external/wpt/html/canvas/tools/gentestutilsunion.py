@@ -414,6 +414,10 @@ class _OutputPaths:
             element=self.element / _ensure_rendered(sub_dir),
             offscreen=self.offscreen / _ensure_rendered(sub_dir))
 
+    def path_for_canvas_type(self, canvas_type: _CanvasType) -> pathlib.Path:
+        return (self.element if canvas_type == _CanvasType.HTML_CANVAS
+                else self.offscreen)
+
     def mkdir(self) -> None:
         """Creates element and offscreen directories, if they don't exist."""
         self.element.mkdir(parents=True, exist_ok=True)
@@ -451,24 +455,14 @@ def _render(jinja_env: jinja2.Environment,
     pathlib.Path(output_file_name).write_text(file_content, 'utf-8')
 
 
-def _write_cairo_images(pycairo_code: str, output_files: _OutputPaths,
-                        canvas_types: FrozenSet[_CanvasType]) -> None:
-    """Creates a png from pycairo code, for the specified canvas types."""
-    if _CanvasType.HTML_CANVAS in canvas_types:
-        full_code = (f'{pycairo_code}\n'
-                     f'surface.write_to_png("{output_files.element}")\n')
-        eval(compile(full_code, '<string>', 'exec'), {
-            'cairo': cairo,
-            'math': math,
-        })
-
-    if {_CanvasType.OFFSCREEN_CANVAS, _CanvasType.WORKER} & canvas_types:
-        full_code = (f'{pycairo_code}\n'
-                     f'surface.write_to_png("{output_files.offscreen}")\n')
-        eval(compile(full_code, '<string>', 'exec'), {
-            'cairo': cairo,
-            'math': math,
-        })
+def _write_cairo_images(pycairo_code: str, output_file: pathlib.Path) -> None:
+    """Creates a png from pycairo code and write it to `output_file`."""
+    full_code = (f'{pycairo_code}\n'
+                 f'surface.write_to_png("{output_file}")\n')
+    eval(compile(full_code, '<string>', 'exec'), {
+        'cairo': cairo,
+        'math': math,
+    })
 
 
 class _Variant():
@@ -645,8 +639,7 @@ class _Variant():
             r'\ncr = cairo.Context(surface)', expected)
 
         img_filename = f'{params["name"]}.png'
-        _write_cairo_images(expected, output_dirs.sub_path(img_filename),
-                            frozenset({_CanvasType.HTML_CANVAS}))
+        _write_cairo_images(expected, output_dirs.element / img_filename)
         params['expected_img'] = img_filename
 
 
@@ -923,8 +916,8 @@ class _VariantGrid:
                 ''')
 
         img_filename = f'{self.file_name}.png'
-        _write_cairo_images(cairo_code, output_dirs.sub_path(img_filename),
-                            frozenset([canvas_type]))
+        output_dir = output_dirs.path_for_canvas_type(canvas_type)
+        _write_cairo_images(cairo_code, output_dir / img_filename)
         self._canvas_type_params[canvas_type]['img_reference'] = img_filename
 
     def _generate_cairo_images(self, output_dirs: _OutputPaths) -> None:
