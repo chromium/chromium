@@ -110,10 +110,6 @@ class MEDIA_EXPORT AudioRenditionGroup
   // appeared in the manifest.
   const std::list<AudioRendition>& GetRenditions() const { return renditions_; }
 
-  // Looks up the renditions within this group identified by the given name.
-  // If no such renditions exists, returns `nullptr`.
-  const AudioRendition* GetRendition(std::string_view name) const;
-
   // Returns the rendition which was specified with the DEFAULT=YES attribute.
   // If no such rendition was in this group, returns `nullptr`;
   const AudioRendition* GetDefaultRendition() const {
