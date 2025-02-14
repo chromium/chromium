@@ -41,7 +41,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                         ObjectAnimator animator =
                                 ObjectAnimator.ofFloat(
                                         hubContainerView,
-                                        View.TRANSLATION_Y,
+                                        View.Y,
                                         hubContainerView.getHeight(),
                                         yOffset);
                         animator.setInterpolator(Interpolators.EMPHASIZED_DECELERATE);
@@ -78,10 +78,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
             float yOffset) {
         ObjectAnimator animator =
                 ObjectAnimator.ofFloat(
-                        hubContainerView,
-                        View.TRANSLATION_Y,
-                        yOffset,
-                        hubContainerView.getHeight());
+                        hubContainerView, View.Y, yOffset, hubContainerView.getHeight());
         animator.setInterpolator(Interpolators.EMPHASIZED_ACCELERATE);
         animator.setDuration(durationMs);
 
