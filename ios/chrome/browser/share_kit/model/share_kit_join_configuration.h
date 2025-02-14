@@ -27,6 +27,9 @@ enum class ShareKitFlowOutcome;
 // The display name of the shared group.
 @property(nonatomic, copy) NSString* displayName;
 
+// The preview image to show in the Join screen.
+@property(nonatomic, strong) UIImage *previewImage;
+
 // The preview items to show in the preview screen.
 @property(nonatomic, copy) NSArray<ShareKitPreviewItem*>* previewItems;
 
