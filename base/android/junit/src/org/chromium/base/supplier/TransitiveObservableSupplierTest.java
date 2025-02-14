@@ -164,4 +164,52 @@ public class TransitiveObservableSupplierTest {
         ShadowLooper.idleMainLooper();
         verify(mOnChangeCallback).onResult(eq(mObject1));
     }
+
+    @Test
+    public void testAddObserver_ShouldNotifyOnAdd() {
+        ObservableSupplierImpl<ObservableSupplier<Object>> parentSupplier =
+                new ObservableSupplierImpl<>();
+        ObservableSupplierImpl<Object> targetSupplier1 = new ObservableSupplierImpl<>();
+
+        ObservableSupplier<Object> transitiveSupplier = make(parentSupplier);
+        assertNull(transitiveSupplier.get());
+
+        parentSupplier.set(targetSupplier1);
+        assertNull(transitiveSupplier.get());
+        verifyNoInteractions(mOnChangeCallback);
+
+        targetSupplier1.set(mObject1);
+        assertEquals(mObject1, transitiveSupplier.get());
+        verifyNoInteractions(mOnChangeCallback);
+
+        assertEquals(transitiveSupplier.addSyncObserverAndCallIfSet(mOnChangeCallback), mObject1);
+        ShadowLooper.runUiThreadTasks();
+        verify(mOnChangeCallback).onResult(eq(mObject1));
+    }
+
+    @Test
+    public void testAddObserver_ShouldNotNotifyOnAdd() {
+        ObservableSupplierImpl<ObservableSupplier<Object>> parentSupplier =
+                new ObservableSupplierImpl<>();
+        ObservableSupplierImpl<Object> targetSupplier1 = new ObservableSupplierImpl<>();
+
+        ObservableSupplier<Object> transitiveSupplier = make(parentSupplier);
+        assertNull(transitiveSupplier.get());
+
+        parentSupplier.set(targetSupplier1);
+        assertNull(transitiveSupplier.get());
+        verifyNoInteractions(mOnChangeCallback);
+
+        targetSupplier1.set(mObject1);
+        assertEquals(mObject1, transitiveSupplier.get());
+        verifyNoInteractions(mOnChangeCallback);
+
+        assertEquals(transitiveSupplier.addSyncObserver(mOnChangeCallback), mObject1);
+        ShadowLooper.runUiThreadTasks();
+        verifyNoInteractions(mOnChangeCallback);
+
+        targetSupplier1.set(mObject2);
+        assertEquals(mObject2, transitiveSupplier.get());
+        verify(mOnChangeCallback).onResult(eq(mObject2));
+    }
 }

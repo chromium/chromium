@@ -36,7 +36,7 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
     private final Handler mHandler = new Handler();
 
     private @Nullable E mObject;
-    private final ObserverList<Callback<E>> mObservers = new ObserverList<>();
+    protected final ObserverList<Callback<E>> mObservers = new ObserverList<>();
 
     public ObservableSupplierImpl() {
         // Guard against creation on Instrumentation thread, since this is basically always a bug.
@@ -48,17 +48,26 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
     }
 
     @Override
-    public @Nullable E addObserver(Callback<E> obs) {
+    public @Nullable E addObserver(Callback<@Nullable E> obs, @NotifyBehavior int behavior) {
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
-        if (mObject != null) {
+        boolean notifyOnAdd = shouldNotifyOnAdd(behavior);
+        boolean omitNullOnAdd = shouldOmitNullOnAdd(behavior);
+        boolean postOnAdd = shouldPostOnAdd(behavior);
+        boolean notify = notifyOnAdd && (mObject != null || !omitNullOnAdd);
+        if (notify) {
             final E currentObject = mObject;
-            mHandler.post(
-                    () -> {
-                        if (mObject != currentObject || !mObservers.hasObserver(obs)) return;
-                        obs.onResult(mObject);
-                    });
+            if (postOnAdd) {
+                mHandler.post(
+                        () -> {
+                            if (mObject == currentObject && mObservers.hasObserver(obs)) {
+                                obs.onResult(mObject);
+                            }
+                        });
+            } else {
+                obs.onResult(mObject);
+            }
         }
 
         return mObject;
@@ -102,5 +111,22 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
     public boolean hasObservers() {
         // ObserverList has its own ThreadChecker.
         return !mObservers.isEmpty();
+    }
+
+    /**
+     * Returns whether the observer should be notified on being added if {@link #mObject} is null.
+     */
+    private static boolean shouldOmitNullOnAdd(@NotifyBehavior int behavior) {
+        return (NotifyBehavior.OMIT_NULL_ON_ADD & behavior) != 0;
+    }
+
+    /** Returns whether the observer should be notified on being added. */
+    private static boolean shouldNotifyOnAdd(@NotifyBehavior int behavior) {
+        return (NotifyBehavior.NOTIFY_ON_ADD & behavior) != 0;
+    }
+
+    /** Returns whether the observer should be notified asynchronously on being added. */
+    private static boolean shouldPostOnAdd(int behavior) {
+        return (NotifyBehavior.POST_ON_ADD & behavior) != 0;
     }
 }

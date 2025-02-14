@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -92,6 +93,32 @@ public class UnwrapObservableSupplierTest {
         assertTrue(parentSupplier.hasObservers());
 
         ShadowLooper.idleMainLooper();
+        verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
+    }
+
+    @Test
+    public void testAddObserver_ShouldNotifyOnAdd() {
+        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>();
+        ObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
+        unwrapSupplier.addObserver(mOnChangeCallback);
+
+        ShadowLooper.idleMainLooper();
+        verify(mOnChangeCallback).onResult(eq(0));
+
+        parentSupplier.set(mObject1);
+        verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
+    }
+
+    @Test
+    public void testAddObserver_ShouldNotNotifyOnAdd() {
+        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>();
+        ObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
+        unwrapSupplier.addSyncObserver(mOnChangeCallback);
+
+        ShadowLooper.idleMainLooper();
+        verifyNoInteractions(mOnChangeCallback);
+
+        parentSupplier.set(mObject1);
         verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
     }
 }
