@@ -98,7 +98,7 @@ MATCHER(ContainsAddressFooterSuggestions, "") {
   return true;
 }
 
-// TODO(crbug.com/378835293): Add tests for generating icons for suggestions.
+// TODO(crbug.com/40100455): Add tests for generating icons for suggestions.
 class AddressSuggestionGeneratorTest : public testing::Test {
  public:
   void SetUp() override {
