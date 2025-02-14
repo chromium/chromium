@@ -23,8 +23,10 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
 
@@ -418,12 +420,21 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   // CJK names are a special case and are tokenized by character without the
   // separators.
   if (HasCjkNameCharacteristics(base::UTF16ToUTF8(value))) {
+    static base::NoDestructor<std::unique_ptr<const icu::RegexPattern>> regex(
+        CompileRegex(
+            base::UTF8ToUTF16(std::string_view(kCjkNameSeparatorsRe))));
+    std::optional<std::vector<std::u16string>> parts =
+        SplitByRegex(value, **regex, value.size());
+    if (!parts.has_value()) {
+      return {AddressToken{.value = value,
+                           .normalized_value = NormalizeValue(value),
+                           .position = 0}};
+    }
     tokens.reserve(value.size());
-    for (size_t i = 0; i < value.size(); i++) {
-      std::u16string cjk_separators = u"・·　 ";
-      if (cjk_separators.find(value.substr(i, 1)) == std::u16string::npos) {
-        tokens.emplace_back(AddressToken{.value = value.substr(i, 1),
-                                         .normalized_value = value.substr(i, 1),
+    for (const std::u16string& part : parts.value()) {
+      for (size_t j = 0; j < part.size(); j++) {
+        tokens.emplace_back(AddressToken{.value = part.substr(j, 1),
+                                         .normalized_value = part.substr(j, 1),
                                          .position = index++});
       }
     }

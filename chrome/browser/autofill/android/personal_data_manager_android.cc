@@ -90,7 +90,7 @@ void RecordAlternativeNameSeparatorUsage(
       saved_alternative_name != existing_alternative_name) {
     const bool has_name_separator =
         re2::RE2::PartialMatch(base::UTF16ToUTF8(saved_alternative_name),
-                               autofill::kCjkNameSeperatorsRe);
+                               autofill::kCjkNameSeparatorsRe);
     base::UmaHistogramBoolean(
         "Autofill.Settings.EditedAlternativeNameContainsASeparator",
         has_name_separator);

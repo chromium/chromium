@@ -230,6 +230,7 @@ TEST(AutofillStructuredAddressUtils, TokenizeValue) {
   EXPECT_EQ(TokenizeValue(u"이영 호"), expected_cjk_tokens);
   EXPECT_EQ(TokenizeValue(u"이・영호"), expected_cjk_tokens);
   EXPECT_EQ(TokenizeValue(u"이영 호"), expected_cjk_tokens);
+  EXPECT_EQ(TokenizeValue(u"이영호"), expected_cjk_tokens);
 }
 
 TEST(AutofillStructuredAddressUtils, NormalizeValue) {
