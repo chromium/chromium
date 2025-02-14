@@ -1754,6 +1754,7 @@ public class StripLayoutHelper
             boolean currContainerHidden = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
 
             // 2. Set start divider visibility.
+            // TODO(crbug.com/384969886): Account for dragging off entire groups.
             if (i > 0 && mStripViews[i - 1] instanceof StripLayoutTab prevTab) {
                 boolean prevContainerHidden = prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
                 boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
