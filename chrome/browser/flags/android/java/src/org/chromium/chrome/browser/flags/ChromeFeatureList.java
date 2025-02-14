@@ -973,7 +973,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAndroidDumpOnScrollWithoutResource =
             newMutableFlagWithSafeDefault(ANDROID_DUMP_ON_SCROLL_WITHOUT_RESOURCE, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutter =
-            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, false);
+            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, true);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveAllButActiveTab =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveDuplicateTabs =
@@ -1426,7 +1426,7 @@ public abstract class ChromeFeatureList {
             sAndroidTabDeclutter.newBooleanParam("android_tab_declutter_archive_enabled", true);
     public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterArchiveTimeDeltaHours =
             sAndroidTabDeclutter.newIntParam(
-                    "android_tab_declutter_archive_time_delta_hours", 7 * 24);
+                    "android_tab_declutter_archive_time_delta_hours", 21 * 24);
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterAutoDeleteEnabled =
             sAndroidTabDeclutter.newBooleanParam(
                     "android_tab_declutter_auto_delete_enabled", false);
@@ -1439,7 +1439,7 @@ public abstract class ChromeFeatureList {
                     "android_tab_declutter_interval_time_delta_hours", 7 * 24);
     public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterMaxSimultaneousArchives =
             sAndroidTabDeclutter.newIntParam(
-                    "android_tab_declutter_max_simultaneous_archives", 250);
+                    "android_tab_declutter_max_simultaneous_archives", 100);
     public static final MutableIntParamWithSafeDefault
             sAndroidTabDeclutterIphMessageDismissThreshold =
                     sAndroidTabDeclutter.newIntParam(
