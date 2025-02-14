@@ -211,6 +211,12 @@ export class ClientDelegateFactory {
         const result = await pageHandler.endSession();
         return !resultHasError(result);
       },
+      extendSessionDuration: async (extendDurationInMinutes: number) => {
+        const result = await pageHandler.extendSessionDuration({
+          microseconds: BigInt(extendDurationInMinutes) * MICRO_SECS_IN_MINUTES
+        });
+        return !resultHasError(result);
+      },
       removeStudent: async (id: string) => {
         const result = await pageHandler.removeStudent(id);
         return !resultHasError(result);

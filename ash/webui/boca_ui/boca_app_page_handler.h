@@ -67,13 +67,15 @@ class BocaAppHandler : public mojom::PageHandler,
                      CreateSessionCallback callback) override;
   void GetSession(GetSessionCallback callback) override;
   void EndSession(EndSessionCallback callback) override;
+  void ExtendSessionDuration(base::TimeDelta extended_duration,
+                             ExtendSessionDurationCallback callback) override;
   void RemoveStudent(const std::string& id,
                      RemoveStudentCallback callback) override;
   void UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
                           UpdateOnTaskConfigCallback callback) override;
   void UpdateCaptionConfig(mojom::CaptionConfigPtr config,
                            UpdateCaptionConfigCallback callback) override;
-  void SetFloatMode(bool isFloatMode, SetFloatModeCallback callback) override;
+  void SetFloatMode(bool is_float_mode, SetFloatModeCallback callback) override;
 
   void SubmitAccessCode(const std::string& access_code,
                         SubmitAccessCodeCallback callback) override;

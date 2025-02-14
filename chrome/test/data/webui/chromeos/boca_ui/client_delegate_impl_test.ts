@@ -5,6 +5,7 @@
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
 import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {TimeDelta} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import type {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -246,6 +247,12 @@ class MockRemoteHandler extends PageHandlerRemote {
   }
 
   override endSession(): Promise<{error: UpdateSessionError | null}> {
+    return Promise.resolve({error: null});
+  }
+
+  override extendSessionDuration(duration: TimeDelta):
+      Promise<{error: UpdateSessionError | null}> {
+    assertDeepEquals({microseconds: 900000000n}, duration);
     return Promise.resolve({error: null});
   }
 
@@ -587,6 +594,14 @@ suite('ClientDelegateTest', function() {
     const result = await clientDelegateImpl.getInstance().endSession();
     assertTrue(result);
   });
+
+  test(
+      'client delegate should translate data for extend session duration',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().extendSessionDuration(15);
+        assertTrue(result);
+      });
 
   test('client delegate should translate data for remove student', async () => {
     const result = await clientDelegateImpl.getInstance().removeStudent('1');

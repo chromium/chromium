@@ -373,6 +373,39 @@ void BocaAppHandler::EndSession(EndSessionCallback callback) {
   session_client_impl_->UpdateSession(std::move(request));
 }
 
+void BocaAppHandler::ExtendSessionDuration(
+    base::TimeDelta extended_duration,
+    ExtendSessionDurationCallback callback) {
+  auto* session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  if (!session || session->session_state() != ::boca::Session::ACTIVE ||
+      extended_duration.is_negative()) {
+    receiver_.ReportBadMessage("Extend session with invalid input.");
+    return;
+  }
+  std::unique_ptr<UpdateSessionRequest> request =
+      std::make_unique<UpdateSessionRequest>(
+          session_client_impl_->sender(), user_identity_, session->session_id(),
+          base::BindOnce(
+              [](EndSessionCallback callback,
+                 base::expected<std::unique_ptr<::boca::Session>,
+                                google_apis::ApiErrorCode> result) {
+                if (!result.has_value()) {
+                  std::move(callback).Run(
+                      mojom::UpdateSessionError::kHTTPError);
+                  return;
+                }
+                std::move(callback).Run(std::nullopt);
+                BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+                    std::move(result.value()), true);
+              },
+              std::move(callback)));
+  // TODO: crbug.com/391945140 - Remove redundant unique pointer dependencies.
+  request->set_duration(std::make_unique<base::TimeDelta>(base::Seconds(
+      session->duration().seconds() + extended_duration.InSeconds())));
+  session_client_impl_->UpdateSession(std::move(request));
+}
+
 void BocaAppHandler::RemoveStudent(const std::string& id,
                                    RemoveStudentCallback callback) {
   auto* session =
@@ -466,10 +499,10 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   session_client_impl_->UpdateSession(std::move(request));
 }
 
-void BocaAppHandler::SetFloatMode(bool isFloatMode,
+void BocaAppHandler::SetFloatMode(bool is_float_mode,
                                   SetFloatModeCallback callback) {
   SetFloatModeAndBoundsForWindow(
-      isFloatMode, web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
+      is_float_mode, web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
       std::move(callback));
 }
 

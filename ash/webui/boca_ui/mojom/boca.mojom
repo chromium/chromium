@@ -264,6 +264,9 @@ interface PageHandler {
   GetSession() => (SessionResult result);
   // End session.
   EndSession() => (UpdateSessionError? error);
+  // Extend session duration.
+  ExtendSessionDuration(mojo_base.mojom.TimeDelta extended_duration)
+  => (UpdateSessionError? error);
   // Remove student from session.
   RemoveStudent(string id) => (RemoveStudentError? error);
   // Update OnTask config.
@@ -273,7 +276,7 @@ interface PageHandler {
   UpdateCaptionConfig(CaptionConfig caption_config)
   => (UpdateSessionError? error);
   // Set app float mode.
-  SetFloatMode(bool isFloatMode)=> (bool success);
+  SetFloatMode(bool is_float_mode) => (bool success);
   // Submit access code to join a current class session.
   SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
   // Requests to view screen of a given student.

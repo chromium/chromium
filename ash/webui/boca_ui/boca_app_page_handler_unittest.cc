@@ -928,6 +928,43 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithNonActiveResponse) {
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
+TEST_F(BocaAppPageHandlerTest, ExtendSessionDurationSucceed) {
+  auto* session_id = "123";
+  auto session = std::make_unique<::boca::Session>();
+  session->mutable_duration()->set_seconds(120);
+  session->set_session_state(::boca::Session::ACTIVE);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId.ToString());
+  UpdateSessionRequest request(nullptr, teacher, session_id,
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
+        ASSERT_EQ(base::Seconds(150), *request->duration());
+        request->callback().Run(std::make_unique<::boca::Session>());
+      })));
+
+  boca_app_handler()->ExtendSessionDuration(base::Seconds(30),
+                                            future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+}
+
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(),

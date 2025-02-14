@@ -281,6 +281,12 @@ export declare interface ClientApiDelegate {
    * End the current session
    */
   endSession(): Promise<boolean>;
+
+  /**
+   * Extend session duration
+   */
+  extendSessionDuration(extendDurationInMinutes: number): Promise<boolean>;
+
   /**
    * Update on task config
    */
