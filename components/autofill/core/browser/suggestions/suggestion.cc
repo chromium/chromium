@@ -64,10 +64,14 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kHttpWarning";
     case Suggestion::Icon::kHttpsInvalid:
       return "kHttpsInvalid";
+    case Suggestion::Icon::kIdCard:
+      return "kIdCard";
     case Suggestion::Icon::kKey:
       return "kKey";
     case Suggestion::Icon::kLocation:
       return "kLocation";
+    case Suggestion::Icon::kLoyalty:
+      return "kLoyalty";
     case Suggestion::Icon::kMagic:
       return "kMagic";
     case Suggestion::Icon::kOfferTag:
@@ -84,6 +88,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kSettingsAndroid";
     case Suggestion::Icon::kUndo:
       return "kUndo";
+    case Suggestion::Icon::kVehicle:
+      return "kVehicle";
     case Suggestion::Icon::kCardGeneric:
       return "kCardGeneric";
     case Suggestion::Icon::kCardAmericanExpress:

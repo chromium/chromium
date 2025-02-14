@@ -289,6 +289,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
+    case Suggestion::Icon::kVehicle:
     case Suggestion::Icon::kEdit:
     case Suggestion::Icon::kEmail:
     case Suggestion::Icon::kError:
@@ -300,9 +301,11 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePayDark:
     case Suggestion::Icon::kHttpsInvalid:
     case Suggestion::Icon::kHttpWarning:
+    case Suggestion::Icon::kIdCard:
     case Suggestion::Icon::kIban:
     case Suggestion::Icon::kKey:
     case Suggestion::Icon::kLocation:
+    case Suggestion::Icon::kLoyalty:
     case Suggestion::Icon::kMagic:
     case Suggestion::Icon::kNoIcon:
     case Suggestion::Icon::kOfferTag:

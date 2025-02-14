@@ -115,15 +115,15 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     // Other networks.
     case Suggestion::Icon::kCardGeneric:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
-
-    case Suggestion::Icon::kAutofillAi:
-
     case Suggestion::Icon::kAccount:
+    case Suggestion::Icon::kAutofillAi:
+    case Suggestion::Icon::kBnpl:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
     case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
+    case Suggestion::Icon::kVehicle:
     case Suggestion::Icon::kEdit:
     case Suggestion::Icon::kEmail:
     case Suggestion::Icon::kError:
@@ -136,8 +136,10 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kHttpsInvalid:
     case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kIban:
+    case Suggestion::Icon::kIdCard:
     case Suggestion::Icon::kKey:
     case Suggestion::Icon::kLocation:
+    case Suggestion::Icon::kLoyalty:
     case Suggestion::Icon::kMagic:
     case Suggestion::Icon::kNoIcon:
     case Suggestion::Icon::kOfferTag:
@@ -148,7 +150,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
-    case Suggestion::Icon::kBnpl:
       return std::u16string();
   }
   NOTREACHED();
@@ -264,6 +265,9 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kDevice:
       return ImageModelFromVectorIcon(kDevicesIcon, kIconSize);
+    case Suggestion::Icon::kVehicle:
+      return ImageModelFromVectorIcon(vector_icons::kDirectionsCarIcon,
+                                      kChromeRefreshIconSize);
     case Suggestion::Icon::kEdit:
       return ImageModelFromVectorIcon(vector_icons::kEditChromeRefreshIcon,
                                       kChromeRefreshIconSize);
@@ -297,11 +301,17 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
                                             ui::kColorAlertHighSeverity,
                                             kIconSize);
+    case Suggestion::Icon::kIdCard:
+      return ImageModelFromVectorIcon(vector_icons::kIdCardIcon,
+                                      kChromeRefreshIconSize);
     case Suggestion::Icon::kKey:
       return ImageModelFromVectorIcon(kKeyIcon, kIconSize);
     case Suggestion::Icon::kLocation:
       return ImageModelFromVectorIcon(
           vector_icons::kLocationOnChromeRefreshIcon, kChromeRefreshIconSize);
+    case Suggestion::Icon::kLoyalty:
+      return ImageModelFromVectorIcon(vector_icons::kLoyaltyIcon,
+                                      kChromeRefreshIconSize);
     case Suggestion::Icon::kMagic:
       return ImageModelFromVectorIcon(vector_icons::kMagicButtonIcon,
                                       kIconSize);

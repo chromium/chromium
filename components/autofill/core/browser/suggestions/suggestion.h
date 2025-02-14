@@ -246,8 +246,10 @@ struct Suggestion {
     kGooglePayDark,
     kHttpWarning,
     kHttpsInvalid,
+    kIdCard,
     kKey,
     kLocation,
+    kLoyalty,
     kMagic,
     kOfferTag,
     kPenSpark,
@@ -256,6 +258,7 @@ struct Suggestion {
     kSettings,
     kSettingsAndroid,
     kUndo,
+    kVehicle,
     // Payment method icons
     kCardGeneric,
     kCardAmericanExpress,
