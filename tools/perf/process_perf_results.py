@@ -598,8 +598,12 @@ def _upload_skia_json(benchmark_name: str,
   with open(skia_results_filename, 'w') as f:
     json.dump(skia_json_data, f)
   # Upload skia json to gcs via depot_tools/upload_to_google_storage.py
+  # TODO(crbug.com/318738818): Remove the experiment_only flag once the
+  # experiment is done.
   bucket_names = json_util.gcs_buckets_from_builder_name(
-      build_properties['buildername'])
+      builder_name=build_properties['buildername'],
+      master_name=_GetMachineGroup(build_properties),
+      experiment_only=True)
   logging.info('Uploading skia json to buckets: %s', bucket_names)
   for bucket_name in bucket_names:
     dest = google_storage_helper.unique_name(
