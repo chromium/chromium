@@ -12455,7 +12455,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "BelowOmniboxWithButtons",
+                    "params": {
+                        "tab-group-indicator-below-omnibox": "true",
+                        "tab-group-indicator-buttons": "true",
+                        "tab-group-indicator-visible": "true"
+                    },
                     "enable_features": [
                         "TabGroupIndicator"
                     ]
