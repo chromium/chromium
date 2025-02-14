@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -91,10 +92,24 @@ public class AwPrefetchManager {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.Profile.Prefetch.SET_SPECULATIVE_LOADING_CONFIG")) {
             assert ThreadUtils.runningOnUiThread();
-            AwPrefetchManagerJni.get()
-                    .updatePrefetchConfiguration(
-                            mNativePrefetchManager, prefetchTTLSeconds, maxPrefetches);
+            if (prefetchTTLSeconds > 0) {
+                AwPrefetchManagerJni.get().setTtlInSec(mNativePrefetchManager, prefetchTTLSeconds);
+            }
+
+            if (maxPrefetches > 0) {
+                AwPrefetchManagerJni.get().setMaxPrefetches(mNativePrefetchManager, maxPrefetches);
+            }
         }
+    }
+
+    @VisibleForTesting
+    public int getTTlInSec() {
+        return AwPrefetchManagerJni.get().getTtlInSec(mNativePrefetchManager);
+    }
+
+    @VisibleForTesting
+    public int getMaxPrefetches() {
+        return AwPrefetchManagerJni.get().getMaxPrefetches(mNativePrefetchManager);
     }
 
     @CalledByNative
@@ -137,7 +152,12 @@ public class AwPrefetchManager {
                 AwPrefetchCallback callback,
                 Executor callbackExecutor);
 
-        void updatePrefetchConfiguration(
-                long nativeAwPrefetchManager, int ttlInSeconds, int maxPrefetches);
+        void setTtlInSec(long nativeAwPrefetchManager, int ttlInSeconds);
+
+        void setMaxPrefetches(long nativeAwPrefetchManager, int maxPrefetches);
+
+        int getTtlInSec(long nativeAwPrefetchManager);
+
+        int getMaxPrefetches(long nativeAwPrefetchManager);
     }
 }
