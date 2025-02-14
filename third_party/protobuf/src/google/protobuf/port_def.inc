@@ -327,6 +327,11 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
 #  define PROTOBUF_EXPORT_TEMPLATE_DECLARE
 #  define PROTOBUF_EXPORT_TEMPLATE_DEFINE __declspec(dllexport)
 #  define PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_CONSTINIT
+// See PROTOBUF_CONSTINIT_WITH_PTR below. This define is used by code inside the
+// protobuf library that needs to know whether it can assume a default instance,
+// which may be initialized inside the same binary or in another library, is
+// constinit.
+#  define PROTOBUF_DEFAULT_INSTANCES_MAY_NOT_BE_CONSTINIT
 # else
 #  define PROTOBUF_EXPORT __declspec(dllimport)
 #  define PROTOBUF_EXPORT_TEMPLATE_DECLARE
