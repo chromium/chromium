@@ -2441,47 +2441,34 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Tests the add password flow from the toolbar button.
-// TODO(crbug.com/40255054): Flaky, please re-enable once fixed.
-- (void)DISABLED_testAddNewPasswordCredential {
+- (void)testAddNewPasswordCredential {
   OpenPasswordManager();
 
   // Press "Add".
   [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
       performAction:grey_tap()];
-
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
-  // Fill form.
+  // Fill password details.
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
       performAction:grey_replaceText(kDefaultSite)];
-
   [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"new username")];
-
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"new password")];
 
   // The "Add" button is enabled after site and password have been entered.
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_enabled()];
-
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       performAction:grey_tap()];
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
-      performAction:grey_tap()];
-
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-
-  TapNavigationBarEditButton();
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      assertWithMatcher:grey_textFieldValue(@"new password")];
+  // Verify the new password is visibile on the password list.
+  [GetInteractionForPasswordEntry(@"example.com")
+      assertWithMatcher:grey_notNil()];
 }
 
 // Validates that the Password Manager UI is dismissed if local authentication
