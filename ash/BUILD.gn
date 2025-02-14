@@ -2819,6 +2819,8 @@ component("ash") {
     "wallpaper/wallpaper_utils/wallpaper_color_calculator.cc",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator.h",
     "wallpaper/wallpaper_utils/wallpaper_color_extraction_result.h",
+    "wallpaper/wallpaper_utils/wallpaper_customization_id.cc",
+    "wallpaper/wallpaper_utils/wallpaper_customization_id.h",
     "wallpaper/wallpaper_utils/wallpaper_ephemeral_user.cc",
     "wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h",
     "wallpaper/wallpaper_utils/wallpaper_file_utils.cc",

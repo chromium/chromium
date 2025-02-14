@@ -45,6 +45,7 @@
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_customization_id.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
@@ -310,23 +311,6 @@ std::unique_ptr<WallpaperInfo> CreateOnlineWallpaperInfo(
     return nullptr;
   }
   return std::make_unique<WallpaperInfo>(params, *selected_variant);
-}
-
-using GetCustomizationIdCallback =
-    base::OnceCallback<void(std::optional<std::string_view>)>;
-
-void OnMachineStatisticsReady(
-    GetCustomizationIdCallback get_customization_id_callback) {
-  std::move(get_customization_id_callback)
-      .Run(system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          system::kCustomizationIdKey));
-}
-
-void GetCustomizationId(
-    GetCustomizationIdCallback get_customization_id_callback) {
-  system::StatisticsProvider::GetInstance()->ScheduleOnMachineStatisticsLoaded(
-      base::BindOnce(&OnMachineStatisticsReady,
-                     std::move(get_customization_id_callback)));
 }
 
 }  // namespace

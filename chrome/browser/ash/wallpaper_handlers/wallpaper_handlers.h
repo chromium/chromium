@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_HANDLERS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 
 namespace backdrop {
@@ -45,6 +47,9 @@ class BackdropCollectionInfoFetcher {
   // Allow delegate to view the constructor.
   friend class WallpaperFetcherDelegateImpl;
 
+  // Called when the customization_id has been read from StatisticsProvider.
+  void OnGetCustomizationIdFilter(std::optional<std::string> customization_id);
+
   // Called when the collections info download completes.
   void OnResponseFetched(const std::string& response);
 
@@ -54,6 +59,8 @@ class BackdropCollectionInfoFetcher {
   // The callback upon completion of downloading and deserializing the
   // collections info.
   OnCollectionsInfoFetched callback_;
+
+  base::WeakPtrFactory<BackdropCollectionInfoFetcher> weak_ptr_factory_{this};
 };
 
 // Downloads the wallpaper images info from the Backdrop service.
@@ -81,6 +88,9 @@ class BackdropImageInfoFetcher {
   // Allow delegate to view the constructor.
   friend class WallpaperFetcherDelegateImpl;
 
+  // Called when the customization_id has been read from StatisticsProvider.
+  void OnGetCustomizationIdFilter(std::optional<std::string> customization_id);
+
   // Called when the images info download completes.
   void OnResponseFetched(const std::string& response);
 
@@ -93,6 +103,8 @@ class BackdropImageInfoFetcher {
   // The callback upon completion of downloading and deserializing the images
   // info.
   OnImagesInfoFetched callback_;
+
+  base::WeakPtrFactory<BackdropImageInfoFetcher> weak_ptr_factory_{this};
 };
 
 // Downloads the surprise me image info from the Backdrop service.
@@ -123,6 +135,9 @@ class BackdropSurpriseMeImageFetcher {
   // Allow delegate to view the constructor.
   friend class WallpaperFetcherDelegateImpl;
 
+  // Called when the customization_id has been read from StatisticsProvider.
+  void OnGetCustomizationIdFilter(std::optional<std::string> customization_id);
+
   // Called when the surprise me image info download completes.
   void OnResponseFetched(const std::string& response);
 
@@ -140,6 +155,8 @@ class BackdropSurpriseMeImageFetcher {
   // The callback upon completion of downloading and deserializing the surprise
   // me image info.
   OnSurpriseMeImageFetched callback_;
+
+  base::WeakPtrFactory<BackdropSurpriseMeImageFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace wallpaper_handlers
