@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import static org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider.AUTOFILL_THIRD_PARTY_MODE_KEY;
-import static org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider.AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.AUTOFILL_THIRD_PARTY_MODE_STATE;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,7 +17,9 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefService;
 
@@ -97,24 +98,14 @@ public class AutofillClientProviderUtils {
 
     @CalledByNative
     public static void setThirdPartyModePref(boolean usesPlatformAutofill) {
-        Editor editor =
-                ContextUtils.getApplicationContext()
-                        .getSharedPreferences(
-                                AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE, Context.MODE_PRIVATE)
-                        .edit();
-        editor.putBoolean(AUTOFILL_THIRD_PARTY_MODE_KEY, usesPlatformAutofill);
-        editor.apply();
+        SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
+        prefManager.writeBoolean(AUTOFILL_THIRD_PARTY_MODE_STATE, usesPlatformAutofill);
     }
 
     @CalledByNative
     public static void unsetThirdPartyModePref() {
-        Editor editor =
-                ContextUtils.getApplicationContext()
-                        .getSharedPreferences(
-                                AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE, Context.MODE_PRIVATE)
-                        .edit();
-        editor.remove(AUTOFILL_THIRD_PARTY_MODE_KEY);
-        editor.apply();
+        SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
+        prefManager.removeKey(AUTOFILL_THIRD_PARTY_MODE_STATE);
     }
 
     @CalledByNative

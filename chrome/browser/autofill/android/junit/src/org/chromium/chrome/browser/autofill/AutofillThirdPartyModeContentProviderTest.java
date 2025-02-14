@@ -12,12 +12,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider.AUTOFILL_THIRD_PARTY_MODE_COLUMN;
-import static org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider.AUTOFILL_THIRD_PARTY_MODE_KEY;
-import static org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider.AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE;
 import static org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider.createContentUri;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.AUTOFILL_THIRD_PARTY_MODE_STATE;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -30,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 
@@ -41,25 +40,23 @@ public class AutofillThirdPartyModeContentProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private AutofillThirdPartyModeContentProvider mProvider;
+    @Mock private SharedPreferencesManager mPrefManager;
 
     @Mock private Context mContext;
-    @Mock private SharedPreferences mSharedPreferences;
 
     @Before
     public void setUp() {
         mProvider = new AutofillThirdPartyModeContentProvider();
+        mProvider.setPerfManagerForTesting(mPrefManager);
+
         ContextUtils.initApplicationContextForTests(mContext);
         // Mock the package name for generating the URI
         when(mContext.getPackageName()).thenReturn("com.example.app");
-        // Mock the state of SharedPreferences
-        when(mContext.getSharedPreferences(
-                        AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE, Context.MODE_PRIVATE))
-                .thenReturn(mSharedPreferences);
     }
 
     @Test
     public void testQueryThirdPartyModeOff() {
-        when(mSharedPreferences.getBoolean(AUTOFILL_THIRD_PARTY_MODE_KEY, false)).thenReturn(false);
+        when(mPrefManager.readBoolean(AUTOFILL_THIRD_PARTY_MODE_STATE, false)).thenReturn(false);
         Uri uri = createContentUri();
 
         Cursor cursor = mProvider.query(uri, null, null, null, null);
@@ -74,7 +71,7 @@ public class AutofillThirdPartyModeContentProviderTest {
 
     @Test
     public void testQueryThirdPartyModeOn() {
-        when(mSharedPreferences.getBoolean(AUTOFILL_THIRD_PARTY_MODE_KEY, false)).thenReturn(true);
+        when(mPrefManager.readBoolean(AUTOFILL_THIRD_PARTY_MODE_STATE, false)).thenReturn(true);
         Uri uri = createContentUri();
 
         Cursor cursor = mProvider.query(uri, null, null, null, null);
@@ -89,7 +86,7 @@ public class AutofillThirdPartyModeContentProviderTest {
 
     @Test
     public void testQueryWrongUrl() {
-        when(mSharedPreferences.getBoolean(AUTOFILL_THIRD_PARTY_MODE_KEY, false)).thenReturn(false);
+        when(mPrefManager.readBoolean(AUTOFILL_THIRD_PARTY_MODE_STATE, false)).thenReturn(false);
         Uri uri = Uri.parse("https://google.com");
 
         Cursor cursor = mProvider.query(uri, null, null, null, null);
