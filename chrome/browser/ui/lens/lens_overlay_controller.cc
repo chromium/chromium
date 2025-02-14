@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
+#include <optional>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -11,6 +17,8 @@
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/kill.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -125,6 +133,10 @@ constexpr base::TimeDelta kReflowWaitTimeout = base::Milliseconds(200);
 // case there is slight variation in the retrievied bytes in between calls.
 constexpr float kByteChangeTolerancePercent = 0.01;
 
+// The maximum length of the DOM text to consider for OCR similarity.
+// Currently 50 MB
+constexpr int kMaxDomTextLengthForOcrSimilarity = 50 * 1000 * 1000;
+
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
 
@@ -218,6 +230,96 @@ SkBitmap CreateRgbBitmap(const SkBitmap& bgr_bitmap) {
 
   // Bitmap creation failed.
   return SkBitmap();
+}
+
+// Returns a new string with all non-alphanumeric characters removed from the
+// ends of the string.
+std::string TrimNonAlphaNumeric(const std::string& text) {
+  if (text.empty()) {
+    return text;
+  }
+
+  // Find the first alphanumeric character from the beginning.
+  size_t first_alphanum_index =
+      std::find_if(text.begin(), text.end(), ::isalnum) - text.begin();
+
+  // If no alphanumeric character is found in the entire string, return an empty
+  // string.
+  if (first_alphanum_index == text.length()) {
+    return "";
+  }
+
+  // Find the index of the last alphanumeric character from the end.
+  size_t last_alphanum_index =
+      std::find_if(text.rbegin(), text.rend(), ::isalnum) - text.rbegin();
+  // `last_alphanumeric` is the count from the end of the string, so convert to
+  // index from the beginning.
+  last_alphanum_index = text.length() - 1 - last_alphanum_index;
+
+  // Extract the substring containing only the alphanumeric characters and those
+  // in between.
+  return text.substr(first_alphanum_index,
+                     last_alphanum_index - first_alphanum_index + 1);
+}
+
+// Returns the percentage of words in the OCR text that are also in the DOM
+// text.
+double CalculateWordOverlapSimilarity(std::string dom_text,
+                                      lens::mojom::TextPtr ocr_text) {
+  // Split dom_text into possible words.
+  std::vector<std::string> dom_words = base::SplitString(
+      dom_text, " \t\r\n<>", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  // Convert dom_text to lowercase, alphanumeric only map for comparison. The
+  // map value is the number of times the word appears in the dom text.
+  std::map<std::string, int> dom_words_map;
+  for (std::string& word : dom_words) {
+    std::string processed_word = TrimNonAlphaNumeric(base::ToLowerASCII(word));
+    if (!processed_word.empty()) {
+      dom_words_map[processed_word]++;
+    }
+  }
+
+  // Count the number of words in ocr_text that are also in the dom text.
+  double overlap_count = 0;
+  double total_ocr_words = 0;
+  if (ocr_text && ocr_text->text_layout &&
+      ocr_text->text_layout->paragraphs.size() > 0) {
+    for (const auto& paragraph : ocr_text->text_layout->paragraphs) {
+      if (paragraph && paragraph->lines.size() > 0) {
+        for (const auto& line : paragraph->lines) {
+          if (line && line->words.size() > 0) {
+            for (const auto& word : line->words) {
+              if (word) {
+                std::string processed_word =
+                    TrimNonAlphaNumeric(base::ToLowerASCII(word->plain_text));
+                if (processed_word.empty()) {
+                  continue;
+                }
+
+                // Find the process word in the dom words.
+                auto word_iterator = dom_words_map.find(processed_word);
+                if (word_iterator != dom_words_map.end() &&
+                    word_iterator->second > 0) {
+                  // The word is in the dom text.
+                  overlap_count++;
+
+                  // Decrement the count in the map so if there are multiple of
+                  // this word in the DOM, we only count it for each instance.
+                  word_iterator->second--;
+                }
+                total_ocr_words++;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Avoid divide by zero. Return the percentage of words in the OCR text that
+  // are also in the DOM text.
+  return total_ocr_words == 0 ? 0.0 : overlap_count / total_ocr_words;
 }
 
 // Converts a JSON string array to a vector.
@@ -502,6 +604,7 @@ void LensOverlayController::ShowUI(
   invocation_time_ = base::TimeTicks::Now();
   invocation_time_since_epoch_ = base::Time::Now();
   hats_triggered_in_session_ = false;
+  ocr_dom_similarity_recorded_in_session_ = false;
 
   // This should be the last thing called in ShowUI, so if something goes wrong
   // in capturing the screenshot, the state gets cleaned up correctly.
@@ -3015,7 +3118,12 @@ void LensOverlayController::HandleStartQueryResponse(
 
   // Text can be null if there was no text within the server response.
   if (!text.is_null()) {
+    initialization_data_->text_ = text.Clone();
     SendText(std::move(text));
+
+    // Try and record the OCR DOM similarity since the OCR text is now
+    // available.
+    TryCalculateAndRecordOcrDomSimilarity();
   }
 }
 
@@ -3073,7 +3181,8 @@ void LensOverlayController::RecordTimeToFirstInteraction(
 
 void LensOverlayController::
     RecordContextualSearchboxTimeToFocusAfterNavigation() {
-  if (!last_navigation_time_.has_value() || contextual_searchbox_focused_after_navigation_) {
+  if (!last_navigation_time_.has_value() ||
+      contextual_searchbox_focused_after_navigation_) {
     return;
   }
   base::TimeDelta time_to_focus =
@@ -3154,6 +3263,53 @@ void LensOverlayController::RecordDocumentMetrics(
         base::BindOnce(&LensOverlayController::RecordInnerHtmlSize,
                        weak_factory_.GetWeakPtr()));
   }
+
+  // Try and record the OCR DOM similarity since the page content is now
+  // available.
+  TryCalculateAndRecordOcrDomSimilarity();
+}
+
+void LensOverlayController::TryCalculateAndRecordOcrDomSimilarity() {
+  // Only record the similarity once per session.
+  if (ocr_dom_similarity_recorded_in_session_) {
+    return;
+  }
+
+  // Exit early if we do not have all the data needed to calculate the
+  // similarity.
+  if (!initialization_data_ || initialization_data_->text_.is_null() ||
+      initialization_data_->page_content_bytes_.empty()) {
+    return;
+  }
+
+  bool is_dom =
+      initialization_data_->page_content_type_ == lens::MimeType::kHtml ||
+      initialization_data_->page_content_type_ == lens::MimeType::kPlainText;
+  bool is_dom_too_large = initialization_data_->page_content_bytes_.size() >
+                          kMaxDomTextLengthForOcrSimilarity;
+  bool is_english = initialization_data_->text_->content_language == "en";
+
+  // Exit early if the page content is not from the DOM, the DOM is very large
+  // and might bog down the thread, or the page is not in English since the
+  // score is not reliable for other languages.
+  if (!is_dom || is_dom_too_large || !is_english) {
+    // If the page content is not from the HTML DOM, we cannot calculate the
+    // similarity, so mark this as true to avoid trying again.
+    ocr_dom_similarity_recorded_in_session_ = true;
+    return;
+  }
+
+  // Post to a background thread to calculate the similarity to avoid slowing
+  // down the main thread.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          &CalculateWordOverlapSimilarity,
+          std::string(initialization_data_->page_content_bytes_.begin(),
+                      initialization_data_->page_content_bytes_.end()),
+          initialization_data_->text_.Clone()),
+      base::BindOnce(&lens::RecordOcrDomSimilarity));
+  ocr_dom_similarity_recorded_in_session_ = true;
 }
 
 void LensOverlayController::RecordInnerTextSize(

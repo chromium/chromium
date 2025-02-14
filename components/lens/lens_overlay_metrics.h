@@ -149,6 +149,10 @@ void RecordDocumentSizeBytes(lens::MimeType page_content_type,
 // Record the number of pages in a PDF.
 void RecordPdfPageCount(uint32_t page_count);
 
+// Records the similarity between the OCR text and the DOM text. Similarity is
+// a value between 0 and 1.
+void RecordOcrDomSimilarity(double similarity);
+
 // Records the side panel result status when attempting a load into the side
 // panel.
 void RecordSidePanelResultStatus(SidePanelResultStatus status);

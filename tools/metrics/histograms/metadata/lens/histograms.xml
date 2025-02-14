@@ -485,6 +485,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.OcrDomSimilarity" units="%"
+    expires_after="2025-09-12">
+  <owner>mercerd@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Records the percentage of text in the Lens OCR response that is also present
+    in the DOM. This is a measure of how well the OCR response matches the
+    contents of the page. Recorded once per session at the time when both the
+    extracted DOM content and the Lens OCR response are available. This metric
+    is not recorded if the page content is not HTML or PDF, if the DOM is too
+    large, if the overlay closes before OCR is received, or if the OCR language
+    is not English (since the score is not reliable for CJK languages).
+  </summary>
+</histogram>
+
 <histogram
     name="Lens.Overlay.Overlay.ByInvocationSource.{InvocationSource}.UserAction"
     enum="LensOverlayUserAction" expires_after="2025-07-06">
