@@ -344,13 +344,13 @@ void Dav1dVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                       : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
-    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    std::move(bound_decode_cb).Run(error_status_);
     return;
   }
 
   if (!DecodeBuffer(std::move(buffer))) {
     state_ = DecoderState::kError;
-    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    std::move(bound_decode_cb).Run(error_status_);
     return;
   }
 
@@ -362,6 +362,7 @@ void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = DecoderState::kNormal;
   dav1d_flush(dav1d_decoder_.get());
+  error_status_ = DecoderStatus::Codes::kFailed;
 
   if (bind_callbacks_)
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -403,6 +404,9 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
         dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->size(),
                         &ReleaseDecoderBuffer, buffer.get());
     if (res < 0) {
+      if (res == DAV1D_ERR(ENOMEM)) {
+        error_status_ = DecoderStatus::Codes::kOutOfMemory;
+      }
       MEDIA_LOG(ERROR, media_log_)
           << "dav1d_data_wrap() failed with error " << res;
       return false;

@@ -70,8 +70,11 @@ enum PipelineStatusCodes : StatusCodeType {
   // Bitstream format conversion related errors.
   DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED = 25,
 
+  // Issued when a component in the pipeline runs out of memory.
+  PIPELINE_ERROR_OUT_OF_MEMORY = 26,
+
   // Must be equal to the largest value ever logged.
-  PIPELINE_STATUS_MAX = DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED,
+  PIPELINE_STATUS_MAX = PIPELINE_ERROR_OUT_OF_MEMORY,
 };
 
 struct PipelineStatusTraits {
