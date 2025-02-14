@@ -32,6 +32,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="XR.OpenXR.LocalFloorExtAvailable" enum="Boolean"
+    expires_after="2026-02-10">
+  <owner>alcooper@chromium.org</owner>
+  <owner>xr-dev@chromium.org</owner>
+  <summary>
+    Recorded when an OpenXR session is started, this records whether the
+    XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT extension is available. It is
+    required to be available on runtimes reporting OpenXR 1.1 or later.
+  </summary>
+</histogram>
+
 <histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2026-01-07">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
