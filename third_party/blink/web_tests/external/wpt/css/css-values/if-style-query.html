@@ -182,6 +182,9 @@
           else: false_value)`,
         [['--x', '']],
         'false_value');
+  test_if(`if(style(--x):a)if(style(--x):b)`,
+        [['--x', '3']],
+        'a/**/b');
 
   // Valid if() with multiple conditions with unregistered custom properties
   test_if(`if(style(--non-existent): value1;
