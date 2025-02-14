@@ -89,6 +89,10 @@ tast_disabled_tests_from_chrome_all = [
   "ui.WebUIJSErrors.field_trial_off",
   "ui.WebUIJSErrors.field_trial_on",
 
+  # b/394409115
+  "network.AllowCACertificateManagement",
+  "network.AllowClientCertificateManagement",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
