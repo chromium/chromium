@@ -2143,7 +2143,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   if (const std::optional<PositionAreaOffsets> offsets =
           candidate_style.PositionAreaOffsets()) {
     PhysicalOffset default_anchor_scroll_shift;
-    if (RuntimeEnabledFeatures::CSSAnchorPositionAreaVisualPositionEnabled()) {
+    if (RuntimeEnabledFeatures::CSSAnchorRememberedScrollOffsetEnabled()) {
       Element* elm = To<Element>(node_info.node.GetDOMNode());
 
       if (const OutOfFlowData* oof_data = elm->GetOutOfFlowData()) {
