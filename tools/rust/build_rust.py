@@ -585,6 +585,18 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
+    # TODO(https://crbug.com/395891130): Remove once upstream fixes passing flags to cargo link steps
+    RunCommand([
+        'git',
+        '-C',
+        RUST_SRC_DIR,
+        'revert',
+        '--no-edit',
+        '-m',
+        '1',
+        '6171d944aea415a3023d4262e0895aa3b18c771f',
+    ])
+
     print('Finished applying cherry-picks.')
 
 
