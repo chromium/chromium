@@ -58,7 +58,7 @@ CONTENT_EXPORT std::string GetCorsExemptRequestedWithHeaderName();
 // This is a value never returned as the unique id of any child processes of
 // any kind, including the values returned by
 // RenderProcessHost::GetDeprecatedID().
-static constexpr int kInvalidChildProcessUniqueId = -1;
+inline constexpr int kInvalidChildProcessUniqueId = -1;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // The OOM score adj constants

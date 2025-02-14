@@ -114,35 +114,35 @@ namespace preloading_predictor {
 // No PreloadingTrigger is present. This may include the small percentage of
 // usages of browser triggers, link-rel, OptimizationGuideService e.t.c which
 // will be added later as a separate elements.
-static constexpr PreloadingPredictor kUnspecified(0, "Unspecified");
+inline constexpr PreloadingPredictor kUnspecified(0, "Unspecified");
 
 // Preloading is triggered by OnPointerDown event heuristics.
-static constexpr PreloadingPredictor kUrlPointerDownOnAnchor(
+inline constexpr PreloadingPredictor kUrlPointerDownOnAnchor(
     1,
     "UrlPointerDownOnAnchor");
 
 // Preloading is triggered by OnPointerHover event heuristics.
-static constexpr PreloadingPredictor kUrlPointerHoverOnAnchor(
+inline constexpr PreloadingPredictor kUrlPointerHoverOnAnchor(
     2,
     "UrlPointerHoverOnAnchor");
 
 // Preloading was triggered by embedding a keyword for the rel attribute of
 // the <link> HTML element to hint to browsers that the user might need it for
 // next navigation.
-static constexpr PreloadingPredictor kLinkRel(3, "LinkRel");
+inline constexpr PreloadingPredictor kLinkRel(3, "LinkRel");
 
 // When overscroll that could trigger a back navigation starts.
-static constexpr PreloadingPredictor kBackGestureNavigation(
+inline constexpr PreloadingPredictor kBackGestureNavigation(
     4,
     "BackGestureNavigation");
 
 // Preloading heuristics ML model.
-static constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
+inline constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
     5,
     "PreloadingHeuristicsMLModel");
 
 // Preloading is triggered by a deterministic viewport-based heuristic.
-static constexpr PreloadingPredictor kViewportHeuristic(6, "ViewportHeuristic");
+inline constexpr PreloadingPredictor kViewportHeuristic(6, "ViewportHeuristic");
 }  // namespace preloading_predictor
 // LINT.ThenChange()
 
