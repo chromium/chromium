@@ -67,7 +67,6 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
 
   // CloudPolicyClient::Observer:
   void OnPolicyFetched(CloudPolicyClient* client) override;
-  void OnRegistrationStateChanged(CloudPolicyClient* client) override;
   void OnClientError(CloudPolicyClient* client) override;
 
   // CloudPolicyStore::Observer:

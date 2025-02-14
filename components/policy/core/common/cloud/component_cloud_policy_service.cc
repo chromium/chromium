@@ -440,18 +440,6 @@ void ComponentCloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {
   UpdateFromClient();
 }
 
-void ComponentCloudPolicyService::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignored; the registration state is tracked by looking at the
-  // CloudPolicyStore instead.
-}
-
-void ComponentCloudPolicyService::OnClientError(CloudPolicyClient* client) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignored.
-}
-
 void ComponentCloudPolicyService::UpdateFromSuperiorStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

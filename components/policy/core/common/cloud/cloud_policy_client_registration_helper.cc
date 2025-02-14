@@ -220,11 +220,6 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
       std::string() /* client_id */, oauth_access_token_);
 }
 
-void CloudPolicyClientRegistrationHelper::OnPolicyFetched(
-    CloudPolicyClient* client) {
-  // Ignored.
-}
-
 void CloudPolicyClientRegistrationHelper::OnRegistrationStateChanged(
     CloudPolicyClient* client) {
   DVLOG_POLICY(1, CBCM_ENROLLMENT) << "Client registration succeeded";

@@ -345,16 +345,6 @@ void ChromeBrowserCloudManagementController::UnenrollCallback(
   NotifyBrowserUnenrolled(success);
 }
 
-void ChromeBrowserCloudManagementController::OnPolicyFetched(
-    CloudPolicyClient* client) {
-  // Ignored.
-}
-
-void ChromeBrowserCloudManagementController::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {
-  // Ignored.
-}
-
 void ChromeBrowserCloudManagementController::OnClientError(
     CloudPolicyClient* client) {
   // DM_STATUS_SERVICE_DEVICE_NOT_FOUND being the last status implies the
