@@ -91,7 +91,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             new TabArchiveSettings.Observer() {
                 @Override
                 public void onSettingChanged() {
-                    if (!mTabArchiveSettings.getArchiveEnabled()) {
+                    // In the case where CTA was destroyed in the background, skip rescuing
+                    // archived tabs. It will be picked up when CTA is re-created, and the tab
+                    // model orchestrator is re-registered.
+                    if (!mTabArchiveSettings.getArchiveEnabled()
+                            && mActivityTabModelOrchestrators.size() > 0) {
                         rescueArchivedTabs(mActivityTabModelOrchestrators.get(0));
                     }
                 }
@@ -254,7 +258,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      */
     public void registerTabModelOrchestrator(TabbedModeTabModelOrchestrator orchestrator) {
         mActivityTabModelOrchestrators.add(orchestrator);
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
+        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
+                && mTabArchiveSettings.getArchiveEnabled()) {
             doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator));
         } else {
             rescueArchivedTabs(orchestrator);

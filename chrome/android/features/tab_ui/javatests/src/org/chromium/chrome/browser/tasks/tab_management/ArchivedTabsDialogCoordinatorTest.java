@@ -356,7 +356,9 @@ public class ArchivedTabsDialogCoordinatorTest {
         ActivityTestUtils.waitForFragmentToAttach(activity, TabArchiveSettingsFragment.class);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.OpenArchivedTabsSettingsMenuItem"));
 
+        mArchivedTabModelOrchestrator.resetRescueArchivedTabsForTesting();
         onView(withText("Never")).perform(click());
+
         CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 3);
         assertEquals(0, mArchivedTabModel.getCount());
     }

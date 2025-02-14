@@ -1999,7 +1999,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                     tabModel.getTabCreator(),
                                     Arrays.asList(archivedTab),
                                     /* updateTimestamp= */ true,
-                                    /* areTabsBeingOpened= */ false);
+                                    /* areTabsBeingOpened= */ true);
                 } else {
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
                 }
