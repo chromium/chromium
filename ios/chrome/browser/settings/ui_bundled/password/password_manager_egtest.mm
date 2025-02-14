@@ -1868,14 +1868,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Test that when user types text in search field, passwords and blocked
-// items are filtered out and "save passwords" switch is removed.
+// items are filtered out correctly.
 - (void)testSearchPasswords {
-  // TODO(crbug.com/40683159): Test doesn't pass on iPad device or simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"This test doesn't pass on iPad device or simulator.");
-  }
-
   SaveExamplePasswordForms();
   SaveExampleBlockedFormsToProfileStore();
 
@@ -1883,7 +1877,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
       assertWithMatcher:grey_notNil()];
-
   [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
       assertWithMatcher:grey_notNil()];
   [GetInteractionForPasswordEntry(@"exclude1.com")
@@ -1904,6 +1897,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_nil()];
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_notNil()];
+
   [[EarlGrey
       selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
       performAction:grey_tap()];
