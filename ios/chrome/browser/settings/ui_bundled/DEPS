@@ -37,6 +37,7 @@ include_rules = [
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/search_engine_choice/ui_bundled",
   "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/regional_capabilities/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/sync/model",

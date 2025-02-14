@@ -28,6 +28,7 @@ source_set("utils") {
     ":enums",
     "//components/prefs",
     "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",

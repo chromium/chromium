@@ -539,16 +539,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
                                 TemplateURL* turl,
                                 syncer::SyncChange::SyncChangeType type);
 
-  // Returns whether the device is from an EEA country. This is consistent with
-  // countries which are eligible for the EEA default search engine choice
-  // prompt. "Default country" or "country at install" are used for
-  // SearchEngineChoiceCountry. It might be different than what LocaleUtils
-  // returns.
-  //
-  // DEPRECATED. Prefer using `RegionalCapabilitiesService::IsInEeaCountry()`.
-  // TODO(crbug.com/391570180): Remove this class method.
-  bool IsEeaChoiceCountry();
-
   // Returns a SearchTermsData which can be used to call TemplateURL methods.
   const SearchTermsData& search_terms_data() const {
     return *search_terms_data_;
