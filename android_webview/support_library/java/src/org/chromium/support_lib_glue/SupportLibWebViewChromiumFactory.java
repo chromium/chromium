@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
-import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 
 import com.android.webview.chromium.CallbackConverter;
@@ -371,24 +370,12 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 "Android.WebView.AndroidX.ApiCall", apiCall, ApiCall.COUNT);
     }
 
-    private final Object mLazyInitLock = new Object();
-
-    @GuardedBy("mLazyInitLock")
+    // Initialization guarded by mAwInit.getLock()
     private InvocationHandler mStatics;
-
-    @GuardedBy("mLazyInitLock")
     private InvocationHandler mServiceWorkerController;
-
-    @GuardedBy("mLazyInitLock")
     private InvocationHandler mTracingController;
-
-    @GuardedBy("mLazyInitLock")
     private InvocationHandler mProxyController;
-
-    @GuardedBy("mLazyInitLock")
     private InvocationHandler mDropDataProvider;
-
-    @GuardedBy("mLazyInitLock")
     private InvocationHandler mProfileStore;
 
     public SupportLibWebViewChromiumFactory() {
@@ -501,7 +488,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     public InvocationHandler getStatics() {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_STATICS")) {
             recordApiCall(ApiCall.GET_STATICS);
-            synchronized (mLazyInitLock) {
+            synchronized (mAwInit.getLock()) {
                 if (mStatics == null) {
                     mStatics =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -509,9 +496,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                                             WebkitToSharedGlueConverter.getGlobalAwInit()
                                                     .getStatics()));
                 }
-
-                return mStatics;
             }
+            return mStatics;
         }
     }
 
@@ -529,16 +515,15 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_SERVICE_WORKER_CONTROLLER")) {
             recordApiCall(ApiCall.GET_SERVICE_WORKER_CONTROLLER);
-            synchronized (mLazyInitLock) {
+            synchronized (mAwInit.getLock()) {
                 if (mServiceWorkerController == null) {
                     mServiceWorkerController =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibServiceWorkerControllerAdapter(
                                             mAwInit.getDefaultServiceWorkerController()));
                 }
-
-                return mServiceWorkerController;
             }
+            return mServiceWorkerController;
         }
     }
 
@@ -547,7 +532,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_TRACING_CONTROLLER")) {
             recordApiCall(ApiCall.GET_TRACING_CONTROLLER);
-            synchronized (mLazyInitLock) {
+            synchronized (mAwInit.getLock()) {
                 if (mTracingController == null) {
                     mTracingController =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -556,9 +541,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                                                     mAwInit.getRunQueue(),
                                                     mAwInit.getAwTracingController())));
                 }
-
-                return mTracingController;
             }
+            return mTracingController;
         }
     }
 
@@ -567,16 +551,15 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROXY_CONTROLLER")) {
             recordApiCall(ApiCall.GET_PROXY_CONTROLLER);
-            synchronized (mLazyInitLock) {
+            synchronized (mAwInit.getLock()) {
                 if (mProxyController == null) {
                     mProxyController =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibProxyControllerAdapter(
                                             mAwInit.getRunQueue(), mAwInit.getAwProxyController()));
                 }
-
-                return mProxyController;
             }
+            return mProxyController;
         }
     }
 
@@ -585,14 +568,14 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_IMAGE_DRAG_DROP_IMPLEMENTATION")) {
             recordApiCall(ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION);
-            synchronized (mLazyInitLock) {
+            synchronized (mAwInit.getLock()) {
                 if (mDropDataProvider == null) {
                     mDropDataProvider =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibDropDataContentProviderAdapter());
                 }
-                return mDropDataProvider;
             }
+            return mDropDataProvider;
         }
     }
 
@@ -600,15 +583,14 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     public InvocationHandler getProfileStore() {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROFILE_STORE")) {
             recordApiCall(ApiCall.GET_PROFILE_STORE);
-            synchronized (mLazyInitLock) {
+            synchronized (mAwInit.getLock()) {
                 if (mProfileStore == null) {
                     mProfileStore =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibProfileStore(ProfileStore.getInstance()));
                 }
-
-                return mProfileStore;
             }
+            return mProfileStore;
         }
     }
 

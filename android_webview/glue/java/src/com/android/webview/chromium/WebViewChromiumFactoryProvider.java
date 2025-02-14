@@ -32,7 +32,6 @@ import android.webkit.WebViewFactory;
 import android.webkit.WebViewFactoryProvider;
 import android.webkit.WebViewProvider;
 
-import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
@@ -184,15 +183,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     protected boolean mShouldDisableThreadChecking;
 
-    private final Object mLazyInitLock = new Object();
-
-    @GuardedBy("mLazyInitLock")
+    // Initialization guarded by mAwInit.getLock()
     private Statics mStaticsAdapter;
 
-    @GuardedBy("mLazyInitLock")
-    private ServiceWorkerController mServiceWorkerController;
-
     private boolean mIsSafeModeEnabled;
+
+    private ServiceWorkerController mServiceWorkerController;
 
     public static class InitInfo {
         // Timestamp of init start and duration, used in the
@@ -206,10 +202,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         public long mTotalFactoryInitStartTime;
         public long mTotalFactoryInitDuration;
     }
+    ;
 
     private InitInfo mInitInfo = new InitInfo();
 
-    @GuardedBy("mLazyInitLock")
     @RequiresApi(Build.VERSION_CODES.P)
     private ObjectHolderForP mObjectHolderForP =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? new ObjectHolderForP() : null;
@@ -701,9 +697,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public Statics getStatics() {
-        synchronized (mLazyInitLock) {
+        synchronized (mAwInit.getLock()) {
+            SharedStatics sharedStatics = mAwInit.getStatics();
             if (mStaticsAdapter == null) {
-                SharedStatics sharedStatics = mAwInit.getStatics();
                 mStaticsAdapter =
                         new WebViewChromiumFactoryProvider.Statics() {
                             @Override
@@ -769,8 +765,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             }
                         };
             }
-            return mStaticsAdapter;
         }
+        return mStaticsAdapter;
     }
 
     @Override
@@ -851,14 +847,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public ServiceWorkerController getServiceWorkerController() {
-        synchronized (mLazyInitLock) {
+        synchronized (mAwInit.getLock()) {
             if (mServiceWorkerController == null) {
                 mServiceWorkerController =
                         new ServiceWorkerControllerAdapter(
                                 mAwInit.getDefaultServiceWorkerController());
             }
-            return mServiceWorkerController;
         }
+        return mServiceWorkerController;
     }
 
     @Override
@@ -917,15 +913,18 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @RequiresApi(Build.VERSION_CODES.P)
     @Override
     public TracingController getTracingController() {
-        synchronized (mLazyInitLock) {
+        synchronized (mAwInit.mLock) {
+            mAwInit.ensureChromiumStartedLocked(
+                    true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
+            // ensureChromiumStartedLocked() can release the lock on first call while
+            // waiting for startup. Hence check the mTracingController here to ensure
+            // the singleton property.
             if (mObjectHolderForP.mTracingController == null) {
-                mAwInit.ensureChromiumStartedLocked(
-                        true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
                 mObjectHolderForP.mTracingController =
                         GlueApiHelperForP.createTracingControllerAdapter(this, mAwInit);
             }
-            return mObjectHolderForP.mTracingController;
         }
+        return mObjectHolderForP.mTracingController;
     }
 
     private static class FilteredClassLoader extends ClassLoader {
