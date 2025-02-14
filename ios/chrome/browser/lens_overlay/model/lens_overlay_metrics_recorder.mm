@@ -183,4 +183,9 @@ lens::MimeType MimeTypeFromWebState(web::WebState* web_state) {
       _mimeType, _foregroundDuration, generatedTabCount);
 }
 
+- (void)recordSearchWithCameraTapped {
+  RecordAction(
+      base::UserMetricsAction("Mobile.LensOverlay.SearchWithCamera.Tapped"));
+}
+
 @end

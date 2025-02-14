@@ -105,4 +105,23 @@ const CGFloat kMenuSymbolSize = 18;
                            }];
 }
 
+- (UIAction*)searchWithCameraActionWithHandler:(void (^)())handler {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA);
+  UIImage* image;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  image = MakeSymbolMonochrome(
+      CustomSymbolWithPointSize(kCameraLensSymbol, kMenuSymbolSize));
+#endif
+
+  return [UIAction actionWithTitle:title
+                             image:image
+                        identifier:nil
+                           handler:^(UIAction* action) {
+                             if (handler) {
+                               handler();
+                             }
+                           }];
+}
+
 @end

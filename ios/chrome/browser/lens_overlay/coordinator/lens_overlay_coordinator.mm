@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -204,10 +205,27 @@ const int kExpectedExitAnimationCount = 2;
                                                     ->GetCommandDispatcher(),
                                                 BrowserCoordinatorCommands)];
 
-  NSArray<UIAction*>* additionalMenuItems = @[
-    [overflowMenuFactory openUserActivityAction],
-    [overflowMenuFactory learnMoreAction],
-  ];
+  BOOL escapeHatchEnabled = IsLVFEscapeHatchEnabled();
+  config.useTrailingDismissButton = !escapeHatchEnabled;
+
+  NSArray<UIAction*>* additionalMenuItems;
+  if (escapeHatchEnabled) {
+    __weak __typeof(self) weakSelf = self;
+    UIAction* searchWithCameraAction =
+        [overflowMenuFactory searchWithCameraActionWithHandler:^{
+          [weakSelf didRequestSearchWithCamera];
+        }];
+    additionalMenuItems = @[
+      searchWithCameraAction,
+      [overflowMenuFactory openUserActivityAction],
+      [overflowMenuFactory learnMoreAction],
+    ];
+  } else {
+    additionalMenuItems = @[
+      [overflowMenuFactory openUserActivityAction],
+      [overflowMenuFactory learnMoreAction],
+    ];
+  }
 
   _selectionViewController = ios::provider::NewChromeLensOverlay(
       imageSource, config, additionalMenuItems);
@@ -765,6 +783,29 @@ const int kExpectedExitAnimationCount = 2;
 - (void)didPressLearnMore {
   [_metricsRecorder recordPermissionsLinkOpen];
   [self openURLInNewTab:GURL(kLearnMoreLensURL)];
+}
+
+- (void)didRequestSearchWithCamera {
+  [_metricsRecorder recordSearchWithCameraTapped];
+  __weak __typeof(self) weakSelf = self;
+  __weak id<LensCommands> weakLensHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  [self
+      hideLensUI:YES
+      completion:^{
+        OpenLensInputSelectionCommand* command =
+            [[OpenLensInputSelectionCommand alloc]
+                    initWithEntryPoint:LensEntrypoint::LensOverlayLvfEscapeHatch
+                     presentationStyle:LensInputSelectionPresentationStyle::
+                                           SlideFromRight
+                presentationCompletion:^{
+                  [weakSelf destroyLensUI:NO
+                                   reason:lens::LensOverlayDismissalSource::
+                                              kSearchWithCameraRequested];
+                }];
+
+        [weakLensHandler openLensInputSelection:command];
+      }];
 }
 
 #pragma mark - LensOverlayConsentPresenterDelegate

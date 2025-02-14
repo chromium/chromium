@@ -18,6 +18,9 @@ bool IsLensOverlaySameTabNavigationEnabled();
 // Returns whether LVF unified experience is enabled.
 bool IsLVFUnifiedExperienceEnabled();
 
+// Returns whether the escape hatch to LVF is enabled.
+bool IsLVFEscapeHatchEnabled();
+
 // Represents the possible onboarding treatments of Lens Overlay.
 enum class LensOverlayOnboardingTreatment {
   // The default onboarding experience.

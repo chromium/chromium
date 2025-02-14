@@ -23,6 +23,9 @@
 
 // The "Learn More" action.
 - (UIAction*)learnMoreAction;
+
+// The "Search with camera" action.
+- (UIAction*)searchWithCameraActionWithHandler:(void (^)())handler;
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_OVERFLOW_MENU_FACTORY_H_

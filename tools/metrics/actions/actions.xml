@@ -21557,6 +21557,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.LensOverlay.SearchWithCamera.Tapped">
+  <owner>radunitescu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user chooses the search with camera option from the
+    overflow menu in Lens Overlay.
+  </description>
+</action>
+
 <action name="Mobile.LensViewFinder.CameraCapture">
   <owner>radunitescu@google.com</owner>
   <owner>stkhapugin@google.com</owner>
