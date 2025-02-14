@@ -72,7 +72,8 @@ bool IsModelPathValid(const std::string& model_path_str) {
 blink::mojom::ModelAvailabilityCheckResult
 ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
     optimization_guide::OnDeviceModelEligibilityReason
-        on_device_model_eligibility_reason) {
+        on_device_model_eligibility_reason,
+    bool is_downloading) {
   switch (on_device_model_eligibility_reason) {
     case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
       return blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown;
@@ -126,6 +127,9 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
         kModelToBeInstalled:
     case optimization_guide::OnDeviceModelEligibilityReason::
         kNoOnDeviceFeatureUsed:
+      if (is_downloading) {
+        return blink::mojom::ModelAvailabilityCheckResult::kDownloading;
+      }
       return blink::mojom::ModelAvailabilityCheckResult::kDownloadable;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kDeprecatedModelNotAvailable:
@@ -581,7 +585,7 @@ void AIManager::CanCreateSession(
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
     std::move(callback).Run(
         ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
-            eligibility));
+            eligibility, component_observer_->is_downloading()));
     return;
   }
 
