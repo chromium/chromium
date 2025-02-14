@@ -1614,10 +1614,11 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Notify) {
 
   {
     const std::u16string script = base::StrCat(
-        {u"__gCrWeb.common.sendWebKitMessage('FrameRegistrationMessage', "
-         u"{'command': 'registerAsChildFrame', 'local_frame_id': "
+        {u"window.webkit.messageHandlers['FrameRegistrationMessage']."
+         u"postMessage({'command': 'registerAsChildFrame', 'local_frame_id': "
          u"__gCrWeb.frameId, 'remote_frame_id':'",
-         base::UTF8ToUTF16(stolen_remote_token.ToString()), u"'});"});
+         base::UTF8ToUTF16(stolen_remote_token.ToString()),
+         u"'}); true;"});
     ASSERT_TRUE(ExecuteJavaScriptInFrame(spoofy_frame, script));
   }
 }

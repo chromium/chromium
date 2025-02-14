@@ -6,7 +6,7 @@ import * as fill_constants from '//components/autofill/ios/form_util/resources/f
 import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
@@ -661,5 +661,5 @@ __gCrWeb.autofill['sanitizedFieldIsEmpty'] = function(value) {
   // Some sites enter values such as ____-____-____-____ or (___)-___-____ in
   // their fields. Check if the field value is empty after the removal of the
   // formatting characters.
-  return __gCrWeb.common.trim(value.replace(/[-_()/|]/g, '')) === '';
+  return trim(value.replace(/[-_()/|]/g, '')) === '';
 };
