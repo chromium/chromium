@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_update_store.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -13,12 +13,12 @@
 
 namespace tab_groups {
 
-MostRecentUpdateStore::MostRecentUpdateStore(
+MostRecentSharedTabUpdateStore::MostRecentSharedTabUpdateStore(
     BrowserWindowInterface* browser_window)
     : browser_window_(browser_window) {}
-MostRecentUpdateStore::~MostRecentUpdateStore() = default;
+MostRecentSharedTabUpdateStore::~MostRecentSharedTabUpdateStore() = default;
 
-void MostRecentUpdateStore::SetLastUpdatedTab(
+void MostRecentSharedTabUpdateStore::SetLastUpdatedTab(
     LocalTabGroupID group_id,
     std::optional<LocalTabID> tab_id) {
   last_updated_tab_ = {group_id, tab_id};
@@ -26,7 +26,7 @@ void MostRecentUpdateStore::SetLastUpdatedTab(
   MaybeShowPromo(feature_engagement::kIPHTabGroupsSharedTabChangedFeature);
 }
 
-ui::TrackedElement* MostRecentUpdateStore::GetIPHAnchor(
+ui::TrackedElement* MostRecentSharedTabUpdateStore::GetIPHAnchor(
     BrowserView* browser_view) {
   CHECK(last_updated_tab_.has_value());
 
@@ -52,7 +52,8 @@ ui::TrackedElement* MostRecentUpdateStore::GetIPHAnchor(
   }
 }
 
-void MostRecentUpdateStore::MaybeShowPromo(const base::Feature& feature) {
+void MostRecentSharedTabUpdateStore::MaybeShowPromo(
+    const base::Feature& feature) {
   if (auto* user_education_interface =
           browser_window_->GetUserEducationInterface()) {
     user_education_interface->MaybeShowFeaturePromo(feature);

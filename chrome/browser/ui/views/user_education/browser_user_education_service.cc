@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_update_store.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -897,17 +897,19 @@ void MaybeRegisterChromeFeaturePromos(
                           ->GetFirstMatchingViewAs<BrowserView>(
                               kBrowserViewElementId, elements[0]->context());
 
-                  tab_groups::MostRecentUpdateStore* most_recent_update_store =
-                      browser_view->browser()
-                          ->GetFeatures()
-                          .most_recent_update_store();
+                  tab_groups::MostRecentSharedTabUpdateStore*
+                      most_recent_shared_tab_update_store =
+                          browser_view->browser()
+                              ->GetFeatures()
+                              .most_recent_shared_tab_update_store();
 
-                  if (!most_recent_update_store ||
-                      !most_recent_update_store->HasUpdate()) {
+                  if (!most_recent_shared_tab_update_store ||
+                      !most_recent_shared_tab_update_store->HasUpdate()) {
                     return nullptr;
                   }
 
-                  return most_recent_update_store->GetIPHAnchor(browser_view);
+                  return most_recent_shared_tab_update_store->GetIPHAnchor(
+                      browser_view);
                 }))
             .SetMetadata(
                 134, "mickeyburks@google.org",

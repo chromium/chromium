@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_MOST_RECENT_UPDATE_STORE_H_
-#define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_MOST_RECENT_UPDATE_STORE_H_
+#ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_MOST_RECENT_SHARED_TAB_UPDATE_STORE_H_
+#define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_MOST_RECENT_SHARED_TAB_UPDATE_STORE_H_
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -24,12 +24,15 @@ using TabIdentifiers = std::pair<LocalTabGroupID, std::optional<LocalTabID>>;
 // The most recent local update to a Shared Tab Group is stored here
 // and may trigger showing a promo. The promo can then retrieve the data
 // from the store in order to know where to anchor.
-class MostRecentUpdateStore {
+class MostRecentSharedTabUpdateStore {
  public:
-  explicit MostRecentUpdateStore(BrowserWindowInterface* browser_window);
-  MostRecentUpdateStore(const MostRecentUpdateStore&) = delete;
-  MostRecentUpdateStore& operator=(const MostRecentUpdateStore& other) = delete;
-  ~MostRecentUpdateStore();
+  explicit MostRecentSharedTabUpdateStore(
+      BrowserWindowInterface* browser_window);
+  MostRecentSharedTabUpdateStore(const MostRecentSharedTabUpdateStore&) =
+      delete;
+  MostRecentSharedTabUpdateStore& operator=(
+      const MostRecentSharedTabUpdateStore& other) = delete;
+  ~MostRecentSharedTabUpdateStore();
 
   // Returns whether |tab_identifiers| has been set.
   bool HasUpdate() { return last_updated_tab_.has_value(); }
@@ -61,4 +64,4 @@ class MostRecentUpdateStore {
 
 }  // namespace tab_groups
 
-#endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_MOST_RECENT_UPDATE_STORE_H_
+#endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_MOST_RECENT_SHARED_TAB_UPDATE_STORE_H_
