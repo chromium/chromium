@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -86,63 +87,42 @@ MATCHER(AddressHasConverted, "") {
 const char kLocalGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kDifferentBillingAddressId[] = "another address entity ID";
 
-template <class T>
-class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
- public:
-  AutofillWebDataServiceConsumer() = default;
-
-  AutofillWebDataServiceConsumer(const AutofillWebDataServiceConsumer&) =
-      delete;
-  AutofillWebDataServiceConsumer& operator=(
-      const AutofillWebDataServiceConsumer&) = delete;
-
-  ~AutofillWebDataServiceConsumer() override = default;
-
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override {
-    result_ = std::move(static_cast<WDResult<T>*>(result.get())->GetValue());
-    run_loop_.Quit();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  T& result() { return result_; }
-
- private:
-  base::RunLoop run_loop_;
-  T result_;
-};
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::vector<std::unique_ptr<CreditCard>> GetServerCards(
     scoped_refptr<autofill::AutofillWebDataService> service) {
-  AutofillWebDataServiceConsumer<std::vector<std::unique_ptr<CreditCard>>>
-      consumer;
-  service->GetServerCreditCards(&consumer);
-  consumer.Wait();
-  return std::move(consumer.result());
+  base::test::TestFuture<WebDataServiceBase::Handle,
+                         std::unique_ptr<WDTypedResult>>
+      future;
+  service->GetServerCreditCards(future.GetCallback());
+  return static_cast<
+             WDResult<std::vector<std::unique_ptr<autofill::CreditCard>>>&>(
+             *future.Get<1>())
+      .GetValue();
 }
 
 std::unique_ptr<autofill::PaymentsCustomerData> GetPaymentsCustomerData(
     scoped_refptr<autofill::AutofillWebDataService> service) {
-  AutofillWebDataServiceConsumer<
-      std::unique_ptr<autofill::PaymentsCustomerData>>
-      consumer;
-  service->GetPaymentsCustomerData(&consumer);
-  consumer.Wait();
-  return std::move(consumer.result());
+  base::test::TestFuture<WebDataServiceBase::Handle,
+                         std::unique_ptr<WDTypedResult>>
+      future;
+  service->GetPaymentsCustomerData(future.GetCallback());
+  return static_cast<
+             WDResult<std::unique_ptr<autofill::PaymentsCustomerData>>&>(
+             *future.Get<1>())
+      .GetValue();
 }
 
 std::vector<std::unique_ptr<autofill::CreditCardCloudTokenData>>
 GetCreditCardCloudTokenData(
     scoped_refptr<autofill::AutofillWebDataService> service) {
-  AutofillWebDataServiceConsumer<
-      std::vector<std::unique_ptr<CreditCardCloudTokenData>>>
-      consumer;
-  service->GetCreditCardCloudTokenData(&consumer);
-  consumer.Wait();
-  return std::move(consumer.result());
+  base::test::TestFuture<WebDataServiceBase::Handle,
+                         std::unique_ptr<WDTypedResult>>
+      future;
+  service->GetCreditCardCloudTokenData(future.GetCallback());
+  return static_cast<
+             WDResult<std::vector<std::unique_ptr<CreditCardCloudTokenData>>>&>(
+             *future.Get<1>())
+      .GetValue();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

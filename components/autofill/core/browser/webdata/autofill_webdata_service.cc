@@ -210,21 +210,21 @@ void AutofillWebDataService::AddLocalIban(const Iban& iban) {
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetLocalIbans(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetLocalIbans,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetServerIbans(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetServerIbans,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 void AutofillWebDataService::UpdateLocalIban(const Iban& iban) {
@@ -279,96 +279,96 @@ void AutofillWebDataService::ClearLocalCvcs() {
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetCreditCards(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetCreditCards,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetServerCreditCards(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetServerCreditCards,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetPaymentsCustomerData(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetPaymentsCustomerData,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetCreditCardCloudTokenData(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetCreditCardCloudTokenData,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetAutofillOffers(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillOffers,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetVirtualCardUsageData(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(
           &AutofillWebDataBackendImpl::GetAutofillVirtualCardUsageData,
           autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetCreditCardBenefits(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetCreditCardBenefits,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetMaskedBankAccounts(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetMaskedBankAccounts,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetPaymentInstruments(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetPaymentInstruments,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle
 AutofillWebDataService::GetPaymentInstrumentCreationOptions(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(
           &AutofillWebDataBackendImpl::GetPaymentInstrumentCreationOptions,
           autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 void AutofillWebDataService::ClearAllCreditCardBenefits() {
