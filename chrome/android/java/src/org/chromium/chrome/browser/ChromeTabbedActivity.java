@@ -38,6 +38,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleRegistry;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -143,7 +144,6 @@ import org.chromium.chrome.browser.latency_injection.StartupLatencyInjector;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
@@ -1182,14 +1182,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         }
     }
 
-    private boolean isMainIntentLaunch() {
-        if (mFromResumption) {
-            int launchCause = getLaunchCause();
-            assert launchCause != LaunchCauseMetrics.LaunchCause.UNINITIALIZED
-                    : "Launch Cause has not been computed for this warm start yet.";
-            return (launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON
-                    || launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT);
-        }
+    // Determine if the launch cause was due to the main Chrome launcher icon, or a shortcut being
+    // pressed before ChromeActivity#onResumeWithNative has run.
+    private boolean isMainIntentLaunchPreOnResume() {
+        @ActivityState int state = ApplicationStatus.getStateForActivity(this);
+        assert state < ActivityState.RESUMED : "This method should only be used pre onResume";
 
         Intent launchIntent = getIntent();
         if (launchIntent == null) return false;
@@ -1210,6 +1207,21 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         }
 
         return false;
+    }
+
+    // Determine if the launch cause was due to the main Chrome launcher icon, or a shortcut being
+    // pressed after ChromeActivity#onResumeWithNative has run. Note: A distinction between pre and
+    // post onResume is made because LaunchCauseMetrics can only be used after that event has run,
+    // and the values returned can differ based on the method used.
+    private boolean isMainIntentLaunchPostOnResume() {
+        @ActivityState int state = ApplicationStatus.getStateForActivity(this);
+        assert state >= ActivityState.RESUMED : "This method can only be used post onResume";
+
+        int launchCause = getLaunchCause();
+        assert launchCause != LaunchCauseMetrics.LaunchCause.UNINITIALIZED
+                : "Launch Cause has not been computed for this start yet.";
+        return (launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON
+                || launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT);
     }
 
     // Returns whether startup was cold or not.
@@ -1317,7 +1329,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         super.onResumeWithNative();
 
-        if (!isColdStart() && isMainIntentLaunch()) {
+        if (!isColdStart() && isMainIntentLaunchPostOnResume()) {
             StartupLatencyInjector startupLatencyInjector = new StartupLatencyInjector();
             startupLatencyInjector.maybeInjectLatency();
         }
@@ -2214,7 +2226,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
 
-        if (isMainIntentLaunch()) {
+        if (isMainIntentLaunchPreOnResume()) {
             StartupLatencyInjector startupLatencyInjector = new StartupLatencyInjector();
             startupLatencyInjector.maybeInjectLatency();
         }
@@ -3725,7 +3737,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             // isColdStart() relies on {@link SimpleStartupForegroundSessionDetector} and the
             // session is discarded during AsyncInitializationActivity's onPause so the metric has
             // to be recorded here instead of onPauseWithNative().
-            if (!isColdStart() && isMainIntentLaunch()) {
+            if (!isColdStart()
+                    && isMainIntentLaunchPostOnResume()
+                    && mTimeToFirstDrawAfterStartMs != 0) {
                 RecordHistogram.recordTimesHistogram(
                         HISTOGRAM_MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS,
                         mTimeToFirstDrawAfterStartMs);
@@ -3849,7 +3863,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, onCreateTimeDeltaMs);
         boolean shouldSaveState =
                 tabbedActivityAtRequestedIndex.getLifecycleDispatcher().getCurrentActivityState()
-                        < ActivityState.STOPPED_WITH_NATIVE;
+                        < ActivityLifecycleDispatcher.ActivityState.STOPPED_WITH_NATIVE;
         if (shouldSaveState
                 && onCreateTimeDeltaMs
                         > ChromeFeatureList
