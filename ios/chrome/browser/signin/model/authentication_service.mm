@@ -575,7 +575,7 @@ void AuthenticationService::OnPrimaryAccountChanged(
   }
 }
 
-void AuthenticationService::OnIdentityListChanged() {
+void AuthenticationService::OnIdentitiesInProfileChanged() {
   ClearAccountSettingsPrefsOfRemovedAccounts();
   ReloadCredentialsFromIdentities();
 }
