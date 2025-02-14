@@ -6492,6 +6492,8 @@ static_library("browser") {
     sources += [
       "enterprise/client_certificates/browser_context_delegate.cc",
       "enterprise/client_certificates/browser_context_delegate.h",
+      "enterprise/client_certificates/cert_utils.cc",
+      "enterprise/client_certificates/cert_utils.h",
       "enterprise/client_certificates/certificate_provisioning_service_factory.cc",
       "enterprise/client_certificates/certificate_provisioning_service_factory.h",
       "enterprise/client_certificates/certificate_store_factory.cc",
