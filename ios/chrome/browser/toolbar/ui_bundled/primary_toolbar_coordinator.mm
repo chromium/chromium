@@ -85,11 +85,11 @@
         initWithDefaultBrowserBannerPromoAppAgent:agent];
     _mediator.settingsHandler =
         HandlerForProtocol(dispatcher, SettingsCommands);
+    self.viewController.bannerPromoDelegate = _mediator;
 
     agent.UICurrentlySupportsPromo = [self viewControllerSupportsBannerPromo];
 
     _mediator.consumer = self.viewController;
-    self.viewController.bannerPromoDelegate = _mediator;
   }
 
   [super start];
