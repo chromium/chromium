@@ -1748,7 +1748,7 @@ TEST_F(MessagingBackendServiceImplTest,
 
   // Mimic that the user has just left the group.
   EXPECT_CALL(*mock_data_sharing_service_,
-              IsLeavingGroup(Eq(collaboration_group_id)))
+              IsLeavingOrDeletingGroup(Eq(collaboration_group_id)))
       .WillRepeatedly(Return(true));
 
   // Remove the group which results due to leaving the collaboration. There

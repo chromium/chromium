@@ -112,7 +112,7 @@ class DataSharingServiceImpl : public DataSharingService,
   void LeaveGroup(
       const GroupId& group_id,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
-  bool IsLeavingGroup(const GroupId& group_id) override;
+  bool IsLeavingOrDeletingGroup(const GroupId& group_id) override;
   std::vector<GroupEvent> GetGroupEventsSinceStartup() override;
   bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
   void HandleShareURLNavigationIntercepted(
@@ -231,7 +231,7 @@ class DataSharingServiceImpl : public DataSharingService,
   // The set of groups that the user has attempted to leave in the current
   // session. Not cleared until a chrome restart.
   std::set<GroupId>
-      groups_attempted_to_leave_by_current_user_in_current_session_;
+      groups_attempted_to_leave_or_delete_by_current_user_in_current_session_;
 
   base::WeakPtrFactory<DataSharingServiceImpl> weak_ptr_factory_{this};
 };

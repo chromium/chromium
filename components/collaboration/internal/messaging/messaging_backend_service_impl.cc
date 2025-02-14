@@ -650,11 +650,13 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
     return;
   }
 
-  // If the user themselves are trying to leave the group, they don't need to be
-  // notified of anything. Note that although real event source is local, it
-  // appears to be a remote event since the leave attempt and tab group removal
+  // If the user themselves are trying to leave or delete the group, they don't
+  // need to be notified of anything. Note that although real event source is
+  // local, it appears to be a remote event since the leave / delete attempt and
+  // tab group removal
   //  is processed only after a commit happens to the server side.
-  if (data_sharing_service_->IsLeavingGroup(*collaboration_group_id)) {
+  if (data_sharing_service_->IsLeavingOrDeletingGroup(
+          *collaboration_group_id)) {
     return;
   }
 
