@@ -45,6 +45,10 @@ class GlicProfileManager {
   // service's panel is showing.
   bool HasActiveGlicService() const;
 
+  // Opens the panel if the "glic-open-on-startup" command line switch was used
+  // and glic has not already opened like this.
+  void MaybeAutoOpenGlicPanel();
+
   // Static in order to permit setting forced values before the manager is
   // constructed.
   static void ForceProfileForLaunchForTesting(Profile* profile);
@@ -56,6 +60,7 @@ class GlicProfileManager {
       const;
 
   base::WeakPtr<GlicKeyedService> active_glic_;
+  bool did_auto_open_ = false;
 };
 }  // namespace glic
 

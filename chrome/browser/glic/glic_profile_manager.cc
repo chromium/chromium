@@ -28,7 +28,7 @@ base::MemoryPressureMonitor::MemoryPressureLevel*
 namespace glic {
 namespace {
 
-void AutoOpenGlicPanel(bool attached) {
+void AutoOpenGlicPanel() {
   Profile* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
   if (!profile) {
     return;
@@ -41,7 +41,8 @@ void AutoOpenGlicPanel(bool attached) {
 
   Browser* browser = nullptr;
   InvocationSource pretend_source = InvocationSource::kOsButton;
-  if (attached) {
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          ::switches::kGlicOpenOnStartup) == "attached") {
     // Attachment is best effort; FindLastActiveWithProfile() may return null
     // here.
     browser = chrome::FindLastActiveWithProfile(profile);
@@ -57,16 +58,7 @@ GlicProfileManager* GlicProfileManager::GetInstance() {
   return g_browser_process->GetFeatures()->glic_profile_manager();
 }
 
-GlicProfileManager::GlicProfileManager() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(::switches::kGlicOpenOnStartup)) {
-    std::string mode =
-        command_line->GetSwitchValueASCII(::switches::kGlicOpenOnStartup);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AutoOpenGlicPanel, /*attached=*/mode == "attached"));
-  }
-}
+GlicProfileManager::GlicProfileManager() = default;
 
 GlicProfileManager::~GlicProfileManager() = default;
 
@@ -122,6 +114,20 @@ bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
 
 bool GlicProfileManager::HasActiveGlicService() const {
   return active_glic_ != nullptr;
+}
+
+void GlicProfileManager::MaybeAutoOpenGlicPanel() {
+  if (did_auto_open_ || !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            ::switches::kGlicOpenOnStartup)) {
+    return;
+  }
+
+  // TODO(391948342): Figure out why the FRE modal doesn't show when triggered
+  // too early, and wait for that condition rather than delaying.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&AutoOpenGlicPanel), base::Seconds(5));
+
+  did_auto_open_ = true;
 }
 
 // static

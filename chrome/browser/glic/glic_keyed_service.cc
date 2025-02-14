@@ -51,6 +51,8 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
+
+  profile_manager->MaybeAutoOpenGlicPanel();
 }
 
 GlicKeyedService::~GlicKeyedService() {
