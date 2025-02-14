@@ -175,7 +175,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     }
 
     @Test
-    public void getPropertyModels_printingEnabledPdfTab_includesPrinting() {
+    public void getPropertyModels_printingEnabledPdfTab_excludesPrinting() {
         when(mTab.isNativePage()).thenReturn(true);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.isPdf()).thenReturn(true);
@@ -187,8 +187,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         DetailedContentType.NOT_SPECIFIED,
                         /* isMultiWindow= */ false);
 
-        assertTrue(
-                "Property models should contain printing.",
+        assertFalse(
+                "Property models should not contain printing.",
                 propertyModelsContain(propertyModels, R.string.print_share_activity_title));
     }
 
