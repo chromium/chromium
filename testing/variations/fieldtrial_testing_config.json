@@ -16939,7 +16939,7 @@
             ]
         }
     ],
-    "PerformanceObserverSafeSort": [
+    "PerformanceEntrySafeSort": [
         {
             "platforms": [
                 "android",
@@ -16952,7 +16952,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PerformanceObserverSafeSort"
+                        "PerformanceEntrySafeSort"
                     ]
                 }
             ]
