@@ -2548,7 +2548,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.GetPackState.FeatureId"
-    enum="LanguagePackFeatureIds" expires_after="2025-03-09">
+    enum="LanguagePackFeatureIds" expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
@@ -2559,41 +2559,46 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.GetPackState.LanguageCode"
-    enum="LanguagePackLanguageCodes" expires_after="2025-01-05">
+    enum="LanguagePackLanguageCodes" expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records which language was requested from Language Packs Manager;
-    specifically an entry is recorded each time GetPackState is called.
+    specifically an entry is recorded each time GetPackState is called. Warning:
+    this histogram was expired from 2025-01-05 to 2025-02-15; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.InstallBasePack.FeatureId"
-    enum="LanguagePackFeatureIds" expires_after="2025-01-05">
+    enum="LanguagePackFeatureIds" expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records which feature requested a BasePack from Language Packs Manager;
     specifically an entry is recorded each time InstallBasePack is called.
+    Warning: this histogram was expired from 2025-01-05 to 2025-02-15; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.InstallError.Fonts"
-    enum="LanguagePackDlcErrorType" expires_after="2025-01-05">
+    enum="LanguagePackDlcErrorType" expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records the type of error that is received from DLC Service when an
     installation is requested for fonts. No metric is emitted on success, we
-    only record an entry in case of error.
+    only record an entry in case of error. Warning: this histogram was expired
+    from 2025-01-05 to 2025-02-15; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.InstallError.Handwriting"
-    enum="LanguagePackDlcErrorType" expires_after="2025-07-13">
+    enum="LanguagePackDlcErrorType" expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
@@ -2605,19 +2610,20 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.InstallError.Tts"
-    enum="LanguagePackDlcErrorType" expires_after="2025-01-05">
+    enum="LanguagePackDlcErrorType" expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records the type of error that is received from DLC Service when an
     installation is requested for TTS. No metric is emitted on success, we only
-    record an entry in case of error.
+    record an entry in case of error. Warning: this histogram was expired from
+    2025-01-05 to 2025-02-15; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.InstallPack.Success"
-    enum="LanguagePackFeatureSuccess" expires_after="2025-06-22">
+    enum="LanguagePackFeatureSuccess" expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
@@ -2628,7 +2634,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Oobe.ValidLocale" enum="BooleanSuccess"
-    expires_after="2025-05-11">
+    expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
@@ -2639,13 +2645,14 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.UninstallComplete.Success"
-    enum="BooleanSuccess" expires_after="2025-01-05">
+    enum="BooleanSuccess" expires_after="2025-09-01">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records whether a language pack uninstallation was successful after a
-    language pack uninstallation attempt.
+    language pack uninstallation attempt. Warning: this histogram was expired
+    from 2025-01-05 to 2025-02-15; data may be missing.
   </summary>
 </histogram>
 
