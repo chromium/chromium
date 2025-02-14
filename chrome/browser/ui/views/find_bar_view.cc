@@ -216,7 +216,7 @@ FindBarView::FindBarView(FindBarHost* host) {
                   .SetController(this),
               views::Builder<FindBarMatchCountLabel>()
                   .CopyAddressTo(&match_count_text_)
-                  .SetBackgroundColorId(kColorFindBarBackground)
+                  .SetBackgroundColor(kColorFindBarBackground)
                   .SetEnabledColorId(kColorFindBarMatchCount)
                   .SetCanProcessEventsWithinSubtree(false)
                   .SetProperty(views::kMarginsKey,

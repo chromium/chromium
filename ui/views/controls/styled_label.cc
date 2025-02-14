@@ -600,12 +600,7 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     result->GetViewAccessibility().SetName(style_info.accessible_name);
   }
   if (displayed_on_background_color_) {
-    if (auto color = displayed_on_background_color_->GetSkColor()) {
-      result->SetBackgroundColor(*color);
-    } else {
-      result->SetBackgroundColorId(
-          *displayed_on_background_color_->GetColorId());
-    }
+    result->SetBackgroundColor(*displayed_on_background_color_);
   }
 
   result->SetAutoColorReadabilityEnabled(auto_color_readability_enabled_);
@@ -620,11 +615,8 @@ void StyledLabel::UpdateLabelBackgroundColor() {
       // TODO(kylixrd): Should updating the label background color even be
       // allowed if there are custom views?
       DCHECK(IsViewClass<Label>(child) || IsViewClass<LinkFragment>(child));
-      static_cast<Label*>(child)->SetBackgroundColorId(
-          displayed_on_background_color_->GetColorId());
-      if (auto color = displayed_on_background_color_->GetSkColor()) {
-        static_cast<Label*>(child)->SetBackgroundColor(*color);
-      }
+      static_cast<Label*>(child)->SetBackgroundColor(
+          *displayed_on_background_color_);
     }
   }
 }

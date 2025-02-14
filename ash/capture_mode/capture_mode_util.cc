@@ -319,7 +319,7 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
   views::Label* shortcut_label =
       clipboard_shortcut_view->AddChildView(std::make_unique<views::Label>());
   shortcut_label->SetText(label_text);
-  shortcut_label->SetBackgroundColorId(cros_tokens::kCrosSysPrimary);
+  shortcut_label->SetBackgroundColor(cros_tokens::kCrosSysPrimary);
   shortcut_label->SetEnabledColorId(cros_tokens::kCrosSysOnPrimary);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
                                              *shortcut_label);
@@ -349,7 +349,7 @@ std::unique_ptr<views::View> CreateBannerView() {
   views::Label* label = banner_view->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_COPIED_TO_CLIPBOARD)));
-  label->SetBackgroundColorId(kColorAshControlBackgroundColorActive);
+  label->SetBackgroundColor(kColorAshControlBackgroundColorActive);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColorId(cros_tokens::kCrosSysOnPrimary);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
