@@ -2951,6 +2951,7 @@ test("content_unittests") {
 
   fuzztests = [
     "BiddingAndAuctionSerializerTargetSizeEstimator.DoesNotCrashForAnyInput",
+    "ActionsParserFuzzTest.ParsesJSONCorrectly",
   ]
 
   if (is_mac) {
@@ -3072,6 +3073,7 @@ test("content_unittests") {
     ":test_support",
     "//base",
     "//base/allocator:buildflags",
+    "//base/test:fuzztest_support",
     "//base/test:proto_test_support",
     "//base/test:test_support",
     "//build:android_buildflags",
