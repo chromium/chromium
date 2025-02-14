@@ -195,6 +195,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
       CheckViewProperty(
           AppMenuModel::kSaveAndShareMenuItem, &views::MenuItemView::title,
           l10n_util::GetStringUTF16(IDS_CAST_SAVE_AND_SHARE_MENU)),
+      ScrollIntoView(AppMenuModel::kSaveAndShareMenuItem),
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       EnsurePresent(AppMenuModel::kCastTitleItem));
 }
@@ -456,6 +457,7 @@ IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
       WaitForState(kAppBannerManagerState, InstallableWebAppCheckResult::kNo),
       PressButton(kToolbarAppMenuButtonElementId),
       EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+      ScrollIntoView(AppMenuModel::kSaveAndShareMenuItem),
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       VerifyDiyAppMenuItemViews());
 }
@@ -491,6 +493,7 @@ IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
                    InstallableWebAppCheckResult::kYes_Promotable),
       PressButton(kToolbarAppMenuButtonElementId),
       EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+      ScrollIntoView(AppMenuModel::kSaveAndShareMenuItem),
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       EnsurePresent(AppMenuModel::kInstallAppItem),
       CheckViewProperty(
@@ -513,6 +516,7 @@ IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
                    InstallableWebAppCheckResult::kYes_Promotable),
       PressButton(kToolbarAppMenuButtonElementId),
       EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+      ScrollIntoView(AppMenuModel::kSaveAndShareMenuItem),
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       EnsurePresent(AppMenuModel::kInstallAppItem));
 }
