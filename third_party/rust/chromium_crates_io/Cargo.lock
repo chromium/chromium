@@ -26,6 +26,11 @@ version = "1.0.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "arrayvec"
+version = "0.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -33,6 +38,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "base64"
 version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "base64"
+version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -109,7 +119,7 @@ name = "chromium"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "base64",
+ "base64 0.13.1",
  "bitflags 2.8.0",
  "bstr",
  "bytemuck",
@@ -144,6 +154,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_json_lenient",
+ "sfv",
  "skrifa",
  "small_ctor",
  "static_assertions",
@@ -290,6 +301,11 @@ version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "equivalent"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "fdeflate"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -347,6 +363,11 @@ dependencies = [
 [[package]]
 name = "glob"
 version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "hashbrown"
+version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -811,6 +832,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "indexmap"
+version = "2.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "equivalent",
+ "hashbrown",
+]
+
+[[package]]
 name = "itertools"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1111,6 +1141,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust_decimal"
+version = "1.36.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "arrayvec",
+ "num-traits",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1184,6 +1223,16 @@ dependencies = [
  "memchr",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "sfv"
+version = "0.10.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "base64 0.22.1",
+ "indexmap",
+ "rust_decimal",
 ]
 
 [[package]]
@@ -1421,7 +1470,7 @@ name = "wycheproof"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "base64",
+ "base64 0.13.1",
  "hex",
  "serde",
  "serde_json",

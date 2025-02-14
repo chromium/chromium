@@ -102,9 +102,6 @@ remove_crates = [
 [crate.anyhow]
 group = 'test'
 
-[crate.base64]
-group = 'test'
-
 [crate.bstr]
 ban_features = [
     # The unicode feature is not audited for UB-Risk-2.
@@ -260,6 +257,9 @@ group = 'test'
 
 [crate.rstest_reuse]
 group = 'test'
+
+[crate.rust_decimal]
+build_script_outputs = ['README-lib.md']
 
 [crate.rustversion]
 allow_first_party_usage = false

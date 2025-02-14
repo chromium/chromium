@@ -50,6 +50,4 @@ cargo_crate("lib") {
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]
-
-  testonly = true
 }

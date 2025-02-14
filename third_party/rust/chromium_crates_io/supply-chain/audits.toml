@@ -282,6 +282,11 @@ criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "0.13.1"
 notes = "Skimmed the uses of `std` to ensure that nothing untoward is happening. Code uses `forbid(unsafe_code)` and, indeed, there are no uses of `unsafe`"
 
+[[audits.base64]]
+who = "amarjotgill <amarjotgill@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.22.1"
+
 [[audits.bitflags]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
@@ -3086,6 +3091,11 @@ Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`
 and there were no hits.
 '''
 
+[[audits.sfv]]
+who = "amarjotgill <amarjotgill@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.10.4"
+
 [[audits.simd-adler32]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -3564,7 +3574,7 @@ version = "0.11.0"
 
 [[trusted.hashbrown]]
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-user-id = 2915
+user-id = 2915 # Amanieu d'Antras (Amanieu)
 start = "2019-04-02"
 end = "2026-02-04"
 notes = """

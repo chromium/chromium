@@ -1,0 +1,71 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "indexmap"
+  epoch = "2"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/arbitrary.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/borsh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/core.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/core/entry.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/core/raw_entry_v1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/mutable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/serde_seq.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/rayon/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/rayon/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/rayon/set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/rustc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set/mutable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set/slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/util.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "2.7.1"
+  cargo_pkg_name = "indexmap"
+  cargo_pkg_description =
+      "A hash table with consistent order and fast iteration."
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/equivalent/v1:lib",
+    "//third_party/rust/hashbrown/v0_15:lib",
+  ]
+  features = [ "std" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+}
