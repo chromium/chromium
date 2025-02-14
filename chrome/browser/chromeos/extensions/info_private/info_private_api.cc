@@ -119,15 +119,4 @@ void ChromeosInfoPrivateIsTabletModeEnabledFunction::RespondWithResult(
   Respond(WithArguments(enabled));
 }
 
-ChromeosInfoPrivateIsRunningOnLacrosFunction::
-    ChromeosInfoPrivateIsRunningOnLacrosFunction() = default;
-
-ChromeosInfoPrivateIsRunningOnLacrosFunction::
-    ~ChromeosInfoPrivateIsRunningOnLacrosFunction() = default;
-
-ExtensionFunction::ResponseAction
-ChromeosInfoPrivateIsRunningOnLacrosFunction::Run() {
-  return RespondNow(WithArguments(false));
-}
-
 }  // namespace extensions
