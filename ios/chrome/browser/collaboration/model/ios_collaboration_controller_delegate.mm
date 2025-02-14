@@ -164,12 +164,17 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
         [NSMutableArray array];
     for (const auto& tab : tab_group_preview->tabs) {
       ShareKitPreviewItem* preview_item = [[ShareKitPreviewItem alloc] init];
-      // preview_item.image = // TODO: fetch favicon?
       preview_item.title = base::SysUTF8ToNSString(tab.url.host());
+      // TODO(crbug.com/396642722): Fetch the favicon for `tab.url`
+      // (asynchronous) and assign to `preview_item.image`. Default to querying
+      // Google servers if needed.
       [preview_items addObject:preview_item];
     }
     config.previewItems = preview_items;
   }
+  // TODO(crbug.com/396642759): Pass a composite image containing 4 favicons
+  // from the tab group, similar to what is done in the Share flow.
+  config.previewImage = [[UIImage alloc] init];
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completion = ^(ShareKitFlowOutcome outcome) {
     completion_block(ConvertOutcome(outcome));

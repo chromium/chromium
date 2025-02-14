@@ -150,6 +150,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "auth_events_recorder_unittest.cc",
+    "auth_factor_editor_unittest.cc",
     "auth_performer_unittest.cc",
     "auth_session_authenticator_unittest.cc",
     "challenge_response/cert_utils_unittest.cc",

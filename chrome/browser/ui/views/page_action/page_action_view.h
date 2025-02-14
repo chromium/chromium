@@ -49,7 +49,6 @@ class PageActionView : public IconLabelBubbleView,
       const views::ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
   void OnTouchUiChanged() override;
-  bool ShouldShowLabel() const override;
   void UpdateBorder() override;
   bool ShouldShowSeparator() const override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;

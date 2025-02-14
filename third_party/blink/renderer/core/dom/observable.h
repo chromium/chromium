@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -110,6 +111,10 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
 
   void Trace(Visitor*) const override;
 
+  void ClearSubscriber(base::PassKey<Subscriber>) {
+    active_subscriber_ = nullptr;
+  }
+
   // The `subscribe()` API is used when web content subscribes to an Observable
   // with a `V8UnionObserverOrObserverCallback`, whereas this API is used when
   // native code subscribes to an `Observable` with a native internal observer.
@@ -144,6 +149,12 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   // https://html.spec.whatwg.org/C#report-the-exception.
   const Member<V8SubscribeCallback> subscribe_callback_;
   const Member<SubscribeDelegate> subscribe_delegate_;
+
+  // The active subscriber associated with `this`. It is set in
+  // `SubscribeInternal`, and used to register all subsequent subscriptions
+  // until it becomes inactive. Once inactive, `this` clears this pointer until
+  // the next invocation of `SubscribeInternal()`.
+  Member<Subscriber> active_subscriber_;
 };
 
 }  // namespace blink

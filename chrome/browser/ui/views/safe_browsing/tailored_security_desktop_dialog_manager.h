@@ -17,7 +17,7 @@ const char kDisabledDialogOutcome[] =
 const char kEnabledDialogOutcome[] =
     "SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogEnabledOutcome";
 
-static constexpr char kTailoredSecurityNoticeDialog[] =
+inline constexpr char kTailoredSecurityNoticeDialog[] =
     "TailoredSecurityNoticeDialog";
 
 class TailoredSecurityDesktopDialogManager {

@@ -40,16 +40,16 @@ namespace cc {
 
 ResourcePool::Backing::Backing() = default;
 ResourcePool::Backing::~Backing() {
-  if (!shared_image) {
+  if (!shared_image_) {
     return;
   }
   if (returned_sync_token.HasData()) {
-    shared_image->UpdateDestructionSyncToken(returned_sync_token);
+    shared_image_->UpdateDestructionSyncToken(returned_sync_token);
   } else if (mailbox_sync_token.HasData()) {
-    shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
+    shared_image_->UpdateDestructionSyncToken(mailbox_sync_token);
   }
 
-  shared_image.reset();
+  shared_image_.reset();
 
   // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
   // itself. We need a flush here to trigger IPC. Without the flush, there
@@ -338,7 +338,7 @@ bool ResourcePool::PrepareForExport(
   Backing* backing = resource->backing();
   DCHECK(backing);
   viz::TransferableResource transferable;
-  if (!backing->shared_image) {
+  if (!backing->shared_image()) {
     // This can happen if we failed to allocate a GpuMemoryBuffer. Avoid
     // sending an invalid resource to the parent in that case, and avoid
     // caching/reusing the resource.
@@ -352,7 +352,7 @@ bool ResourcePool::PrepareForExport(
   overrides.format = resource->format();
   overrides.is_overlay_candidate = backing->overlay_candidate;
   transferable =
-      viz::TransferableResource::Make(backing->shared_image, resource_source,
+      viz::TransferableResource::Make(backing->shared_image(), resource_source,
                                       backing->mailbox_sync_token, overrides);
   if (backing->wait_on_fence_required) {
     transferable.synchronization_type =
@@ -663,8 +663,8 @@ void ResourcePool::PoolResource::OnMemoryDump(
   // the root ownership.
   const int kImportance =
       static_cast<int>(gpu::TracingImportance::kClientOwner);
-  if (backing_ && backing_->shared_image) {
-    backing_->shared_image->OnMemoryDump(pmd, dump->guid(), kImportance);
+  if (backing_ && backing_->shared_image()) {
+    backing_->shared_image()->OnMemoryDump(pmd, dump->guid(), kImportance);
   }
 
   uint64_t total_bytes = memory_usage();

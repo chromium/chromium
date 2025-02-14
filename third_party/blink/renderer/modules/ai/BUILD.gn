@@ -8,6 +8,8 @@ blink_modules_sources("ai") {
   sources = [
     "ai.cc",
     "ai.h",
+    "ai_availability.cc",
+    "ai_availability.h",
     "ai_capability_availability.cc",
     "ai_capability_availability.h",
     "ai_create_monitor.cc",

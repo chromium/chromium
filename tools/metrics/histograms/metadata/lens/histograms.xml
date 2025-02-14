@@ -345,6 +345,67 @@ chromium-metrics-reviews@google.com.
   <token key="PageContentType" variants="MimeTypes"/>
 </histogram>
 
+<histogram
+    name="Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType.{PageContentType}.QueryIssuedInSessionBeforeSuggestShown"
+    enum="Boolean" expires_after="2025-09-13">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the user issued a query from the contextual searchbox before any contextual
+    suggestions were shown, sliced by page content type. This metric only tracks
+    follow-up queries, aka the query issued when the live page is visible next
+    to the results panel. This metric is session based, meaning if at anytime
+    over the span of multiple follow queries, the user issues a query before any
+    suggestions are shown, this metric will be recorded as true.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.FollowUpQuery.QueryIssuedInSessionBeforeSuggestShown"
+    enum="Boolean" expires_after="2025-09-13">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the user issued a query from the contextual searchbox before any contextual
+    suggestions were shown. This metric only tracks follow-up queries, aka the
+    query issued when the live page is visible next to the results panel. This
+    metric is session based, meaning if at anytime over the span of multiple
+    follow queries, the user issues a query before any suggestions are shown,
+    this metric will be recorded as true.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.InitialQuery.ByPageContentType.{PageContentType}.QueryIssuedInSessionBeforeSuggestShown"
+    enum="Boolean" expires_after="2025-09-13">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the user issued a query from the contextual searchbox before any contextual
+    suggestions were shown, sliced by page content type. This metric only tracks
+    the initial query, aka the query issued when the visual selection overlay is
+    open.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.InitialQuery.QueryIssuedInSessionBeforeSuggestShown"
+    enum="Boolean" expires_after="2025-09-13">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the user issued a query from the contextual searchbox before any contextual
+    suggestions were shown. This metric only tracks the initial query, aka the
+    query issued when the visual selection overlay is open.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.ContextualSuggest.QueryIssuedInSession"
     enum="Boolean" expires_after="2025-07-06">
   <owner>niharm@google.com</owner>
@@ -482,6 +543,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when receiving a Lens result. Measures the time elapsed between the
     time a Lens request was initiated and the time a response was received.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.OcrDomSimilarity" units="%"
+    expires_after="2025-09-12">
+  <owner>mercerd@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Records the percentage of text in the Lens OCR response that is also present
+    in the DOM. This is a measure of how well the OCR response matches the
+    contents of the page. Recorded once per session at the time when both the
+    extracted DOM content and the Lens OCR response are available. This metric
+    is not recorded if the page content is not HTML or PDF, if the DOM is too
+    large, if the overlay closes before OCR is received, or if the OCR language
+    is not English (since the score is not reliable for CJK languages).
   </summary>
 </histogram>
 

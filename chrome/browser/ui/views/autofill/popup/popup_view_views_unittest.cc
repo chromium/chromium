@@ -2017,27 +2017,6 @@ TEST_F(PopupViewViewsTest, AutofillAiLoadingOnSuggestionsChangedA11yFocus) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
 }
 
-TEST_F(PopupViewViewsTest, AutofillAiSuggestionsLoadedAnnounced) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
-  MockFunction<PopupViewViewsTestApi::A11yAnnouncer::RunType> a11y_announcer;
-  test_api(view()).SetA11yAnnouncer(
-      base::BindLambdaForTesting(a11y_announcer.AsStdFunction()));
-
-  EXPECT_CALL(
-      a11y_announcer,
-      Call(
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
-          /*polite=*/true));
-
-  Suggestion feedback_suggestion(SuggestionType::kAutofillAiFeedback);
-  feedback_suggestion.voice_over = u"Required a11y message";
-  controller().set_suggestions({std::move(feedback_suggestion)});
-  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(
-      /*prefer_prev_arrow_side=*/false);
-}
-
 TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   CreateAndShowView({SuggestionType::kMixedFormMessage});

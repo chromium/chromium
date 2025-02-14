@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_CLOUD_HEARTBEAT_SERVICE_CLIENT_H_
 #define REMOTING_HOST_CLOUD_HEARTBEAT_SERVICE_CLIENT_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -79,7 +80,7 @@ class CloudHeartbeatServiceClient : public HeartbeatServiceClient {
   // The entity to update in Directory service.
   std::string directory_id_;
 
-  CloudServiceClient client_;
+  std::unique_ptr<CloudServiceClient> client_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

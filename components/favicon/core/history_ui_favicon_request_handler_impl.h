@@ -40,6 +40,7 @@ class HistoryUiFaviconRequestHandlerImpl
   void GetRawFaviconForPageURL(
       const GURL& page_url,
       int desired_size_in_pixel,
+      bool fallback_to_host,
       favicon_base::FaviconRawBitmapCallback callback) override;
   void GetFaviconImageForPageURL(
       const GURL& page_url,
@@ -53,6 +54,7 @@ class HistoryUiFaviconRequestHandlerImpl
   void OnBitmapLocalDataAvailable(
       const GURL& page_url,
       int desired_size_in_pixel,
+      bool fallback_to_host,
       favicon_base::FaviconRawBitmapCallback response_callback,
       const favicon_base::FaviconRawBitmapResult& bitmap_result);
 

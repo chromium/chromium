@@ -54,15 +54,16 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public @Nullable @BrowserControlsState Integer addObserver(Callback<Integer> obs) {
+    public @Nullable @BrowserControlsState Integer addObserver(
+            Callback<@BrowserControlsState Integer> obs, @NotifyBehavior int behavior) {
         if (!hasObservers()) {
             for (int i = 0; i < mDelegates.size(); i++) {
-                mDelegates.get(i).addObserver(mConstraintsUpdatedCallback);
+                mDelegates.get(i).addSyncObserverAndCall(mConstraintsUpdatedCallback);
             }
             // Since the observer is not added yet, we need to trigger an update manually.
             super.set(calculateVisibilityConstraints());
         }
-        return super.addObserver(obs);
+        return super.addObserver(obs, behavior);
     }
 
     @Override

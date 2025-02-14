@@ -6,6 +6,8 @@
 
 #include "base/unguessable_token.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_partition.h"
+#include "services/network/public/cpp/network_isolation_partition_mojom_traits.h"
 
 namespace mojo {
 
@@ -26,14 +28,17 @@ bool StructTraits<network::mojom::NonEmptyNetworkIsolationKeyDataView,
   net::SchemefulSite top_frame_site;
   net::SchemefulSite frame_site;
   std::optional<base::UnguessableToken> nonce;
+  net::NetworkIsolationPartition network_isolation_partition;
 
   if (!data.ReadTopFrameSite(&top_frame_site) ||
-      !data.ReadFrameSite(&frame_site) || !data.ReadNonce(&nonce)) {
+      !data.ReadFrameSite(&frame_site) || !data.ReadNonce(&nonce) ||
+      !data.ReadNetworkIsolationPartition(&network_isolation_partition)) {
     return false;
   }
 
-  *out = net::NetworkIsolationKey(std::move(top_frame_site),
-                                  std::move(frame_site), std::move(nonce));
+  *out =
+      net::NetworkIsolationKey(std::move(top_frame_site), std::move(frame_site),
+                               std::move(nonce), network_isolation_partition);
   return true;
 }
 

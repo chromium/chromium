@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -13,9 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -55,16 +60,9 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
-#include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 using ::testing::NotNull;
-#endif
 
 namespace em = enterprise_management;
 
@@ -229,9 +227,6 @@ class UserPolicyCertsHelper {
     NetworkConfigurationUpdater* user_network_configuration_updater =
         UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
     if (!user_network_configuration_updater) {
-      // In Lacros-Chrome the ONC policy is only handled by the main profile.
-      // Secondary profiles ignore it and UserNetworkConfigurationUpdater is not
-      // created.s
       return;
     }
 
@@ -287,10 +282,8 @@ class MultiProfilePolicyProviderHelper {
       const MultiProfilePolicyProviderHelper& other) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
         ash::switches::kIgnoreUserProfileMappingForTests);
-#endif
   }
 
   // The test should call this before the initial profile is created by chrome.
@@ -486,7 +479,6 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
   EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_1(),
                                  user_policy_certs_helper_.server_cert()));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/40718963): That the cert from a secondary user's
   // policy is used at all is currently an artifact of the test, which reuses
   // the primary user_manager::User for the secondary Profile.
@@ -497,12 +489,6 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
   EXPECT_EQ(net::OK,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
                                  user_policy_certs_helper_.server_cert()));
-#else   // Implies #if BUILDFLAG(IS_CHROMEOS_LACROS), but this is a generally
-        // correct behavior according to the comment above.
-  EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
-            VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
-                                 user_policy_certs_helper_.server_cert()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
@@ -527,9 +513,6 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
                 multi_profile_policy_helper_.profile_1(),
                 user_policy_certs_helper_.server_cert_by_intermediate()));
 }
-
-// NetworkCertLoader is only relevant for Ash-Chrome.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsCertInCertificateList(
     const net::X509Certificate* cert,
@@ -615,7 +598,6 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
             VerifyTestServerCert(ash::ProfileHelper::GetLockScreenProfile(),
                                  user_policy_certs_helper_.server_cert()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace policy

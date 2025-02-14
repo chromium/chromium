@@ -433,6 +433,13 @@ public class WebViewChromiumAwInit {
                 totalTimeTaken,
                 /* callSite= */ callSite,
                 /* fromUIThread= */ triggeredFromUIThread);
+        // Also create the trace events for the earlier WebViewChromiumFactoryProvider init, which
+        // happens before tracing is ready.
+        TraceEvent.webViewStartupTotalFactoryInit(
+                mFactory.getInitInfo().mTotalFactoryInitStartTime,
+                mFactory.getInitInfo().mTotalFactoryInitDuration);
+        TraceEvent.webViewStartupStage1(
+                mFactory.getInitInfo().mStartTime, mFactory.getInitInfo().mDuration);
     }
 
     /**

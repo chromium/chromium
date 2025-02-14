@@ -30,6 +30,9 @@ enum class LensEntrypoint;
 // The entry point from which Lens was entered.
 @property(nonatomic, assign) LensEntrypoint entrypoint;
 
+// Whether to align the dismiss button to the trailing side of the overlay.
+@property(nonatomic, assign) BOOL useTrailingDismissButton;
+
 @end
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_LENS_LENS_CONFIGURATION_H_

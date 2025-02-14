@@ -13,6 +13,7 @@
 #include "base/types/optional_util.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -133,6 +134,10 @@ std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const SiteForCookies& site_for_cookies,
     const SchemefulSite& request_site,
     bool main_frame_navigation) {
+  // Support for creating a CookiePartitionKey from IsolationInfos with special
+  // NetworkIsolationPartition is not implemented.
+  CHECK_EQ(network_isolation_key.GetNetworkIsolationPartition(),
+           NetworkIsolationPartition::kGeneral);
   if (cookie_util::PartitionedCookiesDisabledByCommandLine()) {
     return std::nullopt;
   }

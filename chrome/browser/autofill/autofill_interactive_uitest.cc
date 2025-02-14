@@ -3370,8 +3370,7 @@ class AutofillInteractiveFormSubmissionTest
           ASSERT_TRUE(waiter.Wait(1));
           break;
         }
-        case kSelectOne:
-        case kSelectMultiple: {
+        case kSelectOne: {
           auto& waiter = autofill_manager()->select_field_change_waiter();
           ASSERT_TRUE(waiter.Wait(1));
           break;

@@ -70,6 +70,7 @@ interface ReportingServiceProxy {
                                     string disposition,
                                     string? message,
                                     string? allow_attribute,
+                                    string? src_attribute,
                                     string? source_file,
                                     int32 line_number,
                                     int32 column_number);

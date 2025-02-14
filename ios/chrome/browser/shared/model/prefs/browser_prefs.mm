@@ -181,6 +181,10 @@ constexpr char kEnableDoNotTrackIos[] = "enable_do_not_track";
 inline constexpr char kPageContentCollectionEnabled[] =
     "page_content_collection.enabled";
 
+// Deprecated 02/2025.
+inline constexpr char kNumberOfProfiles[] = "profile.profiles_created";
+inline constexpr char kLastActiveProfiles[] = "profile.last_active_profiles";
+
 // Helper function migrating the preference `pref_name` of type "int" from
 // `defaults` to `pref_service`.
 void MigrateIntegerPreferenceFromUserDefaults(std::string_view pref_name,
@@ -649,6 +653,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
   registry->RegisterBooleanPref(prefs::kYoutubeIncognitoHasBeenShown, false);
+
+  // Deprecated 02/2025.
+  registry->RegisterIntegerPref(kNumberOfProfiles, 0);
+  registry->RegisterListPref(kLastActiveProfiles);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1029,6 +1037,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 09/2024
   prefs->ClearPref(
       kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness);
+
+  // Added 02/2025
+  prefs->ClearPref(kNumberOfProfiles);
+  prefs->ClearPref(kLastActiveProfiles);
 }
 
 // This method should be periodically pruned of year+ old migrations.

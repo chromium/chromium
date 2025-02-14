@@ -76,6 +76,8 @@ def _CreateInfo(aar_file, resource_exclusion_globs):
   data['has_proguard_flags'] = False
   data['has_native_libraries'] = False
   data['has_r_text_file'] = False
+  prefab_headers = []
+  prefab_include_dirs = []
   with zipfile.ZipFile(aar_file) as z:
     manifest_xml = ElementTree.fromstring(z.read('AndroidManifest.xml'))
     data['is_manifest_empty'] = _IsManifestEmpty(manifest_xml)
@@ -112,7 +114,15 @@ def _CreateInfo(aar_file, resource_exclusion_globs):
         # Some AARs, e.g. gvr_controller_java, have empty R.txt. Such AARs
         # have no resources as well. We treat empty R.txt as having no R.txt.
         data['has_r_text_file'] = bool(z.read('R.txt').strip())
+      elif name.startswith('prefab/modules') and '/include/' in name:
+        prefab_headers.append(name)
+        subdir = name[:name.index('/include/')] + '/include'
+        if subdir not in prefab_include_dirs:
+          prefab_include_dirs.append(subdir)
 
+  if prefab_include_dirs:
+    data['prefab_headers'] = prefab_headers
+    data['prefab_include_dirs'] = prefab_include_dirs
   return data
 
 

@@ -156,8 +156,6 @@ rust_static_library("crabbyavif") {
     "src/src/reformat/scale.rs",
     "src/src/utils/clap.rs",
     "src/src/utils/mod.rs",
-    "src/src/utils/raw.rs",
-    "src/src/utils/y4m.rs",
   ]
 
   features = [

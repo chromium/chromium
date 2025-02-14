@@ -9,9 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
+#include "chrome/browser/serial/web_serial_chooser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/serial/serial_chooser.h"
 #include "chrome/browser/ui/serial/serial_chooser_controller.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
@@ -38,11 +38,11 @@ std::unique_ptr<content::SerialChooser> ChromeSerialDelegate::RunChooser(
     std::vector<blink::mojom::SerialPortFilterPtr> filters,
     std::vector<device::BluetoothUUID> allowed_bluetooth_service_class_ids,
     content::SerialChooser::Callback callback) {
-  return std::make_unique<SerialChooser>(chrome::ShowDeviceChooserDialog(
-      frame, std::make_unique<SerialChooserController>(
-                 frame, std::move(filters),
-                 std::move(allowed_bluetooth_service_class_ids),
-                 std::move(callback))));
+  return WebSerialChooser::Create(
+      frame,
+      std::make_unique<SerialChooserController>(
+          frame, std::move(filters),
+          std::move(allowed_bluetooth_service_class_ids), std::move(callback)));
 }
 
 bool ChromeSerialDelegate::CanRequestPortPermission(

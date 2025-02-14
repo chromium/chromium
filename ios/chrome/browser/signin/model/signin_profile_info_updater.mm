@@ -45,9 +45,8 @@ void SigninProfileInfoUpdater::UpdateBrowserStateInfo() {
       ->UpdateAttributesForProfileWithName(
           profile_name_,
           base::BindOnce(
-              [](CoreAccountInfo info, ProfileAttributesIOS attr) {
+              [](CoreAccountInfo info, ProfileAttributesIOS& attr) {
                 attr.SetAuthenticationInfo(info.gaia, info.email);
-                return attr;
               },
               identity_manager_->GetPrimaryAccountInfo(
                   signin::ConsentLevel::kSignin)));
@@ -59,9 +58,8 @@ void SigninProfileInfoUpdater::OnErrorChanged() {
       ->GetProfileAttributesStorage()
       ->UpdateAttributesForProfileWithName(
           profile_name_, base::BindOnce(
-                             [](bool has_error, ProfileAttributesIOS attr) {
+                             [](bool has_error, ProfileAttributesIOS& attr) {
                                attr.SetHasAuthenticationError(has_error);
-                               return attr;
                              },
                              signin_error_controller_->HasError()));
 }

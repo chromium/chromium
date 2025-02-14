@@ -30,6 +30,7 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
@@ -244,7 +245,7 @@ class SingleClientPreferencesWithAccountStorageSyncTest
     : public SingleClientPreferencesSyncTest {
  public:
   SingleClientPreferencesWithAccountStorageSyncTest()
-      : feature_list_(syncer::kEnablePreferencesAccountStorage) {}
+      : feature_list_(switches::kEnablePreferencesAccountStorage) {}
 
   void CommitToDiskAndWait() const {
     base::RunLoop loop;

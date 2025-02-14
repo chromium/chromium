@@ -186,7 +186,7 @@ void FaviconSource::StartDataRequest(
       return;
     }
     history_ui_favicon_request_handler->GetRawFaviconForPageURL(
-        page_url, desired_size_in_pixel,
+        page_url, desired_size_in_pixel, parsed.fallback_to_host,
         base::BindOnce(&FaviconSource::OnFaviconDataAvailable,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        parsed, wc_getter));

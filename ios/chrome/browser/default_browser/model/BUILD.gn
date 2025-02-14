@@ -53,18 +53,13 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "default_browser_promo_event_exporter_unittest.mm",
-    "utils_unittest.mm",
-  ]
+  sources = [ "utils_unittest.mm" ]
   deps = [
     ":default_browser_interest_signals",
-    ":event_exporter",
     ":test_support",
     ":utils",
     "//base/test:test_support",
     "//components/feature_engagement/public",
-    "//components/feature_engagement/test:test_support",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
@@ -76,18 +71,6 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",
-  ]
-}
-
-source_set("event_exporter") {
-  sources = [
-    "default_browser_promo_event_exporter.h",
-    "default_browser_promo_event_exporter.mm",
-  ]
-  deps = [
-    ":features",
-    ":utils",
-    "//components/feature_engagement/public",
   ]
 }
 

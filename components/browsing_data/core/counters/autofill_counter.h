@@ -13,7 +13,6 @@
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/browsing_data/core/counters/sync_tracker.h"
 #include "components/user_annotations/user_annotations_service.h"
-#include "components/webdata/common/web_data_service_consumer.h"
 
 namespace autofill {
 class AutofillWebDataService;
@@ -22,8 +21,7 @@ class PersonalDataManager;
 
 namespace browsing_data {
 
-class AutofillCounter : public browsing_data::BrowsingDataCounter,
-                        public WebDataServiceConsumer {
+class AutofillCounter : public browsing_data::BrowsingDataCounter {
  public:
   class AutofillResult : public SyncResult {
    public:
@@ -81,10 +79,8 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter,
  private:
   void Count() override;
 
-  // WebDataServiceConsumer implementation.
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override;
+  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle handle,
+                                   std::unique_ptr<WDTypedResult> result);
 
   void OnUserAnnotationsServiceResponse(int num_user_annotations);
 
@@ -119,6 +115,8 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter,
   // to cancel them if needed.
   base::WeakPtrFactory<AutofillCounter>
       user_annotations_requirest_weak_factory_{this};
+
+  base::WeakPtrFactory<AutofillCounter> weak_ptr_factory_{this};
 };
 
 }  // namespace browsing_data

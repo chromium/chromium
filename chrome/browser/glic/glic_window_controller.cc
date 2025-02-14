@@ -329,7 +329,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
   // TODO(392644541): There may be edge cases w.r.t. multi-glic-profile.
   if (!new_attached_browser) {
     Browser* last_active_browser = chrome::FindLastActiveWithProfile(profile_);
-    if (last_active_browser) {
+    if (last_active_browser && last_active_browser->is_type_normal()) {
       bool attach_to_last_active_browser =
           last_active_browser->IsActive() && state_ == State::kClosed;
 #if BUILDFLAG(IS_WIN)
@@ -591,10 +591,13 @@ void GlicWindowController::WaitForGlicToLoad() {
       base::BindOnce(&GlicWindowController::GlicLoaded, GetWeakPtr()));
 }
 
-void GlicWindowController::GlicLoaded(mojom::WebClientMode starting_mode) {
+void GlicWindowController::GlicLoaded(mojom::OpenPanelInfoPtr open_info) {
   // TODO: Use `starting_mode` to log latency metrics.
-  DVLOG(1) << "GlicLoaded with " << starting_mode;
-  starting_mode_ = starting_mode;
+  DVLOG(1) << "GlicLoaded with " << open_info->web_client_mode;
+  starting_mode_ = open_info->web_client_mode;
+  if (open_info->panelSize.has_value()) {
+    Resize(*open_info->panelSize, open_info->resizeDuration, base::DoNothing());
+  }
 
   glic_loaded_ = true;
   if (state_ == State::kWaitingForGlicToLoad) {

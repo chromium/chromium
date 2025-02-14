@@ -58,6 +58,8 @@ collaboration_pb::Message CreateTabGroupMessage(
                     tab_group.update_time_windows_epoch_micros());
   message.mutable_tab_group_data()->set_sync_tab_group_id(
       tab_group.saved_guid().AsLowercaseString());
+  message.mutable_tab_group_data()->set_title(
+      base::UTF16ToUTF8(tab_group.title()));
   switch (event_type) {
     case collaboration_pb::TAB_GROUP_ADDED:
       message.set_triggering_user_gaia_id(
@@ -648,11 +650,13 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
     return;
   }
 
-  // If the user themselves are trying to leave the group, they don't need to be
-  // notified of anything. Note that although real event source is local, it
-  // appears to be a remote event since the leave attempt and tab group removal
+  // If the user themselves are trying to leave or delete the group, they don't
+  // need to be notified of anything. Note that although real event source is
+  // local, it appears to be a remote event since the leave / delete attempt and
+  // tab group removal
   //  is processed only after a commit happens to the server side.
-  if (data_sharing_service_->IsLeavingGroup(*collaboration_group_id)) {
+  if (data_sharing_service_->IsLeavingOrDeletingGroup(
+          *collaboration_group_id)) {
     return;
   }
 
@@ -1276,6 +1280,7 @@ MessagingBackendServiceImpl::GetCollaborationGroupIdForTab(
 
 TabGroupMessageMetadata
 MessagingBackendServiceImpl::CreateTabGroupMessageMetadataFromCollaborationId(
+    const collaboration_pb::Message& message,
     std::optional<tab_groups::SavedTabGroup> tab_group,
     std::optional<data_sharing::GroupId> collaboration_group_id) {
   if (tab_group) {
@@ -1291,7 +1296,11 @@ MessagingBackendServiceImpl::CreateTabGroupMessageMetadataFromCollaborationId(
           ToCollaborationId(data_sharing::GroupId(*collaboration_group_id)));
   if (previous_title) {
     tab_group_metadata.last_known_title = base::UTF16ToUTF8(*previous_title);
+  } else {
+    tab_group_metadata.last_known_title = message.tab_group_data().title();
   }
+  // TODO(crbug.com/395918345): Should we always use title from DB and ignore
+  // the tab group?
   return tab_group_metadata;
 }
 
@@ -1304,7 +1313,7 @@ MessagingBackendServiceImpl::CreateTabGroupMessageMetadataFromMessageOrTabGroup(
   }
 
   return CreateTabGroupMessageMetadataFromCollaborationId(
-      GetTabGroupFromMessage(message),
+      message, GetTabGroupFromMessage(message),
       data_sharing::GroupId(message.collaboration_id()));
 }
 

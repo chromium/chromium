@@ -8,7 +8,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -38,7 +38,7 @@ class AISummarizerFactory final : public ScriptWrappable,
   ScriptPromise<AISummarizerCapabilities> capabilities(
       ScriptState* script_state,
       ExceptionState& exception_state);
-  ScriptPromise<V8AICapabilityAvailability> availability(
+  ScriptPromise<V8AIAvailability> availability(
       ScriptState* script_state,
       AISummarizerCreateCoreOptions* options,
       ExceptionState& exception_state);

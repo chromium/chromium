@@ -9,14 +9,13 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_service_impl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #else  // Non-ChromeOS.
@@ -45,7 +44,7 @@ CreateProfilePolicyConnectorForBrowserContext(
   const user_manager::User* user = nullptr;
   const CloudPolicyStore* policy_store = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* const profile = Profile::FromBrowserContext(context);
   if (ash::ProfileHelper::IsUserProfile(profile)) {
     user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
@@ -65,7 +64,7 @@ CreateProfilePolicyConnectorForBrowserContext(
   if (cloud_policy_manager) {
     policy_store = cloud_policy_manager->core()->store();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return CreateAndInitProfilePolicyConnector(
       schema_registry, browser_policy_connector, policy_provider, policy_store,

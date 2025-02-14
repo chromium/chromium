@@ -334,6 +334,7 @@ ChromeAccountManagerService::GetAllIdentitiesOnDevice(
 
 void ChromeAccountManagerService::OnIdentitiesInProfileChanged() {
   for (auto& observer : observer_list_) {
+    observer.OnIdentitiesInProfileChanged();
     observer.OnIdentityListChanged();
   }
 }
@@ -350,6 +351,7 @@ void ChromeAccountManagerService::OnIdentityInProfileUpdated(
     return;
   }
   for (auto& observer : observer_list_) {
+    observer.OnIdentityInProfileUpdated(identity);
     observer.OnIdentityUpdated(identity);
   }
 }

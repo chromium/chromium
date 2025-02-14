@@ -16,11 +16,11 @@
 #import "components/feature_engagement/test/test_tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
-#import "ios/chrome/browser/default_browser/model/default_browser_promo_event_exporter.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_metrics_util.h"
+#import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -334,8 +334,7 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 
   // Check that the FET has been updated.
   std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker(
-          std::make_unique<DefaultBrowserEventExporter>());
+      feature_engagement::CreateTestTracker(std::make_unique<EventExporter>());
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
   unsigned int interactions = 0;
@@ -395,8 +394,7 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 
   // Check that the FET has been updated.
   std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker(
-          std::make_unique<DefaultBrowserEventExporter>());
+      feature_engagement::CreateTestTracker(std::make_unique<EventExporter>());
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
   unsigned int interactions = 0;
@@ -536,8 +534,7 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 
   // Check that the FET has been updated.
   std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker(
-          std::make_unique<DefaultBrowserEventExporter>());
+      feature_engagement::CreateTestTracker(std::make_unique<EventExporter>());
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
   unsigned int interactions = 0;
@@ -598,8 +595,7 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 
   // Check that the FET has been updated.
   std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker(
-          std::make_unique<DefaultBrowserEventExporter>());
+      feature_engagement::CreateTestTracker(std::make_unique<EventExporter>());
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
   unsigned int interactions = 0;

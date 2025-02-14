@@ -41,7 +41,6 @@ class MockAutofillAiClient : public AutofillAiClient {
               TryToOpenFeedbackPage,
               (const std::string& feedback_id),
               (override));
-  MOCK_METHOD(void, OpenAutofillAiSettings, (), (override));
   MOCK_METHOD(bool, IsUserEligible, (), (override));
   MOCK_METHOD(autofill::FormStructure*,
               GetCachedFormStructure,

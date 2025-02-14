@@ -544,7 +544,13 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
     if (glic_button_) {
       glic_button_->SetIsShowingNudge(true);
     }
+    hide_tab_strip_nudge_timer_.Stop();
 #endif  // BUILDFLAG(ENABLE_GLIC)
+  } else {
+    hide_tab_strip_nudge_timer_.Start(
+        FROM_HERE, kShowDuration,
+        base::BindOnce(&TabStripActionContainer::OnTabStripNudgeButtonTimeout,
+                       base::Unretained(this), button));
   }
 
   scoped_tab_strip_modal_ui_ = tab_strip_controller_->ShowModalUI();
@@ -554,11 +560,6 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
       base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
                      base::Unretained(this)));
   animation_session_->Start();
-
-  hide_tab_strip_nudge_timer_.Start(
-      FROM_HERE, kShowDuration,
-      base::BindOnce(&TabStripActionContainer::OnTabStripNudgeButtonTimeout,
-                     base::Unretained(this), button));
 
   if (button == tab_declutter_button_) {
     LogDeclutterTriggerBucket(false);

@@ -28078,4 +28078,101 @@ TEST_P(HttpNetworkTransactionPoolTest, SwitchToHttpStreamPool) {
   EXPECT_FALSE(out.remote_endpoint_after_start.address().empty());
 }
 
+TEST_P(HttpNetworkTransactionTest, EarlyHintsWithAltSvcHeader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      // enabled features
+      {features::kEnableEarlyHintsOnHttp11},  // Enable Early Hints on HTTP/1.1
+      // disabled features
+      {});
+
+  // Enable QUIC
+  session_deps_.enable_quic = true;
+  session_deps_.enable_http2_alternative_service = true;
+
+  MockWrite data_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 103 Early Hints\r\n"
+               "alt-svc: h3=\":443\"; ma=86400\r\n"
+               "\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"
+               "Content-Type: text/html\r\n"
+               "Content-Length: 5\r\n"
+               "\r\n"
+               "Hello"),
+  };
+
+  StaticSocketDataProvider reads(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&reads);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  // Add certificate to make SSL info valid
+  scoped_refptr<X509Certificate> cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(cert);
+  ssl.ssl_info.cert = cert;
+  ssl.ssl_info.cert_status = 0;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  std::unique_ptr<HttpNetworkTransaction> trans(
+      new HttpNetworkTransaction(DEFAULT_PRIORITY, session.get()));
+
+  // Add early response headers callback to ensure 103 response is processed
+  bool early_hints_received = false;
+  trans->SetEarlyResponseHeadersCallback(base::BindLambdaForTesting(
+      [&early_hints_received](
+          scoped_refptr<const HttpResponseHeaders> headers) {
+        EXPECT_EQ(103, headers->response_code());
+        early_hints_received = true;
+      }));
+
+  TestCompletionCallback callback;
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  // Verify early hints were received
+  EXPECT_TRUE(early_hints_received);
+
+  // Verify final response
+  const HttpResponseInfo* response = trans->GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(200, response->headers->response_code());
+  ASSERT_TRUE(response->ssl_info.is_valid());  // Verify SSL info is valid
+
+  std::string response_data;
+  rv = ReadTransaction(trans.get(), &response_data);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_EQ("Hello", response_data);
+
+  // Verify Alt-Svc was processed
+  HttpServerProperties* http_server_properties =
+      session->http_server_properties();
+  url::SchemeHostPort server(request.url);
+  const AlternativeServiceInfoVector alternative_service_info_vector =
+      http_server_properties->GetAlternativeServiceInfos(
+          server, NetworkAnonymizationKey());
+
+  ASSERT_EQ(1u, alternative_service_info_vector.size());
+  EXPECT_EQ(NextProto::kProtoQUIC,
+            alternative_service_info_vector[0].protocol());
+  EXPECT_EQ(443, alternative_service_info_vector[0].alternative_service().port);
+  EXPECT_EQ("www.example.org",
+            alternative_service_info_vector[0].alternative_service().host);
+}
+
 }  // namespace net

@@ -30,7 +30,6 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
     // are observers, otherwise is may be stale.
     private final ObservableSupplierImpl<@Nullable T> mDelegateSupplier =
             new ObservableSupplierImpl<>();
-
     private final Callback<P> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
     private final Callback<T> mOnTargetSupplierChangeCallback = this::onTargetSupplierChange;
     private final ObservableSupplier<P> mParentSupplier;
@@ -49,11 +48,12 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
     }
 
     @Override
-    public @Nullable T addObserver(Callback<T> obs) {
+    public @Nullable T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
         if (!mDelegateSupplier.hasObservers()) {
-            onParentSupplierChange(mParentSupplier.addObserver(mOnParentSupplierChangeCallback));
+            onParentSupplierChange(
+                    mParentSupplier.addSyncObserverAndCallIfSet(mOnParentSupplierChangeCallback));
         }
-        return mDelegateSupplier.addObserver(obs);
+        return mDelegateSupplier.addObserver(obs, behavior);
     }
 
     @Override
@@ -109,7 +109,8 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
             // our delegate supplier could be in an intermediately incorrect state. By just setting
             // our delegate eagerly we avoid both problems.
             onTargetSupplierChange(
-                    mCurrentTargetSupplier.addObserver(mOnTargetSupplierChangeCallback));
+                    mCurrentTargetSupplier.addSyncObserverAndCallIfSet(
+                            mOnTargetSupplierChangeCallback));
         }
     }
 

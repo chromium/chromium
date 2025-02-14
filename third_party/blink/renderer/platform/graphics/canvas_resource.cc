@@ -180,15 +180,15 @@ static void ReleaseFrameResources(
     scoped_refptr<CanvasResource>&& resource,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
+  if (!resource) {
+    return;
+  }
+
   // If there is a LastUnrefCallback, we need to abort because recycling the
   // resource now will prevent the LastUnrefCallback from ever being called.
   // In such cases, ReleaseFrameResources will be called again when
   // CanvasResourceDispatcher destroys the corresponding FrameResource object,
   // at which time this resource will be safely recycled.
-  if (!resource) {
-    return;
-  }
-
   if (resource->HasLastUnrefCallback()) {
     // Currently, there is no code path that should end up here with
     // a viz_release_callback, but if we ever change ExternalCanvasResource's
@@ -353,9 +353,7 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
 }
 
 void CanvasResourceSharedBitmap::NotifyResourceLost() {
-  // Release our reference to the SharedImage since the resource can
-  // no longer be safely recycled and its memory is needed for copy-on-write.
-  shared_image_.reset();
+  is_lost_ = true;
 }
 
 // CanvasResourceSharedImage

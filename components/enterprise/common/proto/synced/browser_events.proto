@@ -424,7 +424,7 @@ message SafeBrowsingPasswordChangedEvent {
 }
 
 // A message for reporting dangerous download events.
-// Next ID: 32.
+// Next ID: 33.
 message SafeBrowsingDangerousDownloadEvent {
   reserved 5, 11, 12, 13, 14, 15, 16;
 
@@ -532,6 +532,10 @@ message SafeBrowsingDangerousDownloadEvent {
 
   // The server side scan status.
   ServerScanStatus server_scan_status = 31;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 32;
 }
 
 // Types of data transferring operations that may have triggered the event to
@@ -620,7 +624,7 @@ message SafeBrowsingInterstitialEvent {
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
-// Next ID: 31.
+// Next ID: 32.
 message DlpSensitiveDataEvent {
   reserved 6, 9, 10, 11, 12, 13, 15, 25;
 
@@ -709,6 +713,10 @@ message DlpSensitiveDataEvent {
 
   // The server side scan status.
   ServerScanStatus server_scan_status = 30;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 31;
 }
 
 // Event where a large file could not be scanned for analysis e.g. malware or
@@ -802,7 +810,7 @@ message UnscannedFileEvent {
 
 // Event that indicates that content was transferred.
 //
-// Next ID: 14.
+// Next ID: 15.
 message ContentTransferEvent {
   // The id of the scan. This will be shared by all events that are triggered
   // from a single scan.
@@ -874,6 +882,10 @@ message ContentTransferEvent {
 
   // The user action led to a content transfer event.
   ContentTransferMethod content_transfer_method = 13;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 14;
 }
 
 // Event sent when a user successfully logs in to a website, as determined by

@@ -39,6 +39,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.util.XrUtils;
 
 import java.util.List;
 
@@ -207,7 +208,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         if (layoutType == LayoutType.TAB_SWITCHER && mHubLayout == null) {
             initTabSwitcher();
         }
-        super.showLayout(layoutType, animate);
+        super.showLayout(layoutType, XrUtils.isXrDevice() ? false : animate);
     }
 
     /**
@@ -332,10 +333,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     /**
      * @param enabled Whether or not to allow model-reactive animations (tab creation, closing,
-     *     etc.).
+     *     etc.). Note that on an XR device the this param value is ignored and animation is
+     *     disabled.
      */
     public void setEnableAnimations(boolean enabled) {
-        mEnableAnimations = enabled;
+        mEnableAnimations = XrUtils.isXrDevice() ? false : enabled;
     }
 
     /** Returns whether animations should be done for model changes. */

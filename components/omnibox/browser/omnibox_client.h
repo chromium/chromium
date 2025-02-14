@@ -115,10 +115,11 @@ class OmniboxClient {
   // be true on iOS.
   virtual bool IsUsingFakeHttpsForHttpsUpgradeTesting() const = 0;
 
-  // Returns the icon corresponding to |match| if match is an extension match
-  // and an empty icon otherwise.
-  virtual gfx::Image GetIconIfExtensionMatch(
-      const AutocompleteMatch& match) const;
+  // Returns the icon corresponding to extension `template_url`.
+  virtual gfx::Image GetExtensionIcon(const TemplateURL* template_url) const;
+
+  // Returns the given |bitmap| with the correct size.
+  virtual gfx::Image GetSizedIcon(const SkBitmap* bitmap) const;
 
   // Returns the given |vector_icon_type| with the correct size.
   virtual gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,

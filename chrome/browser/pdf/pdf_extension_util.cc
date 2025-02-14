@@ -263,6 +263,9 @@ void AddAdditionalData(bool enable_printing,
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
   dict->Set("printingEnabled", printing_enabled);
   dict->Set("pdfAnnotationsEnabled", annotations_enabled);
+  dict->Set("PdfGetSaveDataInBlocks",
+            base::FeatureList::IsEnabled(
+                chrome_pdf::features::kPdfGetSaveDataInBlocks));
   dict->Set("pdfUseShowSaveFilePicker",
             base::FeatureList::IsEnabled(
                 chrome_pdf::features::kPdfUseShowSaveFilePicker));

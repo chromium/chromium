@@ -310,6 +310,14 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         // Extensions require an explicit sign in.
         type_enabled =
             pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
+      } else if (type == UserSelectableType::kPreferences ||
+                 type == UserSelectableType::kThemes) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+        type_enabled = true;
+#else
+        type_enabled = pref_service_->GetBoolean(
+            ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
+#endif
       } else {
         // All other types are always enabled by default.
         type_enabled = true;
@@ -723,8 +731,17 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kReadingList:
       return syncer::IsReadingListAccountStorageEnabled();
     case UserSelectableType::kPreferences:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
-             base::FeatureList::IsEnabled(kEnablePreferencesAccountStorage);
+      if (!base::FeatureList::IsEnabled(
+              switches::kEnablePreferencesAccountStorage)) {
+        return false;
+      }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+#else
+      // Search engines are behind `UserSelectableType::kPreferences`.
+      return base::FeatureList::IsEnabled(
+          kSeparateLocalAndAccountSearchEngines);
+#endif
     case UserSelectableType::kPasswords:
       return true;
     case UserSelectableType::kAutofill:
@@ -745,8 +762,15 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kExtensions:
       return base::FeatureList::IsEnabled(kSyncEnableExtensionsInTransportMode);
-    case UserSelectableType::kApps:
     case UserSelectableType::kThemes:
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      return false;
+#else
+      return base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+             base::FeatureList::IsEnabled(
+                 syncer::kSeparateLocalAndAccountThemes);
+#endif
+    case UserSelectableType::kApps:
     case UserSelectableType::kCookies:
       // These types are not supported in transport mode yet.
       return false;

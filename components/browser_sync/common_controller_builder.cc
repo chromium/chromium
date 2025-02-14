@@ -57,6 +57,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_message_data_type_controller.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
@@ -238,6 +239,19 @@ void LogPaymentsAccountStorageOnDbSequence(
           signed_in_explicitly, has_sync_consent,
           account_autofill_web_data_service->UsesInMemoryDatabaseForMetrics()));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+}
+
+bool ArePreferencesAllowedInTransportMode() {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
+    return false;
+  }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+#else
+  return true;
+#endif
 }
 
 }  // namespace
@@ -688,10 +702,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
   if (!disabled_types.Has(syncer::PREFERENCES)) {
-    bool allow_transport_mode =
-        base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos) &&
-        base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage);
     controllers.push_back(
         std::make_unique<SyncableServiceBasedDataTypeController>(
             syncer::PREFERENCES,
@@ -699,7 +709,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             SyncableServiceForPrefs(pref_service_syncable_.value(),
                                     syncer::PREFERENCES),
             dump_stack,
-            allow_transport_mode
+            ArePreferencesAllowedInTransportMode()
                 ? SyncableServiceBasedDataTypeController::DelegateMode::
                       kTransportModeWithSingleModel
                 : SyncableServiceBasedDataTypeController::DelegateMode::
@@ -707,10 +717,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
   if (!disabled_types.Has(syncer::PRIORITY_PREFERENCES)) {
-    bool allow_transport_mode =
-        base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos) &&
-        base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage);
     controllers.push_back(
         std::make_unique<SyncableServiceBasedDataTypeController>(
             syncer::PRIORITY_PREFERENCES,
@@ -718,7 +724,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             SyncableServiceForPrefs(pref_service_syncable_.value(),
                                     syncer::PRIORITY_PREFERENCES),
             dump_stack,
-            allow_transport_mode
+            ArePreferencesAllowedInTransportMode()
                 ? SyncableServiceBasedDataTypeController::DelegateMode::
                       kTransportModeWithSingleModel
                 : SyncableServiceBasedDataTypeController::DelegateMode::
@@ -810,8 +816,12 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             syncer::SEARCH_ENGINES,
             data_type_store_service_.value()->GetStoreFactory(),
             template_url_service_.value()->AsWeakPtr(), dump_stack,
-            syncer::SyncableServiceBasedDataTypeController::DelegateMode::
-                kLegacyFullSyncModeOnly));
+            base::FeatureList::IsEnabled(
+                syncer::kSeparateLocalAndAccountSearchEngines)
+                ? syncer::SyncableServiceBasedDataTypeController::DelegateMode::
+                      kTransportModeWithSingleModel
+                : syncer::SyncableServiceBasedDataTypeController::DelegateMode::
+                      kLegacyFullSyncModeOnly));
   }
 
   if (!disabled_types.Has(syncer::USER_EVENTS)) {

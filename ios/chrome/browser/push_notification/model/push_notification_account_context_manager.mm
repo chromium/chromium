@@ -248,9 +248,8 @@ void AddAccountToManager(PushNotificationAccountContextManager* manager,
       ->UpdateAttributesForProfileWithName(
           profileName,
           base::BindOnce(
-              [](base::Value::Dict permissions, ProfileAttributesIOS attr) {
+              [](base::Value::Dict permissions, ProfileAttributesIOS& attr) {
                 attr.SetNotificationPermissions(std::move(permissions));
-                return attr;
               },
               permissions.Clone()));
 }

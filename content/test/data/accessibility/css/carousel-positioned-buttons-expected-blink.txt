@@ -1,0 +1,19 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable
+++++++++button focusable name='Scroll left'
+++++++++button focusable name='Scroll right'
+++++++++genericContainer
+++++++++++staticText name='Item'
+++++++++++++inlineTextBox name='Item'
+++++++++genericContainer
+++++++++++staticText name='Item'
+++++++++++++inlineTextBox name='Item'
+++++++++genericContainer
+++++++++++staticText name='Item'
+++++++++++++inlineTextBox name='Item'
+++++++++tabList horizontal setSize=3
+++++++++++tab focusable setSize=3 posInSet=1 selected=true
+++++++++++tab focusable setSize=3 posInSet=2 selected=false
+++++++++++tab focusable setSize=3 posInSet=3 selected=false

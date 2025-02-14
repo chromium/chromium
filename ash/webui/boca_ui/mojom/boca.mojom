@@ -61,6 +61,14 @@ struct Material {
   MaterialType type;
 };
 
+// The assignment type.
+enum AssignmentType {
+  kUnspecified,
+  kAssignment,
+  kShortAnswerQuestion,
+  kMultipleChoiceQuestion,
+};
+
 // Represents a course assignment.
 struct Assignment {
   string title;
@@ -69,6 +77,7 @@ struct Assignment {
   mojo_base.mojom.JSTime last_update_time;
   // Assignment materials.
   array<Material> materials;
+  AssignmentType type;
 };
 
 // Represents a browser window.
@@ -96,6 +105,19 @@ struct NetworkInfo {
   string name;
   // The signal strength of the network in percentage.
   int32 signal_strength;
+};
+
+// The content setting permission type.
+enum Permission {
+  kMicrophone,
+  kCamera,
+};
+
+// The content setting permission setting type.
+enum PermissionSetting {
+  kAllow,
+  kAsk,
+  kBlock,
 };
 
 struct Config{
@@ -242,6 +264,9 @@ interface PageHandler {
   GetSession() => (SessionResult result);
   // End session.
   EndSession() => (UpdateSessionError? error);
+  // Extend session duration.
+  ExtendSessionDuration(mojo_base.mojom.TimeDelta extended_duration)
+  => (UpdateSessionError? error);
   // Remove student from session.
   RemoveStudent(string id) => (RemoveStudentError? error);
   // Update OnTask config.
@@ -251,7 +276,7 @@ interface PageHandler {
   UpdateCaptionConfig(CaptionConfig caption_config)
   => (UpdateSessionError? error);
   // Set app float mode.
-  SetFloatMode(bool isFloatMode)=> (bool success);
+  SetFloatMode(bool is_float_mode) => (bool success);
   // Submit access code to join a current class session.
   SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
   // Requests to view screen of a given student.
@@ -264,6 +289,9 @@ interface PageHandler {
   // Set the value of a boca specific user pref.
   SetUserPref(BocaValidPref pref, mojo_base.mojom.Value value)
     => ();
+  // Set the permission of a site.
+  SetSitePermission(string url, Permission permission, PermissionSetting
+    setting) => (bool success);
 };
 
 // Implemented by renderer process

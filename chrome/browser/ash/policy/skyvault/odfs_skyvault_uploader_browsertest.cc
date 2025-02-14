@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "services/network/public/mojom/network_change_manager.mojom-shared.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -34,7 +36,9 @@ namespace ash::cloud_upload {
 // with the expected results.
 class OdfsSkyvaultUploaderTest : public SkyvaultOneDriveTest {
  public:
-  OdfsSkyvaultUploaderTest() = default;
+  OdfsSkyvaultUploaderTest()
+      : network_connection_tracker_(
+            network::TestNetworkConnectionTracker::CreateInstance()) {}
 
   OdfsSkyvaultUploaderTest(const OdfsSkyvaultUploaderTest&) = delete;
   OdfsSkyvaultUploaderTest& operator=(const OdfsSkyvaultUploaderTest&) = delete;
@@ -53,6 +57,9 @@ class OdfsSkyvaultUploaderTest : public SkyvaultOneDriveTest {
   // Used to observe skyvault notifications during tests.
   base::RepeatingCallback<void(const message_center::Notification&)>
       on_notification_displayed_callback_;
+
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
 };
 
 IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
@@ -98,6 +105,50 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
       /*relative_source_path=*/base::FilePath(test_dir),
       /*upload_root=*/kUploadRootPrefix, UploadTrigger::kMigration,
       progress_callback.Get(), upload_callback.GetCallback());
+
+  auto [url, error, upload_root_path] = upload_callback.Get();
+  EXPECT_FALSE(error.has_value());
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(GetODFS(profile())->GetFileSystemInfo().mount_path().Append(
+                kUploadRootPrefix),
+            upload_root_path);
+  // Check that the source file has been moved to OneDrive.
+  CheckPathExistsOnODFS(base::FilePath("/")
+                            .AppendASCII(kUploadRootPrefix)
+                            .AppendASCII(test_dir)
+                            .AppendASCII(test_file_name));
+}
+
+// Tests that if triggered because of migration, an upload will wait for
+// connectivity instead of failing quickly.
+IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
+                       SuccessfulUploadAfterWaitingForNetwork) {
+  network_connection_tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+
+  SetUpMyFiles();
+  SetUpODFS();
+
+  const std::string test_dir = "TestFolder";
+  base::FilePath test_dir_path = CreateTestDir(test_dir, my_files_dir());
+  const std::string test_file_name = "video_long.ogv";
+  base::FilePath source_file_path = CopyTestFile(test_file_name, test_dir_path);
+
+  // Start the upload workflow and end the test once the upload callback is run.
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<
+      storage::FileSystemURL,
+      std::optional<policy::local_user_files::MigrationUploadError>,
+      base::FilePath>
+      upload_callback;
+  OdfsSkyvaultUploader::Upload(
+      profile(), source_file_path,
+      /*relative_source_path=*/base::FilePath(test_dir),
+      /*upload_root=*/kUploadRootPrefix, UploadTrigger::kMigration,
+      progress_callback.Get(), upload_callback.GetCallback());
+
+  network_connection_tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_ETHERNET);
 
   auto [url, error, upload_root_path] = upload_callback.Get();
   EXPECT_FALSE(error.has_value());

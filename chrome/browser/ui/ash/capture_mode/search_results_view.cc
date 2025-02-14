@@ -16,9 +16,13 @@ namespace ash {
 
 namespace {
 
+// The rounded corners for the web view.
+constexpr gfx::RoundedCornersF kRoundedCorners(16);
+
 AshWebView::InitParams GetInitParams() {
   AshWebView::InitParams params;
   params.suppress_navigation = true;
+  params.rounded_corners = kRoundedCorners;
   return params;
 }
 

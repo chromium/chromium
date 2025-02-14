@@ -36,9 +36,12 @@ namespace {
 // TODO(crbug.com/40283901): Should an element that IsCheckableElement() also be
 // IsAutofillableInputElement()?
 bool IsFormInteresting(const FormData& form) {
+  auto is_checkable = [](FormControlType type) {
+    return type == FormControlType::kInputCheckbox ||
+           type == FormControlType::kInputRadio;
+  };
   return !form.child_frames().empty() ||
-         std::ranges::any_of(form.fields(),
-                             std::not_fn(&form_util::IsCheckable),
+         std::ranges::any_of(form.fields(), std::not_fn(is_checkable),
                              &FormFieldData::form_control_type) ||
          std::ranges::any_of(form.fields(), std::not_fn(&std::string::empty),
                              &FormFieldData::autocomplete_attribute);

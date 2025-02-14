@@ -250,7 +250,8 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
   }
 
   void WaitForIssueAndCheckUrl(const std::string& url,
-                               TestDevToolsProtocolClient* client) {
+                               TestDevToolsProtocolClient* client,
+                               const std::string& expected_info_enum) {
     auto is_blob_url_issue = [](const base::Value::Dict& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
@@ -274,6 +275,13 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
         partitioning_blob_url_issue_details->FindString("url");
     EXPECT_EQ(*blob_url_ptr, url);
 
+    // Verify the reported partitioningBlobURLInfo matches the expected enum.
+    std::string* info_enum_ptr =
+        partitioning_blob_url_issue_details->FindString(
+            "partitioningBlobURLInfo");
+    ASSERT_TRUE(info_enum_ptr);
+    EXPECT_EQ(*info_enum_ptr, expected_info_enum);
+
     // Clear existing notifications so subsequent calls don't fail by checking
     // `url` against old notifications.
     client->ClearNotifications();
@@ -281,6 +289,8 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
+  // TODO(https://crbug.com/395911627): convert browser_tests to
+  // inspector-protocol test
   GURL main_url = embedded_test_server()->GetURL(
       "c.com", "/cross_site_iframe_factory.html?c(b(c))");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -313,7 +323,62 @@ IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
           "await blob.text();}"
           "test();",
           blob_url)));
-  WaitForIssueAndCheckUrl(blob_url_string, client.get());
+  WaitForIssueAndCheckUrl(blob_url_string, client.get(),
+                          "BlockedCrossPartitionFetching");
+  client->DetachProtocolClient();
+}
+
+IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest,
+                       PartitioningBlobUrlNavigationIssue) {
+  // TODO(https://crbug.com/395911627): convert browser_tests to
+  // inspector-protocol test
+  // 1. Navigate to c.com.
+  GURL main_url = embedded_test_server()->GetURL("c.com", "/title1.html");
+  WebContents* web_contents = shell()->web_contents();
+  EXPECT_TRUE(NavigateToURL(web_contents, main_url));
+  RenderFrameHost* rfh_c = web_contents->GetPrimaryMainFrame();
+
+  std::string blob_url_string =
+      EvalJs(
+          rfh_c,
+          "const blob_url = URL.createObjectURL(new "
+          "Blob(['<!doctype html><body>potato</body>'], {type: 'text/html'}));"
+          "blob_url;")
+          .ExtractString();
+
+  // 2. Create blob_url in c.com (blob url origin is c.com).
+  GURL blob_url(blob_url_string);
+
+  // 3. window.open b.com with c.com embedded.
+  // 3a. Navigate to b.com.
+  GURL b_url = embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(c)");
+
+  // 3b. Open new tab from b.com context.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(
+      content::ExecJs(rfh_c, content::JsReplace("window.open($1)", b_url)));
+
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContents* new_contents = new_shell->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+
+  RenderFrameHost* rfh_b = new_contents->GetPrimaryMainFrame();
+  RenderFrameHost* rfh_c_in_b = ChildFrameAt(rfh_b, 0);
+
+  // 4. Attach DevTools client to the innermost frame (c.com inside b.com).
+  std::unique_ptr<TestDevToolsProtocolClient> client =
+      std::make_unique<TestDevToolsProtocolClient>();
+  client->AttachToFrameTreeHost(rfh_c_in_b);
+  client->SendCommandSync("Audits.enable");
+  client->ClearNotifications();
+
+  // 4. Do the window.open of blob url from c.com.
+  EXPECT_TRUE(
+      ExecJs(rfh_c_in_b, JsReplace("handle = window.open($1);", blob_url)));
+
+  WaitForIssueAndCheckUrl(blob_url_string, client.get(),
+                          "EnforceNoopenerForNavigation");
   client->DetachProtocolClient();
 }
 

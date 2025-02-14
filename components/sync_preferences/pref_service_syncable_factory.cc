@@ -17,6 +17,7 @@
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_value_store.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
@@ -60,7 +61,8 @@ std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
 
   auto pref_notifier = std::make_unique<PrefNotifierImpl>();
 
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+  if (base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
     // If EnablePreferencesAccountStorage is enabled, then a
     // DualLayerUserPrefStore is used as the main user pref store, and sync is
     // hooked up directly to the underlying account store.

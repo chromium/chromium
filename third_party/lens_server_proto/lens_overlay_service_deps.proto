@@ -75,7 +75,9 @@ message LensOverlayInteractionRequest {
 message LensOverlayInteractionResponse {
   string encoded_response = 3;
 
-  reserved 1, 2;
+  Text text = 5;
+
+  reserved 1, 2, 4;
 }
 
 // Next ID: 9

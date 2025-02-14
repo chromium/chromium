@@ -507,11 +507,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "atomic-move",
-    "owners": [ "dom@chromium.org", "nrosenthal@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "audio-a2dp-advanced-codecs",
     "owners": ["jrwu@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 130
@@ -1670,7 +1665,7 @@
   {
     "name": "cros-content-adjusted-refresh-rate",
     "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "cros-focus-mode",
@@ -3863,12 +3858,12 @@
   {
     "name": "enable-standard-device-bound-session-credentials",
     "owners": [ "drubery@chromium.org",  "kristianm@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "enable-standard-device-bound-session-persistence",
     "owners": [ "anunoy@chromium.org", "drubery@chromium.org",  "kristianm@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "enable-start-surface-return-time",
@@ -4037,7 +4032,7 @@
   {
     "name": "enable-variable-refresh-rate",
     "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "enable-vbr-encode-acceleration",
@@ -5306,11 +5301,6 @@
     "expiry_milestone": 121
   },
   {
-    "name": "ios-keyboard-accessory-upgrade",
-    "owners": [ "noemies@google.com", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "ios-keyboard-accessory-upgrade-for-ipad",
     "owners": [ "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
     "expiry_milestone": 145
@@ -5851,6 +5841,13 @@
     "name": "mbi-mode",
     "owners": [ "dom@chromium.org", "blink-isolation-dev@chromium.org" ],
     "expiry_milestone": 120
+  },
+  {
+    "name": "media-app-image-mantis-model",
+    "owners": [
+      "cros-mantis@google.com"
+    ],
+    "expiry_milestone": 145
   },
   {
     "name": "media-app-pdf-a11y-ocr",
@@ -8976,11 +8973,6 @@
   },
   {
     "name": "username-first-flow-with-intermediate-values-predictions",
-    "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "username-first-flow-with-intermediate-values-voting",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
     "expiry_milestone": 135
   },

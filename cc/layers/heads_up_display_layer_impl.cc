@@ -260,7 +260,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
           {pool_resource.format(), pool_resource.size(),
            pool_resource.color_space(), flags, "HeadsUpDisplayLayer"},
           gpu::kNullSurfaceHandle));
-      CHECK(backing->shared_image);
+      CHECK(backing->shared_image());
       auto* ri = raster_context_provider->RasterInterface();
       ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       pool_resource.set_backing(std::move(backing));
@@ -287,7 +287,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
           {pool_resource.format(), pool_resource.size(),
            pool_resource.color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
            "HeadsUpDisplayLayer"}));
-      CHECK(backing->shared_image);
+      CHECK(backing->shared_image());
       pool_resource.set_backing(std::move(backing));
     }
   }
@@ -316,7 +316,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
                               gpu::raster::kNoMSAA, can_use_lcd_text,
                               /*visible=*/true, gfx::ColorSpace::CreateSRGB(),
                               /*hdr_headroom=*/1.f,
-                              backing->shared_image->mailbox().name);
+                              backing->shared_image()->mailbox().name);
       constexpr gfx::Vector2dF post_translate(0.f, 0.f);
       constexpr gfx::Vector2dF post_scale(1.f, 1.f);
       DummyImageProvider image_provider;
@@ -348,8 +348,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       SkPixmap pixmap;
       staging_surface_->peekPixels(&pixmap);
 
-      uint32_t texture_target = backing->shared_image->GetTextureTarget();
-      ri->WritePixels(backing->shared_image->mailbox(), /*dst_x_offset=*/0,
+      uint32_t texture_target = backing->shared_image()->GetTextureTarget();
+      ri->WritePixels(backing->shared_image()->mailbox(), /*dst_x_offset=*/0,
                       /*dst_y_offset=*/0, texture_target, pixmap);
     }
 
@@ -367,7 +367,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     const size_t row_bytes = info.minRowBytes();
     auto* backing = pool_resource.backing();
-    auto mapping = backing->shared_image->Map();
+    auto mapping = backing->shared_image()->Map();
     base::span<uint8_t> mem = mapping->GetMemoryForPlane(0);
     CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
     sk_sp<SkSurface> surface =

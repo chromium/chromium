@@ -50,6 +50,11 @@ bool IsLensOverlayLandscapeOrientationEnabled() {
          base::FeatureList::IsEnabled(kLensOverlayEnableLandscapeCompatibility);
 }
 
+bool IsLVFEscapeHatchEnabled() {
+  return IsLensOverlayAvailable() &&
+         base::FeatureList::IsEnabled(kLensOverlayEnableLVFEscapeHatch);
+}
+
 LensOverlayOnboardingTreatment GetLensOverlayOnboardingTreatment() {
   std::string featureParam = base::GetFieldTrialParamValueByFeature(
       kLensOverlayAlternativeOnboarding, kLensOverlayOnboardingParam);

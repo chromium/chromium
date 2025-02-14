@@ -105,13 +105,6 @@ void AwPrefetchManager::StartPrefetchRequest(
   }
 }
 
-void AwPrefetchManager::UpdatePrefetchConfiguration(JNIEnv* env,
-                                                    jint ttl_in_sec,
-                                                    jint max_prefetches) {
-  ttl_in_sec_ = ttl_in_sec;
-  max_prefetches_ = max_prefetches;
-}
-
 base::android::ScopedJavaLocalRef<jobject>
 AwPrefetchManager::GetJavaPrefetchManager() {
   if (!java_obj_) {

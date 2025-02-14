@@ -213,6 +213,15 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
     });
   }
 
+  // Same as above, but for current tab version of the dialog.
+  auto TriggerCurrentTabDialog(std::vector<ActivityLogItem> activity_log) {
+    return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
+      bubble_coordinator_.ShowForCurrentTab(
+          tab_strip, browser()->tab_strip_model()->GetWebContentsAt(0),
+          activity_log, browser()->profile());
+    });
+  }
+
   ActivityLogItem CreateActivityForTab(
       LocalTabGroupID group_id,
       tabs::TabInterface* tab,
@@ -272,12 +281,37 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewInteractiveUiTest,
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      TriggerDialog(std::move(activity_log)),
-      WaitForShow(kRecentActivityBubbleDialogId),
+      TriggerDialog(activity_log), WaitForShow(kRecentActivityBubbleDialogId),
       WaitForImages(activity_log_index),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSkipPixelTestsReason),
       Screenshot(kRecentActivityBubbleDialogId, "", "6131072"), HoverTabAt(0),
+      ClickMouse(), WaitForHide(kRecentActivityBubbleDialogId));
+}
+
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewInteractiveUiTest,
+                       ShowDialogForCurrentTab) {
+  // Set up tab group.
+  tabs::TabInterface* tab = CreateTab();
+  tabs::TabInterface* tab2 = CreateTab();
+  TabGroupId group_id = CreateTabGroup({tab, tab2});
+  std::string collaboration_id = "fake_collaboration_id";
+  ShareTabGroup(group_id, collaboration_id);
+
+  // Create mock activity log.
+  std::vector<ActivityLogItem> activity_log;
+  activity_log.emplace_back(CreateActivityForTab(group_id, tab));
+  activity_log.emplace_back(CreateActivityForTab(group_id, tab));
+  activity_log.emplace_back(CreateActivityForTab(group_id, tab2));
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      TriggerCurrentTabDialog(activity_log),
+      WaitForShow(kRecentActivityBubbleDialogId), WaitForImages(0),
+      WaitForImages(1), WaitForImages(2),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kSkipPixelTestsReason),
+      Screenshot(kRecentActivityBubbleDialogId, "", "6259060"), HoverTabAt(0),
       ClickMouse(), WaitForHide(kRecentActivityBubbleDialogId));
 }
 

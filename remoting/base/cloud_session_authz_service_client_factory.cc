@@ -7,6 +7,8 @@
 #include <limits.h>
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
@@ -69,7 +71,7 @@ class CloudSessionAuthzServiceClient : public SessionAuthzServiceClient {
       const HttpStatus& status,
       std::unique_ptr<ReauthorizeHostResponse> response);
 
-  CloudServiceClient client_;
+  std::unique_ptr<CloudServiceClient> client_;
 
   base::WeakPtrFactory<CloudSessionAuthzServiceClient> weak_factory_{this};
 };
@@ -77,13 +79,15 @@ class CloudSessionAuthzServiceClient : public SessionAuthzServiceClient {
 CloudSessionAuthzServiceClient::CloudSessionAuthzServiceClient(
     OAuthTokenGetter* oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : client_(oauth_token_getter, url_loader_factory) {}
+    : client_(CloudServiceClient::CreateForChromotingRobotAccount(
+          oauth_token_getter,
+          url_loader_factory)) {}
 
 CloudSessionAuthzServiceClient::~CloudSessionAuthzServiceClient() = default;
 
 void CloudSessionAuthzServiceClient::GenerateHostToken(
     GenerateHostTokenCallback callback) {
-  client_.GenerateHostToken(base::BindOnce(
+  client_->GenerateHostToken(base::BindOnce(
       &CloudSessionAuthzServiceClient::OnGenerateHostTokenResponse,
       weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -91,7 +95,7 @@ void CloudSessionAuthzServiceClient::GenerateHostToken(
 void CloudSessionAuthzServiceClient::VerifySessionToken(
     std::string_view session_token,
     VerifySessionTokenCallback callback) {
-  client_.VerifySessionToken(
+  client_->VerifySessionToken(
       std::string(session_token),
       base::BindOnce(
           &CloudSessionAuthzServiceClient::OnVerifySessionTokenResponse,
@@ -102,7 +106,7 @@ void CloudSessionAuthzServiceClient::ReauthorizeHost(
     std::string_view session_reauth_token,
     std::string_view session_id,
     ReauthorizeHostCallback callback) {
-  client_.ReauthorizeHost(
+  client_->ReauthorizeHost(
       std::string(session_reauth_token), std::string(session_id),
       base::BindOnce(&CloudSessionAuthzServiceClient::OnReauthorizeHostResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback)));

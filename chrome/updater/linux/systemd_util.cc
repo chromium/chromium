@@ -149,8 +149,8 @@ std::string GetLauncherCommandLine(UpdaterScope scope,
                                    base::FilePath launcher) {
   base::CommandLine command(launcher);
   command.AppendSwitch(kServerSwitch);
-  command.AppendSwitchASCII(kServerServiceSwitch,
-                            kServerUpdateServiceSwitchValue);
+  command.AppendSwitchUTF8(kServerServiceSwitch,
+                           kServerUpdateServiceSwitchValue);
   if (scope == UpdaterScope::kSystem) {
     command.AppendSwitch(kSystemSwitch);
   }

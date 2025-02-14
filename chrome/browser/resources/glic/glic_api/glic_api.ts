@@ -127,6 +127,10 @@ export declare interface GlicBrowserHost {
    * the animation finishes, is interrupted, or immediately if the window
    * doesn't exist yet, in which case the size will be used as the initial size
    * when the widget is eventually created. Size values are in DIPs.
+   *
+   * All provided values will go through sanity checks (e.g. checking min and
+   * max values for height and width) and may be adjusted. The web client should
+   * expect that the provided values may not be applied verbatim.
    */
   resizeWindow(width: number, height: number, options?: ResizeWindowOptions):
       Promise<void>;
@@ -220,9 +224,6 @@ export declare interface GlicBrowserHost {
   canAttachPanel?(): ObservableValue<boolean>;
 
   /**
-   * @todo Replace with the separate notifications about tab change and tab
-   *       navigation. https://crbug.com/390741160
-   *
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever the focus changes due to the user switching tabs or navigating the
    * current focused tab.
@@ -231,8 +232,24 @@ export declare interface GlicBrowserHost {
    *          a new tab is focused or the current tab is navigated. The value
    *          will be `undefined` if there's no active tab or it cannot be
    *          focused (i.e. the URL is ineligible for tab context sharing).
+   *
+   * @deprecated Used `getFocusedTabStateV2` instead. This function returns a
+   * TabData on success but no information at all on failure. V2 solves this by
+   * returning error codes to signal why no focus was available.
    */
   getFocusedTabState?(): ObservableValue<TabData|undefined>;
+
+  /**
+   * Returns the observable state of the currently focused tab. Updates are sent
+   * whenever the focus changes due to the user switching tabs or navigating the
+   * current focused tab. `FocusedTabData` contains a TabData when available
+   * along with an `InvalidCandidateError` if it is unfit for focus. If no
+   * TabData is available, a `NoFocusErrorReason` is returned specifying why.
+   *
+   * @returns An ObservableValue for `FocusedTabData` values that will be
+   * updated when a new tab is focused or the current tab is navigated.
+   */
+  getFocusedTabStateV2?(): ObservableValue<FocusedTabData>;
 
   /** Returns the state of the microphone permission. */
   getMicrophonePermissionState?(): ObservableValue<boolean>;
@@ -299,6 +316,17 @@ export declare interface GlicBrowserHost {
 
   /** Returns an object that holds metrics-related functionality. */
   getMetrics?(): GlicBrowserHostMetrics;
+
+  /**
+   * @todo Not yet implemented. https://crbug.com/381437495
+   *
+   * Scrolls to and (optionally) highlights content specified by an input
+   * selector. Returns a promise that resolves when the selected content is
+   * matched and a scroll is started.
+   *
+   * @throws {ScrollToError} on failure.
+   */
+  scrollTo?(params: ScrollToParams): Promise<void>;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */
@@ -371,6 +399,15 @@ export enum WebClientMode {
 export declare interface OpenPanelInfo {
   /** The mode in which the web client is opening at. */
   startingMode: WebClientMode;
+  /**
+   * @todo Make non-optional once the web client populates this value.
+   *       https://crbug.com/390476866
+   *
+   * Panel sizing information that must be specified by the web client on every
+   * open event. See documentation on `resizeWindow` for how the provided
+   * arguments will be used.
+   */
+  resizeParams?: {width: number, height: number, options?: ResizeWindowOptions};
 }
 
 /** A panel can be in one of these three states. */
@@ -535,6 +572,31 @@ export declare interface TabData {
   documentMimeType?: string;
 }
 
+/** Data class holding information about the focused tab state. */
+export declare interface FocusedTabData {
+  /** Stores the focused tab data if one exists. */
+  focusedTab?: TabData;
+  /**
+   * If a focus candidate exists but cannot be focused then
+   * `focusedTabCandidate` will hold its `TabData` and an
+   * `InvalidCandidateError` specifying why it is not focusable.
+   */
+  focusedTabCandidate?: FocusedTabCandidate;
+  /** If no candidate exists than the noCandidateTabError will indicate why. */
+  noCandidateTabError?: NoCandidateTabError;
+}
+
+/** Data class holding information about the focused tab candidate. */
+export declare interface FocusedTabCandidate {
+  /**
+   * Stores the focused tab candidate data if the browser has valid TabData
+   * which cannot be used for context extraction.
+   */
+  focusedTabCandidateData?: TabData;
+  /** Specifies why the candidate was invalid for focus. */
+  invalidCandidateError?: InvalidCandidateError;
+}
+
 /**
  * Annotates an image, providing security relevant information about the origins
  * from which image is composed.
@@ -569,6 +631,7 @@ export declare interface Screenshot {
 export declare interface ErrorReasonTypes {
   tabContext: GetTabContextErrorReason;
   captureScreenshot: CaptureScreenshotErrorReason;
+  scrollTo: ScrollToErrorReason;
 }
 
 /** Error implementation with a typed generic reason attached. */
@@ -592,14 +655,43 @@ export enum GetTabContextErrorReason {
   REQUEST_THROTTLED = 'REQUEST_THROTTLED',
 }
 
-// Reason why capturing desktop screenshot failed.
+/**
+ * Reason why a focused tab candidate is not valid for focus. NOTE: This may be
+ * extended in the future so avoid using complete switches on the currently used
+ * enum values.
+ */
+export enum InvalidCandidateError {
+  /** Candidate invalid for an unknown reason. */
+  UNKNOWN = 0,
+  /** The URL in the tab data is not supported. */
+  UNSUPPORTED_URL = 1,
+}
+
+/**
+ * Reason why a focused tab is not available. NOTE: This may be extended in the
+ * future so avoid using complete switches on the currently used enum values.
+ */
+export enum NoCandidateTabError {
+  /** An unknown error occurred while getting the tab data. */
+  UNKNOWN = 0,
+  /** There are no Chrome tabs available to be focused. */
+  NO_FOCUSABLE_TABS = 1,
+}
+
+/**
+ * Reason why capturing desktop screenshot failed. NOTE: This may be extended in
+ * the future so avoid using complete switches on the currently used enum
+ * values.
+ */
 export enum CaptureScreenshotErrorReason {
-  // Screen capture or frame encoding failure.
-  SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON = 0,
-  // Screen capture requested but already in progress of serving another
-  // request.
+  /** Screen capture or frame encoding failure. */
+  UNKNOWN = 0,
+  /**
+   * Screen capture requested but already in progress of serving another
+   * request.
+   */
   SCREEN_CAPTURE_REQUEST_THROTTLED = 1,
-  // User declined screen capture dialog before taking a screenshot.
+  /** User declined screen capture dialog before taking a screenshot. */
   USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
 }
 
@@ -608,6 +700,61 @@ export type GetTabContextError = ErrorWithReason<'tabContext'>;
 
 /** Error type used for screenshot capture errors. */
 export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
+
+/** Params for scrollTo(). */
+export declare interface ScrollToParams {
+  /**
+   * Whether we should highlight the content selected. True by default if not
+   * specified. If false, the content is scrolled to but not highlighted.
+   */
+  highlight?: boolean;
+
+  /** Used to specify content to scroll to and highlight. */
+  selector: ScrollToSelector;
+}
+
+/**
+ * Used to select content to scroll to. Note that only one concrete selector
+ * type can be present.
+ * Additional selector types will be added to this API in the future.
+ */
+export declare interface ScrollToSelector {
+  /** Exact text selector, see ScrollToTextSelector for more details. */
+  exactText?: ScrollToTextSelector;
+
+  /**
+   * Text fragment selector, see ScrollToTextFragmentSelector for more details
+   */
+  textFragment?: ScrollToTextFragmentSelector;
+}
+
+/**
+ * scrollTo() selector to select exact text in HTML and PDF documents.
+ */
+export declare interface ScrollToTextSelector {
+  text: string;
+}
+
+/**
+ * scrollTo() selector to select a range of text in HTML and PDF documents.
+ * Text selected will match textStart <anything in the middle> textEnd.
+ */
+export declare interface ScrollToTextFragmentSelector {
+  textStart: string;
+  textEnd: string;
+}
+
+/** Error type used for scrollTo(). */
+export type ScrollToError = ErrorWithReason<'scrollTo'>;
+
+/** Reason why scrollTo() failed. */
+export enum ScrollToErrorReason {
+  /**
+   * Invalid params were provided to scrollTo(), or the browser doesn't support
+   * scrollTo() yet.
+   */
+  NOT_SUPPORTED = 0
+}
 
 /**
  * A rectangular area based in the glic window's coordinate system. All

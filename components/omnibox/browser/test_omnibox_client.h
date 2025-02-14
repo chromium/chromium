@@ -44,6 +44,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   bool ShouldDefaultTypedNavigationsToHttps() const override;
   int GetHttpsPortForTesting() const override;
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
+  gfx::Image GetSizedIcon(const SkBitmap* bitmap) const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
   gfx::Image GetSizedIcon(const gfx::Image& icon) const override;
@@ -65,6 +66,10 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
               GetFaviconForKeywordSearchProvider,
               (const TemplateURL* template_url,
                FaviconFetchedCallback on_favicon_fetched));
+  MOCK_METHOD(gfx::Image,
+              GetExtensionIcon,
+              (const TemplateURL* template_url),
+              (const, override));
   MOCK_METHOD(void,
               ShowFeedbackPage,
               (const std::u16string& input_text, const GURL& destination_url));

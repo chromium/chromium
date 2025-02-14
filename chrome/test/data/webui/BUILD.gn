@@ -109,6 +109,10 @@ source_set("browser_tests") {
     sources += [ "cr_components/certificate_manager/certificate_manager_component_browsertest.cc" ]
   }
 
+  if (enable_glic) {
+    sources += [ "glic/glic_browsertest.cc" ]
+  }
+
   if (is_chromeos) {
     sources += [
       "chromeos/ash_common/ash_common_browsertest.cc",
@@ -620,6 +624,11 @@ generate_grd("build_grd") {
   if (enable_dice_support || is_chromeos) {
     deps += [ "gaia_auth_host:build_grdp" ]
     grdp_files += [ "$target_gen_dir/gaia_auth_host/resources.grdp" ]
+  }
+
+  if (enable_glic) {
+    grdp_files += [ "$target_gen_dir/glic/resources.grdp" ]
+    deps += [ "glic:build_grdp" ]
   }
 
   if (is_chromeos) {

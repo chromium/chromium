@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
@@ -67,7 +68,7 @@ void WaitForPreferenceValue(int pref_value) {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
-  config.features_enabled.push_back(syncer::kEnablePreferencesAccountStorage);
+  config.features_enabled.push_back(switches::kEnablePreferencesAccountStorage);
   return config;
 }
 

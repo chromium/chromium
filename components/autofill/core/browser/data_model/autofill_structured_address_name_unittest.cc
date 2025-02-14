@@ -512,6 +512,7 @@ TEST(AutofillStructuredName, HasCjkNameCharacteristics) {
   EXPECT_TRUE(HasCjkNameCharacteristics("房仕龙"));
   EXPECT_TRUE(HasCjkNameCharacteristics("房仕・龙"));
   EXPECT_FALSE(HasCjkNameCharacteristics("・"));
+  EXPECT_FALSE(HasCjkNameCharacteristics("・·　 -"));
   EXPECT_FALSE(HasCjkNameCharacteristics("房・仕・龙"));
   // Non-CJK language with only ASCII characters.
   EXPECT_FALSE(HasCjkNameCharacteristics("Homer Jay Simpson"));

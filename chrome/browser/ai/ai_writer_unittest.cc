@@ -176,7 +176,7 @@ TEST_F(AIWriterTest, CanCreateDefaultOptions) {
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   base::MockCallback<AIManager::CanCreateWriterCallback> callback;
   EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
   GetAIManagerInterface()->CanCreateWriter(GetDefaultOptions(), callback.Get());
 }
 
@@ -194,7 +194,7 @@ TEST_F(AIWriterTest, CanCreateIsLanguagesSupported) {
       AITestUtils::ToMojoLanguageCodes({"en-GB", ""});
   base::MockCallback<AIManager::CanCreateWriterCallback> callback;
   EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
   GetAIManagerInterface()->CanCreateWriter(std::move(options), callback.Get());
 }
 
@@ -207,9 +207,8 @@ TEST_F(AIWriterTest, CanCreateUnIsLanguagesSupported) {
   options->expected_context_languages =
       AITestUtils::ToMojoLanguageCodes({"ar", "zh", "hi"});
   base::MockCallback<AIManager::CanCreateWriterCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage));
   GetAIManagerInterface()->CanCreateWriter(std::move(options), callback.Get());
 }
 

@@ -1049,6 +1049,18 @@ void StyleCascade::TokenSequence::Append(const CSSParserToken& token,
   }
 }
 
+bool StyleCascade::TokenSequence::Append(TokenSequence& sequence,
+                                         bool is_attr_tainted,
+                                         wtf_size_t byte_limit) {
+  if (!Append(sequence.OriginalText(),
+              is_attr_tainted || !sequence.GetAttrTaintedRanges()->empty(),
+              byte_limit)) {
+    return false;
+  }
+  is_animation_tainted_ |= sequence.is_animation_tainted_;
+  return true;
+}
+
 CSSVariableData* StyleCascade::TokenSequence::BuildVariableData() {
   return CSSVariableData::Create(
       original_text_, is_animation_tainted_, !attr_taint_ranges_.empty(),
@@ -1198,9 +1210,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
   DCHECK(!resolver.IsLocked(property));
   CascadeResolver::AutoLock lock(property, resolver);
 
-  CascadePriority priority = map_.At(property.GetCSSPropertyName());
   DCHECK_NE(property.PropertyID(), CSSPropertyID::kVariable);
-  DCHECK_NE(priority.GetOrigin(), CascadeOrigin::kNone);
 
   MarkHasVariableReference(property);
 
@@ -2072,7 +2082,8 @@ bool StyleCascade::EvalIfKeyword(const CSSValue& keyword_value,
 KleeneValue StyleCascade::EvalIfStyleFeature(
     const MediaQueryFeatureExpNode& feature,
     CascadeResolver& resolver,
-    const CSSParserContext& context) {
+    const CSSParserContext& context,
+    bool& is_attr_tainted) {
   const MediaQueryExpBounds& bounds = feature.Bounds();
 
   // Style features do not support the range syntax.
@@ -2090,6 +2101,10 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
 
   LookupAndApply(property, resolver);
   CSSVariableData* computed = GetVariableData(property);
+
+  if (computed && computed->IsAttrTainted()) {
+    is_attr_tainted = true;
+  }
 
   if (!bounds.right.value.IsValid()) {
     return computed ? KleeneValue::kTrue : KleeneValue::kFalse;
@@ -2139,6 +2154,10 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
             computed_query_data->IsAttrTainted());
   }
 
+  if (computed_query_data->IsAttrTainted()) {
+    is_attr_tainted = true;
+  }
+
   if (computed->EqualsIgnoringAttrTainting(*computed_query_data)) {
     return KleeneValue::kTrue;
   }
@@ -2148,7 +2167,8 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
 
 bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
                                    CascadeResolver& resolver,
-                                   const CSSParserContext& context) {
+                                   const CSSParserContext& context,
+                                   bool& is_attr_tainted) {
   if (stream.Peek().Id() == CSSValueID::kElse) {
     stream.ConsumeIncludingWhitespace();
     DCHECK_EQ(stream.Peek().GetType(), kColonToken);
@@ -2165,9 +2185,10 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
   DCHECK_EQ(stream.Peek().GetType(), kColonToken);
   stream.ConsumeIncludingWhitespace();
 
-  return MediaEval(*exp_node, [this, &resolver, &context](
+  return MediaEval(*exp_node, [this, &resolver, &context, &is_attr_tainted](
                                   const MediaQueryFeatureExpNode& feature) {
-           return EvalIfStyleFeature(feature, resolver, context);
+           return EvalIfStyleFeature(feature, resolver, context,
+                                     is_attr_tainted);
          }) == KleeneValue::kTrue;
 }
 
@@ -2176,7 +2197,9 @@ bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
                                  const CSSParserContext& context,
                                  TokenSequence& out) {
   stream.ConsumeWhitespace();
-  bool eval_result = EvalIfCondition(stream, resolver, context);
+  bool is_attr_tainted = false;
+  bool eval_result =
+      EvalIfCondition(stream, resolver, context, is_attr_tainted);
   while (!eval_result) {
     stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
     if (stream.AtEnd()) {
@@ -2188,12 +2211,16 @@ bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
       // None of the conditions matched, so should be IACVT.
       return false;
     }
-    eval_result = EvalIfCondition(stream, resolver, context);
+    eval_result = EvalIfCondition(stream, resolver, context, is_attr_tainted);
   }
-  // TODO(crbug.com/325504770): Take function context into account.
-  return ResolveTokensInto(stream, resolver, context,
-                           /* function_context */ nullptr,
-                           /* stop_type */ kSemicolonToken, out);
+  TokenSequence if_result;
+  if (!ResolveTokensInto(stream, resolver, context,
+                         /* function_context */ nullptr,
+                         /* stop_type */ kSemicolonToken, if_result)) {
+    return false;
+  }
+
+  return out.Append(if_result, is_attr_tainted);
 }
 
 CSSVariableData* StyleCascade::GetVariableData(

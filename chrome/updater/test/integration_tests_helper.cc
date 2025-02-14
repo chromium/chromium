@@ -70,13 +70,8 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
     const base::CommandLine* command_line =
         base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(flag)) {
-      return callback.Run(
-#if BUILDFLAG(IS_WIN)
-          base::WideToUTF8(command_line->GetSwitchValueNative(flag)),
-#else
-          command_line->GetSwitchValueNative(flag),
-#endif
-          std::move(args)...);
+      return callback.Run(command_line->GetSwitchValueUTF8(flag),
+                          std::move(args)...);
     }
     LOG(ERROR) << "Missing switch: " << flag;
     return false;

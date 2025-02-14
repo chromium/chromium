@@ -1263,6 +1263,21 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                     : R.dimen.location_bar_icon_width);
 
             addButtonsVisibilityUpdater();
+            adjustLocationBarPadding();
+        }
+
+        private void adjustLocationBarPadding() {
+            if (shouldNestSecurityIcon() && !isIncognitoBranded()) {
+                int horizontalPadding =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.custom_tabs_location_bar_horizontal_padding);
+                mLocationBarFrameLayout.setPadding(
+                        horizontalPadding,
+                        mLocationBarFrameLayout.getPaddingTop(),
+                        horizontalPadding,
+                        mLocationBarFrameLayout.getPaddingBottom());
+            }
         }
 
         private void removeButtonsVisibilityUpdater() {

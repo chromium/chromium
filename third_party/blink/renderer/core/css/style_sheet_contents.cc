@@ -623,6 +623,17 @@ Document* StyleSheetContents::SingleOwnerDocument() const {
   return root->ClientSingleOwnerDocument();
 }
 
+CSSStyleSheet* StyleSheetContents::AnyClient() const {
+  StyleSheetContents* root = RootStyleSheet();
+  if (root->ClientSize() <= 0) {
+    return nullptr;
+  }
+  if (root->loading_clients_.size()) {
+    return (*root->loading_clients_.begin());
+  }
+  return (*root->completed_clients_.begin());
+}
+
 Document* StyleSheetContents::AnyOwnerDocument() const {
   return RootStyleSheet()->ClientAnyOwnerDocument();
 }

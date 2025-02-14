@@ -63,7 +63,7 @@ void MockDiskMountManager::SetupDefaultReplies() {
   EXPECT_CALL(*this, EnsureMountInfoRefreshed(_, _)).Times(AnyNumber());
   EXPECT_CALL(*this, MountPath(_, _, _, _, _, _, _)).Times(AnyNumber());
   EXPECT_CALL(*this, UnmountPath(_, _)).Times(AnyNumber());
-  EXPECT_CALL(*this, RemountAllRemovableDrives(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, RemountRemovableDrive(_, _)).Times(AnyNumber());
   EXPECT_CALL(*this, FormatMountedDevice(_, _, _)).Times(AnyNumber());
   EXPECT_CALL(*this, SinglePartitionFormatDevice(_, _, _)).Times(AnyNumber());
   EXPECT_CALL(*this, UnmountDeviceRecursively(_, _)).Times(AnyNumber());

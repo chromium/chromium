@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/common/manifest.h"
 
 class Profile;
@@ -86,10 +87,18 @@ class SyncExtensionHelper {
   struct ExtensionState {
     enum EnabledState { DISABLED, PENDING, ENABLED };
 
+    ExtensionState(EnabledState state,
+                   const extensions::DisableReasonSet& reasons,
+                   bool incognito_enabled);
+    ExtensionState(ExtensionState&& other);
+    ExtensionState(const ExtensionState& other) = delete;
+    ExtensionState& operator=(const ExtensionState& other) = delete;
+    ~ExtensionState();
+
     bool operator==(const ExtensionState& other) const = default;
 
     EnabledState enabled_state = ENABLED;
-    int disable_reasons = 0;
+    extensions::DisableReasonSet disable_reasons;
     bool incognito_enabled = false;
   };
 

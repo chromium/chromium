@@ -389,13 +389,11 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 }
 
 // Takes the corresponded action to `actionType` for the shared `group`.
-// Not handled TabGroupActionType: kUngroupTabGroup, kDeleteTabGroup.
+// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
 - (void)takeActionForActionType:(TabGroupActionType)actionType
                  sharedTabGroup:(const TabGroup*)group {
   CHECK(_dataSharingService);
 
-  const base::Uuid savedGroupId =
-      _tabGroupSyncService->GetGroup(group->tab_group_id())->saved_guid();
   const tab_groups::CollaborationId collabId =
       tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
   CHECK(!collabId->empty());
@@ -404,7 +402,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   __weak TabGroupIndicatorMediator* weakSelf = self;
   auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
     BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
-    [weakSelf handTakeActionForActionTypeOutcome:success];
+    [weakSelf handleTakeActionForActionTypeOutcome:success];
   });
 
   // TODO(crbug.com/393073658): Block the screen.
@@ -425,8 +423,9 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   }
 }
 
-// Called when `performAction:forSharedTabGroup:` server's call returned.
-- (void)handTakeActionForActionTypeOutcome:(BOOL)success {
+// Called when `takeActionForActionType:forSharedTabGroup:` server's call
+// returned.
+- (void)handleTakeActionForActionTypeOutcome:(BOOL)success {
   // TODO(crbug.com/393073658):
   // - Unblock the screen.
   // - Show an error if needed.

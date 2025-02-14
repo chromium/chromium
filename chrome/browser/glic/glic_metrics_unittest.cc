@@ -4,12 +4,15 @@
 
 #include "chrome/browser/glic/glic_metrics.h"
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -48,8 +51,8 @@ class MockTabManager : public GlicFocusedTabManager {
   MockTabManager(Profile* profile, GlicWindowController& window_controller)
       : GlicFocusedTabManager(profile, window_controller) {}
   ~MockTabManager() override = default;
-  content::WebContents* GetWebContentsForFocusedTab() override {
-    return contents_;
+  FocusedTabData GetFocusedTabData() override {
+    return FocusedTabData(contents_, std::nullopt, std::nullopt);
   }
   void SetWebContents(content::WebContents* contents) { contents_ = contents; }
   raw_ptr<content::WebContents> contents_;

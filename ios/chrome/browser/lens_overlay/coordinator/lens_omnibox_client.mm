@@ -137,8 +137,8 @@ bool LensOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
       ->IsUsingFakeHttpsForTesting();
 }
 
-gfx::Image LensOmniboxClient::GetIconIfExtensionMatch(
-    const AutocompleteMatch& match) const {
+gfx::Image LensOmniboxClient::GetExtensionIcon(
+    const TemplateURL* template_url) const {
   // Extensions are not supported on iOS.
   return gfx::Image();
 }

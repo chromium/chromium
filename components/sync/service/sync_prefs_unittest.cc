@@ -17,6 +17,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -47,6 +48,7 @@ class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
     // TODO(crbug.com/368409110): These prefs are required due to a workaround
     // in KeepAccountSettingsPrefsOnlyForUsers(); see TODOs there.
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
@@ -54,9 +56,6 @@ class SyncPrefsTest : public testing::Test {
         tab_groups::prefs::kLocallyClosedRemoteTabGroupIds,
         base::Value::Dict());
 
-    // Pref is registered in signin internal `PrimaryAccountManager`.
-    pref_service_.registry()->RegisterBooleanPref(
-        ::prefs::kExplicitBrowserSignin, false);
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
     gaia_id_hash_ = signin::GaiaIdHash::FromGaiaId(GaiaId("account_gaia"));
   }
@@ -463,7 +462,7 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                            kEnablePreferencesAccountStorage,
+                            switches::kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
@@ -495,13 +494,17 @@ TEST_F(SyncPrefsTest,
                             kReplaceSyncPromosWithSignInPromos,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
+                            kSeparateLocalAndAccountSearchEngines,
+                            syncer::kSeparateLocalAndAccountThemes,
+                            syncer::kMoveThemePrefsToSpecifics,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                            kEnablePreferencesAccountStorage,
+                            switches::kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
       /*disabled_features=*/{});
 
   // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
-  // Autofill, Payments and Preferences are supported and enabled by default.
+  // Autofill, Payments, Preferences and Themes are supported and enabled by
+  // default.
   // Extensions is supported, but not enabled by default. (History and Tabs are
   // also supported, but require a separate opt-in.) Transport mode is required
   // for new sync types moving forward. Compare is one of those and is enabled
@@ -516,6 +519,9 @@ TEST_F(SyncPrefsTest,
   // On Desktop, kPasswords and kAutofill are disabled by default.
   expected_types.Remove(UserSelectableType::kPasswords);
   expected_types.Remove(UserSelectableType::kAutofill);
+  // Because `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is not set,
+  // kPreferences  are disabled.
+  expected_types.Remove(UserSelectableType::kPreferences);
 #endif
 
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
@@ -529,7 +535,11 @@ class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
   SyncPrefsExplicitBrowserSigninTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kSyncEnableExtensionsInTransportMode,
-                              switches::kExplicitBrowserSigninUIOnDesktop},
+                              switches::kExplicitBrowserSigninUIOnDesktop,
+                              kSeparateLocalAndAccountSearchEngines,
+                              switches::kEnablePreferencesAccountStorage,
+                              syncer::kSeparateLocalAndAccountThemes,
+                              syncer::kMoveThemePrefsToSpecifics},
         /*disabled_features=*/{});
   }
 
@@ -551,14 +561,25 @@ TEST_F(SyncPrefsExplicitBrowserSigninTest, DefaultWithExplicitBrowserSignin) {
   // Set an explicit browser signin.
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
 
-  // With an explicit sign in, apps, extensions, themes, passwords and autofill
-  // are enabled by default.
-  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kAutofill));
-  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kPasswords));
-  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kExtensions));
+  EXPECT_EQ(
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
+      UserSelectableTypeSet(
+          {UserSelectableType::kExtensions, UserSelectableType::kPasswords,
+           UserSelectableType::kAutofill, UserSelectableType::kPayments}));
+}
+
+TEST_F(SyncPrefsExplicitBrowserSigninTest, DefaultWithNewSigninPref) {
+  // Simulate a new signin enabling more datatypes.
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+  pref_service_.SetBoolean(
+      ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
+
+  EXPECT_EQ(
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
+      UserSelectableTypeSet(
+          {UserSelectableType::kExtensions, UserSelectableType::kPasswords,
+           UserSelectableType::kPreferences, UserSelectableType::kAutofill,
+           UserSelectableType::kPayments, UserSelectableType::kThemes}));
 }
 
 #endif
@@ -859,19 +880,18 @@ class SyncPrefsMigrationTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                               kReadingListEnableSyncTransportModeUponSignIn,
                               switches::kExplicitBrowserSigninUIOnDesktop,
+                              kSeparateLocalAndAccountSearchEngines,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                              kEnablePreferencesAccountStorage},
+                              switches::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
 
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     gaia_id_hash_ = signin::GaiaIdHash::FromGaiaId(GaiaId("account_gaia"));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    // Pref is registered in signin internal `PrimaryAccountManager`.
-    pref_service_.registry()->RegisterBooleanPref(
-        ::prefs::kExplicitBrowserSignin, false);
+    signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
-    pref_service_.registry()->RegisterStringPref(
-        ::prefs::kGoogleServicesLastSyncingGaiaId, std::string());
+    pref_service_.SetBoolean(
+        ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
 #endif
   }
 
@@ -1546,14 +1566,13 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_DefaultState) {
   // Everything is in the default state. Notably, "Sync Everything" is true.
 
   // Pre-migration (without any explicit per-account settings), most supported
-  // types are considered selected by default - except for kHistory and kTabs,
-  // and kPasswords on desktop.
+  // types are considered selected by default - except for kHistory and kTabs.
   // Note that this is not exhaustive - depending on feature flags, additional
   // types may be supported and default-enabled.
   const UserSelectableTypeSet default_enabled_types{
-      UserSelectableType::kAutofill, UserSelectableType::kBookmarks,
-      UserSelectableType::kPayments, UserSelectableType::kPreferences,
-      UserSelectableType::kReadingList};
+      UserSelectableType::kAutofill,    UserSelectableType::kBookmarks,
+      UserSelectableType::kPasswords,   UserSelectableType::kPayments,
+      UserSelectableType::kPreferences, UserSelectableType::kReadingList};
   ASSERT_TRUE(SyncPrefs(&pref_service_)
                   .GetSelectedTypesForAccount(gaia_id_hash_)
                   .HasAll(default_enabled_types));
@@ -1572,8 +1591,6 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_DefaultState) {
   EXPECT_TRUE(selected_types.HasAll(default_enabled_types));
   EXPECT_TRUE(selected_types.Has(UserSelectableType::kHistory));
   EXPECT_TRUE(selected_types.Has(UserSelectableType::kTabs));
-  // Also kPasswords which (depending on the platform) may or may not be
-  // considered enabled by default, should be selected now.
   EXPECT_TRUE(selected_types.Has(UserSelectableType::kPasswords));
 }
 
@@ -1596,13 +1613,14 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomState) {
 
   // Pre-migration (without any explicit per-account settings), most supported
   // types are considered selected by default, including Bookmarks and
-  // Preferences - but not History or Tabs (or, on desktop, Passwords).
+  // Preferences - but not History or Tabs.
   // Note that this is not exhaustive - depending on feature flags, additional
   // types may be supported and default-enabled.
   ASSERT_TRUE(SyncPrefs(&pref_service_)
                   .GetSelectedTypesForAccount(gaia_id_hash_)
                   .HasAll({UserSelectableType::kAutofill,
                            UserSelectableType::kBookmarks,
+                           UserSelectableType::kPasswords,
                            UserSelectableType::kPayments,
                            UserSelectableType::kPreferences,
                            UserSelectableType::kReadingList}));
@@ -1681,14 +1699,13 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomPassphrase) {
   }
 
   // Pre-migration (without any explicit per-account settings), most supported
-  // types are considered selected by default - except for kHistory and kTabs,
-  // and kPasswords on desktop.
+  // types are considered selected by default - except for kHistory and kTabs.
   // Note that this is not exhaustive - depending on feature flags, additional
   // types may be supported and default-enabled.
   const UserSelectableTypeSet default_enabled_types{
-      UserSelectableType::kAutofill, UserSelectableType::kBookmarks,
-      UserSelectableType::kPayments, UserSelectableType::kPreferences,
-      UserSelectableType::kReadingList};
+      UserSelectableType::kAutofill,    UserSelectableType::kBookmarks,
+      UserSelectableType::kPasswords,   UserSelectableType::kPayments,
+      UserSelectableType::kPreferences, UserSelectableType::kReadingList};
   ASSERT_TRUE(SyncPrefs(&pref_service_)
                   .GetSelectedTypesForAccount(gaia_id_hash_)
                   .HasAll(default_enabled_types));

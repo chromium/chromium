@@ -1812,7 +1812,7 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
                   const gfx::AxisTransform2d& transform,
                   const RasterSource::PlaybackSettings& playback_settings,
                   const GURL& url) override {
-      auto mapping = backing_->shared_image->Map();
+      auto mapping = backing_->shared_image()->Map();
       void* memory = mapping->GetMemoryForPlane(0).data();
       RasterBufferProvider::PlaybackToMemory(
           memory, kSharedImageFormat, size_, /*stride=*/0, raster_source,
@@ -2154,7 +2154,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     // tile resource will be a bitmap.
     auto* backing = tile->draw_info().GetResource().backing();
     SkBitmap bitmap;
-    auto mapping = backing->shared_image->Map();
+    auto mapping = backing->shared_image()->Map();
     void* pixels = mapping->GetMemoryForPlane(0).data();
     bitmap.installPixels(info, pixels, info.minRowBytes());
 

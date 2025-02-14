@@ -73,6 +73,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     private static ProfileKeyedMap<ArchivedTabModelOrchestrator> sProfileMap;
+    private static ArchivedTabModelOrchestrator sInstanceForTesting;
 
     // TODO(crbug.com/333572160): Rely on PKM destroy infra when it's working.
     @VisibleForTesting
@@ -90,7 +91,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             new TabArchiveSettings.Observer() {
                 @Override
                 public void onSettingChanged() {
-                    if (!mTabArchiveSettings.getArchiveEnabled()) {
+                    // In the case where CTA was destroyed in the background, skip rescuing
+                    // archived tabs. It will be picked up when CTA is re-created, and the tab
+                    // model orchestrator is re-registered.
+                    if (!mTabArchiveSettings.getArchiveEnabled()
+                            && mActivityTabModelOrchestrators.size() > 0) {
                         rescueArchivedTabs(mActivityTabModelOrchestrators.get(0));
                     }
                 }
@@ -141,6 +146,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      * @return The corresponding {@link ArchivedTabModelOrchestrator}.
      */
     public static ArchivedTabModelOrchestrator getForProfile(Profile profile) {
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
+        }
+
         if (sProfileMap == null) {
             ThreadUtils.assertOnUiThread();
             sProfileMap =
@@ -249,7 +258,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      */
     public void registerTabModelOrchestrator(TabbedModeTabModelOrchestrator orchestrator) {
         mActivityTabModelOrchestrators.add(orchestrator);
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
+        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
+                && mTabArchiveSettings.getArchiveEnabled()) {
             doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator));
         } else {
             rescueArchivedTabs(orchestrator);
@@ -537,5 +547,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     public void setTabModelSelectorForTesting(TabModelSelectorBase tabModelSelector) {
         mTabModelSelector = tabModelSelector;
+    }
+
+    public static void setInstanceForTesting(ArchivedTabModelOrchestrator instance) {
+        sInstanceForTesting = instance;
     }
 }

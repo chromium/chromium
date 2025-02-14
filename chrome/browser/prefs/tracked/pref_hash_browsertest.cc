@@ -44,6 +44,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -1369,7 +1370,7 @@ class PrefHashBrowserTestAccountValueUntrustedAddition
     : public PrefHashBrowserTestBase {
  public:
   PrefHashBrowserTestAccountValueUntrustedAddition()
-      : feature_list_(syncer::kEnablePreferencesAccountStorage) {}
+      : feature_list_(switches::kEnablePreferencesAccountStorage) {}
 
   void SetupPreferences() override {
     EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));

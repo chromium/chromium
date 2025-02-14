@@ -94,6 +94,9 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
   // failures can return an error instead of crashing the tab.
   scoped_refptr<FrameBufferPool> frame_pool_;
 
+  // More specific error code to surface after an error occurs during decoding.
+  DecoderStatus::Codes error_status_ = DecoderStatus::Codes::kFailed;
+
   // The allocated decoder; null before Initialize() and anytime after
   // CloseDecoder().
   struct Dav1dContextDeleter {

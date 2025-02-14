@@ -36,6 +36,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using password_manager::CredentialUIEntry;
+using password_manager::prefs::kCredentialsEnablePasskeys;
 using password_manager::prefs::kCredentialsEnableService;
 
 namespace {
@@ -175,11 +176,15 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self.consumer setSignedInAccount:base::SysUTF8ToNSString(
                                         _syncService->GetAccountInfo().email)];
 
-  // TODO(crbug.com/40131118): In addition to setting this value here, we should
-  // observe for changes (i.e., if policy changes while the screen is open) and
-  // push that to the consumer.
-  [self.consumer setManagedByPolicy:_prefService->IsManagedPreference(
-                                        kCredentialsEnableService)];
+  // TODO(crbug.com/40131118): In addition to setting these values here,
+  // mediator should observe for policy changes and push that to the consumer.
+  bool savingCredentialsManagedByPolicy =
+      _prefService->IsManagedPreference(kCredentialsEnableService);
+  [self.consumer setManagedByPolicy:savingCredentialsManagedByPolicy];
+  [self.consumer
+      setAutomaticPasskeyUpgradesManagedByPolicy:
+          savingCredentialsManagedByPolicy ||
+          _prefService->IsManagedPreference(kCredentialsEnablePasskeys)];
 
   [self passwordAutoFillStatusDidChange];
 

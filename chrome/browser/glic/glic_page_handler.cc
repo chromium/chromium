@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
@@ -25,10 +26,12 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -103,7 +106,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->panel_state =
         glic_service_->window_controller().GetPanelState().Clone();
 
-    state->focused_tab = CreateTabData(glic_service_->GetFocusedTab());
+    state->focused_tab_data =
+        CreateFocusedTabData(glic_service_->GetFocusedTabData());
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
 
     std::move(callback).Run(std::move(state));
@@ -259,6 +263,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnResponseRated(positive);
   }
 
+  void ScrollTo(mojom::ScrollToParamsPtr params,
+                ScrollToCallback callback) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
+      mojo::ReportBadMessage(
+          "Client should not be able to call ScrollTo without the GlicScrollTo "
+          "feature enabled.");
+      return;
+    }
+    NOTIMPLEMENTED();
+    std::move(callback).Run(mojom::ScrollToErrorReason::kNotSupported);
+  }
+
   // GlicWindowController::StateObserver implementation.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
@@ -271,10 +287,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyPanelWillOpen(
         panel_state.Clone(),
         base::BindOnce(
-            [](PanelWillOpenCallback done, glic::mojom::WebClientMode mode) {
+            [](PanelWillOpenCallback done, glic::mojom::OpenPanelInfoPtr info) {
               base::UmaHistogramEnumeration("Glic.Api.NotifyPanelWillOpen",
-                                            mode);
-              std::move(done).Run(mode);
+                                            info->web_client_mode);
+              std::move(done).Run(std::move(info));
             },
             std::move(done)));
   }
@@ -316,9 +332,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  void OnFocusedTabChanged(const content::WebContents* focused_tab) {
+  void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
     web_client_->NotifyFocusedTabChanged(
-        CreateTabData(glic_service_->GetFocusedTab()));
+        CreateFocusedTabData(focused_tab_data));
   }
 
   PrefChangeRegistrar pref_change_registrar_;

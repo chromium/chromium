@@ -251,7 +251,6 @@ class InteractiveGlicTestT : public T {
   }
 
   // Activate one of the glic entrypoints.
-  //
   // If `instrument_glic_contents` is true both the host and contents will be
   // instrumented (see `WaitForAndInstrumentGlic()`) else only the host will be
   // instrumented (`WaitForAndInstrumentGlicHostOnly()`).
@@ -267,19 +266,24 @@ class InteractiveGlicTestT : public T {
                               GlicWindowController::State::kClosed));
     // Technically, this toggles the window, but we've already ensured that it's
     // closed.
-    switch (window_mode) {
-      case GlicWindowMode::kAttached:
-        steps.push_back(Api::PressButton(kGlicButtonElementId));
-        break;
-      case GlicWindowMode::kDetached:
-        steps.push_back(
-            Api::Do([this] { window_controller().ShowDetachedForTesting(); }));
-        break;
-    }
+    steps.push_back(ToggleGlicWindow(window_mode));
     steps =
         Api::Steps(std::move(steps), WaitForAndInstrumentGlic(instrument_mode));
     Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
+  }
+
+  // Toggles Glic through one of the entrypoints.
+  // Does not wait for Glic to open or close, tests using this should check for
+  // the correct window state after toggling.
+  auto ToggleGlicWindow(GlicWindowMode window_mode) {
+    switch (window_mode) {
+      case GlicWindowMode::kAttached:
+        return Api::PressButton(kGlicButtonElementId);
+      case GlicWindowMode::kDetached:
+        return Api::Do(
+            [this] { window_controller().ShowDetachedForTesting(); });
+    }
   }
 
   // Ensures a mock glic button is present and then clicks it. Works even if the

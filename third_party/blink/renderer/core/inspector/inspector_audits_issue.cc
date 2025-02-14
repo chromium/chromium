@@ -679,6 +679,42 @@ void AuditsIssue::ReportGenericIssue(
 
   frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
+void AuditsIssue::ReportPartitioningBlobURLIssue(
+    LocalDOMWindow* window,
+    String blob_url,
+    mojom::blink::PartitioningBlobURLInfo info) {
+  protocol::String partitioning_blob_url_info_string;
+  switch (info) {
+    case mojom::blink::PartitioningBlobURLInfo::kEnforceNoopenerForNavigation:
+      partitioning_blob_url_info_string = protocol::Audits::
+          PartitioningBlobURLInfoEnum::EnforceNoopenerForNavigation;
+      break;
+    case mojom::blink::PartitioningBlobURLInfo::kBlockedCrossPartitionFetching:
+      // This is logged from the browser process and not used in the renderer.
+    default:
+      NOTREACHED();
+  }
+
+  auto partitioning_blob_url_issue_details =
+      protocol::Audits::PartitioningBlobURLIssueDetails::create()
+          .setUrl(blob_url)
+          .setPartitioningBlobURLInfo(partitioning_blob_url_info_string)
+          .build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setPartitioningBlobURLIssueDetails(
+              std::move(partitioning_blob_url_issue_details))
+          .build();
+
+  auto issue = protocol::Audits::InspectorIssue::create()
+                   .setCode(protocol::Audits::InspectorIssueCodeEnum::
+                                PartitioningBlobURLIssue)
+                   .setDetails(std::move(protocol_issue_details))
+                   .build();
+
+  window->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
 
 void AuditsIssue::ReportPropertyRuleIssue(
     Document* document,

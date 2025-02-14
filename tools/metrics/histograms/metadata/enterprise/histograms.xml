@@ -2319,6 +2319,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.FileDownloadObfuscation.Result"
+    enum="EnterpriseObfuscationError" expires_after="2026-01-01">
+  <owner>haihan@google.com</owner>
+  <owner>domfc@chromium.org</owner>
+  <summary>
+    Records the result of file download obfuscation attempts, and any exit
+    errors. Errors are recorded during obfuscation on-the-fly, deobfuscation
+    on-the-fly, and in-place deobfuscation operations. Success is only recorded
+    at the end of in-place deobfuscation, the last operation.
+
+    The rest of the operations are aborted once an error exit is encountered, so
+    only the first error exit/success is recorded per obfuscation attempt.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.IdleTimeoutPolicies.ActionTime.{ActionType}"
     units="ms" expires_after="2026-01-01">
   <owner>esalma@google.com</owner>

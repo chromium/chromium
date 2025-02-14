@@ -43,20 +43,24 @@ class ChromeAccountManagerService : public KeyedService,
     Observer& operator=(const Observer&) = delete;
     ~Observer() override {}
 
+    // DEPRECATED! Use OnIdentitiesInProfileChanged() instead.
+    virtual void OnIdentityListChanged() {}
+
     // Handles change events for per-profile identity list.
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
-    // TODO(crbug.com/368409110): Rename to OnIdentitiesPerProfileChanged.
-    virtual void OnIdentityListChanged() {}
+    virtual void OnIdentitiesInProfileChanged() {}
 
     // Handles change events for on-device identity list.
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
     virtual void OnIdentitiesOnDeviceChanged() {}
 
-    // Called when an identity in this profile is updated.
-    // TODO(crbug.com/368409110): Rename to OnIdentitiesInProfileChanged.
+    // DEPRECATED! Use OnIdentityInProfileUpdated() instead.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
+
+    // Called when an identity in this profile is updated.
+    virtual void OnIdentityInProfileUpdated(id<SystemIdentity> identity) {}
 
     // Called when an identity on this device is updated.
     virtual void OnIdentityOnDeviceUpdated(id<SystemIdentity> identity) {}
@@ -114,7 +118,8 @@ class ChromeAccountManagerService : public KeyedService,
 
   // Returns the identity avatar. If the avatar is not available, it is fetched
   // in background (a notification will be received when it will be available),
-  // and the default avatar is returned (see `Observer::OnIdentityUpdated()`).
+  // and the default avatar is returned (see
+  // `Observer::OnIdentityInProfileUpdated()`).
   UIImage* GetIdentityAvatarWithIdentity(id<SystemIdentity> identity,
                                          IdentityAvatarSize size);
 

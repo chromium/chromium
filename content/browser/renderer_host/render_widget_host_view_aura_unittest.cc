@@ -3459,7 +3459,8 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.visible_viewport_size);
+    EXPECT_EQ(gfx::Size(100, 100),
+              visual_properties.visible_viewport_size_device_px);
   }
 
   // Get back the UpdateVisualProperties ack.
@@ -3481,7 +3482,8 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
-    EXPECT_EQ(gfx::Size(100, 60), visual_properties.visible_viewport_size);
+    EXPECT_EQ(gfx::Size(100, 60),
+              visual_properties.visible_viewport_size_device_px);
   }
 }
 

@@ -42,6 +42,11 @@ BASE_FEATURE(kUncachedGattDiscoveryForGattConnection,
 BASE_FEATURE(kBluetoothRfcommAndroid,
              "BluetoothRfcommAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+// Controls whether to enable Web serial. Blink runtime features don't allow
+// pure Blink features on a subset of platforms, so we need a separate feature
+// for non-Android platforms to keep the Finch switches.
+BASE_FEATURE(kSerial, "Serial", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

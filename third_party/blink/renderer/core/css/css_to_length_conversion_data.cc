@@ -85,6 +85,17 @@ std::optional<double> FindSizeForContainerAxis(
 
 }  // namespace
 
+CSSToLengthConversionData::FontSizes::FontSizes(const FontSizeStyle& style,
+                                                const ComputedStyle* root_style)
+    : FontSizes(
+          style.SpecifiedFontSize(),
+          root_style ? root_style->SpecifiedFontSize()
+                     : style.SpecifiedFontSize(),
+          style.GetFont(),
+          root_style ? root_style->GetFont() : style.GetFont(),
+          style.EffectiveZoom(),
+          root_style ? root_style->EffectiveZoom() : style.EffectiveZoom()) {}
+
 float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
@@ -320,6 +331,52 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       anchor_data_(anchor_data),
       flags_(&flags),
       element_(element) {}
+
+CSSToLengthConversionData::CSSToLengthConversionData(
+    const ComputedStyle& element_style,
+    const ComputedStyle* parent_style,
+    const ComputedStyle* root_style,
+    const ViewportSize& viewport_size,
+    const ContainerSizes& container_sizes,
+    const AnchorData& anchor_data,
+    float zoom,
+    Flags& flags,
+    const Element* element)
+    : CSSToLengthConversionData(
+          element_style.GetWritingMode(),
+          FontSizes(element_style.GetFontSizeStyle(), root_style),
+          LineHeightSize(parent_style ? parent_style->GetFontSizeStyle()
+                                      : element_style.GetFontSizeStyle(),
+                         root_style),
+          viewport_size,
+          container_sizes,
+          anchor_data,
+          zoom,
+          flags,
+          element) {}
+
+CSSToLengthConversionData::CSSToLengthConversionData(
+    const ComputedStyleBuilder& element_style,
+    const ComputedStyle* parent_style,
+    const ComputedStyle* root_style,
+    const ViewportSize& viewport_size,
+    const ContainerSizes& container_sizes,
+    const AnchorData& anchor_data,
+    float zoom,
+    Flags& flags,
+    const Element* element)
+    : CSSToLengthConversionData(
+          element_style.GetWritingMode(),
+          FontSizes(element_style.GetFontSizeStyle(), root_style),
+          LineHeightSize(parent_style ? parent_style->GetFontSizeStyle()
+                                      : element_style.GetFontSizeStyle(),
+                         root_style),
+          viewport_size,
+          container_sizes,
+          anchor_data,
+          zoom,
+          flags,
+          element) {}
 
 float CSSToLengthConversionData::EmFontSize(float zoom) const {
   SetFlag(Flag::kEm);

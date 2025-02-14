@@ -52,7 +52,7 @@ class IceConfigFetcherCloud final : public protocol::IceConfigFetcher {
                                       GenerateIceConfigResponse> response);
 
   OnIceConfigCallback on_ice_config_callback_;
-  CloudServiceClient service_client_;
+  std::unique_ptr<CloudServiceClient> service_client_;
 
   base::WeakPtrFactory<IceConfigFetcherCloud> weak_factory_{this};
 };

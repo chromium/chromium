@@ -15,7 +15,6 @@ virtual/isolated-context/wpt_internal/*
 virtual/isolated-context-stable/wpt_internal/*
 virtual/forced-high-contrast-colors/wpt_internal/*
 virtual/trust-tokens/wpt_internal/*
-virtual/third-party-storage-partitioning/wpt_internal/*
 virtual/popover-hint-disabled/wpt_internal/*
 virtual/private-aggregation-developer-mode/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
@@ -44,7 +43,6 @@ external/wpt/background-fetch/fetch-uploads.https.window.html
 external/wpt/background-fetch/match.https.window.html
 external/wpt/background-fetch/update-ui.https.window.html
 external/wpt/bluetooth/legacy/*
-external/wpt/client-hints/viewport-size/viewport-size-subresource.https.html
 external/wpt/client-hints/viewport-size/viewport-size-window-different-dimensions.https.html
 external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html
 external/wpt/compat/webkit-box-clamp-bottom-border.html
@@ -525,7 +523,6 @@ external/wpt/editing/other/insertparagraph-in-non-splittable-element.html
 external/wpt/editing/other/join-pre-and-other-block.html*
 external/wpt/editing/other/no-beforeinput-when-no-selection.html
 external/wpt/editing/other/paste_text_with_text_transform.html
-external/wpt/editing/other/plain-text-copy-paste-of-paragraph-ending-with-non-layed-out-content.html
 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=DesignMode
 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=DesignMode&child=b
 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=DesignMode&parent=b
@@ -1032,8 +1029,6 @@ virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/p
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechSynthesis*
 virtual/stable/external/wpt/soft-navigation-heuristics/disabled.html
-virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idbindex_getAllRecords.tentative.any.*
-virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idbobjectstore_getAllRecords.tentative.any.*
 virtual/third-party-storage-partitioning/external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-fixed-inline-002.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-*

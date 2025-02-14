@@ -390,14 +390,13 @@ void HistoryClustersHandler::RemoveVisits(
     {
       history::BrowsingHistoryService::HistoryEntry entry;
       entry.url = visit->raw_visit_data->url;
-      entry.all_timestamps.insert(
-          visit->raw_visit_data->visit_time.ToInternalValue());
+      entry.all_timestamps.insert(visit->raw_visit_data->visit_time);
       items_to_remove.push_back(std::move(entry));
     }
     for (const auto& duplicate : visit->duplicates) {
       history::BrowsingHistoryService::HistoryEntry entry;
       entry.url = duplicate->url;
-      entry.all_timestamps.insert(duplicate->visit_time.ToInternalValue());
+      entry.all_timestamps.insert(duplicate->visit_time);
       items_to_remove.push_back(std::move(entry));
     }
   }
@@ -432,8 +431,7 @@ void HistoryClustersHandler::RemoveVisitByUrlAndTime(
   history::BrowsingHistoryService::HistoryEntry entry;
   entry.url = url;
   base::Time visit_time = base::Time::FromMillisecondsSinceUnixEpoch(timestamp);
-  entry.all_timestamps.insert(
-      visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  entry.all_timestamps.insert(visit_time);
   browsing_history_service_->RemoveVisits({entry});
 }
 

@@ -6449,7 +6449,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   // ignored. Set `adjusted_params` such that no conversions will be made using
   // that state.
   params.unpack_premultiply_alpha =
-      static_bitmap_image->GetSkColorInfo().alphaType() == kPremul_SkAlphaType;
+      static_bitmap_image->GetSkImageInfo().alphaType() == kPremul_SkAlphaType;
   params.unpack_flip_y = false;
   const bool image_has_flip_y = false;
   // TODO(kbr): make this work for sub-rectangles of ImageBitmaps.

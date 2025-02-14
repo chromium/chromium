@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/collaboration/test_support/mock_messaging_backend_service.h"
 #import "components/data_sharing/public/features.h"
+#import "components/data_sharing/test_support/mock_data_sharing_service.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/core/favicon_url.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -121,6 +122,8 @@ class TabStripMediatorTest : public PlatformTest {
 
     tab_group_sync_service_ = std::make_unique<
         ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
+    data_sharing_service_ = std::make_unique<
+        ::testing::NiceMock<data_sharing::MockDataSharingService>>();
 
     profile_ = std::move(profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(
@@ -160,8 +163,10 @@ class TabStripMediatorTest : public PlatformTest {
     mediator_ =
         [[TabStripMediator alloc] initWithConsumer:consumer_
                                tabGroupSyncService:tab_group_sync_service_.get()
+                                dataSharingService:data_sharing_service_.get()
                                        browserList:browser_list
-                                  messagingService:&messaging_backend_];
+                                  messagingService:&messaging_backend_
+                              collaborationService:nil];
 
     mediator_.profile = profile_.get();
     mediator_.webStateList = web_state_list_;
@@ -208,6 +213,7 @@ class TabStripMediatorTest : public PlatformTest {
   FakeTabStripConsumer* consumer_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<tab_groups::MockTabGroupSyncService> tab_group_sync_service_;
+  std::unique_ptr<data_sharing::MockDataSharingService> data_sharing_service_;
   std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
   raw_ptr<UrlLoadingBrowserAgent> loader_;
   FakeURLLoadingDelegate* url_loading_delegate_;

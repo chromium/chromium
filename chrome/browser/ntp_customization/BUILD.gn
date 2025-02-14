@@ -22,6 +22,7 @@ android_resources("java_resources") {
     "java/res/drawable-night/edit_icon_with_background.xml",
     "java/res/drawable/edit_icon_with_background.xml",
     "java/res/drawable/forward_arrow_icon.xml",
+    "java/res/drawable/ntp_customization_bottom_sheet_background.xml",
     "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_bottom.xml",
     "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_top.xml",
     "java/res/layout/ntp_customization_main_bottom_sheet.xml",

@@ -121,18 +121,13 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 
   // Enable the Keyboard Accessory Upgrade feature.
   config.features_enabled_and_params.push_back(
-      {kIOSKeyboardAccessoryUpgrade, {}});
+      {kIOSKeyboardAccessoryUpgradeForIPad, {}});
 
   return config;
 }
 
 - (void)setUp {
   [super setUp];
-
-  // TODO(crbug.com/327838014): Fix and enable tests for iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
 
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
@@ -184,10 +179,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that the plus address fallback is shown in the address and the
 // password segment.
 - (void)testPlusAddressFallback {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -213,10 +204,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that the plus address manage action are shown in the address and
 // password segments.
 - (void)testPlusAddressManageAction {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
 
@@ -249,10 +236,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that tapping on the create plus address action in the address manual
 // fill view opens up the bottomsheet to create one.
 - (void)testPlusAddressCreateActionFromAddressView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
   [PlusAddressAppInterface setShouldReturnNoAffiliatedPlusProfiles:YES];
 
@@ -280,10 +263,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that tapping on the create plus address action in the password manual
 // fill view opens up the bottomsheet to create one.
 - (void)testPlusAddressCreateActionFromPasswordView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
   [PlusAddressAppInterface setShouldReturnNoAffiliatedPlusProfiles:YES];
 
@@ -313,10 +292,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that tapping on the select plus address action shows a sheet with the
 // list of all plus addresses from the address manual fill view.
 - (void)testSelectPlusAddressActionFromAddressFillView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
   [PlusAddressAppInterface addPlusAddressProfile];
 
@@ -373,10 +348,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 
 // Tests the search functionality in the select plus address sheet view.
 - (void)testSearchPlusAddress {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
   [PlusAddressAppInterface addPlusAddressProfile];
 
@@ -412,10 +383,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // TODO(crbug.com/391354601): Reenable when the flakiness source has been found
 // and dealt with.
 - (void)FLAKY_testOverflowMenuManageActionInAddressManualFillMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -445,17 +412,12 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that the "Manage" action in the overflow menu is displayed in the
 // select plus address view.
 - (void)testOverflowMenuManageActionInSelectPlusAddressView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
   [PlusAddressAppInterface addPlusAddressProfile];
 
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
-  id<GREYMatcher> selectPlusAddressMatcher = grey_accessibilityID(
-      manual_fill::kSelectPlusAddressAccessibilityIdentifier);
+  id<GREYMatcher> selectPlusAddressMatcher = PlusAddressSelectActionMatcher();
 
   [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];

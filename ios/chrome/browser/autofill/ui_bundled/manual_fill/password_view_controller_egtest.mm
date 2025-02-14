@@ -270,9 +270,9 @@ void CheckKeyboardIsUpAndNotCovered() {
   AppLaunchConfiguration config;
 
   if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   } else {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
 
   return config;
@@ -347,11 +347,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the passwords view controller contains the "Manage Passwords..."
 // and "Manage Settings..." actions.
 - (void)testPasswordsViewControllerContainsManageActions {
-  // TODO(crbug.com/40857537): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -392,11 +387,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the Password Manager is dismissed when local authentication fails
 // after tapping "Manage Passwords...".
 - (void)testManagePasswordsActionWithFailedAuthDismissesPasswordManager {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   CheckPasswordManagerUIDismissesAfterFailedAuthentication(
       manual_fill::ManagePasswordsMatcher());
 
@@ -500,11 +490,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that returning from "Manage Settings..." leaves the keyboard and the
 // icons in the right state.
 - (void)testPasswordsStateAfterPresentingManageSettings {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -556,11 +541,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the "Select Password..." action works.
 - (void)testSelectPasswordActionOpensOtherPasswordList {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -593,11 +573,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the other password list can be dismissed with a swipe down.
 - (void)testClosingOtherPasswordListViaSwipeDown {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -655,11 +630,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the "Select Password..." UI is dismissed after failed local
 // authentication.
 - (void)testOtherPasswordListUIDismissedAfterFailedAuth {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   // Setup failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
@@ -822,11 +792,16 @@ void CheckKeyboardIsUpAndNotCovered() {
   // icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
-      assertWithMatcher:grey_interactable()];
-  // Verify the interaction status of the password icon.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
-      assertWithMatcher:grey_userInteractionEnabled()];
+
+  // Icons are not present when the Keyboard Accessory Upgrade feature is
+  // enabled.
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
+        assertWithMatcher:grey_interactable()];
+    // Verify the interaction status of the password icon.
+    [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
+        assertWithMatcher:grey_userInteractionEnabled()];
+  }
 }
 
 // Tests that the Password View Controller is dismissed when tapping the
@@ -1394,7 +1369,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 @end
 
-// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgrade
+// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgradeForIPad
 // disabled. This will be removed once that feature launches fully, but ensures
 // regressions aren't introduced in the meantime.
 @interface PasswordViewControllerKeyboardAccessoryUpgradeDisabledTestCase

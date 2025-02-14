@@ -346,13 +346,6 @@ BASE_FEATURE(kGlicCSPConfig,
              "GlicCSPConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/378951332): Configure an approved CSP.
-const base::FeatureParam<std::string> kGlicWebUICSPOverride{
-    &kGlicCSPConfig, "glic-webui-csp-override",
-    "child-src 'self'"
-    " https://*.google.com/"
-    " https://*.googleplex.com/;"};
-
 BASE_FEATURE(kGlicKeyboardShortcutNewBadge,
              "GlicKeyboardShortcutNewBadge",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -360,6 +353,13 @@ BASE_FEATURE(kGlicKeyboardShortcutNewBadge,
 BASE_FEATURE(kGlicDebugWebview,
              "GlicDebugWebview",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(crbug.com/378951332): Set appropriate default.
+const base::FeatureParam<std::string> kGlicAllowedOriginsOverride{
+    &kGlicCSPConfig, "glic-allowed-origins-override",
+    // Space-delimited set of allowed origins.
+    "https://*.google.com"};
+
+BASE_FEATURE(kGlicScrollTo, "GlicScrollTo", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",

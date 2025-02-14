@@ -663,6 +663,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // AXObjectCacheImpl that a serialization was sent.
   void OnSerializationStartSend() override;
 
+  Node* GetAccessibilityFocus() const override;
+
 #if AX_FAIL_FAST_BUILD()
   // This is called after a node's included status changes, to update the
   // included_node_count_ which is used to debug tree mismatches between the the
@@ -805,6 +807,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // `layout_object`, nullptr if it is the first object or if it is not part of
   // a line.
   const LayoutObject* CachedPreviousOnLine(const LayoutObject* layout_object);
+
+  // Updates the node on which the browser last requested accessibility focus.
+  void UpdateAccessibilityFocus(AXID id) { accessibility_focus_ = id; }
 
  protected:
   void ScheduleImmediateSerialization() override;
@@ -1155,6 +1160,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // of the element.
   HashSet<AXID> nodes_with_bad_aria_hidden_;
 
+  AXID accessibility_focus_ = ui::AXNodeData::kInvalidAXID;
   AXID last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 
   // If tree_update_callback_queue_ gets improbably large, stop

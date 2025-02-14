@@ -379,8 +379,9 @@ bool CanReloadInputViews() {
 }
 
 // Starts the expanded manual fill coordinator and displays its view controller.
-- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType
-          invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
+- (void)startManualFillFromButton:(UIButton*)button
+                      forDataType:(manual_fill::ManualFillDataType)dataType
+         invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
   manual_fill::ManualFillDataType focusedFieldDataType = [ManualFillUtil
       manualFillDataTypeFromFillingProduct:
           [_formInputAccessoryMediator currentProviderMainFillingProduct]];
@@ -400,8 +401,12 @@ bool CanReloadInputViews() {
       expandedManualFillCoordinator;
   [expandedManualFillCoordinator start];
 
-  self.formInputViewController = expandedManualFillCoordinator.viewController;
-  [self maybeReloadInputViews];
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [expandedManualFillCoordinator presentFromButton:button];
+  } else {
+    self.formInputViewController = expandedManualFillCoordinator.viewController;
+    [self maybeReloadInputViews];
+  }
 
   [self.childCoordinators addObject:expandedManualFillCoordinator];
 }
@@ -490,15 +495,16 @@ bool CanReloadInputViews() {
                                  (manual_fill::ManualFillDataType)dataType {
   CHECK(IsKeyboardAccessoryUpgradeEnabled());
 
-  [self stopChildren];
   BOOL invokedOnObfuscatedField =
       [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
-  [self startManualFillForDataType:dataType
-          invokedOnObfuscatedField:invokedOnObfuscatedField];
 
-  // TODO(crbug.com/326265397): Hide the keyboard accessory and remove line
-  // below.
-  [self updateKeyboardAccessoryForManualFilling];
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self stopChildren];
+  }
+
+  [self startManualFillFromButton:manualFillButton
+                      forDataType:dataType
+         invokedOnObfuscatedField:invokedOnObfuscatedField];
 }
 
 - (void)formInputAccessoryViewController:
@@ -705,6 +711,12 @@ bool CanReloadInputViews() {
 #pragma mark - ExpandedManualFillCoordinatorDelegate
 
 - (void)stopExpandedManualFillCoordinator:
+    (ExpandedManualFillCoordinator*)coordinator {
+  [self reset];
+}
+
+// Called when the user has taken action to dismiss a popover.
+- (void)expandedManualFillCoordinatorDidDismissPopover:
     (ExpandedManualFillCoordinator*)coordinator {
   [self reset];
 }

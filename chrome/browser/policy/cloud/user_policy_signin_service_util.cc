@@ -4,7 +4,6 @@
 
 #include "chrome/browser/policy/cloud/user_policy_signin_service_util.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -12,14 +11,9 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/affiliation.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/policy/core/common/policy_loader_lacros.h"
-#else
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#endif
 
 namespace policy {
 
@@ -45,12 +39,8 @@ std::string GetDeviceDMTokenIfAffiliated(
                         ->device_affiliation_ids())) {
     return std::string();
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return PolicyLoaderLacros::device_dm_token();
-#else
   DMToken token = BrowserDMTokenStorage::Get()->RetrieveDMToken();
   return token.is_valid() ? token.value() : std::string();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 std::string GetProfileId(Profile* profile) {

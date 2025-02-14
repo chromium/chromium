@@ -65,7 +65,7 @@ class MockHistoryService : public history::HistoryService {
                          base::CancelableTaskTracker* tracker));
 };
 
-static constexpr size_t kNumModuleFeatures = 5;
+inline constexpr size_t kNumModuleFeatures = 5;
 extern const std::vector<base::test::FeatureRef>& kAllModuleFeatures;
 
 std::vector<base::test::FeatureRef> ComputeDisabledFeaturesList(

@@ -2462,8 +2462,25 @@ inline constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
 inline constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 
+// A boolean pref that records whether the Scanner feature is enabled by the
+// user, and *will NEVER be enforced by an administrator*. This is true by
+// default, but the feature will not be usable until the user explicitly accepts
+// a consent disclaimer.
+inline constexpr char kScannerEnabled[] = "ash.scanner.enabled";
+
+// An integer pref that records whether the feature is allowed by enterprise
+// policy.
+// This integer has three valid values:
+// - 0: Allowed with model improvement.
+// - 1: Allowed without model improvement.
+// - 2: Disallowed.
+// Any other value outside of the range should behave identically to 1.
+inline constexpr char kScannerEnterprisePolicyAllowed[] =
+    "ash.scanner.enterprise_policy_allowed";
+
 // A boolean pref that records whether users can submit feedback with Scanner.
 // Intended to be managed by policy.
+// TODO: b/388450143 - Delete this now-unused pref.
 inline constexpr char kScannerFeedbackEnabled[] =
     "ash.scanner.feedback_enabled";
 

@@ -306,23 +306,40 @@ static void JNI_TraceEvent_WebViewStartupStage1(JNIEnv* env,
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
-static void JNI_TraceEvent_WebViewStartupStage2(JNIEnv* env,
-                                                jlong start_time_ms,
-                                                jlong duration_ms,
-                                                jboolean is_cold_startup) {
+static void JNI_TraceEvent_WebViewStartupFirstInstance(
+    JNIEnv* env,
+    jlong start_time_ms,
+    jlong duration_ms,
+    jboolean included_global_startup) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   auto t = perfetto::Track::ThreadScoped(
       reinterpret_cast<void*>(trace_event::GetNextGlobalTraceId()));
-  if (is_cold_startup) {
-    TRACE_EVENT_BEGIN("android_webview.timeline",
-                      "WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
-                      t, TimeTicks() + Milliseconds(start_time_ms));
+  if (included_global_startup) {
+    TRACE_EVENT_BEGIN(
+        "android_webview.timeline",
+        "WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup", t,
+        TimeTicks() + Milliseconds(start_time_ms));
   } else {
-    TRACE_EVENT_BEGIN("android_webview.timeline",
-                      "WebView.Startup.CreationTime.Stage2.ProviderInit.Warm",
-                      t, TimeTicks() + Milliseconds(start_time_ms));
+    TRACE_EVENT_BEGIN(
+        "android_webview.timeline",
+        "WebView.Startup.CreationTime.FirstInstanceWithoutGlobalStartup", t,
+        TimeTicks() + Milliseconds(start_time_ms));
   }
 
+  TRACE_EVENT_END("android_webview.timeline", t,
+                  TimeTicks() + Milliseconds(start_time_ms + duration_ms));
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+}
+
+static void JNI_TraceEvent_WebViewStartupNotFirstInstance(JNIEnv* env,
+                                                          jlong start_time_ms,
+                                                          jlong duration_ms) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  auto t = perfetto::Track::ThreadScoped(
+      reinterpret_cast<void*>(trace_event::GetNextGlobalTraceId()));
+  TRACE_EVENT_BEGIN("android_webview.timeline",
+                    "WebView.Startup.CreationTime.NotFirstInstance", t,
+                    TimeTicks() + Milliseconds(start_time_ms));
   TRACE_EVENT_END("android_webview.timeline", t,
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)

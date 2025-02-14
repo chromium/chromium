@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 
 #import "base/test/task_environment.h"
+#import "base/time/time.h"
+#import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
@@ -14,11 +16,13 @@
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
+#import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/testing_application_context.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -36,7 +40,7 @@ class MockAutocompleteController : public AutocompleteController {
   MockAutocompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            0) {}
+            AutocompleteClassifier::DefaultOmniboxProviders()) {}
   MockAutocompleteController(const MockAutocompleteController&) = delete;
   MockAutocompleteController& operator=(const MockAutocompleteController&) =
       delete;
@@ -86,6 +90,10 @@ class MockOmniboxEditModel : public OmniboxEditModel {
 class OmniboxAutocompleteControllerTest : public PlatformTest {
  public:
   OmniboxAutocompleteControllerTest() {
+    auto clipboard = std::make_unique<FakeClipboardRecentContent>();
+    clipboard_ = clipboard.get();
+    ClipboardRecentContent::SetInstance(std::move(clipboard));
+
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterLocalStatePrefs(local_state_->registry());
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
@@ -114,6 +122,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
   ~OmniboxAutocompleteControllerTest() override {
     [controller_ disconnect];
+    clipboard_ = nullptr;
     autocomplete_controller_ = nullptr;
     omnibox_edit_model_ = nullptr;
     omnibox_controller_ = nullptr;
@@ -144,6 +153,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   OmniboxAutocompleteController* controller_;
   raw_ptr<MockAutocompleteController> autocomplete_controller_;
   raw_ptr<MockOmniboxEditModel> omnibox_edit_model_;
+  raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
   id popup_;
 };
@@ -276,4 +286,26 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
                               openIn:WindowOpenDisposition::CURRENT_TAB];
   // Expect the match to be opened.
   EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
+}
+
+// Tests opening a clipboard URL match.
+TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardURLMatch) {
+  // Create an empty clipboard match in autocompleteController.
+  AutocompleteMatch clipboard_match = CreateAutocompleteMatch(
+      "Clipboard match", AutocompleteMatchType::CLIPBOARD_URL, false, false,
+      100, std::nullopt);
+  clipboard_match.destination_url = GURL();
+  autocomplete_controller_->SetAutocompleteMatches({clipboard_match});
+
+  // Set the clipboard content.
+  GURL pasteboard_url = GURL("https://chromium.org");
+  clipboard_->SetClipboardURL(pasteboard_url, base::TimeDelta::Min());
+
+  // Open the clipboard match.
+  [controller_ selectMatchForOpening:clipboard_match
+                               inRow:0
+                              openIn:WindowOpenDisposition::CURRENT_TAB];
+
+  // Expect the clipboard content to be loaded.
+  EXPECT_EQ(LastOpenedMatch().destination_url, pasteboard_url);
 }

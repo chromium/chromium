@@ -8,6 +8,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +31,9 @@ namespace {
 // The amount of time for the opacity to go from 0 to 1.
 constexpr static base::TimeDelta kOpacityRampUpDuration =
     base::Milliseconds(500);
+// The amount of time for the opacity to go from 1 to 0 in a fast ramp up.
+constexpr static base::TimeDelta kFastOpacityRampUpDuration =
+    base::Milliseconds(200);
 // The amount of time for the opacity to go from 1 to 0.
 constexpr static base::TimeDelta kOpacityRampDownDuration =
     base::Milliseconds(200);
@@ -93,8 +97,10 @@ class GlicBorderView::BorderViewUpdater {
   BorderViewUpdater& operator=(const BorderViewUpdater&) = delete;
   ~BorderViewUpdater() = default;
 
-  // Called when the focused tab changes.
-  void OnFocusedTabChanged(const content::WebContents* contents) {
+  // Called when the focused tab changes with the focused tab data object.
+  void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
+    content::WebContents* contents =
+        focused_tab_data.focused_tab_contents.get();
     auto* previous_focus = glic_focused_contents_in_current_window_.get();
     if (contents && IsTabInCurrentWindow(contents)) {
       glic_focused_contents_in_current_window_ =
@@ -102,12 +108,29 @@ class GlicBorderView::BorderViewUpdater {
     } else {
       glic_focused_contents_in_current_window_.reset();
     }
-    if (previous_focus && glic_focused_contents_in_current_window_ &&
-        previous_focus != glic_focused_contents_in_current_window_.get()) {
+
+    bool tab_switch =
+        previous_focus && glic_focused_contents_in_current_window_ &&
+        previous_focus != glic_focused_contents_in_current_window_.get();
+    // OnFocusedTabChanged is dispatched after the previous focused WebContents
+    // is destroyed, making it no different than the focus changing to a
+    // different browser window. `border_view_->compositor_` helps
+    // differentiating between the two states.
+    bool focused_tab_destroyed = !previous_focus &&
+                                 glic_focused_contents_in_current_window_ &&
+                                 border_view_->compositor_;
+    bool window_gained_focus =
+        !previous_focus && glic_focused_contents_in_current_window_;
+    bool window_lost_focus =
+        previous_focus && !glic_focused_contents_in_current_window_;
+
+    if (tab_switch) {
       UpdateBorderView(UpdateBorderReason::kFocusedTabChanged_NoFocusChange);
-    } else if (!previous_focus && glic_focused_contents_in_current_window_) {
+    } else if (focused_tab_destroyed) {
+      UpdateBorderView(UpdateBorderReason::kFocusedTabDestroyed_NoFocusChange);
+    } else if (window_gained_focus) {
       UpdateBorderView(UpdateBorderReason::kFocusedTabChanged_GainFocus);
-    } else if (previous_focus && !glic_focused_contents_in_current_window_) {
+    } else if (window_lost_focus) {
       UpdateBorderView(UpdateBorderReason::kFocusedTabChanged_LostFocus);
     }
   }
@@ -132,6 +155,10 @@ class GlicBorderView::BorderViewUpdater {
 
     // Tab focus changes in the same window.
     kFocusedTabChanged_NoFocusChange,
+
+    // The focused tab is destroyed so the focus changes to a different tab.
+    kFocusedTabDestroyed_NoFocusChange,
+
     // Focus changes across different application windows.
     kFocusedTabChanged_GainFocus,
     kFocusedTabChanged_LostFocus,
@@ -153,18 +180,15 @@ class GlicBorderView::BorderViewUpdater {
         }
         break;
       }
-      case UpdateBorderReason::kFocusedTabChanged_NoFocusChange: {
+      case UpdateBorderReason::kFocusedTabChanged_NoFocusChange:
+      case UpdateBorderReason::kFocusedTabDestroyed_NoFocusChange: {
         if (ShouldShowBorderAnimation()) {
           border_view_->ResetEmphasisAndReplay();
         }
         break;
       }
-      // It's hard to know if the user has changed the focus from this chrome
-      // window to a different chrome window or a different app. For now, just
-      // cancel the animation and restart from t0 for the cross-window focus
-      // change.
-      // TODO(crbug.com/392641313): Confirm with UX if the user will ever notice
-      // the animation restart at all, in the cross-window focus change case.
+      // This happens when the user has changed the focus from this chrome
+      // window to a different chrome window or a different app.
       case UpdateBorderReason::kFocusedTabChanged_GainFocus: {
         border_view_->CancelAnimation();
         if (ShouldShowBorderAnimation()) {
@@ -251,7 +275,7 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
   }
 #endif
   std::vector<cc::PaintShader::FloatUniform> float_uniforms = {
-      {.name = SkString("u_time"), .value = GetSecondsSinceCreation()},
+      {.name = SkString("u_time"), .value = GetEffectTime()},
       {.name = SkString("u_emphasis"), .value = SkScalar(emphasis_)},
       {.name = SkString("u_corner_radius"), .value = SkScalar(corner_radius)}};
   std::vector<cc::PaintShader::Float2Uniform> float2_uniforms = {
@@ -286,12 +310,6 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
   }
   if (record_first_ramp_down_frame_) {
     record_first_ramp_down_frame_ = false;
-
-    // Don't show the ramp down if `skip_animation_` is toggled.
-    if (skip_animation_) {
-      CancelAnimation();
-      return;
-    }
     first_ramp_down_frame_ = timestamp;
   }
 
@@ -301,20 +319,19 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
   base::TimeDelta opacity_since_first_frame = timestamp - first_frame_time_;
   opacity_ = GetOpacity(timestamp);
 
+  // TODO(liuwilliam): Ideally this should be done in paint-related methods.
+  // Consider moving it to LayerDelegate::OnPaintLayer().
   layer()->SetOpacity(opacity_);
 
-  // Don't animate if:
-  // - `skip_animation_` is explicitly toggled, or
-  // - The animations have exhausted and we haven't started ramping down.
-  // We shouldn't be an observer for more than 60 seconds
+  // Don't animate if the animations have exhausted and we haven't started
+  // ramping down. We shouldn't be an observer for more than 60 seconds
   // (CompositorAnimationObserver::NotifyFailure()).
   bool emphasis_done =
       emphasis_ == 0.f && !emphasis_since_first_frame.is_zero();
   bool opacity_ramp_up_done =
       opacity_ == 1.f && !opacity_since_first_frame.is_zero();
   bool show_steady_state =
-      skip_animation_ || (emphasis_done && opacity_ramp_up_done &&
-                          first_ramp_down_frame_.is_null());
+      emphasis_done && opacity_ramp_up_done && first_ramp_down_frame_.is_null();
 
   if (show_steady_state) {
     // If skipping the animation the class does not need to be an animation
@@ -353,7 +370,7 @@ void GlicBorderView::StartAnimation() {
   layer()->SetFillsBoundsOpaquely(false);
   SetVisible(true);
 
-  skip_animation_ = gfx::Animation::PrefersReducedMotion();
+  skip_emphasis_animation_ = gfx::Animation::PrefersReducedMotion();
 
   ui::Compositor* compositor = layer()->GetCompositor();
   if (!compositor) {
@@ -390,12 +407,12 @@ void GlicBorderView::CancelAnimation() {
   SetVisible(false);
 }
 
-float GlicBorderView::GetSecondsSinceCreationForTesting() const {
-  return GetSecondsSinceCreation();
+float GlicBorderView::GetEffectTimeForTesting() const {
+  return GetEffectTime();
 }
 
 float GlicBorderView::GetEmphasis(base::TimeDelta delta) const {
-  if (skip_animation_) {
+  if (skip_emphasis_animation_) {
     return 0.f;
   }
   static constexpr base::TimeDelta kRampUpAndSteady =
@@ -423,10 +440,8 @@ void GlicBorderView::ResetEmphasisAndReplay() {
 }
 
 float GlicBorderView::GetOpacity(base::TimeTicks timestamp) const {
-  if (skip_animation_) {
-    return 1.0f;
-  }
-
+  auto ramp_up_duration = skip_emphasis_animation_ ? kFastOpacityRampUpDuration
+                                                   : kOpacityRampUpDuration;
   if (!first_ramp_down_frame_.is_null()) {
     // The ramp up opacity could be any value between 0-1 during the ramp up
     // time. Thus, the ramping down opacity must be deducted from the value of
@@ -434,7 +449,7 @@ float GlicBorderView::GetOpacity(base::TimeTicks timestamp) const {
     base::TimeDelta delta = first_ramp_down_frame_ - first_frame_time_;
     float ramp_up_opacity =
         std::clamp(static_cast<float>(delta.InMillisecondsF() /
-                                      kOpacityRampUpDuration.InMillisecondsF()),
+                                      ramp_up_duration.InMillisecondsF()),
                    0.0f, 1.0f);
 
     base::TimeDelta time_since_first_ramp_down_frame =
@@ -448,7 +463,7 @@ float GlicBorderView::GetOpacity(base::TimeTicks timestamp) const {
     base::TimeDelta time_since_first_frame = timestamp - first_frame_time_;
     return std::clamp(
         static_cast<float>(time_since_first_frame.InMillisecondsF() /
-                           kOpacityRampUpDuration.InMillisecondsF()),
+                           ramp_up_duration.InMillisecondsF()),
         0.0f, 1.0f);
   }
 }
@@ -464,10 +479,19 @@ void GlicBorderView::StartRampingDown() {
   }
 }
 
-float GlicBorderView::GetSecondsSinceCreation() const {
+float GlicBorderView::GetEffectTime() const {
   if (last_animation_step_time_.is_null()) {
     return 0;
   }
+
+  // Returns a constant duration so the border states don't jump around when
+  // switching tabs.
+  if (skip_emphasis_animation_) {
+    auto time_since_creation =
+        (first_frame_time_ - GetCreationTime()) % kMaxTime;
+    return time_since_creation.InSecondsF();
+  }
+
   auto time_since_creation =
       (last_animation_step_time_ - GetCreationTime()) % kMaxTime;
   return time_since_creation.InSecondsF();

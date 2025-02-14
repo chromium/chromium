@@ -116,8 +116,8 @@ void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
   const base::Value::Dict& values =
       CHECK_DEREF(prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name));
 
-  ProfileAttributesIOS attr =
-      std::move(callback).Run(ProfileAttributesIOS::WithAttrs(name, values));
+  ProfileAttributesIOS attr = ProfileAttributesIOS::WithAttrs(name, values);
+  std::move(callback).Run(attr);
   CHECK(!attr.IsDeletedProfile());
 
   base::Value::Dict updated_values = std::move(attr).GetStorage();
@@ -199,8 +199,6 @@ void ProfileAttributesStorageIOS::SetPersonalProfileName(
 // static
 void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileInfoCache);
-  registry->RegisterIntegerPref(prefs::kNumberOfProfiles, 0);
-  registry->RegisterListPref(prefs::kLastActiveProfiles);
   registry->RegisterDictionaryPref(prefs::kProfileForScene);
   registry->RegisterStringPref(prefs::kPersonalProfileName, std::string());
   registry->RegisterListPref(prefs::kProfilesToRemove);

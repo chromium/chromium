@@ -23,6 +23,7 @@
 #import "components/prefs/pref_value_store.h"
 #import "components/prefs/wrap_with_prefix_pref_store.h"
 #import "components/proxy_config/proxy_config_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync/base/features.h"
@@ -97,7 +98,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
   sync_preferences::PrefServiceSyncableFactory factory;
   PrepareFactory(&factory, local_pref_store, policy_service, policy_connector,
                  supervised_user_prefs);
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+  if (base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
     base::FilePath account_prefs_filepath =
         profile_path.Append(kAccountPreferencesFilename);
     if (base::FeatureList::IsEnabled(syncer::kMigrateAccountPrefs)) {

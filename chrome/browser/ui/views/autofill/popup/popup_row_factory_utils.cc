@@ -25,7 +25,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_ai/popup_row_autofill_ai_feedback_view.h"
 #include "chrome/browser/ui/views/autofill/popup/lazy_loading_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
@@ -91,8 +90,7 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageAutofillAi, SuggestionType::kManageCreditCard,
      SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
      SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
-     SuggestionType::kViewPasswordDetails,
-     SuggestionType::kRetrieveAutofillAi});
+     SuggestionType::kViewPasswordDetails});
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -555,17 +553,6 @@ std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
       PopupRowWithButtonView::ButtonSelectBehavior::kSelectSuggestion);
 }
 
-// Creates the row for the `SuggestionType::kAutofillAiFeedback` suggestion.
-std::unique_ptr<autofill_ai::PopupRowAutofillAiFeedbackView>
-CreateAutofillAiFeedbackRow(
-    base::WeakPtr<AutofillPopupController> controller,
-    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
-    PopupRowView::SelectionDelegate& selection_delegate,
-    int line_number) {
-  return std::make_unique<autofill_ai::PopupRowAutofillAiFeedbackView>(
-      a11y_selection_delegate, selection_delegate, controller, line_number);
-}
-
 }  // namespace
 
 std::unique_ptr<PopupRowView> CreatePopupRowView(
@@ -584,11 +571,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
   if (type == SuggestionType::kAutocompleteEntry) {
     return CreateAutocompleteRowWithDeleteButton(
         controller, a11y_selection_delegate, selection_delegate, line_number);
-  }
-
-  if (type == SuggestionType::kAutofillAiFeedback) {
-    return CreateAutofillAiFeedbackRow(controller, a11y_selection_delegate,
-                                       selection_delegate, line_number);
   }
 
   if (IsFooterSuggestionType(type)) {

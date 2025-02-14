@@ -21,6 +21,8 @@ class AIOnDeviceModelComponentObserver
   AIOnDeviceModelComponentObserver& operator=(
       const AIOnDeviceModelComponentObserver&) = delete;
 
+  bool is_downloading() { return is_downloading_; }
+
  protected:
   // component_updater::ServiceObserver:
   void OnEvent(const component_updater::CrxUpdateItem& item) override;
@@ -29,7 +31,7 @@ class AIOnDeviceModelComponentObserver
   base::ScopedObservation<component_updater::ComponentUpdateService,
                           component_updater::ComponentUpdateService::Observer>
       component_updater_observation_{this};
-
+  bool is_downloading_ = false;
   raw_ptr<AIManager> ai_manager_;
 };
 

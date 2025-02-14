@@ -177,10 +177,10 @@ struct TestApp {
     if (IsSystemInstall(GetUpdaterScopeForTesting())) {
       command.AppendArg("--system");
     }
-    command.AppendSwitchASCII("--appid", appid);
-    command.AppendSwitchASCII("--company", COMPANY_SHORTNAME_STRING);
-    command.AppendSwitchASCII("--product_version",
-                              install_v1 ? v1.GetString() : v2.GetString());
+    command.AppendSwitchUTF8("--appid", appid);
+    command.AppendSwitchUTF8("--company", COMPANY_SHORTNAME_STRING);
+    command.AppendSwitchUTF8("--product_version",
+                             install_v1 ? v1.GetString() : v2.GetString());
     return command;
   }
 

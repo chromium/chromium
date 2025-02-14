@@ -273,6 +273,9 @@ void DataSharingServiceImpl::DeleteGroup(
     return;
   }
 
+  groups_attempted_to_leave_or_delete_by_current_user_in_current_session_
+      .insert(group_id);
+
   data_sharing_pb::DeleteGroupParams params;
   params.set_group_id(group_id.value());
   sdk_delegate_->DeleteGroup(
@@ -359,8 +362,8 @@ void DataSharingServiceImpl::LeaveGroup(
     return;
   }
 
-  groups_attempted_to_leave_by_current_user_in_current_session_.insert(
-      group_id);
+  groups_attempted_to_leave_or_delete_by_current_user_in_current_session_
+      .insert(group_id);
 
   data_sharing_pb::LeaveGroupParams params;
   params.set_group_id(group_id.value());
@@ -370,9 +373,9 @@ void DataSharingServiceImpl::LeaveGroup(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool DataSharingServiceImpl::IsLeavingGroup(const GroupId& group_id) {
-  return groups_attempted_to_leave_by_current_user_in_current_session_.contains(
-      group_id);
+bool DataSharingServiceImpl::IsLeavingOrDeletingGroup(const GroupId& group_id) {
+  return groups_attempted_to_leave_or_delete_by_current_user_in_current_session_
+      .contains(group_id);
 }
 
 std::vector<GroupEvent> DataSharingServiceImpl::GetGroupEventsSinceStartup() {

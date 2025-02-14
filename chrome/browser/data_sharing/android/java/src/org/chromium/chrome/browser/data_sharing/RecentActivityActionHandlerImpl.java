@@ -7,12 +7,9 @@ package org.chromium.chrome.browser.data_sharing;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityActionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -54,13 +51,7 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
 
     @Override
     public void focusTab(int tabId) {
-        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
-        int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
-        // If the backend sends us a non-existent tab ID, we should safely ignore.
-        if (tabIndex == TabModel.INVALID_TAB_INDEX) return;
-
-        mTabModelSelector.selectModel(/* incognito= */ false);
-        tabModel.setIndex(tabIndex, TabSelectionType.FROM_USER);
+        mDataSharingTabGroupsDelegate.hideTabSwitcherAndShowTab(tabId);
     }
 
     @Override

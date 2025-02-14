@@ -510,8 +510,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayLogoHeight));
-#endif
+#else
   return self.logoIcon;
+#endif
 }
 
 - (TableViewTextEditItem*)textEditItemWithType:(ItemType)type

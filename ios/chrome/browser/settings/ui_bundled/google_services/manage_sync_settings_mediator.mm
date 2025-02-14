@@ -462,6 +462,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // There should be a sign-out section. Load it if it's not there yet.
   if (!hasSignOutSection) {
     [self loadSignOutAndManageAccountsSection];
+    [self loadSwitchAccountAndSignOutSection];
     NSUInteger sectionIndex =
         [model sectionForSectionIdentifier:ManageAndSignOutSectionIdentifier];
     [self.consumer insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
@@ -514,16 +515,58 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [model addItem:item
       toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
+  // If kSeparateProfilesForManagedAccounts is disabled, the signout button
+  // exists in the ManageAndSignOutSection.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Sign out item.
+    item = [[TableViewTextItem alloc] initWithType:SignOutItemType];
+    item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
+    item.textColor = [UIColor colorNamed:kBlueColor];
+    [model addItem:item
+        toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
+
+    if (self.forcedSigninEnabled) {
+      [model setFooter:[self createForcedSigninFooterItem]
+          forSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
+    }
+  }
+}
+
+- (void)loadSwitchAccountAndSignOutSection {
+  if (!self.accountStateSignedIn ||
+      !AreSeparateProfilesForManagedAccountsEnabled()) {
+    return;
+  }
+
+  TableViewModel* model = self.consumer.tableViewModel;
+  NSInteger previousSection =
+      [model sectionForSectionIdentifier:ManageAndSignOutSectionIdentifier];
+  CHECK_NE(NSNotFound, previousSection);
+  [model insertSectionWithIdentifier:SwitchAccountAndSignOutSectionIdentifier
+                             atIndex:previousSection + 1];
+
+  // If kSeparateProfilesForManagedAccounts is enabled, the signout button
+  // exists in its own section along with the switch profile item.
+
+  // Creates items in the switch account and sign-out section.
+  // Switch Account item.
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:SwitchAccountItemType];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SWITCH_ACCOUNT_ITEM);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  [model addItem:item
+      toSectionWithIdentifier:SwitchAccountAndSignOutSectionIdentifier];
+
   // Sign out item.
   item = [[TableViewTextItem alloc] initWithType:SignOutItemType];
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
   [model addItem:item
-      toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
-
+      toSectionWithIdentifier:SwitchAccountAndSignOutSectionIdentifier];
   if (self.forcedSigninEnabled) {
     [model setFooter:[self createForcedSigninFooterItem]
-        forSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
+        forSectionWithIdentifier:SwitchAccountAndSignOutSectionIdentifier];
   }
 }
 
@@ -877,6 +920,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self loadSyncDataTypeSection];
   [self loadAdvancedSettingsSection];
   [self loadSignOutAndManageAccountsSection];
+  [self loadSwitchAccountAndSignOutSection];
   [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:YES];
   // Loading the header asks the consumer to reload the data, so it should be
   // done after all sections are initially loaded.
@@ -1003,6 +1047,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       }
       case ManageGoogleAccountItemType:
       case ManageAccountsItemType:
+      case SwitchAccountItemType:
       case SignOutItemType:
       case EncryptionItemType:
       case GoogleActivityControlsItemType:
@@ -1083,6 +1128,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       break;
     case ManageAccountsItemType:
       [self.commandHandler showAccountsPage];
+      break;
+    case SwitchAccountItemType:
+      // TODO(crbug.com/336719357): Open the account menu.
       break;
     case BatchUploadButtonItemType:
       [self.commandHandler openBulkUpload];

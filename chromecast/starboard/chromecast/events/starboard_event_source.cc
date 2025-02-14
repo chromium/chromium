@@ -35,6 +35,8 @@ constexpr auto kSbKeyToDomCodeMap = base::MakeFixedFlatMap<SbKey, ui::DomCode>({
     {kSbKeyLeft, ui::DomCode::ARROW_LEFT},
     {kSbKeyRight, ui::DomCode::ARROW_RIGHT},
     {kSbKeyBack, ui::DomCode::BROWSER_BACK},
+    {kSbKeyEscape, ui::DomCode::BROWSER_BACK},
+
 
     // Keys which are used by the Cast SDK when the DPAD UI is enabled.
     {kSbKeyMediaPlayPause, ui::DomCode::MEDIA_PLAY_PAUSE},

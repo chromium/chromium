@@ -49,7 +49,9 @@ void GlicTabIndicatorHelper::UpdateTab() {
 }
 
 void GlicTabIndicatorHelper::OnFocusedTabChanged(
-    const content::WebContents* contents) {
+    FocusedTabData focused_tab_data) {
+  const raw_ptr<content::WebContents> contents =
+      focused_tab_data.focused_tab_contents.get();
   if (tab_is_focused_ && contents != tab_->GetContents()) {
     tab_is_focused_ = false;
     UpdateTab();

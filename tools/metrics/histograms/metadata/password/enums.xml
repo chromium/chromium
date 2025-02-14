@@ -1319,17 +1319,6 @@ chromium-metrics-reviews@google.com.
              bubble."/>
 </enum>
 
-<enum name="PasswordMigrationWarningUserActions">
-  <int value="0" label="The warning was acknowledged"/>
-  <int value="1" label="The more options button was clicked"/>
-  <int value="2" label="The user chose to start syncing"/>
-  <int value="3" label="The user chose to export passwords"/>
-  <int value="4" label="The cancel button was clicked"/>
-  <int value="5" label="The sheet with the introduction was dismissed"/>
-  <int value="6" label="The sheet with more options was dismissed"/>
-  <int value="7" label="The sheet without content was dismissed (Obsolete)"/>
-</enum>
-
 <enum name="PasswordNoteAction">
   <int value="0"
       label="A new credential is added from settings, with the note field not

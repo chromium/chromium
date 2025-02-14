@@ -45,6 +45,9 @@ struct ParsedFaviconPath {
   // Whether we should ignore the theme when themeing the default favicon and
   // just return the light mode version.
   bool force_light_mode = false;
+
+  // Whether we should fallback to the host to find the best matching favicon.
+  bool fallback_to_host = true;
 };
 
 // Enum describing the two possible url formats: the legacy chrome://favicon

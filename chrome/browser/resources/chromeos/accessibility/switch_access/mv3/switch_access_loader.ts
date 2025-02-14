@@ -7,6 +7,7 @@ import '/common/testing/test_import_manager.js';
 import {AsyncUtil} from '/common/async_util.js';
 import {Flags} from '/common/flags.js';
 import {InstanceChecker} from '/common/instance_checker.js';
+import {KeepAlive} from '/common/keep_alive.js';
 
 import {ActionManager} from './action_manager.js';
 import {AutoScanManager} from './auto_scan_manager.js';
@@ -19,6 +20,9 @@ import {SwitchAccess} from './switch_access.js';
 InstanceChecker.closeExtraInstances();
 
 async function initAll(): Promise<void> {
+  // Prevent this service worker from going to sleep.
+  KeepAlive.init();
+
   await Flags.init();
   const desktop = await AsyncUtil.getDesktop();
   await SwitchAccess.init(desktop);

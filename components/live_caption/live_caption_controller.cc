@@ -101,14 +101,6 @@ void LiveCaptionController::RegisterProfilePrefs(
   registry->RegisterListPref(
       prefs::kLiveCaptionMediaFoundationRendererErrorSilenced,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Flags for User Microphone Captioning are only available on ash.
-  registry->RegisterBooleanPref(prefs::kLiveCaptionUserMicrophoneEnabled,
-                                false);
-  registry->RegisterStringPref(prefs::kUserMicrophoneCaptionLanguageCode,
-                               speech::kUsEnglishLocale);
-#endif
 }
 
 void LiveCaptionController::OnLiveCaptionEnabledChanged() {
@@ -140,12 +132,7 @@ void LiveCaptionController::OnLiveCaptionLanguageChanged() {
 }
 
 bool LiveCaptionController::IsLiveCaptionEnabled() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return enabled_for_babel_orca_ ||
-         profile_prefs()->GetBoolean(prefs::kLiveCaptionEnabled);
-#else
   return profile_prefs()->GetBoolean(prefs::kLiveCaptionEnabled);
-#endif
 }
 
 void LiveCaptionController::StartLiveCaption() {
@@ -182,21 +169,10 @@ void LiveCaptionController::OnSodaInstalled(
   bool is_language_code_for_live_caption =
       prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bool is_language_code_for_babel_orca =
-      prefs::IsLanguageCodeForMicrophoneCaption(language_code, profile_prefs());
-
-  if ((enabled_for_babel_orca_ && is_language_code_for_babel_orca) ||
-      is_language_code_for_live_caption) {
-    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-    CreateUI();
-  }
-#else
   if (is_language_code_for_live_caption) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
     CreateUI();
   }
-#endif
 }
 
 void LiveCaptionController::OnSodaInstallError(
@@ -214,12 +190,6 @@ void LiveCaptionController::OnSodaInstallError(
 }
 
 const std::string LiveCaptionController::GetLanguageCode() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (enabled_for_babel_orca_) {
-    return prefs::GetUserMicrophoneCaptionLanguage(profile_prefs());
-  }
-#endif
-
   return prefs::GetLiveCaptionLanguageCode(profile_prefs());
 }
 
@@ -275,13 +245,6 @@ void LiveCaptionController::OnToggleFullscreen(
   // in the workspace of the browser window that is transmitting captions.
   DestroyUI();
   CreateUI();
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-void LiveCaptionController::ToggleLiveCaptionForBabelOrca(bool enabled) {
-  enabled_for_babel_orca_ = enabled;
-  OnLiveCaptionEnabledChanged();
 }
 #endif
 

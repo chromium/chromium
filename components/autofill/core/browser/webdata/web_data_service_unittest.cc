@@ -219,12 +219,14 @@ TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
   wds_->AddFormFields(form_fields);
   done_event_.TimedWait(kWebDataServiceTimeout);
 
-  AutofillWebDataServiceWaiter<std::vector<AutocompleteEntry>> consumer;
+  WebDataServiceRequestFuture consumer;
   wds_->GetFormValuesForElementName(u"name1", std::u16string(),
-                                    /*limit=*/10, &consumer);
-  EXPECT_THAT(consumer.result(), UnorderedElementsAre(testing::Property(
-                                     &AutocompleteEntry::key,
-                                     AutocompleteKey("name1", "value1"))));
+                                    /*limit=*/10, consumer.GetCallback());
+  EXPECT_THAT(
+      consumer.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteEntry>>(
+          UnorderedElementsAre(testing::Property(
+              &AutocompleteEntry::key, AutocompleteKey("name1", "value1")))));
 }
 
 TEST_F(WebDataServiceAutofillTest, FormFillRemoveOne) {

@@ -101,17 +101,37 @@ interface FrePageHandler {
 };
 
 // Reason why getting tab context failed.
+[Stable, Extensible]
 enum GetTabContextErrorReason {
   // A valid web contents was not available for the entire duration of context
   // gathering.
-  kWebContentsChanged,
+  [Default] kWebContentsChanged,
+};
+
+// Reason why a focused tab candidate is not valid for focus.
+[Stable, Extensible]
+enum InvalidCandidateError {
+  // Candidate was deemed invalid for focus for an unknown reason.
+  [Default] kUnknown = 0,
+  // The URL in the candidate's tab data is not supported.
+  kUnsupportedUrl = 1,
+};
+
+// Reason why a focused tab is not available.
+[Stable, Extensible]
+enum NoCandidateTabError {
+  // An unknown error occurred while getting the tab data.
+  [Default] kUnknown = 0,
+  // There are no Chrome tabs available to be focused.
+  kNoFocusableTabs = 1,
 };
 
 // Reason why capturing desktop screenshot failed. This MUST be kept in sync
 // with the glic_api.ts enum.
+[Stable, Extensible]
 enum CaptureScreenshotErrorReason {
   // Screen capture or frame encoding failure.
-  kScreenCaptureFailedForUnknownReason = 0,
+  [Default] kUnknown = 0,
   // Screen capture requested but already in progress of serving another request
   kScreenCaptureRequestThrottled = 1,
   // User declined screen capture dialog before taking a screenshot.
@@ -142,8 +162,8 @@ struct UserProfileInfo {
 // available before the web client is initialized.
 struct WebClientInitialState {
   PanelState panel_state;
-  // Initially focused tab.
-  TabData? focused_tab;
+  // Initially focused tab data.
+  FocusedTabData focused_tab_data;
   bool microphone_permission_enabled;
   bool location_permission_enabled;
   bool tab_context_permission_enabled;
@@ -165,6 +185,45 @@ struct GetTabContextOptions {
   // Maximum size of PDF data returned. If PDF data exceeds this size, no PDF
   // data is returned.
   uint32 pdf_size_limit;
+};
+
+// Parameters for ScrollTo.
+struct ScrollToParams {
+  // Used to specify content to scroll to (and optionally highlight).
+  ScrollToSelector selector;
+
+  // Whether to highlight the selected content.
+  bool highlight;
+};
+
+// Used to select content in a page to scroll to and highlight.
+union ScrollToSelector {
+  ScrollToTextSelector exact_text_selector;
+  ScrollToTextFragmentSelector text_fragment_selector;
+};
+
+// Used to specify exact text to scroll to and highlight.
+struct ScrollToTextSelector {
+  // Exact text to select.
+  string text;
+};
+
+// Used to specify a text fragment to scroll to and highlight. Text selected
+// will match text block that starts with `text_start` and ends with `text_end`
+// (and can have any text in the middle).
+struct ScrollToTextFragmentSelector {
+  // Start of text to select.
+  string text_start;
+  // End of text to select.
+  string text_end;
+};
+
+// Note: This must be kept in sync with the corresponding enum (same name) in
+// glic_api.ts
+[Stable, Extensible]
+enum ScrollToErrorReason {
+  // The browser doesn't support ScrollTo.
+  [Default] kNotSupported = 0
 };
 
 // Access to the browser from the web client by proxy through the WebUI.
@@ -284,6 +343,10 @@ interface WebClientHandler {
 
   // Called when the user rates a response.
   OnResponseRated(bool positive);
+
+  // Scrolls to and (optionally) highlights content specified by `params`.
+  // Returns an error reason if the scroll fails, or null otherwise.
+  ScrollTo(ScrollToParams params) => (ScrollToErrorReason? error_reason);
 };
 
 // State of the glic panel.
@@ -321,14 +384,25 @@ enum WebClientMode {
   kAudio = 1,
 };
 
+// Carries back to the browser information on how to configure the panel being
+// opened.
+struct OpenPanelInfo {
+  // Informs Chrome of the current web client mode, which may be kUnknown for
+  // clients that do not support it.
+  WebClientMode web_client_mode;
+  // The size of the panel upon opening. Temporarily, it may not be provided by
+  // the web client.
+  gfx.mojom.Size? panelSize;
+  // Resize animation duration.
+  mojo_base.mojom.TimeDelta resizeDuration;
+};
+
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
   // Informs the web client that the panel will open. Chrome will wait to open
-  // the panel until after this returns.
-  // `web_client_mode` informs Chrome of the current web client mode, which may
-  // be kUnknown for clients that do not support it.
-  NotifyPanelWillOpen(PanelState panel_state) =>
-      (WebClientMode web_client_mode);
+  // the panel until after this returns, and will use the data in the returned
+  // `OpenPanelInfo` to setup the opening panel.
+  NotifyPanelWillOpen(PanelState panel_state) => (OpenPanelInfo openPanelInfo);
 
   // Informs the web client that the panel was closed. Chrome will try to keep
   // the web client alive until this function returns.
@@ -365,7 +439,7 @@ interface WebClient {
   NotifyTabContextPermissionStateChanged(bool enabled);
 
   // The focused tab has changed.
-  NotifyFocusedTabChanged(TabData? tab_data);
+  NotifyFocusedTabChanged(FocusedTabData focused_tab_data);
 };
 
 // Information extracted from a tab.
@@ -428,6 +502,27 @@ struct TabData {
   skia.mojom.BitmapN32? favicon;
   // MIME type of the main document in this tab.
   string document_mime_type;
+};
+
+// Data about the focused tab state.
+union FocusedTabData {
+  // Stores the focused tab data if one exists.
+  TabData focused_tab;
+  // If a focus candidate exists but cannot be focused then
+  // `focused_tab_candidate` will hold its `TabData` and an
+  // `InvalidCandidateError` specifying why it is not focusable.
+  FocusedTabCandidate focused_tab_candidate;
+  // If no candidate exists then the `no_candidate_tab_error` will indicate why.
+  NoCandidateTabError no_candidate_tab_error;
+};
+
+// Data about the focused tab candidate.
+struct FocusedTabCandidate {
+  // Stores the focused tab candidate data when the browser has valid TabData
+  // that cannot be used for context extraction.
+  TabData focused_tab_candidate_data;
+  // Specifies why the candidate was invalid for focus.
+  InvalidCandidateError invalid_candidate_error;
 };
 
 // Information about the annotated page content.

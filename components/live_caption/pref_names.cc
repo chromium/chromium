@@ -45,18 +45,4 @@ bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,
 
 #endif  // !defined(ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-const std::string GetUserMicrophoneCaptionLanguage(PrefService* profile_prefs) {
-  return GetCaptionLanguageCodeForPref(
-      prefs::kUserMicrophoneCaptionLanguageCode, profile_prefs);
-}
-
-bool IsLanguageCodeForMicrophoneCaption(speech::LanguageCode language_code,
-                                        PrefService* profile_prefs) {
-  return language_code == speech::GetLanguageCode(
-                              GetUserMicrophoneCaptionLanguage(profile_prefs));
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace prefs

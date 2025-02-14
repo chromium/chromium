@@ -26,6 +26,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -271,34 +272,21 @@ void Label::SetEnabledColorId(std::optional<ui::ColorId> enabled_color_id) {
 }
 
 SkColor Label::GetBackgroundColor() const {
-  return background_color_;
+  return resolved_background_color_;
 }
 
-void Label::SetBackgroundColor(SkColor color) {
-  if (background_color_set_ && background_color_ == color) {
+void Label::SetBackgroundColor(ui::ColorVariant color) {
+  if (requested_background_color_ == color) {
     return;
   }
-  background_color_ = color;
-  background_color_set_ = true;
+  requested_background_color_ = color;
   if (GetWidget()) {
     UpdateColorsFromTheme();
   } else {
     RecalculateColors();
   }
-  OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
-}
 
-void Label::SetBackgroundColorId(
-    std::optional<ui::ColorId> background_color_id) {
-  if (background_color_id_ == background_color_id) {
-    return;
-  }
-
-  background_color_id_ = background_color_id;
-  if (GetWidget()) {
-    UpdateColorsFromTheme();
-  }
-  OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
+  OnPropertyChanged(&requested_background_color_, kPropertyEffectsPaint);
 }
 
 SkColor Label::GetSelectionTextColor() const {
@@ -1452,14 +1440,14 @@ SkColor Label::GetForegroundColor(SkColor foreground,
 
 void Label::RecalculateColors() {
   actual_enabled_color_ =
-      GetForegroundColor(requested_enabled_color_, background_color_);
+      GetForegroundColor(requested_enabled_color_, resolved_background_color_);
   // Using GetResultingPaintColor() here allows non-opaque selection backgrounds
   // to still participate in auto color readability, assuming
   // |background_color_| is itself opaque.
-  actual_selection_text_color_ =
-      GetForegroundColor(requested_selection_text_color_,
-                         color_utils::GetResultingPaintColor(
-                             selection_background_color_, background_color_));
+  actual_selection_text_color_ = GetForegroundColor(
+      requested_selection_text_color_,
+      color_utils::GetResultingPaintColor(selection_background_color_,
+                                          resolved_background_color_));
 
   ApplyTextColors();
   SchedulePaint();
@@ -1475,7 +1463,7 @@ void Label::ApplyTextColors() const {
   display_text_->set_selection_background_focused_color(
       selection_background_color_);
   const bool subpixel_rendering_enabled =
-      subpixel_rendering_enabled_ && IsOpaque(background_color_);
+      subpixel_rendering_enabled_ && IsOpaque(resolved_background_color_);
   display_text_->set_subpixel_rendering_suppressed(!subpixel_rendering_enabled);
 }
 
@@ -1491,10 +1479,12 @@ void Label::UpdateColorsFromTheme() {
             TypographyProvider::Get().GetColorId(text_context_, text_style_)));
   }
 
-  if (background_color_id_.has_value()) {
-    background_color_ = color_provider->GetColor(*background_color_id_);
-  } else if (!background_color_set_) {
-    background_color_ = color_provider->GetColor(ui::kColorDialogBackground);
+  if (requested_background_color_) {
+    resolved_background_color_ =
+        requested_background_color_->ConvertToSkColor(color_provider);
+  } else {
+    resolved_background_color_ =
+        color_provider->GetColor(ui::kColorDialogBackground);
   }
 
   if (!selection_text_color_set_) {

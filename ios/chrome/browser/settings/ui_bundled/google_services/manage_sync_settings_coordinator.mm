@@ -10,7 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "components/google/core/common/google_util.h"
-#import "components/search_engines/template_url_service.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
@@ -19,7 +19,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/features.h"
@@ -156,9 +156,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       self.authService->GetServiceStatus() ==
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   if (IsLinkedServicesSettingIosEnabled()) {
-    self.mediator.isEEAAccount = ios::TemplateURLServiceFactory::GetForProfile(
-                                     self.browser->GetProfile())
-                                     ->IsEeaChoiceCountry();
+    self.mediator.isEEAAccount =
+        ios::RegionalCapabilitiesServiceFactory::GetForProfile(
+            self.browser->GetProfile())
+            ->IsInEeaCountry();
   }
 
   ManageSyncSettingsTableViewController* viewController =

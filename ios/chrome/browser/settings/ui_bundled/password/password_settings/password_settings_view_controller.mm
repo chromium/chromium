@@ -129,6 +129,10 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // Whether or not the Password Manager is managed by enterprise policy.
 @property(nonatomic, assign, getter=isManagedByPolicy) BOOL managedByPolicy;
 
+// Whether automatic passkey upgrades setting is managed by enterprise policy.
+// If managed, the switch controlling this settings should not be displayed.
+@property(nonatomic, assign) BOOL automaticPasskeyUpgradesManagedByPolicy;
+
 // Indicates whether or not "Offer to Save Passwords" is set to enabled.
 @property(nonatomic, assign, getter=isSavePasswordsEnabled)
     BOOL savePasswordsEnabled;
@@ -285,8 +289,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
-  if (AutomaticPasskeyUpgradeFeatureEnabled()) {
-    // TODO(crbug.com/358343061): Add item for the policy enforced toggle.
+  if ([self shouldDisplayPasskeyUpgradesSwitch]) {
     [model addSectionWithIdentifier:
                SectionIdentifierAutomaticPasskeyUpgradesSwitch];
     [model addItem:[self automaticPasskeyUpgradesSwitchItem]
@@ -702,6 +705,20 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
                 withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
+- (void)setAutomaticPasskeyUpgradesManagedByPolicy:(BOOL)managed {
+  if (_automaticPasskeyUpgradesManagedByPolicy == managed) {
+    return;
+  }
+
+  _automaticPasskeyUpgradesManagedByPolicy = managed;
+
+  if (self.modelLoadStatus == ModelNotLoaded) {
+    return;
+  }
+
+  [self updateAutomaticPasskeyUpgradesSwitch];
+}
+
 - (void)setSavePasswordsEnabled:(BOOL)enabled {
   if (_savePasswordsEnabled == enabled) {
     return;
@@ -1068,7 +1085,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // Returns section index for the change GPM Pin button.
 - (NSInteger)computeGPMPinSectionIndex {
   NSInteger previousSection =
-      AutomaticPasskeyUpgradeFeatureEnabled()
+      [self shouldDisplayPasskeyUpgradesSwitch]
           ? SectionIdentifierAutomaticPasskeyUpgradesSwitch
           : SectionIdentifierPasswordsInOtherApps;
   return [self.tableViewModel sectionForSectionIdentifier:previousSection] + 1;
@@ -1085,11 +1102,64 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   if ([tableViewModel hasSectionForSectionIdentifier:
                           SectionIdentifierGooglePasswordManagerPin]) {
     previousSection = SectionIdentifierGooglePasswordManagerPin;
-  } else if (AutomaticPasskeyUpgradeFeatureEnabled()) {
+  } else if ([self shouldDisplayPasskeyUpgradesSwitch]) {
     previousSection = SectionIdentifierAutomaticPasskeyUpgradesSwitch;
   }
 
   return [tableViewModel sectionForSectionIdentifier:previousSection] + 1;
+}
+
+// Updates the view to by either adding or removing the automatic passkey
+// upgrades switch section based on whether password manager or saving passkeys
+// is controlled by enterprise policy (in those cases there is no point in
+// displaying the switch).
+- (void)updateAutomaticPasskeyUpgradesSwitch {
+  if (self.modelLoadStatus != ModelLoadComplete) {
+    return;
+  }
+
+  TableViewModel* model = self.tableViewModel;
+  BOOL shouldDisplaySwitch = [self shouldDisplayPasskeyUpgradesSwitch];
+  if ([model hasSectionForSectionIdentifier:
+                 SectionIdentifierAutomaticPasskeyUpgradesSwitch] ==
+      shouldDisplaySwitch) {
+    return;
+  }
+
+  UITableView* tableView = self.tableView;
+  if (shouldDisplaySwitch) {
+    NSInteger previousSectionIndex = [model
+        sectionForSectionIdentifier:SectionIdentifierPasswordsInOtherApps];
+    [model insertSectionWithIdentifier:
+               SectionIdentifierAutomaticPasskeyUpgradesSwitch
+                               atIndex:previousSectionIndex + 1];
+    [model addItem:[self automaticPasskeyUpgradesSwitchItem]
+        toSectionWithIdentifier:
+            SectionIdentifierAutomaticPasskeyUpgradesSwitch];
+    NSIndexSet* indexSet = [NSIndexSet
+        indexSetWithIndex:
+            [model sectionForSectionIdentifier:
+                       SectionIdentifierAutomaticPasskeyUpgradesSwitch]];
+    [tableView insertSections:indexSet
+             withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else {
+    NSInteger section =
+        [model sectionForSectionIdentifier:
+                   SectionIdentifierAutomaticPasskeyUpgradesSwitch];
+    [model removeSectionWithIdentifier:
+               SectionIdentifierAutomaticPasskeyUpgradesSwitch];
+    [tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
+             withRowAnimation:UITableViewRowAnimationAutomatic];
+  }
+}
+
+// Automatic passkey upgrades switch should be displayed if the feature is
+// enabled and is not managed by an enterprise policy.
+// TODO(crbug.com/358343061): Consult with UX how this should relate to
+// `_savePasswordsEnabled`.
+- (BOOL)shouldDisplayPasskeyUpgradesSwitch {
+  return AutomaticPasskeyUpgradeFeatureEnabled() &&
+         !self.automaticPasskeyUpgradesManagedByPolicy;
 }
 
 @end

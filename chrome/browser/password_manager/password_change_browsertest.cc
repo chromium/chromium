@@ -36,8 +36,10 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -57,6 +59,7 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
+using SubmissionOutcome = ChangeFormSubmissionVerifier::SubmissionOutcome;
 
 const char kPasswordChangeSubmissionOutcomeHistogram[] =
     "PasswordManager.PasswordChangeSubmissionOutcome";
@@ -101,6 +104,17 @@ content::WebContents* OpenNewTabInBackground(base::WeakPtr<Browser> browser,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   browser->tab_strip_model()->ActivateTabAt(preexisting_tab);
   return contents;
+}
+
+// Verifies that |test_ukm_recorder| recorder has a single entry called |entry|
+// and returns it.
+const ukm::mojom::UkmEntry* GetMetricEntry(
+    const ukm::TestUkmRecorder& test_ukm_recorder,
+    std::string_view entry) {
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+      ukm_entries = test_ukm_recorder.GetEntriesByName(entry);
+  EXPECT_EQ(1u, ukm_entries.size());
+  return ukm_entries[0];
 }
 
 }  // namespace
@@ -368,9 +382,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
       PasswordChangeDelegate::State::kChangingPassword, 1);
 }
 
-// TODO(crbug.com/382703186): Fix flakiness and re-enable.
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       DISABLED_GeneratedPasswordIsPreSaved) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
 
@@ -394,8 +406,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_EQ(base::UTF16ToUTF8(generated_password),
             GetElementValue(/*iframe_id=*/"null", "new_password_1"));
   CheckThatCredentialsStored(
-      /*username=*/"", base::UTF16ToUTF8(generated_password),
-      password_manager::PasswordForm::Type::kChangeSubmission);
+      /*username=*/"", base::UTF16ToUTF8(generated_password));
 }
 
 // Verify that after password change is stopped, password change delegate is not
@@ -424,6 +435,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StopPasswordChange) {
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
@@ -463,15 +475,22 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kPasswordSuccessfullyChanged, 1);
-  histogram_tester.ExpectUniqueSample(
-      kPasswordChangeSubmissionOutcomeHistogram,
-      ChangeFormSubmissionVerifier::SubmissionOutcome::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(kPasswordChangeSubmissionOutcomeHistogram,
+                                      SubmissionOutcome::kSuccess, 1);
   histogram_tester.ExpectTotalCount("PasswordManager.PasswordChangeTimeOverall",
                                     1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ChangePasswordFormDetected", true, 1);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ChangePasswordFormDetectionTime", 1);
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      GetMetricEntry(
+          test_ukm_recorder,
+          ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome::
+              kEntryName),
+      ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome::
+          kPasswordChangeSubmissionOutcomeName,
+      static_cast<int>(SubmissionOutcome::kSuccess));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
@@ -526,6 +545,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        PasswordChangeSubmissionFailedEmptyResponse) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   SetPrivacyNoticeAcceptedPref();
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -578,14 +598,22 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   }));
 
   WaitForPasswordStore();
-  histograms.ExpectUniqueSample(
-      kPasswordChangeSubmissionOutcomeHistogram,
-      ChangeFormSubmissionVerifier::SubmissionOutcome::kNoResponse, 1);
+  histograms.ExpectUniqueSample(kPasswordChangeSubmissionOutcomeHistogram,
+                                SubmissionOutcome::kNoResponse, 1);
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      GetMetricEntry(
+          test_ukm_recorder,
+          ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome::
+              kEntryName),
+      ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome::
+          kPasswordChangeSubmissionOutcomeName,
+      static_cast<int>(SubmissionOutcome::kNoResponse));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        PasswordChangeSubmissionFailed) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   SetPrivacyNoticeAcceptedPref();
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -646,6 +674,14 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   histogram_tester.ExpectUniqueSample(
       kPasswordChangeSubmissionOutcomeHistogram,
       ChangeFormSubmissionVerifier::SubmissionOutcome::kPageError, 1);
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      GetMetricEntry(
+          test_ukm_recorder,
+          ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome::
+              kEntryName),
+      ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome::
+          kPasswordChangeSubmissionOutcomeName,
+      static_cast<int>(SubmissionOutcome::kPageError));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,

@@ -92,7 +92,8 @@ void EmptyDataSharingService::LeaveGroup(
     const GroupId& group_id,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
-bool EmptyDataSharingService::IsLeavingGroup(const GroupId& group_id) {
+bool EmptyDataSharingService::IsLeavingOrDeletingGroup(
+    const GroupId& group_id) {
   return false;
 }
 

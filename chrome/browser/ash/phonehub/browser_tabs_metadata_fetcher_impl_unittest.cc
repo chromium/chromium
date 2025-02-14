@@ -37,9 +37,10 @@ class MockHistoryUiFaviconRequestHandler
   MockHistoryUiFaviconRequestHandler() = default;
   ~MockHistoryUiFaviconRequestHandler() override = default;
 
-  MOCK_METHOD3(GetRawFaviconForPageURL,
+  MOCK_METHOD4(GetRawFaviconForPageURL,
                void(const GURL& page_url,
                     int desired_size_in_pixel,
+                    bool fallback_to_host,
                     favicon_base::FaviconRawBitmapCallback callback));
 
   MOCK_METHOD2(GetFaviconImageForPageURL,

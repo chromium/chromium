@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -75,6 +76,60 @@ TEST(NetworkIsolationKeyTest, KeyWithNonce) {
   NetworkIsolationKey key2(site1, site2, nonce2);
   EXPECT_NE(key, key2);
   EXPECT_NE(key.ToDebugString(), key2.ToDebugString());
+}
+
+TEST(NetworkIsolationKeyTest, KeyWithNonGeneralNetworkPartition) {
+  SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
+  SchemefulSite site2 = SchemefulSite(GURL("http://b.test/"));
+  NetworkIsolationKey key(
+      site1, site2, /*nonce=*/std::nullopt,
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  EXPECT_TRUE(key.IsFullyPopulated());
+  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+            key.GetNetworkIsolationPartition());
+  EXPECT_EQ(site1.Serialize() + " " + site2.Serialize() + " 1",
+            key.ToCacheKeyString());
+  EXPECT_FALSE(key.IsTransient());
+  EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString() +
+                " (protected audience seller worklet partition)",
+            key.ToDebugString());
+  EXPECT_EQ(site1.Serialize() + " " + site2.Serialize() + " 1",
+            key.ToCacheKeyString());
+
+  // Create another NetworkIsolationKey with the same input parameters, and
+  // check that it is equal.
+  NetworkIsolationKey same_key(
+      site1, site2, /*nonce=*/std::nullopt,
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+            same_key.GetNetworkIsolationPartition());
+  EXPECT_EQ(key, same_key);
+  EXPECT_EQ(key.ToCacheKeyString(), same_key.ToCacheKeyString());
+  EXPECT_EQ(key.ToDebugString(), same_key.ToDebugString());
+
+  // Create another NetworkIsolationKey with a different
+  // NetworkIsolationPartition and check that it's different.
+  NetworkIsolationKey key2(site1, site2, /*nonce=*/std::nullopt,
+                           NetworkIsolationPartition::kGeneral);
+  EXPECT_EQ(NetworkIsolationPartition::kGeneral,
+            key2.GetNetworkIsolationPartition());
+  EXPECT_NE(key, key2);
+  EXPECT_NE(key.ToCacheKeyString(), key2.ToCacheKeyString());
+  EXPECT_NE(key.ToDebugString(), key2.ToDebugString());
+
+  // Make sure if a nonce is included in addition to a
+  // non-general NetworkPartition, the NIK is transient.
+  auto nonce = base::UnguessableToken::Create();
+  NetworkIsolationKey key3(
+      site1, site2, /*nonce=*/nonce,
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  EXPECT_TRUE(key3.IsTransient());
+
+  // Make sure if there's an opaque origin, the NIK is still transient.
+  NetworkIsolationKey key4(
+      site1, SchemefulSite(GURL(kDataUrl)), /*nonce=*/std::nullopt,
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  EXPECT_TRUE(key4.IsTransient());
 }
 
 TEST(NetworkIsolationKeyTest, OpaqueOriginKey) {
@@ -155,7 +210,13 @@ TEST(NetworkIsolationKeyTest, Operators) {
       NetworkIsolationKey(SchemefulSite(GURL("http://b.test/")),
                           SchemefulSite(GURL("http://b.test/"))),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
-                          SchemefulSite(GURL("https://a.test/"))),
+                          SchemefulSite(GURL("https://a.test/")),
+                          /*nonce=*/std::nullopt,
+                          NetworkIsolationPartition::kGeneral),
+      NetworkIsolationKey(
+          SchemefulSite(GURL("https://a.test/")),
+          SchemefulSite(GURL("https://a.test/")), /*nonce=*/std::nullopt,
+          NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
                           SchemefulSite(GURL("https://a.test/")), nonce1),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
@@ -273,6 +334,18 @@ TEST(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
       key_with_nonce.CreateWithNewFrameSite(site_c);
   EXPECT_EQ(key_with_nonce.GetNonce(), key_with_nonce_c.GetNonce());
   EXPECT_TRUE(key_with_nonce_c.IsTransient());
+
+  // Ensure that `CreateWithNewFrameSite()` preserves the
+  // NetworkIsolationPartition.
+  NetworkIsolationKey key_with_partition(
+      site_a, site_b, /*nonce=*/std::nullopt,
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  NetworkIsolationKey key_with_partition_c =
+      key_with_partition.CreateWithNewFrameSite(site_c);
+  EXPECT_EQ(key_with_partition.GetNetworkIsolationPartition(),
+            NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  EXPECT_EQ(key_with_partition.GetNetworkIsolationPartition(),
+            key_with_partition_c.GetNetworkIsolationPartition());
 }
 
 TEST(NetworkIsolationKeyTest, CreateTransientForTesting) {

@@ -449,8 +449,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_browser_manager.cc",
-    "fake_browser_manager.h",
     "test_crosapi_environment.cc",
     "test_crosapi_environment.h",
     "test_local_printer_ash.cc",

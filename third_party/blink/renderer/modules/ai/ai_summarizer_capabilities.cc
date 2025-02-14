@@ -18,7 +18,7 @@ void AISummarizerCapabilities::Trace(Visitor* visitor) const {
 
 V8AICapabilityAvailability AISummarizerCapabilities::languageAvailable(
     const WTF::String& language_tag) {
-  if (language_tag == kAILanguageTagEn) {
+  if (language_tag == "en") {
     return V8AICapabilityAvailability(
         V8AICapabilityAvailability::Enum::kReadily);
   }

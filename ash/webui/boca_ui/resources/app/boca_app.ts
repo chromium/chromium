@@ -52,6 +52,7 @@ export declare interface Assignment {
   url: string;
   lastUpdateTime: Date;
   materials: Material[];
+  type: AssignmentType;
 }
 
 /**
@@ -107,6 +108,23 @@ export enum NetworkType {
 }
 
 /**
+ * Declare permission type enum type
+ */
+export enum Permission {
+  MICROPHONE = 0,
+  CAMERA = 1,
+}
+
+/**
+ * Declare permission setting type enum type
+ */
+export enum PermissionSetting {
+  ALLOW = 0,
+  ASK = 1,
+  BLOCK = 2,
+}
+
+/**
  * Declare boca user pref type.
  */
 export enum BocaValidPref {
@@ -123,6 +141,16 @@ export enum MaterialType {
   YOUTUBE_VIDEO = 2,
   LINK = 3,
   FORM = 4,
+}
+
+/**
+ * Declare course assignment type enum type
+ */
+export enum AssignmentType {
+  UNSPECIFIED = 0,
+  ASSIGNMENT = 1,
+  SHORT_ANSWER_QUESTION = 2,
+  MULTIPLE_CHOICE_QUESTION = 3,
 }
 
 /**
@@ -253,6 +281,12 @@ export declare interface ClientApiDelegate {
    * End the current session
    */
   endSession(): Promise<boolean>;
+
+  /**
+   * Extend session duration
+   */
+  extendSessionDuration(extendDurationInMinutes: number): Promise<boolean>;
+
   /**
    * Update on task config
    */
@@ -291,6 +325,13 @@ export declare interface ClientApiDelegate {
    * Set the value of a boca specific user pref.
    */
   setUserPref(pref: BocaValidPref, value: any): Promise<void>;
+
+  /**
+   * Set the permission of a site.
+   */
+  setSitePermission(
+      url: string, permission: Permission,
+      setting: PermissionSetting): Promise<boolean>;
 }
 
 /**

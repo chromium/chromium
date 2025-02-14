@@ -217,6 +217,29 @@ constexpr int kSunfishModeCaptureRegionRadiusDp = 16;
 // a region in sunfish mode.
 constexpr int kSunfishModeCaptureRegionBorderWidthDp = 6;
 
+// The radius of the focus ring drawn around the whole capture region in sunfish
+// mode.
+constexpr int kSunfishRegionFocusRingRadiusDp = 18;
+
+// The radius of the focus ring drawn around a corner handle of the capture
+// region in sunfish mode.
+constexpr int kSunfishRegionCornerFocusRingRadiusDp = 16;
+
+// The offset between a corner of a sunfish capture region and the center of the
+// the corresponding corner handle. This is used to move the focus ring and hit
+// test rect slightly inwards towards the capture region, to center it around
+// the rounded corner.
+constexpr int kSunfishRegionRoundedCornerOffsetDp =
+    kSunfishModeCaptureRegionRadiusDp / 2;
+
+// The damage outset from the edge of the capture region to repaint when
+// updating the capture region in sunfish mode. The value here is just a
+// heuristic but should be enough to cover all relevant UI around the capture
+// region.
+constexpr int kSunfishRegionDamageOutsetDp =
+    kSunfishModeCaptureRegionBorderWidthDp +
+    kSunfishRegionCornerFocusRingRadiusDp;
+
 // The animation duration for fading in Scanner action buttons.
 constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
     base::Milliseconds(100);
@@ -415,28 +438,56 @@ bool IsWidgetOverlappedWithCameraPreview(views::Widget* widget) {
              widget->GetWindowBoundsInScreen());
 }
 
+int GetHitTestRadiusForFineTunePosition(bool is_touch,
+                                        FineTunePosition position,
+                                        CaptureModeBehavior* active_behavior) {
+  if (is_touch) {
+    return kAffordanceCircleTouchHitRadiusDp;
+  }
+
+  if (active_behavior->ShouldPaintSunfishCaptureRegion() &&
+      capture_mode_util::IsCornerFineTunePosition(position)) {
+    return kSunfishRegionCornerFocusRingRadiusDp;
+  }
+
+  return kAffordanceCircleRadiusDp;
+}
+
 gfx::Rect GetHitTestRectAroundPoint(gfx::Point point, int hit_radius) {
   return gfx::Rect(point.x() - hit_radius, point.y() - hit_radius,
                    hit_radius * 2, hit_radius * 2);
 }
 
 gfx::Rect GetHitTestRectForFineTunePosition(
-    int hit_radius,
     const gfx::Rect& capture_region_in_screen,
-    FineTunePosition position) {
+    FineTunePosition position,
+    bool is_touch,
+    CaptureModeBehavior* active_behavior) {
+  const int hit_radius =
+      GetHitTestRadiusForFineTunePosition(is_touch, position, active_behavior);
+
+  // In sunfish mode, the capture region is painted with rounded corners. Inset
+  // the capture region if needed so that the hit test rect is centered around
+  // the corner drag handle.
+  gfx::Rect corner_adjusted_capture_region = capture_region_in_screen;
+  if (active_behavior->ShouldPaintSunfishCaptureRegion() &&
+      capture_mode_util::IsCornerFineTunePosition(position)) {
+    corner_adjusted_capture_region.Inset(kSunfishRegionRoundedCornerOffsetDp);
+  }
+
   switch (position) {
     case FineTunePosition::kTopLeftVertex:
-      return GetHitTestRectAroundPoint(capture_region_in_screen.origin(),
+      return GetHitTestRectAroundPoint(corner_adjusted_capture_region.origin(),
                                        hit_radius);
     case FineTunePosition::kTopRightVertex:
-      return GetHitTestRectAroundPoint(capture_region_in_screen.top_right(),
-                                       hit_radius);
+      return GetHitTestRectAroundPoint(
+          corner_adjusted_capture_region.top_right(), hit_radius);
     case FineTunePosition::kBottomRightVertex:
-      return GetHitTestRectAroundPoint(capture_region_in_screen.bottom_right(),
-                                       hit_radius);
+      return GetHitTestRectAroundPoint(
+          corner_adjusted_capture_region.bottom_right(), hit_radius);
     case FineTunePosition::kBottomLeftVertex:
-      return GetHitTestRectAroundPoint(capture_region_in_screen.bottom_left(),
-                                       hit_radius);
+      return GetHitTestRectAroundPoint(
+          corner_adjusted_capture_region.bottom_left(), hit_radius);
     case FineTunePosition::kTopEdge:
     case FineTunePosition::kBottomEdge: {
       const gfx::Size horizontal_size(
@@ -2348,8 +2399,6 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
 
   // Draw a focus ring if the region or one of the drag handles circles
   // currently has focus.
-  // TODO(crbug.com/395483324): Update the focus ring styling based on the new
-  // Sunfish mode region selection UI.
   cc::PaintFlags focus_ring_flags;
   focus_ring_flags.setAntiAlias(true);
   focus_ring_flags.setColor(color_provider->GetColor(ui::kColorAshFocusRing));
@@ -2362,12 +2411,27 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
       break;
     case FineTunePosition::kCenter: {
       gfx::RectF focus_rect(region);
-      focus_rect.Inset(
-          gfx::InsetsF(-kFocusRingSpacingDp - kFocusRingStrokeWidthDp / 2));
-      canvas->DrawRect(focus_rect, focus_ring_flags);
+      focus_rect.Outset(kFocusRingSpacingDp + kFocusRingStrokeWidthDp / 2);
+      canvas->DrawRoundRect(focus_rect, kSunfishRegionFocusRingRadiusDp,
+                            focus_ring_flags);
       break;
     }
-    default: {
+    case FineTunePosition::kTopLeftVertex:
+    case FineTunePosition::kTopRightVertex:
+    case FineTunePosition::kBottomRightVertex:
+    case FineTunePosition::kBottomLeftVertex: {
+      const float radius = dsf * (kSunfishRegionCornerFocusRingRadiusDp +
+                                  kFocusRingStrokeWidthDp / 2);
+      region.Inset(kSunfishRegionRoundedCornerOffsetDp);
+      canvas->DrawCircle(capture_mode_util::GetLocationForFineTunePosition(
+                             region, focused_fine_tune_position),
+                         radius, focus_ring_flags);
+      break;
+    }
+    case FineTunePosition::kTopEdge:
+    case FineTunePosition::kRightEdge:
+    case FineTunePosition::kBottomEdge:
+    case FineTunePosition::kLeftEdge: {
       const float radius =
           dsf * (kAffordanceCircleRadiusDp + kFocusRingSpacingDp +
                  kFocusRingStrokeWidthDp / 2);
@@ -2677,11 +2741,9 @@ FineTunePosition CaptureModeSession::GetFineTunePosition(
       FineTunePosition::kBottomEdge,        FineTunePosition::kLeftEdge,
       FineTunePosition::kTopEdge,           FineTunePosition::kRightEdge};
 
-  const int hit_radius =
-      is_touch ? kAffordanceCircleTouchHitRadiusDp : kAffordanceCircleRadiusDp;
   for (FineTunePosition position : drag_positions) {
-    if (GetHitTestRectForFineTunePosition(hit_radius, capture_region_in_screen,
-                                          position)
+    if (GetHitTestRectForFineTunePosition(capture_region_in_screen, position,
+                                          is_touch, active_behavior_)
             .Contains(location_in_screen)) {
       return position;
     }
@@ -2883,7 +2945,9 @@ void CaptureModeSession::UpdateCaptureRegion(
     // enough to also cover the border and affordance circles.
     damage_region.Outset(kDamageWithGlowOutsetDp);
   } else {
-    damage_region.Outset(kDamageOutsetDp);
+    damage_region.Outset(active_behavior_->ShouldPaintSunfishCaptureRegion()
+                             ? kSunfishRegionDamageOutsetDp
+                             : kDamageOutsetDp);
   }
   layer()->SchedulePaint(damage_region);
 
@@ -3277,7 +3341,9 @@ void CaptureModeSession::EndSelection(
 
 void CaptureModeSession::RepaintRegion() {
   gfx::Rect damage_region = controller_->user_capture_region();
-  damage_region.Outset(kDamageOutsetDp);
+  damage_region.Outset(active_behavior_->ShouldPaintSunfishCaptureRegion()
+                           ? kSunfishRegionDamageOutsetDp
+                           : kDamageOutsetDp);
   layer()->SchedulePaint(damage_region);
 }
 

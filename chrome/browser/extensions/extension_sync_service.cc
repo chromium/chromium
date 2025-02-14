@@ -309,20 +309,15 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
   const GURL update_url =
       extension_management->GetEffectiveUpdateURL(extension);
 
-  // TODO(crbug.com/372186532): This conversion code will be removed when we
-  // support syncing disable reasons as a set.
-  const int syncable_disable_reasons_bitflag =
-      extensions::IntegerSetToBitflag(syncable_disable_reasons);
   ExtensionSyncData result =
       extension.is_app()
           ? ExtensionSyncData(
-                extension, enabled, syncable_disable_reasons_bitflag,
-                incognito_enabled, remote_install, update_url,
+                extension, enabled, syncable_disable_reasons, incognito_enabled,
+                remote_install, update_url,
                 app_sorting->GetAppLaunchOrdinal(id),
                 app_sorting->GetPageOrdinal(id),
                 extensions::GetLaunchTypePrefValue(extension_prefs, id))
-          : ExtensionSyncData(extension, enabled,
-                              syncable_disable_reasons_bitflag,
+          : ExtensionSyncData(extension, enabled, syncable_disable_reasons,
                               incognito_enabled, remote_install, update_url);
 
   // If there's a pending update, send the new version to sync instead of the
@@ -448,8 +443,10 @@ void ExtensionSyncService::ApplySyncData(
   }
 
   // Add/remove disable reasons based on the incoming sync data.
-  int incoming_disable_reasons = extension_sync_data.disable_reasons();
-  if (!!incoming_disable_reasons == extension_sync_data.enabled()) {
+  const base::flat_set<int> incoming_disable_reasons =
+      extension_sync_data.disable_reasons();
+
+  if (!incoming_disable_reasons.empty() == extension_sync_data.enabled()) {
     // The enabled flag disagrees with the presence of disable reasons. This
     // must either come from an old (<M45) client which doesn't sync disable
     // reasons, or the extension is blocklisted (which doesn't have a
@@ -468,10 +465,8 @@ void ExtensionSyncService::ApplySyncData(
     // 2. Remove any non-syncable reasons from the incoming data because Chrome
     // M45-M47 also wrote local disable reasons to sync, and we don't want
     // those.
-    base::flat_set<int> incoming_disable_reasons_set =
-        extensions::BitflagToIntegerSet(incoming_disable_reasons);
     base::flat_set<int> cleaned_incoming_disable_reasons_set =
-        GetSyncableDisableReasons(incoming_disable_reasons_set);
+        GetSyncableDisableReasons(incoming_disable_reasons);
 
     // 3. Add the incoming disable reasons.
     disable_reasons = base::STLSetUnion<base::flat_set<int>>(

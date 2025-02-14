@@ -125,6 +125,8 @@ blink_core_sources_inspector = [
   "request_debug_header_scope.h",
   "resolve_node.cc",
   "resolve_node.h",
+  "style_rule_to_style_sheet_contents_map.cc",
+  "style_rule_to_style_sheet_contents_map.h",
   "thread_debugger_common_impl.cc",
   "thread_debugger_common_impl.h",
   "v8_inspector_string.cc",

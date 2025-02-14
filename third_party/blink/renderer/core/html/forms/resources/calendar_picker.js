@@ -4987,7 +4987,7 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
                   '.month-popup-button, .year-list-view')) {
             if (this._selection) {
               window.pagePopupController.setValueAndClosePopup(
-                  0, this.getSelectedValue());
+                  0, this.getSelectedValue(), /* is_keyboard_event= */ true);
             } else {
               // If there is no selection it must be the case that there are no
               // valid values (because min >= max).  There's nothing useful to

@@ -100,16 +100,18 @@ void ChromeQuickAnswersTestBase::SetUp() {
   // redesigned.
   auto* test_session_controller_client =
       ash_test_helper()->test_session_controller_client();
+  test_session_controller_client->SetUnownedUserPrefService(
+      user->GetAccountId(), profile_->GetPrefs());
+  test_session_controller_client->set_default_provide_pref_service(false);
   test_session_controller_client->AddUserSession(
       user->GetAccountId(), user->GetDisplayEmail(), user->GetType(),
       /*provide_or_pref_service=*/false,
       /*is_new_profile=*/false, base::UTF16ToUTF8(user->GetGivenName()),
       user->is_managed().value_or(false));
-  test_session_controller_client->SetUnownedUserPrefService(
-      user->GetAccountId(), profile_->GetPrefs());
   test_session_controller_client->SwitchActiveUser(user->GetAccountId());
   test_session_controller_client->SetSessionState(
       session_manager::SessionState::ACTIVE);
+  test_session_controller_client->set_default_provide_pref_service(true);
 
   SetUpInitialPrefValues();
   quick_answers_controller_ =

@@ -438,6 +438,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           ash::features::IsSunfishFeatureEnabled() ||
                               IsScannerSettingsToggleVisible());
 
+  html_source->AddBoolean("isScannerSettingsToggleVisible",
+                          IsScannerSettingsToggleVisible());
+
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
 
@@ -513,6 +516,11 @@ bool SearchSection::LogMetric(mojom::Setting setting,
                                 value.GetBool());
       return true;
 
+    case mojom::Setting::kScannerOnOff:
+      base::UmaHistogramBoolean("ChromeOS.Settings.ScannerEnabled",
+                                value.GetBool());
+      return true;
+
     default:
       return false;
   }
@@ -532,6 +540,7 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kMagicBoostOnOff);
   generator->RegisterTopLevelSetting(mojom::Setting::kLobsterOnOff);
   generator->RegisterTopLevelSetting(mojom::Setting::kSunfishOnOff);
+  generator->RegisterTopLevelSetting(mojom::Setting::kScannerOnOff);
 
   // Search.
   generator->RegisterTopLevelSubpage(

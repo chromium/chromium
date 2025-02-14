@@ -152,6 +152,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       const std::string& disposition,
       const std::optional<std::string>& message,
       const std::optional<std::string>& allow_attribute,
+      const std::optional<std::string>& src_attribute,
       const std::optional<std::string>& source_file,
       int line_number,
       int column_number) override {
@@ -163,6 +164,9 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     }
     if (allow_attribute) {
       body.Set("allowAttribute", *allow_attribute);
+    }
+    if (src_attribute) {
+      body.Set("srcAttribute", *src_attribute);
     }
     if (source_file) {
       body.Set("sourceFile", *source_file);

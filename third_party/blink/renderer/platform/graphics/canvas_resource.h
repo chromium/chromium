@@ -241,7 +241,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       base::WeakPtr<CanvasResourceProvider>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
   ~CanvasResourceSharedBitmap() override;
-  bool IsRecycleable() const final { return IsValid(); }
+  bool IsRecycleable() const final { return !is_lost_; }
   bool IsValid() const final;
   bool CreatesAcceleratedTransferableResources() const final { return false; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
@@ -278,6 +278,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken sync_token_;
+  bool is_lost_ = false;
 };
 
 // Resource type for SharedImage
@@ -294,7 +295,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       gpu::SharedImageUsageSet shared_image_usage_flags);
   ~CanvasResourceSharedImage() override;
 
-  bool IsRecycleable() const final { return true; }
+  bool IsRecycleable() const final { return !IsLost(); }
   bool CreatesAcceleratedTransferableResources() const override { return true; }
   bool IsValid() const final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;

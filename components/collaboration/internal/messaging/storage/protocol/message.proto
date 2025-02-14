@@ -45,6 +45,9 @@ message TabData {
 message TabGroupData {
   // The sync ID of the corresponding SavedTabGroup.
   optional string sync_tab_group_id = 1;
+
+  // The title of the tab group.
+  optional string title = 2;
 }
 
 // Collaboration message related data.

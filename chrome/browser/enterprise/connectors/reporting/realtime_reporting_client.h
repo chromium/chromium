@@ -71,9 +71,6 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
 
   // policy::CloudPolicyClient::Observer overrides:
   void OnClientError(policy::CloudPolicyClient* client) override;
-  void OnPolicyFetched(policy::CloudPolicyClient* client) override {}
-  void OnRegistrationStateChanged(policy::CloudPolicyClient* client) override {}
-
 
   // Determines if the real-time reporting feature is enabled.
   // Obtain settings to apply to a reporting event from ConnectorsService.

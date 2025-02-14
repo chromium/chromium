@@ -2291,10 +2291,8 @@ class CONTENT_EXPORT ContentBrowserClient {
       mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
           receiver);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Allows the embedder to provide an implementation of the Serial API.
   virtual SerialDelegate* GetSerialDelegate();
-#endif
 
   // Allows the embedder to provide an implementation of the WebHID API.
   virtual HidDelegate* GetHidDelegate();

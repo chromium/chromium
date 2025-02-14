@@ -236,9 +236,9 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   AppLaunchConfiguration config;
 
   if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   } else {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
 
   return config;
@@ -278,6 +278,13 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 // Tests that the saved address chip buttons are all visible in the address
 // table view controller, and that they have the right accessibility label.
 - (void)testAddressChipButtonsAreAllVisible {
+  // TODO(crbug.com/385172448): Make this test work on all platforms.
+  if ([ChromeEarlGrey isIPadIdiom] &&
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"The keyboard accessory can't show all the buttons "
+                           @"at once on some tablets.");
+  }
+
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];

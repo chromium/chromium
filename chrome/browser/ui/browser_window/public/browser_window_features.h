@@ -14,7 +14,7 @@
 namespace glic {
 class GlicButtonController;
 class GlicIphController;
-}
+}  // namespace glic
 #endif
 
 class Browser;
@@ -62,8 +62,8 @@ class MemorySaverBubbleController;
 
 namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
-class MostRecentUpdateStore;
 class SharedTabGroupFeedbackController;
+class MostRecentSharedTabUpdateStore;
 }  // namespace tab_groups
 
 namespace send_tab_to_self {
@@ -177,8 +177,9 @@ class BrowserWindowFeatures {
     return download_toolbar_ui_controller_.get();
   }
 
-  tab_groups::MostRecentUpdateStore* most_recent_update_store() {
-    return most_recent_update_store_.get();
+  tab_groups::MostRecentSharedTabUpdateStore*
+  most_recent_shared_tab_update_store() {
+    return most_recent_shared_tab_update_store_.get();
   }
 
   memory_saver::MemorySaverBubbleController* memory_saver_bubble_controller() {
@@ -249,7 +250,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
 #endif
 
-  std::unique_ptr<tab_groups::MostRecentUpdateStore> most_recent_update_store_;
+  std::unique_ptr<tab_groups::MostRecentSharedTabUpdateStore>
+      most_recent_shared_tab_update_store_;
 
   std::unique_ptr<memory_saver::MemorySaverBubbleController>
       memory_saver_bubble_controller_;

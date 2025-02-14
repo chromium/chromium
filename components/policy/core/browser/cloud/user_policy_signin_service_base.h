@@ -97,8 +97,6 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   void OnPolicyRefreshed(bool success) override;
 
   // CloudPolicyClient::Observer implementation:
-  void OnPolicyFetched(CloudPolicyClient* client) override;
-  void OnRegistrationStateChanged(CloudPolicyClient* client) override;
   void OnClientError(CloudPolicyClient* client) override;
 
   // KeyedService implementation:

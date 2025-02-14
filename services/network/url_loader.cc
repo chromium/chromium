@@ -1503,6 +1503,10 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
 
   mojom::IPAddressSpace response_address_space =
       *private_network_access_checker_.ResponseAddressSpace();
+  mojom::IPAddressSpace client_address_space =
+      private_network_access_checker_.ClientAddressSpace();
+  mojom::IPAddressSpace target_address_space =
+      private_network_access_checker_.TargetAddressSpace();
 
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
@@ -1515,6 +1519,15 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
             .Set("result",
                  PrivateNetworkAccessCheckResultToStringPiece(result));
       });
+
+  if (url_loader_network_observer_) {
+    if (response_address_space == mojom::IPAddressSpace::kLocal ||
+        response_address_space == mojom::IPAddressSpace::kPrivate) {
+      url_loader_network_observer_->OnUrlLoaderConnectedToPrivateNetwork(
+          url_request_->url(), response_address_space, client_address_space,
+          target_address_space);
+    }
+  }
 
   bool is_warning = false;
   switch (result) {

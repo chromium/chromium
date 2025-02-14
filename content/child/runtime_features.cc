@@ -374,6 +374,13 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"OriginIsolationHeader", raw_ref(features::kOriginIsolationHeader)},
           {"ReduceAcceptLanguage",
            raw_ref(network::features::kReduceAcceptLanguage)},
+          {"Serial",
+#if BUILDFLAG(IS_ANDROID)
+           raw_ref(device::features::kBluetoothRfcommAndroid)
+#else
+           raw_ref(device::features::kSerial)
+#endif
+          },
           {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
           {"SignatureBasedIntegrity",
            raw_ref(network::features::kSRIMessageSignatureEnforcement)},

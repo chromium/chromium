@@ -257,6 +257,25 @@ TEST_F(PageActionViewWithMockModelTest, Visibility) {
   EXPECT_FALSE(page_action_view()->GetVisible());
 }
 
+TEST_F(PageActionViewWithMockModelTest, LabelVisibility) {
+  // Ensure view defaults to invisible.
+  EXPECT_FALSE(page_action_view()->GetVisible());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()->GetVisible());
+  EXPECT_TRUE(page_action_view()->ShouldShowLabel());
+  EXPECT_TRUE(page_action_view()->GetLabelForTesting()->GetVisible());
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()->GetVisible());
+  EXPECT_FALSE(page_action_view()->ShouldShowLabel());
+  EXPECT_FALSE(page_action_view()->GetLabelForTesting()->GetVisible());
+}
+
 TEST_F(PageActionViewWithMockModelTest,
        UpdateStyleSetsTonalColorsAndBackgroundVisibility) {
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
@@ -313,6 +332,7 @@ TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
 // Test that UpdateBorder adjusts the insets based on label visibility.
 TEST_F(PageActionViewWithMockModelTest, UpdateBorderAdjustsInsets) {
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   const gfx::Insets initial_insets = page_action_view()->GetInsets();
 

@@ -22,10 +22,10 @@
 namespace reporting {
 
 // Frequency that session activity is periodically reported.
-static constexpr base::TimeDelta kReportingFrequency = base::Hours(1);
+inline constexpr base::TimeDelta kReportingFrequency = base::Hours(1);
 
 // Frequency with which we collect the active/idle of the device.
-static constexpr base::TimeDelta kActiveIdleStateCollectionFrequency =
+inline constexpr base::TimeDelta kActiveIdleStateCollectionFrequency =
     base::Seconds(30);
 
 // This class reports user session start/end events and the user's active/idle

@@ -97,6 +97,7 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   void IsMantisAvailable(IsMantisAvailableCallback callback) override;
   void CreateMantisUntrustedService(
       mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedPage> page,
+      const std::optional<base::Uuid>& dlc_uuid,
       CreateMantisUntrustedServiceCallback callback) override;
 
   void StartFontDataRequest(

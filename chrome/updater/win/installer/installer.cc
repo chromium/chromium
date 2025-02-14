@@ -307,10 +307,10 @@ ProcessExitResult BuildInstallerCommandLineArgumentsInternal(
   // Use the tag from the `--install` command line argument if such argument
   // exists. Otherwise, try extracting a tag embedded in the program image of
   // the meta installer.
-  if (args.GetSwitchValueASCII(kInstallSwitch).empty()) {
+  if (args.GetSwitchValueUTF8(kInstallSwitch).empty()) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
-      args.AppendSwitchASCII(kInstallSwitch, tag.c_str());
+      args.AppendSwitchUTF8(kInstallSwitch, tag.c_str());
     }
   }
 
@@ -325,7 +325,7 @@ ProcessExitResult BuildInstallerCommandLineArgumentsInternal(
   }
 
   if (!args.HasSwitch(kLoggingModuleSwitch)) {
-    args.AppendSwitchASCII(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
+    args.AppendSwitchUTF8(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
   }
 
   std::wstring args_str = args.GetArgumentsString();
@@ -387,7 +387,7 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
   // The metainstaller needs elevation because unpacking files and running
   // updater.exe must happen from a secure directory.
   base::CommandLine elevated_command_line = command_line;
-  elevated_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
+  elevated_command_line.AppendSwitchUTF8(kCmdLineExpectElevated, {});
   ASSIGN_OR_RETURN(DWORD result,
                    RunElevated(command_line.GetProgram(),
                                elevated_command_line.GetArgumentsString()),

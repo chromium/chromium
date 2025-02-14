@@ -45,6 +45,8 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
   void MaybeCloseLocalApproval() override;
 
  private:
+  friend class ParentAccessTabHelperTest;
+
   // Processes the outcome of the local approval request.
   void OnLocalApprovalRequestCompleted(
       const GURL& url,

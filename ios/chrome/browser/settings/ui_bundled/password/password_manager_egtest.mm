@@ -1681,13 +1681,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // storing just about enough passwords to ensure filling more than one page on
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
-// TODO(crbug.com/40910877): This test is flaky.
-- (void)FLAKY_testManyPasswords {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/40602996): Enable the test on iPad once the bug is fixed.
-    EARL_GREY_TEST_DISABLED(@"Disabled for iPad.");
-  }
-
+- (void)testManyPasswords {
   // Enough just to ensure filling more than one page on all devices.
   constexpr int kPasswordsCount = 15;
 
@@ -1707,17 +1701,18 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  // Wait for the loading indicator to disappear, and the sections to be on
-  // screen, before scrolling.
-  [[EarlGrey selectElementWithMatcher:SavedPasswordsHeaderMatcher()]
-      assertWithMatcher:grey_notNil()];
-
-  // Aim at an entry almost at the end of the list.
-  constexpr int kRemoteIndex = kPasswordsCount - 4;
-
+  // Open password details.
   [GetInteractionForPasswordEntry(
       [NSString stringWithFormat:@"example.com, %d accounts", kPasswordsCount])
       performAction:grey_tap()];
+
+  // Aim at an entry almost at the end of the list.
+  constexpr int kRemoteIndex = kPasswordsCount - 4;
+  // Using scrolling with the default `kScrollAmount` has too fine steps to
+  // reach the desired part of the list quickly. The following gives it a head
+  // start of the desired position, counting 30 points per entry and
+  // aiming at `kRemoteIndex`.
+  constexpr int kJump = kRemoteIndex * 30 + 150;
 
   // Check that the detail view loaded correctly by verifying the site content.
   [[[EarlGrey
@@ -1725,8 +1720,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
           [self matcherForPasswordDetailCellWithWebsites:
                     [NSString stringWithFormat:@"https://www%02d.example.com/",
                                                kRemoteIndex]]]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, kJump)
       onElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 
@@ -1868,14 +1862,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Test that when user types text in search field, passwords and blocked
-// items are filtered out and "save passwords" switch is removed.
+// items are filtered out correctly.
 - (void)testSearchPasswords {
-  // TODO(crbug.com/40683159): Test doesn't pass on iPad device or simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"This test doesn't pass on iPad device or simulator.");
-  }
-
   SaveExamplePasswordForms();
   SaveExampleBlockedFormsToProfileStore();
 
@@ -1883,7 +1871,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
       assertWithMatcher:grey_notNil()];
-
   [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
       assertWithMatcher:grey_notNil()];
   [GetInteractionForPasswordEntry(@"exclude1.com")
@@ -1904,6 +1891,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_nil()];
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_notNil()];
+
   [[EarlGrey
       selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
       performAction:grey_tap()];
@@ -2441,47 +2429,34 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Tests the add password flow from the toolbar button.
-// TODO(crbug.com/40255054): Flaky, please re-enable once fixed.
-- (void)DISABLED_testAddNewPasswordCredential {
+- (void)testAddNewPasswordCredential {
   OpenPasswordManager();
 
   // Press "Add".
   [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
       performAction:grey_tap()];
-
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
-  // Fill form.
+  // Fill password details.
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
       performAction:grey_replaceText(kDefaultSite)];
-
   [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"new username")];
-
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"new password")];
 
   // The "Add" button is enabled after site and password have been entered.
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_enabled()];
-
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       performAction:grey_tap()];
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
-      performAction:grey_tap()];
-
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-
-  TapNavigationBarEditButton();
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      assertWithMatcher:grey_textFieldValue(@"new password")];
+  // Verify the new password is visibile on the password list.
+  [GetInteractionForPasswordEntry(@"example.com")
+      assertWithMatcher:grey_notNil()];
 }
 
 // Validates that the Password Manager UI is dismissed if local authentication
@@ -2574,7 +2549,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that when a new credential is saved or an existing one is updated via
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
-// TODO(crbug.com/40874087): Flaky, please re-enable once fixed.
 - (void)testAutoScroll {
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
@@ -2872,41 +2846,31 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Tests that the percentage of favicons for the password manager metric is
 // logged properly when there are passwords with a favicon.
-// TODO(crbug.com/395064486): Test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword \
-  FLAKY_testLogFaviconsForPasswordsPercentageMetricWithPassword
-#else
-#define MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword \
-  testLogFaviconsForPasswordsPercentageMetricWithPassword
-#endif
-- (void)MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword {
-  // Sign-in and synced user.
+- (void)testLogFaviconsForPasswordsPercentageMetricWithPassword {
+  // Sign-in and wait for fully active sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
 
-  // Add passwords for the user.
   SaveExamplePasswordForms();
-
   OpenPasswordManager();
 
-  // Make sure the cell is loaded properly before tapping on it.
+  // Metrics are logged when the password list view is disappearing, tap on a
+  // password entry to trigger that. Make sure the details view is loaded
+  // properly before verifying that.
+  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
+      performAction:grey_tap()];
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
+    [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
   };
-
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForUIElementTimeout, condition),
-             @"Waiting for the cell to load");
-
-  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
-      performAction:grey_tap()];
+             @"Waiting for the details view to load");
 
   // Metric: Percentage of favicons with image.
   // Verify that histogram is called.
@@ -2916,6 +2880,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   if (error) {
     GREYFail([error description]);
   }
+
   // Verify the logged value of the histogram.
   error = [MetricsAppInterface
          expectSum:0

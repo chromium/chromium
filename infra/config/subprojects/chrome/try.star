@@ -223,6 +223,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-webgl-sherlock-qemu",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.IOS_BRANCHES,
     builder = "ios-rel-ready",
 )

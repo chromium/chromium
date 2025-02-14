@@ -21,8 +21,6 @@ struct EnumTraits<signin::mojom::AccountType, AccountType> {
         return signin::mojom::AccountType::UNKNOWN;
       case AccountType::GOOGLE:
         return signin::mojom::AccountType::GOOGLE;
-      case AccountType::ACTIVE_DIRECTORY:
-        return signin::mojom::AccountType::ACTIVE_DIRECTORY;
     }
     NOTREACHED();
   }
@@ -36,8 +34,10 @@ struct EnumTraits<signin::mojom::AccountType, AccountType> {
         *out = AccountType::GOOGLE;
         return true;
       case signin::mojom::AccountType::ACTIVE_DIRECTORY:
-        *out = AccountType::ACTIVE_DIRECTORY;
-        return true;
+        // TODO(crbug.com/291783005): This account type is no longer supported
+        // on ChromeOS, and the ACTIVE_DIRECTORY enum value can be removed from
+        // signin::mojom::AccountType.
+        NOTREACHED();
     }
     NOTREACHED();
   }
@@ -52,8 +52,6 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
     switch (r.GetAccountType()) {
       case AccountType::GOOGLE:
         return r.GetGaiaId().ToString();
-      case AccountType::ACTIVE_DIRECTORY:
-        return r.GetObjGuid();
       case AccountType::UNKNOWN:
         // UNKNOWN type is used for users that have only email (e.g. in tests
         // or legacy users that have not run through migration code).
@@ -76,9 +74,6 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
     switch (account_type) {
       case AccountType::GOOGLE:
         *out = AccountId::FromUserEmailGaiaId(user_email, GaiaId(id));
-        break;
-      case AccountType::ACTIVE_DIRECTORY:
-        *out = AccountId::AdFromUserEmailObjGuid(user_email, id);
         break;
       case AccountType::UNKNOWN:
         // UNKNOWN type is used for users that have only email (e.g. in tests

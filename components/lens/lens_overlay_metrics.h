@@ -38,6 +38,40 @@ enum class LensOverlaySpeedbumpMenuSelection {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlaySpeedbumpMenuSelection)
 
+struct ContextualSearchboxSessionEndMetrics {
+  // Indicates whether zps was shown for the initial query in a session.
+  bool zps_shown_on_initial_query_ = false;
+
+  // Indicates whether zps was shown for the initial query in a session.
+  bool zps_shown_on_follow_up_query_ = false;
+
+  // Indicates whether contextual zero suggest was used in a session.
+  bool zps_used_ = false;
+
+  // Indicates whether a contextual query was issued in a session.
+  bool query_issued_ = false;
+
+  // Indicates whether a follo up contextual query was issued in a session.
+  bool follow_up_query_issued_ = false;
+
+  // Indicates whether a contextual query was issued before zps was shown for
+  // the initial query in a session.
+  bool initial_query_issued_before_zps_shown_ = false;
+
+  // Indicates whether a contextual query was issued before zps was shown for
+  // the follow up query in a session.
+  bool follow_up_query_issued_before_zps_shown_ = false;
+
+  // Indicates whether the contextual searchbox was focused in the current
+  // session. Used to record interaction rate, defined by whether or not a
+  // user focused the contextual searchbox in sessions in which it was shown.
+  // Set if contextual searchbox is shown.
+  bool searchbox_focused_ = false;
+
+  // Whether the contextual searchbox should be shown in the session.
+  bool searchbox_shown_ = false;
+};
+
 // Returns the string representation of the invocation source.
 std::string InvocationSourceToString(
     LensOverlayInvocationSource invocation_source);
@@ -79,11 +113,7 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
 // Lens on, as determined by the WebContents.
 void RecordContextualSearchboxSessionEndMetrics(
     ukm::SourceId source_id,
-    bool contextual_searchbox_shown_in_session,
-    bool contextual_searchbox_focused_in_session,
-    bool contextual_zps_shown_in_session,
-    bool contextual_zps_used_in_session,
-    bool contextual_query_issued_in_session,
+    ContextualSearchboxSessionEndMetrics session_end_metrics,
     lens::MimeType page_content_type,
     lens::MimeType document_content_type);
 
@@ -148,6 +178,10 @@ void RecordDocumentSizeBytes(lens::MimeType page_content_type,
 
 // Record the number of pages in a PDF.
 void RecordPdfPageCount(uint32_t page_count);
+
+// Records the similarity between the OCR text and the DOM text. Similarity is
+// a value between 0 and 1.
+void RecordOcrDomSimilarity(double similarity);
 
 // Records the side panel result status when attempting a load into the side
 // panel.

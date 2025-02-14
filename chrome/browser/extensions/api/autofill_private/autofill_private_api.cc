@@ -114,7 +114,7 @@ bool HasNameSeparator(const std::string& name) {
   if (name.empty()) {
     return false;
   }
-  return re2::RE2::PartialMatch(name, autofill::kCjkNameSeperatorsRe);
+  return re2::RE2::PartialMatch(name, autofill::kCjkNameSeparatorsRe);
 }
 
 // Logs whether the alternative name in a new/updated profile contains a

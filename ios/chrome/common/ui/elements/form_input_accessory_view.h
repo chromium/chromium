@@ -100,13 +100,15 @@ extern NSString* const
 // - The background color is set to grey.
 // If `closeButtonSymbol` is nil, the close button will use the default text.
 // Otherwise, it will use closeButtonSymbol as the image instead.
+// `isTabletFormFactor` modifies the appearance of the manual fill button.
 - (void)setUpWithLeadingView:(UIView*)leadingView
             navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
               manualFillSymbol:(UIImage*)manualFillSymbol
       passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
-             closeButtonSymbol:(UIImage*)closeButtonSymbol;
+             closeButtonSymbol:(UIImage*)closeButtonSymbol
+            isTabletFormFactor:(BOOL)isTabletFormFactor;
 
 // Sets up the view with the given `leadingView`. Navigation controls are
 // replaced with `customTrailingView`.

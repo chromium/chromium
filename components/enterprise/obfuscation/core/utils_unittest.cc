@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -143,6 +144,8 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateSingleDataChunk) {
 }
 
 TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
+  base::HistogramTester histogram_tester;
+
   std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
   ASSERT_TRUE(base::WriteFile(test_file_path(), test_data));
 
@@ -152,12 +155,17 @@ TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
 
   if (!file_obfuscation_feature_enabled()) {
     ASSERT_EQ(result.error(), Error::kDisabled);
+    histogram_tester.ExpectUniqueSample(kObfuscationResultHistogram,
+                                        Error::kDisabled, 1);
     return;
   }
 
   // Deobfuscating an unobfuscated file should fail.
-  ASSERT_EQ(result.error(), original_size == 0 ? Error::kFileOperationError
-                                               : Error::kDeobfuscationFailed);
+  Error unobfuscated_error = original_size == 0 ? Error::kFileOperationError
+                                                : Error::kDeobfuscationFailed;
+  ASSERT_EQ(result.error(), unobfuscated_error);
+  histogram_tester.ExpectUniqueSample(kObfuscationResultHistogram,
+                                      unobfuscated_error, 1);
 
   // Only the original test file should remain.
   EXPECT_EQ(CountFilesInDirectory(test_file_path().DirName()), 1);
@@ -168,6 +176,9 @@ TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
 
   ASSERT_TRUE(base::WriteFile(test_file_path(), obfuscated_content));
   ASSERT_TRUE(DeobfuscateFileInPlace(test_file_path()).has_value());
+
+  histogram_tester.ExpectBucketCount(kObfuscationResultHistogram,
+                                     Error::kSuccess, 1);
 
   auto deobfuscated_content = base::ReadFileToBytes(test_file_path());
   ASSERT_TRUE(deobfuscated_content.has_value());
@@ -187,6 +198,12 @@ TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
 
   // Only the original test file should remain.
   EXPECT_EQ(CountFilesInDirectory(test_file_path().DirName()), 1);
+
+  int expected_file_op_count = (original_size == 0) ? 2 : 1;
+  histogram_tester.ExpectBucketCount(kObfuscationResultHistogram,
+                                     Error::kFileOperationError,
+                                     expected_file_op_count);
+  histogram_tester.ExpectTotalCount(kObfuscationResultHistogram, 3);
 }
 
 TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateVariableChunks) {

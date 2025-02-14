@@ -111,11 +111,6 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
                                             PolicyFetchReason::kSignin);
 }
 
-void UserPolicySigninServiceBase::OnPolicyFetched(CloudPolicyClient* client) {}
-
-void UserPolicySigninServiceBase::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {}
-
 void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
   if (client->is_registered()) {
     // If the client is already registered, it means this error must have

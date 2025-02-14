@@ -290,17 +290,6 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
       disable_reasons.erase(disable_reason);
     }
   }
-  if (!disable_reasons.empty()) {
-    // Record any unexpected disable reasons - these are likely deprecated
-    // reason(s) that have not been migrated over in a few clients. Use this
-    // histogram to determine how many clients are affected to decide what
-    // action to take (if any).
-    // TODO(crbug.com/372186532): This histogram has expired. We should either
-    // remove this code or add a new histogram which logs all reasons separately
-    // (instead of as a bitflag).
-    base::UmaHistogramSparse("Extensions.DeprecatedDisableReasonsObserved",
-                             extensions::IntegerSetToBitflag(disable_reasons));
-  }
 
   return reasons;
 }

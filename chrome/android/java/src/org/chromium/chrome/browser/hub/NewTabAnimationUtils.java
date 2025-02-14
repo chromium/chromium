@@ -15,12 +15,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 /** Utilities related to new tab animations. */
 @NullMarked
 public class NewTabAnimationUtils {
-    /**
-     * Ensures consistency between {@link HubLayout} and {@link
-     * org.chromium.chrome.browser.compositor.layouts.phone.NewTabAnimationLayout}
-     */
-    public static final int FOREGROUND_RADIUS = 30;
-
     private static final float INITIAL_SCALE = 0.2f;
     private static final float FINAL_SCALE = 1.1f;
 

@@ -88,7 +88,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   bool IsPremultiplied() const {
     return GetSkImageInfo().alphaType() == SkAlphaType::kPremul_SkAlphaType;
   }
-  SkColorInfo GetSkColorInfo() const { return GetSkImageInfo().colorInfo(); }
 
   // Methods have exactly the same implementation for all sub-classes
   bool OriginClean() const { return is_origin_clean_; }
@@ -115,6 +114,10 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
 
   // Return the SkImageInfo of the internal representation of this image.
   virtual SkImageInfo GetSkImageInfo() const = 0;
+  gfx::Size GetSize() {
+    return gfx::Size(GetSkImageInfo().width(), GetSkImageInfo().height());
+  }
+  SkAlphaType GetAlphaType() { return GetSkImageInfo().alphaType(); }
 
  protected:
   // Helper for sub-classes

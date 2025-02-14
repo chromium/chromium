@@ -36,6 +36,7 @@ component("accelerated_widget_mac") {
       "ca_layer_frame_sink_provider.h",
       "ca_layer_frame_sink_provider.mm",
     ]
+    frameworks += [ "BrowserEngineKit.framework" ]
   }
 
   if (is_mac) {

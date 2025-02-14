@@ -6,19 +6,66 @@
 import collections
 import dataclasses
 import datetime
+import json
+import os
 import re
 import statistics
 from typing import Any, Dict, List, Mapping, Optional, Set, Tuple
+from core import path_util
 
 import json_constants
 
+# The source of truth for public perf builders, which is extracted from
+# datastore (url http://shortn/_ApO0FuH9pg and url http://shortn/_pKoMUP1fe6).
+PUBLIC_PERF_BUILDERS_PATH = os.path.join(
+      path_util.GetChromiumSrcDir(), "tools", "perf",
+      "public_builders.json")
 
-# TODO(crbug.com/318738818): Replace the hardcoded bucket names with the
-# correct ones.
-def gcs_buckets_from_builder_name(_: str) -> List[str]:
-  """Returns the GCS buckets to upload the json to."""
-  # Hardcoded for a/b testing to achieve data parity.
-  return ["chrome-perf-experiment-non-public"]
+
+def is_public_builder(builder_name: str) -> bool:
+  """Returns whether the builder is public.
+
+  Args:
+    builder_name: The builder name.
+  Returns:
+    Whether the builder is public.
+  """
+  if not builder_name:
+    # Return True if the builder name is empty so it only uploads to a public
+    # bucket.
+    return True
+  with open(PUBLIC_PERF_BUILDERS_PATH, "r") as fp:
+    public_builders = json.load(fp)
+  return builder_name in public_builders["public_perf_builders"]
+
+
+def gcs_buckets_from_builder_name(
+    builder_name: str,
+    master_name: str,
+    experiment_only: bool=False) -> List[str]:
+  """Returns the GCS buckets to upload the json to.
+
+  Args:
+    builder_name: The builder name.
+    master_name: The master name.
+    experiment_only: Whether the json is to uoload for experiment only.
+  Returns:
+    The GCS buckets to upload the json to.
+  """
+  if experiment_only:
+    # Hardcoded for a/b testing to achieve data parity.
+    return ["chrome-perf-experiment-non-public"]
+  if not builder_name or not master_name:
+    return []
+  is_public = is_public_builder(builder_name)
+  for _, value in json_constants.REPOSITORY_PROPERTY_MAP.items():
+    if master_name in value["masters"]:
+      if is_public:
+        return [value["public_bucket_name"]]
+      if value["internal_bucket_name"]:
+        return [value["public_bucket_name"], value["internal_bucket_name"]]
+      return [value["public_bucket_name"]]
+  return []
 
 
 def calculate_stats(values):

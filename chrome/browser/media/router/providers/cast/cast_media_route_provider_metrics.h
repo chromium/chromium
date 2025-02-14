@@ -13,14 +13,14 @@
 namespace media_router {
 
 // Histogram names for app availability.
-static constexpr char kHistogramAppAvailabilitySuccess[] =
+inline constexpr char kHistogramAppAvailabilitySuccess[] =
     "MediaRouter.Cast.App.Availability.Success";
-static constexpr char kHistogramAppAvailabilityFailure[] =
+inline constexpr char kHistogramAppAvailabilityFailure[] =
     "MediaRouter.Cast.App.Availability.Failure";
-static constexpr char kHistogramAudioSender[] =
+inline constexpr char kHistogramAudioSender[] =
     "MediaRouter.CastStreaming.Audio.PlaybackOnReceiver";
 // Histogram name for appType set by the receiver device.
-static constexpr char kHistogramCastAppType[] =
+inline constexpr char kHistogramCastAppType[] =
     "MediaRouter.Cast.LaunchSessionResponse.AppType";
 
 // For the purpose of collecting data for

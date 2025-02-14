@@ -1,0 +1,30 @@
+[package]
+name = "sfv"
+version = "0.10.4"
+authors = ["Tania Batieva <yalyna.ts@gmail.com>"]
+edition = "2018"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+documentation = "https://docs.rs/sfv"
+description = """Structured Field Values for HTTP parser.
+Implementation of RFC 8941."""
+repository = "https://github.com/undef1nd/sfv"
+keywords = ["http-header", "structured-header", ]
+exclude = ["tests/**", ".github/*"]
+
+
+[dependencies]
+base64 = "0.22.1"
+indexmap = "2"
+rust_decimal = { version = "1.20.0", default-features = false }
+
+[dev-dependencies]
+rust_decimal = { version = "1.20.0", default-features = false, features = ["std"] }
+serde_json = { version = "1.0" }
+serde = { version = "1.0", features = ["derive"] }
+criterion = "0.4.0"
+base32 = "0.5.1"
+
+[[bench]]
+name = "bench"
+harness = false

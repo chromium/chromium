@@ -2,8 +2,7 @@ PASS internals.pagePopupWindow is null
 PASS menu.value is "garply"
 PASS internals.selectMenuListText(menu) is "garply"
 PASS events[0] is "change"
-PASS events[1] is "mouseup"
-PASS events[2] is "click"
+PASS events[1] is "click"
 PASS successfullyParsed is true
 
 TEST COMPLETE

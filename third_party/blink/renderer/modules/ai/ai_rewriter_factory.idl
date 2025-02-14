@@ -34,7 +34,9 @@ interface AIRewriterFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AICapabilityAvailability> availability(optional AIRewriterCreateCoreOptions options = {});
+  Promise<AIAvailability> availability(
+    optional AIRewriterCreateCoreOptions options = {}
+  );
   [
     Measure,
     CallWith=ScriptState,

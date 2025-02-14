@@ -18,16 +18,17 @@ build_webui("build") {
 
   non_web_component_files = [
     "browser_proxy.ts",
-    "glic_api/glic_api.ts",
     "glic_api_impl/glic_api_client.ts",
+    "glic_api_impl/glic_api_host.ts",
     "glic_api_impl/glic_api_injected_client.ts",
     "glic_api_impl/post_message_transport.ts",
     "glic_api_impl/request_types.ts",
-    "glic_api_impl/glic_api_host.ts",
+    "glic_api/glic_api.ts",
     "glic_app_controller.ts",
+    "glic_fre/fre.ts",
     "icons.html.ts",
     "main.ts",
-    "glic_fre/fre.ts",
+    "webview.ts",
   ]
 
   webui_context_type = "trusted"
@@ -44,13 +45,13 @@ build_webui("build") {
   mojo_files = [ "$root_gen_dir/chrome/browser/glic/glic.mojom-webui.ts" ]
 
   ts_definitions = [
-    # These files are necessary for chrome.webviewTag:
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
+    "url_pattern.d.ts",
   ]
 
   ts_composite = true

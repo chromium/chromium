@@ -50,6 +50,7 @@ static_library("session") {
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/bluetooth",
     "//chrome/browser/ash/arc/boot_phase_monitor",
+    "//chrome/browser/ash/arc/dlc_installer",
     "//chrome/browser/ash/arc/enterprise",
     "//chrome/browser/ash/arc/enterprise/cert_store",
     "//chrome/browser/ash/arc/error_notification",

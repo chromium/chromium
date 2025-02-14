@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {TimeDelta} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import type {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -64,6 +65,7 @@ class MockRemoteHandler extends PageHandlerRemote {
             {title: 'material-title-1', type: 0},
             {title: 'material-title-2', type: 1},
           ],
+          type: 0,
         },
         {
           title: 'assignment-title2',
@@ -73,6 +75,7 @@ class MockRemoteHandler extends PageHandlerRemote {
             {title: 'material-title-3', type: 2},
             {title: 'material-title-4', type: 3},
           ],
+          type: 1,
         },
       ],
     });
@@ -247,6 +250,12 @@ class MockRemoteHandler extends PageHandlerRemote {
     return Promise.resolve({error: null});
   }
 
+  override extendSessionDuration(duration: TimeDelta):
+      Promise<{error: UpdateSessionError | null}> {
+    assertDeepEquals({microseconds: 900000000n}, duration);
+    return Promise.resolve({error: null});
+  }
+
   override removeStudent(id: string):
       Promise<{error: RemoveStudentError | null}> {
     id;
@@ -285,6 +294,14 @@ class MockRemoteHandler extends PageHandlerRemote {
     pref;
     value;
     return Promise.resolve();
+  }
+  override setSitePermission(
+      url: string, permission: Permission,
+      setting: PermissionSetting): Promise<{success: boolean}> {
+    url;
+    permission;
+    setting;
+    return Promise.resolve({success: true});
   }
 }
 
@@ -367,6 +384,7 @@ suite('ClientDelegateTest', function() {
                   {title: 'material-title-1', type: 0},
                   {title: 'material-title-2', type: 1},
                 ],
+                type: 0,
               },
               {
                 title: 'assignment-title2',
@@ -376,6 +394,7 @@ suite('ClientDelegateTest', function() {
                   {title: 'material-title-3', type: 2},
                   {title: 'material-title-4', type: 3},
                 ],
+                type: 1,
               },
             ],
             result);
@@ -576,6 +595,14 @@ suite('ClientDelegateTest', function() {
     assertTrue(result);
   });
 
+  test(
+      'client delegate should translate data for extend session duration',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().extendSessionDuration(15);
+        assertTrue(result);
+      });
+
   test('client delegate should translate data for remove student', async () => {
     const result = await clientDelegateImpl.getInstance().removeStudent('1');
     assertTrue(result);
@@ -716,5 +743,12 @@ suite('ClientDelegateTest', function() {
       'client delegate should respond correctly for set user pref',
       async () => {
         await clientDelegateImpl.getInstance().setUserPref(1, {value: {}});
+      });
+  test(
+      'client delegate should respond correctly for set site permission',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().setSitePermission('1', 0, 0);
+        assertTrue(result);
       });
 });

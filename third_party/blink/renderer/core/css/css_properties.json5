@@ -3622,6 +3622,7 @@
       name: "interactivity",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
+      independent: true,
       field_group: "*",
       field_template: "keyword",
       keywords: ["auto", "inert"],

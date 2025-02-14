@@ -55,6 +55,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/chrome_version.h"
@@ -478,11 +479,19 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
   dialog_controller_->SetRequestCallback(request_callback);
   dialog_controller_->SetAccountPreselectedCallback(
       account_preselected_callback_);
-  dialog_controller_->SetPasswordSelectedCallback(password_selected_callback_);
   dialog_controller_->SetBluetoothAdapterPowerOnCallback(
       bluetooth_adapter_power_on_callback);
   dialog_controller_->SetRequestBlePermissionCallback(
       request_ble_permission_callback);
+  if (PasswordsUsable(credential_types_,
+                      dialog_controller_->ui_presentation())) {
+    auto* password_controller =
+        PasswordCredentialController::MaybeGet(GetRenderFrameHost());
+    if (password_controller) {
+      password_controller->SetPasswordSelectedCallback(
+          password_selected_callback_);
+    }
+  }
 }
 
 void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(

@@ -2026,12 +2026,6 @@ const char kOutlineSilhouetteIconName[] = "Outline Silhouette Icon";
 const char kOutlineSilhouetteIconDescription[] =
     "Enables the improved silhouette icon for signed out profiles";
 
-const char kAtomicMoveAPIName[] = "Atomic DOM move (Node.moveBefore)";
-const char kAtomicMoveAPIDescription[] =
-    "Introduces a state-preserving atomic move primitive to the DOM, "
-    "by calling Node.moveBefore. See "
-    "https://github.com/whatwg/dom/issues/1255.";
-
 const char kCastMessageLoggingName[] = "Enables logging of all Cast messages.";
 const char kCastMessageLoggingDescription[] =
     "Enables logging of all messages exchanged between websites, Chrome, "
@@ -3753,14 +3747,6 @@ const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[] =
 const char kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[] =
     "New single username predictions based on voting from Username First Flow "
     "with intermediate values.";
-
-const char kUsernameFirstFlowWithIntermediateValuesVotingName[] =
-    "Username first flow with intermediate values voting";
-const char kUsernameFirstFlowWithIntermediateValuesVotingDescription[] =
-    "Support voting on username first flow with intermediate values. Username "
-    "first flow is login/sign-up flow where a user has to type username first "
-    "on one page and then password on another page. Intermediate fields are "
-    "usually an OTP field or CAPTCHA.";
 
 const char kUseSearchClickForRightClickName[] =
     "Use Search+Click for right click";
@@ -6822,6 +6808,11 @@ const char kMahiSummarizeSelectedDescription[] =
 const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";
+
+const char kMediaAppImageMantisModelName[] =
+    "The model to use with the Mantis feature";
+const char kMediaAppImageMantisModelDescription[] =
+    "This flag controls the model to use with the Mantis feature.";
 
 const char kMicrophoneMuteSwitchDeviceName[] = "Microphone Mute Switch Device";
 const char kMicrophoneMuteSwitchDeviceDescription[] =

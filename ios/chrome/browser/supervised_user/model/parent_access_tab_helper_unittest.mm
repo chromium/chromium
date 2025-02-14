@@ -7,34 +7,54 @@
 #import <Foundation/Foundation.h>
 
 #import "base/strings/stringprintf.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/time/time.h"
+#import "components/supervised_user/core/browser/web_content_handler.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/supervised_user/test_support/parent_access_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
+#import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
-// A test object that conforms to the NetExportTabHelperDelegate protocol.
+// A test object that conforms to the ParentAccessTabHelperDelegate protocol.
 @interface TestParentAccessTabHelperDelegate
     : NSObject <ParentAccessTabHelperDelegate>
 // Boolean to track whether the bottom sheet is hidden.
 @property(nonatomic, readonly) BOOL isBottomSheetHidden;
-// Result extracted from the PACP callback.
-@property(nonatomic, readonly) supervised_user::LocalApprovalResult result;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCompletion:(ParentAccessApprovalResultCallback)callback
+    NS_DESIGNATED_INITIALIZER;
 
 @end
 
-@implementation TestParentAccessTabHelperDelegate
+@implementation TestParentAccessTabHelperDelegate {
+  // Completion callback to be executed when the bottom sheet is dismissed.
+  ParentAccessApprovalResultCallback _completion;
+}
+
 @synthesize isBottomSheetHidden = _isBottomSheetHidden;
-@synthesize result = _result;
+
+- (instancetype)initWithCompletion:
+    (ParentAccessApprovalResultCallback)callback {
+  if ((self = [super init])) {
+    _completion = std::move(callback);
+  }
+  return self;
+}
 
 - (void)hideParentAccessBottomSheetWithResult:
     (supervised_user::LocalApprovalResult)result {
   _isBottomSheetHidden = true;
-  _result = result;
+  CHECK(_completion);
+  std::move(_completion).Run(result);
 }
 
 @end
@@ -42,12 +62,27 @@
 // Test fixture for testing ParentAccessTabHelper.
 class ParentAccessTabHelperTest : public PlatformTest {
  public:
-  ParentAccessTabHelperTest()
-      : delegate_([[TestParentAccessTabHelperDelegate alloc] init]) {
+  ParentAccessTabHelperTest() {
     profile_ = TestProfileIOS::Builder().Build();
 
     web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
+
+    mock_parent_access_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(ParentAccessCommands));
+    web_content_handler_ = std::make_unique<IOSWebContentHandlerImpl>(
+        web_state_.get(), mock_parent_access_commands_handler_,
+        /*is_main_frame=*/true);
+    web_content_handler_->is_bottomsheet_shown_ = true;
+
+    // URL is ignored in this test; using an empty GURL.
+    ParentAccessApprovalResultCallback completion_callback = base::BindOnce(
+        &IOSWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
+        std::move(web_content_handler_), GURL(),
+        /*start_time=*/base::TimeTicks());
+
+    delegate_ = [[TestParentAccessTabHelperDelegate alloc]
+        initWithCompletion:std::move(completion_callback)];
   }
 
   ParentAccessTabHelperTest(const ParentAccessTabHelperTest&) = delete;
@@ -67,9 +102,13 @@ class ParentAccessTabHelperTest : public PlatformTest {
 
   web::WebState* web_state() { return web_state_.get(); }
 
+  base::HistogramTester histogram_tester_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
+  id mock_parent_access_commands_handler_;
+  std::unique_ptr<IOSWebContentHandlerImpl> web_content_handler_;
+
   // A delegate that is given to the ParentAccessTabHelper for testing.
   __strong TestParentAccessTabHelperDelegate* delegate_;
 };
@@ -100,6 +139,14 @@ TEST_F(ParentAccessTabHelperTest, InvalidURL) {
 
   EXPECT_FALSE(delegate_.isBottomSheetHidden);
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
+
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 0);
+
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::
+          GetLocalApprovalDurationMillisecondsHistogram(),
+      0);
 }
 
 // Verifies that a valid URL that has an empty result closes the bottom sheet
@@ -123,8 +170,18 @@ TEST_F(ParentAccessTabHelperTest, ValidUrlWithoutResult) {
       }));
 
   EXPECT_TRUE(delegate_.isBottomSheetHidden);
-  EXPECT_EQ(delegate_.result, supervised_user::LocalApprovalResult::kError);
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
+
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
+      supervised_user::LocalApprovalResult::kError, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
+
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::
+          GetLocalApprovalDurationMillisecondsHistogram(),
+      0);
 }
 
 // Verifies that a valid URL with a malformed message closes the bottom sheet
@@ -149,8 +206,18 @@ TEST_F(ParentAccessTabHelperTest, ValidUrlWithError) {
       }));
 
   EXPECT_TRUE(delegate_.isBottomSheetHidden);
-  EXPECT_EQ(delegate_.result, supervised_user::LocalApprovalResult::kError);
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
+
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
+      supervised_user::LocalApprovalResult::kError, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
+
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::
+          GetLocalApprovalDurationMillisecondsHistogram(),
+      0);
 }
 
 // Verifies that a valid URL with an unexpected result closes the bottom sheet
@@ -176,8 +243,18 @@ TEST_F(ParentAccessTabHelperTest, ValidUrlWithUnexpectedResult) {
       }));
 
   EXPECT_TRUE(delegate_.isBottomSheetHidden);
-  EXPECT_EQ(delegate_.result, supervised_user::LocalApprovalResult::kError);
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
+
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
+      supervised_user::LocalApprovalResult::kError, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
+
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::
+          GetLocalApprovalDurationMillisecondsHistogram(),
+      0);
 }
 
 // Verifies that a valid URL with a valid result closes the bottom sheet and
@@ -203,6 +280,16 @@ TEST_F(ParentAccessTabHelperTest, ValidUrlWithApprovalResult) {
       }));
 
   EXPECT_TRUE(delegate_.isBottomSheetHidden);
-  EXPECT_EQ(delegate_.result, supervised_user::LocalApprovalResult::kApproved);
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
+
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
+      supervised_user::LocalApprovalResult::kApproved, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
+
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::
+          GetLocalApprovalDurationMillisecondsHistogram(),
+      1);
 }

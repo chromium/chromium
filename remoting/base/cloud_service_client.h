@@ -6,6 +6,7 @@
 #define REMOTING_BASE_CLOUD_SERVICE_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -67,14 +68,20 @@ class CloudServiceClient {
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           VerifySessionTokenResponse>)>;
 
-  // Used for creating a service client to call the Remoting Cloud API using
-  // the |api_key| provided.
-  CloudServiceClient(
-      const std::string& api_key,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   // Used for creating a service client to call the Remoting Cloud Private API
   // using a scoped OAuth access token generated for the device robot account.
-  CloudServiceClient(
+  static std::unique_ptr<CloudServiceClient> CreateForChromotingRobotAccount(
+      OAuthTokenGetter* oauth_token_getter,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  // Used for creating a service client to call the Remoting Cloud API using
+  // the |api_key| provided which associates the request with a GCP project.
+  static std::unique_ptr<CloudServiceClient> CreateForGcpProject(
+      const std::string& api_key,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  // Used for creating a service client to call the Remoting Cloud API using
+  // an access token associated with the default service account for the
+  // Compute Engine Instance the code is running on.
+  static std::unique_ptr<CloudServiceClient> CreateForGceDefaultServiceAccount(
       OAuthTokenGetter* oauth_token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
@@ -88,6 +95,7 @@ class CloudServiceClient {
       const std::string& display_name,
       const std::string& public_key,
       const std::optional<std::string>& existing_directory_id,
+      const std::optional<std::string>& instance_identity_token,
       ProvisionGceInstanceCallback callback);
 
   void SendHeartbeat(const std::string& directory_id,
@@ -115,6 +123,12 @@ class CloudServiceClient {
   void CancelPendingRequests();
 
  private:
+  CloudServiceClient(
+      const std::string& api_key,
+      OAuthTokenGetter* oauth_token_getter,
+      const std::string& base_service_url,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   template <typename CallbackType>
   void ExecuteRequest(
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -124,7 +138,7 @@ class CloudServiceClient {
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback);
 
-  // The customer API_KEY to use for calling the Cloud API.
+  // The customer API_KEY to use for calling the Remoting Cloud API.
   std::string api_key_;
 
   ProtobufHttpClient http_client_;

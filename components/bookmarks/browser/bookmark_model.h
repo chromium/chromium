@@ -163,6 +163,9 @@ class BookmarkModel : public BookmarkUndoProvider,
     return node && (node == root_ || node->parent() == root_);
   }
 
+  // Returns true if the given `node` should be visible in UI surfaces.
+  bool IsNodeVisible(const BookmarkNode& node) const;
+
   // Returns true if `node` represents a bookmark that is stored on the local
   // profile but not saved to the user's server-side account. The opposite case,
   // returning null, can happen because the user turned sync-the-feature on,

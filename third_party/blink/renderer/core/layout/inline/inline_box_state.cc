@@ -1049,6 +1049,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
 
 void InlineLayoutStateStack::BoxData::Trace(Visitor* visitor) const {
   visitor->Trace(ruby_column_list);
+  visitor->Trace(item);
 }
 
 InlineLayoutStateStack::PositionPending

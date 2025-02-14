@@ -84,9 +84,9 @@ void SaveAutofillAiDataControllerImpl::OnSaveButtonClicked() {
 
 std::u16string SaveAutofillAiDataControllerImpl::GetDialogTitle() const {
   switch (autofill_ai_data_->type().name()) {
-    case autofill::EntityTypeName::kCar:
+    case autofill::EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SAVE_CAR_ENTITY_DIALOG_TITLE);
+          IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
     case autofill::EntityTypeName::kPassport:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);

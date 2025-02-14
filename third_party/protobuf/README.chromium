@@ -163,6 +163,12 @@ Description of the patches:
 
   See https://github.com/protocolbuffers/protobuf/issues/10159.
 
+  Feb-2025: this patch was updated to address an issue where code internal to
+  PB assumed that the default instances it was acting on were const inited,
+  when they were not constinit due to the Chromium workaround. See related
+  PB commit:
+  https://github.com/protocolbuffers/protobuf/commit/f5c53ac4605aa5a276e9786952d467fe1fda5420
+
 - 0031-workaround-cfi-unrelated-cast.patch
 
   A workaround for Clang's Control Flow Integrity check for casting pointers to

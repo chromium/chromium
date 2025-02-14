@@ -54,8 +54,7 @@ class PlusAddressSettingService;
 // Not intended for widespread use.
 class PlusAddressServiceImpl : public PlusAddressService,
                                public signin::IdentityManager::Observer,
-                               public PlusAddressWebDataService::Observer,
-                               public WebDataServiceConsumer {
+                               public PlusAddressWebDataService::Observer {
  public:
   using FeatureEnabledForProfileCheck =
       base::RepeatingCallback<bool(const base::Feature&)>;
@@ -126,10 +125,8 @@ class PlusAddressServiceImpl : public PlusAddressService,
   void OnWebDataChangedBySync(
       const std::vector<PlusAddressDataChange>& changes) override;
 
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override;
+  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle handle,
+                                   std::unique_ptr<WDTypedResult> result);
 
   // PlusAddressService:
   void AddObserver(PlusAddressService::Observer* o) override;
@@ -238,7 +235,7 @@ class PlusAddressServiceImpl : public PlusAddressService,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<PlusAddressServiceImpl> weak_factory_{this};
+  base::WeakPtrFactory<PlusAddressServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace plus_addresses

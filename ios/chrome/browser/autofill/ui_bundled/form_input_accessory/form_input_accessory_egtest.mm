@@ -175,7 +175,7 @@ void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
   config.features_disabled.push_back(
       autofill::features::test::kAutofillServerCommunication);
   if ([self isRunningTest:@selector(testOpenExpandedManualFillView)]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
   if ([self isRunningTest:@selector(testFillXframeCreditCardForm)] ||
       [self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)]) {
@@ -647,11 +647,6 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
 // Tests that the manual fill button opens the expanded manual fill view.
 - (void)testOpenExpandedManualFillView {
-  // The expanded manual fill view UI is not available on tablets.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
-  }
-
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]

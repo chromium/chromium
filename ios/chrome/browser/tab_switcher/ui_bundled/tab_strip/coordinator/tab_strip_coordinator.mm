@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -107,13 +108,21 @@
   BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  self.mediator = [[TabStripMediator alloc]
-         initWithConsumer:self.tabStripViewController
-      tabGroupSyncService:tabGroupSyncService
-              browserList:browserList
-         messagingService:collaboration::messaging::
-                              MessagingBackendServiceFactory::GetForProfile(
-                                  profile)];
+  data_sharing::DataSharingService* dataSharingService =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  collaboration::messaging::MessagingBackendService* messagingService =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+
+  self.mediator =
+      [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
+                             tabGroupSyncService:tabGroupSyncService
+                              dataSharingService:dataSharingService
+                                     browserList:browserList
+                                messagingService:messagingService
+                            collaborationService:collaborationService];
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.profile = profile;
   self.mediator.browser = self.browser;
@@ -260,6 +269,11 @@
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
                                 groupItem:(TabGroupItem*)tabGroupItem
                                sourceView:(UIView*)sourceView {
+  if (actionType == TabGroupActionType::kLeaveOrKeepSharedTabGroup ||
+      actionType == TabGroupActionType::kDeleteOrKeepSharedTabGroup) {
+    sourceView = self.tabStripViewController.closedTabGroupView;
+  }
+
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -267,20 +281,19 @@
                       sourceView:sourceView];
   __weak TabStripCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.primaryAction = ^{
+    [weakSelf takeActionForActionType:actionType tabGroupItem:tabGroupItem];
+  };
+  _tabGroupConfirmationCoordinator.secondaryAction = ^{
     switch (actionType) {
       case TabGroupActionType::kUngroupTabGroup:
-        [weakSelf ungroupTabGroup:tabGroupItem];
-        break;
       case TabGroupActionType::kDeleteTabGroup:
-        [weakSelf deleteTabGroup:tabGroupItem];
-        break;
       case TabGroupActionType::kLeaveSharedTabGroup:
       case TabGroupActionType::kDeleteSharedTabGroup:
-        // TODO(crbug.com/375587197): Implement this.
-        break;
+        NOTREACHED();
+
       case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
       case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
-        NOTREACHED();
+        break;
     }
   };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroupItem.title;
@@ -391,21 +404,33 @@
   _alertCoordinator = nil;
 }
 
-// Helper method to close a tab group and dismiss the confirmation coordinator.
-- (void)deleteTabGroup:(TabGroupItem*)tabGroupItem {
-  if (tabGroupItem) {
-    [_mediator deleteGroup:tabGroupItem];
+// Executes a corresponded action to `actionType` and dismiss
+// the confirmation coordinator.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                   tabGroupItem:(TabGroupItem*)tabGroupItem {
+  if (!tabGroupItem) {
+    return;
   }
-  [_tabGroupConfirmationCoordinator stop];
-  _tabGroupConfirmationCoordinator = nil;
-}
 
-// Helper method to ungroup a tab group and dismiss the confirmation
-// coordinator.
-- (void)ungroupTabGroup:(TabGroupItem*)tabGroupItem {
-  if (tabGroupItem) {
-    [_mediator ungroupGroup:tabGroupItem];
+  switch (actionType) {
+    case TabGroupActionType::kUngroupTabGroup:
+      [_mediator ungroupGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kDeleteTabGroup:
+      [_mediator deleteGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      [_mediator leaveSharedGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      [_mediator deleteSharedGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      // Not implemented yet.
+      NOTREACHED();
   }
+
   [_tabGroupConfirmationCoordinator stop];
   _tabGroupConfirmationCoordinator = nil;
 }

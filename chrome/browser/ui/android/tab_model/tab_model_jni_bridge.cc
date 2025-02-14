@@ -252,7 +252,9 @@ jclass TabModelJniBridge::GetClazz(JNIEnv* env) {
 }
 
 TabModelJniBridge::~TabModelJniBridge() {
-  if (!is_archived_tab_model_) {
+  if (is_archived_tab_model_) {
+    TabModelList::SetArchivedTabModel(nullptr);
+  } else {
     TabModelList::RemoveTabModel(this);
   }
 }

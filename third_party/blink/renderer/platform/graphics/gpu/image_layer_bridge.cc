@@ -194,7 +194,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
     bool is_overlay_candidate =
         shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
-    SkColorType color_type = image_for_compositor->GetSkColorInfo().colorType();
+    SkColorType color_type = image_for_compositor->GetSkImageInfo().colorType();
     *out_resource = viz::TransferableResource::MakeGpu(
         shared_image, shared_image->GetTextureTarget(),
         image_for_compositor->GetSyncToken(), size,

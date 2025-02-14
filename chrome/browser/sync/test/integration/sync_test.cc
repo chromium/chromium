@@ -1123,7 +1123,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
   allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
 
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
+  if (base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage) &&
       base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     allowed_types.Put(syncer::PREFERENCES);

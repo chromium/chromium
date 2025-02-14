@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -71,6 +72,20 @@ TEST_F(InvalidationSetToSelectorMapTest, TrackerLifetime) {
   StopTracing();
 }
 
+namespace {
+
+const std::string& SelectorAtIndex(const base::Value::List* selector_list,
+                                   size_t index) {
+  return *(*selector_list)[index].GetDict().FindString("selector");
+}
+
+const std::string& StyleSheetIdAtIndex(const base::Value::List* selector_list,
+                                       size_t index) {
+  return *(*selector_list)[index].GetDict().FindString("style_sheet_id");
+}
+
+}  // anonymous namespace
+
 TEST_F(InvalidationSetToSelectorMapTest, ClassMatch) {
   StartTracing();
   SetBodyInnerHTML(R"HTML(
@@ -102,7 +117,7 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatch) {
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".b .x");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
         found_event_count++;
       }
     }
@@ -143,12 +158,70 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithMultipleInvalidations) {
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".b .x");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
         found_event_count++;
       }
     }
   }
   EXPECT_EQ(found_event_count, 3u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithMultipleStylesheets) {
+  StartTracing();
+  SetBodyInnerHTML(R"HTML(
+    <style id=sheet1>
+      .a .x { color: red; }
+    </style>
+    <style id=sheet2>
+      .b .x { color: green; }
+    </style>
+    <div id=parent>Parent
+      <div class=x>Child</div>
+    </div>
+  )HTML");
+
+  Element* parent = GetElementById("parent");
+  parent->classList().Add(AtomicString("a"));
+  UpdateAllLifecyclePhasesForTest();
+  parent->classList().Add(AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &events);
+  size_t found_event_count = 0;
+  for (auto event : events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched class") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      if (selector_list != nullptr) {
+        EXPECT_EQ(selector_list->size(), 1u);
+
+        const char* expected_selector;
+        const char* style_element_id;
+        if (found_event_count == 0) {
+          expected_selector = ".a .x";
+          style_element_id = "sheet1";
+        } else {
+          expected_selector = ".b .x";
+          style_element_id = "sheet2";
+        }
+
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), expected_selector);
+        const CSSStyleSheet* sheet =
+            To<HTMLStyleElement>(GetElementById(style_element_id))->sheet();
+        EXPECT_EQ(StyleSheetIdAtIndex(selector_list, 0),
+                  IdentifiersFactory::IdForCSSStyleSheet(sheet).Utf8());
+
+        found_event_count++;
+      }
+    }
+  }
+  EXPECT_EQ(found_event_count, 2u);
 }
 
 TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithCombine) {
@@ -187,11 +260,11 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithCombine) {
         EXPECT_EQ(selector_list->size(), 2u);
         // The map stores selectors in a HeapHashSet; they can be output to the
         // trace event list in either order.
-        if ((*selector_list)[0] == ".b .x") {
-          EXPECT_EQ((*selector_list)[1], ".b .w .x");
+        if (SelectorAtIndex(selector_list, 0) == ".b .x") {
+          EXPECT_EQ(SelectorAtIndex(selector_list, 1), ".b .w .x");
         } else {
-          EXPECT_EQ((*selector_list)[0], ".b .w .x");
-          EXPECT_EQ((*selector_list)[1], ".b .x");
+          EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .w .x");
+          EXPECT_EQ(SelectorAtIndex(selector_list, 1), ".b .x");
         }
         found_event_count++;
       }
@@ -281,7 +354,7 @@ TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".b *");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b *");
         found_event_count++;
       }
     }
@@ -295,6 +368,7 @@ TEST_F(InvalidationSetToSelectorMapTest, InvalidationSetRemoval) {
       GetDocument().GetStyleEngine());
   EXPECT_NE(GetInstance(), nullptr);
 
+  CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
   StyleRule* style_rule = To<StyleRule>(
       css_test_helpers::ParseRule(GetDocument(), ".a .b { color: red; }"));
   AtomicString class_name("b");
@@ -303,12 +377,14 @@ TEST_F(InvalidationSetToSelectorMapTest, InvalidationSetRemoval) {
   using IndexedSelector = InvalidationSetToSelectorMap::IndexedSelector;
   using IndexedSelectorList = InvalidationSetToSelectorMap::IndexedSelectorList;
 
+  InvalidationSetToSelectorMap::BeginStyleSheetContents(sheet->Contents());
   InvalidationSetToSelectorMap::BeginSelector(style_rule, 0);
   InvalidationSet* invalidation_set =
       DescendantInvalidationSet::Create().release();
   InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
       invalidation_set, SelectorFeatureType::kClass, class_name);
   InvalidationSetToSelectorMap::EndSelector();
+  InvalidationSetToSelectorMap::EndStyleSheetContents();
 
   const IndexedSelectorList* result = InvalidationSetToSelectorMap::Lookup(
       invalidation_set, SelectorFeatureType::kClass, class_name);
@@ -359,7 +435,7 @@ TEST_F(InvalidationSetToSelectorMapTest, StartTracingLate) {
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".b .x");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
         found_event_count++;
       }
     }
@@ -403,7 +479,7 @@ TEST_F(InvalidationSetToSelectorMapTest, StartTracingLateWithNestedRules) {
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".b .x");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
         found_event_count++;
       }
     }
@@ -442,7 +518,7 @@ TEST_F(InvalidationSetToSelectorMapTest,
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".a .c");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a .c");
         found_event_count++;
       }
     }
@@ -485,7 +561,7 @@ TEST_F(InvalidationSetToSelectorMapTest,
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".c .d");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".c .d");
         found_event_count++;
       }
     }
@@ -527,7 +603,7 @@ TEST_F(InvalidationSetToSelectorMapTest,
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".a + .b");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a + .b");
         found_event_count++;
       }
     }
@@ -603,7 +679,7 @@ TEST_F(InvalidationSetToSelectorMapTest, HandleRebuildAfterRuleSetChange) {
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".a .b");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a .b");
         found_event_count++;
       }
     }
@@ -643,7 +719,7 @@ TEST_F(InvalidationSetToSelectorMapTest,
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".a *");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a *");
         found_event_count++;
       }
     }
@@ -685,7 +761,7 @@ TEST_F(InvalidationSetToSelectorMapTest,
       base::Value::List* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
-        EXPECT_EQ((*selector_list)[0], ".a + *");
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a + *");
         found_event_count++;
       }
     }
@@ -770,7 +846,7 @@ TEST_F(InvalidationSetToSelectorMapTest,
   base::Value::List* selector_list = data_dict.FindList("selectors");
   ASSERT_NE(selector_list, nullptr);
   EXPECT_EQ(selector_list->size(), 1u);
-  EXPECT_EQ((*selector_list)[0], ".b *");
+  EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b *");
 }
 
 TEST_F(InvalidationSetToSelectorMapTest, AttributePseudos) {
@@ -818,7 +894,7 @@ TEST_F(InvalidationSetToSelectorMapTest, AttributePseudos) {
   base::Value::List* selector_list = data_dict.FindList("selectors");
   ASSERT_NE(selector_list, nullptr);
   EXPECT_EQ(selector_list->size(), 1u);
-  EXPECT_EQ((*selector_list)[0], ".b p::first-letter");
+  EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b p::first-letter");
 }
 
 }  // namespace blink

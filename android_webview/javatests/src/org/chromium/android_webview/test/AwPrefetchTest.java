@@ -10,6 +10,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,6 +22,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwNoVarySearchData;
 import org.chromium.android_webview.AwPrefetchCallback;
+import org.chromium.android_webview.AwPrefetchManager;
 import org.chromium.android_webview.AwPrefetchParameters;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -187,6 +189,40 @@ public class AwPrefetchTest extends AwParameterizedTest {
                     callback.getOnErrorHelper().getError().getMessage());
             Assert.assertNull(callback.getOnStatusUpdatedHelper().mExtras);
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSettingConfigsWithInValidValues() {
+        AwPrefetchManager prefetchManager =
+                mActivityTestRule.getAwBrowserContext().getPrefetchManager();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Updating with negative values shouldn't be applied
+                    prefetchManager.updatePrefetchConfiguration(-1, -1);
+                    Assert.assertTrue(prefetchManager.getTTlInSec() > 0);
+                    Assert.assertTrue(prefetchManager.getMaxPrefetches() > 0);
+
+                    // Updating with 0 shouldn't be applied as well.
+                    prefetchManager.updatePrefetchConfiguration(0, 0);
+                    Assert.assertTrue(prefetchManager.getTTlInSec() > 0);
+                    Assert.assertTrue(prefetchManager.getMaxPrefetches() > 0);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSettingConfigsWithValidValues() {
+        AwPrefetchManager prefetchManager =
+                mActivityTestRule.getAwBrowserContext().getPrefetchManager();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    prefetchManager.updatePrefetchConfiguration(60, 5);
+                    Assert.assertEquals(60, prefetchManager.getTTlInSec());
+                    Assert.assertEquals(5, prefetchManager.getMaxPrefetches());
+                });
     }
 
     private TestAwPrefetchCallback startPrefetchingAndWait(

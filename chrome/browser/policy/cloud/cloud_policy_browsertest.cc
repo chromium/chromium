@@ -18,7 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -67,7 +66,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -130,7 +129,7 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
 }
 
 const char* GetTestUser() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return user_manager::kStubUserEmail;
 #else
   return "user@example.com";
@@ -240,21 +239,12 @@ class CloudPolicyTest : public PlatformBrowserTest,
         g_browser_process->browser_policy_connector();
     connector->ScheduleServiceInitialization(0);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     UserCloudPolicyManagerAsh* policy_manager =
         chrome_test_utils::GetProfile(this)->GetUserCloudPolicyManagerAsh();
     ASSERT_TRUE(policy_manager);
 #else
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::FilePath dest_path =
-        g_browser_process->profile_manager()->user_data_dir();
-    profile_ = Profile::CreateProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")), nullptr,
-        Profile::CreateMode::kSynchronous);
-    Profile* profile = profile_.get();
-#else
     Profile* profile = chrome_test_utils::GetProfile(this);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Mock a signed-in user. This is used by the UserCloudPolicyStore to pass
     // the username to the UserCloudPolicyValidator.
@@ -270,7 +260,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
         std::make_unique<CloudPolicyClient>(
             connector->device_management_service(),
             g_browser_process->shared_url_loader_factory()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     ASSERT_TRUE(policy_manager->core()->client());
 
@@ -296,7 +286,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     // CloudPolicyClient fetch the DMToken.
     ASSERT_FALSE(policy_manager->core()->client()->is_registered());
     CloudPolicyClient::RegistrationParameters parameters(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         em::DeviceRegisterRequest::USER,
 #else
         em::DeviceRegisterRequest::BROWSER,
@@ -315,7 +305,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     policy_manager->core()->client()->AddObserver(
         policy_manager->core()->refresh_scheduler());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Get the path to the user policy key file.
     base::FilePath user_policy_key_dir;
     ASSERT_TRUE(base::PathService::Get(
@@ -329,22 +319,15 @@ class CloudPolicyTest : public PlatformBrowserTest,
 #else
     user_policy_key_file_ =
         profile->GetPath().AppendASCII("Policy").AppendASCII("Signing Key");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_.reset();
-#endif
     identity_test_env_.reset();
   }
 
   Profile* profile() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return profile_.get();
-#else
     return chrome_test_utils::GetProfile(this);
-#endif
   }
 
   PolicyService* GetPolicyService() {
@@ -405,7 +388,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
   void OnPolicyServiceInitialized(PolicyDomain domain) override {}
 
   void FlushNonChromeOSStoreIOTasks() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     base::RunLoop run_loop;
     profile()
         ->GetUserCloudPolicyManager()
@@ -414,16 +397,12 @@ class CloudPolicyTest : public PlatformBrowserTest,
         ->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
                           base::Milliseconds(0));
     run_loop.Run();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   base::FilePath user_policy_key_file_;
   base::OnceClosure on_policy_updated_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For Lacros use non-main profile in these tests.
-  std::unique_ptr<Profile> profile_;
-#endif
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
@@ -460,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicy) {
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // ENTERPRISE_DEFAULT policies only are supported on Chrome OS currently.
 IN_PROC_BROWSER_TEST_P(CloudPolicyTest, EnsureDefaultPoliciesSet) {
   PolicyService* policy_service = GetPolicyService();
@@ -485,13 +464,7 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, EnsureDefaultPoliciesSet) {
 }
 #endif
 
-// crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_InvalidatePolicy DISABLED_InvalidatePolicy
-#else
-#define MAYBE_InvalidatePolicy InvalidatePolicy
-#endif
-IN_PROC_BROWSER_TEST_P(CloudPolicyTest, MAYBE_InvalidatePolicy) {
+IN_PROC_BROWSER_TEST_P(CloudPolicyTest, InvalidatePolicy) {
   PolicyService* policy_service = GetPolicyService();
   policy_service->AddObserver(POLICY_DOMAIN_CHROME, this);
 

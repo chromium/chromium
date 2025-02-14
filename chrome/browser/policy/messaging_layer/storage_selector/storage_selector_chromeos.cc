@@ -11,7 +11,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/dbus/missive/missive_storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
@@ -21,8 +20,7 @@ namespace reporting {
 
 // static
 bool StorageSelector::is_uploader_required() {
-  // Ash needs to upload. LaCros cannot upload and does not need to.
-  return BUILDFLAG(IS_CHROMEOS_ASH);
+  return BUILDFLAG(IS_CHROMEOS);
 }
 
 // static

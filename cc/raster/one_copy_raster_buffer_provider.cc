@@ -58,7 +58,7 @@ OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
       color_space_(in_use_resource.color_space()),
       previous_content_id_(previous_content_id),
       before_raster_sync_token_(backing->returned_sync_token),
-      shared_image_(backing->shared_image),
+      shared_image_(backing->shared_image()),
       mailbox_texture_is_overlay_candidate_(backing->overlay_candidate) {}
 
 OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
@@ -71,10 +71,10 @@ OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
     backing_->returned_sync_token = gpu::SyncToken();
   }
   backing_->set_shared_image(std::move(shared_image_));
-  if (should_destroy_shared_image_ && backing_->shared_image) {
-    backing_->shared_image->UpdateDestructionSyncToken(
+  if (should_destroy_shared_image_ && backing_->shared_image()) {
+    backing_->shared_image()->UpdateDestructionSyncToken(
         before_raster_sync_token_);
-    backing_->shared_image.reset();
+    backing_->clear_shared_image();
   }
 }
 

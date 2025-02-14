@@ -444,6 +444,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorHoverCardTabAlertPipPlayingIcon] =
       ui::PickGoogleColor(ui::kColorAccent, ui::kColorBubbleFooterBackground,
                           color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorHoverCardTabAlertUserAvatarFallbackIcon] =
+      ui::SelectBasedOnDarkInput(ui::kColorBubbleFooterBackground,
+                                 SK_ColorWHITE, gfx::kGoogleGrey800);
   mixer[kColorTabCloseButtonFocusRingActive] = ui::PickGoogleColor(
       ui::kColorFocusableBorderFocused, kColorTabBackgroundActiveFrameActive,
       color_utils::kMinimumVisibleContrastRatio);
@@ -457,8 +460,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorFocusableBorderFocused, kColorTabBackgroundInactiveFrameActive,
       ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
 
+  mixer[kColorSharingRecentActivityDialogActivityContainer] = {
+      ui::kColorSysSurface5};
   mixer[kColorSharingRecentActivityDialogFaviconContainer] = {
-      kColorToolbarInkDropHover};
+      ui::kColorSysSurface};
 
   mixer[kColorTabGroupTabStripFrameActiveBlue] =
       ui::SelectBasedOnDarkInput(kColorTabBackgroundInactiveFrameActive,

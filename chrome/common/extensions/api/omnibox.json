@@ -91,6 +91,12 @@
             "items": {
               "$ref": "Action"
             }
+          },
+          "iconUrl" : {
+            "nodoc": true,
+            "optional": true,
+            "description": "An icon shown on the leading edge of the suggestion in the omnibox dropdown. Only supported for suggestions added in unscoped mode.",
+            "type": "string"
           }
         }
       },

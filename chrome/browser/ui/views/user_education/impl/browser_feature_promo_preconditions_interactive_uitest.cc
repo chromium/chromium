@@ -89,20 +89,15 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
   auto* const incog = CreateIncognitoBrowser();
   RunTestSequence(
       WaitForShow(kToolbarAppMenuButtonElementId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              "Linux window activation issues."),
       InContext(incog->window()->GetElementContext(),
-                WaitForShow(kToolbarAppMenuButtonElementId)),
-      Check([this, incog]() {
-        // On different platforms, activation of the second window can occur
-        // differently. So instead of trying to guess which will be active,
-        // explicitly find the inactive one.
-        Browser* inactive = incog->IsActive() ? browser() : incog;
-        EXPECT_FALSE(inactive->IsActive());
-        anchor_element_data_.data() =
-            ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-                kToolbarAppMenuButtonElementId,
-                inactive->window()->GetElementContext());
-        return static_cast<bool>(anchor_element_data_.data());
-      }),
+                Steps(WaitForShow(kToolbarAppMenuButtonElementId),
+                      ActivateSurface(kToolbarAppMenuButtonElementId))),
+      WithElement(kToolbarAppMenuButtonElementId,
+                  [this](ui::TrackedElement* anchor) {
+                    anchor_element_data_.data() = anchor;
+                  }),
       CheckWindowActiveResult(
           user_education::FeaturePromoResult::kBlockedByUi));
 }

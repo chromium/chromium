@@ -6,7 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/flat_set.h"
-#include "headless/lib/browser/headless_screen_info.h"
+#include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
 #include "ui/display/util/display_util.h"

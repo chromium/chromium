@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kStartMigrateToDircrypto,
     kRemove,
     kGetRecoverableKeyStores,
+    kLockFactorUntilReboot,
   };
 
   // The method by which a user's home directory can be encrypted.
@@ -317,6 +318,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void SetUserDataStorageWriteEnabled(
       const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
       SetUserDataStorageWriteEnabledCallback callback) override;
+  void LockFactorUntilReboot(
+      const ::user_data_auth::LockFactorUntilRebootRequest& request,
+      FakeUserDataAuthClient::LockFactorUntilRebootCallback callback) override;
 
   int get_prepare_guest_request_count() const {
     return prepare_guest_request_count_;
@@ -353,6 +357,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   FUDAC_OPERATION_TYPES(kRemove, RemoveRequest);
   FUDAC_OPERATION_TYPES(kGetRecoverableKeyStores,
                         GetRecoverableKeyStoresRequest);
+  FUDAC_OPERATION_TYPES(kLockFactorUntilReboot, LockFactorUntilRebootRequest);
 
 #undef FUDAC_OPERATION_TYPES
 

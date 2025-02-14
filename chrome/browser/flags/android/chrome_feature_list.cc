@@ -517,7 +517,7 @@ BASE_FEATURE(kAndroidPdfAssistContent,
 
 BASE_FEATURE(kAndroidTabDeclutter,
              "AndroidTabDeclutter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab,
              "AndroidTabDeclutterArchiveAllButActiveTab",

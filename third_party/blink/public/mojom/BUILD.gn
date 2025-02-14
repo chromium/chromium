@@ -212,6 +212,7 @@ mojom("mojom_platform") {
     "selection_menu/selection_menu_behavior.mojom",
     "sensor/web_sensor_provider.mojom",
     "sensor/web_sensor_provider_automation.mojom",
+    "serial/serial.mojom",
     "service_worker/controller_service_worker_mode.mojom",
     "service_worker/dispatch_fetch_event_params.mojom",
     "service_worker/service_worker_ancestor_frame_type.mojom",
@@ -358,7 +359,6 @@ mojom("mojom_platform") {
     sources += [
       "direct_sockets/direct_sockets.mojom",
       "printing/web_printing.mojom",
-      "serial/serial.mojom",
     ]
   }
 

@@ -2523,5 +2523,44 @@ TEST_F(FormStructureTestImpl, GetHeuristicPredictions) {
                   testing::Pair(mystery_field.global_id(), NO_SERVER_DATA)));
 }
 
+// Tests that loyalty card fields are classified on big forms.
+TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableLoyaltyCardsFilling};
+  std::unique_ptr<FormStructure> form_structure;
+  FormData form;
+  form.set_url(GURL("http://www.foo.com/"));
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_fields(
+      {CreateTestFormField("First Name", "firstname", "",
+                           FormControlType::kInputText, "given-name"),
+       CreateTestFormField("Last Name", "lastname", "",
+                           FormControlType::kInputText, "family-name"),
+       CreateTestFormField("Email", "email", "", FormControlType::kInputEmail,
+                           "email"),
+       CreateTestFormField("Frequent Flyer Number", "frequent-flyer-number", "",
+                           FormControlType::kInputText, "flyer-number"),
+       CreateTestFormField("Phone Number", "BillTo.Phone", "",
+                           FormControlType::kInputText, "phone")});
+
+  form_structure = std::make_unique<FormStructure>(form);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  EXPECT_TRUE(form_structure->IsAutofillable());
+  ASSERT_EQ(5U, form_structure->field_count());
+  ASSERT_EQ(5U, form_structure->autofill_count());
+
+  // First name.
+  EXPECT_EQ(NAME_FIRST, form_structure->field(0)->heuristic_type());
+  // Last name.
+  EXPECT_EQ(NAME_LAST, form_structure->field(1)->heuristic_type());
+  // Email.
+  EXPECT_EQ(EMAIL_ADDRESS, form_structure->field(2)->heuristic_type());
+  // Loyalty Card.
+  EXPECT_EQ(LOYALTY_MEMBERSHIP_ID, form_structure->field(3)->heuristic_type());
+  // Phone number.
+  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER,
+            form_structure->field(4)->heuristic_type());
+}
+
 }  // namespace
 }  // namespace autofill

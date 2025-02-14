@@ -138,6 +138,12 @@ bool ParseFaviconPathWithFavicon2Format(const std::string& path,
     } else if (key == "size" && !StringToPositiveInt(it.GetUnescapedValue(),
                                                      &parsed->size_in_dip)) {
       return false;
+    } else if (key == "fallbackToHost") {
+      const std::string val = it.GetUnescapedValue();
+      if (!(val == "0" || val == "1")) {
+        return false;
+      }
+      parsed->fallback_to_host = val == "1";
     }
   }
 

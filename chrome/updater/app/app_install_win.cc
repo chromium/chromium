@@ -629,7 +629,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   install_settings_dict.Set(kEnterpriseSwitch,
                             cmd_line.HasSwitch(kEnterpriseSwitch));
   install_settings_dict.Set(kSessionIdSwitch,
-                            cmd_line.GetSwitchValueASCII(kSessionIdSwitch));
+                            cmd_line.GetSwitchValueUTF8(kSessionIdSwitch));
 
   std::string install_settings;
   if (!JSONStringValueSerializer(&install_settings)

@@ -39,6 +39,12 @@ void MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture() {
   ExtensionApiTest::SetUpInProcessBrowserTestFixture();
 }
 
+void MixinBasedExtensionApiTest::SetUpLocalStatePrefService(
+    PrefService* local_state) {
+  mixin_host_.SetUpLocalStatePrefService(local_state);
+  ExtensionApiTest::SetUpLocalStatePrefService(local_state);
+}
+
 void MixinBasedExtensionApiTest::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {
   mixin_host_.CreatedBrowserMainParts(browser_main_parts);
@@ -53,6 +59,11 @@ void MixinBasedExtensionApiTest::SetUpOnMainThread() {
 void MixinBasedExtensionApiTest::TearDownOnMainThread() {
   mixin_host_.TearDownOnMainThread();
   ExtensionApiTest::TearDownOnMainThread();
+}
+
+void MixinBasedExtensionApiTest::PostRunTestOnMainThread() {
+  mixin_host_.PostRunTestOnMainThread();
+  ExtensionApiTest::PostRunTestOnMainThread();
 }
 
 void MixinBasedExtensionApiTest::TearDownInProcessBrowserTestFixture() {

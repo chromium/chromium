@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -75,6 +76,9 @@ namespace {
 
 // The expected number of animations happening at the same time when exiting.
 const int kExpectedExitAnimationCount = 2;
+
+// The delay for showing the search with camera tooltip hint.
+const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 }  // namespace
 
@@ -204,10 +208,27 @@ const int kExpectedExitAnimationCount = 2;
                                                     ->GetCommandDispatcher(),
                                                 BrowserCoordinatorCommands)];
 
-  NSArray<UIAction*>* additionalMenuItems = @[
-    [overflowMenuFactory openUserActivityAction],
-    [overflowMenuFactory learnMoreAction],
-  ];
+  BOOL escapeHatchEnabled = IsLVFEscapeHatchEnabled();
+  config.useTrailingDismissButton = !escapeHatchEnabled;
+
+  NSArray<UIAction*>* additionalMenuItems;
+  if (escapeHatchEnabled) {
+    __weak __typeof(self) weakSelf = self;
+    UIAction* searchWithCameraAction =
+        [overflowMenuFactory searchWithCameraActionWithHandler:^{
+          [weakSelf didRequestSearchWithCamera];
+        }];
+    additionalMenuItems = @[
+      searchWithCameraAction,
+      [overflowMenuFactory openUserActivityAction],
+      [overflowMenuFactory learnMoreAction],
+    ];
+  } else {
+    additionalMenuItems = @[
+      [overflowMenuFactory openUserActivityAction],
+      [overflowMenuFactory learnMoreAction],
+    ];
+  }
 
   _selectionViewController = ios::provider::NewChromeLensOverlay(
       imageSource, config, additionalMenuItems);
@@ -767,6 +788,55 @@ const int kExpectedExitAnimationCount = 2;
   [self openURLInNewTab:GURL(kLearnMoreLensURL)];
 }
 
+- (void)didRequestSearchWithCamera {
+  [_metricsRecorder recordSearchWithCameraTapped];
+  __weak __typeof(self) weakSelf = self;
+  __weak id<LensCommands> weakLensHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  [self
+      hideLensUI:YES
+      completion:^{
+        OpenLensInputSelectionCommand* command =
+            [[OpenLensInputSelectionCommand alloc]
+                    initWithEntryPoint:LensEntrypoint::LensOverlayLvfEscapeHatch
+                     presentationStyle:LensInputSelectionPresentationStyle::
+                                           SlideFromRight
+                presentationCompletion:^{
+                  [weakSelf destroyLensUI:NO
+                                   reason:lens::LensOverlayDismissalSource::
+                                              kSearchWithCameraRequested];
+                }];
+
+        [weakLensHandler openLensInputSelection:command];
+      }];
+}
+
+- (void)scheduleTooltipHintDisplay {
+  if (_isExiting || _isStopped) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf onTooltipScheduledDisplayDelayElapsed];
+      }),
+      kSearchWithCameraTooltipHintDelay);
+}
+
+- (void)onTooltipScheduledDisplayDelayElapsed {
+  if (_isExiting || _isStopped) {
+    return;
+  }
+
+  BOOL hadInteraction = self.isResultsBottomSheetCreated;
+  if (!hadInteraction) {
+    if ([_selectionViewController
+            respondsToSelector:@selector(requestShowOverflowMenuTooltip)]) {
+      [_selectionViewController requestShowOverflowMenuTooltip];
+    }
+  }
+}
+
 #pragma mark - LensOverlayConsentPresenterDelegate
 
 - (void)requestDismissalOfConsentDialog:
@@ -1063,6 +1133,10 @@ const int kExpectedExitAnimationCount = 2;
   [self disableSelectionInteraction:NO];
   [_selectionViewController setTopIconsHidden:NO];
   [_selectionViewController start];
+
+  if (IsLVFEscapeHatchEnabled()) {
+    [self scheduleTooltipHintDisplay];
+  }
 }
 
 - (void)buildResultsBottomSheetPresentation {

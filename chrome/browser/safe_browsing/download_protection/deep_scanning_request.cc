@@ -561,47 +561,12 @@ void DeepScanningRequest::StartSavePackageScan() {
 void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
                                           Profile* profile,
                                           const base::FilePath& path) {
-  if (IsEnterpriseTriggered()) {
-    if (analysis_settings_.cloud_or_local_settings.is_cloud_analysis()) {
-      request->set_device_token(
-          analysis_settings_.cloud_or_local_settings.dm_token());
-    }
-    request->set_per_profile_request(analysis_settings_.per_profile);
-    if (analysis_settings_.client_metadata) {
-      request->set_client_metadata(*analysis_settings_.client_metadata);
-    }
-    request->set_reason(reason_);
-  }
-
+  InitializeRequest(request, IsEnterpriseTriggered());
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);
-  request->set_email(enterprise_connectors::GetProfileEmail(profile));
-
-  if (item_->GetURL().is_valid()) {
-    request->set_url(item_->GetURL().spec());
-  }
-
-  if (item_->GetTabUrl().is_valid()) {
-    request->set_tab_url(item_->GetTabUrl());
-  }
-
   if (file_metadata_.count(path) &&
       !file_metadata_.at(path).mime_type.empty()) {
     request->set_content_type(file_metadata_.at(path).mime_type);
   }
-
-  for (const auto& tag : analysis_settings_.tags) {
-    request->add_tag(tag.first);
-  }
-
-  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-    for (const auto& ip_address :
-         enterprise_connectors::GetLocalIpAddresses()) {
-      request->add_local_ips(ip_address);
-    }
-  }
-
-  request->set_blocking(analysis_settings_.block_until_verdict !=
-                        enterprise_connectors::BlockUntilVerdict::kNoBlock);
 }
 
 void DeepScanningRequest::PrepareClientDownloadRequest(
@@ -825,6 +790,50 @@ void DeepScanningRequest::OnDownloadDestroyed(
   callback_.Reset();
 
   FinishRequest(DownloadCheckResult::UNKNOWN);
+}
+
+const enterprise_connectors::AnalysisSettings& DeepScanningRequest::settings()
+    const {
+  return analysis_settings_;
+}
+
+int DeepScanningRequest::user_action_requests_count() const {
+  if (!save_package_files_.empty()) {
+    return save_package_files_.size();
+  }
+  return 1;
+}
+
+std::string DeepScanningRequest::tab_title() const {
+  return "";
+}
+
+std::string DeepScanningRequest::user_action_id() const {
+  return "";
+}
+
+std::string DeepScanningRequest::email() const {
+  return enterprise_connectors::GetProfileEmail(Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item_)));
+}
+
+std::string DeepScanningRequest::url() const {
+  if (item_->GetURL().is_valid()) {
+    return item_->GetURL().spec();
+  }
+  return "";
+}
+
+const GURL& DeepScanningRequest::tab_url() const {
+  if (item_->GetTabUrl().is_valid()) {
+    return item_->GetTabUrl();
+  }
+  return GURL::EmptyGURL();
+}
+
+enterprise_connectors::ContentAnalysisRequest::Reason
+DeepScanningRequest::reason() const {
+  return reason_;
 }
 
 void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {

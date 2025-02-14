@@ -237,10 +237,8 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
 
   // Pass the timestamps in a list.
   std::vector<double> timestamps;
-  for (int64_t timestamp : entry.all_timestamps) {
-    timestamps.push_back(
-        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(timestamp))
-            .InMillisecondsFSinceUnixEpoch());
+  for (const base::Time& timestamp : entry.all_timestamps) {
+    timestamps.push_back(timestamp.InMillisecondsFSinceUnixEpoch());
   }
   result_mojom->all_timestamps = std::move(timestamps);
 
@@ -436,7 +434,7 @@ void BrowsingHistoryHandler::RemoveVisits(
     for (const auto& timestamp : timestamps) {
       base::Time visit_time =
           base::Time::FromMillisecondsSinceUnixEpoch(timestamp);
-      entry.all_timestamps.insert(visit_time.ToInternalValue());
+      entry.all_timestamps.insert(visit_time);
     }
 
     items_to_remove.push_back(entry);

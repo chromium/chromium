@@ -7437,6 +7437,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.Startup.CreationTime.FirstInstanceAfterGlobalStartup"
+    units="ms" expires_after="2025-12-31">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How long it takes to initialize the first WebViewChromium instance in the
+    case where we have already finished the process-global browser startup:
+    (&quot;Android.WebView.Startup.CreationTime.StartChromiumLocked&quot;) was
+    already complete and did not need to be performed during the instance
+    initialization.
+
+    This is recorded separately as it is significantly faster than the
+    &quot;FirstInstanceWithGlobalStartup&quot; case, but slower than the
+    &quot;NotFirstInstance&quot; case.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup"
+    units="ms" expires_after="2025-12-31">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How long it takes to initialize the first WebViewChromium instance in the
+    case where we had to also do the process-global browser startup:
+    (&quot;Android.WebView.Startup.CreationTime.StartChromiumLocked&quot;) had
+    not yet run and was performed during the instance initialization.
+
+    This is recorded separately as it is significantly slower than the
+    &quot;FirstInstanceAfterGlobalStartup&quot; and &quot;NotFirstInstance&quot;
+    cases.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CreationTime.InitReason"
     enum="WebViewStartupCallSite" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
@@ -7450,13 +7485,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.CreationTime.NotFirstInstance"
+    units="ms" expires_after="2025-12-31">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How long it takes to initialize a subsequent WebViewChromium instance. This
+    will be recorded once for each instance created, other than the first to be
+    created in the current process.
+
+    This is recorded separately as it is significantly faster than the
+    &quot;FirstInstanceWithGlobalStartup&quot; and
+    &quot;FirstInstanceAfterGlobalStartup&quot; cases.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CreationTime.Stage1.FactoryInit"
     units="ms" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    How long it takes to initialize a WebViewChromiumFactoryProvider. This is
-    the first major phase of the WebViewChromium construction.
+    How long it takes to run WebViewChromiumFactoryProvider.initialize(). This
+    does not count the time spent beforehand in WebViewFactory in the Android
+    framework, which first has to load the WebView code and do some basic setup
+    before initialize() can be called.
+
+    This will be recorded once per host process since the initialization is
+    process-global.
+
+    The &quot;Android.WebView.Startup.CreationTime.TotalFactoryInitTime&quot;
+    histogram measures the entire duration from when
+    WebViewFactory.getProvider() is first called until the
+    WebViewChromiumFactoryProvider is fully initialized and should be preferred
+    for most purposes, but is only recorded on Android S+ devices, so this older
+    metric is retained for now to allow &quot;fair&quot; comparisons with
+    Android R and earlier.
   </summary>
 </histogram>
 
@@ -7465,10 +7528,23 @@ chromium-metrics-reviews@google.com.
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    How long it takes to initialize a WebViewProvider, the first time that one
-    is initialized. WebViewProvider initialization is the second major phase of
-    WebViewChromium construction. The first initialization is recorded
-    separately because it is usually much slower than subsequent ones.
+    How long it takes to initialize a WebViewChromium instance in the case where
+    we had to also do the process-global browser startup:
+    (&quot;Android.WebView.Startup.CreationTime.StartChromiumLocked&quot;) had
+    not yet run and was performed during the instance initialization.
+
+    This is recorded separately as it is significantly slower than the
+    &quot;Warm&quot; case, and can only occur the first time that a
+    WebViewChromium instance is created. However, it's possible for browser
+    startup to already be complete before the first WebViewChromium instance is
+    created, in which case the &quot;Cold&quot; case will not be recorded during
+    this session.
+
+    The newer histograms FirstInstanceAfterGlobalStartup,
+    FirstInstanceWithGlobalStartup, and NotFirstInstance should be preferred for
+    most purposes as they correctly reflect that there are three distinct cases
+    here rather than only two, but the older histograms are retained for now to
+    allow &quot;fair&quot; comparisons with builds that predate the newer ones.
   </summary>
 </histogram>
 
@@ -7477,10 +7553,24 @@ chromium-metrics-reviews@google.com.
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    How long it takes to initialize a WebViewProvider, when it is initialized
-    the second or later times. WebViewProvider initialization is the second
-    major phase of WebViewChromium construction. When it is not the first time,
-    it is faster and thus recorded separately.
+    How long it takes to initialize a WebViewChromium instance in the case where
+    we have already finished the process-global browser startup:
+    (&quot;Android.WebView.Startup.CreationTime.StartChromiumLocked&quot;) was
+    already complete and did not need to be performed during the instance
+    initialization.
+
+    This is recorded separately as it is significantly faster than the
+    &quot;Cold&quot; case. However, it's possible for browser startup
+    initialization to already be complete before the first WebViewChromium
+    instance is created, in which case the first instance will be recorded as a
+    &quot;Warm&quot; case, even though it is expected to be slower than
+    subsequent instances, resulting in this metric being bimodal.
+
+    The newer histograms FirstInstanceAfterGlobalStartup,
+    FirstInstanceWithGlobalStartup, and NotFirstInstance should be preferred for
+    most purposes as they correctly reflect that there are three distinct cases
+    here rather than only two, but the older histograms are retained for now to
+    allow &quot;fair&quot; comparisons with builds that predate the newer ones.
   </summary>
 </histogram>
 

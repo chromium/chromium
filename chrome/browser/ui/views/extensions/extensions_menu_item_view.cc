@@ -411,6 +411,11 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   site_permissions_button_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  // Add rounded corners to the site permissions button.
+  site_permissions_button_->SetFocusRingCornerRadius(
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kExtensionsMenuButtonRadius));
 }
 
 ExtensionMenuItemView::~ExtensionMenuItemView() = default;

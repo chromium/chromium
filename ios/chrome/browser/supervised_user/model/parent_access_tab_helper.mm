@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
 
-#import "base/base64.h"
 #import "base/logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -46,8 +45,7 @@ void ParentAccessTabHelper::ShouldAllowRequest(
   }
 
   auto parsed_result = supervised_user::ParentAccessCallbackParsedResult::
-      ParseParentAccessCallbackResult(encoded_callback.value(),
-                                      base::Base64DecodePolicy::kForgiving);
+      ParseParentAccessCallbackResult(encoded_callback.value());
   if (!parsed_result.GetCallback()) {
     // Early return on malformed results.
     [delegate_ hideParentAccessBottomSheetWithResult:

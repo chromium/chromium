@@ -368,6 +368,7 @@ public class BottomSheetTest {
     public void testAdditionalBottomOffset() {
         final int height = 300;
         final int margin = 100;
+        final int edgeToEdgeInset = 50;
 
         runOnUiThreadBlocking(
                 () -> {
@@ -398,11 +399,19 @@ public class BottomSheetTest {
         assertEquals(height, mSheetController.getCurrentOffset());
 
         // Change bottom margin; the margin and height should change.
-        runOnUiThreadBlocking(() -> mTestSupport.setBottomMargin(margin));
+        runOnUiThreadBlocking(
+                () -> {
+                    mTestSupport.setEdgeToEdgeBottomInsetSupplier(() -> edgeToEdgeInset);
+                    mTestSupport.setBottomMargin(margin);
+                });
 
         CriteriaHelper.pollUiThread(
                 () ->
-                        ((MarginLayoutParams) mTestSupport.getSheetContainer().getLayoutParams())
+                        mTestSupport.getSheetContainer().getPaddingBottom() == 0
+                                && ((MarginLayoutParams)
+                                                        mTestSupport
+                                                                .getSheetContainer()
+                                                                .getLayoutParams())
                                                 .bottomMargin
                                         == margin
                                 && !mTestSupport.getSheetContainer().isLayoutRequested());

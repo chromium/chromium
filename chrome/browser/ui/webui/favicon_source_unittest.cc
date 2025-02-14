@@ -54,9 +54,10 @@ class MockHistoryUiFaviconRequestHandler
   MockHistoryUiFaviconRequestHandler() = default;
   ~MockHistoryUiFaviconRequestHandler() override = default;
 
-  MOCK_METHOD3(GetRawFaviconForPageURL,
+  MOCK_METHOD4(GetRawFaviconForPageURL,
                void(const GURL& page_url,
                     int desired_size_in_pixel,
+                    bool fallback_to_host,
                     favicon_base::FaviconRawBitmapCallback callback));
 
   MOCK_METHOD2(GetFaviconImageForPageURL,
@@ -127,10 +128,10 @@ class FaviconSourceTestBase : public testing::Test {
           return kDummyTaskId;
         });
     ON_CALL(*mock_history_ui_favicon_request_handler_, GetRawFaviconForPageURL)
-        .WillByDefault(
-            [](auto, auto, favicon_base::FaviconRawBitmapCallback callback) {
-              std::move(callback).Run(favicon_base::FaviconRawBitmapResult());
-            });
+        .WillByDefault([](auto, auto, auto,
+                          favicon_base::FaviconRawBitmapCallback callback) {
+          std::move(callback).Run(favicon_base::FaviconRawBitmapResult());
+        });
 
     // Mock default icon loading.
     ON_CALL(*source(), LoadIconBytes(_, _))
@@ -307,7 +308,7 @@ TEST_P(
       ->SetLastCommittedURL(GURL(chrome::kChromeUIHistoryURL));
 
   EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
-              GetRawFaviconForPageURL(GURL("https://www.google.com"), _, _))
+              GetRawFaviconForPageURL(GURL("https://www.google.com"), _, _, _))
       .Times(1);
 
   source()->StartDataRequest(
@@ -325,7 +326,7 @@ TEST_P(
       ->SetLastCommittedURL(GURL(chrome::kChromeUIUntrustedDataSharingURL));
 
   EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
-              GetRawFaviconForPageURL(GURL("https://www.google.com"), _, _))
+              GetRawFaviconForPageURL(GURL("https://www.google.com"), _, _, _))
       .Times(1);
 
   source()->StartDataRequest(

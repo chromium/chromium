@@ -710,12 +710,3 @@ mojom("mojo_bindings") {
   export_define = "CONTENT_IMPLEMENTATION=1"
   export_header = "content/common/content_export.h"
 }
-
-fuzzer_test("content_input_actions_parser_fuzzer") {
-  sources = [ "input/actions_parser_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//content/public/common",
-    "//third_party/abseil-cpp:absl",
-  ]
-}

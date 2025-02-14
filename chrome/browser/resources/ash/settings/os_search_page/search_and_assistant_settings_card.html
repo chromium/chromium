@@ -115,7 +115,7 @@
   </template>
 
   <template is="dom-if" if="[[isSunfishSettingsToggleVisible_]]">
-    <!-- TODO: b/368184169 - Localise the label and add an icon, sublabel and
+    <!-- TODO: b/395736972 - Localise the label and add an icon, sublabel and
         learn more link. -->
     <settings-toggle-button
         id="sunfishToggle"
@@ -124,6 +124,36 @@
         label="Enable Sunfish"
         deep-link-focus-id$="[[Setting.kSunfishOnOff]]">
     </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[isScannerSettingsToggleVisible_]]">
+    <!-- TODO: b/368184169 - Localise the label and add an icon, sublabel and
+        learn more link. -->
+    <!-- \`restamp\` is needed to ensure that deep links work correctly if
+         \`isScannerAllowedByEnterprisePolicy_\` changes. -->
+    <template is="dom-if" restamp if="[[!isScannerAllowedByEnterprisePolicy_]]">
+      <!-- As the enterprise policy is under a different pref, use that one here
+           to make this toggle appear as managed. The toggle needs to be
+           explicitly disabled in case the policy is recommended. -->
+      <settings-toggle-button
+          id="scannerEnterpriseToggle"
+          class="hr"
+          pref="{{prefs.ash.scanner.enterprise_policy_allowed}}"
+          numeric-unchecked-values="[[enterprisePolicyToggleUncheckedValues_]]"
+          disabled
+          no-set-pref
+          label="Enable Scanner"
+          deep-link-focus-id$="[[Setting.kScannerOnOff]]">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" restamp if="[[isScannerAllowedByEnterprisePolicy_]]">
+      <settings-toggle-button
+          id="scannerToggle"
+          class="hr"
+          pref="{{prefs.ash.scanner.enabled}}"
+          label="Enable Scanner"
+          deep-link-focus-id$="[[Setting.kScannerOnOff]]">
+      </settings-toggle-button>
+    </template>
   </template>
 
 </settings-card>

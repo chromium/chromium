@@ -279,7 +279,8 @@ Locale& DateTimeChooserImpl::GetLocale() {
 }
 
 void DateTimeChooserImpl::SetValueAndClosePopup(int num_value,
-                                                const String& string_value) {
+                                                const String& string_value,
+                                                const bool is_keyboard_event) {
   if (num_value >= 0)
     SetValue(string_value);
   EndChooser();

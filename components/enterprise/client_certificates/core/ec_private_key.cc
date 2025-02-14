@@ -64,4 +64,13 @@ client_certificates_pb::PrivateKey ECPrivateKey::ToProto() const {
   return private_key;
 }
 
+base::Value::Dict ECPrivateKey::ToDict() const {
+  std::vector<uint8_t> wrapped;
+  if (!key_->ExportPrivateKey(&wrapped)) {
+    return base::Value::Dict();
+  }
+
+  return BuildSerializedPrivateKey(wrapped);
+}
+
 }  // namespace client_certificates

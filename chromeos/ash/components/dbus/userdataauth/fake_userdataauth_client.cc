@@ -1939,4 +1939,11 @@ void FakeUserDataAuthClient::SetUserDataStorageWriteEnabled(
   std::move(callback).Run(std::move(reply));
 }
 
+void FakeUserDataAuthClient::LockFactorUntilReboot(
+    const ::user_data_auth::LockFactorUntilRebootRequest& request,
+    LockFactorUntilRebootCallback callback) {
+  ::user_data_auth::LockFactorUntilRebootReply reply;
+  std::move(callback).Run(std::move(reply));
+}
+
 }  // namespace ash

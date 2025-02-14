@@ -19,6 +19,7 @@ component_files = [
   "delete-recording-dialog.ts",
   "directives/with-tooltip.ts",
   "educational-nudge.ts",
+  "error-dialog.ts",
   "expandable-card.ts",
   "export-dialog.ts",
   "export-dialog-section.ts",

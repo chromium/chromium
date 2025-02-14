@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/memory/raw_ref.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -79,10 +78,9 @@ class ParentAccessCallbackParsedResult {
   GetCallback() const;
 
   // Decodes and parses the the base64 result provided by the PACP widget.
+  // See https://tools.ietf.org/html/rfc4648#section-5.
   static ParentAccessCallbackParsedResult ParseParentAccessCallbackResult(
-      const std::string& encoded_parent_access_callback_proto,
-      base::Base64DecodePolicy decoding_policy =
-          base::Base64DecodePolicy::kStrict);
+      const std::string& encoded_parent_access_callback_proto);
 
  private:
   absl::variant<

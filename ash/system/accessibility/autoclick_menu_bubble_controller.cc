@@ -4,6 +4,8 @@
 
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 
+#include <string>
+
 #include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
@@ -18,10 +20,14 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/display.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -91,11 +97,37 @@ void AutoclickMenuBubbleController::SetPosition(
   gfx::Rect new_bounds = GetOnScreenBoundsForFloatingMenuPosition(
       gfx::Size(kAutoclickMenuWidth, kAutoclickMenuHeight), new_position);
 
+  // TODO(396681078): Confirm the preventive fix, clean up logging, and swap to
+  // a valid display if needed.
+  const display::Display target_display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          bubble_widget_->GetNativeWindow());
+  if (!target_display.is_valid() ||
+      !Shell::GetRootWindowControllerWithDisplayId(target_display.id())) {
+    SCOPED_CRASH_KEY_NUMBER("AMBC", "target_display", target_display.id());
+    if (display::DisplayManager* display_manager =
+            Shell::Get()->display_manager()) {
+      std::string key;
+      for (size_t i = 0; i < display_manager->GetNumDisplays(); i++) {
+        const display::Display& current_display =
+            display_manager->GetDisplayAt(i);
+        key += (i ? "_" : "") + base::NumberToString(i);
+        key += "_" + base::NumberToString(current_display.id());
+        key += "_" + base::NumberToString(current_display.is_valid());
+        key += "_" + base::NumberToString(
+                         !!Shell::GetRootWindowControllerWithDisplayId(
+                             current_display.id()));
+      }
+      key += "_" + base::NumberToString(display_manager->IsInUnifiedMode());
+      SCOPED_CRASH_KEY_STRING256("AMBC", "display_info", key);
+    }
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   // Update the preferred bounds based on other system windows.
   gfx::Rect resting_bounds = CollisionDetectionUtils::GetRestingPosition(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          bubble_widget_->GetNativeWindow()),
-      new_bounds,
+      target_display, new_bounds,
       CollisionDetectionUtils::RelativePriority::kAutomaticClicksMenu);
 
   // Un-inset the bounds to get the widget's bounds, which includes the drop

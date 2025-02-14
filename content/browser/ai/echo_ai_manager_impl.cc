@@ -69,13 +69,13 @@ void EchoAIManagerImpl::CanCreateLanguageModel(
     CanCreateLanguageModelCallback callback) {
   if (options && options->expected_input_languages.has_value() &&
       !IsLanguagesSupported(options->expected_input_languages.value())) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
     return;
   }
 
   std::move(callback).Run(
-      blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
+      blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
 }
 
 void EchoAIManagerImpl::CreateLanguageModel(
@@ -113,16 +113,16 @@ void EchoAIManagerImpl::CanCreateSummarizer(
   if (options && !SupportedLanguages(options->expected_input_languages,
                                      options->expected_context_languages,
                                      options->output_language)) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
     return;
   }
   if (!summarizer_downloaded_) {
     std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
+        blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
   } else {
     std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kReadily);
+        blink::mojom::ModelAvailabilityCheckResult::kAvailable);
   }
 }
 
@@ -169,7 +169,8 @@ void EchoAIManagerImpl::GetLanguageModelParams(
 void EchoAIManagerImpl::CanCreateWriter(
     blink::mojom::AIWriterCreateOptionsPtr options,
     CanCreateWriterCallback callback) {
-  std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::kReadily);
+  std::move(callback).Run(
+      blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 }
 
 void EchoAIManagerImpl::CreateWriter(
@@ -186,7 +187,8 @@ void EchoAIManagerImpl::CreateWriter(
 void EchoAIManagerImpl::CanCreateRewriter(
     blink::mojom::AIRewriterCreateOptionsPtr options,
     CanCreateRewriterCallback callback) {
-  std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::kReadily);
+  std::move(callback).Run(
+      blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 }
 
 void EchoAIManagerImpl::CreateRewriter(

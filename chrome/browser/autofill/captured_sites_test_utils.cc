@@ -15,6 +15,7 @@
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
@@ -56,6 +57,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/test_renderer_host.h"
@@ -1015,6 +1018,26 @@ content::WebContents* TestRecipeReplayer::GetWebContents() {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
+namespace {
+// Runs the given closure if the `WebContent`'s main frame changes.
+class RenderFrameHostChangedObserver : public content::WebContentsObserver {
+ public:
+  RenderFrameHostChangedObserver(content::WebContents* wc,
+                                 base::OnceClosure closure)
+      : content::WebContentsObserver(wc), closure_(std::move(closure)) {}
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override {
+    changed_ = true;
+    std::move(closure_).Run();
+  }
+  bool changed() { return changed_; }
+
+ private:
+  base::OnceClosure closure_;
+  bool changed_ = false;
+};
+}  // namespace
+
 void TestRecipeReplayer::WaitTillPageIsIdle(
     base::TimeDelta continuous_paint_timeout) {
   // Loop continually while WebContents are waiting for response or loading.
@@ -1041,19 +1064,30 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
     }
   }
   finished_load_time = base::TimeTicks::Now();
+  bool wait_again = false;
   while (true) {
     // Now, rely on the render frame count to be the indicator of page activity.
     // Once all the frames are drawn, we're free to continue.
     content::RenderFrameSubmissionObserver frame_submission_observer(
         GetWebContents());
-    {
-      base::RunLoop heart_beat;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
-      heart_beat.Run();
-    }
-    if (frame_submission_observer.render_frame_count() == 0) {
-      // If the render r has stopped submitting frames
+    base::RunLoop heart_beat;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
+    // `frame_submission_observer` holds a reference to metadata from a frame
+    // that will be destroyed if a navigation occurs. We need to destroy the
+    // observer before the frame is destroyed to avoid a dangling raw
+    // pointer. See https://crbug.com/396232961.
+    RenderFrameHostChangedObserver frame_observer(GetWebContents(),
+                                                  heart_beat.QuitClosure());
+    heart_beat.Run();
+    if (frame_observer.changed()) {
+      VLOG(1) << "The render frame has changed.";
+      // Start waiting on the new frame.
+      wait_again = true;
+      break;
+    } else if (frame_submission_observer.render_frame_count() == 0) {
+      // If the renderer has stopped submitting frames
+      VLOG(1) << "The renderer has stopped submitting frames.";
       break;
     } else if ((base::TimeTicks::Now() - finished_load_time) >
                continuous_paint_timeout) {
@@ -1068,6 +1102,9 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
               << frame_submission_observer.render_frame_count();
       break;
     }
+  }
+  if (wait_again) {
+    WaitTillPageIsIdle(continuous_paint_timeout);
   }
 }
 

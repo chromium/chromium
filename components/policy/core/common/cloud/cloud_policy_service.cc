@@ -87,10 +87,6 @@ void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {
   }
 }
 
-void CloudPolicyService::OnRegistrationStateChanged(CloudPolicyClient* client) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
 void CloudPolicyService::OnClientError(CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

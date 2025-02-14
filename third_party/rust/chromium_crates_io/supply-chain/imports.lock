@@ -1,6 +1,13 @@
 
 # cargo-vet imports lock
 
+[[publisher.hashbrown]]
+version = "0.15.2"
+when = "2024-11-25"
+user-id = 2915
+user-login = "Amanieu"
+user-name = "Amanieu d'Antras"
+
 [[publisher.libc]]
 version = "0.2.169"
 when = "2024-12-19"
@@ -140,6 +147,17 @@ version = "1.13.1"
 who = "George Burgess IV <gbiv@google.com>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "1.4.0"
+
+[[audits.chromeos.audits.equivalent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+version = "1.0.1"
+
+[[audits.chromeos.audits.equivalent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
 
 [[audits.chromeos.audits.getrandom]]
 who = "Android Legacy"

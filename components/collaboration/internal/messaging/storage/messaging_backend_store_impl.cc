@@ -258,6 +258,8 @@ MessagingBackendStoreImpl::GetRecentMessagesForGroup(
 
 void MessagingBackendStoreImpl::AddMessage(
     const collaboration_pb::Message& message) {
+  last_added_message_for_testing_ = message;
+
   data_sharing::GroupId collaboration_id =
       data_sharing::GroupId(message.collaboration_id());
   CHECK(!collaboration_id->empty());
@@ -324,6 +326,11 @@ std::optional<MessagesPerGroup*>
 MessagingBackendStoreImpl::GetMessagesPerGroupForTesting(
     const data_sharing::GroupId& collaboration_id) {
   return GetMessagesPerGroup(collaboration_id);
+}
+
+std::optional<collaboration_pb::Message>
+MessagingBackendStoreImpl::GetLastMessageForTesting() {
+  return last_added_message_for_testing_;
 }
 
 std::optional<MessagesPerGroup*> MessagingBackendStoreImpl::GetMessagesPerGroup(

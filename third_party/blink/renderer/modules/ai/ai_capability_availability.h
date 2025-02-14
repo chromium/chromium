@@ -8,11 +8,11 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 
+// TODO(crbug.com/395509560): remove this file.
 namespace blink {
-
-inline constexpr char kAILanguageTagEn[] = "en";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -30,10 +30,8 @@ enum class AICapabilityAvailability {
 V8AICapabilityAvailability AICapabilityAvailabilityToV8(
     AICapabilityAvailability availability);
 
-AICapabilityAvailability HandleModelAvailabilityCheckResult(
-    ExecutionContext* execution_context,
-    AIMetrics::AISessionType session_type,
-    mojom::blink::ModelAvailabilityCheckResult result);
+AICapabilityAvailability AIAvailabilityToAICapabilityAvailability(
+    AIAvailability availablity);
 
 }  // namespace blink
 

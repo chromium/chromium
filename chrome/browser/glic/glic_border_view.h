@@ -63,7 +63,7 @@ class GlicBorderView : public views::View,
   };
   void set_tester(Tester* tester) { tester_ = tester; }
 
-  float GetSecondsSinceCreationForTesting() const;
+  float GetEffectTimeForTesting() const;
 
  private:
   // A value from 0 to 1 indicating how much the border is to be emphasized.
@@ -78,8 +78,8 @@ class GlicBorderView : public views::View,
   // Sets the necessary bits to start ramping down the opacity once it's called.
   void StartRampingDown();
 
-  // Returns the number of seconds since construction; wraps after a day.
-  float GetSecondsSinceCreation() const;
+  // Returns the effect evolution time; wraps after a day.
+  float GetEffectTime() const;
 
   // Returns the timestamp when the instance was created (but permits being
   // adjusted by the Tester).
@@ -94,7 +94,7 @@ class GlicBorderView : public views::View,
 
   // When it is true, the class directly presents a static border and when it is
   // false, it animates the border first.
-  bool skip_animation_ = false;
+  bool skip_emphasis_animation_ = false;
 
   float opacity_ = 0.f;
   float emphasis_ = 0.f;

@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search/search.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -111,6 +112,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   raw_ptr<const TemplateURL> _defaultSearchEngine;
   // Sync Service.
   raw_ptr<syncer::SyncService> _syncService;
+  // Used to check feed configuration based on the country.
+  raw_ptr<regional_capabilities::RegionalCapabilitiesService>
+      _regionalCapabilitiesService;
   // Observer to keep track of the syncing status.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
@@ -119,18 +123,21 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 @synthesize scrollPositionToSave = _scrollPositionToSave;
 
 - (instancetype)
-    initWithTemplateURLService:(TemplateURLService*)templateURLService
-                     URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                   authService:(AuthenticationService*)authService
-               identityManager:(signin::IdentityManager*)identityManager
-         accountManagerService:
-             (ChromeAccountManagerService*)accountManagerService
-      identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
-                   isIncognito:(BOOL)isIncognito
-           discoverFeedService:(DiscoverFeedService*)discoverFeedService
-                   prefService:(PrefService*)prefService
-                   syncService:(syncer::SyncService*)syncService
-                    isSafeMode:(BOOL)isSafeMode {
+     initWithTemplateURLService:(TemplateURLService*)templateURLService
+                      URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                    authService:(AuthenticationService*)authService
+                identityManager:(signin::IdentityManager*)identityManager
+          accountManagerService:
+              (ChromeAccountManagerService*)accountManagerService
+       identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
+                    isIncognito:(BOOL)isIncognito
+            discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                    prefService:(PrefService*)prefService
+                    syncService:(syncer::SyncService*)syncService
+    regionalCapabilitiesService:
+        (regional_capabilities::RegionalCapabilitiesService*)
+            regionalCapabilitiesService
+                     isSafeMode:(BOOL)isSafeMode {
   self = [super init];
   if (self) {
     CHECK(identityManager);
@@ -155,6 +162,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _isIncognito = isIncognito;
     _discoverFeedService = discoverFeedService;
     _prefService = prefService;
+    _regionalCapabilitiesService = regionalCapabilitiesService;
     _isSafeMode = isSafeMode;
   }
   return self;
@@ -184,6 +192,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _prefService = nullptr;
   _syncObserver.reset();
   _syncService = nullptr;
+  _regionalCapabilitiesService = nullptr;
   self.feedControlDelegate = nil;
 }
 
@@ -349,7 +358,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
          !IsFeedAblationEnabled() &&
          IsContentSuggestionsForSupervisedUserEnabled(_prefService) &&
          !_isSafeMode &&
-         !ShouldHideFeedWithSearchChoice(self.templateURLService);
+         !ShouldHideFeedWithSearchChoice(self.templateURLService,
+                                         _regionalCapabilitiesService);
 }
 
 // Sets whether the feed header should be visible.

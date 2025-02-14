@@ -89,7 +89,7 @@ public class PaymentRequestService
     private final RenderFrameHost mRenderFrameHost;
     private final Delegate mDelegate;
     private final List<PaymentApp> mPendingApps = new ArrayList<>();
-    private final Supplier<PaymentAppServiceBridge> mPaymentAppServiceBridgeSupplier;
+    @Nullable private final Supplier<PaymentAppServiceBridge> mPaymentAppServiceBridgeSupplier;
     private WebContents mWebContents;
     private JourneyLogger mJourneyLogger;
     private String mTopLevelOrigin;
@@ -402,13 +402,14 @@ public class PaymentRequestService
      * @param delegate The delegate of this class.
      * @param paymentAppServiceBridgeSupplier The supplier of PaymentAppServiceBridge - a C++
      *     factory that creates service-worker payment apps, secure payment confirmation apps, etc.
+     *     Can be null on platforms where the C++ factory is disabled, e.g., on WebView.
      */
     public PaymentRequestService(
             RenderFrameHost renderFrameHost,
             @Nullable PaymentRequestClient client,
             Runnable onClosedListener,
             Delegate delegate,
-            Supplier<PaymentAppServiceBridge> paymentAppServiceBridgeSupplier) {
+            @Nullable Supplier<PaymentAppServiceBridge> paymentAppServiceBridgeSupplier) {
         assert renderFrameHost != null;
         assert onClosedListener != null;
         assert delegate != null;
@@ -608,7 +609,8 @@ public class PaymentRequestService
         PaymentAppService service = mDelegate.getPaymentAppService();
 
         String paymentAppServiceBridgeId = PaymentAppServiceBridge.class.getName();
-        if (!service.containsFactory(paymentAppServiceBridgeId)) {
+        if (mPaymentAppServiceBridgeSupplier != null
+                && !service.containsFactory(paymentAppServiceBridgeId)) {
             service.addUniqueFactory(
                     mPaymentAppServiceBridgeSupplier.get(), paymentAppServiceBridgeId);
         }

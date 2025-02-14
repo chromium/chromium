@@ -203,9 +203,8 @@ void AuthenticationService::Initialize(
       [](ProfileAttributesStorageIOS* attributes_storage,
          std::string_view profile_name) {
         attributes_storage->UpdateAttributesForProfileWithName(
-            profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
+            profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
               attrs.SetFullyInitialized();
-              return attrs;
             }));
       },
       attributes_storage, profile_name));
@@ -576,7 +575,7 @@ void AuthenticationService::OnPrimaryAccountChanged(
   }
 }
 
-void AuthenticationService::OnIdentityListChanged() {
+void AuthenticationService::OnIdentitiesInProfileChanged() {
   ClearAccountSettingsPrefsOfRemovedAccounts();
   ReloadCredentialsFromIdentities();
 }

@@ -4384,7 +4384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.FileSizeMB.{Outcome}" units="MB"
-    expires_after="2025-06-22">
+    expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4398,19 +4398,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.ManageStorageAlert.Cancelled"
-    enum="BooleanCanceled" expires_after="2025-02-09">
+    enum="BooleanCanceled" expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     Logged when an alert was shown to let the user manage their Drive storage.
     Reports whether the user cancelled or instead opted to manage their Drive
-    storage.
+    storage. Warning: Data gap between 2025-02-09 - 2025-02-12.
   </summary>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.ManageStorageAlert.Shown"
-    enum="BooleanShown" expires_after="2025-06-22">
+    enum="BooleanShown" expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4422,7 +4422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.MimeType.{Outcome}"
-    enum="DownloadMimeTypeResult" expires_after="2025-06-22">
+    enum="DownloadMimeTypeResult" expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4435,7 +4435,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.NumberOfAttempts.{Outcome}" units="count"
-    expires_after="2025-02-09">
+    expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4443,13 +4443,14 @@ chromium-metrics-reviews@google.com.
     Logged the Save to Drive UI is dismissed, indicating the number of attempts
     to select a destination (i.e. number of times &quot;Save&quot; was tapped)
     as a function of the final outcome of the UI flow e.g. whether the user
-    canceled, whether they selected Drive or Files, etc.
+    canceled, whether they selected Drive or Files, etc. Warning: Data gap
+    between 2025-02-09 - 2025-02-12.
   </summary>
   <token key="Outcome" variants="IOSSaveToDriveUIOutcomeVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.Outcome" enum="IOSSaveToDriveOutcomeType"
-    expires_after="2025-06-22">
+    expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4461,7 +4462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.FileSizeMB.{FinalState}" units="MB"
-    expires_after="2025-06-22">
+    expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4474,7 +4475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.FinalState"
-    enum="IOSSaveToDriveUploadTaskStateType" expires_after="2025-06-22">
+    enum="IOSSaveToDriveUploadTaskStateType" expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4485,7 +4486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.MimeType.{FinalState}"
-    enum="DownloadMimeTypeResult" expires_after="2025-06-22">
+    enum="DownloadMimeTypeResult" expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4498,7 +4499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.NumberOfAttempts.{FinalState}"
-    units="count" expires_after="2025-02-09">
+    units="count" expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4506,13 +4507,14 @@ chromium-metrics-reviews@google.com.
     Logged when a Drive upload task's destructor is called, indicating the
     number of attempts to complete the task (i.e. number of times it was
     started) as a function of the final state of the task e.g. Not Started,
-    Cancelled, Completed or Failed.
+    Cancelled, Completed or Failed. Warning: Data gap between 2025-02-09 -
+    2025-02-12.
   </summary>
   <token key="FinalState" variants="IOSSaveToDriveUploadTaskFinalStateVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.{QueryType}.ErrorCode" enum="HttpResponseCode"
-    expires_after="2025-05-11">
+    expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4524,7 +4526,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.{QueryType}.Successful" enum="BooleanSuccess"
-    expires_after="2025-06-22">
+    expires_after="2026-02-12">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>

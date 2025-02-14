@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/glic_profile_configuration.h"
+#include "chrome/browser/glic/glic_tab_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
@@ -93,10 +94,9 @@ class GlicKeyedService : public KeyedService {
   void SetContextAccessIndicator(bool show);
   void NotifyWindowIntentToShow();
 
-  // Callback for changes to focused tab. When there is no focused tab,
-  // |WebContents| will be nullptr.
+  // Callback for changes to focused tab data.
   using FocusedTabChangedCallback =
-      base::RepeatingCallback<void(const content::WebContents*)>;
+      base::RepeatingCallback<void(FocusedTabData)>;
   // Callback for changes to the context access indicator status.
   using ContextAccessIndicatorChangedCallback =
       base::RepeatingCallback<void(bool)>;
@@ -117,8 +117,11 @@ class GlicKeyedService : public KeyedService {
   base::CallbackListSubscription AddContextAccessIndicatorStatusChangedCallback(
       ContextAccessIndicatorChangedCallback callback);
 
-  // Returns the currently focused tab or nullptr if there is none.
-  content::WebContents* GetFocusedTab();
+  // Returns the currently focused tab data union which contains the focused
+  // tab's web contents, or the candidate for the focused tab and why it was
+  // deemed invalid for focus, or an error stating why no candidate was
+  // available.
+  FocusedTabData GetFocusedTabData();
 
   // Returns whether the context access indicator should be shown for the web
   // contents. True iff the web contents is considered focused by

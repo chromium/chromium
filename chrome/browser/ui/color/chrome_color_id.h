@@ -589,6 +589,7 @@
   E_CPONLY(kColorShareThisTabSourceViewBorder) \
   /* The color used in the Tab Group Sharing Recent Activity dialog */ \
   E_CPONLY(kColorSharingRecentActivityDialogFaviconContainer) \
+  E_CPONLY(kColorSharingRecentActivityDialogActivityContainer) \
   /* Side panel colors. */ \
   E_CPONLY(kColorSidePanelBackground) \
   E_CPONLY(kColorSidePanelBadgeBackground) \
@@ -678,6 +679,7 @@
   E_CPONLY(kColorHoverCardTabAlertMediaRecordingIcon) \
   E_CPONLY(kColorHoverCardTabAlertPipPlayingIcon) \
   E_CPONLY(kColorHoverCardTabAlertAudioPlayingIcon) \
+  E_CPONLY(kColorHoverCardTabAlertUserAvatarFallbackIcon) \
   /* Tab colors. */ \
   E_CPONLY(kColorTabBackgroundActiveFrameActive) \
   E_CPONLY(kColorTabBackgroundActiveFrameInactive) \

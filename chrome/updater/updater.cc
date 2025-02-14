@@ -295,8 +295,8 @@ void EnableLoggingByDefault() {
     command_line->AppendSwitch(kEnableLoggingSwitch);
   }
   if (!command_line->HasSwitch(kLoggingModuleSwitch)) {
-    command_line->AppendSwitchASCII(kLoggingModuleSwitch,
-                                    kLoggingModuleSwitchValue);
+    command_line->AppendSwitchUTF8(kLoggingModuleSwitch,
+                                   kLoggingModuleSwitchValue);
   }
 }
 

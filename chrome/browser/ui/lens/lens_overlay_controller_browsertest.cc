@@ -318,14 +318,16 @@ const lens::mojom::GeometryPtr kTestGeometry = lens::mojom::Geometry::New(
 const lens::mojom::OverlayObjectPtr kTestOverlayObject =
     lens::mojom::OverlayObject::New("unique_id", kTestGeometry->Clone());
 const lens::mojom::TextPtr kTestText =
-    lens::mojom::Text::New(lens::mojom::TextLayout::New(), "es");
+    lens::mojom::Text::New(lens::mojom::TextLayout::New(), "en");
 const lens::mojom::CenterRotatedBoxPtr kTestRegion =
     lens::mojom::CenterRotatedBox::New(
         gfx::RectF(0.5, 0.5, 0.8, 0.8),
         0.0,
         lens::mojom::CenterRotatedBox_CoordinateType::kNormalized);
 
-lens::LensOverlayObjectsResponse CreateTestObjectsResponse(bool is_translate) {
+lens::LensOverlayObjectsResponse CreateTestObjectsResponse(
+    bool is_translate,
+    std::vector<std::string> words = {}) {
   lens::LensOverlayObjectsResponse objects_response;
   auto* overlay_object = objects_response.add_overlay_objects();
   overlay_object->set_id("unique_id");
@@ -347,9 +349,28 @@ lens::LensOverlayObjectsResponse CreateTestObjectsResponse(bool is_translate) {
   // will ignore the object.
   overlay_object->mutable_interaction_properties()->set_select_on_tap(true);
 
-  objects_response.mutable_text()->mutable_text_layout();
-  objects_response.mutable_text()->set_content_language(is_translate ? "fr"
-                                                                     : "es");
+  // Create the test text object.
+  lens::Text* text = objects_response.mutable_text();
+  text->set_content_language(is_translate ? "fr" : "en");
+
+  // Create a paragraph.
+  lens::TextLayout::Paragraph* paragraph =
+      text->mutable_text_layout()->add_paragraphs();
+
+  // Create a line.
+  lens::TextLayout::Line* line = paragraph->add_lines();
+
+  for (size_t i = 0; i < words.size(); ++i) {
+    lens::TextLayout::Word* word = line->add_words();
+    word->set_plain_text(words[i]);
+    word->set_text_separator(" ");
+    word->mutable_geometry()->mutable_bounding_box()->set_center_x(0.1 * i);
+    word->mutable_geometry()->mutable_bounding_box()->set_center_y(0.1);
+    word->mutable_geometry()->mutable_bounding_box()->set_width(0.1);
+    word->mutable_geometry()->mutable_bounding_box()->set_height(0.1);
+    word->mutable_geometry()->mutable_bounding_box()->set_coordinate_type(
+        lens::NORMALIZED);
+  }
 
   objects_response.mutable_cluster_info()->set_server_session_id(
       kTestServerSessionId);
@@ -502,7 +523,7 @@ class LensOverlayControllerFake : public LensOverlayController {
         cluster_info_response);
 
     fake_query_controller->set_fake_objects_response(
-        CreateTestObjectsResponse(/*is_translate=*/false));
+        CreateTestObjectsResponse(/*is_translate=*/false, ocr_response_words_));
 
     lens::LensOverlayInteractionResponse interaction_response;
     interaction_response.set_encoded_response(kTestSuggestSignals);
@@ -551,6 +572,7 @@ class LensOverlayControllerFake : public LensOverlayController {
 
   int is_side_panel_loading_set_to_true_ = 0;
   int is_side_panel_loading_set_to_false_ = 0;
+  std::vector<std::string> ocr_response_words_;
   LensOverlayPageFake fake_overlay_page_;
   bool full_image_request_should_return_error_ = false;
   bool is_screenshot_possible_ = true;
@@ -800,8 +822,9 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     auto* omnibox_entrypoint =
         location_bar->page_action_icon_controller()->GetIconView(
             PageActionIconType::kLensOverlay);
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return omnibox_entrypoint->GetVisible() == expected_visible; }));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return omnibox_entrypoint->GetVisible() == expected_visible;
+    }));
 
     // Verify three dot menu entrypoint matches expected visibility.
     EXPECT_EQ(expected_visible,
@@ -820,6 +843,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
  protected:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
+  // The words returned by the mock objects response.
+  std::vector<std::string> ocr_response_words_;
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -5898,6 +5923,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  // Setup fake text in the OCR response. Included 0 words from the DOM to
+  // ensure the similarity score is still recorded when its 0.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  fake_controller->ocr_response_words_ = {"BLAH.", "   random   - ", " ,no] ",
+                                          "RANDOM", "\n\npuppies.\n"};
+
   // Open the overlay.
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
@@ -5961,6 +5992,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByPageContentType.Pdf.PageCount",
       /*expected_count=*/0);
+
+  // This histogram is async so run until it is recorded.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("Lens.Overlay.OcrDomSimilarity",
+                                           0) == 1;
+  }));
+  // Verify the similarity score was only recorded once for the session.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.OcrDomSimilarity", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -5973,6 +6012,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // State should start in off.
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
+
+  // Setup fake text in the OCR response. Included 4 words on the DOM, and 1
+  // not, to make a similarity score of 0.8. Also include some random characters
+  // to make sure they are ignored.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  fake_controller->ocr_response_words_ = {"The.", "   below   - ", " ,are] ",
+                                          "RANDOM", "\n\n\nCharacters.\n"};
 
   // Open the overlay.
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
@@ -6024,6 +6070,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
           kPageContentTypeName,
       static_cast<int64_t>(lens::MimeType::kPlainText));
+
+  // This histogram is async so run until it is recorded.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("Lens.Overlay.OcrDomSimilarity",
+                                           80) == 1;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -6476,6 +6528,161 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
           kPageContentTypeName,
       static_cast<int64_t>(lens::MimeType::kPlainText));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       RecordQueryIssuesBeforeZpsShownInSessionHistograms) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Show ZPS and issue a query.
+  controller->OnZeroSuggestShownForTesting();
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Close the overlay.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Verify the initial histogram was recorded.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.InitialQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      false,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.InitialQuery.ByPageContentType.PlainText."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      false,
+      /*expected_count=*/1);
+
+  // Verify the follow up histogram was not recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType."
+      "PlainText.QueryIssuedInSessionBeforeSuggestShown",
+      /*expected_count=*/0);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Issue a search query before ZPS is shown.
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Issue a follow up after ZPS is shown.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  int follow_up_query_issued_count =
+      fake_controller->is_side_panel_loading_set_to_true_;
+
+  controller->OnZeroSuggestShownForTesting();
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+
+  // Run until the follow up query is issued.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_controller->is_side_panel_loading_set_to_true_ ==
+           follow_up_query_issued_count + 1;
+  }));
+
+  // Close the overlay.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Verify the initial histogram was recorded.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.InitialQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      true,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.InitialQuery.ByPageContentType.PlainText."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      true,
+      /*expected_count=*/1);
+
+  // Verify the follow up histogram was recorded.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      false,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType."
+      "PlainText.QueryIssuedInSessionBeforeSuggestShown",
+      false,
+      /*expected_count=*/1);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Issue a search query.
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Issue a follow up before ZPS is shown.
+  follow_up_query_issued_count =
+      fake_controller->is_side_panel_loading_set_to_true_;
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+
+  // Run until the follow up query is issued.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_controller->is_side_panel_loading_set_to_true_ ==
+           follow_up_query_issued_count + 1;
+  }));
+
+  // Close the overlay.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Verify the follow up histogram was recorded.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      true,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType."
+      "PlainText.QueryIssuedInSessionBeforeSuggestShown",
+      true,
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

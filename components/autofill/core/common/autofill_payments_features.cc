@@ -207,7 +207,7 @@ BASE_FEATURE(kAutofillEnableVcnEnrollLoadingAndConfirmation,
 // merchant websites where the merchant has opted-out of virtual cards.
 BASE_FEATURE(kAutofillEnableVcnGrayOutForMerchantOptOut,
              "AutofillEnableVcnGrayOutForMerchantOptOut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Verve-branded card art will be shown for Verve cards.
 BASE_FEATURE(kAutofillEnableVerveCardSupport,

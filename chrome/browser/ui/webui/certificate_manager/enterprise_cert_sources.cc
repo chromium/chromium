@@ -143,6 +143,9 @@ void EnterpriseTrustedCertSource::ViewCertificate(
           metadata.mutable_constraints()->mutable_cidrs()->Add(
               std::move(proto_cidr));
         }
+        metadata.mutable_trust()->set_trust_type(
+            chrome_browser_server_certificate_database::CertificateTrust::
+                CERTIFICATE_TRUST_TYPE_TRUSTED);
         ShowCertificateDialog(std::move(web_contents),
                               net::x509_util::CreateCryptoBuffer(
                                   cert_with_constraints->certificate),

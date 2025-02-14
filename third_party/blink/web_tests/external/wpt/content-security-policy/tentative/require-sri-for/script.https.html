@@ -49,13 +49,11 @@
           document.body.appendChild(script);
         });
 
-        if (test_case.should_block && !window.ran) {
-          return blockedURI;
-        } else {
-          return window.ran;
-        }
+        return { blocked: blockedURI, ran: window.ran };
       }, [test_case]);
-      assert_equals(result, test_case.expected);
+      for (const [key, value] of Object.entries(result)) {
+        assert_equals(result[key], test_case.expected[key]);
+      }
     }, test_case.description);
   };
 
@@ -77,8 +75,8 @@
       cross_origin: true,
       integrity: "",
       should_block: true,
-      expected: ORIGIN + "/content-security-policy/resources/ran.js",
       report_only: false,
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false },
     },
     {
       description: "Ensure that a script with unknown integrity algorithm did not run",
@@ -86,8 +84,8 @@
       cross_origin: true,
       integrity: "foobar-AAAAAAAAAAAAAAAAAAAa",
       should_block: true,
-      expected: ORIGIN + "/content-security-policy/resources/ran.js",
       report_only: false,
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false },
     },
     {
       description: "Ensure that a script without integrity algorithm runs and gets reported in report-only mode",
@@ -95,8 +93,8 @@
       cross_origin: true,
       integrity: "",
       should_block: true,
-      expected: true,
       report_only: true,
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: true },
     },
     {
       description: "Ensure that a no-cors script gets blocked",
@@ -104,8 +102,8 @@
       cross_origin: false,
       integrity: "sha384-tqyFpeo21WFM8HDeUtLqH20GUq/q3D1R6mqTzW3RtyTZ3dAYZJhC1wUcnkgOE2ak",
       should_block: true,
-      expected: ORIGIN + "/content-security-policy/resources/ran.js",
       report_only: false,
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false },
     },
     {
       description: "Ensure that a script with integrity runs",
@@ -113,8 +111,8 @@
       cross_origin: true,
       integrity: "sha384-tqyFpeo21WFM8HDeUtLqH20GUq/q3D1R6mqTzW3RtyTZ3dAYZJhC1wUcnkgOE2ak",
       should_block: false,
-      expected: true,
       report_only: false,
+      expected: {blocked: "", ran: true },
     },
     {
       description: "Ensure that a script with signature integrity runs",
@@ -122,8 +120,8 @@
       cross_origin: true,
       integrity: "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=",
       should_block: false,
-      expected: true,
       report_only: false,
+      expected: {blocked: "", ran: true },
     },
     {
       description: "Ensure that a data URI script with no integrity runs",
@@ -131,8 +129,17 @@
       cross_origin: true,
       integrity: "",
       should_block: false,
-      expected: true,
       report_only: false,
+      expected: {blocked: "", ran: true },
+    },
+    {
+      description: "Ensure that a no-CORS data URI script with no integrity runs",
+      url: "data:application/javascript,window.ran=true",
+      cross_origin: false,
+      integrity: "",
+      should_block: false,
+      report_only: false,
+      expected: {blocked: "", ran: true },
     },
     {
       description: "Ensure that a blob URL script with no integrity runs",
@@ -140,8 +147,17 @@
       cross_origin: true,
       integrity: "",
       should_block: false,
-      expected: true,
       report_only: false,
+      expected: {blocked: "", ran: true },
+    },
+    {
+      description: "Ensure that a no-CORS blob URL script with no integrity runs",
+      url: blob_url,
+      cross_origin: false,
+      integrity: "",
+      should_block: false,
+      report_only: false,
+      expected: {blocked: "", ran: true },
     }
   ];
   test_cases.map(run_test);

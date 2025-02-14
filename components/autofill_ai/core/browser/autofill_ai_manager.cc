@@ -286,7 +286,6 @@ void AutofillAiManager::OnSuggestionsShown(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
-  logger_.OnSuggestionsShown(form.global_id());
   if (shown_suggestion_types.contains(SuggestionType::kFillAutofillAi)) {
     logger_.OnFillingSuggestionsShown(form.global_id());
   }
@@ -434,10 +433,6 @@ bool AutofillAiManager::ShouldDisplayIph(
   // 3. The focused form can trigger the feature.
   return !client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
          field.GetAutofillAiServerTypePredictions();
-}
-
-void AutofillAiManager::GoToSettings() const {
-  client_->OpenAutofillAiSettings();
 }
 
 autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {

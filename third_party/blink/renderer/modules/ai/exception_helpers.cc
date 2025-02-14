@@ -179,48 +179,58 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
 WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     mojom::blink::ModelAvailabilityCheckResult result) {
   switch (result) {
-    case mojom::blink::ModelAvailabilityCheckResult::kNoServiceNotRunning:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableServiceNotRunning:
       return "Unable to create a text session because the service is not "
              "running.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoUnsupportedLanguage:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableUnsupportedLanguage:
       return "The requested language options are not supported.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoUnknown:
+    case mojom::blink::ModelAvailabilityCheckResult::kUnavailableUnknown:
       return "The service is unable to create new session.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoFeatureNotEnabled:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableFeatureNotEnabled:
       return "The feature flag gating model execution was disabled.";
     case mojom::blink::ModelAvailabilityCheckResult::
-        kNoConfigNotAvailableForFeature:
+        kUnavailableConfigNotAvailableForFeature:
       return "The model was available but there was not an execution config "
              "available for the feature.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoGpuBlocked:
+    case mojom::blink::ModelAvailabilityCheckResult::kUnavailableGpuBlocked:
       return "The GPU is blocked.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoTooManyRecentCrashes:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableTooManyRecentCrashes:
       return "The model process crashed too many times for this version.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoSafetyModelNotAvailable:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableSafetyModelNotAvailable:
       return "The safety model was required but not available.";
     case mojom::blink::ModelAvailabilityCheckResult::
-        kNoSafetyConfigNotAvailableForFeature:
+        kUnavailableSafetyConfigNotAvailableForFeature:
       return "The safety model was available but there was not a safety config "
              "available for the feature.";
     case mojom::blink::ModelAvailabilityCheckResult::
-        kNoLanguageDetectionModelNotAvailable:
+        kUnavailableLanguageDetectionModelNotAvailable:
       return "The language detection model was required but not available.";
     case mojom::blink::ModelAvailabilityCheckResult::
-        kNoFeatureExecutionNotEnabled:
+        kUnavailableFeatureExecutionNotEnabled:
       return "Model execution for this feature was not enabled.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoValidationPending:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableValidationPending:
       return "Model validation is still pending.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoValidationFailed:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableValidationFailed:
       return "Model validation failed.";
-    case mojom::blink::ModelAvailabilityCheckResult::kModelNotEligible:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableModelNotEligible:
       return "The device is not eligible for running on-device model.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoInsufficientDiskSpace:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableInsufficientDiskSpace:
       return "The device does not have enough space for downloading the "
              "on-device model";
-    case mojom::blink::ModelAvailabilityCheckResult::kReadily:
-    case mojom::blink::ModelAvailabilityCheckResult::kAfterDownload:
+    case mojom::blink::ModelAvailabilityCheckResult::kAvailable:
+    case mojom::blink::ModelAvailabilityCheckResult::kDownloadable:
+    case mojom::blink::ModelAvailabilityCheckResult::kDownloading:
     case mojom::blink::ModelAvailabilityCheckResult::
-        kNoModelAdaptationNotAvailable:
+        kUnavailableModelAdaptationNotAvailable:
       NOTREACHED();
   }
   NOTREACHED();

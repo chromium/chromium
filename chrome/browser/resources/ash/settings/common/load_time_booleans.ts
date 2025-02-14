@@ -115,6 +115,10 @@ export function isSunfishSettingsToggleVisible(): boolean {
   return loadTimeData.getBoolean('isSunfishSettingsToggleVisible');
 }
 
+export function isScannerSettingsToggleVisible(): boolean {
+  return loadTimeData.getBoolean('isScannerSettingsToggleVisible');
+}
+
 // System preferences page
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');

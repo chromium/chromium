@@ -162,7 +162,7 @@ std::unique_ptr<views::Label> CreateTitle() {
       views::style::STYLE_HEADLINE_5);
 
   title->SetEnabledColorId(kColorSidePanelEntryTitle);
-  title->SetBackgroundColorId(kColorToolbar);
+  title->SetBackgroundColor(kColorToolbar);
   title->SetSubpixelRenderingEnabled(false);
   const int horizontal_margin =
       ChromeLayoutProvider::Get()->GetDistanceMetric(

@@ -374,12 +374,7 @@ void SystemLiveCaptionService::BindToBrowserInterface() {
 }
 
 std::string SystemLiveCaptionService::GetPrimaryLanguageCode() const {
-  switch (source_) {
-    case AudioSource::kLoopback:
-      return prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs());
-    case AudioSource::kUserMicrophone:
-      return prefs::GetUserMicrophoneCaptionLanguage(profile_->GetPrefs());
-  }
+  return prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs());
 }
 
 void SystemLiveCaptionService::OpenCaptionSettings() {

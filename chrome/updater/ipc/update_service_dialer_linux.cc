@@ -59,8 +59,8 @@ bool DialUpdateInternalService(UpdaterScope scope) {
   if (updater) {
     base::CommandLine command(*updater);
     command.AppendSwitch(kServerSwitch);
-    command.AppendSwitchASCII(kServerServiceSwitch,
-                              kServerUpdateServiceInternalSwitchValue);
+    command.AppendSwitchUTF8(kServerServiceSwitch,
+                             kServerUpdateServiceInternalSwitchValue);
     if (scope == UpdaterScope::kSystem) {
       command.AppendSwitch(kSystemSwitch);
     }

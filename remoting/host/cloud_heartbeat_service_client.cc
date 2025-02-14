@@ -4,6 +4,11 @@
 
 #include "remoting/host/cloud_heartbeat_service_client.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/callback.h"
 #include "base/strings/stringize_macros.h"
 #include "remoting/base/oauth_token_getter_impl.h"
@@ -32,7 +37,9 @@ CloudHeartbeatServiceClient::CloudHeartbeatServiceClient(
     OAuthTokenGetter* oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : directory_id_(directory_id),
-      client_(oauth_token_getter, url_loader_factory) {}
+      client_(CloudServiceClient::CreateForChromotingRobotAccount(
+          oauth_token_getter,
+          url_loader_factory)) {}
 
 CloudHeartbeatServiceClient::~CloudHeartbeatServiceClient() = default;
 
@@ -58,7 +65,7 @@ void CloudHeartbeatServiceClient::SendFullHeartbeat(
             &CloudHeartbeatServiceClient::OnUpdateRemoteAccessHostResponse,
             weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
-    client_.SendHeartbeat(
+    client_->SendHeartbeat(
         directory_id_,
         base::BindOnce(&CloudHeartbeatServiceClient::OnSendHeartbeatResponse,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -69,7 +76,7 @@ void CloudHeartbeatServiceClient::SendLiteHeartbeat(
     HeartbeatResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  client_.SendHeartbeat(
+  client_->SendHeartbeat(
       directory_id_,
       base::BindOnce(&CloudHeartbeatServiceClient::OnSendHeartbeatResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -77,7 +84,7 @@ void CloudHeartbeatServiceClient::SendLiteHeartbeat(
 
 void CloudHeartbeatServiceClient::CancelPendingRequests() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_.CancelPendingRequests();
+  client_->CancelPendingRequests();
 }
 
 void CloudHeartbeatServiceClient::OnSendHeartbeatResponse(
@@ -116,10 +123,10 @@ void CloudHeartbeatServiceClient::MakeUpdateRemoteAccessHostCall(
     std::optional<std::string> offline_reason,
     CloudServiceClient::UpdateRemoteAccessHostCallback callback) {
   constexpr auto* host_version = STRINGIZE(VERSION);
-  client_.UpdateRemoteAccessHost(directory_id_, host_version, signaling_id,
-                                 offline_reason, GetHostOperatingSystemName(),
-                                 GetHostOperatingSystemVersion(),
-                                 std::move(callback));
+  client_->UpdateRemoteAccessHost(directory_id_, host_version, signaling_id,
+                                  offline_reason, GetHostOperatingSystemName(),
+                                  GetHostOperatingSystemVersion(),
+                                  std::move(callback));
 }
 
 void CloudHeartbeatServiceClient::RunHeartbeatResponseCallback(

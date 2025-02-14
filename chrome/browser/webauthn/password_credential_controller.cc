@@ -34,6 +34,17 @@ void PasswordCredentialController::FetchPasswords(
     const GURL& url,
     PasswordCredentialsReceivedCallback callback) {}
 
+bool PasswordCredentialController::IsAuthRequired() {
+  return false;
+}
+
+void PasswordCredentialController::SetPasswordSelectedCallback(
+    AuthenticatorRequestClientDelegate::PasswordSelectedCallback callback) {}
+
+void PasswordCredentialController::OnPasswordSelected(std::u16string username,
+                                                      std::u16string password) {
+}
+
 // static
 void PasswordCredentialController::set_instance_for_testing(
     PasswordCredentialController* instance) {

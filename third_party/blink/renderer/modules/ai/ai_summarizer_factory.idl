@@ -55,7 +55,9 @@ interface AISummarizerFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AICapabilityAvailability> availability(optional AISummarizerCreateCoreOptions options = {});
+  Promise<AIAvailability> availability(
+    optional AISummarizerCreateCoreOptions options = {}
+  );
 
   // TODO(crbug.com/390477782): Deprecate this method.
   [

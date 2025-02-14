@@ -657,14 +657,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     base::CommandLine helper_command(path);
     helper_command.AppendSwitch(command_switch);
     for (const Param& param : params) {
-      helper_command.AppendSwitchASCII(param.name, param.value);
+      helper_command.AppendSwitchUTF8(param.name, param.value);
     }
 
     // Avoids the test runner banner about test debugging.
     helper_command.AppendSwitch("single-process-tests");
-    helper_command.AppendSwitchASCII("gtest_filter",
-                                     "TestHelperCommandRunner.Run");
-    helper_command.AppendSwitchASCII("gtest_brief", "1");
+    helper_command.AppendSwitchUTF8("gtest_filter",
+                                    "TestHelperCommandRunner.Run");
+    helper_command.AppendSwitchUTF8("gtest_brief", "1");
     for (const std::string& s :
          {switches::kUiTestActionTimeout, switches::kUiTestActionMaxTimeout,
           switches::kTestTinyTimeout, switches::kTestLauncherTimeout}) {

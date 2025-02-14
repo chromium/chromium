@@ -974,7 +974,7 @@ void MediaRecorderHandler::OnEncodedVideo(
 
     // We don't use the output_chunk, we just pass the configuration
     // data as a codec_descriptions.
-    auto output_chunk = h26x_converter_->Convert(encoded_data->AsSpan());
+    auto output_chunk = h26x_converter_->Convert(*encoded_data);
     codec_description = h26x_converter_->GetCodecDescription();
     if (first_key_frame) {
       video_codec_profile_.level =

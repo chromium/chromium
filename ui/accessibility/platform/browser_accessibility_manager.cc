@@ -1078,6 +1078,16 @@ void BrowserAccessibilityManager::ScrollToMakeVisible(
   action_data.scroll_behavior = scroll_behavior;
   delegate_->AccessibilityPerformAction(action_data);
   AXPlatform::GetInstance().NotifyAccessibilityApiUsage();
+
+  // Android has an official api for accessibility focus.
+#if !BUILDFLAG(IS_ANDROID)
+  // Update our notion of accessibility focus on the root browser accessibility
+  // manager.
+  BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
+  if (root_manager) {
+    UpdateAccessibilityFocus(this, node);
+  }
+#endif
 }
 
 void BrowserAccessibilityManager::ScrollToPoint(
@@ -1994,6 +2004,23 @@ AXPlatformNodeId BrowserAccessibilityManager::GetNodeUniqueId(
   return node_id_delegate_->GetOrCreateAXNodeUniqueId(node->node()->id());
 }
 
+BrowserAccessibility* BrowserAccessibilityManager::GetAccessibilityFocus() {
+  if (accessibility_focus_tree_id_ == AXTreeIDUnknown() ||
+      accessibility_focus_node_id_ == AXNodeData::kInvalidAXID) {
+    return nullptr;
+  }
+
+  BrowserAccessibilityManager* manager =
+      BrowserAccessibilityManager::FromID(accessibility_focus_tree_id_);
+
+  BrowserAccessibility* node = nullptr;
+  if (manager) {
+    node = manager->GetFromID(accessibility_focus_node_id_);
+  }
+
+  return node;
+}
+
 float BrowserAccessibilityManager::device_scale_factor() const {
   return device_scale_factor_;
 }
@@ -2001,6 +2028,30 @@ float BrowserAccessibilityManager::device_scale_factor() const {
 void BrowserAccessibilityManager::UpdateDeviceScaleFactor() {
   if (delegate_)
     device_scale_factor_ = delegate_->AccessibilityGetDeviceScaleFactor();
+}
+
+void BrowserAccessibilityManager::UpdateAccessibilityFocus(
+    BrowserAccessibilityManager* manager,
+    const BrowserAccessibility& node) {
+  BrowserAccessibilityManager* prior_manager = nullptr;
+  BrowserAccessibility* prior_node = GetAccessibilityFocus();
+  if (prior_node) {
+    prior_manager = prior_node->manager();
+  }
+
+  // Focus didn't change.
+  if (prior_manager && prior_node && prior_node->GetId() == node.GetId() &&
+      manager->GetTreeID() == prior_manager->GetTreeID()) {
+    return;
+  }
+
+  if (prior_node) {
+    prior_manager->ClearAccessibilityFocus(*prior_node);
+  }
+
+  manager->SetAccessibilityFocus(node);
+  accessibility_focus_tree_id_ = manager->GetTreeID();
+  accessibility_focus_node_id_ = node.GetId();
 }
 
 }  // namespace ui

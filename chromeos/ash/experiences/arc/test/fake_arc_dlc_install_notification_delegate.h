@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace arc {
@@ -16,6 +16,7 @@ class FakeArcDlcInstallNotificationDelegate
     : public ArcDlcInstallNotificationManager::Delegate {
  public:
   FakeArcDlcInstallNotificationDelegate();
+
   ~FakeArcDlcInstallNotificationDelegate() override;
 
   void DisplayNotification(

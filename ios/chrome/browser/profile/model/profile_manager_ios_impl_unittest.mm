@@ -124,9 +124,8 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
   // Reserve a new profile name and mark it as existing.
   const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
-        return attrs;
       }));
 
   base::RunLoop run_loop;
@@ -167,9 +166,8 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
   // Reserve a new profile name and mark it as existing.
   const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
-        return attrs;
       }));
 
   // Load the Profile a first time.
@@ -407,9 +405,8 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfile) {
   // Reserve a new profile name and mark it as existing.
   const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
-        return attrs;
       }));
 
   // Load the Profile synchronously.

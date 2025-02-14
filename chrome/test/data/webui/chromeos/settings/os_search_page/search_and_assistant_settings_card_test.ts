@@ -329,6 +329,229 @@ suite('<search-and-assistant-settings-card>', () => {
         });
       });
 
+  test(
+      'when isScannerSettingsToggleVisible flag is false, ' +
+          'Scanner toggles are hidden',
+      () => {
+        loadTimeData.overrideValues({
+          isScannerSettingsToggleVisible: false,
+        });
+        createSearchAndAssistantCard();
+        assertFalse(
+            isVisible(searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+                '#scannerToggle')));
+        assertFalse(
+            isVisible(searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+                '#scannerEnterpriseToggle')));
+      });
+
+  suite('when isScannerSettingsToggleVisible flag is true', () => {
+    setup(() => {
+      loadTimeData.overrideValues({
+        isScannerSettingsToggleVisible: true,
+      });
+    });
+
+    const ALLOWED_ENTERPRISE_POLICIES = [
+      {desc: 'allowed with model improvement', value: 0},
+      {desc: 'allowed without model improvement', value: 1},
+      {desc: 'an invalid value', value: 3},
+    ] as const satisfies ReadonlyArray<{desc: string, value: number}>;
+
+    for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
+      suite(`and enterprise policy is ${desc}`, () => {
+        let scannerToggle: SettingsToggleButtonElement;
+
+        setup(() => {
+          createSearchAndAssistantCard();
+          searchAndAssistantSettingsCard.prefs = {
+            ash: {
+              scanner: {
+                enabled: {
+                  value: true,
+                  type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                },
+                enterprise_policy_allowed: {
+                  value,
+                  type: chrome.settingsPrivate.PrefType.NUMBER,
+                },
+              },
+            },
+          };
+          flush();
+
+          const nullableScannerToggle =
+              searchAndAssistantSettingsCard.shadowRoot!
+                  .querySelector<SettingsToggleButtonElement>('#scannerToggle');
+          assertTrue(nullableScannerToggle !== null);
+          scannerToggle = nullableScannerToggle;
+        });
+
+        test('Scanner toggle should appear', () => {
+          assertTrue(isVisible(scannerToggle));
+        });
+
+        test('Scanner enterprise toggle should not appear', () => {
+          const scannerEnterpriseToggle =
+              searchAndAssistantSettingsCard.shadowRoot!
+                  .querySelector<SettingsToggleButtonElement>(
+                      '#scannerEnterpriseToggle');
+          assertTrue(!isVisible(scannerEnterpriseToggle));
+        });
+
+        test('Scanner toggle reflects pref value', () => {
+          assertTrue(isVisible(scannerToggle));
+          assertTrue(scannerToggle.checked);
+          assertTrue(searchAndAssistantSettingsCard.get(
+              'prefs.ash.scanner.enabled.value'));
+
+          scannerToggle.click();
+          assertFalse(scannerToggle.checked);
+          assertFalse(searchAndAssistantSettingsCard.get(
+              'prefs.ash.scanner.enabled.value'));
+        });
+
+        test('Scanner toggle is deep-linkable', async () => {
+          const setting = settingMojom.Setting.kScannerOnOff;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(defaultRoute, params);
+
+          await waitAfterNextRender(scannerToggle);
+          assertEquals(
+              scannerToggle,
+              searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+              `Element should be focused for settingId=${setting}.'`);
+        });
+
+        test(
+            'then changes to disallowed, ' +
+                'Scanner enterprise toggle is deep-linkable',
+            async () => {
+              searchAndAssistantSettingsCard.set(
+                  'prefs.ash.scanner.enterprise_policy_allowed.value', 2);
+              flush();
+
+              const scannerEnterpriseToggle =
+                  searchAndAssistantSettingsCard.shadowRoot!
+                      .querySelector<SettingsToggleButtonElement>(
+                          '#scannerEnterpriseToggle');
+              assertTrue(scannerEnterpriseToggle !== null);
+
+              const setting = settingMojom.Setting.kScannerOnOff;
+              const params = new URLSearchParams();
+              params.append('settingId', setting.toString());
+              Router.getInstance().navigateTo(defaultRoute, params);
+
+              await waitAfterNextRender(scannerEnterpriseToggle);
+              assertEquals(
+                  scannerEnterpriseToggle,
+                  searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+                  `Element should be focused for settingId=${setting}.'`);
+            });
+      });
+    }
+
+    suite('and enterprise policy is disallowed', () => {
+      let scannerEnterpriseToggle: SettingsToggleButtonElement;
+
+      setup(() => {
+        createSearchAndAssistantCard();
+        searchAndAssistantSettingsCard.prefs = {
+          ash: {
+            scanner: {
+              enabled: {
+                value: true,
+                type: chrome.settingsPrivate.PrefType.BOOLEAN,
+              },
+              enterprise_policy_allowed: {
+                value: 2,
+                type: chrome.settingsPrivate.PrefType.NUMBER,
+              },
+            },
+          },
+        };
+        flush();
+
+        const nullableScannerEnterpriseToggle =
+            searchAndAssistantSettingsCard.shadowRoot!
+                .querySelector<SettingsToggleButtonElement>(
+                    '#scannerEnterpriseToggle');
+        assertTrue(nullableScannerEnterpriseToggle !== null);
+        scannerEnterpriseToggle = nullableScannerEnterpriseToggle;
+      });
+
+      test('Scanner enterprise toggle should appear', () => {
+        assertTrue(isVisible(scannerEnterpriseToggle));
+      });
+
+      test('Scanner toggle should not appear', () => {
+        const scannerToggle =
+            searchAndAssistantSettingsCard.shadowRoot!
+                .querySelector<SettingsToggleButtonElement>('#scannerToggle');
+        assertTrue(!isVisible(scannerToggle));
+      });
+
+      test('Scanner enterprise toggle appears unchecked', () => {
+        assertTrue(isVisible(scannerEnterpriseToggle));
+        assertFalse(scannerEnterpriseToggle.checked);
+      });
+
+      test('Scanner enterprise toggle does not respond to clicks', () => {
+        assertTrue(isVisible(scannerEnterpriseToggle));
+        scannerEnterpriseToggle.click();
+
+        assertFalse(scannerEnterpriseToggle.checked);
+        assertTrue(searchAndAssistantSettingsCard.get(
+            'prefs.ash.scanner.enabled.value'));
+        assertEquals(
+            searchAndAssistantSettingsCard.get(
+                'prefs.ash.scanner.enterprise_policy_allowed.value'),
+            2);
+      });
+
+      test('Scanner enterprise toggle is deep-linkable', async () => {
+        const setting = settingMojom.Setting.kScannerOnOff;
+        const params = new URLSearchParams();
+        params.append('settingId', setting.toString());
+        Router.getInstance().navigateTo(defaultRoute, params);
+
+        await waitAfterNextRender(scannerEnterpriseToggle);
+        assertEquals(
+            scannerEnterpriseToggle,
+            searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+            `Element should be focused for settingId=${setting}.'`);
+      });
+
+      for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
+        test(
+            `then changes to ${desc}, Scanner toggle is deep-linkable`,
+            async () => {
+              searchAndAssistantSettingsCard.set(
+                  'prefs.ash.scanner.enterprise_policy_allowed.value', value);
+              flush();
+
+              const scannerToggle =
+                  searchAndAssistantSettingsCard.shadowRoot!
+                      .querySelector<SettingsToggleButtonElement>(
+                          '#scannerToggle');
+              assertTrue(scannerToggle !== null);
+
+              const setting = settingMojom.Setting.kScannerOnOff;
+              const params = new URLSearchParams();
+              params.append('settingId', setting.toString());
+              Router.getInstance().navigateTo(defaultRoute, params);
+
+              await waitAfterNextRender(scannerToggle);
+              assertEquals(
+                  scannerToggle,
+                  searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+                  `Element should be focused for settingId=${setting}.'`);
+            });
+      }
+    });
+  });
+
   suite('when Quick Answers is not supported', () => {
     test('Search engine row should be visible', () => {
       createSearchAndAssistantCard();

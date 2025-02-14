@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -83,15 +82,12 @@ class SessionControllerClientImplTest : public testing::Test {
         TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    browser_manager_ = std::make_unique<crosapi::FakeBrowserManager>();
-
     cros_settings_test_helper_ =
         std::make_unique<ash::ScopedCrosSettingsTestHelper>();
   }
 
   void TearDown() override {
     cros_settings_test_helper_.reset();
-    browser_manager_.reset();
 
     for (user_manager::User* user : user_manager_->GetPersistedUsers()) {
       user_manager_->OnUserProfileWillBeDestroyed(user->GetAccountId());
@@ -183,7 +179,6 @@ class SessionControllerClientImplTest : public testing::Test {
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
 };
 

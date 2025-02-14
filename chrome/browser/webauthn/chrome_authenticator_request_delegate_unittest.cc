@@ -119,6 +119,10 @@ class MockPasswordCredentialController
       (const GURL&,
        PasswordCredentialController::PasswordCredentialsReceivedCallback),
       (override));
+  MOCK_METHOD(base::WeakPtr<PasswordCredentialController>,
+              AsWeakPtr,
+              (),
+              (override));
 };
 
 class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
@@ -186,7 +190,6 @@ class TestAuthenticatorModelObserver final
   raw_ptr<AuthenticatorRequestDialogModel> model_;
   AuthenticatorRequestDialogModel::Step last_step_;
 };
-
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
   const std::array<uint8_t, 16> eid = {1, 2, 3, 4};
@@ -293,53 +296,53 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       },
   };
 
-    unsigned test_case = 0;
-    for (const auto& test : kTests) {
-      SCOPED_TRACE(test_case);
-      test_case++;
+  unsigned test_case = 0;
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test_case);
+    test_case++;
 
-      MockCableDiscoveryFactory discovery_factory;
-      ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-      delegate.SetRelyingPartyId(kRpId);
-      delegate.ConfigureDiscoveries(
-          url::Origin::Create(GURL(test.origin)), test.origin,
-          content::AuthenticatorRequestClientDelegate::RequestSource::
-              kWebAuthentication,
-          test.request_type, test.resident_key_requirement,
-          device::UserVerificationRequirement::kRequired,
-          /*user_name=*/std::nullopt, test.extensions,
-          /*is_enclave_authenticator_available=*/false, &discovery_factory);
+    MockCableDiscoveryFactory discovery_factory;
+    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    delegate.SetRelyingPartyId(kRpId);
+    delegate.ConfigureDiscoveries(
+        url::Origin::Create(GURL(test.origin)), test.origin,
+        content::AuthenticatorRequestClientDelegate::RequestSource::
+            kWebAuthentication,
+        test.request_type, test.resident_key_requirement,
+        device::UserVerificationRequirement::kRequired,
+        /*user_name=*/std::nullopt, test.extensions,
+        /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
-      switch (test.expected_result) {
-        case Result::kNone:
-          EXPECT_FALSE(discovery_factory.qr_key.has_value());
-          EXPECT_TRUE(discovery_factory.cable_data.empty());
-          break;
+    switch (test.expected_result) {
+      case Result::kNone:
+        EXPECT_FALSE(discovery_factory.qr_key.has_value());
+        EXPECT_TRUE(discovery_factory.cable_data.empty());
+        break;
 
-        case Result::kV1:
-          EXPECT_FALSE(discovery_factory.qr_key.has_value());
-          EXPECT_FALSE(discovery_factory.cable_data.empty());
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
-                    AuthenticatorRequestDialogModel::CableUIType::CABLE_V1);
-          break;
+      case Result::kV1:
+        EXPECT_FALSE(discovery_factory.qr_key.has_value());
+        EXPECT_FALSE(discovery_factory.cable_data.empty());
+        EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
+                  AuthenticatorRequestDialogModel::CableUIType::CABLE_V1);
+        break;
 
-        case Result::kServerLink:
-          EXPECT_TRUE(discovery_factory.qr_key.has_value());
-          EXPECT_FALSE(discovery_factory.cable_data.empty());
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
-                    AuthenticatorRequestDialogModel::CableUIType::
-                        CABLE_V2_SERVER_LINK);
-          break;
+      case Result::kServerLink:
+        EXPECT_TRUE(discovery_factory.qr_key.has_value());
+        EXPECT_FALSE(discovery_factory.cable_data.empty());
+        EXPECT_EQ(
+            delegate.dialog_model()->cable_ui_type,
+            AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK);
+        break;
 
-        case Result::k3rdParty:
-          EXPECT_TRUE(discovery_factory.qr_key.has_value());
-          EXPECT_TRUE(discovery_factory.cable_data.empty());
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
-                    AuthenticatorRequestDialogModel::CableUIType::
-                        CABLE_V2_2ND_FACTOR);
-          break;
-      }
+      case Result::k3rdParty:
+        EXPECT_TRUE(discovery_factory.qr_key.has_value());
+        EXPECT_TRUE(discovery_factory.cable_data.empty());
+        EXPECT_EQ(
+            delegate.dialog_model()->cable_ui_type,
+            AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR);
+        break;
     }
+  }
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {

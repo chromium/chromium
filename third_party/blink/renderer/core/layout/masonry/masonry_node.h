@@ -7,8 +7,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/masonry/masonry_item_group.h"
 
 namespace blink {
+
+class GridLineResolver;
 
 // Masonry specific extensions to `BlockNode`.
 class CORE_EXPORT MasonryNode final : public BlockNode {
@@ -17,6 +20,11 @@ class CORE_EXPORT MasonryNode final : public BlockNode {
     DCHECK(box);
     DCHECK(box->IsLayoutMasonry());
   }
+
+  // Collects the children of this node into item groups based on their
+  // placement, span size, and baseline-sharing group.
+  MasonryItemGroups CollectItemGroups(
+      const GridLineResolver& line_resolver) const;
 };
 
 template <>

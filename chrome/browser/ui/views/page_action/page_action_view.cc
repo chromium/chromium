@@ -56,6 +56,7 @@ void PageActionView::OnPageActionModelChanged(
   SetVisible(model.GetVisible());
   SetText(model.GetText());
   SetTooltipText(model.GetTooltipText());
+  label()->SetVisible(model.GetShowSuggestionChip());
 
   UpdateIconImage();
   UpdateBorder();
@@ -96,11 +97,6 @@ void PageActionView::ViewHierarchyChanged(
     UpdateIconImage();
     UpdateBorder();
   }
-}
-
-bool PageActionView::ShouldShowLabel() const {
-  return observation_.IsObserving() &&
-         observation_.GetSource()->GetShowSuggestionChip();
 }
 
 void PageActionView::UpdateBorder() {

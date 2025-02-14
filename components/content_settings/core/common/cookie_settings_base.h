@@ -501,7 +501,7 @@ class CookieSettingsBase {
                net::CookieSettingOverrides overrides,
                const ContentSetting& setting,
                bool is_explicit_setting,
-               bool global_setting_or_embedder_blocks_third_party_cookies,
+               bool block_third_party_cookies,
                SettingInfo& setting_info) const;
 
   // Returns whether requests for |url| and |first_party_url| should always

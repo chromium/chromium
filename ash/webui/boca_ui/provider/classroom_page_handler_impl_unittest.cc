@@ -609,10 +609,30 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
               ]
             },
             {
-              "id": "question-id",
-              "title": "question-title",
-              "alternateLink": "http://question-url.com",
+              "id": "short-answer-question-id",
+              "title": "short-answer-question-title",
+              "alternateLink": "http://short-answer-question-url.com",
+              "workType": "SHORT_ANSWER_QUESTION",
+              "updateTime": "2025-04-05T04:05:06.700Z"
+            },
+            {
+              "id": "multiple-choice-question-id",
+              "title": "multiple-choice-question-title",
+              "alternateLink": "http://multiple-choice-question-url.com",
               "workType": "MULTIPLE_CHOICE_QUESTION",
+              "updateTime": "2025-04-05T04:05:06.700Z"
+            },
+            {
+              "id": "type-unspecified-id",
+              "title": "type-unspecified-title",
+              "alternateLink": "http://type-unspecified-url.com",
+              "workType": "COURSE_WORK_TYPE_UNSPECIFIED",
+              "updateTime": "2025-04-05T04:05:06.700Z"
+            },
+            {
+              "id": "no-type-id",
+              "title": "no-type-title",
+              "alternateLink": "http://no-type-url.com",
               "updateTime": "2025-04-05T04:05:06.700Z"
             }
         ]
@@ -633,10 +653,11 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
       google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
   run_loop.Run();
 
-  ASSERT_EQ(response.size(), 4u);
+  ASSERT_EQ(response.size(), 6u);
   EXPECT_EQ(response.at(0)->title, "assignment-multiple-materials-title");
   EXPECT_EQ(response.at(0)->url,
             GURL("http://assignment-multiple-materials-url.com"));
+  EXPECT_EQ(response.at(0)->type, mojom::AssignmentType::kAssignment);
   EXPECT_EQ(
       google_apis::util::FormatTimeAsString(response.at(0)->last_update_time),
       "2025-01-01T00:00:00.000Z");
@@ -651,6 +672,7 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
   EXPECT_EQ(response.at(1)->title, "assignment-link-materials-title");
   EXPECT_EQ(response.at(1)->url,
             GURL("http://assignment-link-materials-url.com"));
+  EXPECT_EQ(response.at(1)->type, mojom::AssignmentType::kAssignment);
   EXPECT_EQ(
       google_apis::util::FormatTimeAsString(response.at(1)->last_update_time),
       "2025-01-02T01:02:03.400Z");
@@ -662,6 +684,7 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
   EXPECT_EQ(response.at(2)->title, "assignment-form-materials-title");
   EXPECT_EQ(response.at(2)->url,
             GURL("http://assignment-form-materials-url.com"));
+  EXPECT_EQ(response.at(2)->type, mojom::AssignmentType::kAssignment);
   EXPECT_EQ(
       google_apis::util::FormatTimeAsString(response.at(2)->last_update_time),
       "2025-02-03T02:03:04.500Z");
@@ -670,6 +693,7 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
   EXPECT_EQ(response.at(2)->materials.at(0)->type, mojom::MaterialType::kForm);
 
   EXPECT_EQ(response.at(3)->title, "assignment-unknown-materials-title");
+  EXPECT_EQ(response.at(3)->type, mojom::AssignmentType::kAssignment);
   EXPECT_EQ(response.at(3)->url,
             GURL("http://assignment-unknown-materials-url.com"));
   EXPECT_EQ(
@@ -678,6 +702,22 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
   EXPECT_EQ(response.at(3)->materials.size(), 1u);
   EXPECT_EQ(response.at(3)->materials.at(0)->type,
             mojom::MaterialType::kUnknown);
+
+  EXPECT_EQ(response.at(4)->title, "short-answer-question-title");
+  EXPECT_EQ(response.at(4)->url, GURL("http://short-answer-question-url.com"));
+  EXPECT_EQ(response.at(4)->type, mojom::AssignmentType::kShortAnswerQuestion);
+  EXPECT_EQ(
+      google_apis::util::FormatTimeAsString(response.at(3)->last_update_time),
+      "2025-03-04T03:04:05.600Z");
+
+  EXPECT_EQ(response.at(5)->title, "multiple-choice-question-title");
+  EXPECT_EQ(response.at(5)->url,
+            GURL("http://multiple-choice-question-url.com"));
+  EXPECT_EQ(response.at(5)->type,
+            mojom::AssignmentType::kMultipleChoiceQuestion);
+  EXPECT_EQ(
+      google_apis::util::FormatTimeAsString(response.at(3)->last_update_time),
+      "2025-03-04T03:04:05.600Z");
 }
 
 TEST_F(ClassroomPageHandlerImplTest, ListAssignmentsOnHttpError) {

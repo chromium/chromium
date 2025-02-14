@@ -37,6 +37,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
 
   base::WeakPtr<AuthFactorEditor> AsWeakPtr();
 
+  // Locks account recovery until the device reboots. On success, no user on the
+  // device will be able to access the local account without using their old
+  // password. After the device reboots, users can use their updated password to
+  // gain access to their local account. This can be used to temporary block
+  // account recovery for a remote access session to the device.
+  void LockCryptohomeRecoveryUntilReboot(NoContextOperationCallback callback);
+
   // Retrieves information about all configured and possible AuthFactors,
   // and stores it in `context`.
   // Should only be used with AuthFactors feature enabled.
@@ -240,6 +247,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                                  const cryptohome::KeyLabel& new_label,
                                  AuthOperationCallback callback,
                                  const std::string& system_salt);
+
+  void OnCryptohomeRecoveryLockedUntilReboot(
+      NoContextOperationCallback callback,
+      std::optional<user_data_auth::LockFactorUntilRebootReply> reply);
 
   const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   base::WeakPtrFactory<AuthFactorEditor> weak_factory_{this};

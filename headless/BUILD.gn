@@ -265,8 +265,6 @@ component("headless_non_renderer") {
     "lib/browser/headless_request_context_manager.h",
     "lib/browser/headless_screen.cc",
     "lib/browser/headless_screen.h",
-    "lib/browser/headless_screen_info.cc",
-    "lib/browser/headless_screen_info.h",
     "lib/browser/headless_screen_orientation_delegate.cc",
     "lib/browser/headless_screen_orientation_delegate.h",
     "lib/browser/headless_web_contents_impl.cc",
@@ -365,6 +363,7 @@ component("headless_non_renderer") {
     "//components/embedder_support/origin_trials",
     "//components/headless/clipboard",
     "//components/headless/command_handler:switches",
+    "//components/headless/screen_info",
     "//components/headless/select_file_dialog",
     "//components/keyed_service/content",
     "//components/origin_trials:browser",
@@ -560,7 +559,6 @@ test("headless_unittests") {
   sources = [
     "lib/browser/headless_browser_impl_unittest.cc",
     "lib/browser/headless_client_hints_controller_delegate_unittest.cc",
-    "lib/browser/headless_screen_info_unittest.cc",
     "lib/renderer/allowlist_unittest.cc",
   ]
 

@@ -36,14 +36,6 @@ class AwPrefetchManager {
 
   ~AwPrefetchManager();
 
-  void StartBrowserPrefetchRequest(
-      const GURL& url,
-      bool javascript_enabled,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
-      const net::HttpRequestHeaders& additional_headers,
-      std::unique_ptr<content::PrefetchRequestStatusListener>
-          request_status_listener);
-
   void StartPrefetchRequest(
       JNIEnv* env,
       const std::string& url,
@@ -51,16 +43,19 @@ class AwPrefetchManager {
       const base::android::JavaParamRef<jobject>& callback,
       const base::android::JavaParamRef<jobject>& callback_executor);
 
-  // Updates the TTL and maximum number of prefetches.
-  void UpdatePrefetchConfiguration(JNIEnv* env,
-                                   jint ttl_in_sec,
-                                   jint max_prefetches);
+  // Updates Time-To-Live (TTL) for the prefetched content in seconds.
+  void SetTtlInSec(JNIEnv* env, jint ttl_in_sec) { ttl_in_sec_ = ttl_in_sec; }
+
+  // Updates the maximum number of allowed prefetches in cache
+  void SetMaxPrefetches(JNIEnv* env, jint max_prefetches) {
+    max_prefetches_ = max_prefetches;
+  }
 
   // Returns the Time-to-Live (TTL) for prefetched content in seconds.
-  int GetTtlInSec() const { return ttl_in_sec_; }
+  int GetTtlInSec(JNIEnv* env) const { return ttl_in_sec_; }
 
   // Returns the maximum number of allowed prefetches in cache.
-  int GetMaxPrefetches() const { return max_prefetches_; }
+  int GetMaxPrefetches(JNIEnv* env) const { return max_prefetches_; }
 
   std::vector<content::PrefetchHandle*> GetAllPrefetchesForTesting() const {
     std::vector<content::PrefetchHandle*> raw_prefetches;

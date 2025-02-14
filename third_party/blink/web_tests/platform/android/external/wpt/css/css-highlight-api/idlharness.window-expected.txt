@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] HighlightRegistry interface: operation highlightsFromPoint(float, float, optional HighlightsFromPointOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "highlightsFromPoint" missing
+[FAIL] HighlightRegistry interface: CSS.highlights must inherit property "highlightsFromPoint(float, float, optional HighlightsFromPointOptions)" with the proper type
+  assert_inherits: property "highlightsFromPoint" not found in prototype chain
+[FAIL] HighlightRegistry interface: calling highlightsFromPoint(float, float, optional HighlightsFromPointOptions) on CSS.highlights with too few arguments must throw TypeError
+  assert_inherits: property "highlightsFromPoint" not found in prototype chain
+Harness: the test ran to completion.

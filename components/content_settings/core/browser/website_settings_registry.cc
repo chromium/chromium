@@ -205,7 +205,8 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::SERIAL_CHOOSER_DATA, "serial-chooser-data",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::HID_CHOOSER_DATA, "hid-chooser-data",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,

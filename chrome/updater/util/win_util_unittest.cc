@@ -322,7 +322,7 @@ TEST(WinUtil, StopProcessesUnderPath) {
 
   base::CommandLine command_line = GetTestProcessCommandLine(
       GetUpdaterScopeForTesting(), test::GetTestName());
-  command_line.AppendSwitchASCII(
+  command_line.AppendSwitchUTF8(
       updater::kTestSleepSecondsSwitch,
       base::NumberToString(TestTimeouts::action_timeout().InSeconds() / 4));
 

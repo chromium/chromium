@@ -54,12 +54,12 @@ WebDataServiceBase::Handle AutofillWebDataService::GetFormValuesForElementName(
     const std::u16string& name,
     const std::u16string& prefix,
     int limit,
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetFormValuesForElementName,
                      autofill_backend_, name, prefix, limit),
-      consumer);
+      std::move(consumer));
 }
 
 void AutofillWebDataService::RemoveFormElementsAddedBetween(
@@ -160,13 +160,13 @@ WebDataServiceBase::Handle
 AutofillWebDataService::GetCountOfValuesContainedBetween(
     base::Time begin,
     base::Time end,
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(
           &AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween,
           autofill_backend_, begin, end),
-      consumer);
+      std::move(consumer));
 }
 
 void AutofillWebDataService::UpdateAutocompleteEntries(
@@ -436,13 +436,13 @@ AutofillWebDataService::GetDBTaskRunner() {
 
 WebDataServiceBase::Handle
 AutofillWebDataService::RemoveExpiredAutocompleteEntries(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(
           &AutofillWebDataBackendImpl::RemoveExpiredAutocompleteEntries,
           autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 void AutofillWebDataService::AddServerCreditCardForTesting(

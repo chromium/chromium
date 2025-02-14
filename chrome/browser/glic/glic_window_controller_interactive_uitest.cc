@@ -119,8 +119,11 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenAttachedThenOpenAttachedToSameBrowserCloses) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
-                  OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  ToggleGlicWindow(GlicWindowMode::kAttached),
+                  InAnyContext(WaitForHide(kGlicViewElementId)),
                   CheckControllerHasWidget(false));
 }
 
@@ -203,6 +206,18 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       InAnyContext(WaitForShow(kGlicViewElementId)),
       CheckControllerHasWidget(true),
       CheckControllerWidgetMode(GlicWindowMode::kAttached));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       HotkeyDetachedWithNotNormalBrowser) {
+  RunTestSequence(Do([&]() {
+                    Browser* const pwa =
+                        CreateBrowserForApp("app name", browser()->profile());
+                    pwa->window()->Activate();
+                  }),
+                  SimulateGlicHotkey(),
+                  InAnyContext(WaitForShow(kGlicViewElementId)),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 
 #if !BUILDFLAG(IS_LINUX)

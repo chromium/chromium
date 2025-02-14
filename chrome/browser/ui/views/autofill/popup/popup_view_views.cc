@@ -692,21 +692,6 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
-  // TODO(crbug.com/374715256): Autofill Ai suggestions are generated
-  // asynchronously, after showing the "loading" popup. Testing for the
-  // `kAutofillAiFeedback` suggestion is a way to understand that the
-  // suggestions are generated successfully and announce it. This approach
-  // should be reconsidered in favor of something more reliable.
-  CHECK(controller(), base::NotFatalUntil::M134);
-  if (controller() &&
-      base::Contains(controller()->GetSuggestions(),
-                     SuggestionType::kAutofillAiFeedback, &Suggestion::type)) {
-    a11y_announcer_.Run(
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
-        /*polite=*/true);
-  }
-
   MaybeA11yFocusInformationalSuggestion();
 }
 
@@ -1054,24 +1039,8 @@ void PopupViewViews::CreateSuggestionViews() {
                   std::move(filter_match), password_favicon_loader_.get()));
           rows_.push_back(row_view);
 
-          // Set element identifiers for tests.
-          if (suggestions[current_line_number].type ==
-              SuggestionType::kRetrieveAutofillAi) {
-            row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillAiTriggerElementId);
-          } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kFillAutofillAi) {
-            row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillAiFillElementId);
-          } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kAutofillAiError) {
-            row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillAiErrorElementId);
-          }
-
           const base::Feature* const feature =
               suggestions[current_line_number].iph_metadata.feature;
-
           // Set appropriate element ids for IPH targets, it is important to
           // set them earlier to make sure the elements are discoverable later
           // during popup's visibility change and the promo bubble showing.

@@ -193,17 +193,17 @@ std::vector<ActivityLogItem> CreateMockActivityLog(int n) {
 class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
  public:
   void ShowUi(const std::string& name) override {
-    std::vector<ActivityLogItem> activity_log;
     if (name == "Empty") {
-      activity_log = {};
+      ShowLog({});
     } else if (name == "WithOneItem") {
-      activity_log = CreateMockActivityLog(1);
+      ShowLog(CreateMockActivityLog(1));
     } else if (name == "WithFullList") {
-      activity_log = CreateMockActivityLog(5);
+      ShowLog(CreateMockActivityLog(5));
     } else if (name == "WithTooManyItems") {
-      activity_log = CreateMockActivityLog(10);
+      ShowLog(CreateMockActivityLog(10));
+    } else if (name == "ForCurrentTab") {
+      ShowLogForCurrentTab(CreateMockActivityLog(5));
     }
-    ShowLog(activity_log);
   }
 
   void ShowLog(std::vector<ActivityLogItem> activity_log) {
@@ -218,23 +218,56 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
                               activity_log, browser()->profile());
   }
 
+  void ShowLogForCurrentTab(std::vector<ActivityLogItem> activity_log) {
+    // Anchor to top container for tests.
+    views::View* anchor_view =
+        BrowserView::GetBrowserViewForBrowser(browser())->top_container();
+
+    bubble_coordinator_ = std::make_unique<RecentActivityBubbleCoordinator>();
+    EXPECT_EQ(nullptr, bubble_coordinator_->GetBubble());
+    bubble_coordinator_->ShowForCurrentTab(
+        anchor_view, browser()->tab_strip_model()->GetWebContentsAt(0),
+        activity_log, browser()->profile());
+  }
+
   bool VerifyUi() override {
     EXPECT_TRUE(bubble_coordinator_->IsShowing());
     EXPECT_NE(nullptr, bubble_coordinator_->GetBubble());
-    auto children = bubble_coordinator_->GetBubble()->children();
+    auto* bubble = bubble_coordinator_->GetBubble();
+    auto children = bubble->children();
 
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
 
+    // Containers are always created
+    EXPECT_TRUE(bubble->tab_activity_container());
+    EXPECT_TRUE(bubble->group_activity_container());
+
+    // All dialogs have 4 children, except for empty state dialog, which
+    // also contains the label for the empty state.
     if (test_name == "InvokeUi_Empty") {
-      // Single child is the label view.
-      EXPECT_EQ(1u, children.size());
-    } else if (test_name == "InvokeUi_WithOneItem") {
-      // Single child is the one row.
-      EXPECT_EQ(1u, children.size());
-    } else {
-      // All other tests expect a complete list of 5 items.
       EXPECT_EQ(5u, children.size());
+    } else {
+      EXPECT_EQ(4u, children.size());
+    }
+
+    // Tab container empty and hidden.
+    EXPECT_FALSE(bubble->tab_activity_container()->GetVisible());
+    EXPECT_EQ(0u, bubble->tab_activity_container()->children().size());
+
+    if (test_name == "InvokeUi_Empty") {
+      // Group container empty and hidden.
+      EXPECT_FALSE(bubble->group_activity_container()->GetVisible());
+      EXPECT_EQ(0u, bubble->group_activity_container()->children().size());
+    } else if (test_name == "InvokeUi_WithOneItem") {
+      // Group container is visible with one child.
+      EXPECT_TRUE(bubble->group_activity_container()->GetVisible());
+      EXPECT_EQ(1u, bubble->group_activity_container()->children().size());
+    } else {
+      // All other tests expect a complete list of 5 items in the group
+      // container.
+      EXPECT_TRUE(bubble->group_activity_container()->GetVisible());
+      EXPECT_EQ(5u, bubble->group_activity_container()->children().size());
     }
 
     return true;
@@ -268,6 +301,11 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
                        InvokeUi_WithTooManyItems) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
+                       InvokeUi_ForCurrentTab) {
   ShowAndVerifyUi();
 }
 

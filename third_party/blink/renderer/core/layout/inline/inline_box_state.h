@@ -44,8 +44,7 @@ struct InlineBoxState {
 
  public:
   unsigned fragment_start = 0;
-  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
-  const InlineItem* item = nullptr;
+  Member<const InlineItem> item;
   Member<const ComputedStyle> style;
 
   // Equal to style->GetFont(), or to |scaled_font| in an SVG <text>.
@@ -101,6 +100,7 @@ struct InlineBoxState {
   InlineBoxState& operator=(const InlineBoxState&) = delete;
 
   void Trace(Visitor* visitor) const {
+    visitor->Trace(item);
     visitor->Trace(style);
     visitor->Trace(font);
     visitor->Trace(scaled_font);
@@ -323,8 +323,7 @@ class CORE_EXPORT InlineLayoutStateStack {
     // Ruby columns in the above range.
     Member<HeapVector<Member<LogicalRubyColumn>>> ruby_column_list;
 
-    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
-    const InlineItem* item;
+    Member<const InlineItem> item;
     LogicalRect rect;
 
     bool has_line_left_edge = false;

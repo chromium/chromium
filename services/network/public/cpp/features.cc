@@ -265,7 +265,7 @@ BASE_FEATURE(kSharedZstd, "SharedZstd", base::FEATURE_ENABLED_BY_DEFAULT);
 // attached or the request is for an ad request.
 BASE_FEATURE(kReduceTransferSizeUpdatedIPC,
              "ReduceTransferSizeUpdatedIPC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature allows skipping TPCD mitigation checks when the cookie access
 // is tagged as being used for advertising purposes. This means that cookies

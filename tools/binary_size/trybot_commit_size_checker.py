@@ -102,7 +102,7 @@ class _SizeDelta(collections.namedtuple(
 def _MaxSizeIncrease(author, subject):
   if 'AFDO' in subject or 'PGO Profile' in subject:
     return 1024 * 1024
-  if 'Update V8' in subject:
+  if 'Update V8' in subject or 'Roll V8' in subject:
     return 100 * 1024
   if 'autoroll' in author:
     return 50 * 1024

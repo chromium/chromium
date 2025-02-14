@@ -7,8 +7,8 @@ promise_test(async () => {
 
 promise_test(async () => {
   // TODO(crbug.com/382596381): Test availability with various options.
-  assert_equals(await ai.writer.availability(), 'readily');
-  assert_equals(await ai.writer.availability({outputLanguage: 'en'}), 'readily');
+  assert_equals(await ai.writer.availability(), 'available');
+  assert_equals(await ai.writer.availability({ outputLanguage: 'en' }), 'available');
 }, 'AIWriterFactory.availability');
 
 promise_test(async () => {

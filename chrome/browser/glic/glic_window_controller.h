@@ -244,7 +244,7 @@ class GlicWindowController : public views::WidgetObserver {
   // This sends a message to glic to get ready to show. This will eventually
   // result in the callback GlicLoaded().
   void WaitForGlicToLoad();
-  void GlicLoaded(mojom::WebClientMode starting_mode);
+  void GlicLoaded(mojom::OpenPanelInfoPtr open_info);
 
   // Called when the open animation is finished.
   void OpenAnimationFinished();

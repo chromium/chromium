@@ -221,4 +221,5 @@ TEST_F(ArcDlcInstallHardwareCheckerTest, BlockDeviceCheckErrorAfterRetries) {
 }
 
 }  // namespace
+
 }  // namespace arc

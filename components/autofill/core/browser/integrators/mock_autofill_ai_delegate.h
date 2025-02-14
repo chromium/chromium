@@ -43,7 +43,6 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
               ShouldDisplayIph,
               (const AutofillField& field),
               (const override));
-  MOCK_METHOD(void, GoToSettings, (), (const override));
   MOCK_METHOD(void,
               OnSuggestionsShown,
               (const DenseSet<SuggestionType>& shown_suggestion_types,

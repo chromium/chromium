@@ -135,13 +135,10 @@ D3DImageBacking::GLTextureHolder::~GLTextureHolder() = default;
 scoped_refptr<D3DImageBacking::GLTextureHolder>
 D3DImageBacking::CreateGLTexture(
     const GLFormatDesc& gl_format_desc,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     GLenum texture_target,
     unsigned array_slice,
-    unsigned plane_index,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain) {
+    unsigned plane_index) {
   gl::GLApi* const api = gl::g_current_gl_context;
   gl::ScopedRestoreTexture scoped_restore(api, texture_target);
 
@@ -1289,12 +1286,10 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
             gl_format_caps_.ToGLFormatDesc(format(), /*plane_index=*/0);
       }
 
-      gfx::Size plane_size = format().GetPlaneSize(plane, size());
       // Creating the GL texture doesn't require exclusive access to the
       // underlying D3D11 texture.
-      holder = CreateGLTexture(gl_format_desc, plane_size, color_space(),
-                               d3d11_texture, texture_target_, array_slice_,
-                               plane, swap_chain_);
+      holder = CreateGLTexture(gl_format_desc, d3d11_texture, texture_target_,
+                               array_slice_, plane);
       if (!holder) {
         LOG(ERROR) << "Failed to create GL texture for plane: " << plane;
         return nullptr;

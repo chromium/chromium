@@ -10,9 +10,15 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}  // namespace regional_capabilities
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 namespace web {
 class WebState;
 }  // namespace web
@@ -27,9 +33,6 @@ class DiscoverFeedService;
 @protocol NewTabPageHeaderConsumer;
 @class NewTabPageState;
 class PrefService;
-namespace syncer {
-class SyncService;
-}
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 @protocol UserAccountImageUpdateDelegate;
@@ -40,18 +43,21 @@ class UrlLoadingBrowserAgent;
     : NSObject <FeedManagementNavigationDelegate, NewTabPageMutator>
 
 - (instancetype)
-    initWithTemplateURLService:(TemplateURLService*)templateURLService
-                     URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                   authService:(AuthenticationService*)authService
-               identityManager:(signin::IdentityManager*)identityManager
-         accountManagerService:
-             (ChromeAccountManagerService*)accountManagerService
-      identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
-                   isIncognito:(BOOL)isIncognito
-           discoverFeedService:(DiscoverFeedService*)discoverFeedService
-                   prefService:(PrefService*)prefService
-                   syncService:(syncer::SyncService*)syncService
-                    isSafeMode:(BOOL)isSafeMode NS_DESIGNATED_INITIALIZER;
+     initWithTemplateURLService:(TemplateURLService*)templateURLService
+                      URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                    authService:(AuthenticationService*)authService
+                identityManager:(signin::IdentityManager*)identityManager
+          accountManagerService:
+              (ChromeAccountManagerService*)accountManagerService
+       identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
+                    isIncognito:(BOOL)isIncognito
+            discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                    prefService:(PrefService*)prefService
+                    syncService:(syncer::SyncService*)syncService
+    regionalCapabilitiesService:
+        (regional_capabilities::RegionalCapabilitiesService*)
+            regionalCapabilitiesService
+                     isSafeMode:(BOOL)isSafeMode NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

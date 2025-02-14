@@ -977,6 +977,7 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
     }
   }
 
+  InvalidationSetToSelectorMap::StyleSheetContentsScope contents_scope(sheet);
   AddChildRules(/*parent_rule=*/nullptr, sheet->ChildRules(), medium,
                 kRuleHasNoSpecialState, nullptr /* container_query */,
                 cascade_layer, style_scope, /*within_mixin=*/false);

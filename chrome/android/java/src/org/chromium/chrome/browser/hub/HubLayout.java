@@ -62,6 +62,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.util.XrUtils;
 
 import java.util.Collections;
 import java.util.function.DoubleConsumer;
@@ -332,6 +333,15 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         if (isStartingToHide()) return;
 
         try (TraceEvent e = TraceEvent.scoped("HubLayout.startHiding")) {
+            // End spatialization, if active as the tab switcher is hiding on an XR device.
+            // It hides the contents and root view temporarily before any transition to the browsing
+            // layout takes place and before the notifications are sent to the observer(s).
+            if (XrUtils.getInstance().isFsmOnXrDevice()) {
+                HubContainerView containerView = mHubController.getContainerView();
+                containerView.setVisibility(View.INVISIBLE);
+                mRootView.setVisibility(View.INVISIBLE);
+            }
+
             super.startHiding();
 
             // Since we are hiding this is no-longer fully shown.
@@ -523,7 +533,10 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             initialRect = new Rect();
             NewTabAnimationUtils.updateRects(
                     initialRect, finalRect, isRtl, /* isTopAligned= */ true);
-            cornerRadius = NewTabAnimationUtils.FOREGROUND_RADIUS;
+            cornerRadius =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.new_tab_animation_rect_corner_radius);
         } else {
             cornerRadius = 0;
             int y = finalRect.top;
@@ -547,6 +560,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                 new HubLayoutAnimationListener() {
                     @Override
                     public void onEnd(boolean wasForcedToFinish) {
+                        // TODO(crbug.com/40933120): Add fade animator.
                         doneHiding();
                     }
                 });

@@ -102,7 +102,7 @@ class Mp4MuxerTest : public ::testing::TestWithParam<TestParam> {
 };
 
 MATCHER_P(MatchBufferData, data, "decoderbuffer data matcher") {
-  return arg->AsSpan() == base::as_byte_span(data);
+  return *arg == base::as_byte_span(data);
 }
 
 TEST_P(Mp4MuxerTest, ForwardsFlush) {

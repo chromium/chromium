@@ -121,7 +121,7 @@ TEST(TemporalScalabilityIdExtractorTest, AV1_TwoTemporalLayers) {
       {6, 0, 0b01111111, 0b00000001}, {7, 1, 0b01111111, 0b00000000},
   };
   for (int i = 0; i < static_cast<int>(buffers.size()); i++) {
-    EXPECT_TRUE(extractor.ParseChunk(buffers[i]->AsSpan(), i, md));
+    EXPECT_TRUE(extractor.ParseChunk(*buffers[i], i, md));
     EXPECT_EQ(md.temporal_id, expected[i].temporal_idx);
     EXPECT_EQ(md.reference_idx_flags, expected[i].reference_idx_flags);
     EXPECT_EQ(md.refresh_frame_flags, expected[i].refresh_frame_flags);

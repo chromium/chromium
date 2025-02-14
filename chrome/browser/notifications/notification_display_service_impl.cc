@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/non_persistent_notification_handler.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/persistent_notification_handler.h"
@@ -37,7 +36,7 @@
 #include "chrome/browser/sharing/sharing_notification_handler.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/nearby_sharing/nearby_notification_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
@@ -113,7 +112,7 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
         std::move(screen_capture_blocker));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
             profile_)) {
       AddNotificationHandler(NotificationHandler::Type::NEARBY_SHARE,

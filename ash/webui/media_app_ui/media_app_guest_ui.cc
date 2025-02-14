@@ -325,13 +325,14 @@ void MediaAppGuestUI::IsMantisAvailable(IsMantisAvailableCallback callback) {
 
 void MediaAppGuestUI::CreateMantisUntrustedService(
     mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedPage> page,
+    const std::optional<base::Uuid>& dlc_uuid,
     CreateMantisUntrustedServiceCallback callback) {
   if (!is_mantis_available_.value_or(false)) {
     untrusted_service_factory_.ReportBadMessage(
         "Trying to bind interface when feature is not available.");
     return;
   }
-  mantis_untrusted_service_manager_->Create(std::move(page),
+  mantis_untrusted_service_manager_->Create(std::move(page), dlc_uuid,
                                             std::move(callback));
 }
 

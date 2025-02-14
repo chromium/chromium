@@ -144,8 +144,7 @@ UserManager* user_manager::UserManager::Get() {
   return UserManager::instance;
 }
 
-UserManager::~UserManager() {
-}
+UserManager::~UserManager() = default;
 
 // static
 void UserManager::SetInstance(UserManager* user_manager) {
@@ -174,8 +173,9 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
 
   // This may happen after browser crash after device account was marked for
   // removal, but before clean exit.
-  if (browser_restart && IsDeviceLocalAccountMarkedForRemoval(account_id))
+  if (browser_restart && IsDeviceLocalAccountMarkedForRemoval(account_id)) {
     return UserType::kPublicAccount;
+  }
 
   // If user already exists
   if (user) {
@@ -193,20 +193,13 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
       LOG(FATAL) << "Incorrect child user type " << user_type;
     }
 
-    // TODO(rsorokin): Check for reverse: account_id AD type should imply
-    // AD user type.
-    if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-      LOG(FATAL) << "Incorrect AD user type " << user_type;
-    }
-
     return user_type;
   }
 
   // User is new
-  if (is_child)
+  if (is_child) {
     return UserType::kChild;
-
-  CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
+  }
 
   return UserType::kRegular;
 }

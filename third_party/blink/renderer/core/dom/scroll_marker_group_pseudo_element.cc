@@ -141,7 +141,8 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
   mojom::blink::ScrollIntoViewParamsPtr params =
       scroll_into_view_util::CreateScrollIntoViewParams(
           *scroll_marker->parentElement()->GetComputedStyle());
-  scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
+  scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params),
+                                              UltimateOriginatingElement());
   GetDocument().SetFocusedElement(scroll_marker,
                                   FocusParams(SelectionBehaviorOnFocus::kNone,
                                               mojom::blink::FocusType::kNone,

@@ -8,11 +8,8 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-
-namespace content {
-class WebContents;
-}
 
 namespace glic {
 
@@ -38,8 +35,8 @@ class GlicTabIndicatorHelper {
   // focus, or when the indicator status changes.
   void UpdateTab();
 
-  // Called when the focused tab changes.
-  void OnFocusedTabChanged(const content::WebContents* contents);
+  // Called when the focused tab changes with the focused tab data object.
+  void OnFocusedTabChanged(FocusedTabData focused_tab_data);
 
   // Called when the client changes the context access indicator status.
   void OnIndicatorStatusChanged(bool enabled);

@@ -222,8 +222,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     while (true) {
       std::optional<blink::VisualProperties> properties =
           child_rwh->LastComputedVisualProperties();
-      if (properties && properties->visible_viewport_size == initial_size)
+      if (properties &&
+          properties->visible_viewport_size_device_px == initial_size) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -240,8 +242,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       std::optional<blink::VisualProperties> properties =
           nested_child_rwh->LastComputedVisualProperties();
       if (properties &&
-          properties->visible_viewport_size == nested_initial_size)
+          properties->visible_viewport_size_device_px == nested_initial_size) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -273,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       std::optional<blink::VisualProperties> properties =
           root_rwh->LastComputedVisualProperties();
       if (properties &&
-          properties->visible_viewport_size == resize_to_device_px) {
+          properties->visible_viewport_size_device_px == resize_to_device_px) {
         break;
       }
       base::RunLoop().RunUntilIdle();
@@ -282,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       std::optional<blink::VisualProperties> properties =
           child_rwh->LastComputedVisualProperties();
       if (properties &&
-          properties->visible_viewport_size == resize_to_device_px) {
+          properties->visible_viewport_size_device_px == resize_to_device_px) {
         break;
       }
       base::RunLoop().RunUntilIdle();
@@ -311,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       std::optional<blink::VisualProperties> properties =
           nested_root_rwh->LastComputedVisualProperties();
       if (properties &&
-          properties->visible_viewport_size == resize_to_device_px) {
+          properties->visible_viewport_size_device_px == resize_to_device_px) {
         break;
       }
       base::RunLoop().RunUntilIdle();
@@ -320,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       std::optional<blink::VisualProperties> properties =
           nested_child_rwh->LastComputedVisualProperties();
       if (properties &&
-          properties->visible_viewport_size == resize_to_device_px) {
+          properties->visible_viewport_size_device_px == resize_to_device_px) {
         break;
       }
       base::RunLoop().RunUntilIdle();
@@ -356,8 +359,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     while (true) {
       std::optional<blink::VisualProperties> properties =
           root_rwh->LastComputedVisualProperties();
-      if (properties &&
-          properties->visible_viewport_size == auto_resize_to_device_px) {
+      if (properties && properties->visible_viewport_size_device_px ==
+                            auto_resize_to_device_px) {
         break;
       }
       base::RunLoop().RunUntilIdle();
@@ -365,8 +368,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     while (true) {
       std::optional<blink::VisualProperties> properties =
           child_rwh->LastComputedVisualProperties();
-      if (properties &&
-          properties->visible_viewport_size == auto_resize_to_device_px) {
+      if (properties && properties->visible_viewport_size_device_px ==
+                            auto_resize_to_device_px) {
         break;
       }
       base::RunLoop().RunUntilIdle();

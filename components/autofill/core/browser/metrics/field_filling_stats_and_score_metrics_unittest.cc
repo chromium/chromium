@@ -112,7 +112,6 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
 };
 
 // Test the logging of the field-wise filling stats.
-// TODO(crbug.com/40274514): Delete this test once cleanup starts.
 TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest, FillingStats) {
   const FormData& form = GetAndAddSeenFormWithFields(GetTestFormDataFields());
   SimulationOfDefaultUserChangesOnAddedFormTextFields();

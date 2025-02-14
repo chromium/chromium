@@ -94,8 +94,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     std::string client_id;
 
     // Timestamps of all local or remote visits the same URL on the same day.
-    // TODO(skym): These should probably be converted to base::Time.
-    std::set<int64_t> all_timestamps;
+    std::set<base::Time> all_timestamps;
 
     // If true, this entry is a search result.
     bool is_search_result;

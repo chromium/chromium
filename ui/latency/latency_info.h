@@ -10,10 +10,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "ipc/ipc_param_traits.h"  // nogncheck
@@ -22,7 +20,24 @@
 
 namespace perfetto {
 class EventContext;
-}
+
+// These enums are somewhat arduous to forward-declare, but it's worth it
+// because the header which defines them is enormous and this header is widely
+// used.
+namespace protos::pbzero {
+namespace perfetto_pbzero_enum_ChromeLatencyInfo2 {
+enum InputResultState : int32_t;
+enum InputType : int32_t;
+enum Step : int32_t;
+}  // namespace perfetto_pbzero_enum_ChromeLatencyInfo2
+class ChromeLatencyInfo2;
+using ChromeLatencyInfo2_InputResultState =
+    perfetto_pbzero_enum_ChromeLatencyInfo2::InputResultState;
+using ChromeLatencyInfo2_InputType =
+    perfetto_pbzero_enum_ChromeLatencyInfo2::InputType;
+using ChromeLatencyInfo2_Step = perfetto_pbzero_enum_ChromeLatencyInfo2::Step;
+}  // namespace protos::pbzero
+}  // namespace perfetto
 
 namespace ui {
 
@@ -115,11 +130,11 @@ class LatencyInfo {
   static perfetto::protos::pbzero::ChromeLatencyInfo2* FillTraceEvent(
       perfetto::EventContext& ctx,
       int64_t latency_trace_id,
-      perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
-      std::optional<perfetto::protos::pbzero::ChromeLatencyInfo2::InputType>
+      perfetto::protos::pbzero::ChromeLatencyInfo2_Step step,
+      std::optional<perfetto::protos::pbzero::ChromeLatencyInfo2_InputType>
           input_type = std::nullopt,
       std::optional<
-          perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
+          perfetto::protos::pbzero::ChromeLatencyInfo2_InputResultState>
           input_result_state = std::nullopt);
 
   // Add timestamps for components that are in |other| but not in |this|.

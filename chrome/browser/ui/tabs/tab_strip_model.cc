@@ -31,6 +31,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/not_fatal_until.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -164,6 +165,13 @@ std::unique_ptr<TabGroupModel> TabGroupModelFactory::Create(
     TabGroupController* controller) {
   return std::make_unique<TabGroupModel>(controller);
 }
+
+DetachedTabGroup::DetachedTabGroup(
+    std::unique_ptr<tabs::TabGroupTabCollection> collection)
+    : collection_(std::move(collection)) {}
+
+DetachedTabGroup::~DetachedTabGroup() = default;
+DetachedTabGroup::DetachedTabGroup(DetachedTabGroup&&) = default;
 
 DetachedTab::DetachedTab(int index_before_any_removals,
                          int index_at_time_of_removal,
@@ -389,6 +397,26 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabWithReasonAt(
   return std::move(notifications.detached_tab[0]);
 }
 
+std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupForInsertion(
+    const tab_groups::TabGroupId group_id) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  CHECK(group_model_);
+  CHECK(group_model_->ContainsTabGroup(group_id));
+
+  return DetachTabGroupImpl(group_id);
+}
+
+void TabStripModel::InsertDetachedTabGroupAt(
+    std::unique_ptr<DetachedTabGroup> group,
+    int index) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  CHECK(group_model_);
+  CHECK(!group_model_->ContainsTabGroup(group->collection_->GetTabGroupId()));
+
+  InsertDetachedTabGroupImpl(std::move(group), index);
+}
+
 tabs::TabModel* TabStripModel::GetTabModelAtIndex(int index) const {
   return contents_data_->GetTabAtIndexRecursive(index);
 }
@@ -400,6 +428,30 @@ void TabStripModel::OnChange(const TabStripModelChange& change,
   for (auto& observer : observers_) {
     observer.OnTabStripModelChanged(this, change, selection);
   }
+}
+
+void TabStripModel::OnTabGroupDetached(const TabGroup& group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupDetached(this, group);
+  }
+}
+
+void TabStripModel::OnTabGroupAttached(const TabGroup& group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupAttached(this, group);
+  }
+}
+
+std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
+    const tab_groups::TabGroupId& group_id) {
+  NOTIMPLEMENTED();
+  return std::make_unique<DetachedTabGroup>(nullptr);
+}
+
+void TabStripModel::InsertDetachedTabGroupImpl(
+    std::unique_ptr<DetachedTabGroup> detached_group,
+    int index) {
+  NOTIMPLEMENTED();
 }
 
 std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
@@ -2206,7 +2258,10 @@ std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {
 std::vector<int> TabStripModel::GetIndicesClosedByCommand(
     int index,
     ContextMenuCommand id) const {
-  CHECK(ContainsIndex(index));
+  std::vector<int> indices;
+  if (!ContainsIndex(index)) {
+    return indices;
+  }
   DCHECK(id == CommandCloseTabsToRight || id == CommandCloseOtherTabs);
   bool is_selected = IsTabSelected(index);
   int last_unclosed_tab = -1;
@@ -2216,7 +2271,6 @@ std::vector<int> TabStripModel::GetIndicesClosedByCommand(
   }
 
   // NOTE: callers expect the vector to be sorted in descending order.
-  std::vector<int> indices;
   for (int i = count() - 1; i > last_unclosed_tab; --i) {
     if (i != index && !IsTabPinned(i) && (!is_selected || !IsTabSelected(i))) {
       indices.push_back(i);

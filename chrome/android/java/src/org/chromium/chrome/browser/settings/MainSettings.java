@@ -24,6 +24,7 @@ import androidx.preference.Preference;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardPreference;
@@ -562,18 +564,25 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     CharSequence getAddressBarPreferenceTitle() {
-        boolean clicked =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, false);
+        SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
+        boolean clicked;
+        try {
+            clicked =
+                    sharedPreferences.readBoolean(
+                            ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, false);
+        } catch (ClassCastException e) {
+            // Clean up pref value mis-written as int.
+            sharedPreferences.writeBoolean(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, true);
+            clicked = true;
+        }
+
         int viewCount =
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT, 0);
+                sharedPreferences.readInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT, 0);
         boolean showNewLabelForAddressBarPref =
                 !clicked && viewCount < ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT;
         Context context = getContext();
         if (showNewLabelForAddressBarPref) {
-            ChromeSharedPreferences.getInstance()
-                    .incrementInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT);
+            sharedPreferences.incrementInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT);
             return SpanApplier.applySpans(
                     context.getString(R.string.address_bar_settings),
                     new SpanInfo(
@@ -584,10 +593,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             new ForegroundColorSpan(
                                     SemanticColorUtils.getDefaultTextColorAccent1(context))));
         } else {
-            return SpanApplier.removeSpanText(
-                            context.getString(R.string.address_bar_settings),
-                            new SpanInfo("<new>", "</new>"))
-                    .trim();
+            return AddressBarSettingsFragment.getTitleWithoutSpans(context);
         }
     }
 

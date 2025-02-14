@@ -1155,7 +1155,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
     viewport_device_px = view_->GetVisibleViewportSizeDevicePx();
     viewport_dips = view_->GetVisibleViewportSize();
   }
-  visual_properties.visible_viewport_size = viewport_device_px;
+  visual_properties.visible_viewport_size_device_px = viewport_device_px;
 
   // The root widget's viewport segments are computed here - child frames just
   // use the value provided from the parent.
@@ -2913,8 +2913,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
          old_visual_properties->resizable != new_visual_properties.resizable ||
          old_visual_properties->browser_controls_params !=
              new_visual_properties.browser_controls_params ||
-         old_visual_properties->visible_viewport_size !=
-             new_visual_properties.visible_viewport_size ||
+         old_visual_properties->visible_viewport_size_device_px !=
+             new_visual_properties.visible_viewport_size_device_px ||
          old_visual_properties->capture_sequence_number !=
              new_visual_properties.capture_sequence_number ||
          old_visual_properties->page_scale_factor !=

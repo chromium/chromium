@@ -30,3 +30,18 @@ void func() {
   const char32_t buf5[] = U"123456789";
   std::ignore = buf5[UnsafeIndex()];
 }
+
+void non_const_case() {
+  // The explicit specification of the element type and size are necessary,
+  // otherwise the deduced element type will be const.
+  //
+  // Expected rewrite:
+  // std::array<char, 4> buf{"abc"};
+  char buf[] = "abc";
+  std::ignore = buf[UnsafeIndex()];
+
+  // Expected rewrite:
+  // std::array<char, 1 + 3> buf2{"abc"};
+  char buf2[1 + 3] = "abc";
+  std::ignore = buf2[UnsafeIndex()];
+}

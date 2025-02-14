@@ -53,14 +53,6 @@ Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
   return suggestion;
 }
 
-Suggestion CreateAutofillAiFeedback() {
-  Suggestion suggestion(SuggestionType::kAutofillAiFeedback);
-  suggestion.icon = Suggestion::Icon::kAutofillAi;
-  suggestion.highlight_on_select = false;
-  suggestion.voice_over = u"Required feedback screen reader text.";
-  return suggestion;
-}
-
 // Suggestion main text (Suggestion::main_text) is used for the test and
 // screenshot names, avoid special symbols and keep them unique.
 const Suggestion kSuggestions[] = {
@@ -84,13 +76,8 @@ const Suggestion kSuggestions[] = {
     Suggestion("Promo_code",
                "label",
                Suggestion::Icon::kGlobe,
-               SuggestionType::kSeePromoCodeDetails),
-    CreateAutofillAiFeedback(),
-    Suggestion("Autofill_with_AI",
-               "",
-               Suggestion::Icon::kAutofillAi,
-               SuggestionType::kRetrieveAutofillAi),
-};
+               SuggestionType::kSeePromoCodeDetails)};
+
 const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
     u"Address_entry",
     {Suggestion(u"Username", SuggestionType::kPasswordEntry)})};

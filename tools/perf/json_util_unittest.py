@@ -7,6 +7,7 @@
 import copy
 import datetime
 import unittest
+from unittest import mock
 import json_util
 from parameterized import parameterized  # pylint: disable=import-error
 
@@ -781,6 +782,62 @@ class JsonUtilTest(unittest.TestCase):
         given_datetime=given_datetime,
         filename=filename)
     self.assertEqual(got, expected)
+
+  @mock.patch('builtins.open', new_callable=mock.mock_open)
+  def test_is_public_builder(self, mock_open):
+    mock_open.return_value.__enter__.return_value.read.return_value = (
+        '{"public_perf_builders": ["win-10-perf"]}')
+    self.assertTrue(json_util.is_public_builder(''))
+    self.assertTrue(json_util.is_public_builder('win-10-perf'))
+    self.assertFalse(json_util.is_public_builder('win-11-perf'))
+
+  @parameterized.expand([
+      (
+          'empty_master_name',
+          'win-11-perf',
+          '',
+          False,
+          [],
+      ),
+      (
+          'empty_builder_name',
+          '',
+          'ChromiumPerf',
+          False,
+          [],
+      ),
+      (
+          'public_builder',
+          'win-10-perf',
+          'ChromiumPerf',
+          False,
+          ['chrome-perf-public'],
+      ),
+      (
+          'internal_builder',
+          'win-11-perf',
+          'ChromiumPerf',
+          False,
+          ['chrome-perf-public', 'chrome-perf-non-public'],
+      ),
+      (
+          'experiment_only',
+          'win-11-perf',
+          'ChromiumPerf',
+          True,
+          ['chrome-perf-experiment-non-public'],
+      ),
+  ])
+  def test_gcs_buckets_from_builder_name(
+      self, _, builder_name, master_name, experiment_only, expected):
+    with mock.patch('builtins.open', new_callable=mock.mock_open) as mock_open:
+      mock_open.return_value.__enter__.return_value.read.return_value = (
+          '{"public_perf_builders": ["win-10-perf"]}')
+      got = json_util.gcs_buckets_from_builder_name(
+          builder_name=builder_name,
+          master_name=master_name,
+          experiment_only=experiment_only)
+      self.assertEqual(got, expected)
 
 
 if __name__ == '__main__':

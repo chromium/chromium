@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -238,6 +239,7 @@ void ArcSessionRunner::OnShutdown() {
   // ArcSession::OnShutdown() invokes OnSessionStopped() synchronously.
   // In the observer method, |arc_session_| should be destroyed.
   DCHECK(!arc_session_);
+  is_shutdown_requested_ = true;
 }
 
 void ArcSessionRunner::SetUserInfo(
@@ -286,6 +288,10 @@ void ArcSessionRunner::StartArcSession() {
   DCHECK(target_mode_.has_value());
 
   VLOG(1) << "Starting ARC instance";
+  if (is_shutdown_requested_) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   if (!arc_session_) {
     arc_session_ = factory_.Run();
     if (!cryptohome_id_.id().empty() && !user_id_hash_.empty() &&

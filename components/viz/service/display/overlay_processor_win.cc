@@ -551,16 +551,16 @@ OverlayProcessorWin::TryDelegatedCompositing(
       }
     }
 
-    if (factory.IsOccludedByFilteredQuad(
-            dc_layer.value(), root_render_pass->quad_list.begin(),
-            root_render_pass->quad_list.end(), render_pass_backdrop_filters)) {
-      return base::unexpected(DelegationStatus::kCompositedBackdropFilter);
-    }
-
     // Store metadata on RPDQ overlays for post-processing in
     // |UpdatePromotedRenderPassProperties| to support partially delegated
     // compositing.
     if (dc_layer->rpdq) {
+      if (render_pass_backdrop_filters.contains(
+              dc_layer->rpdq->render_pass_id)) {
+        // We don't delegate composting of backdrop filters to the OS.
+        return base::unexpected(DelegationStatus::kCompositedBackdropFilter);
+      }
+
       auto render_pass_it =
           std::ranges::find(render_passes, dc_layer->rpdq->render_pass_id,
                             &AggregatedRenderPass::id);

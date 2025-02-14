@@ -88,8 +88,13 @@ bool IsValidFieldTypeAndValue(
     return false;
   }
 
-  // Allow the import if `field_type` wasn't observed before.
-  if (!observed_types.contains(field_type)) {
+  // Allow the import if `field_type` wasn't observed before. Also, allow it for
+  // duplicate fields with identical field values.
+  // TODO(crbug.com/395855125): Clean up when launched.
+  if (auto it = observed_types.find(field_type);
+      it == observed_types.end() ||
+      (it->second == value &&
+       base::FeatureList::IsEnabled(features::kAutofillRelaxAddressImport))) {
     return true;
   }
 
@@ -101,7 +106,7 @@ bool IsValidFieldTypeAndValue(
 
   // Allow the import for duplicate phone number component fields because a form
   // might request several phone numbers.
-  // TODO(crbug.com/40735892) Clean up when launched.
+  // TODO(crbug.com/40735892) Remove feature check when launched.
   if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone ||
       base::FeatureList::IsEnabled(
           features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {

@@ -34,12 +34,12 @@ class AITranslatorFactory final : public ScriptWrappable,
       ScriptState* script_state,
       ExceptionState& exception_state);
 
-  void Trace(Visitor* visitor) const override;
-
- private:
   HeapMojoRemote<mojom::blink::TranslationManager>&
   GetTranslationManagerRemote();
 
+  void Trace(Visitor* visitor) const override;
+
+ private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::TranslationManager> translation_manager_remote_{
       nullptr};

@@ -6,9 +6,11 @@
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -97,6 +99,13 @@ bool ViewTransitionUtils::IsViewTransitionParticipantFromSupplement(
     const LayoutObject& object) {
   ViewTransition* transition = GetTransition(object.GetDocument());
   return transition && transition->IsRepresentedViaPseudoElements(object);
+}
+
+// static
+bool ViewTransitionUtils::UseLayeredCapture(const ComputedStyle& style) {
+  return RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled() &&
+         style.ViewTransitionCaptureMode() ==
+             StyleViewTransitionCaptureMode::kLayered;
 }
 
 // static

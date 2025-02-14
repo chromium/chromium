@@ -22,7 +22,7 @@ class Base64Test : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST(Base64Test, Basic) {
+TEST_F(Base64Test, Basic) {
   const std::string kText = "hello world";
   const std::string kBase64Text = "aGVsbG8gd29ybGQ=";
 
@@ -32,7 +32,7 @@ TEST(Base64Test, Basic) {
   EXPECT_EQ(decoded, kText);
 }
 
-TEST(Base64Test, InPlace) {
+TEST_F(Base64Test, InPlace) {
   const std::string kText = "hello world";
   const std::string kBase64Text = "aGVsbG8gd29ybGQ=";
 
@@ -43,7 +43,7 @@ TEST(Base64Test, InPlace) {
   EXPECT_EQ(text, kText);
 }
 
-TEST(Base64Test, ForgivingAndStrictDecode) {
+TEST_F(Base64Test, ForgivingAndStrictDecode) {
   struct {
     const char* in;
 

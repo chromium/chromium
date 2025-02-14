@@ -30,9 +30,8 @@
       ->GetProfileAttributesStorage()
       ->UpdateAttributesForProfileWithName(
           profile->GetProfileName(),
-          base::BindOnce([](ProfileAttributesIOS attr) {
+          base::BindOnce([](ProfileAttributesIOS& attr) {
             attr.SetLastActiveTime(base::Time::Now());
-            return attr;
           }));
 
   // Update the primary account's last-active time (if there is a primary

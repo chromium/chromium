@@ -25,6 +25,10 @@ enum ChromeInsetsMetric {
   INSETS_RECENT_ACTIVITY_IMAGE_MARGIN,
   // Margins for rows within the Recent Activity dialog.
   INSETS_RECENT_ACTIVITY_ROW_MARGIN,
+  // Margins for tab activity container within the Recent Activity dialog.
+  INSETS_RECENT_ACTIVITY_TAB_CONTAINER_MARGIN,
+  // Margins for group activity container within the Recent Activity dialog.
+  INSETS_RECENT_ACTIVITY_GROUP_CONTAINER_MARGIN,
   // Margins for the contents inside in the Task Manager.
   INSETS_TASK_MANAGER,
   // Padding used in the page info footer button.
@@ -171,6 +175,9 @@ enum ChromeDistanceMetric {
   // Distance to offset favicon containers from the avatar in the Recent
   // Activity dialog.
   DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_OFFSET_FROM_AVATAR,
+  // Size to use for the radius of activity containers in the Recent
+  // Activity dialog.
+  DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

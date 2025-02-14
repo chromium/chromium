@@ -1151,9 +1151,6 @@ extern const char kObservableAPIDescription[];
 extern const char kOutlineSilhouetteIconName[];
 extern const char kOutlineSilhouetteIconDescription[];
 
-extern const char kAtomicMoveAPIName[];
-extern const char kAtomicMoveAPIDescription[];
-
 extern const char kCastMessageLoggingName[];
 extern const char kCastMessageLoggingDescription[];
 
@@ -1416,9 +1413,6 @@ extern const char kMostVisitedTilesReselectDescription[];
 extern const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[];
 extern const char
     kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[];
-
-extern const char kUsernameFirstFlowWithIntermediateValuesVotingName[];
-extern const char kUsernameFirstFlowWithIntermediateValuesVotingDescription[];
 
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
@@ -4008,6 +4002,9 @@ extern const char kMahiDebuggingDescription[];
 
 extern const char kMediaAppPdfMahiName[];
 extern const char kMediaAppPdfMahiDescription[];
+
+extern const char kMediaAppImageMantisModelName[];
+extern const char kMediaAppImageMantisModelDescription[];
 
 extern const char kMicrophoneMuteSwitchDeviceName[];
 extern const char kMicrophoneMuteSwitchDeviceDescription[];

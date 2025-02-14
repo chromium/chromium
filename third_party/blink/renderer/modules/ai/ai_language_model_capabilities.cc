@@ -19,7 +19,7 @@ void AILanguageModelCapabilities::Trace(Visitor* visitor) const {
 
 V8AICapabilityAvailability AILanguageModelCapabilities::languageAvailable(
     WTF::String languageTag) const {
-  if (languageTag == kAILanguageTagEn) {
+  if (languageTag == "en") {
     return V8AICapabilityAvailability(
         V8AICapabilityAvailability::Enum::kReadily);
   }

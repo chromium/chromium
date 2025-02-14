@@ -528,16 +528,17 @@ bool SharedContextState::InitializeSkia(
     gpu::raster::GrShaderCache* cache,
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
-  static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
-  crash_key.Set(GrContextTypeToString(gr_context_type_));
-
   // Record the Skia backend type the first time Skia/SharedContextState is
-  // initialized. This can happen more than once and on different threads but
-  // the backend type should never change.
+  // initialized. This can happen more than once and on different threads, as we
+  // can have SharedContextState which uses GL that can be created later but
+  // isn't the primary Skia context type.
   static std::atomic<bool> once(true);
   if (once.exchange(false, std::memory_order_relaxed)) {
     SkiaBackendType context_enum = FindSkiaBackendType(this);
     base::UmaHistogramEnumeration("GPU.SkiaBackendType", context_enum);
+    // Record gr-context-type crash key.
+    static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
+    crash_key.Set(GrContextTypeToString(gr_context_type_));
   }
 
   is_drdc_enabled_ = features::IsDrDcEnabled() && !workarounds.disable_drdc;

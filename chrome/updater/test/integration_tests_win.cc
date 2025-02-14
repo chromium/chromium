@@ -451,8 +451,8 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
     install_cmd.AppendSwitchNative(updater::kHandoffSwitch,
                                    base::StrCat({L"appguid=", app_id, L"&lang=",
                                                  base::UTF8ToWide(language)}));
-    install_cmd.AppendSwitchASCII(updater::kSessionIdSwitch,
-                                  "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
+    install_cmd.AppendSwitchUTF8(updater::kSessionIdSwitch,
+                                 "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
     install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
                                    offline_dir_guid);
     if (is_silent_install) {
@@ -1667,8 +1667,8 @@ void InvokeTestServiceFunction(const std::string& function_name,
   EXPECT_TRUE(base::PathExists(path));
 
   base::CommandLine command(path);
-  command.AppendSwitchASCII("--function", function_name);
-  command.AppendSwitchASCII("--args", arguments_json_string);
+  command.AppendSwitchUTF8("--function", function_name);
+  command.AppendSwitchUTF8("--args", arguments_json_string);
   EXPECT_EQ(RunVPythonCommand(command), 0);
 }
 
@@ -1897,7 +1897,7 @@ void RunFakeLegacyUpdater(UpdaterScope scope) {
   const base::FilePath exe_dir(google_update_exe->DirName());
   base::CommandLine command_line =
       GetTestProcessCommandLine(scope, test::GetTestName());
-  command_line.AppendSwitchASCII(
+  command_line.AppendSwitchUTF8(
       updater::kTestSleepSecondsSwitch,
       base::NumberToString(TestTimeouts::action_timeout().InSeconds() / 4));
 

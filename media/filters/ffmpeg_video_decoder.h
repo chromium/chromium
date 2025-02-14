@@ -111,6 +111,9 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
 
   bool force_allocation_error_ = false;
 
+  // More specific error code to surface after an error occurs during decoding.
+  DecoderStatus::Codes error_status_ = DecoderStatus::Codes::kFailed;
+
   std::unique_ptr<FFmpegDecodingLoop> decoding_loop_;
 };
 

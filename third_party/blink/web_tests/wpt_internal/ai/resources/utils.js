@@ -111,8 +111,8 @@ const testPromptAPI = async () => {
 // on the first download. The test cases shall always
 // call this function to create the summarizer.
 const createSummarizerMaybeDownload = async (options) => {
-  const capabilities = await ai.summarizer.capabilities();
-  if (capabilities.available == "after-download") {
+  const availability = await ai.summarizer.availability();
+  if (availability === "downloadable" || availability === "downloading") {
     isDownloadProgressEventTriggered = false;
     options.monitor = (m) => {
       m.addEventListener("downloadprogress", e => {
@@ -219,5 +219,5 @@ const ensureLanguageModel = async () => {
   const availability = await ai.languageModel.availability();
   // TODO(crbug.com/376789810): make it a PRECONDITION_FAILED if the model is
   // not ready.
-  assert_not_equals(availability, 'no');
+  assert_not_equals(availability, 'unavailable');
 };

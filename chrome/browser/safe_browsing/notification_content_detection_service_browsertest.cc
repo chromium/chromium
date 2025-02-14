@@ -26,6 +26,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -615,6 +616,39 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_FALSE(
         IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
+                       EnterpriseAllowlistedSiteDoesNotExecuteModel) {
+  // Setup enterprise allowlist.
+  base::Value::List allowlist;
+  allowlist.Append("enterprise-domain.com");
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
+
+  UpdateNotificationContentDetectionModel();
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId,
+      GURL("https://www.enterprise-domain.com") /* service_worker_scope */,
+      GURL("https://www.enterprise-domain.com"), data,
+      blink::NotificationResources());
+
+  // No logging should have occurred, but the notification should have been
+  // displayed.
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      0);
+  histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 0);
+  histogram_tester().ExpectTotalCount(kSuspiciousScoreHistogram, 0);
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::PermissionUsage_NotificationShown::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
 }
 
 }  // namespace safe_browsing

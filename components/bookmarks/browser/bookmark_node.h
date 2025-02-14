@@ -116,6 +116,12 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // parent node is marked as invisible, a child node may return "Visible". This
   // function is primarily useful when traversing the model to generate a UI
   // representation but we may want to suppress some nodes.
+  //
+  // This method only considers the visibility of the node based on itself and
+  // its children. Callers should prefer `BookmarkModel::IsVisible()`, which
+  // considers the full tree.
+  // TODO(crbug.com/395071423): migrate callers and remove (or restrict
+  // visibility of) this method.
   virtual bool IsVisible() const;
 
   // Gets/sets/deletes value of `key` in the meta info represented by

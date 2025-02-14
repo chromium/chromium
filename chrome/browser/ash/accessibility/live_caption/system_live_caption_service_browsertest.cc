@@ -47,13 +47,8 @@ namespace ash {
 namespace {
 static constexpr int kDefaultSampleRateMs = 16000;
 static constexpr int kDefaultPollingTimesHz = 10;
-
-// Babel Orca and live caption use different languages in order to quickly
-// identify which FakeSpeechRecognizer belongs to which feature in tests.
 static constexpr char kAlternativeLiveCaptionLanguageName[] = "es-ES";
 static constexpr char kDefaultLiveCaptionLanguageName[] = "en-US";
-static constexpr char kAlternativeBabelOrcaLanguageName[] = "fr-FR";
-static constexpr char kDefaultBabelOrcaLanguageName[] = "de-DE";
 }  // namespace
 
 // We need to swap out the device audio system for a fake one.
@@ -103,82 +98,23 @@ std::unique_ptr<media::AudioSystem> CreateStubAudioSystem() {
   return stub_audio_system;
 }
 
-// Wrapper class for the SystemLiveCaption service that allows the test
-// to produce a weak_ptr to the SystemLiveCaptionService.  This is used
-// in BabelOrcaTests in the SodaInstallWaiter so that we can avoid
-// a dangling pointer as the service will be freed before the waiter.
-class SystemLiveCaptionServiceWeakPtrWrapper : public SystemLiveCaptionService {
- public:
-  explicit SystemLiveCaptionServiceWeakPtrWrapper(
-      Profile* profile,
-      SystemLiveCaptionService::AudioSource source)
-      : SystemLiveCaptionService(profile, source) {}
-
-  base::WeakPtr<SystemLiveCaptionService> GetWeakPtrForService() {
-    return service_weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<SystemLiveCaptionService> service_weak_ptr_factory_{
-      this};
-};
-
-// Since Babel Orca no longer uses the ClientBrowserInterface to wait for SODA
-// installation we will use this class in order to emulate the behavior of the
-// BabelOrca SpeechRecognitionEventHandler which invokes
-//`SpeechRecognitionAvailabilityChanged` when SODA is ready.
-class BabelOrcaSodaInstallWaiter : public speech::SodaInstaller::Observer {
- public:
-  BabelOrcaSodaInstallWaiter(
-      base::WeakPtr<SystemLiveCaptionService> service_under_test,
-      speech::LanguageCode language_code)
-      : service_under_test_(service_under_test),
-        language_code_(language_code) {}
-  ~BabelOrcaSodaInstallWaiter() override = default;
-  BabelOrcaSodaInstallWaiter(BabelOrcaSodaInstallWaiter&) = delete;
-  BabelOrcaSodaInstallWaiter operator=(BabelOrcaSodaInstallWaiter&) = delete;
-
-  void OnSodaInstalled(speech::LanguageCode language_code) override {
-    if (language_code_ == language_code) {
-      service_under_test_->SpeechRecognitionAvailabilityChanged(true);
-    }
-  }
-
-  void OnSodaInstallError(
-      speech::LanguageCode language_code,
-      speech::SodaInstaller::ErrorCode error_code) override {
-    if (language_code_ == language_code) {
-      service_under_test_->SpeechRecognitionAvailabilityChanged(false);
-    }
-  }
-
-  void OnSodaProgress(speech::LanguageCode language_code,
-                      int progress) override {}
-
- private:
-  // The live caption service will always outlive this class.
-  base::WeakPtr<SystemLiveCaptionService> service_under_test_;
-  speech::LanguageCode language_code_;
-};
-
 // Runs the system live caption service backed by a fake audio system and SODA
 // installation.
-class SystemLiveCaptionServiceTestBase
+class SystemLiveCaptionServiceTest
     : public InProcessBrowserTest,
       public speech::FakeSpeechRecognitionService::Observer {
  public:
-  SystemLiveCaptionServiceTestBase() {
+  SystemLiveCaptionServiceTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kOnDeviceSpeechRecognition,
                               media::kLiveCaptionMultiLanguage},
         /*disabled_features=*/{});
   }
 
-  ~SystemLiveCaptionServiceTestBase() override = default;
-  SystemLiveCaptionServiceTestBase(const SystemLiveCaptionServiceTestBase&) =
+  ~SystemLiveCaptionServiceTest() override = default;
+  SystemLiveCaptionServiceTest(const SystemLiveCaptionServiceTest&) = delete;
+  SystemLiveCaptionServiceTest& operator=(const SystemLiveCaptionServiceTest&) =
       delete;
-  SystemLiveCaptionServiceTestBase& operator=(
-      const SystemLiveCaptionServiceTestBase&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
@@ -208,19 +144,11 @@ class SystemLiveCaptionServiceTestBase
                 }));
     fake_speech_recognition_service_->AddObserver(this);
 
-    // Init the user microphone system live caption service, as it
-    // is no longer owned by a keyed service factory.
-    user_microphone_service_ =
-        std::make_unique<SystemLiveCaptionServiceWeakPtrWrapper>(
-            primary_profile_,
-            SystemLiveCaptionService::AudioSource::kUserMicrophone);
     // Pass in an inert audio system backend.
     SystemLiveCaptionServiceFactory::GetInstance()
         ->GetForProfile(primary_profile_)
         ->set_audio_system_factory_for_testing(
             base::BindRepeating(&CreateStubAudioSystem));
-    user_microphone_service_->set_audio_system_factory_for_testing(
-        base::BindRepeating(&CreateStubAudioSystem));
 
     // Don't actually try to download SODA.
     speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
@@ -228,13 +156,31 @@ class SystemLiveCaptionServiceTestBase
     // Use English as our caption language.
     primary_profile_->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
                                             kDefaultLiveCaptionLanguageName);
-
-    primary_profile_->GetPrefs()->SetString(
-        prefs::kUserMicrophoneCaptionLanguageCode,
-        kDefaultBabelOrcaLanguageName);
   }
 
-  void TearDownOnMainThread() override { user_microphone_service_.reset(); }
+  const std::string GetLanguageCode() const {
+    return primary_profile_->GetPrefs()->GetString(
+        prefs::kLiveCaptionLanguageCode);
+  }
+
+  void SetLanguagePref(const std::string& language) {
+    primary_profile_->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                            language);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetLiveCaptionsPref(bool enabled) {
+    primary_profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+                                             enabled);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void NotifyNonChromeOutputStarted() {
+    SystemLiveCaptionServiceFactory::GetInstance()
+        ->GetForProfile(primary_profile_)
+        ->OnNonChromeOutputStarted();
+    base::RunLoop().RunUntilIdle();
+  }
 
   ::captions::CaptionBubbleController* GetCaptionBubbleController(
       Profile* profile) const {
@@ -260,19 +206,9 @@ class SystemLiveCaptionServiceTestBase
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
     // Events must propagate, so we wait after install.
     base::RunLoop().RunUntilIdle();
-    MaybeNotifyNonChromeOutputStarted();
+    NotifyNonChromeOutputStarted();
     base::RunLoop().RunUntilIdle();
   }
-
-  // These methods require GetParam() so they're implemented with the
-  // parameterized test interface.
-  virtual SystemLiveCaptionService* GetServiceUnderTest() = 0;
-  virtual const std::string GetLanguageCode() const = 0;
-  virtual const std::string GetAltLanguageCode() const = 0;
-  virtual const std::string GetDefaultLanguageCode() const = 0;
-  virtual void SetLiveCaptionsPref(bool enabled) = 0;
-  virtual void SetLanguagePref(const std::string& language) = 0;
-  virtual void MaybeNotifyNonChromeOutputStarted() = 0;
 
   // FakeSpeechRecognitionService::Observer
   void OnRecognizerBound(
@@ -307,118 +243,12 @@ class SystemLiveCaptionServiceTestBase
   raw_ptr<speech::FakeSpeechRecognitionService, DanglingUntriaged>
       fake_speech_recognition_service_;
 
-  // Since removing the UserMicrophoneCaptionServiceFactory we now need
-  // to own the service that handles user microphone input.
-  std::unique_ptr<SystemLiveCaptionServiceWeakPtrWrapper>
-      user_microphone_service_;
-
-  // Used to emulate Babel Orca logic that notifies the service
-  // when speech_recognition is available.
-  std::unique_ptr<BabelOrcaSodaInstallWaiter> soda_install_waiter_;
-
   base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class SystemLiveCaptionServiceTest
-    : public SystemLiveCaptionServiceTestBase,
-      public testing::WithParamInterface<
-          SystemLiveCaptionService::AudioSource> {
- public:
-  SystemLiveCaptionServiceTest() = default;
-  ~SystemLiveCaptionServiceTest() override = default;
-
-  SystemLiveCaptionService* GetServiceUnderTest() override {
-    switch (GetParam()) {
-      case SystemLiveCaptionService::AudioSource::kLoopback:
-        return SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(
-            primary_profile_);
-      case SystemLiveCaptionService::AudioSource::kUserMicrophone:
-        return user_microphone_service_.get();
-    }
-  }
-
-  const std::string GetLanguageCode() const override {
-    switch (GetParam()) {
-      case SystemLiveCaptionService::AudioSource::kLoopback:
-        return primary_profile_->GetPrefs()->GetString(
-            prefs::kLiveCaptionLanguageCode);
-      case SystemLiveCaptionService::AudioSource::kUserMicrophone:
-        return primary_profile_->GetPrefs()->GetString(
-            prefs::kUserMicrophoneCaptionLanguageCode);
-    }
-  }
-  const std::string GetAltLanguageCode() const override {
-    switch (GetParam()) {
-      case SystemLiveCaptionService::AudioSource::kLoopback:
-        return kAlternativeLiveCaptionLanguageName;
-      case SystemLiveCaptionService::AudioSource::kUserMicrophone:
-        return kAlternativeBabelOrcaLanguageName;
-    }
-  }
-  const std::string GetDefaultLanguageCode() const override {
-    switch (GetParam()) {
-      case SystemLiveCaptionService::AudioSource::kLoopback:
-        return kDefaultLiveCaptionLanguageName;
-      case SystemLiveCaptionService::AudioSource::kUserMicrophone:
-        return kDefaultBabelOrcaLanguageName;
-    }
-  }
-  void SetLanguagePref(const std::string& language) override {
-    switch (GetParam()) {
-      case SystemLiveCaptionService::AudioSource::kLoopback:
-        primary_profile_->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                                                language);
-        break;
-      case SystemLiveCaptionService::AudioSource::kUserMicrophone:
-        primary_profile_->GetPrefs()->SetString(
-            prefs::kUserMicrophoneCaptionLanguageCode, language);
-        break;
-    }
-    base::RunLoop().RunUntilIdle();
-  }
-  void SetLiveCaptionsPref(bool enabled) override {
-    switch (GetParam()) {
-      case SystemLiveCaptionService::AudioSource::kLoopback:
-        primary_profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                                 enabled);
-        break;
-      case SystemLiveCaptionService::AudioSource::kUserMicrophone:
-        // Bypass the client browser interface for the BabelOrca tests. we
-        // park the waiter in the parent class so that it will still be
-        // alive when the install events are emulated. We only need to wait
-        // if we're enabling live capiton, we can disable it immediately.
-        if (enabled) {
-          soda_install_waiter_ = std::make_unique<BabelOrcaSodaInstallWaiter>(
-              user_microphone_service_->GetWeakPtrForService(),
-              speech::GetLanguageCode(GetLanguageCode()));
-          speech::SodaInstaller::GetInstance()->AddObserver(
-              soda_install_waiter_.get());
-        } else {
-          GetServiceUnderTest()->SpeechRecognitionAvailabilityChanged(false);
-        }
-        ::captions::LiveCaptionControllerFactory::GetInstance()
-            ->GetForProfile(primary_profile_)
-            ->ToggleLiveCaptionForBabelOrca(enabled);
-        break;
-    }
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void MaybeNotifyNonChromeOutputStarted() override {
-    if (IsTestingLiveCaption()) {
-      GetServiceUnderTest()->OnNonChromeOutputStarted();
-      base::RunLoop().RunUntilIdle();
-    }
-  }
-
-  bool IsTestingLiveCaption() {
-    return GetParam() == SystemLiveCaptionService::AudioSource::kLoopback;
-  }
 };
 
 // Tests that system audio is processed only when all our preconditions are
 // satisfied.
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, Triggering) {
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, Triggering) {
   // We should be waiting for the feature to be enabled and for SODA to be
   // installed.
   EXPECT_FALSE(current_audio_fetcher_);
@@ -442,17 +272,11 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, Triggering) {
   base::RunLoop().RunUntilIdle();
   // The client should be created at this point.
   ASSERT_TRUE(current_audio_fetcher_);
-
-  // After language and binary install, still should be false until output is
-  // triggered IFF the current source is the loopback input.
-  if (IsTestingLiveCaption()) {
-    EXPECT_FALSE(current_audio_fetcher_->is_capturing_audio());
-  }
+  EXPECT_FALSE(current_audio_fetcher_->is_capturing_audio());
 
   // Start audio.
   // Set audio output running.
-  MaybeNotifyNonChromeOutputStarted();
-  // base::RunLoop().RunUntilIdle();
+  NotifyNonChromeOutputStarted();
 
   // Should now be processing system audio.
   EXPECT_TRUE(current_audio_fetcher_->is_capturing_audio());
@@ -465,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, Triggering) {
 }
 
 // Test that feature is gated on successful SODA install.
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, SodaError) {
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaError) {
   // Enable feature so that we start listening for SODA install status.
   SetLiveCaptionsPref(/*enabled=*/true);
 
@@ -480,9 +304,9 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, SodaError) {
 }
 
 // Tests that our feature listens to the correct SODA language.
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, SodaIrrelevantError) {
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaIrrelevantError) {
   // Set audio output running
-  MaybeNotifyNonChromeOutputStarted();
+  NotifyNonChromeOutputStarted();
 
   // Enable feature so that we start listening for SODA install status.
   SetLiveCaptionsPref(/*enabled=*/true);
@@ -506,14 +330,14 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, SodaIrrelevantError) {
   base::RunLoop().RunUntilIdle();
   // Tell the caption service audio is running again. This is needed since we
   // don't actually go to a fake cras audio system in this test.
-  MaybeNotifyNonChromeOutputStarted();
+  NotifyNonChromeOutputStarted();
   // We should have ignored the unrelated error.
   ASSERT_TRUE(current_audio_fetcher_);
   EXPECT_TRUE(current_audio_fetcher_->is_capturing_audio());
 }
 
 // Test that captions are only dispatched for the primary profile.
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, DispatchToProfile) {
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, DispatchToProfile) {
   StartLiveCaptioning();
 
   // Capture fake audio.
@@ -533,8 +357,7 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, DispatchToProfile) {
   EXPECT_EQ(nullptr, GetCaptionBubbleController(secondary_profile_));
 }
 
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, StartStopStart) {
-
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, StartStopStart) {
   StartLiveCaptioning();
 
   // Capture fake audio.
@@ -553,7 +376,9 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, StartStopStart) {
             primary_bubble->GetBubbleLabelTextForTesting());
 
   // Stop
-  GetServiceUnderTest()->OnNonChromeOutputStopped();
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnNonChromeOutputStopped();
   EmulateRecognizedSpeech(" more after stop ");
   EXPECT_EQ(" more after stop ",
             primary_bubble->GetBubbleLabelTextForTesting());
@@ -561,7 +386,9 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, StartStopStart) {
   base::RunLoop().RunUntilIdle();
 
   // Start again.
-  GetServiceUnderTest()->OnNonChromeOutputStarted();
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnNonChromeOutputStarted();
   EmulateRecognizedSpeech(" and yet more ");
 
   EXPECT_EQ(" and yet more ", primary_bubble->GetBubbleLabelTextForTesting());
@@ -570,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, StartStopStart) {
 }
 
 // Test that we can cease transcription by closing the bubble UI.
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, EarlyStopping) {
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, EarlyStopping) {
   StartLiveCaptioning();
 
   // Fake some speech.
@@ -593,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, EarlyStopping) {
 }
 
 // Test that the UI is closed when transcription is complete.
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, EndOfStream) {
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, EndOfStream) {
   StartLiveCaptioning();
   ASSERT_TRUE(current_audio_fetcher_);
 
@@ -616,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, EndOfStream) {
 }
 
 // Test that an error message is shown if something goes wrong.
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, ServiceError) {
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, ServiceError) {
   StartLiveCaptioning();
   ASSERT_TRUE(current_audio_fetcher_);
 
@@ -642,8 +469,8 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, ServiceError) {
 
 // Tests that the System Live Caption Service uses the correct language as set
 // by the kLiveCaptionLanguageCode preference.
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, UsesCorrectLanguage) {
-  SetLanguagePref(GetAltLanguageCode());
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, UsesCorrectLanguage) {
+  SetLanguagePref(kAlternativeLiveCaptionLanguageName);
   StartLiveCaptioning();
   ASSERT_TRUE(current_audio_fetcher_);
 
@@ -657,22 +484,16 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, UsesCorrectLanguage) {
 
   // Assert language is correct.
   ASSERT_NE(recognition_options, nullptr);
-  EXPECT_EQ(std::string(GetAltLanguageCode()),
+  EXPECT_EQ(std::string(kAlternativeLiveCaptionLanguageName),
             recognition_options->language.value());
 }
 
 // When a language changes in the middle of a session the service must switch
 // out the speech recognition client for a new one with the selected language.
 // This tests that while there are non chrome outputs running that the session
-// restarts automatically. Note that language handling is handled differently
-// by babel orca so this test coverage is skipped in that case. Existing test
-// coverage can be found in chromeos/ash/components/boca/babelorca
-IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest,
+// restarts automatically.
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest,
                        SwitchesLanguageCorrectly) {
-  if (GetParam() == SystemLiveCaptionService::AudioSource::kUserMicrophone) {
-    return;
-  }
-
   StartLiveCaptioning();
   ASSERT_TRUE(current_audio_fetcher_);
 
@@ -687,18 +508,20 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest,
   // Assert language is correct.
   ASSERT_NE(recognition_options, nullptr);
   ASSERT_TRUE(recognition_options->language.has_value());
-  EXPECT_EQ(std::string(GetDefaultLanguageCode()),
+  EXPECT_EQ(std::string(kDefaultLiveCaptionLanguageName),
             recognition_options->language.value());
 
   // This should restart the recognizer with the correct language.  The
   // language pack will be installed by the live caption controller and then
   // the SODA Installer will notify the SystemLiveCaptionService.
-  SetLanguagePref(GetAltLanguageCode());
+  SetLanguagePref(kAlternativeLiveCaptionLanguageName);
 
   // For this test case we want to switch while output is running so that we
   // restart the session without explicitly calling OnNonChromeOutputStarted.
-  GetServiceUnderTest()->set_num_non_chrome_output_streams_for_testing(
-      /*num_output_streams=*/1);
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->set_num_non_chrome_output_streams_for_testing(
+          /*num_output_streams=*/1);
 
   // Until SODA installs we should do nothing.  The Client will be created at
   // this point so we can assert that the current audio fetcher is not capturing
@@ -707,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest,
 
   // Emulate successful SODA installation from LiveCaptionController.
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
-      speech::GetLanguageCode(GetAltLanguageCode()));
+      speech::GetLanguageCode(kAlternativeLiveCaptionLanguageName));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(current_audio_fetcher_);
@@ -719,13 +542,8 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest,
 
   ASSERT_NE(recognition_options, nullptr);
   ASSERT_TRUE(recognition_options->language.has_value());
-  EXPECT_EQ(std::string(GetAltLanguageCode()),
+  EXPECT_EQ(std::string(kAlternativeLiveCaptionLanguageName),
             recognition_options->language.value());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    SystemLiveCaptionServiceBrowserTests,
-    SystemLiveCaptionServiceTest,
-    testing::Values(SystemLiveCaptionService::AudioSource::kLoopback,
-                    SystemLiveCaptionService::AudioSource::kUserMicrophone));
 }  // namespace ash

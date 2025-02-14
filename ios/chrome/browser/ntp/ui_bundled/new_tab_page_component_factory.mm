@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -119,21 +121,25 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
       DiscoverFeedServiceFactory::GetForProfile(profile);
   PrefService* prefService = profile->GetPrefs();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  regional_capabilities::RegionalCapabilitiesService*
+      regionalCapabilitiesService =
+          ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
   BOOL isSafeMode =
       [browser->GetSceneState().profileState.appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
-      initWithTemplateURLService:templateURLService
-                       URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
-                     authService:authService
-                 identityManager:IdentityManagerFactory::GetForProfile(profile)
-           accountManagerService:ChromeAccountManagerServiceFactory::
-                                     GetForProfile(profile)
-        identityDiscImageUpdater:imageUpdater
-                     isIncognito:profile->IsOffTheRecord()
-             discoverFeedService:discoverFeedService
-                     prefService:prefService
-                     syncService:syncService
-                      isSafeMode:isSafeMode];
+       initWithTemplateURLService:templateURLService
+                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
+                      authService:authService
+                  identityManager:IdentityManagerFactory::GetForProfile(profile)
+            accountManagerService:ChromeAccountManagerServiceFactory::
+                                      GetForProfile(profile)
+         identityDiscImageUpdater:imageUpdater
+                      isIncognito:profile->IsOffTheRecord()
+              discoverFeedService:discoverFeedService
+                      prefService:prefService
+                      syncService:syncService
+      regionalCapabilitiesService:regionalCapabilitiesService
+                       isSafeMode:isSafeMode];
 }
 
 - (NewTabPageViewController*)NTPViewController {

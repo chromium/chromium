@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_update_store.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -274,11 +274,11 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     // to a renderer navigation in the main frame.
     // Note: this does not overlap with the conditions checked in
     // IsUserTriggeredMainFrameNavigation.
-    if (MostRecentUpdateStore* most_recent_update_store =
+    if (MostRecentSharedTabUpdateStore* most_recent_shared_tab_update_store =
             local_tab_->GetBrowserWindowInterface()
                 ->GetFeatures()
-                .most_recent_update_store()) {
-      most_recent_update_store->SetLastUpdatedTab(
+                .most_recent_shared_tab_update_store()) {
+      most_recent_shared_tab_update_store->SetLastUpdatedTab(
           group->local_group_id().value(), local_tab_id());
     }
   }

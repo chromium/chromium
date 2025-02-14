@@ -24,4 +24,7 @@ public interface Printable {
 
     /** Check if the current Printable can print. */
     boolean canPrint();
+
+    /** Get the file path if the print job is already a pdf. Otherwise return null. */
+    String getPdfFilePath();
 }

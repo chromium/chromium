@@ -204,7 +204,6 @@ source_set("browser_tests") {
     "glic_browsertest.cc",
     "glic_fre_controller_browsertest.cc",
     "glic_policy_browsertest.cc",
-    "glic_window_resize_animation_browsertest.cc",
     "guest_util_browsertest.cc",
   ]
   deps = [
@@ -236,6 +235,7 @@ source_set("interactive_ui_tests") {
     "glic_tab_indicator_helper_interactive_uitest.cc",
     "glic_ui_interactive_uitest.cc",
     "glic_window_controller_interactive_uitest.cc",
+    "glic_window_resize_animation_interactive_uitest.cc",
   ]
   deps = [
     ":glic",

@@ -5,18 +5,13 @@
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
 
 #include "base/check_is_test.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -29,22 +24,9 @@ GetFileSystemAccessCloudIdentifierProvider() {
     CHECK_IS_TEST();
     return g_cloud_identifier_provider_for_testing;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<
-          crosapi::mojom::FileSystemAccessCloudIdentifierProvider>()) {
-    return nullptr;
-  }
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::FileSystemAccessCloudIdentifierProvider>()
-      .get();
-#else
   return crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->file_system_access_cloud_identifier_provider_ash();
-#endif
 }
 
 crosapi::mojom::HandleType TranslateHandleType(

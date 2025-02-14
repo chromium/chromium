@@ -283,6 +283,9 @@ class CORE_EXPORT StyleCascade {
                 bool is_attr_tainted,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     void Append(const CSSParserToken&, bool is_attr_tainted, StringView string);
+    bool Append(TokenSequence& sequence,
+                bool is_attr_tainted,
+                wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
 
     // NOTE: Strips trailing whitespace.
     bool AppendFallback(const TokenSequence&,
@@ -470,10 +473,12 @@ class CORE_EXPORT StyleCascade {
 
   bool EvalIfCondition(CSSParserTokenStream& stream,
                        CascadeResolver& resolver,
-                       const CSSParserContext& context);
+                       const CSSParserContext& context,
+                       bool& is_attr_tainted);
   KleeneValue EvalIfStyleFeature(const MediaQueryFeatureExpNode&,
                                  CascadeResolver&,
-                                 const CSSParserContext& context);
+                                 const CSSParserContext& context,
+                                 bool& is_attr_tainted);
   bool EvalIfKeyword(const CSSValue& value,
                      CSSVariableData* query_value,
                      const CustomProperty& property);

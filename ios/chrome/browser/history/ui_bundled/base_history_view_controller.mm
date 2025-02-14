@@ -470,8 +470,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
         [self.tableViewModel itemAtIndexPath:indexPath]);
     BrowsingHistoryService::HistoryEntry entry;
     entry.url = object.URL;
-    // TODO(crbug.com/40479288) Remove base::TimeXXX::ToInternalValue().
-    entry.all_timestamps.insert(object.timestamp.ToInternalValue());
+    entry.all_timestamps.insert(object.timestamp);
     entries.push_back(entry);
   }
   self.historyService->RemoveVisits(entries);

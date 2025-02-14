@@ -114,12 +114,7 @@ void IdleManagerImpl::OnIdleStateChange(
     const ui::IdlePollingService::State& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  blink::mojom::IdleStatePtr new_state = CreateIdleState(state);
-  if (new_state == last_state_) {
-    return;
-  }
-
-  last_state_ = std::move(new_state);
+  last_state_ = CreateIdleState(state);
   for (const auto& monitor : monitors_) {
     monitor->Update(last_state_->Clone(), /*is_overridden_by_devtools=*/false);
   }

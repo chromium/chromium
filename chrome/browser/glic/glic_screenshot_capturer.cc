@@ -65,8 +65,7 @@ void GlicScreenshotCapturer::CaptureScreenshot(
   }
   capture_callback_ = std::move(callback);
   if (!parent_window) {
-    SignalError(glic::mojom::CaptureScreenshotErrorReason::
-                    kScreenCaptureFailedForUnknownReason);
+    SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);
     return;
   }
   // Construct picker.
@@ -95,8 +94,7 @@ void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
   picker_controller_ = nullptr;
   if (!err.empty()) {
     DVLOG(1) << "Unknown error while selecting source: " << err;
-    SignalError(glic::mojom::CaptureScreenshotErrorReason::
-                    kScreenCaptureFailedForUnknownReason);
+    SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);
     return;
   } else if (id.is_null()) {
     SignalError(glic::mojom::CaptureScreenshotErrorReason::
@@ -106,8 +104,7 @@ void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
   desktop_capturer_ = content::desktop_capture::CreateScreenCapturer();
   desktop_capturer_->Start(this);
   if (!desktop_capturer_->SelectSource(id.id)) {
-    SignalError(glic::mojom::CaptureScreenshotErrorReason::
-                    kScreenCaptureFailedForUnknownReason);
+    SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);
     return;
   }
   desktop_capturer_->CaptureFrame();
@@ -119,8 +116,7 @@ void GlicScreenshotCapturer::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   if (!frame) {
-    SignalError(glic::mojom::CaptureScreenshotErrorReason::
-                    kScreenCaptureFailedForUnknownReason);
+    SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);
     return;
   }
   frame_size_ = frame->size();
@@ -135,8 +131,7 @@ void GlicScreenshotCapturer::SignalScreenshotResult(
     std::vector<uint8_t> jpeg_data) {
   if (jpeg_data.empty()) {
     DVLOG(1) << "Could not convert frame to JPEG";
-    SignalError(glic::mojom::CaptureScreenshotErrorReason::
-                    kScreenCaptureFailedForUnknownReason);
+    SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);
     return;
   }
   mojom::ScreenshotPtr screenshot = mojom::Screenshot::New();

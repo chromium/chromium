@@ -1228,9 +1228,9 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
     if (node.IsPickerIconPseudoElement()) {
       return false;
     }
-    // ::scroll-marker gains a kTab role, so it's relevant regardless of the
-    // type of content it contains since it has a layout object (checked above).
-    if (node.IsScrollMarkerPseudoElement()) {
+    // Scroll control pseudo elements are always relevant when they have a
+    // layout object (which is checked above).
+    if (node.IsScrollControlPseudoElement()) {
       return true;
     }
     // Ignore non-inline whitespace content, which is used by many pages as
@@ -4031,6 +4031,11 @@ void AXObjectCacheImpl::MaybeDisallowImplicitSelectionWithCleanLayout(
   }
 
   if (AXObject* container = subwidget->ContainerWidget()) {
+    if (container->IsMultiSelectable()) {
+      // Multi-selectable containers do not allow implicit selection, so
+      // we can skip the remaining checks.
+      return;
+    }
     if (containers_disallowing_implicit_selection_
             .insert(container->AXObjectID())
             .is_new_entry) {
@@ -4044,13 +4049,15 @@ void AXObjectCacheImpl::MaybeDisallowImplicitSelectionWithCleanLayout(
         return;
       }
       // The active descendant or focus may lose its implicit selected state.
-      AXObject* ax_focus = FocusedObject();
-      if (ax_focus == container) {
+      Node* focus = FocusedNode();
+      if (focus == container->GetNode()) {
         if (AXObject* activedescendant = container->ActiveDescendant()) {
           AddDirtyObjectToSerializationQueue(activedescendant);
         }
       }
-      AddDirtyObjectToSerializationQueue(ax_focus);
+      if (AXObject* ax_focus = Get(focus)) {
+        AddDirtyObjectToSerializationQueue(ax_focus);
+      }
     }
   }
 }
@@ -4934,6 +4941,19 @@ void AXObjectCacheImpl::ScheduleImmediateSerialization() {
   // Call ScheduleAXUpdate() to ensure lifecycle does not get stalled.
   // Will call AXReadyCallback() at the next available opportunity.
   ScheduleAXUpdate();
+}
+
+Node* AXObjectCacheImpl::GetAccessibilityFocus() const {
+  if (accessibility_focus_ == ui::AXNodeData::kInvalidAXID) {
+    return nullptr;
+  }
+
+  AXObject* obj = ObjectFromAXID(accessibility_focus_);
+  if (!obj) {
+    return nullptr;
+  }
+
+  return obj->GetNode();
 }
 
 void AXObjectCacheImpl::PostPlatformNotification(

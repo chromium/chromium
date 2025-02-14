@@ -90,9 +90,11 @@ class TestSessionControllerClient final : public SessionControllerClient {
   // same name that takes an `AccountId` created with a valid storage key
   // instead. See the documentation for`AccountId::GetUserEmail` for discussion.
   // `provide_or_pref_service` is a variant of bool, which indicates if the perf
-  // service should be automatically created (true) or not(false), or a
-  // PrefService instance which will be used for the session. Passing nullptr
-  // will result in a check failure.
+  // service should be automatically created (true) if doesn't exit, or
+  // not(false), or a PrefService instance which will be used for the
+  // session. Passing nullptr will result in a check failure.  If
+  // `default_provide_pref_service` is false, it will not automatically create
+  // the pref service.
   void AddUserSession(
       std::string_view display_email,
       user_manager::UserType user_type = user_manager::UserType::kRegular,
@@ -112,11 +114,6 @@ class TestSessionControllerClient final : public SessionControllerClient {
       bool is_new_profile = false,
       const std::string& given_name = std::string(),
       bool is_account_managed = false);
-
-  // Creates a test PrefService and associates it with the user. When `notify`
-  // is true, it will call `SessionController::OnProfilePrefServiceInitialized`.
-  PrefService* ProvidePrefServiceForUser(const AccountId& account_id,
-                                         bool notify = true);
 
   // Synchronously lock screen by requesting screen lock and waiting for the
   // request to complete.
@@ -208,6 +205,8 @@ class TestSessionControllerClient final : public SessionControllerClient {
   std::tuple<bool, bool> is_eligible_for_background_replace_ = {true, true};
 
   int existing_users_count_ = 0;
+
+  bool reuse_pref_service_ = false;
 
   std::unique_ptr<views::Widget> multi_profile_login_widget_;
 

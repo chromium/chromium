@@ -198,7 +198,7 @@ consoles.console_view(
     ("fuchsia-fyi-astro", "hardware", "ast"),
     ("fuchsia-fyi-nelson", "hardware", "nsn"),
     ("fuchsia-fyi-sherlock", "hardware", "sher"),
-    ("fuchsia-fyi-sherlock-qemu", "hardware|emu", "sher"),
+    ("fuchsia-fyi-sherlock-qemu", "hardware", "emu-sher"),
     ("fuchsia-smoke-astro", "hardware|smoke", "ast"),
     ("fuchsia-smoke-nelson", "hardware|smoke", "nsn"),
     ("fuchsia-smoke-sherlock", "hardware|smoke", "sher"),
@@ -208,6 +208,7 @@ consoles.console_view(
     ("fuchsia-webgl-astro", "hardware|webgl", "ast"),
     ("fuchsia-webgl-nelson", "hardware|webgl", "nsn"),
     ("fuchsia-webgl-sherlock", "hardware|webgl", "sher"),
+    ("fuchsia-webgl-sherlock-qemu", "hardware|webgl", "emu-sher"),
     ("fuchsia-x64", "p/chrome|official", "x64"),
     ("fuchsia-x64-nest-sd", "p/chrome|official", "nest-x64"),
 )]

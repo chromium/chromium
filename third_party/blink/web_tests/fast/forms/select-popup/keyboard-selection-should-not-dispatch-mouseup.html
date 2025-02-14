@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<link rel="help" href="http://crbug.com/40698108">
+<link rel="help" href="https://www.w3.org/TR/uievents/#event-type-mouseup">
+
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
+<select id="target">
+  <option id="alpha">alpha</option>
+  <option id="omega">omega</option>
+</select>
+
+<script>
+promise_test(async (t) => {
+  let firedMouseup = false;
+  target.addEventListener('mouseup', () => firedMouseup = true);
+
+  assert_false(
+    target.matches(':open'),
+    'The select should initially be closed.'
+  );
+  assert_equals(
+    target.value,
+    'alpha',
+    'Initial select value should be alpha.'
+  );
+
+  await openPicker(target);
+  assert_true(
+    target.matches(':open'),
+    'The select should be open.'
+  );
+
+  eventSender.keyDown('ArrowDown');
+  eventSender.keyDown('Enter');
+  assert_false(
+    target.matches(':open'),
+    'The select should be closed after selection.'
+  );
+  assert_equals(
+    target.value,
+    'omega',
+    'The select value should be `omega` after selection.'
+  );
+
+  assert_false(firedMouseup, 'The mouseup event should not be fired when choosing an option using the keyboard.');
+}, 'Selecting an option using keyboard should not dispatch a mouseup event.');
+</script>

@@ -45,21 +45,27 @@ class AwPrefetchManagerTest : public testing::Test {
 // correctly.
 TEST_F(AwPrefetchManagerTest, UpdateCacheConfig) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
+  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
+                               /*ttl_in_sec=*/60 * 10);
 
-  prefetch_manager.UpdatePrefetchConfiguration(
-      base::android::AttachCurrentThread(), /*ttl_in_sec*/ 60 * 10,
-      /* max_prefetches*/ 5);
+  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
+                                    /* max_prefetches=*/5);
 
-  EXPECT_EQ(prefetch_manager.GetTtlInSec(), 60 * 10);
-  EXPECT_EQ(prefetch_manager.GetMaxPrefetches(), 5);
+  EXPECT_EQ(prefetch_manager.GetTtlInSec(base::android::AttachCurrentThread()),
+            60 * 10);
+  EXPECT_EQ(
+      prefetch_manager.GetMaxPrefetches(base::android::AttachCurrentThread()),
+      5);
 }
 
 TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
 
-  prefetch_manager.UpdatePrefetchConfiguration(
-      base::android::AttachCurrentThread(), /*ttl_in_sec=*/60 * 10,
-      /* max_prefetches=*/3);
+  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
+                               /*ttl_in_sec=*/60 * 10);
+
+  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
+                                    /* max_prefetches=*/3);
 
   // Add more prefetch requests than the limit.
   for (int i = 0; i < 5; ++i) {
@@ -85,9 +91,11 @@ TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {
 TEST_F(AwPrefetchManagerTest, RemoveOldestPrefetchHandle) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
 
-  prefetch_manager.UpdatePrefetchConfiguration(
-      base::android::AttachCurrentThread(), /*ttl_in_sec*/ 60 * 10,
-      /* max_prefetches*/ 2);  // Set a limit of 2
+  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
+                               /*ttl_in_sec=*/60 * 10);
+
+  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
+                                    /* max_prefetches=*/2);
 
   // 1. Make two requests.
   prefetch_manager.StartPrefetchRequest(

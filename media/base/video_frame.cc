@@ -959,6 +959,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
 scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
   if (handle.type != gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
     DLOG(ERROR) << "Non-IOSurface handle.";
@@ -992,7 +993,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   }
 
   const StorageType storage_type = STORAGE_UNOWNED_MEMORY;
-  if (!IsValidConfig(pixel_format, storage_type, size, visible_rect, size)) {
+  if (!IsValidConfig(pixel_format, storage_type, size, visible_rect,
+                     natural_size)) {
     DLOG(ERROR) << "Invalid config.";
     return nullptr;
   }
@@ -1010,9 +1012,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
         IOSurfaceUnlock(io_surface.get(), kIOSurfaceLockReadOnly, nullptr);
       };
 
-  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
-                                                *layout, storage_type,
-                                                visible_rect, size, timestamp);
+  auto frame = base::MakeRefCounted<VideoFrame>(
+      base::PassKey<VideoFrame>(), *layout, storage_type, visible_rect,
+      natural_size, timestamp);
   for (size_t i = 0; i < num_planes; ++i) {
     uint8_t* plane_data = reinterpret_cast<uint8_t*>(
         IOSurfaceGetBaseAddressOfPlane(io_surface.get(), i));

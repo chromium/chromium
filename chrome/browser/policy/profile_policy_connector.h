@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 
@@ -32,9 +31,9 @@ class User;
 
 namespace policy {
 namespace internal {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ProxiedPoliciesPropagatedWatcher;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 class LocalTestInfoBarVisibilityManager;
 }  // namespace internal
 
@@ -85,11 +84,11 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   // higher-level provider.
   bool IsProfilePolicy(const char* policy_key) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Triggers the time out handling of waiting for the proxied primary user
   // policies to propagate. May be only called form tests.
   void TriggerProxiedPoliciesWaitTimeoutForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns affiliation IDs contained in the PolicyData corresponding to the
   // profile.
@@ -133,7 +132,7 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   // every 7 days if the profile remains open.
   void RecordAffiliationMetrics();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, primary Profile user policies are forwarded to the
   // device-global PolicyService[1] using a ProxyPolicyProvider.
   // When that is done, signaling that |policy_service_| is initialized should
@@ -183,7 +182,7 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   // until the policies have been reflected in the device-wide PolicyService.
   std::unique_ptr<internal::ProxiedPoliciesPropagatedWatcher>
       proxied_policies_propagated_watcher_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Wrap policy provider with SchemaRegistryTrackingPolicyProvider to track
   // extensions' policy schema update.

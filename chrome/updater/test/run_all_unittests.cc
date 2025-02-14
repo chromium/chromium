@@ -151,17 +151,17 @@ void MaybeIncreaseTestTimeouts(int argc, char** argv) {
 
   // The minimum and the default value when unspecified is 45000.
   if (!command_line->HasSwitch(switches::kTestLauncherTimeout)) {
-    command_line->AppendSwitchASCII(switches::kTestLauncherTimeout, "90000");
+    command_line->AppendSwitchUTF8(switches::kTestLauncherTimeout, "90000");
   }
 
   // The minimum and the default value when unspecified is 30000.
   if (!command_line->HasSwitch(switches::kUiTestActionMaxTimeout)) {
-    command_line->AppendSwitchASCII(switches::kUiTestActionMaxTimeout, "45000");
+    command_line->AppendSwitchUTF8(switches::kUiTestActionMaxTimeout, "45000");
   }
 
   // The minimum and the default value when unspecified is 10000.
   if (!command_line->HasSwitch(switches::kUiTestActionTimeout)) {
-    command_line->AppendSwitchASCII(switches::kUiTestActionTimeout, "40000");
+    command_line->AppendSwitchUTF8(switches::kUiTestActionTimeout, "40000");
   }
 }
 

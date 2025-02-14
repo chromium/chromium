@@ -62,11 +62,8 @@ class ProfileIOSImpl final : public ProfileIOS {
  private:
   friend class ProfileIOS;
 
-  // Store information about the profile initialisation.
-  struct InitInfo {
-    CreationMode creation_mode;
-    bool is_new_profile;
-  };
+  // Store information about the profile's pref initialisation.
+  struct InitInfo;
 
   ProfileIOSImpl(const base::FilePath& state_path,
                  std::string_view profile_name,

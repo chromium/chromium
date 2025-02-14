@@ -41,7 +41,7 @@ class AILanguageModelFactory final : public ScriptWrappable,
   ScriptPromise<AILanguageModelCapabilities> capabilities(
       ScriptState* script_state,
       ExceptionState& exception_state);
-  ScriptPromise<V8AICapabilityAvailability> availability(
+  ScriptPromise<V8AIAvailability> availability(
       ScriptState* script_state,
       const AILanguageModelCreateCoreOptions* options,
       ExceptionState& exception_state);
@@ -62,7 +62,7 @@ class AILanguageModelFactory final : public ScriptWrappable,
       ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
       mojom::blink::ModelAvailabilityCheckResult check_result);
   void OnCanCreateLanguageModelComplete(
-      ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
+      ScriptPromiseResolver<V8AIAvailability>* resolver,
       mojom::blink::ModelAvailabilityCheckResult check_result);
   void OnGetLanguageModelParamsComplete(
       ScriptPromiseResolver<IDLNullable<AILanguageModelParams>>* resolver,

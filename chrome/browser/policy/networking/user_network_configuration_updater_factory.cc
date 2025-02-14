@@ -5,20 +5,19 @@
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater.h"
+#include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace policy {
 
@@ -62,7 +61,6 @@ bool UserNetworkConfigurationUpdaterFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<KeyedService>
 UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
@@ -85,31 +83,5 @@ UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceForBrowserContext(
       profile, *user, profile->GetProfilePolicyConnector()->policy_service(),
       ash::NetworkHandler::Get()->managed_network_configuration_handler());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::unique_ptr<KeyedService>
-  UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
-  // Lacros only handles CA certificates from the ONC policy and it is only
-  // supported for the main profile.
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile->IsMainProfile()) {
-    return nullptr;
-  }
-
-  // Lacros only handles CA certificates from the ONC policy, so the simple
-  // UserNetworkConfigurationUpdater is sufficient for it. Client certs and
-  // network configs will be processed by Ash.
-  // Note that sessions which don't have policy (e.g. guest sessions) still
-  // expect to have UserNetworkConfigurationUpdater, because
-  // ManagedNetworkConfigurationHandler requires a (possibly empty) policy to be
-  // set for all user sessions.
-  // TODO(crbug.com/40097732): Evaluate if this is can be solved in a
-  // more elegant way.
-  return UserNetworkConfigurationUpdater::CreateForUserPolicy(
-      profile->GetProfilePolicyConnector()->policy_service());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace policy

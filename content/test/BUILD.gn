@@ -138,6 +138,8 @@ static_library("test_support") {
     "../browser/renderer_host/mock_render_widget_host.h",
     "../browser/screen_details/screen_details_test_utils.cc",
     "../browser/screen_details/screen_details_test_utils.h",
+    "../browser/serial/serial_test_utils.cc",
+    "../browser/serial/serial_test_utils.h",
     "../browser/service_worker/embedded_worker_test_helper.cc",
     "../browser/service_worker/embedded_worker_test_helper.h",
     "../browser/service_worker/fake_embedded_worker_instance_client.cc",
@@ -442,6 +444,8 @@ static_library("test_support") {
     "mock_render_input_router.h",
     "mock_render_widget_host_delegate.cc",
     "mock_render_widget_host_delegate.h",
+    "mock_speech_recognition_event_listener.cc",
+    "mock_speech_recognition_event_listener.h",
     "mock_ssl_host_state_delegate.cc",
     "mock_ssl_host_state_delegate.h",
     "mock_widget.cc",
@@ -672,8 +676,6 @@ static_library("test_support") {
     ]
   } else {
     sources += [
-      "../browser/serial/serial_test_utils.cc",
-      "../browser/serial/serial_test_utils.h",
       "../public/test/mock_captured_surface_controller.cc",
       "../public/test/mock_captured_surface_controller.h",
     ]
@@ -2776,6 +2778,7 @@ test("content_unittests") {
     "../browser/security/coop/cross_origin_opener_policy_reporter_unittest.cc",
     "../browser/security/coop/cross_origin_opener_policy_status_unittest.cc",
     "../browser/security/dip/document_isolation_policy_reporter_unittest.cc",
+    "../browser/serial/serial_unittest.cc",
     "../browser/service_worker/embedded_worker_instance_unittest.cc",
     "../browser/service_worker/service_worker_cache_writer_unittest.cc",
     "../browser/service_worker/service_worker_container_host_unittest.cc",
@@ -2948,6 +2951,7 @@ test("content_unittests") {
 
   fuzztests = [
     "BiddingAndAuctionSerializerTargetSizeEstimator.DoesNotCrashForAnyInput",
+    "ActionsParserFuzzTest.ParsesJSONCorrectly",
   ]
 
   if (is_mac) {
@@ -3069,6 +3073,7 @@ test("content_unittests") {
     ":test_support",
     "//base",
     "//base/allocator:buildflags",
+    "//base/test:fuzztest_support",
     "//base/test:proto_test_support",
     "//base/test:test_support",
     "//build:android_buildflags",
@@ -3441,7 +3446,6 @@ test("content_unittests") {
       "../browser/devtools/protocol/webauthn_handler_unittest.cc",
       "../browser/host_zoom_map_impl_unittest.cc",
       "../browser/picture_in_picture/document_picture_in_picture_navigation_throttle_unittest.cc",
-      "../browser/serial/serial_unittest.cc",
       "../browser/speech/network_speech_recognition_engine_impl_unittest.cc",
       "../browser/speech/speech_recognizer_impl_unittest.cc",
       "../browser/tracing/tracing_ui_unittest.cc",

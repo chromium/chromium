@@ -66,16 +66,14 @@ constexpr char kTestSceneId1[] = "scene-id1";
 constexpr char kTestSceneId2[] = "scene-id2";
 
 // Updates `attr` with information from `account`.
-ProfileAttributesIOS UpdateAttributesFromTestAccount(
-    const TestAccount& account,
-    ProfileAttributesIOS attr) {
+void UpdateAttributesFromTestAccount(const TestAccount& account,
+                                     ProfileAttributesIOS& attr) {
   CHECK_EQ(account.name, attr.GetProfileName());
   attr.SetLastActiveTime(account.last_active_time);
   attr.SetAuthenticationInfo(GaiaId(std::string(account.gaia)), account.email);
   ProfileAttributesIOS::GaiaIdSet gaia_ids;
   gaia_ids.insert(GaiaId(std::string(account.gaia)));
   attr.SetAttachedGaiaIds(gaia_ids);
-  return attr;
 }
 
 }  // namespace

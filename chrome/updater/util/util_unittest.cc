@@ -49,9 +49,9 @@ TEST_P(UtilTagArgsTest, AppArgsAndAP) {
   base::test::ScopedCommandLine original_command_line;
   {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(GetParam().tag_switch,
-                                    "appguid=8a69f345-c564-463c-aff1-"
-                                    "a69d9e530f96&appname=TestApp&ap=TestAP");
+    command_line->AppendSwitchUTF8(GetParam().tag_switch,
+                                   "appguid=8a69f345-c564-463c-aff1-"
+                                   "a69d9e530f96&appname=TestApp&ap=TestAP");
 
     // Test GetAppArgs.
     EXPECT_EQ(GetAppArgs("NonExistentAppId"), std::nullopt);
@@ -66,13 +66,13 @@ TEST_P(UtilTagArgsTest, AppArgsAndAP) {
 
 TEST_P(UtilTagArgsTest, GetTagArgsForCommandLine) {
   base::CommandLine command_line(base::FilePath(FILE_PATH_LITERAL("my.exe")));
-  command_line.AppendSwitchASCII(GetParam().tag_switch,
-                                 "appguid={8a69}&appname=Chrome");
-  command_line.AppendSwitchASCII(kAppArgsSwitch,
-                                 "&appguid={8a69}&installerdata=%7B%22homepage%"
-                                 "22%3A%22http%3A%2F%2Fwww.google.com%");
+  command_line.AppendSwitchUTF8(GetParam().tag_switch,
+                                "appguid={8a69}&appname=Chrome");
+  command_line.AppendSwitchUTF8(kAppArgsSwitch,
+                                "&appguid={8a69}&installerdata=%7B%22homepage%"
+                                "22%3A%22http%3A%2F%2Fwww.google.com%");
   command_line.AppendSwitch(kSilentSwitch);
-  command_line.AppendSwitchASCII(kSessionIdSwitch, "{123-456}");
+  command_line.AppendSwitchUTF8(kSessionIdSwitch, "{123-456}");
 
   TagParsingResult result = GetTagArgsForCommandLine(command_line);
   EXPECT_EQ(result.error, tagging::ErrorCode::kSuccess);

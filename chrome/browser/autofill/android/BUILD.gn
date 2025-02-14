@@ -18,6 +18,8 @@ android_library("third_party_provider_java") {
   sources = [ "java/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProvider.java" ]
   deps = [
     "//base:base_java",
+    "//base:base_shared_preferences_java",
+    "//chrome/browser/preferences:java",
     "//third_party/android_deps:com_android_support_support_annotations_java",
   ]
 }

@@ -86,10 +86,6 @@ class LiveCaptionController : public KeyedService,
   void OnToggleFullscreen(CaptionBubbleContext* caption_bubble_context);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void ToggleLiveCaptionForBabelOrca(bool enabled);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   CaptionBubbleController* caption_bubble_controller_for_testing() {
     return caption_bubble_controller();
   }
@@ -117,11 +113,6 @@ class LiveCaptionController : public KeyedService,
   raw_ptr<PrefService> global_prefs_;
   raw_ptr<content::BrowserContext> browser_context_;
   const std::unique_ptr<LiveCaptionBubbleSettings> caption_bubble_settings_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Tracks whether or not Live Caption has been enabled for babel orca.
-  bool enabled_for_babel_orca_ = false;
-#endif
 
   // Whether Live Caption is enabled.
   bool enabled_ = false;

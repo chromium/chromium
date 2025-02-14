@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace user_data_auth {
@@ -115,6 +116,9 @@ template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     cryptohome::ErrorWrapper
     ReplyToCryptohomeError(const std::optional<StartMigrateToDircryptoReply>&);
+template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<LockFactorUntilRebootReply>&);
 
 int64_t AccountDiskUsageReplyToUsageSize(
     const std::optional<GetAccountDiskUsageReply>& reply) {

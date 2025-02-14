@@ -41,7 +41,7 @@
 namespace updater {
 
 bool IsInternalService() {
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(
              kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
 }
 

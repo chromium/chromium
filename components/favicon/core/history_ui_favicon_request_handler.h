@@ -19,9 +19,11 @@ class HistoryUiFaviconRequestHandler : public KeyedService {
   // Requests favicon bitmap at `page_url` of size `desired_size_in_pixel`.
   // Tries to fetch the icon from local storage and falls back to the Google
   // favicon server if user settings allow to query it using history data.
+  // `fallback_to_host` enables the local storage fuzzy matching fallback.
   virtual void GetRawFaviconForPageURL(
       const GURL& page_url,
       int desired_size_in_pixel,
+      bool fallback_to_host,
       favicon_base::FaviconRawBitmapCallback callback) = 0;
 
   // Requests favicon image at `page_url`. The same fallback considerations for

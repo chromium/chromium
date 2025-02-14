@@ -46,7 +46,6 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   autofill::EntityDataManager* GetEntityDataManager() override;
   bool IsAutofillAiEnabledPref() const override;
   void TryToOpenFeedbackPage(const std::string& feedback_id) override;
-  void OpenAutofillAiSettings() override;
   bool IsUserEligible() override;
   autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormGlobalId& form_id) override;

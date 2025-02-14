@@ -15,6 +15,7 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
+#include "ash/webui/boca_ui/provider/content_settings_handler.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -190,12 +191,14 @@ BocaAppHandler::BocaAppHandler(
     content::WebUI* web_ui,
     std::unique_ptr<WebviewAuthHandler> auth_handler,
     std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
+    std::unique_ptr<ContentSettingsHandler> content_settings_handler,
     SessionClientImpl* session_client_impl,
     bool is_producer)
     : is_producer_(is_producer),
       tab_info_collector_(web_ui, is_producer),
       auth_handler_(std::move(auth_handler)),
       class_room_page_handler_(std::move(classroom_client_impl)),
+      content_settings_handler_(std::move(content_settings_handler)),
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
       session_client_impl_(session_client_impl),
@@ -370,6 +373,39 @@ void BocaAppHandler::EndSession(EndSessionCallback callback) {
   session_client_impl_->UpdateSession(std::move(request));
 }
 
+void BocaAppHandler::ExtendSessionDuration(
+    base::TimeDelta extended_duration,
+    ExtendSessionDurationCallback callback) {
+  auto* session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  if (!session || session->session_state() != ::boca::Session::ACTIVE ||
+      extended_duration.is_negative()) {
+    receiver_.ReportBadMessage("Extend session with invalid input.");
+    return;
+  }
+  std::unique_ptr<UpdateSessionRequest> request =
+      std::make_unique<UpdateSessionRequest>(
+          session_client_impl_->sender(), user_identity_, session->session_id(),
+          base::BindOnce(
+              [](EndSessionCallback callback,
+                 base::expected<std::unique_ptr<::boca::Session>,
+                                google_apis::ApiErrorCode> result) {
+                if (!result.has_value()) {
+                  std::move(callback).Run(
+                      mojom::UpdateSessionError::kHTTPError);
+                  return;
+                }
+                std::move(callback).Run(std::nullopt);
+                BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+                    std::move(result.value()), true);
+              },
+              std::move(callback)));
+  // TODO: crbug.com/391945140 - Remove redundant unique pointer dependencies.
+  request->set_duration(std::make_unique<base::TimeDelta>(base::Seconds(
+      session->duration().seconds() + extended_duration.InSeconds())));
+  session_client_impl_->UpdateSession(std::move(request));
+}
+
 void BocaAppHandler::RemoveStudent(const std::string& id,
                                    RemoveStudentCallback callback) {
   auto* session =
@@ -463,10 +499,10 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   session_client_impl_->UpdateSession(std::move(request));
 }
 
-void BocaAppHandler::SetFloatMode(bool isFloatMode,
+void BocaAppHandler::SetFloatMode(bool is_float_mode,
                                   SetFloatModeCallback callback) {
   SetFloatModeAndBoundsForWindow(
-      isFloatMode, web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
+      is_float_mode, web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
       std::move(callback));
 }
 
@@ -530,6 +566,15 @@ void BocaAppHandler::SetUserPref(mojom::BocaValidPref pref,
                                  SetUserPrefCallback callback) {
   pref_service_->Set(GetPrefName(pref), std::move(value));
   std::move(callback).Run();
+}
+
+void BocaAppHandler::SetSitePermission(const std::string& url,
+                                       mojom::Permission permission,
+                                       mojom::PermissionSetting setting,
+                                       SetSitePermissionCallback callback) {
+  const bool success = content_settings_handler_->SetContentSettingForOrigin(
+      url, permission, setting);
+  std::move(callback).Run(success);
 }
 
 void BocaAppHandler::OnStudentActivityUpdated(

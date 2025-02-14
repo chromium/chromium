@@ -4680,6 +4680,8 @@ void StyleEngine::RevisitActiveStyleSheetsForInspector() {
     // we may throw out the global rule set data and rebuild it from the
     // individual sheets' data, so the inspector needs to know about both.
     StyleSheetContents* contents = sheet.first->Contents();
+    InvalidationSetToSelectorMap::StyleSheetContentsScope contents_scope(
+        contents);
     RevisitStyleRulesForInspector(global_features, contents->ChildRules());
     if (contents->HasRuleSet()) {
       RevisitStyleRulesForInspector(contents->GetRuleSet().Features(),

@@ -587,6 +587,64 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   }
 }
 
+// Regression test for https://crbug.com/395985663.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       ExtensionRequestRedirectToServer) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+      "name": "Extension request redirect to server",
+      "manifest_version": 2,
+      "version": "0.1",
+      "default_locale": "en",
+      "background": { "scripts": ["background.js"] },
+      "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+    })");
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      content::JsReplace(
+          R"(
+      chrome.webRequest.onBeforeRequest.addListener(
+          function(details) {
+            if (details.url.endsWith('test') &&
+                details.url.startsWith('chrome-extension')) {
+              // Redirect "test" chrome-extension:// URL request to the
+              // HTTP server URL.
+              return {redirectUrl: $1};
+            }
+          },
+          {urls: ['<all_urls>']},
+          ['blocking']);
+
+      (async () => {
+        const res = await fetch('./test');
+        const text = await res.text();
+        const expected = 'p {\n  color: __MSG_text_color__;\n}\n';
+        // "__MSG_text_color__" must not be replaced with "red".
+        if (text == expected) {
+          chrome.test.notifyPass();
+        } else {
+          chrome.test.notifyFail('Unexpected content :' + text);
+        }
+      })();
+    )",
+          embedded_test_server()->GetURL(
+              "/extensions/api_test/content_scripts/css_l10n/test.css")));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(
+        base::CopyDirectory(test_data_dir_.AppendASCII("content_scripts")
+                                .AppendASCII("css_l10n")
+                                .AppendASCII("_locales"),
+                            test_dir.UnpackedPath(), true));
+  }
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
 using ContextType = extensions::browser_test_util::ContextType;
 
 enum class BackgroundResourceFetchTestCase {

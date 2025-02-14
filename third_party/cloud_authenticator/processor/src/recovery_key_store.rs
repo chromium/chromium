@@ -734,6 +734,7 @@ mod key_distribution {
     use alloc::string::String;
     use alloc::vec;
     use alloc::vec::Vec;
+    use base64::Engine;
 
     #[cfg(feature = "chromium_integration_test")]
     use super::TEST_ROOT_CERTIFICATE;
@@ -786,7 +787,8 @@ mod key_distribution {
         else {
             return Err("missing <certificate>");
         };
-        let leaf_cert_der = base64::decode(leaf_cert_der_b64)
+        let leaf_cert_der = base64::engine::general_purpose::STANDARD
+            .decode(leaf_cert_der_b64)
             .map_err(|_| "failed to base64-decode <certificate>")?;
         let leaf_cert = x509::parse(&leaf_cert_der).ok_or("failed to parse <certificate>")?;
         let (leaf_key_type, leaf_key) =
@@ -798,7 +800,9 @@ mod key_distribution {
         let Some(xml::Element::Single(xml::Value::String(sig_b64))) = sig_value.get("value") else {
             return Err("missing <value>");
         };
-        let sig = base64::decode(sig_b64).map_err(|_| "failed to base64-decode <value>")?;
+        let sig = base64::engine::general_purpose::STANDARD
+            .decode(sig_b64)
+            .map_err(|_| "failed to base64-decode <value>")?;
 
         // The public key from <certificate> should only be trusted if it chains
         // up to `ROOT_CERTIFICATE`.
@@ -857,7 +861,9 @@ mod key_distribution {
                 let xml::Value::String(cert_der_b64) = cert_value else {
                     return Err("unexpected object in <cert>");
                 };
-                base64::decode(cert_der_b64).map_err(|_| "failed to base64-decode <cert>")
+                base64::engine::general_purpose::STANDARD
+                    .decode(cert_der_b64)
+                    .map_err(|_| "failed to base64-decode <cert>")
             })
             .collect::<Result<Vec<Vec<u8>>, &'static str>>()?;
 
@@ -914,7 +920,9 @@ mod key_distribution {
                 let xml::Value::String(cert_der_b64) = cert_value else {
                     return Err("non-string in intermediates list");
                 };
-                base64::decode(cert_der_b64).map_err(|_| "failed to base64-decode <intermediate>")
+                base64::engine::general_purpose::STANDARD
+                    .decode(cert_der_b64)
+                    .map_err(|_| "failed to base64-decode <intermediate>")
             })
             .collect::<Result<Vec<Vec<u8>>, &'static str>>()?;
 

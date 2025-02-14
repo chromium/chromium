@@ -143,6 +143,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/screen_details",
     "//third_party/blink/renderer/modules/screen_orientation",
     "//third_party/blink/renderer/modules/sensor",
+    "//third_party/blink/renderer/modules/serial",
     "//third_party/blink/renderer/modules/service_worker",
     "//third_party/blink/renderer/modules/shapedetection",
     "//third_party/blink/renderer/modules/shared_storage",
@@ -182,7 +183,6 @@ component("modules") {
     sub_modules += [
       "//third_party/blink/renderer/modules/direct_sockets",
       "//third_party/blink/renderer/modules/printing",
-      "//third_party/blink/renderer/modules/serial",
       "//third_party/blink/renderer/modules/smart_card",
       "//third_party/blink/renderer/modules/window_controls_overlay",
     ]

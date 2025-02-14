@@ -354,7 +354,7 @@ void AddInstallServerWorkItems(HKEY root,
 
   base::CommandLine run_com_server_command(com_server_path);
   run_com_server_command.AppendSwitch(kServerSwitch);
-  run_com_server_command.AppendSwitchASCII(
+  run_com_server_command.AppendSwitchUTF8(
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
@@ -400,7 +400,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   base::CommandLine com_service_command(com_service_path);
   com_service_command.AppendSwitch(kSystemSwitch);
   com_service_command.AppendSwitch(kWindowsServiceSwitch);
-  com_service_command.AppendSwitchASCII(
+  com_service_command.AppendSwitchUTF8(
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);

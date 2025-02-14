@@ -203,7 +203,7 @@ bool HasAutofillSugestionsForA11y(SuggestionType item_id) {
   switch (item_id) {
     // TODO(crbug.com/374918460): Consider adding other types that can be
     // classified as "providing autofill capabilities".
-    case SuggestionType::kRetrieveAutofillAi:
+    case SuggestionType::kFillAutofillAi:
       return true;
     default:
       return AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
@@ -240,7 +240,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kAutofillAiError:
-    case SuggestionType::kAutofillAiFeedback:
     case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kComposeDisable:
@@ -254,7 +253,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
-    case SuggestionType::kEditAutofillAiData:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kFillPassword:
@@ -271,7 +269,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
-    case SuggestionType::kRetrieveAutofillAi:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
@@ -685,7 +682,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kAutofillAiError:
-    case SuggestionType::kEditAutofillAiData:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
@@ -695,7 +691,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kPlusAddressError:
     case SuggestionType::kAutofillAiLoadingState:
-    case SuggestionType::kRetrieveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
@@ -712,7 +707,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
-    case SuggestionType::kAutofillAiFeedback:
     case SuggestionType::kViewPasswordDetails:
       NOTREACHED();  // Should be handled elsewhere.
   }
@@ -848,19 +842,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             manager_->client().GetLastCommittedPrimaryMainFrameOrigin());
       }
       break;
-    case SuggestionType::kRetrieveAutofillAi:
-      return;
     case SuggestionType::kFillAutofillAi:
       manager_->FillOrPreviewFormWithAutofillAiData(
           mojom::ActionPersistence::kFill, query_form_, query_field_,
           suggestion.GetPayload<Suggestion::AutofillAiPayload>()
               .values_to_fill);
-      break;
-    case SuggestionType::kEditAutofillAiData:
-      if (AutofillAiDelegate* delegate =
-              manager_->client().GetAutofillAiDelegate()) {
-        delegate->GoToSettings();
-      }
       break;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
@@ -899,7 +885,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
-    case SuggestionType::kAutofillAiFeedback:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kAutofillAiError:
@@ -936,10 +921,6 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
             CreateUpdateSuggestionsCallback());
       }
       return;
-    case SuggestionType::kAutofillAiFeedback: {
-      NOTIMPLEMENTED();
-      break;
-    }
     default:
       NOTREACHED();
   }
@@ -1024,14 +1005,11 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kPasswordFieldByFieldFilling:
-    case SuggestionType::kAutofillAiFeedback:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
-    case SuggestionType::kRetrieveAutofillAi:
     case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kAutofillAiError:
-    case SuggestionType::kEditAutofillAiData:
       return false;
   }
 }

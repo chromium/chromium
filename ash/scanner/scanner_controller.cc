@@ -25,6 +25,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_command_delegate_impl.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/scanner/scanner_feedback.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_session.h"
@@ -333,6 +334,10 @@ ScannerController::~ScannerController() = default;
 
 // static
 void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kScannerEnabled, true);
+  registry->RegisterIntegerPref(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
   registry->RegisterBooleanPref(prefs::kScannerFeedbackEnabled, true);
 }
 
@@ -355,7 +360,23 @@ bool ScannerController::CanShowUi() {
 
   checks.Remove(
       specialized_features::FeatureAccessFailure::kConsentNotAccepted);
-  return checks.empty();
+  if (!checks.empty()) {
+    return false;
+  }
+
+  // Check enterprise policy.
+  const AccountId& account_id = session_controller_->GetActiveAccountId();
+  PrefService* prefs =
+      session_controller_->GetUserPrefServiceForUser(account_id);
+  // We assume a default value of 1 (allowed without model improvement) if the
+  // value is invalid, or the pref service isn't valid.
+  if (prefs != nullptr &&
+      prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
+          static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool ScannerController::CanShowFeatureSettingsToggle() {
@@ -387,7 +408,23 @@ bool ScannerController::CanStartSession() {
     return false;
   }
 
-  return profile_scoped_delegate->CheckFeatureAccess().empty();
+  if (!profile_scoped_delegate->CheckFeatureAccess().empty()) {
+    return false;
+  }
+
+  // Check enterprise policy.
+  const AccountId& account_id = session_controller_->GetActiveAccountId();
+  PrefService* prefs =
+      session_controller_->GetUserPrefServiceForUser(account_id);
+  // We assume a default value of 1 (allowed without model improvement) if the
+  // value is invalid, or the pref service isn't valid.
+  if (prefs != nullptr &&
+      prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
+          static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    return false;
+  }
+
+  return true;
 }
 
 ScannerSession* ScannerController::StartNewSession() {
@@ -494,7 +531,10 @@ void ScannerController::OnActionFinished(
     PrefService* prefs =
         session_controller_->GetUserPrefServiceForUser(account_id);
 
-    if (prefs && prefs->GetBoolean(prefs::kScannerFeedbackEnabled)) {
+    if (prefs &&
+        prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
+            static_cast<int>(
+                ScannerEnterprisePolicy::kAllowedWithModelImprovement)) {
       toast_data.button_type = ToastData::ButtonType::kIconButton;
       toast_data.button_text = l10n_util::GetStringUTF16(
           IDS_ASH_SCANNER_ACTION_TOAST_FEEDBACK_ICON_ACCESSIBLE_NAME);

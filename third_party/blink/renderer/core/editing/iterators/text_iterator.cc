@@ -449,15 +449,25 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
               Strategy::IsDescendantOf(*end_container_, *parent_node)) {
             return;
           }
-          // We should call the ExitNode() always if |node_| has a layout
-          // object or not and it's the last child under |parent_node|.
+          // ExitNode() is invoked if |node_| is the last child under
+          // |parent_node|, irrespective of whether |node_| possesses a layout
+          // object. However, if any block node resides within a node that has
+          // an inline layout it should not be called.
           bool have_layout_object = node_->GetLayoutObject();
           node_ = parent_node;
           fully_clipped_stack_.Pop();
           parent_node = Strategy::Parent(*node_);
-          if (RuntimeEnabledFeatures::
-                  CallExitNodeWithoutLayoutObjectEnabled() ||
-              have_layout_object) {
+          LayoutObject* node_layout =
+              node_ ? node_->GetLayoutObject() : nullptr;
+          LayoutObject* parent_node_layout =
+              parent_node ? parent_node->GetLayoutObject() : nullptr;
+          bool should_exit_node = have_layout_object ||
+              (RuntimeEnabledFeatures::
+                   CallExitNodeWithoutLayoutObjectEnabled() &&
+               node_layout && parent_node_layout &&
+               node_layout->IsLayoutBlock() &&
+               !parent_node_layout->IsInline());
+          if (should_exit_node) {
             ExitNode();
           }
           if (text_state_.PositionNode()) {

@@ -15,7 +15,7 @@ namespace content::test {
 
 using PrefetchContainerIdForTesting =
     base::StrongAlias<class PrefetchContainerIdForTestingTag, std::string>;
-static constexpr PrefetchContainerIdForTesting
+inline constexpr PrefetchContainerIdForTesting
     InvalidPrefetchContainerIdForTesting = PrefetchContainerIdForTesting("");
 
 class TestPrefetchWatcherImpl;

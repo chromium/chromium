@@ -235,46 +235,6 @@ TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 }
 
-TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
-  // OOBE.
-  GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  message_center::NotifierId notifier_id(
-      message_center::NotifierType::APPLICATION, "test-notifier");
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  // Login screen.
-  GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  // Simulates login event sequence in production code:
-  // - Add a user session;
-  // - User session is set as active session;
-  // - Session state changes to active;
-  // - User PrefService is initialized sometime later.
-  const AccountId kUserAccountId = AccountId::FromUserEmail("user@test.com");
-  TestSessionControllerClient* const session_controller_client =
-      GetSessionControllerClient();
-  session_controller_client->AddUserSession(kUserAccountId.GetUserEmail(),
-                                            user_manager::UserType::kRegular,
-                                            /*provide_pref_service=*/false);
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  session_controller_client->SwitchActiveUser(kUserAccountId);
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  session_controller_client->SetSessionState(SessionState::ACTIVE);
-  EXPECT_EQ(1, GetStateChangedCountAndReset());
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  session_controller_client->ProvidePrefServiceForUser(kUserAccountId);
-  EXPECT_EQ(1, GetStateChangedCountAndReset());
-  EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
-}
-
 TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,

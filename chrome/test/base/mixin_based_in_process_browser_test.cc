@@ -27,14 +27,17 @@ bool InProcessBrowserTestMixin::SetUpUserDataDirectory() {
 
 void InProcessBrowserTestMixin::SetUpInProcessBrowserTestFixture() {}
 
+void InProcessBrowserTestMixin::SetUpLocalStatePrefService(
+    PrefService* local_state) {}
+
 void InProcessBrowserTestMixin::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {}
 
 void InProcessBrowserTestMixin::SetUpOnMainThread() {}
 
-void InProcessBrowserTestMixin::PostRunTestOnMainThread() {}
-
 void InProcessBrowserTestMixin::TearDownOnMainThread() {}
+
+void InProcessBrowserTestMixin::PostRunTestOnMainThread() {}
 
 void InProcessBrowserTestMixin::TearDownInProcessBrowserTestFixture() {}
 
@@ -45,44 +48,64 @@ InProcessBrowserTestMixinHost::InProcessBrowserTestMixinHost() = default;
 InProcessBrowserTestMixinHost::~InProcessBrowserTestMixinHost() = default;
 
 void InProcessBrowserTestMixinHost::SetUp() {
-  for (InProcessBrowserTestMixin* mixin : mixins_)
+  for (InProcessBrowserTestMixin* mixin : mixins_) {
     mixin->SetUp();
+  }
 }
 
 void InProcessBrowserTestMixinHost::SetUpCommandLine(
     base::CommandLine* command_line) {
-  for (InProcessBrowserTestMixin* mixin : mixins_)
+  for (InProcessBrowserTestMixin* mixin : mixins_) {
     mixin->SetUpCommandLine(command_line);
+  }
 }
 
 void InProcessBrowserTestMixinHost::SetUpDefaultCommandLine(
     base::CommandLine* command_line) {
-  for (InProcessBrowserTestMixin* mixin : mixins_)
+  for (InProcessBrowserTestMixin* mixin : mixins_) {
     mixin->SetUpDefaultCommandLine(command_line);
+  }
 }
 
 bool InProcessBrowserTestMixinHost::SetUpUserDataDirectory() {
   for (InProcessBrowserTestMixin* mixin : mixins_) {
-    if (!mixin->SetUpUserDataDirectory())
+    if (!mixin->SetUpUserDataDirectory()) {
       return false;
+    }
   }
   return true;
 }
 
 void InProcessBrowserTestMixinHost::SetUpInProcessBrowserTestFixture() {
-  for (InProcessBrowserTestMixin* mixin : mixins_)
+  for (InProcessBrowserTestMixin* mixin : mixins_) {
     mixin->SetUpInProcessBrowserTestFixture();
+  }
+}
+
+void InProcessBrowserTestMixinHost::SetUpLocalStatePrefService(
+    PrefService* local_state) {
+  for (InProcessBrowserTestMixin* mixin : mixins_) {
+    mixin->SetUpLocalStatePrefService(local_state);
+  }
 }
 
 void InProcessBrowserTestMixinHost::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {
-  for (InProcessBrowserTestMixin* mixin : mixins_)
+  for (InProcessBrowserTestMixin* mixin : mixins_) {
     mixin->CreatedBrowserMainParts(browser_main_parts);
+  }
 }
 
 void InProcessBrowserTestMixinHost::SetUpOnMainThread() {
-  for (InProcessBrowserTestMixin* mixin : mixins_)
+  for (InProcessBrowserTestMixin* mixin : mixins_) {
     mixin->SetUpOnMainThread();
+  }
+}
+
+void InProcessBrowserTestMixinHost::TearDownOnMainThread() {
+  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_)) {
+    mixin->TearDownOnMainThread();
+  }
 }
 
 void InProcessBrowserTestMixinHost::PostRunTestOnMainThread() {
@@ -91,19 +114,16 @@ void InProcessBrowserTestMixinHost::PostRunTestOnMainThread() {
   }
 }
 
-void InProcessBrowserTestMixinHost::TearDownOnMainThread() {
-  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_))
-    mixin->TearDownOnMainThread();
-}
-
 void InProcessBrowserTestMixinHost::TearDownInProcessBrowserTestFixture() {
-  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_))
+  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_)) {
     mixin->TearDownInProcessBrowserTestFixture();
+  }
 }
 
 void InProcessBrowserTestMixinHost::TearDown() {
-  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_))
+  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_)) {
     mixin->TearDown();
+  }
 }
 
 MixinBasedInProcessBrowserTest::MixinBasedInProcessBrowserTest() = default;
@@ -136,6 +156,12 @@ void MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture() {
   InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 }
 
+void MixinBasedInProcessBrowserTest::SetUpLocalStatePrefService(
+    PrefService* local_state) {
+  mixin_host_.SetUpLocalStatePrefService(local_state);
+  InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
+}
+
 void MixinBasedInProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {
   mixin_host_.CreatedBrowserMainParts(browser_main_parts);
@@ -147,14 +173,14 @@ void MixinBasedInProcessBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
 }
 
-void MixinBasedInProcessBrowserTest::PostRunTestOnMainThread() {
-  mixin_host_.PostRunTestOnMainThread();
-  InProcessBrowserTest::PostRunTestOnMainThread();
-}
-
 void MixinBasedInProcessBrowserTest::TearDownOnMainThread() {
   mixin_host_.TearDownOnMainThread();
   InProcessBrowserTest::TearDownOnMainThread();
+}
+
+void MixinBasedInProcessBrowserTest::PostRunTestOnMainThread() {
+  mixin_host_.PostRunTestOnMainThread();
+  InProcessBrowserTest::PostRunTestOnMainThread();
 }
 
 void MixinBasedInProcessBrowserTest::TearDownInProcessBrowserTestFixture() {

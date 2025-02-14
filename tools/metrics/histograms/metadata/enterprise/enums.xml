@@ -891,6 +891,15 @@ chromium-metrics-reviews@google.com.
              management capabilities)"/>
 </enum>
 
+<enum name="EnterpriseObfuscationError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Obfuscation process failed"/>
+  <int value="2" label="Deobfuscation process failed"/>
+  <int value="3" label="Error during file read/write operations"/>
+  <int value="4" label="Obfuscation/deobfuscation is not enabled"/>
+  <int value="5" label="Error with obfuscation scheme"/>
+</enum>
+
 <enum name="EnterprisePolicies">
 <!-- Generated from components/policy/resources/templates/policies.yaml -->
 

@@ -28,10 +28,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 using ::testing::ContainerEq;
 using ::testing::IsEmpty;
 using ::testing::Not;
@@ -67,12 +63,9 @@ class SupportToolUiUtilsTest : public ::testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-
-    browser_manager_ = std::make_unique<crosapi::FakeBrowserManager>();
   }
 
   void TearDown() override {
-    browser_manager_.reset();
     profile_manager_.reset();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -115,7 +108,6 @@ class SupportToolUiUtilsTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

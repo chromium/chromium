@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/message_service_api.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/common/api/messaging/port_context.h"
@@ -95,6 +96,24 @@ void ServiceWorkerHost::BindReceiver(
 }
 
 // static
+std::vector<ServiceWorkerHost*> ServiceWorkerHost::GetServiceWorkerHostList(
+    content::RenderProcessHost* rph) {
+  ServiceWorkerHostList* host_list =
+      ServiceWorkerHostList::Get(rph, /*create_if_not_exists=*/false);
+  if (!host_list) {
+    return {};
+  }
+  // Copy the vector of unique pointers to a vector of raw pointers so we're
+  // not handing out our owned memory to the caller.
+  std::vector<ServiceWorkerHost*> hosts;
+  hosts.reserve(host_list->list.size());
+  for (const std::unique_ptr<ServiceWorkerHost>& host : host_list->list) {
+    hosts.push_back(host.get());
+  }
+  return hosts;
+}
+
+// static
 ServiceWorkerHost* ServiceWorkerHost::GetWorkerFor(const WorkerId& worker_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* render_process_host =
@@ -118,7 +137,6 @@ ServiceWorkerHost* ServiceWorkerHost::GetWorkerFor(const WorkerId& worker_id) {
 
 void ServiceWorkerHost::RemoteDisconnected() {
   receiver_.reset();
-  permissions_observer_.Reset();
   Destroy();
   // This instance has now been destroyed.
 }
@@ -164,7 +182,6 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
   worker_id_.version_id = service_worker_version_id;
   worker_id_.render_process_id = render_process_id;
   worker_id_.thread_id = worker_thread_id;
-  permissions_observer_.Observe(PermissionsManager::Get(browser_context));
 
   ServiceWorkerTaskQueue::Get(browser_context)
       ->DidInitializeServiceWorkerContext(
@@ -276,10 +293,9 @@ mojom::ServiceWorker* ServiceWorkerHost::GetServiceWorker() {
   return remote_.get();
 }
 
-void ServiceWorkerHost::OnExtensionPermissionsUpdated(
+void ServiceWorkerHost::UpdateExtensionPermissions(
     const Extension& extension,
-    const PermissionSet& permissions,
-    PermissionsManager::UpdateReason reason) {
+    const PermissionSet& permissions) {
   if (extension.id() != worker_id_.extension_id) {
     return;
   }

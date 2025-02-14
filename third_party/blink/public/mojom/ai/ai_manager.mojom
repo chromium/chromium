@@ -13,58 +13,56 @@ import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
   // The model is readily available and the text session can be created.
-  kReadily = 0,
+  kAvailable = 0,
   // The model is not available but the test session can be created after
-  // downloading the model
-  kAfterDownload = 1,
+  // downloading the model.
+  kDownloadable = 1,
+  // The model is not available but it's being downloaded.
+  kDownloading = 2,
   // The model cannot be created because the service is not running.
-  kNoServiceNotRunning = 2,
+  kUnavailableServiceNotRunning = 3,
   // The model does not support the requested language options.
-  kNoUnsupportedLanguage = 3,
+  kUnavailableUnsupportedLanguage = 4,
 
   // The following reasons are from
   // `optimization_guide::OnDeviceModelEligibilityReason`.
 
   // The model is not available because of unknown reason.
-  kNoUnknown = 4,
+  kUnavailableUnknown = 5,
   // The model is not available because the feature flag gating on-device model
   // execution was disabled.
-  kNoFeatureNotEnabled = 5,
-  // DEPRECATED: it's now split into kModelNotEligible and
-  // kNoInsufficientDiskSpace.
-  // The model is not available because there was no on-device model available.
-  // kNoModelNotAvailable = 6,
+  kUnavailableFeatureNotEnabled = 6,
   // The model is not available because the on-device model was available but
   // there was not an execution config available for the feature.
-  kNoConfigNotAvailableForFeature = 7,
+  kUnavailableConfigNotAvailableForFeature = 7,
   // The model is not available because the GPU is blocked.
-  kNoGpuBlocked = 8,
+  kUnavailableGpuBlocked = 8,
   // The model is not available because the on-device model process crashed too
   // many times for this version.
-  kNoTooManyRecentCrashes = 9,
+  kUnavailableTooManyRecentCrashes = 9,
   // The model is not available because the on-device safety model was required
   // but not available.
-  kNoSafetyModelNotAvailable = 11,
+  kUnavailableSafetyModelNotAvailable = 10,
   // The model is not available because the on-device safety model was
   // available but there was not a safety config available for the feature.
-  kNoSafetyConfigNotAvailableForFeature = 12,
+  kUnavailableSafetyConfigNotAvailableForFeature = 11,
   // The model is not available because the on-device language detection model
   // was required but not available.
-  kNoLanguageDetectionModelNotAvailable = 13,
+  kUnavailableLanguageDetectionModelNotAvailable = 12,
   // The model is not available because the on-device model execution for this
   // feature was not enabled.
-  kNoFeatureExecutionNotEnabled = 14,
+  kUnavailableFeatureExecutionNotEnabled = 13,
   // The model is not available because the on-device model adaptation was
   // required but not available.
-  kNoModelAdaptationNotAvailable = 15,
+  kUnavailableModelAdaptationNotAvailable = 14,
   // Validation has not completed for the model yet.
-  kNoValidationPending = 16,
+  kUnavailableValidationPending = 15,
   // Validation failed for the model.
-  kNoValidationFailed = 17,
+  kUnavailableValidationFailed = 16,
   // The device is not eligible for running on-device model.
-  kModelNotEligible = 18,
+  kUnavailableModelNotEligible = 17,
   // The device does not have sufficient disk space for the on-device model.
-  kNoInsufficientDiskSpace = 19,
+  kUnavailableInsufficientDiskSpace = 18,
 
   // Append new line here
 };

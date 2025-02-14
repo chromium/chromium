@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,7 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #else
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -171,19 +170,11 @@ class CloudPolicyManagerTest : public PlatformBrowserTest {
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::FilePath dest_path =
-        g_browser_process->profile_manager()->user_data_dir();
-    profile_ = Profile::CreateProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")), nullptr,
-        Profile::CreateMode::kSynchronous);
-#endif
-
     BrowserPolicyConnector* connector =
         g_browser_process->browser_policy_connector();
     connector->ScheduleServiceInitialization(0);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     policy_manager()->core()->client()->SetURLLoaderFactoryForTesting(
         test_url_loader_factory_->GetSafeWeakWrapper());
 #else
@@ -206,24 +197,17 @@ class CloudPolicyManagerTest : public PlatformBrowserTest {
     // Verify that all the expected requests were handled.
     EXPECT_EQ(0, test_url_loader_factory_->NumPending());
     identity_test_env_.reset();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_.reset();
-#endif
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   UserCloudPolicyManagerAsh* policy_manager() {
     return chrome_test_utils::GetProfile(this)->GetUserCloudPolicyManagerAsh();
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  UserCloudPolicyManager* policy_manager() {
-    return profile_->GetUserCloudPolicyManager();
   }
 #else
   UserCloudPolicyManager* policy_manager() {
     return chrome_test_utils::GetProfile(this)->GetUserCloudPolicyManager();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Register the client of the policy_manager() using a bogus auth token, and
   // returns once the registration gets a result back.
@@ -244,7 +228,7 @@ class CloudPolicyManagerTest : public PlatformBrowserTest {
     // Give a bogus OAuth token to the |policy_manager|. This should make its
     // CloudPolicyClient fetch the DMToken.
     CloudPolicyClient::RegistrationParameters parameters(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         em::DeviceRegisterRequest::USER,
 #else
         em::DeviceRegisterRequest::BROWSER,
@@ -260,10 +244,6 @@ class CloudPolicyManagerTest : public PlatformBrowserTest {
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For Lacros use non-main profile in these tests.
-  std::unique_ptr<Profile> profile_;
-#endif
 };
 
 IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, Register) {
@@ -272,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, Register) {
         // Accept one register request. The initial request should not include
         // the reregister flag.
         em::DeviceRegisterRequest::Type expected_type =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             em::DeviceRegisterRequest::USER;
 #else
             em::DeviceRegisterRequest::BROWSER;
@@ -322,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterWithRetry) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         em::DeviceRegisterRequest::Type expected_type =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             em::DeviceRegisterRequest::USER;
 #else
             em::DeviceRegisterRequest::BROWSER;

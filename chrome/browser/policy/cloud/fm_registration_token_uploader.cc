@@ -98,15 +98,11 @@ class FmRegistrationTokenUploader::CloudPolicyClientRegistrationObserver
     observation.Observe(client);
   }
 
-  void OnPolicyFetched(CloudPolicyClient* client) override {}
-
   void OnRegistrationStateChanged(CloudPolicyClient* client) override {
     if (client->is_registered()) {
       std::move(on_connected_callback_).Run();
     }
   }
-
-  void OnClientError(CloudPolicyClient* client) override {}
 
  private:
   base::ScopedObservation<CloudPolicyClient,

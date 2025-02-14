@@ -1233,11 +1233,9 @@ void ContentBrowserClient::CreateSecurePaymentConfirmationService(
     mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
         receiver) {}
 
-#if !BUILDFLAG(IS_ANDROID)
 SerialDelegate* ContentBrowserClient::GetSerialDelegate() {
   return nullptr;
 }
-#endif
 
 HidDelegate* ContentBrowserClient::GetHidDelegate() {
   return nullptr;

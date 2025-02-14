@@ -23,6 +23,7 @@
 #include "ash/scanner/fake_scanner_delegate.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -194,6 +195,65 @@ TEST_F(ScannerControllerTest, CanNotStartSessionIfFeatureChecksFail) {
   EXPECT_FALSE(scanner_controller->StartNewSession());
 }
 
+TEST_F(ScannerControllerTest,
+       CanStartSessionIfEnterprisePolicyAllowedWithModelImprovement) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+
+  EXPECT_TRUE(scanner_controller->CanStartSession());
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+}
+
+TEST_F(ScannerControllerTest,
+       CanStartSessionIfEnterprisePolicyAllowedWithoutModelImprovement) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(
+          ScannerEnterprisePolicy::kAllowedWithoutModelImprovement));
+
+  EXPECT_TRUE(scanner_controller->CanStartSession());
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+}
+
+TEST_F(ScannerControllerTest, CanStartSessionIfEnterprisePolicyIsInvalidValue) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed, 3);
+
+  EXPECT_TRUE(scanner_controller->CanStartSession());
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+}
+
+TEST_F(ScannerControllerTest,
+       CannotStartSessionIfDisallowedByEnterprisePolicy) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+
+  EXPECT_FALSE(scanner_controller->CanStartSession());
+  EXPECT_FALSE(scanner_controller->StartNewSession());
+}
+
 TEST_F(ScannerControllerTest, CanShowFeatureSettingsToggleIfNoChecksFail) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
@@ -213,6 +273,60 @@ TEST_F(ScannerControllerTest, CanShowUiIfConsentNotAcceptedOnly) {
           specialized_features::FeatureAccessFailure::kConsentNotAccepted}));
 
   EXPECT_TRUE(scanner_controller->CanShowUi());
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowUiIfEnterprisePolicyAllowedWithModelImprovement) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+
+  EXPECT_TRUE(scanner_controller->CanShowUi());
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowUiIfEnterprisePolicyAllowedWithoutModelImprovement) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(
+          ScannerEnterprisePolicy::kAllowedWithoutModelImprovement));
+
+  EXPECT_TRUE(scanner_controller->CanShowUi());
+}
+
+TEST_F(ScannerControllerTest, CanShowUiIfEnterprisePolicyIsInvalidValue) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed, 3);
+
+  EXPECT_TRUE(scanner_controller->CanShowUi());
+}
+
+TEST_F(ScannerControllerTest, CannotShowUiIfDisallowedByEnterprisePolicy) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+
+  EXPECT_FALSE(scanner_controller->CanShowUi());
 }
 
 TEST_F(ScannerControllerTest,
@@ -249,6 +363,20 @@ TEST_F(ScannerControllerTest,
           CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
           specialized_features::FeatureAccessFailure::kConsentNotAccepted}));
+
+  EXPECT_TRUE(scanner_controller->CanShowFeatureSettingsToggle());
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowFeatureSettingsToggleIfDisallowedByPolicy) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
 
   EXPECT_TRUE(scanner_controller->CanShowFeatureSettingsToggle());
 }
@@ -462,9 +590,53 @@ TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
             "copy_to_clipboard.html_text: <b>Hello</b>\n");
 }
 
-TEST_F(ScannerControllerTest, ActionSuccessToastDoesNotHaveButtonIfDisabled) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kScannerFeedbackEnabled, false);
+TEST_F(
+    ScannerControllerTest,
+    ActionSuccessToastDoesNotHaveButtonIfPolicyAllowedWithoutModelImprovement) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(
+          ScannerEnterprisePolicy::kAllowedWithoutModelImprovement));
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()
+      ->add_actions()
+      ->mutable_copy_to_clipboard()
+      ->set_html_text("<b>Hello</b>");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  // Mock a successful action.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  ScannerSession::FetchActionsResponse actions = actions_future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+  scanner_controller->ExecuteAction(actions.value()[0]);
+
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
+  ToastOverlay* overlay =
+      Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
+  ASSERT_TRUE(overlay);
+  views::Button* button = overlay->button_for_testing();
+  EXPECT_FALSE(button);
+}
+
+TEST_F(ScannerControllerTest,
+       ActionSuccessToastDoesNotHaveButtonIfPolicyInvalidValue) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed, 3);
   base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);

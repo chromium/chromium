@@ -444,8 +444,6 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "url";
     case FormControlType::kSelectOne:
       return "select-one";
-    case FormControlType::kSelectMultiple:
-      return "select-multiple";
     case FormControlType::kTextArea:
       return "textarea";
   }

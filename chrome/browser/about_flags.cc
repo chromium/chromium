@@ -2948,6 +2948,19 @@ const FeatureEntry::FeatureVariation kSystemShortcutBehaviorVariations[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kMediaAppImageMantisModelV1[] = {
+    {"mantis_model", "v1"}};
+
+const FeatureEntry::FeatureParam kMediaAppImageMantisModelV2[] = {
+    {"mantis_model", "v2"}};
+
+const FeatureEntry::FeatureVariation kMediaAppImageMantisModelVariations[] = {
+    {"With V1", kMediaAppImageMantisModelV1,
+     std::size(kMediaAppImageMantisModelV1), nullptr},
+    {"With V2", kMediaAppImageMantisModelV2,
+     std::size(kMediaAppImageMantisModelV1), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -4941,13 +4954,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::
              kUsernameFirstFlowWithIntermediateValuesPredictions)},
-    {"username-first-flow-with-intermediate-values-voting",
-     flag_descriptions::kUsernameFirstFlowWithIntermediateValuesVotingName,
-     flag_descriptions::
-         kUsernameFirstFlowWithIntermediateValuesVotingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kUsernameFirstFlowWithIntermediateValuesVoting)},
     {"enable-show-autofill-signatures",
      flag_descriptions::kShowAutofillSignaturesName,
      flag_descriptions::kShowAutofillSignaturesDescription, kOsAll,
@@ -8180,6 +8186,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"media-app-pdf-mahi", flag_descriptions::kMediaAppPdfMahiName,
      flag_descriptions::kMediaAppPdfMahiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMediaAppPdfMahi)},
+    {"media-app-image-mantis-model",
+     flag_descriptions::kMediaAppImageMantisModelName,
+     flag_descriptions::kMediaAppImageMantisModelDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kMediaAppImageMantisModel,
+                                    kMediaAppImageMantisModelVariations,
+                                    "MediaAppImageMantisModel")},
     {"on-device-app-controls", flag_descriptions::kOnDeviceAppControlsName,
      flag_descriptions::kOnDeviceAppControlsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kForceOnDeviceAppControlsForAllRegions)},
@@ -9654,7 +9666,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-preferences-account-storage",
      flag_descriptions::kEnablePreferencesAccountStorageName,
      flag_descriptions::kEnablePreferencesAccountStorageDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(syncer::kEnablePreferencesAccountStorage)},
+     FEATURE_VALUE_TYPE(switches::kEnablePreferencesAccountStorage)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -10077,10 +10089,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"observable-api", flag_descriptions::kObservableAPIName,
      flag_descriptions::kObservableAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kObservableAPI)},
-
-    {"atomic-move", flag_descriptions::kAtomicMoveAPIName,
-     flag_descriptions::kAtomicMoveAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAtomicMoveAPI)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-hub-search", flag_descriptions::kAndroidHubSearchName,

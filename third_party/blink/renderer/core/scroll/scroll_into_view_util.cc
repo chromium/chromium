@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -168,6 +169,7 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
     const PhysicalRect& absolute_rect,
     mojom::blink::ScrollIntoViewParamsPtr& params,
     const PhysicalBoxStrut& scroll_margin,
+    const LayoutObject* container,
     bool from_remote_frame) {
   DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
          params->type == mojom::blink::ScrollType::kUser);
@@ -185,6 +187,14 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
       box.GetFrame()->GetSecurityContext()->GetSecurityOrigin();
 
   const LayoutBox* current_box = &box;
+  HeapHashSet<Member<const LayoutBox>> stop_at;
+  if (const LayoutObject* halt_object =
+          container ? current_box->CommonAncestor(*container) : nullptr) {
+    for (const LayoutBox* halt_box = halt_object->EnclosingBox(); halt_box;
+         halt_box = halt_box->ParentBox()) {
+      stop_at.insert(halt_box);
+    }
+  }
   while (current_box) {
     AdjustRectToNotEmpty(absolute_rect_to_scroll);
 
@@ -268,6 +278,10 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
       break;
     }
 
+    if (stop_at.Contains(current_box)) {
+      break;
+    }
+
     // If the scroll was stopped prior to reaching the local root, we cannot
     // return a rect since the caller cannot know which frame it's relative to.
     std::optional<LayoutBox*> next_box_opt =
@@ -305,6 +319,7 @@ namespace scroll_into_view_util {
 void ScrollRectToVisible(const LayoutObject& layout_object,
                          const PhysicalRect& absolute_rect,
                          mojom::blink::ScrollIntoViewParamsPtr params,
+                         const LayoutObject* container,
                          bool from_remote_frame) {
   LayoutBox* enclosing_box = layout_object.EnclosingBox();
   if (!enclosing_box)
@@ -322,7 +337,8 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
   absolute_rect_to_scroll.Expand(scroll_margin);
   std::optional<PhysicalRect> updated_absolute_rect =
       PerformBubblingScrollIntoView(*enclosing_box, absolute_rect_to_scroll,
-                                    params, scroll_margin, from_remote_frame);
+                                    params, scroll_margin, container,
+                                    from_remote_frame);
 
   // If the scroll into view stopped early (i.e. before the local root),
   // there's no need to continue bubbling or finishing a scroll focused

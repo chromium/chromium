@@ -186,7 +186,7 @@ std::string ParseSeparatedCJkNameExpression() {
       NAME_FULL,
       {// Parse one or more CJK characters into the last name.
        CaptureTypeWithPattern(NAME_LAST, kCjkCharactersRe,
-                              {.separator = kCjkNameSeperatorsRe}),
+                              {.separator = kCjkNameSeparatorsRe}),
        // Parse the remaining CJK characters into the first name.
        CaptureTypeWithPattern(NAME_FIRST, kCjkCharactersRe)});
 }
@@ -196,7 +196,7 @@ std::string ParseSeparatedCJkAlternativeNameExpression() {
       ALTERNATIVE_FULL_NAME,
       {// Parse one or more CJK characters into the last name.
        CaptureTypeWithPattern(ALTERNATIVE_FAMILY_NAME, kCjkCharactersRe,
-                              {.separator = kCjkNameSeperatorsRe}),
+                              {.separator = kCjkNameSeparatorsRe}),
        // Parse the remaining CJK characters into the first name.
        CaptureTypeWithPattern(ALTERNATIVE_GIVEN_NAME, kCjkCharactersRe)});
 }
@@ -253,7 +253,7 @@ std::string MatchCjkNameExpression() {
                        "^", kCjkCharactersRe,
                        // Followed by an optional separator with one
                        // or more additional CJK characters.
-                       "(", kCjkNameSeperatorsRe, kCjkCharactersRe, ")?$"});
+                       "(", kCjkNameSeparatorsRe, kCjkCharactersRe, ")?$"});
 }
 
 // Returns an expression to parse a full name that contains only a last name.

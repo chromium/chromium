@@ -82,13 +82,12 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     // Construct the Profiles with the given gaia id and add the gaia id
     // into the AccountContextManager.
     storage->UpdateAttributesForProfileWithName(
-        profile_name, base::BindOnce(
-                          [](const GaiaId& gaia_id, ProfileAttributesIOS attr) {
-                            attr.SetAuthenticationInfo(
-                                gaia_id, /*user_name=*/std::string());
-                            return attr;
-                          },
-                          gaia_id));
+        profile_name,
+        base::BindOnce(
+            [](const GaiaId& gaia_id, ProfileAttributesIOS& attr) {
+              attr.SetAuthenticationInfo(gaia_id, /*user_name=*/std::string());
+            },
+            gaia_id));
     [manager addAccount:gaia_id];
   }
 

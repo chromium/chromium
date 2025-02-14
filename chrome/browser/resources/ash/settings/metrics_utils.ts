@@ -266,6 +266,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kSunfishOnOff,
     type: PrefType.BOOLEAN,
   },
+  'ash.scanner.enabled': {
+    setting: Setting.kScannerOnOff,
+    type: PrefType.BOOLEAN,
+  },
 };
 
 // Converts a given settings pref to a pair of setting ID and setting change

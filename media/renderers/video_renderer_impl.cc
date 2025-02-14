@@ -580,11 +580,20 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
       // Anything other than `kOk` or `kAborted` is treated as an error.
       DCHECK(!result.has_value());
 
-      PipelineStatus::Codes code =
-          result.code() == DecoderStatus::Codes::kDisconnected
-              ? PIPELINE_ERROR_DISCONNECTED
-              : PIPELINE_ERROR_DECODE;
-      PipelineStatus status = {code, std::move(result).error()};
+      PipelineStatus::Codes pipeline_status_code;
+      switch (result.code()) {
+        case DecoderStatus::Codes::kDisconnected:
+          pipeline_status_code = PIPELINE_ERROR_DISCONNECTED;
+          break;
+        case DecoderStatus::Codes::kOutOfMemory:
+          pipeline_status_code = PIPELINE_ERROR_OUT_OF_MEMORY;
+          break;
+        default:
+          pipeline_status_code = PIPELINE_ERROR_DECODE;
+          break;
+      }
+
+      PipelineStatus status = {pipeline_status_code, std::move(result).error()};
       task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&VideoRendererImpl::OnPlaybackError,

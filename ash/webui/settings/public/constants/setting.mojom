@@ -182,6 +182,7 @@ enum Setting {
   kMagicBoostOnOff = 613,
   kLobsterOnOff = 614,
   kSunfishOnOff = 615,
+  kScannerOnOff = 616,
 
   // Apps section.
   kManageAndroidPreferences = 700,

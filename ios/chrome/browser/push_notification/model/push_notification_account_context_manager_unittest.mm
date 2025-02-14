@@ -32,9 +32,8 @@ void UpdateProfileAuthInfo(ProfileAttributesStorageIOS* storage,
                            const std::string& gaia) {
   storage->UpdateAttributesForProfileWithName(
       profile_name, base::BindOnce(
-                        [](const GaiaId& gaia, ProfileAttributesIOS attr) {
+                        [](const GaiaId& gaia, ProfileAttributesIOS& attr) {
                           attr.SetAuthenticationInfo(gaia, std::string());
-                          return attr;
                         },
                         GaiaId(gaia)));
 }

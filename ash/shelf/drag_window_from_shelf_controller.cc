@@ -130,8 +130,8 @@ class OtherWindowCopyAnimation {
 
 }  // namespace
 
-// Hide all visible windows expect the dragged windows or the window showing in
-// splitview during dragging.
+// Hide all visible windows except the dragged windows and the other window
+// which is not dragged if there is a floating window while dragging.
 class DragWindowFromShelfController::WindowsHider
     : public aura::WindowObserver {
  public:
@@ -145,6 +145,9 @@ class DragWindowFromShelfController::WindowsHider
       }
       if (wm::HasTransientAncestor(window, dragged_window_))
         continue;
+      if (other_window && wm::HasTransientAncestor(window, other_window)) {
+        continue;
+      }
       if (!window->IsVisible())
         continue;
       if (SplitViewController::Get(window)->IsWindowInSplitView(window))

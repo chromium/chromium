@@ -45,10 +45,8 @@ action("regex_patterns_inl_h") {
   # values in regex_patterns.h.
   sources = []
   if (use_internal_autofill_patterns) {
-    sources += [
-      "form_parsing/internal_resources/0_default_regex_patterns.json",
-      "form_parsing/internal_resources/1_autofill_ai.json",
-    ]
+    sources +=
+        [ "form_parsing/internal_resources/0_default_regex_patterns.json" ]
   } else {
     sources += [ "form_parsing/resources/legacy_regex_patterns.json" ]
   }
@@ -243,6 +241,8 @@ static_library("browser") {
     "form_parsing/form_field_parser.h",
     "form_parsing/iban_field_parser.cc",
     "form_parsing/iban_field_parser.h",
+    "form_parsing/loyalty_field_parser.cc",
+    "form_parsing/loyalty_field_parser.h",
     "form_parsing/merchant_promo_code_field_parser.cc",
     "form_parsing/merchant_promo_code_field_parser.h",
     "form_parsing/name_field_parser.cc",
@@ -1239,6 +1239,7 @@ source_set("unit_tests") {
     "form_parsing/field_candidates_unittest.cc",
     "form_parsing/form_field_parser_unittest.cc",
     "form_parsing/iban_field_parser_unittest.cc",
+    "form_parsing/loyalty_field_parser_unittest.cc",
     "form_parsing/merchant_promo_code_field_parser_unittest.cc",
     "form_parsing/name_field_parser_unittest.cc",
     "form_parsing/parsing_test_utils.cc",
