@@ -41,8 +41,8 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PromoCloseButtonAXID";
 // Creates the image to go in the close button.
 UIImage* CloseButtonImage(BOOL highlighted) {
   NSArray<UIColor*>* palette = @[
-    [UIColor colorNamed:kBlueColor],
-    [UIColor colorNamed:kBlue100Color],
+    [UIColor colorNamed:@"banner_promo_close_button_x_color"],
+    [UIColor colorNamed:@"banner_promo_close_button_background_color"],
   ];
 
   if (highlighted) {
@@ -117,7 +117,7 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
     // The promo's height is fixed, so cap the number of lines of text at 2.
     _text.numberOfLines = 2;
     _text.font = [self textFont];
-    _text.textColor = [UIColor colorNamed:kBlueColor];
+    _text.textColor = [UIColor colorNamed:@"banner_promo_text_color"];
     [_text
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
