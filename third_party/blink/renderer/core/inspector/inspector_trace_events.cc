@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -656,7 +657,16 @@ void FillSelectors(
     dict.Add("selectorCount", selectors->size());
     auto array = dict.AddArray("selectors");
     for (auto selector : *selectors) {
-      array.Append(selector->GetSelectorText());
+      auto selector_dict = array.AppendDictionary();
+      selector_dict.Add("selector", selector->GetSelectorText());
+      const StyleSheetContents* contents = selector->GetStyleSheetContents();
+      // TODO(crbug.com/337076014): This will pick an arbitrary stylesheet
+      // instantiation. In web components scenarios, it would be clearer to
+      // pick an instantiation local to the affected element.
+      const CSSStyleSheet* style_sheet =
+          (contents != nullptr) ? contents->AnyClient() : nullptr;
+      selector_dict.Add("style_sheet_id",
+                        IdentifiersFactory::IdForCSSStyleSheet(style_sheet));
     }
   }
 }
