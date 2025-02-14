@@ -149,6 +149,7 @@ constexpr char kOpMatmulTypeName[] = "matmul";
 constexpr char kOpPadTypeName[] = "pad";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
+constexpr char kOpReverseTypeName[] = "reverse";
 constexpr char kOpScatterElementsTypeName[] = "scatter_along_axis";
 constexpr char kOpScatterNDTypeName[] = "scatter_nd";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
@@ -1259,8 +1260,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_transformation.reshape
        /*reshape_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
-       // TODO(crbug.com/377349382): Implement Reverse.
-       /*reverse_input=*/{},
+       /*reverse_input=*/{kFloatsAndInt32, kMaxRank},
        /*scatter_elements_input=*/{kFloatsAndInt32, kMaxRank},
        /*scatter_elements_indices=*/{{OperandDataType::kInt32}, kMaxRank},
        /*scatter_nd_input=*/{kFloatsAndInt32, kMaxRank},
@@ -1540,6 +1540,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
             AddOperationForReshape(*operation->get_reshape(), block));
         break;
       }
+      case mojom::Operation::Tag::kReverse: {
+        RETURN_IF_ERROR(
+            AddOperationForReverse(*operation->get_reverse(), block));
+        break;
+      }
       case mojom::Operation::Tag::kScatterElements: {
         RETURN_IF_ERROR(AddOperationForScatterElements(
             *operation->get_scatter_elements(), block));
@@ -1621,7 +1626,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       }
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kReverse:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
   }
@@ -4673,6 +4677,28 @@ GraphBuilderCoreml::AddOperationForReshape(
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForReshape(operation.input_operand_id,
                                 operation.output_operand_id, block);
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForReverse(
+    const mojom::Reverse& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(context_properties_.data_type_limits.reverse_input.data_types.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpReverseTypeName);
+
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                                      operation.input_operand_id));
+
+  SetInputWithValue(
+      *op->mutable_inputs(), kOpParamAxes,
+      Create1DTensorImmediateValue<int32_t>(Ui32ToI32(operation.axes)));
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
