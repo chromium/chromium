@@ -259,7 +259,7 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyBitmap) {
                                       /*desired_size_in_pixel=*/16, _, _, _));
   favicon_base::FaviconRawBitmapResult result;
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
-      kPageUrl, /*desired_size_in_pixel=*/16,
+      kPageUrl, /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
       base::BindOnce(&StoreBitmap, &result));
   EXPECT_FALSE(result.is_valid());
 }
@@ -272,7 +272,7 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalBitmap) {
   EXPECT_CALL(mock_large_icon_service_, TouchIconFromGoogleServer(kIconUrl));
   favicon_base::FaviconRawBitmapResult result;
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
-      kPageUrl, /*desired_size_in_pixel=*/16,
+      kPageUrl, /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
       base::BindOnce(&StoreBitmap, &result));
   EXPECT_TRUE(result.is_valid());
 }
@@ -290,7 +290,7 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
                   /*should_trim_page_url_path=*/false, _, _));
   favicon_base::FaviconRawBitmapResult result;
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
-      kPageUrl, /*desired_size_in_pixel=*/16,
+      kPageUrl, /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
       base::BindOnce(&StoreBitmap, &result));
   EXPECT_TRUE(result.is_valid());
 }
@@ -346,7 +346,8 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest,
       GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _, _, _))
       .Times(0);
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
-      kPageUrl, /*desired_size_in_pixel=*/16, base::DoNothing());
+      kPageUrl, /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
+      base::DoNothing());
 }
 
 }  // namespace

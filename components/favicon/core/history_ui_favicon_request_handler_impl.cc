@@ -19,15 +19,6 @@ namespace favicon {
 
 namespace {
 
-// Parameter used for local bitmap queries by page url. The url is an origin,
-// and it may not have had a favicon associated with it. A trickier case is when
-// it only has domain-scoped cookies, but visitors are redirected to HTTPS on
-// visiting. It defaults to a HTTP scheme, but the favicon will be associated
-// with the HTTPS URL and hence won't be found if we include the scheme in the
-// lookup. Set `fallback_to_host`=true so the favicon database will fall back to
-// matching only the hostname to have the best chance of finding a favicon.
-const bool kFallbackToHost = true;
-
 // Parameter used for local bitmap queries by page url.
 favicon_base::IconTypeSet GetIconTypesForLocalQuery() {
   return {favicon_base::IconType::kFavicon, favicon_base::IconType::kTouchIcon,
@@ -54,15 +45,16 @@ HistoryUiFaviconRequestHandlerImpl::~HistoryUiFaviconRequestHandlerImpl() =
 void HistoryUiFaviconRequestHandlerImpl::GetRawFaviconForPageURL(
     const GURL& page_url,
     int desired_size_in_pixel,
+    bool fallback_to_host,
     favicon_base::FaviconRawBitmapCallback callback) {
   // First attempt to find the icon locally.
   favicon_service_->GetRawFaviconForPageURL(
       page_url, GetIconTypesForLocalQuery(), desired_size_in_pixel,
-      kFallbackToHost,
+      fallback_to_host,
       base::BindOnce(
           &HistoryUiFaviconRequestHandlerImpl::OnBitmapLocalDataAvailable,
           weak_ptr_factory_.GetWeakPtr(), page_url, desired_size_in_pixel,
-          /*response_callback=*/std::move(callback)),
+          fallback_to_host, /*response_callback=*/std::move(callback)),
       &cancelable_task_tracker_);
 }
 
@@ -82,6 +74,7 @@ void HistoryUiFaviconRequestHandlerImpl::GetFaviconImageForPageURL(
 void HistoryUiFaviconRequestHandlerImpl::OnBitmapLocalDataAvailable(
     const GURL& page_url,
     int desired_size_in_pixel,
+    bool fallback_to_host,
     favicon_base::FaviconRawBitmapCallback response_callback,
     const favicon_base::FaviconRawBitmapResult& bitmap_result) {
   if (bitmap_result.is_valid()) {
@@ -107,8 +100,8 @@ void HistoryUiFaviconRequestHandlerImpl::OnBitmapLocalDataAvailable(
             // base::Unretained() is safe here as RequestFromGoogleServer()
             // doesn't execute the callback if `this` is deleted.
             base::Unretained(favicon_service_), page_url,
-            GetIconTypesForLocalQuery(), desired_size_in_pixel, kFallbackToHost,
-            std::move(split_response_callback.second),
+            GetIconTypesForLocalQuery(), desired_size_in_pixel,
+            fallback_to_host, std::move(split_response_callback.second),
             &cancelable_task_tracker_));
     return;
   }
