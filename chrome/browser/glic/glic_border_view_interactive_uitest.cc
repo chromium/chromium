@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
   timestamp += base::Seconds(0.123);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  // 0.666-((0.123/0.2)*1) = 0.051.
+  // 0.666-(0.123/0.2) = 0.051.
   EXPECT_NEAR(border->opacity_for_testing(), 0.051, kFloatComparisonTolerance);
   // 0.456/0.5=0.912, 1-(1-0.912)**2=0.926
   EXPECT_NEAR(border->emphasis_for_testing(), 0.992, kFloatComparisonTolerance);
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
   timestamp += base::Seconds(0.07);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  // clamp 0.666-((0.193/0.2)*1) = 0.0
+  // clamp 0.666-(0.193/0.2) = 0.0
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
   // 0.52/0.5 -> 1, however since CancelAnimation has been invoked (this
   // happens when the opacity ramp down is done in order to clean up), emphasis
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
   timestamp += base::Seconds(0.05);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  // 1-((0.05/0.2)*1)=0.75
+  // 1-(0.05/0.2)=0.75
   EXPECT_NEAR(border->opacity_for_testing(), 0.75, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
   timestamp += base::Seconds(0.07);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  // 1-((0.12/0.2)*1)=0.4
+  // 1-(0.12/0.2)=0.4
   EXPECT_NEAR(border->opacity_for_testing(), 0.4, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.0f, kFloatComparisonTolerance);
 
@@ -585,12 +585,12 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
   tester.set_creation_time(timestamp);
-  float seconds = border->GetSecondsSinceCreationForTesting();
+  float seconds = border->GetEffectTimeForTesting();
 
   timestamp += base::Days(0.5);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  float seconds_half_day = border->GetSecondsSinceCreationForTesting();
+  float seconds_half_day = border->GetEffectTimeForTesting();
 
   // Should not have wrapped.
   EXPECT_LT(seconds, seconds_half_day);
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
 
   // Now that more than a day has passed, we should have wrapped (and so the
   // ms since creation should be lower than at the half-day mark).
-  EXPECT_GT(seconds_half_day, border->GetSecondsSinceCreationForTesting());
+  EXPECT_GT(seconds_half_day, border->GetEffectTimeForTesting());
 }
 
 namespace {
@@ -635,10 +635,11 @@ class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
 };
 }  // namespace
 
-// Ensures that in prefers-reduced-motion cases, we immediately show the
-// static border without any animations.
+// Ensures that when PrefersReducedMotion is true, the emphasis animation is
+// skipped and we just show an opacity ramp up and ramp down animation.
+// Note: Ramp up and ramp down duration in PrefersReducedMotion is 200ms..
 IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
-                       PrefersReducedMotion) {
+                       BasicRampingUpAndDown) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
@@ -649,47 +650,62 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
 
+  // ---- Ramping up ----
+  // T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
-  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+
+  // T=0.123s.
+  timestamp += base::Seconds(0.123);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  // Opacity ramp up is 0.2; 0.123/0.2=0.615
+  EXPECT_NEAR(border->opacity_for_testing(), 0.615, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
-  timestamp += base::Seconds(2.2);
+  // T=0.146s.
+  timestamp += base::Seconds(0.023);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  // 0.146/0.2=0.73
+  EXPECT_NEAR(border->opacity_for_testing(), 0.73, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=1s.
+  timestamp += base::Seconds(0.854);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
-  border->CancelAnimation();
-  EXPECT_FALSE(border->compositor_for_testing());
-}
-
-// Ensures that in prefers-reduced-motion cases, we immediately cancel the
-// animation without showing a ramp down animation.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest, RampingDown) {
-  ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
-  auto* border = browser()->window()->AsBrowserView()->glic_border();
-  ASSERT_TRUE(border);
-  base::TimeTicks timestamp = base::TimeTicks::Now();
-  TesterImpl tester(border, timestamp);
-
-  StartBorderAnimation(browser());
-  tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
-
-  border->OnAnimationStep(kDummyTimeStamp);
-  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
-
-  timestamp += base::Seconds(2.2);
-  tester.set_next_time_tick(timestamp);
-  border->OnAnimationStep(kDummyTimeStamp);
-  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
-
+  // ---- Ramping down ----
   // Closing the glic window must start the ramping down process.
   GetGlicService(browser())->ClosePanel();
 
-  // Calling `OnAnimationStep()` should cancel the animation immediately.
+  // T=1s; For opacity T=0s.
+  // Calling `OnAnimationStep()` will set the start time of ramping down.
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=1.123s. For opacity, T=0.123s.
+  timestamp += base::Seconds(0.123);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  // 1-(0.123/0.2)=0.385
+  EXPECT_NEAR(border->opacity_for_testing(), 0.385, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=1.134s. For opacity, T=0.134s.
+  timestamp += base::Seconds(0.011);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  // 1-(0.134/0.2)=0.33
+  EXPECT_NEAR(border->opacity_for_testing(), 0.33, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=2s. For opacity, T=1s.
+  timestamp += base::Seconds(0.866);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
