@@ -240,6 +240,7 @@ chromium-metrics-reviews@google.com.
   <int value="613" label="MagicBoost: On/Off"/>
   <int value="614" label="Lobster: On/Off"/>
   <int value="615" label="Sunfish: On/Off"/>
+  <int value="616" label="Scanner: On/Off"/>
   <int value="700" label="Manage Android Preferences"/>
   <int value="701" label="Remove Play Store"/>
   <int value="702" label="Turn On Play Store"/>

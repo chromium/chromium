@@ -23,7 +23,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isAssistantAllowed, isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isSunfishSettingsToggleVisible} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isScannerSettingsToggleVisible, isSunfishSettingsToggleVisible} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -88,6 +88,14 @@ export class SearchAndAssistantSettingsCardElement extends
         },
       },
 
+      isScannerSettingsToggleVisible_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => {
+          return isScannerSettingsToggleVisible();
+        },
+      },
+
       /** Can be disallowed due to flag, policy, locale, etc. */
       isAssistantAllowed_: {
         type: Boolean,
@@ -108,6 +116,7 @@ export class SearchAndAssistantSettingsCardElement extends
           Setting.kShowOrca,
           Setting.kLobsterOnOff,
           Setting.kSunfishOnOff,
+          Setting.kScannerOnOff,
         ]),
       },
     };
@@ -118,6 +127,7 @@ export class SearchAndAssistantSettingsCardElement extends
   private isQuickAnswersSupported_: boolean;
   private isMagicBoostFeatureEnabled_: boolean;
   private readonly isSunfishSettingsToggleVisible_: boolean;
+  private readonly isScannerSettingsToggleVisible_: boolean;
 
   constructor() {
     super();

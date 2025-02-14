@@ -329,6 +329,76 @@ suite('<search-and-assistant-settings-card>', () => {
         });
       });
 
+  test(
+      'when isScannerSettingsToggleVisible flag is false, ' +
+          'Scanner toggle is hidden',
+      () => {
+        loadTimeData.overrideValues({
+          isScannerSettingsToggleVisible: false,
+        });
+        createSearchAndAssistantCard();
+        assertFalse(
+            isVisible(searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+                '#scannerToggle')));
+      });
+
+  suite('when isScannerSettingsToggleVisible flag is true', () => {
+    let scannerToggle: SettingsToggleButtonElement;
+
+    setup(() => {
+      loadTimeData.overrideValues({
+        isScannerSettingsToggleVisible: true,
+      });
+      createSearchAndAssistantCard();
+
+      const nullableScannerToggle =
+          searchAndAssistantSettingsCard.shadowRoot!
+              .querySelector<SettingsToggleButtonElement>('#scannerToggle');
+      assertTrue(nullableScannerToggle !== null);
+      scannerToggle = nullableScannerToggle;
+    });
+
+    test('Scanner toggle should appear', () => {
+      assertTrue(isVisible(scannerToggle));
+    });
+
+    test('Scanner toggle reflects pref value', () => {
+      searchAndAssistantSettingsCard.prefs = {
+        ash: {
+          scanner: {
+            enabled: {
+              value: true,
+            },
+          },
+        },
+      };
+      flush();
+
+      assertTrue(isVisible(scannerToggle));
+      assertTrue(scannerToggle.checked);
+      assertTrue(searchAndAssistantSettingsCard.get(
+          'prefs.ash.scanner.enabled.value'));
+
+      scannerToggle.click();
+      assertFalse(scannerToggle.checked);
+      assertFalse(searchAndAssistantSettingsCard.get(
+          'prefs.ash.scanner.enabled.value'));
+    });
+
+    test('Scanner toggle is deep-linkable', async () => {
+      const setting = settingMojom.Setting.kScannerOnOff;
+      const params = new URLSearchParams();
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(defaultRoute, params);
+
+      await waitAfterNextRender(scannerToggle);
+      assertEquals(
+          scannerToggle,
+          searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+          `Element should be focused for settingId=${setting}.'`);
+    });
+  });
+
   suite('when Quick Answers is not supported', () => {
     test('Search engine row should be visible', () => {
       createSearchAndAssistantCard();
