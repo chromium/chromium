@@ -29,14 +29,20 @@ namespace {
 TabStrip* GetTabStripWithGroup(LocalTabGroupID local_tab_group_id) {
   const Browser* const browser_with_local_group_id =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(local_tab_group_id);
-  CHECK(browser_with_local_group_id);
+  if (!browser_with_local_group_id) {
+    return nullptr;
+  }
 
   auto* browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_with_local_group_id);
-  CHECK(browser_view);
+  if (!browser_view) {
+    return nullptr;
+  }
 
   auto* tab_strip = browser_view->tabstrip();
-  CHECK(tab_strip);
+  if (!tab_strip) {
+    return nullptr;
+  }
 
   return tab_strip;
 }
@@ -56,7 +62,9 @@ std::optional<int> GetTabStripIndex(LocalTabID local_tab_id,
                                     LocalTabGroupID local_tab_group_id) {
   const Browser* const browser_with_local_group_id =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(local_tab_group_id);
-  CHECK(browser_with_local_group_id);
+  if (!browser_with_local_group_id) {
+    return std::nullopt;
+  }
 
   TabStripModel* tab_strip_model =
       browser_with_local_group_id->tab_strip_model();
@@ -121,10 +129,14 @@ void CollaborationMessagingObserver::HandleDirtyTabGroup(
     PersistentMessage message,
     MessageDisplayStatus display) {
   // TODO(crbug.com/392604409): Refactor to use a TabGroupFeature.
-  if (auto local_tab_group_id = UnwrapTabGroupID(message)) {
-    GetTabStripWithGroup(local_tab_group_id.value())
-        ->SetTabGroupNeedsAttention(local_tab_group_id.value(),
-                                    display == MessageDisplayStatus::kDisplay);
+  std::optional<LocalTabGroupID> local_tab_group_id = UnwrapTabGroupID(message);
+  if (!local_tab_group_id) {
+    return;
+  }
+
+  if (TabStrip* tabstrip = GetTabStripWithGroup(local_tab_group_id.value())) {
+    tabstrip->SetTabGroupNeedsAttention(
+        local_tab_group_id.value(), display == MessageDisplayStatus::kDisplay);
   }
 }
 
@@ -132,10 +144,14 @@ void CollaborationMessagingObserver::HandleDirtyTab(
     PersistentMessage message,
     MessageDisplayStatus display) {
   // TODO(crbug.com/392604409): Refactor to use a TabFeature.
-  if (auto tab_info = UnwrapTabInfo(message)) {
-    GetTabStripWithGroup(tab_info->local_tab_group_id)
-        ->SetTabNeedsAttention(tab_info->tabstrip_index,
-                               display == MessageDisplayStatus::kDisplay);
+  std::optional<TabInfo> tab_info = UnwrapTabInfo(message);
+  if (!tab_info) {
+    return;
+  }
+
+  if (TabStrip* tabstrip = GetTabStripWithGroup(tab_info->local_tab_group_id)) {
+    tabstrip->SetTabNeedsAttention(tab_info->tabstrip_index,
+                                   display == MessageDisplayStatus::kDisplay);
   }
 }
 
