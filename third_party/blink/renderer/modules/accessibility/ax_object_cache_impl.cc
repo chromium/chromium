@@ -4943,6 +4943,19 @@ void AXObjectCacheImpl::ScheduleImmediateSerialization() {
   ScheduleAXUpdate();
 }
 
+Node* AXObjectCacheImpl::GetAccessibilityFocus() const {
+  if (accessibility_focus_ == ui::AXNodeData::kInvalidAXID) {
+    return nullptr;
+  }
+
+  AXObject* obj = ObjectFromAXID(accessibility_focus_);
+  if (!obj) {
+    return nullptr;
+  }
+
+  return obj->GetNode();
+}
+
 void AXObjectCacheImpl::PostPlatformNotification(
     AXObject* obj,
     ax::mojom::blink::Event event_type,

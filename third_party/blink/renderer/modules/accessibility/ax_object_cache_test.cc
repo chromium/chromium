@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "ui/accessibility/ax_action_data.h"
 
 namespace blink {
 
@@ -213,6 +214,36 @@ TEST_F(AccessibilityTest, UpdateAXForAllDocumentsAfterPausedUpdates) {
   ax_object_cache->UpdateAXForAllDocuments();
   ScopedFreezeAXCache freeze(*ax_object_cache);
   CHECK(!root->NeedsToUpdateCachedValues());
+}
+
+TEST_F(AccessibilityTest, AccessibilityFocus) {
+  String test_content =
+      "<body>"
+      "<button id=button></button>"
+      "<ul id=ul></ul>"
+      "</body>";
+
+  SetBodyInnerHTML(test_content);
+  Element* root(GetDocument().documentElement());
+  Element* button = root->getElementById(AtomicString("button"));
+  ASSERT_NE(nullptr, button);
+  Element* ul = root->getElementById(AtomicString("ul"));
+  ASSERT_NE(nullptr, ul);
+
+  auto& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeBasic);
+  EXPECT_EQ(nullptr, cache.GetAccessibilityFocus());
+  auto* ax_button = cache.FirstObjectWithRole(ax::mojom::Role::kButton);
+  ASSERT_NE(nullptr, ax_button);
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kSetAccessibilityFocus;
+  ax_button->PerformAction(action);
+  EXPECT_EQ(button, cache.GetAccessibilityFocus());
+
+  auto* ax_ul = cache.FirstObjectWithRole(ax::mojom::Role::kList);
+  ASSERT_NE(nullptr, ax_ul);
+  ax_ul->PerformAction(action);
+  EXPECT_EQ(ul, cache.GetAccessibilityFocus());
 }
 
 class AXViewTransitionTest : public testing::Test {

@@ -411,8 +411,9 @@ enum Action {
   kBlur = 2,
 
   // Notifies a node that it no longer has accessibility focus.
-  // Currently used only on Android and only internally, it's not
-  // exposed to the open web. See kSetAccessibilityFocus, below.
+  // On Android, this comes from an official Android accessibility api.
+  // On other platforms, we derive this from other actions such as
+  // kScrollToMakeVisible.
   kClearAccessibilityFocus = 3,
 
   // Collapse the collapsible node.
@@ -485,8 +486,9 @@ enum Action {
   [MinVersion=3] kScrollToPositionAtRowColumn = 39,
 
   // Notifies a node that it has accessibility focus.
-  // Currently used only on Android and only internally, it's not
-  // exposed to the open web. See kClearAccessibilityFocus, above.
+  // On Android, this comes from an official Android accessibility api.
+  // On other platforms, we derive this from other actions  such as
+  // kScrollToMakeVisible.
   kSetAccessibilityFocus = 26,
 
   kSetScrollOffset = 27,

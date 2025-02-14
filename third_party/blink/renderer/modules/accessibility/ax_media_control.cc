@@ -26,11 +26,13 @@ AccessibilityMediaControl::AccessibilityMediaControl(
     : AXNodeObject(layout_object, ax_object_cache) {}
 
 bool AccessibilityMediaControl::InternalSetAccessibilityFocusAction() {
+  AXObject::InternalSetAccessibilityFocusAction();
   MediaControlElementsHelper::NotifyMediaControlAccessibleFocus(GetElement());
   return true;
 }
 
 bool AccessibilityMediaControl::InternalClearAccessibilityFocusAction() {
+  AXObject::InternalClearAccessibilityFocusAction();
   MediaControlElementsHelper::NotifyMediaControlAccessibleBlur(GetElement());
   return true;
 }
