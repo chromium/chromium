@@ -431,37 +431,20 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                            WebStateList::CLOSE_USER_ACTION);
 }
 
-- (void)takeActionForActionType:(TabGroupActionType)actionType
-                 sharedTabGroup:(const TabGroup*)group {
-  CHECK(_dataSharingService);
-
-  const tab_groups::CollaborationId collabId =
-      tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
-  CHECK(!collabId->empty());
-  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
-
-  __weak TabStripMediator* weakSelf = self;
-  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
-    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
-    [weakSelf handleTakeActionForActionTypeOutcome:success];
-  });
-
-  // TODO(crbug.com/393073658): Block the screen.
-
-  // Asynchronously call on the server.
-  switch (actionType) {
-    case TabGroupActionType::kLeaveSharedTabGroup:
-      _dataSharingService->LeaveGroup(groupId, std::move(callback));
-      break;
-    case TabGroupActionType::kDeleteSharedTabGroup:
-      _dataSharingService->DeleteGroup(groupId, std::move(callback));
-      break;
-    case TabGroupActionType::kUngroupTabGroup:
-    case TabGroupActionType::kDeleteTabGroup:
-    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
-    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
-      NOTREACHED();
+- (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem {
+  if (!_dataSharingService || !tabGroupItem.tabGroup) {
+    return;
   }
+  [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup
+                 sharedTabGroup:tabGroupItem.tabGroup];
+}
+
+- (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem {
+  if (!_dataSharingService || !tabGroupItem.tabGroup) {
+    return;
+  }
+  [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
+                 sharedTabGroup:tabGroupItem.tabGroup];
 }
 
 #pragma mark - Public properties
@@ -1816,6 +1799,41 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   TabStripItemData* itemData = CreateGroupItemData(group, _dirtyGroups);
   [self.consumer updateItemData:@{itemIdentifier : itemData}
                reconfigureItems:YES];
+}
+
+// Takes the corresponding action to `actionType` for the shared `group`.
+// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                 sharedTabGroup:(const TabGroup*)group {
+  CHECK(_dataSharingService);
+
+  const tab_groups::CollaborationId collabId =
+      tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
+  CHECK(!collabId->empty());
+  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
+
+  __weak TabStripMediator* weakSelf = self;
+  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
+    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+    [weakSelf handleTakeActionForActionTypeOutcome:success];
+  });
+
+  // TODO(crbug.com/393073658): Block the screen.
+
+  // Asynchronously call on the server.
+  switch (actionType) {
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      _dataSharingService->LeaveGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      _dataSharingService->DeleteGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kUngroupTabGroup:
+    case TabGroupActionType::kDeleteTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      NOTREACHED();
+  }
 }
 
 // Called when `takeActionForActionType:forSharedTabGroup:` server's call

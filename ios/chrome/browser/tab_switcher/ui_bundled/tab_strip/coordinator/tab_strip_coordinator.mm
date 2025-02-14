@@ -272,22 +272,7 @@
                       sourceView:sourceView];
   __weak TabStripCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.primaryAction = ^{
-    switch (actionType) {
-      case TabGroupActionType::kUngroupTabGroup:
-        [weakSelf ungroupTabGroup:tabGroupItem];
-        break;
-      case TabGroupActionType::kDeleteTabGroup:
-        [weakSelf deleteTabGroup:tabGroupItem];
-        break;
-      case TabGroupActionType::kLeaveSharedTabGroup:
-      case TabGroupActionType::kDeleteSharedTabGroup:
-        [weakSelf takeActionForActionType:actionType
-                           sharedTabGroup:tabGroupItem];
-        break;
-      case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
-      case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
-        NOTREACHED();
-    }
+    [weakSelf takeActionForActionType:actionType tabGroupItem:tabGroupItem];
   };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroupItem.title;
 
@@ -397,33 +382,33 @@
   _alertCoordinator = nil;
 }
 
-// Helper method to close a tab group and dismiss the confirmation coordinator.
-- (void)deleteTabGroup:(TabGroupItem*)tabGroupItem {
-  if (tabGroupItem) {
-    [_mediator deleteGroup:tabGroupItem];
-  }
-  [_tabGroupConfirmationCoordinator stop];
-  _tabGroupConfirmationCoordinator = nil;
-}
-
-// Helper method to ungroup a tab group and dismiss the confirmation
-// coordinator.
-- (void)ungroupTabGroup:(TabGroupItem*)tabGroupItem {
-  if (tabGroupItem) {
-    [_mediator ungroupGroup:tabGroupItem];
-  }
-  [_tabGroupConfirmationCoordinator stop];
-  _tabGroupConfirmationCoordinator = nil;
-}
-
-// Takes the corresponded action to `actionType` for the shared `group`.
-// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
+// Executes a corresponded action to `actionType` and dismiss
+// the confirmation coordinator.
 - (void)takeActionForActionType:(TabGroupActionType)actionType
-                 sharedTabGroup:(TabGroupItem*)tabGroupItem {
-  if (tabGroupItem) {
-    [_mediator takeActionForActionType:actionType
-                        sharedTabGroup:tabGroupItem.tabGroup];
+                   tabGroupItem:(TabGroupItem*)tabGroupItem {
+  if (!tabGroupItem) {
+    return;
   }
+
+  switch (actionType) {
+    case TabGroupActionType::kUngroupTabGroup:
+      [_mediator ungroupGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kDeleteTabGroup:
+      [_mediator deleteGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      [_mediator leaveSharedGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      [_mediator deleteSharedGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      // Not implemented yet.
+      NOTREACHED();
+  }
+
   [_tabGroupConfirmationCoordinator stop];
   _tabGroupConfirmationCoordinator = nil;
 }

@@ -96,10 +96,11 @@ class WebStateID;
 // Closes and deletes all tabs in `tabGroupItem`.
 - (void)deleteGroup:(TabGroupItem*)tabGroupItem;
 
-// Takes the corresponded action to `actionType` for the shared `group`.
-// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
-- (void)takeActionForActionType:(TabGroupActionType)actionType
-                 sharedTabGroup:(const TabGroup*)group;
+// Leaves the shared group in `tabGroupItem`.
+- (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem;
+
+// Deletes the shared group in `tabGroupItem`.
+- (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem;
 
 @end
 
