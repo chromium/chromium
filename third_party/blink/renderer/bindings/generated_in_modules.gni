@@ -1240,6 +1240,18 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor_error_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_output_signals.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_output_signals.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_filter.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_filter.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_request_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_request_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_share_data.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_share_data.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.cc",
@@ -1552,6 +1564,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_writable_file_stream_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_flow_control_type.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_flow_control_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_actuator_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_actuator_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_effect_type.cc",
@@ -1758,6 +1772,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_over_sample_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_panning_model_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_panning_model_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_parity_type.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_parity_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_complete.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_complete.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_delegation.cc",
@@ -2820,6 +2836,10 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor_error_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor_error_event.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_service_worker.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_service_worker.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_service_worker_container.cc",
@@ -3471,41 +3491,6 @@ if (!target_os_is_android) {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_job.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_job.h",
-  ]
-}
-
-# Serial
-# This uses target_os rather than current_os (which is what is_android is set
-# from) for the case of generating the v8 context snapshot for android. When
-# generating the snapshot for android, blink is compiled with
-# current_os="linux" and target_os="android". Using target_os is necessary as
-# we need to compile in the same way as would happen when current_os="android".
-if (!target_os_is_android) {
-  generated_dictionary_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_options.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_options.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_output_signals.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_output_signals.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_filter.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_filter.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_request_options.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_request_options.h",
-  ]
-  generated_enumeration_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_flow_control_type.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_flow_control_type.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_parity_type.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_parity_type.h",
-  ]
-  generated_interface_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.h",
   ]
 }
 

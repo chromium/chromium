@@ -3978,6 +3978,7 @@
     {
       name: "Serial",
       status: {"Android": "", "default": "stable"},
+      base_feature: "none",
     },
     {
       name: "SerializeViewTransitionStateInSPA",

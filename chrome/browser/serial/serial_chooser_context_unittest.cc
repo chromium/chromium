@@ -850,7 +850,14 @@ TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowForUrls) {
     ASSERT_EQ(1u, bar_objects.size());
     const auto& bar_object = bar_objects.front();
     EXPECT_EQ(kBarOrigin.GetURL(), bar_object->origin);
+#if BUILDFLAG(IS_ANDROID)
+    // Android doesn't include the USB device list because it takes too much
+    // space
+    EXPECT_EQ(u"USB device (18D1:4E11)",
+              context()->GetObjectDisplayName(bar_object->value));
+#else
     EXPECT_EQ(u"Nexus One", context()->GetObjectDisplayName(bar_object->value));
+#endif  // BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(SettingSource::kPolicy, bar_object->source);
     EXPECT_FALSE(bar_object->incognito);
 
@@ -866,7 +873,14 @@ TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowForUrls) {
       } else if (object->origin == kBarOrigin.GetURL()) {
         EXPECT_FALSE(found_bar_object);
         found_bar_object = true;
+#if BUILDFLAG(IS_ANDROID)
+        // Android doesn't include the USB device list because it takes too much
+        // space
+        EXPECT_EQ(u"USB device (18D1:4E11)",
+                  context()->GetObjectDisplayName(object->value));
+#else
         EXPECT_EQ(u"Nexus One", context()->GetObjectDisplayName(object->value));
+#endif  // BUILDFLAG(IS_ANDROID)
       }
       EXPECT_EQ(SettingSource::kPolicy, object->source);
       EXPECT_FALSE(object->incognito);
@@ -923,8 +937,15 @@ TEST_P(SerialChooserContextAffiliatedTest,
     auto google_objects = context()->GetGrantedObjects(
         url::Origin::Create(GURL("https://google.com")));
     ASSERT_EQ(1u, google_objects.size());
+#if BUILDFLAG(IS_ANDROID)
+    // Android doesn't include the USB device list because it takes too much
+    // space
+    EXPECT_EQ(u"USB devices from vendor 18D1",
+              context()->GetObjectDisplayName(google_objects[0]->value));
+#else
     EXPECT_EQ(u"USB devices from Google Inc.",
               context()->GetObjectDisplayName(google_objects[0]->value));
+#endif  // BUILDFLAG(IS_ANDROID)
 
     auto unknown_vendor_objects = context()->GetGrantedObjects(
         url::Origin::Create(GURL("https://unknown-vendor.com")));
@@ -936,9 +957,17 @@ TEST_P(SerialChooserContextAffiliatedTest,
     auto unknown_product_objects = context()->GetGrantedObjects(
         url::Origin::Create(GURL("https://unknown-product.google.com")));
     ASSERT_EQ(1u, unknown_product_objects.size());
+#if BUILDFLAG(IS_ANDROID)
+    // Android doesn't include the USB device list because it takes too much
+    // space
+    EXPECT_EQ(
+        u"USB device (18D1:162E)",
+        context()->GetObjectDisplayName(unknown_product_objects[0]->value));
+#else
     EXPECT_EQ(
         u"USB device from Google Inc. (product 162E)",
         context()->GetObjectDisplayName(unknown_product_objects[0]->value));
+#endif  // BUILDFLAG(IS_ANDROID)
 
     auto unknown_product_and_vendor_objects =
         context()->GetGrantedObjects(url::Origin::Create(

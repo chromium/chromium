@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
@@ -86,7 +87,6 @@
 #include "chrome/browser/hid/hid_status_icon.h"
 #include "chrome/browser/usb/usb_status_icon.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -526,7 +526,6 @@ TestingBrowserProcess::resource_coordinator_parts() {
   return resource_coordinator_parts_.get();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 SerialPolicyAllowedPorts* TestingBrowserProcess::serial_policy_allowed_ports() {
   if (!serial_policy_allowed_ports_) {
     serial_policy_allowed_ports_ =
@@ -535,6 +534,7 @@ SerialPolicyAllowedPorts* TestingBrowserProcess::serial_policy_allowed_ports() {
   return serial_policy_allowed_ports_.get();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 HidSystemTrayIcon* TestingBrowserProcess::hid_system_tray_icon() {
   return hid_system_tray_icon_.get();
 }
@@ -608,9 +608,7 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
     notification_ui_manager_.reset();
 #endif
-#if !BUILDFLAG(IS_ANDROID)
     serial_policy_allowed_ports_.reset();
-#endif
     ShutdownBrowserPolicyConnector();
     created_browser_policy_connector_ = false;
   }

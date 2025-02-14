@@ -160,8 +160,8 @@ class TestingBrowserProcess : public BrowserProcess {
   resource_coordinator::TabManager* GetTabManager() override;
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
-#if !BUILDFLAG(IS_ANDROID)
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
+#if !BUILDFLAG(IS_ANDROID)
   HidSystemTrayIcon* hid_system_tray_icon() override;
   UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
@@ -281,8 +281,8 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<resource_coordinator::ResourceCoordinatorParts>
       resource_coordinator_parts_;
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
