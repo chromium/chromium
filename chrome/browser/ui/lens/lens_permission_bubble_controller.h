@@ -30,7 +30,7 @@ class PrefService;
 
 namespace lens {
 
-static constexpr char kLensPermissionDialogName[] = "LensPermissionDialog";
+inline constexpr char kLensPermissionDialogName[] = "LensPermissionDialog";
 
 // Manages the Lens Permission Bubble instance for the associated browser.
 class LensPermissionBubbleController {

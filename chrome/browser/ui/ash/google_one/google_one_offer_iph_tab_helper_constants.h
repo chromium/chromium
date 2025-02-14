@@ -14,20 +14,20 @@ constexpr char kFallbackNotificationMessage[] =
     "charge";
 constexpr char kFallbackGetPerkButtonTitle[] = "Claim now";
 
-static constexpr char kIPHGoogleOneOfferNotificationId[] =
+inline constexpr char kIPHGoogleOneOfferNotificationId[] =
     "iph-google-one-offer-notification-id";
-static constexpr char kIPHGoogleOneOfferNotifierId[] =
+inline constexpr char kIPHGoogleOneOfferNotifierId[] =
     "iph-google-one-offer-notifier-id";
 
 // Notification constants
-static constexpr int kGetPerkButtonIndex = 0;
-static constexpr char kGoogleOneOfferUrl[] =
+inline constexpr int kGetPerkButtonIndex = 0;
+inline constexpr char kGoogleOneOfferUrl[] =
     "https://www.google.com/chromebook/perks/?id=google.one.2019";
 
 // IPH events
-static constexpr char kIPHGoogleOneOfferNotificationDismissEventName[] =
+inline constexpr char kIPHGoogleOneOfferNotificationDismissEventName[] =
     "google_one_offer_iph_notification_dismiss";
-static constexpr char kIPHGoogleOneOfferNotificationGetPerkEventName[] =
+inline constexpr char kIPHGoogleOneOfferNotificationGetPerkEventName[] =
     "google_one_offer_iph_notification_get_perk";
 
 // IPH Feature Param names
