@@ -199,11 +199,11 @@ void FadeCollaborationMessagingFooterRow::SetData(
   }
 
   // Fallback to using an icon.
-  // TODO(crbug.com/381719301): Define a color for the fallback icon
-  SetContent(ui::ImageModel::FromVectorIcon(
-                 kTabGroupSharingIcon, kColorHoverCardTabAlertAudioPlayingIcon,
-                 GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
-             data_.text);
+  SetContent(
+      ui::ImageModel::FromVectorIcon(
+          kTabGroupSharingIcon, kColorHoverCardTabAlertUserAvatarFallbackIcon,
+          GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
+      data_.text);
 }
 
 CollaborationMessagingRowData::CollaborationMessagingRowData() = default;
