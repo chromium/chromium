@@ -6,7 +6,7 @@ import type {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-w
 
 import type {Assignment as AssignmentMojom, Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, Material as MaterialMojom, NetworkInfo as NetworkInfoMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
-import type {BocaValidPref, CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, SessionConfig} from './boca_app.js';
+import type {BocaValidPref, CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, Permission, PermissionSetting, SessionConfig} from './boca_app.js';
 import {SubmitAccessCodeResult} from './boca_app.js';
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
@@ -262,7 +262,13 @@ export class ClientDelegateFactory {
       setUserPref: async (pref: BocaValidPref, value: Value) => {
         await pageHandler.setUserPref(pref.valueOf(), value);
       },
-    };
+      setSitePermission: async (
+          url: string, permission: Permission, setting: PermissionSetting) => {
+        return (await pageHandler.setSitePermission(
+                    url, permission.valueOf(), setting.valueOf()))
+            .success;
+      }
+    }
   }
 
   getInstance(): ClientApiDelegate {

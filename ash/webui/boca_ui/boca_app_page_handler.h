@@ -11,6 +11,7 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
+#include "ash/webui/boca_ui/provider/content_settings_handler.h"
 #include "ash/webui/boca_ui/provider/network_info_provider.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "ash/webui/boca_ui/webview_auth_handler.h"
@@ -41,6 +42,7 @@ class BocaAppHandler : public mojom::PageHandler,
       content::WebUI* webui,
       std::unique_ptr<WebviewAuthHandler> auth_handler,
       std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
+      std::unique_ptr<ContentSettingsHandler> content_settings_handler,
       SessionClientImpl* session_client_impl,
       bool is_producer);
 
@@ -85,6 +87,10 @@ class BocaAppHandler : public mojom::PageHandler,
   void SetUserPref(mojom::BocaValidPref pref,
                    base::Value value,
                    SetUserPrefCallback callback) override;
+  void SetSitePermission(const std::string& url,
+                         mojom::Permission permission,
+                         mojom::PermissionSetting setting,
+                         SetSitePermissionCallback callback) override;
 
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -148,6 +154,7 @@ class BocaAppHandler : public mojom::PageHandler,
   TabInfoCollector tab_info_collector_;
   std::unique_ptr<WebviewAuthHandler> auth_handler_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
+  const std::unique_ptr<ContentSettingsHandler> content_settings_handler_;
   // Latest config is not always the same as the instance maintained in
   // boca_session_manager as it contains the async config that hasn't been
   // committed yet. OnTask and caption config use the same server endpoint. We

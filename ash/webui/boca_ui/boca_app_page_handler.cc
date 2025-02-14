@@ -15,6 +15,7 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
+#include "ash/webui/boca_ui/provider/content_settings_handler.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -190,12 +191,14 @@ BocaAppHandler::BocaAppHandler(
     content::WebUI* web_ui,
     std::unique_ptr<WebviewAuthHandler> auth_handler,
     std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
+    std::unique_ptr<ContentSettingsHandler> content_settings_handler,
     SessionClientImpl* session_client_impl,
     bool is_producer)
     : is_producer_(is_producer),
       tab_info_collector_(web_ui, is_producer),
       auth_handler_(std::move(auth_handler)),
       class_room_page_handler_(std::move(classroom_client_impl)),
+      content_settings_handler_(std::move(content_settings_handler)),
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
       session_client_impl_(session_client_impl),
@@ -530,6 +533,15 @@ void BocaAppHandler::SetUserPref(mojom::BocaValidPref pref,
                                  SetUserPrefCallback callback) {
   pref_service_->Set(GetPrefName(pref), std::move(value));
   std::move(callback).Run();
+}
+
+void BocaAppHandler::SetSitePermission(const std::string& url,
+                                       mojom::Permission permission,
+                                       mojom::PermissionSetting setting,
+                                       SetSitePermissionCallback callback) {
+  const bool success = content_settings_handler_->SetContentSettingForOrigin(
+      url, permission, setting);
+  std::move(callback).Run(success);
 }
 
 void BocaAppHandler::OnStudentActivityUpdated(

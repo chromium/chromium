@@ -67,12 +67,18 @@ static_library("on_task") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "on_task_extensions_manager_impl_unittest.cc" ]
+  sources = [
+    "content_settings_handler_unittest.cc",
+    "on_task_extensions_manager_impl_unittest.cc",
+  ]
 
   deps = [
     ":on_task",
+    "//ash/webui/boca_ui",
+    "//ash/webui/boca_ui/mojom",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",

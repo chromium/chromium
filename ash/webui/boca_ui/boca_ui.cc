@@ -17,6 +17,7 @@
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
@@ -133,9 +134,13 @@ void BocaUI::Create(
       web_ui()->GetWebContents()->GetVisibleURL().host();
   auto auth_handler = std::make_unique<WebviewAuthHandler>(
       std::make_unique<WebviewAuthDelegate>(), context, host_name);
+  auto* const profile = Profile::FromWebUI(web_ui());
+  auto content_settings_handler =
+      std::make_unique<ContentSettingsHandler>(profile);
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       std::move(page_handler), std::move(page), web_ui(),
       std::move(auth_handler), std::make_unique<ClassroomPageHandlerImpl>(),
+      std::move(content_settings_handler),
       BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
       is_producer_);
   page_handler_impl_->SetSpotlightService(&spotlight_service_);

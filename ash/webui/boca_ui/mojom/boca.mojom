@@ -98,6 +98,19 @@ struct NetworkInfo {
   int32 signal_strength;
 };
 
+// The content setting permission type.
+enum Permission {
+  kMicrophone,
+  kCamera,
+};
+
+// The content setting permission setting type.
+enum PermissionSetting {
+  kAllow,
+  kAsk,
+  kBlock,
+};
+
 struct Config{
   mojo_base.mojom.TimeDelta session_duration;
   mojo_base.mojom.JSTime? session_start_time;
@@ -264,6 +277,9 @@ interface PageHandler {
   // Set the value of a boca specific user pref.
   SetUserPref(BocaValidPref pref, mojo_base.mojom.Value value)
     => ();
+  // Set the permission of a site.
+  SetSitePermission(string url, Permission permission, PermissionSetting
+    setting) => (bool success);
 };
 
 // Implemented by renderer process

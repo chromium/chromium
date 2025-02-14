@@ -320,7 +320,8 @@ class BocaAppPageHandlerTest : public testing::Test {
         pending_receiver_.InitWithNewPipeAndPassRemote(), web_ui_.get(),
         std::make_unique<MockWebviewAuthHandler>(browser_context,
                                                  kWebviewHostName),
-        /*classroom_client_impl=*/nullptr, &session_client_impl_,
+        /*classroom_client_impl=*/nullptr,
+        /*content_settings_handler=*/nullptr, &session_client_impl_,
         /*is_producer=*/true);
     boca_app_handler_->SetSpotlightService(&spotlight_service_);
     // Explicitly set pref

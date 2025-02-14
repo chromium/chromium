@@ -107,6 +107,23 @@ export enum NetworkType {
 }
 
 /**
+ * Declare permission type enum type
+ */
+export enum Permission {
+  MICROPHONE = 0,
+  CAMERA = 1,
+}
+
+/**
+ * Declare permission setting type enum type
+ */
+export enum PermissionSetting {
+  ALLOW = 0,
+  ASK = 1,
+  BLOCK = 2,
+}
+
+/**
  * Declare boca user pref type.
  */
 export enum BocaValidPref {
@@ -291,6 +308,13 @@ export declare interface ClientApiDelegate {
    * Set the value of a boca specific user pref.
    */
   setUserPref(pref: BocaValidPref, value: any): Promise<void>;
+
+  /**
+   * Set the permission of a site.
+   */
+  setSitePermission(
+      url: string, permission: Permission,
+      setting: PermissionSetting): Promise<boolean>;
 }
 
 /**

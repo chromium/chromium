@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import type {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -285,6 +285,14 @@ class MockRemoteHandler extends PageHandlerRemote {
     pref;
     value;
     return Promise.resolve();
+  }
+  override setSitePermission(
+      url: string, permission: Permission,
+      setting: PermissionSetting): Promise<{success: boolean}> {
+    url;
+    permission;
+    setting;
+    return Promise.resolve({success: true});
   }
 }
 
@@ -716,5 +724,12 @@ suite('ClientDelegateTest', function() {
       'client delegate should respond correctly for set user pref',
       async () => {
         await clientDelegateImpl.getInstance().setUserPref(1, {value: {}});
+      });
+  test(
+      'client delegate should respond correctly for set site permission',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().setSitePermission('1', 0, 0);
+        assertTrue(result);
       });
 });
