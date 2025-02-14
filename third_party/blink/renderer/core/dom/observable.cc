@@ -2583,39 +2583,40 @@ void Observable::SubscribeInternal(
   //      this specific subscription. No `observer_union` is passed in.
   CHECK_NE(!!observer_union, !!internal_observer);
 
-  // Build and initialize a `Subscriber` with a dictionary of `Observer`
-  // callbacks.
-  Subscriber* subscriber = nullptr;
+  ObservableInternalObserver* observer = nullptr;
   if (observer_union) {
     // Case (1) above.
     switch (observer_union->GetContentType()) {
       case V8UnionObserverOrObserverCallback::ContentType::kObserver: {
-        Observer* observer = observer_union->GetAsObserver();
-        ScriptCallbackInternalObserver* constructed_internal_observer =
-            MakeGarbageCollected<ScriptCallbackInternalObserver>(
-                observer->hasNext() ? observer->next() : nullptr,
-                observer->hasError() ? observer->error() : nullptr,
-                observer->hasComplete() ? observer->complete() : nullptr);
-
-        subscriber = MakeGarbageCollected<Subscriber>(
-            PassKey(), script_state, constructed_internal_observer, options);
+        Observer* script_observer = observer_union->GetAsObserver();
+        observer = MakeGarbageCollected<ScriptCallbackInternalObserver>(
+            script_observer->hasNext() ? script_observer->next() : nullptr,
+            script_observer->hasError() ? script_observer->error() : nullptr,
+            script_observer->hasComplete() ? script_observer->complete()
+                                           : nullptr);
         break;
       }
       case V8UnionObserverOrObserverCallback::ContentType::kObserverCallback:
-        ScriptCallbackInternalObserver* constructed_internal_observer =
-            MakeGarbageCollected<ScriptCallbackInternalObserver>(
-                /*next=*/observer_union->GetAsObserverCallback(),
-                /*error_callback=*/nullptr, /*complete_callback=*/nullptr);
-
-        subscriber = MakeGarbageCollected<Subscriber>(
-            PassKey(), script_state, constructed_internal_observer, options);
+        observer = MakeGarbageCollected<ScriptCallbackInternalObserver>(
+            /*next=*/observer_union->GetAsObserverCallback(),
+            /*error_callback=*/nullptr, /*complete_callback=*/nullptr);
         break;
     }
   } else {
     // Case (2) above.
-    subscriber = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
-                                                  internal_observer, options);
+    observer = internal_observer;
   }
+
+  CHECK(observer);
+  if (active_subscriber_) {
+    active_subscriber_->RegisterNewObserver(script_state, observer, options);
+    return;
+  }
+
+  // Construct `active_subscriber_` for the first subscription. This will take
+  // care of registering `observer` as the first observer.
+  active_subscriber_ = MakeGarbageCollected<Subscriber>(
+      PassKey(), this, script_state, observer, options);
 
   // Exactly one of `subscribe_callback_` or `subscribe_delegate_` is non-null.
   // Use whichever is provided.
@@ -2623,7 +2624,7 @@ void Observable::SubscribeInternal(
       << "Exactly one of subscribe_callback_ or subscribe_delegate_ should be "
          "non-null";
   if (subscribe_delegate_) {
-    subscribe_delegate_->OnSubscribe(subscriber, script_state);
+    subscribe_delegate_->OnSubscribe(active_subscriber_, script_state);
     return;
   }
 
@@ -2645,10 +2646,26 @@ void Observable::SubscribeInternal(
 
   ScriptState::Scope scope(script_state);
   v8::TryCatch try_catch(script_state->GetIsolate());
-  std::ignore = subscribe_callback_->Invoke(nullptr, subscriber);
+  std::ignore = subscribe_callback_->Invoke(nullptr, active_subscriber_);
   if (try_catch.HasCaught()) {
-    subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
-                                                try_catch.Exception()));
+    // If the above `subscribe_callback_` closes the subscription,
+    // `active_subscriber_` will be cleared to null. In the case where closing
+    // the subscription also throws an error (i.e., an exception-throwing
+    // `complete()` handler), then `try_catch.HasCaught()` will be true even
+    // though `active_subscriber_` is null; so we must report the exception to
+    // the global instead.
+    if (active_subscriber_) {
+      active_subscriber_->error(
+          script_state,
+          ScriptValue(script_state->GetIsolate(), try_catch.Exception()));
+    } else {
+      if (!script_state->ContextIsValid()) {
+        CHECK(!GetExecutionContext());
+        return;
+      }
+      V8ScriptRunner::ReportException(script_state->GetIsolate(),
+                                      try_catch.Exception());
+    }
   }
 }
 
@@ -3211,6 +3228,7 @@ ScriptPromise<IDLAny> Observable::ReduceInternal(
 void Observable::Trace(Visitor* visitor) const {
   visitor->Trace(subscribe_callback_);
   visitor->Trace(subscribe_delegate_);
+  visitor->Trace(active_subscriber_);
 
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
