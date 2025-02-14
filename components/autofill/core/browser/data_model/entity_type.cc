@@ -66,20 +66,21 @@ std::u16string AttributeType::GetNameForI18n() const {
     case AttributeTypeName::kLoyaltyCardMemberId:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_LOYALTY_CARD_MEMBER_ID_ATTRIBUTE_NAME);
-    case AttributeTypeName::kCarOwner:
+    case AttributeTypeName::kVehicleOwner:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_CAR_OWNER_ATTRIBUTE_NAME);
-    case AttributeTypeName::kCarLicensePlate:
+          IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleLicensePlate:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_CAR_LICENSE_PLATE_ATTRIBUTE_NAME);
-    case AttributeTypeName::kCarRegistration:
+          IDS_AUTOFILL_AI_VEHICLE_LICENSE_PLATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleVin:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_CAR_REGISTRATION_ATTRIBUTE_NAME);
-    case AttributeTypeName::kCarMake:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_CAR_MAKE_ATTRIBUTE_NAME);
-    case AttributeTypeName::kCarModel:
+          IDS_AUTOFILL_AI_VEHICLE_VIN_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleMake:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_CAR_MODEL_ATTRIBUTE_NAME);
+          IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleModel:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME);
     case AttributeTypeName::kDriversLicenseName:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME);
@@ -109,7 +110,7 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
         return 1;
       case EntityTypeName::kLoyaltyCard:
         return 2;
-      case EntityTypeName::kCar:
+      case EntityTypeName::kVehicle:
         return 3;
       case EntityTypeName::kDriversLicense:
         return 4;
@@ -125,8 +126,8 @@ std::u16string EntityType::GetNameForI18n() const {
     case EntityTypeName::kLoyaltyCard:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_LOYALTY_CARD_ENTITY_NAME);
-    case EntityTypeName::kCar:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_CAR_ENTITY_NAME);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME);
     case EntityTypeName::kDriversLicense:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME);
