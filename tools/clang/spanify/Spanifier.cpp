@@ -1227,6 +1227,8 @@ void RewriteUnsafeArray(const MatchFinder::MatchResult& result) {
   }
 
   const clang::InitListExpr* init_list_expr = GetArrayInitList(array_variable);
+  const clang::StringLiteral* init_string_literal =
+      clang::dyn_cast_or_null<clang::StringLiteral>(array_variable->getInit());
 
   //   static const char* array[] = {...};
   //   |            |
@@ -1251,14 +1253,45 @@ void RewriteUnsafeArray(const MatchFinder::MatchResult& result) {
   const char* include_path = kArrayIncludePath;
   std::string replacement_text;
   std::string additional_replacement;
-  if (original_element_type->isAnyCharacterType() &&
-      original_element_type.isConstant(ast_context) &&
-      clang::dyn_cast_or_null<clang::StringLiteral>(
-          array_variable->getInit())) {
-    replacement_text = llvm::formatv(
-        "{0} {1}", GetStringViewType(new_element_type, ast_context),
-        array_variable_as_string);
-    include_path = kStringViewIncludePath;
+  if (init_string_literal) {
+    assert(original_element_type->isAnyCharacterType());
+    if (original_element_type.isConstant(ast_context)) {
+      replacement_text = llvm::formatv(
+          "{0} {1}", GetStringViewType(new_element_type, ast_context),
+          array_variable_as_string);
+      include_path = kStringViewIncludePath;
+    } else {
+      // In case of a non-const array initialized with a string literal, we
+      // need to explicitly specify the element type and size of the std::array
+      // (i.e. they're not deducible) because the deduced element type will be
+      // a const type. Hence,
+      //
+      //     char arr[] = "abc";
+      //
+      // is rewritten to
+      //
+      //     std::array<char, 4> arr{"abc"};
+      //
+      // Note that `std::array<char, 4> arr = "abc";` doesn't compile.
+
+      replacement_range.setEnd(init_string_literal->getBeginLoc());
+      replacement_text = llvm::formatv(
+          "std::array<{0}, {1}> {2}{{", element_type_as_string,
+          !array_size_as_string.empty()
+              ? array_size_as_string
+              : llvm::formatv("{0}", init_string_literal->getLength() +
+                                         1 /* nul-terminator */),
+          array_variable_as_string);
+
+      const clang::SourceLocation& end_of_string_literal =
+          init_string_literal
+              ->getLocationOfByte(init_string_literal->getByteLength(),
+                                  source_manager, ast_context.getLangOpts(),
+                                  ast_context.getTargetInfo())
+              .getLocWithOffset(1);  // The last closing quote
+      additional_replacement = GetReplacementDirective(
+          clang::SourceRange(end_of_string_literal), "}", source_manager);
+    }
   } else if (init_list_expr) {
     auto replacements = RewriteStdArrayWithInitList(
         array_type, element_type_as_string, array_variable_as_string,

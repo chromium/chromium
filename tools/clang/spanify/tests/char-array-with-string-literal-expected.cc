@@ -5,6 +5,7 @@
 #include <uchar.h>
 #include <wchar.h>
 
+#include <array>
 #include <string_view>
 #include <tuple>
 
@@ -30,4 +31,19 @@ void func() {
   // const std::u32string_view buf = U"123456789";
   const std::u32string_view buf5 = U"123456789";
   std::ignore = buf5[UnsafeIndex()];
+}
+
+void non_const_case() {
+  // The explicit specification of the element type and size are necessary,
+  // otherwise the deduced element type will be const.
+  //
+  // Expected rewrite:
+  // std::array<char, 4> buf{"abc"};
+  std::array<char, 4> buf{"abc"};
+  std::ignore = buf[UnsafeIndex()];
+
+  // Expected rewrite:
+  // std::array<char, 1 + 3> buf2{"abc"};
+  std::array<char, 1 + 3> buf2{"abc"};
+  std::ignore = buf2[UnsafeIndex()];
 }
