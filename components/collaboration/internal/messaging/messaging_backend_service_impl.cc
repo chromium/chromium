@@ -58,6 +58,8 @@ collaboration_pb::Message CreateTabGroupMessage(
                     tab_group.update_time_windows_epoch_micros());
   message.mutable_tab_group_data()->set_sync_tab_group_id(
       tab_group.saved_guid().AsLowercaseString());
+  message.mutable_tab_group_data()->set_title(
+      base::UTF16ToUTF8(tab_group.title()));
   switch (event_type) {
     case collaboration_pb::TAB_GROUP_ADDED:
       message.set_triggering_user_gaia_id(
@@ -1276,6 +1278,7 @@ MessagingBackendServiceImpl::GetCollaborationGroupIdForTab(
 
 TabGroupMessageMetadata
 MessagingBackendServiceImpl::CreateTabGroupMessageMetadataFromCollaborationId(
+    const collaboration_pb::Message& message,
     std::optional<tab_groups::SavedTabGroup> tab_group,
     std::optional<data_sharing::GroupId> collaboration_group_id) {
   if (tab_group) {
@@ -1291,7 +1294,11 @@ MessagingBackendServiceImpl::CreateTabGroupMessageMetadataFromCollaborationId(
           ToCollaborationId(data_sharing::GroupId(*collaboration_group_id)));
   if (previous_title) {
     tab_group_metadata.last_known_title = base::UTF16ToUTF8(*previous_title);
+  } else {
+    tab_group_metadata.last_known_title = message.tab_group_data().title();
   }
+  // TODO(crbug.com/395918345): Should we always use title from DB and ignore
+  // the tab group?
   return tab_group_metadata;
 }
 
@@ -1304,7 +1311,7 @@ MessagingBackendServiceImpl::CreateTabGroupMessageMetadataFromMessageOrTabGroup(
   }
 
   return CreateTabGroupMessageMetadataFromCollaborationId(
-      GetTabGroupFromMessage(message),
+      message, GetTabGroupFromMessage(message),
       data_sharing::GroupId(message.collaboration_id()));
 }
 

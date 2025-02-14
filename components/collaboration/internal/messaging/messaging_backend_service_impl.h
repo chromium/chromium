@@ -148,6 +148,7 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // Uses the provided data to create TabGroupMessageMetadata.
   TabGroupMessageMetadata CreateTabGroupMessageMetadataFromCollaborationId(
+      const collaboration_pb::Message& message,
       std::optional<tab_groups::SavedTabGroup> tab_group,
       std::optional<data_sharing::GroupId> collaboration_group_id);
 
