@@ -139,16 +139,18 @@ void TestPaymentsNetworkInterface::ShouldReturnUnmaskDetailsImmediately(
   should_return_unmask_details_ = should_return_unmask_details;
 }
 
-void TestPaymentsNetworkInterface::AllowFidoRegistration(bool offer_fido_opt_in) {
+void TestPaymentsNetworkInterface::AllowFidoRegistration(
+    bool server_denotes_fido_eligible_but_not_opted_in) {
   should_return_unmask_details_ = true;
-  unmask_details_.offer_fido_opt_in = offer_fido_opt_in;
+  unmask_details_.server_denotes_fido_eligible_but_not_opted_in =
+      server_denotes_fido_eligible_but_not_opted_in;
 }
 
 void TestPaymentsNetworkInterface::AddFidoEligibleCard(std::string server_id,
                                              std::string credential_id,
                                              std::string relying_party_id) {
   should_return_unmask_details_ = true;
-  unmask_details_.offer_fido_opt_in = false;
+  unmask_details_.server_denotes_fido_eligible_but_not_opted_in = false;
   unmask_details_.unmask_auth_method =
       PaymentsAutofillClient::UnmaskAuthMethod::kFido;
   unmask_details_.fido_eligible_card_ids.insert(server_id);

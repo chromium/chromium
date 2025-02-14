@@ -111,7 +111,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // Params of the CreditCardAccessManagerBetterAuthOptInLogTest:
 // -- bool is_virtual_card;
-// -- bool unmask_details_offer_fido_opt_in;
+// -- bool unmask_details_server_denotes_fido_eligible_but_not_opted_in;
 // -- bool card_authorization_token_present;
 // -- bool max_strikes_limit_reached;
 // -- bool has_opted_in_from_android_settings;
@@ -141,7 +141,8 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
     SetCreditCardFIDOAuthEnabled(false);
 #endif  // BUILDFLAG(OS_ANDROID)
     payments_network_interface().AllowFidoRegistration(
-        /*offer_fido_opt_in=*/UnmaskDetailsOfferFidoOptIn());
+        /*server_denotes_fido_eligible_but_not_opted_in=*/
+        UnmaskDetailsOfferFidoOptIn());
     if (IsVirtualCard()) {
       CreditCard credit_card_copy = *GetCreditCard();
       credit_card_copy.set_record_type(CreditCard::RecordType::kVirtualCard);

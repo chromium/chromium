@@ -16,7 +16,8 @@ UnmaskDetails::UnmaskDetails(UnmaskDetails&&) = default;
 
 UnmaskDetails& UnmaskDetails::operator=(const UnmaskDetails& other) {
   unmask_auth_method = other.unmask_auth_method;
-  offer_fido_opt_in = other.offer_fido_opt_in;
+  server_denotes_fido_eligible_but_not_opted_in =
+      other.server_denotes_fido_eligible_but_not_opted_in;
   if (other.fido_request_options.empty()) {
     fido_request_options.clear();
   } else {

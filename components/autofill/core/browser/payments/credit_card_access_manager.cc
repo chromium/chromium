@@ -289,12 +289,12 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
   unmask_details_request_in_progress_ = false;
   unmask_details_ = unmask_details;
 
-  // TODO(crbug.com/40253859): Rename `offer_fido_opt_in`, and check that the
-  // user is off the record separately.
-  unmask_details_.offer_fido_opt_in =
-      unmask_details_.offer_fido_opt_in && !autofill_client().IsOffTheRecord();
+  // TODO(crbug.com/40253859): Check that the user is off the record separately.
+  unmask_details_.server_denotes_fido_eligible_but_not_opted_in =
+      unmask_details_.server_denotes_fido_eligible_but_not_opted_in &&
+      !autofill_client().IsOffTheRecord();
 
-  // Set delay as fido request timeout if available, otherwise set to default.
+  // Set delay as FIDO request timeout if available, otherwise set to default.
   base::TimeDelta delay = kDelayForGetUnmaskDetails;
   if (!unmask_details_.fido_request_options.empty()) {
     if (std::optional<int> request_timeout =
@@ -764,9 +764,9 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
 
 #if BUILDFLAG(IS_ANDROID)
 bool CreditCardAccessManager::ShouldOfferFidoAuth() const {
-  if (!unmask_details_.offer_fido_opt_in &&
+  if (!unmask_details_.server_denotes_fido_eligible_but_not_opted_in &&
       !unmask_details_.fido_request_options.empty()) {
-    // Server instructed the client to not offer fido because the client is
+    // Server instructed the client to not offer FIDO because the client is
     // already opted in. This can be verified with the presence of request
     // options in the server response.
     autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
@@ -774,7 +774,7 @@ bool CreditCardAccessManager::ShouldOfferFidoAuth() const {
     return false;
   }
 
-  if (!unmask_details_.offer_fido_opt_in) {
+  if (!unmask_details_.server_denotes_fido_eligible_but_not_opted_in) {
     // If the server thinks FIDO opt-in is not required for this user, then we
     // won't offer the FIDO opt-in checkbox on the card unmask dialog. Since the
     // client is not opted-in and device is eligible, this could mean that the
@@ -1052,9 +1052,9 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   // We should not offer FIDO opt-in dialog on mobile.
   return false;
 #else
-  if (!unmask_details_.offer_fido_opt_in &&
+  if (!unmask_details_.server_denotes_fido_eligible_but_not_opted_in &&
       !unmask_details_.fido_request_options.empty()) {
-    // Server instructed the client to not offer fido because the client is
+    // Server instructed the client to not offer FIDO because the client is
     // already opted in. This can be verified with the presence of request
     // options in the server response.
     autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
@@ -1066,7 +1066,7 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   // the FIDO opt-in dialog. Since the client is not opted-in and device is
   // eligible, this could mean that the server does not have a valid key for
   // this device or the server is in a bad state.
-  if (!unmask_details_.offer_fido_opt_in) {
+  if (!unmask_details_.server_denotes_fido_eligible_but_not_opted_in) {
     autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
         autofill_metrics::WebauthnOptInPromoNotOfferedReason::
             kUnmaskDetailsOfferFidoOptInFalse);
