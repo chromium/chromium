@@ -295,7 +295,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       gpu::SharedImageUsageSet shared_image_usage_flags);
   ~CanvasResourceSharedImage() override;
 
-  bool IsRecycleable() const final { return true; }
+  bool IsRecycleable() const final { return !IsLost(); }
   bool CreatesAcceleratedTransferableResources() const override { return true; }
   bool IsValid() const final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
