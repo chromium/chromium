@@ -124,6 +124,8 @@ public class ModalDialogViewBinder
             view.setHorizontalMargin(model.get(ModalDialogProperties.HORIZONTAL_MARGIN));
         } else if (ModalDialogProperties.VERTICAL_MARGIN == propertyKey) {
             view.setVerticalMargin(model.get(ModalDialogProperties.VERTICAL_MARGIN));
+        } else if (ModalDialogProperties.PADDING == propertyKey) {
+            view.setPadding(model.get(ModalDialogProperties.PADDING));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_LOADING == propertyKey) {
             view.setLoadingButtonState(
                     model.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING),

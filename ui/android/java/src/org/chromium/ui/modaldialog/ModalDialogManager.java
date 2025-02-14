@@ -172,9 +172,12 @@ public class ModalDialogManager {
          * A supplier to determine whether edge-to-edge is active in the enclosing window.
          *
          * @param edgeToEdgeStateSupplier The supplier for edge-to-edge state.
+         * @param isEdgeToEdgeEverywhereEnabled Whether the edge-to-edge-everywhere feature is
+         *     enabled.
          */
         protected void setEdgeToEdgeStateSupplier(
-                ObservableSupplier<Boolean> edgeToEdgeStateSupplier) {}
+                ObservableSupplier<Boolean> edgeToEdgeStateSupplier,
+                boolean isEdgeToEdgeEverywhereEnabled) {}
     }
 
     // This affects only the dialog style. To define a priority, call showDialog with {@link
@@ -285,6 +288,8 @@ public class ModalDialogManager {
     /** A supplier to determine whether edge-to-edge is active in the enclosing window. */
     private final @Nullable ObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
 
+    private final boolean mIsEdgeToEdgeEverywhereEnabled;
+
     /**
      * Constructor for initializing default {@link Presenter}. TODO (crbug.com/41492646): Remove
      * this constructor in favor of the one depending on E2E when this bug is addressed.
@@ -293,7 +298,11 @@ public class ModalDialogManager {
      * @param defaultType The dialog type of the default presenter.
      */
     public ModalDialogManager(Presenter defaultPresenter, @ModalDialogType int defaultType) {
-        this(defaultPresenter, defaultType, /* edgeToEdgeStateSupplier= */ null);
+        this(
+                defaultPresenter,
+                defaultType,
+                /* edgeToEdgeStateSupplier= */ null,
+                /* isEdgeToEdgeEverywhereEnabled= */ false);
     }
 
     /**
@@ -305,13 +314,16 @@ public class ModalDialogManager {
      * @param edgeToEdgeStateSupplier Supplier to determine whether edge-to-edge is active. This
      *     will be used to account for system bars insets in dialog margin calculations when
      *     applicable.
+     * @param isEdgeToEdgeEverywhereEnabled Whether the edge-to-edge-everywhere feature is enabled.
      */
     public ModalDialogManager(
             Presenter defaultPresenter,
             @ModalDialogType int defaultType,
-            @Nullable ObservableSupplier<Boolean> edgeToEdgeStateSupplier) {
+            @Nullable ObservableSupplier<Boolean> edgeToEdgeStateSupplier,
+            boolean isEdgeToEdgeEverywhereEnabled) {
         mDefaultPresenter = defaultPresenter;
         mEdgeToEdgeStateSupplier = edgeToEdgeStateSupplier;
+        mIsEdgeToEdgeEverywhereEnabled = isEdgeToEdgeEverywhereEnabled;
         registerPresenter(defaultPresenter, defaultType);
 
         mTokenHolders.put(
@@ -378,7 +390,8 @@ public class ModalDialogManager {
             presenter.setInsetObserver(mInsetObserver);
         }
         if (mEdgeToEdgeStateSupplier != null) {
-            presenter.setEdgeToEdgeStateSupplier(mEdgeToEdgeStateSupplier);
+            presenter.setEdgeToEdgeStateSupplier(
+                    mEdgeToEdgeStateSupplier, mIsEdgeToEdgeEverywhereEnabled);
         }
     }
 
