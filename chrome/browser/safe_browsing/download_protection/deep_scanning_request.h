@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -36,7 +37,8 @@ class DownloadRequestMaker;
 
 // This class encapsulates the process of uploading a file to Safe Browsing for
 // deep scanning and reporting the result.
-class DeepScanningRequest : public download::DownloadItem::Observer {
+class DeepScanningRequest : public download::DownloadItem::Observer,
+                            public enterprise_connectors::ContentAnalysisInfo {
  public:
   // Enum representing the type of constructor that initiated scanning.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -101,6 +103,16 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // download::DownloadItem::Observer:
   void OnDownloadUpdated(download::DownloadItem* download) override;
   void OnDownloadDestroyed(download::DownloadItem* download) override;
+
+  // enterprise_connectors::ContentAnalysisInfo:
+  const enterprise_connectors::AnalysisSettings& settings() const override;
+  int user_action_requests_count() const override;
+  std::string tab_title() const override;
+  std::string user_action_id() const override;
+  std::string email() const override;
+  std::string url() const override;
+  const GURL& tab_url() const override;
+  enterprise_connectors::ContentAnalysisRequest::Reason reason() const override;
 
  private:
   // Starts the deep scanning request when there is a one-to-one mapping from
