@@ -11,7 +11,7 @@
 #import "components/feature_engagement/public/feature_activation.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/default_browser/model/default_browser_promo_event_exporter.h"
+#import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 #import "ios/chrome/browser/feature_engagement/model/ios_tracker_session_controller.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -47,14 +47,13 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       profile->GetProtoDatabaseProvider();
 
-  auto default_browser_event_exporter =
-      std::make_unique<DefaultBrowserEventExporter>();
+  auto event_exporter = std::make_unique<EventExporter>();
 
   auto session_controller = std::make_unique<IOSTrackerSessionController>();
 
   return feature_engagement::Tracker::Create(
       storage_dir, background_task_runner, db_provider,
-      std::move(default_browser_event_exporter),
+      std::move(event_exporter),
       feature_engagement::Tracker::GetDefaultConfigurationProviders(),
       std::move(session_controller));
 }

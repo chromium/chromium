@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/default_browser_promo_event_exporter.h"
+#import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
@@ -20,10 +20,10 @@ constexpr base::TimeDelta kMoreThan3Day = base::Days(3) + base::Minutes(1);
 constexpr base::TimeDelta kMoreThan30Days = base::Days(30) + base::Minutes(1);
 }  // namespace
 
-class DefaultBrowserEventExporterTest : public PlatformTest {
+class EventExporterTest : public PlatformTest {
  public:
-  DefaultBrowserEventExporterTest() {}
-  ~DefaultBrowserEventExporterTest() override {}
+  EventExporterTest() {}
+  ~EventExporterTest() override {}
   base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
   }
@@ -48,7 +48,7 @@ class DefaultBrowserEventExporterTest : public PlatformTest {
               callback_called = true;
             });
 
-    DefaultBrowserEventExporter* exporter = new DefaultBrowserEventExporter();
+    EventExporter* exporter = new EventExporter();
     exporter->ExportEvents(std::move(callback));
 
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -65,7 +65,7 @@ class DefaultBrowserEventExporterTest : public PlatformTest {
   void InitTrackerAndSetBasicConditions() {
     // Initialize tracker with the default browser exporter.
     tracker_ = feature_engagement::CreateTestTracker(
-        std::make_unique<DefaultBrowserEventExporter>());
+        std::make_unique<EventExporter>());
 
     // Make sure tracker is initialized.
     tracker_->AddOnInitializedCallback(BoolArgumentQuitClosure());
@@ -89,7 +89,7 @@ class DefaultBrowserEventExporterTest : public PlatformTest {
       export_events_;
 };
 
-TEST_F(DefaultBrowserEventExporterTest, TestFRETimestampMigration) {
+TEST_F(EventExporterTest, TestFRETimestampMigration) {
   // No events to export.
   RequestExportEventsAndVerifyCallback();
   EXPECT_EQ(GetExportEventsCount(), 0);
@@ -113,7 +113,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestFRETimestampMigration) {
   EXPECT_EQ(GetExportEventsCount(), 0);
 }
 
-TEST_F(DefaultBrowserEventExporterTest, TestPromoInterestEventsMigration) {
+TEST_F(EventExporterTest, TestPromoInterestEventsMigration) {
   // No events to export.
   RequestExportEventsAndVerifyCallback();
   EXPECT_EQ(GetExportEventsCount(), 0);
@@ -148,7 +148,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestPromoInterestEventsMigration) {
   EXPECT_EQ(GetExportEventsCount(), 4);
 }
 
-TEST_F(DefaultBrowserEventExporterTest, TestPromoImpressionsMigration) {
+TEST_F(EventExporterTest, TestPromoImpressionsMigration) {
   // No events to export.
   RequestExportEventsAndVerifyCallback();
   EXPECT_EQ(GetExportEventsCount(), 0);
@@ -182,7 +182,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestPromoImpressionsMigration) {
 }
 
 // Checks that none of the promos triggers when there are no events exported.
-TEST_F(DefaultBrowserEventExporterTest, TestMigrationNoEvents) {
+TEST_F(EventExporterTest, TestMigrationNoEvents) {
   // Initialize tracker.
   InitTrackerAndSetBasicConditions();
 
@@ -199,7 +199,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationNoEvents) {
 
 // Checks that none of the promos triggers even when conditions are met when
 // cooldown from FRE is not satisfied.
-TEST_F(DefaultBrowserEventExporterTest, TestMigrationFRECooldown) {
+TEST_F(EventExporterTest, TestMigrationFRECooldown) {
   // Write to user defaults before creating the tracker.
   LogUserInteractionWithFirstRunPromo();
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
@@ -223,7 +223,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationFRECooldown) {
 
 // Checks that none of the promos triggers even when conditions are not met but
 // cooldown from FRE is ok.
-TEST_F(DefaultBrowserEventExporterTest, TestMigrationConditionsNotMet) {
+TEST_F(EventExporterTest, TestMigrationConditionsNotMet) {
   // Write to user defaults before creating the tracker.
   SimulateUserInteractionWithPromos(kMoreThan3Day, /*interectedWithFRE=*/true,
                                     /*genericCount=*/0, /*tailoredCount=*/0,
@@ -245,7 +245,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationConditionsNotMet) {
 
 // Checks that promos trigger when conditions are met and
 // cooldown from FRE is ok.
-TEST_F(DefaultBrowserEventExporterTest, TestMigrationConditionsMet) {
+TEST_F(EventExporterTest, TestMigrationConditionsMet) {
   // Write to user defaults before creating the tracker.
   SimulateUserInteractionWithPromos(kMoreThan3Day, /*interectedWithFRE=*/true,
                                     /*genericCount=*/0, /*tailoredCount=*/0,
@@ -270,7 +270,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationConditionsMet) {
 }
 
 // Checks that generic promo doesn't tigger second time.
-TEST_F(DefaultBrowserEventExporterTest, TestMigrationSecondGenericPromo) {
+TEST_F(EventExporterTest, TestMigrationSecondGenericPromo) {
   // Write to user defaults before creating the tracker.
   SimulateUserInteractionWithPromos(kMoreThan30Days, /*interectedWithFRE=*/true,
                                     /*genericCount=*/1, /*tailoredCount=*/0,
@@ -295,7 +295,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationSecondGenericPromo) {
 }
 
 // Checks that tailored promos don't trigger second time.
-TEST_F(DefaultBrowserEventExporterTest, TestMigrationSecondTailoredPromo) {
+TEST_F(EventExporterTest, TestMigrationSecondTailoredPromo) {
   // Write to user defaults before creating the tracker.
   SimulateUserInteractionWithPromos(kMoreThan30Days, /*interectedWithFRE=*/true,
                                     /*genericCount=*/0, /*tailoredCount=*/1,
@@ -321,7 +321,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationSecondTailoredPromo) {
 
 // Checks that generic promo doesn't trigger when conditions are met but are too
 // old.
-TEST_F(DefaultBrowserEventExporterTest, TestMigrationGenericOldCondition) {
+TEST_F(EventExporterTest, TestMigrationGenericOldCondition) {
   // Write to user defaults before creating the tracker.
   SimulateUserInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral,
                                                    kMoreThan30Days);
@@ -339,7 +339,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationGenericOldCondition) {
 
 // Checks that tailored promo doesn't trigger when conditions are met but are
 // too old.
-TEST_F(DefaultBrowserEventExporterTest, TestMigrationTailoredOldCondition) {
+TEST_F(EventExporterTest, TestMigrationTailoredOldCondition) {
   // Write to user defaults before creating the tracker.
   SimulateUserInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs,
                                                    kMoreThan30Days);
@@ -356,7 +356,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationTailoredOldCondition) {
 }
 
 // Checks that the event exporter migrates the events.
-TEST_F(DefaultBrowserEventExporterTest, TestNonModalPromoEventsMigration) {
+TEST_F(EventExporterTest, TestNonModalPromoEventsMigration) {
   // No events to export.
   RequestExportEventsAndVerifyCallback();
   EXPECT_EQ(GetExportEventsCount(), 0);
@@ -382,7 +382,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestNonModalPromoEventsMigration) {
 }
 
 // Checks that none of the promos trigger when there are no events exported.
-TEST_F(DefaultBrowserEventExporterTest, TestNonModalMigrationNoEvents) {
+TEST_F(EventExporterTest, TestNonModalMigrationNoEvents) {
   LogUserInteractionWithNonModalPromo(1);
 
   // Initialize tracker.
@@ -395,7 +395,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestNonModalMigrationNoEvents) {
 
 // Checks that after migration, the promo can be triggered if the last
 // interaction isn't in cooldown and the interaction count is less than 10.
-TEST_F(DefaultBrowserEventExporterTest, TestNonModalMigrationConditionsMet) {
+TEST_F(EventExporterTest, TestNonModalMigrationConditionsMet) {
   SimulateUserInteractionWithNonModalPromo(kMoreThan30Days,
                                            /*interaction_count=*/1);
 
@@ -408,8 +408,7 @@ TEST_F(DefaultBrowserEventExporterTest, TestNonModalMigrationConditionsMet) {
 
 // Checks that after migration, the promo cannot be triggered if the last
 // interaction is in cooldown and the interaction count is less than 10.
-TEST_F(DefaultBrowserEventExporterTest,
-       TestNonModalMigrationCooldownConditionsNotMet) {
+TEST_F(EventExporterTest, TestNonModalMigrationCooldownConditionsNotMet) {
   // Write to user defaults before creating the tracker.
   SimulateUserInteractionWithNonModalPromo(kMoreThan3Day,
                                            /*interaction_count=*/1);
@@ -423,8 +422,7 @@ TEST_F(DefaultBrowserEventExporterTest,
 
 // Checks that after migration, the promo cannot be triggered if the last
 // interaction is not in cooldown but the interaction count is more than 10.
-TEST_F(DefaultBrowserEventExporterTest,
-       TestNonModalMigrationInteractionConditionNotMet) {
+TEST_F(EventExporterTest, TestNonModalMigrationInteractionConditionNotMet) {
   // Write to user defaults before creating the tracker.
   SimulateUserInteractionWithNonModalPromo(kMoreThan3Day,
                                            /*interaction_count=*/10);

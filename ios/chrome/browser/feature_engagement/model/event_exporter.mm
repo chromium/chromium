@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/default_browser_promo_event_exporter.h"
+#import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 
 #import <UIKit/UIKit.h>
 
@@ -10,7 +10,6 @@
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 
 namespace {
 
@@ -21,11 +20,11 @@ int DaysSinceTime(base::Time time) {
 
 }  // namespace
 
-DefaultBrowserEventExporter::DefaultBrowserEventExporter() {}
+EventExporter::EventExporter() {}
 
-DefaultBrowserEventExporter::~DefaultBrowserEventExporter() = default;
+EventExporter::~EventExporter() = default;
 
-void DefaultBrowserEventExporter::ExportEvents(ExportEventsCallback callback) {
+void EventExporter::ExportEvents(ExportEventsCallback callback) {
   std::vector<EventData> events_to_migrate;
 
   // Migrate the FRE promo event.
@@ -84,8 +83,7 @@ void DefaultBrowserEventExporter::ExportEvents(ExportEventsCallback callback) {
       base::BindOnce(std::move(callback), std::move(events_to_migrate)));
 }
 
-void DefaultBrowserEventExporter::AddFREPromoEvent(
-    std::vector<EventData>& events) {
+void EventExporter::AddFREPromoEvent(std::vector<EventData>& events) {
   const base::Time time = GetDefaultBrowserFREPromoTimestampIfLast();
   if (time != base::Time::UnixEpoch()) {
     events.emplace_back(feature_engagement::events::kIOSDefaultBrowserFREShown,
@@ -93,17 +91,15 @@ void DefaultBrowserEventExporter::AddFREPromoEvent(
   }
 }
 
-void DefaultBrowserEventExporter::AddPromoInterestEvents(
-    std::vector<EventData>& events,
-    DefaultPromoType promo,
-    const std::string& event_name) {
+void EventExporter::AddPromoInterestEvents(std::vector<EventData>& events,
+                                           DefaultPromoType promo,
+                                           const std::string& event_name) {
   for (base::Time time : LoadTimestampsForPromoType(promo)) {
     events.emplace_back(event_name, DaysSinceTime(time));
   }
 }
 
-void DefaultBrowserEventExporter::AddGenericPromoImpressions(
-    std::vector<EventData>& events) {
+void EventExporter::AddGenericPromoImpressions(std::vector<EventData>& events) {
   const base::Time time = GetGenericDefaultBrowserPromoTimestamp();
   if (time != base::Time::UnixEpoch()) {
     events.emplace_back(
@@ -111,7 +107,7 @@ void DefaultBrowserEventExporter::AddGenericPromoImpressions(
         DaysSinceTime(time));
   }
 }
-void DefaultBrowserEventExporter::AddTailoredPromoImpressions(
+void EventExporter::AddTailoredPromoImpressions(
     std::vector<EventData>& events) {
   const base::Time time = GetTailoredDefaultBrowserPromoTimestamp();
   if (time != base::Time::UnixEpoch()) {
