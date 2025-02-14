@@ -19880,7 +19880,7 @@
                 {
                     "name": "Disabled",
                     "enable_features": [
-                        "RustyPng"
+                        "RustPng"
                     ]
                 }
             ]
