@@ -171,21 +171,6 @@ class DiskMountManagerImpl : public DiskMountManager,
                                          std::move(callback), mount_path));
   }
 
-  void RemountAllRemovableDrives(MountAccessMode mode) override {
-    // TODO(yamaguchi): Retry for tentative remount failures. crbug.com/661455
-    for (const auto& disk : disks_) {
-      DCHECK(disk);
-      if (disk->is_read_only_hardware()) {
-        // Read-only devices can be mounted in RO mode only. No need to remount.
-        continue;
-      }
-      if (!disk->is_mounted()) {
-        continue;
-      }
-      RemountRemovableDrive(*disk, mode);
-    }
-  }
-
   // DiskMountManager override.
   void FormatMountedDevice(const std::string& mount_path,
                            FormatFileSystemType filesystem,
@@ -423,7 +408,17 @@ class DiskMountManagerImpl : public DiskMountManager,
     OnMountCompleted({source_path, {}, type, MountError::kInternalError});
   }
 
-  void RemountRemovableDrive(const Disk& disk, MountAccessMode access_mode) {
+  void RemountRemovableDrive(const Disk& disk,
+                             MountAccessMode access_mode) override {
+    // TODO(yamaguchi): Retry for tentative remount failures. crbug.com/661455
+    if (disk.is_read_only_hardware()) {
+      // Read-only devices can be mounted in RO mode only. No need to remount.
+      return;
+    }
+    if (!disk.is_mounted()) {
+      return;
+    }
+
     const std::string& mount_path = disk.mount_path();
     MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {

@@ -1071,22 +1071,30 @@ TEST_F(VolumeManagerTest, ExternalStorageDisabledPolicyMultiProfile) {
 }
 
 TEST_F(VolumeManagerTest, OnExternalStorageReadOnlyChanged) {
-  // Emulate updates of kExternalStorageReadOnly (change to true, then false).
+  // This subscribes to pref changes.
+  volume_manager()->Initialize();
+
+  // Set up some disks.
+  disk_mount_manager_->AddDiskForTest(
+      Disk::Builder().SetDevicePath("device1").Build());
+  disk_mount_manager_->AddDiskForTest(
+      Disk::Builder().SetDevicePath("device2").Build());
+
+  // Trigger pref updates.
   profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageReadOnly,
                                     true);
-  volume_manager()->OnExternalStorageReadOnlyChanged();
   profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageReadOnly,
                                     false);
-  volume_manager()->OnExternalStorageReadOnlyChanged();
 
-  // Verify that remount of removable disks is triggered for each update.
-  ASSERT_EQ(2U, disk_mount_manager_->remount_all_requests().size());
-  const FakeDiskMountManager::RemountAllRequest& remount_request1 =
-      disk_mount_manager_->remount_all_requests()[0];
-  EXPECT_EQ(ash::MountAccessMode::kReadOnly, remount_request1.access_mode);
-  const FakeDiskMountManager::RemountAllRequest& remount_request2 =
-      disk_mount_manager_->remount_all_requests()[1];
-  EXPECT_EQ(ash::MountAccessMode::kReadWrite, remount_request2.access_mode);
+  // Verify that removable disk remounts are triggered.
+  using ash::MountAccessMode;
+  std::vector<FakeDiskMountManager::RemountRequest> expected = {
+      {"device1", MountAccessMode::kReadOnly},
+      {"device2", MountAccessMode::kReadOnly},
+      {"device1", MountAccessMode::kReadWrite},
+      {"device2", MountAccessMode::kReadWrite},
+  };
+  EXPECT_EQ(expected, disk_mount_manager_->remount_requests());
 }
 
 TEST_F(VolumeManagerTest, GetVolumeList) {

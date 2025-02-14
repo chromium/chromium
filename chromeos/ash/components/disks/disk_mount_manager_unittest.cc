@@ -1130,13 +1130,18 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
       kMountPath1);
 }
 
-TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
+TEST_F(DiskMountManagerTest, RemountRemovableDrive) {
   DiskMountManager* manager = DiskMountManager::GetInstance();
   // Initially we have 2 mounted devices.
   // kDevice1MountPath --- read-write device, mounted in read-write mode.
   // kReadOnlyDeviceMountPath --- read-only device, mounted in read-only mode.
 
-  manager->RemountAllRemovableDrives(MountAccessMode::kReadOnly);
+  manager->RemountRemovableDrive(
+      *manager->FindDiskBySourcePath(kDevice1SourcePath),
+      MountAccessMode::kReadOnly);
+  manager->RemountRemovableDrive(
+      *manager->FindDiskBySourcePath(kDevice2SourcePath),
+      MountAccessMode::kReadOnly);
 
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
@@ -1154,7 +1159,12 @@ TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
   EXPECT_TRUE(observer_->GetMountEvent(0).disk->is_read_only());
 
   // Remount in read-write mode again.
-  manager->RemountAllRemovableDrives(MountAccessMode::kReadWrite);
+  manager->RemountRemovableDrive(
+      *manager->FindDiskBySourcePath(kDevice1SourcePath),
+      MountAccessMode::kReadWrite);
+  manager->RemountRemovableDrive(
+      *manager->FindDiskBySourcePath(kDevice2SourcePath),
+      MountAccessMode::kReadWrite);
 
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(

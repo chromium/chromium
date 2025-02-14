@@ -212,9 +212,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   virtual void UnmountPath(const std::string& mount_path,
                            UnmountPathCallback callback) = 0;
 
-  // Remounts mounted removable devices to change the read-only mount option.
-  // Devices that can be mounted only in its read-only mode will be ignored.
-  virtual void RemountAllRemovableDrives(MountAccessMode mode) = 0;
+  // Remounts mounted removable device to change the read-only mount option.
+  // Device that can be mounted only in its read-only mode will be ignored.
+  virtual void RemountRemovableDrive(const Disk& disk,
+                                     MountAccessMode access_mode) = 0;
 
   // Formats device mounted at |mount_path| with the given filesystem and label.
   // Also unmounts the device before formatting.

@@ -1137,8 +1137,11 @@ void VolumeManager::OnExternalStorageDisabledChanged() {
 }
 
 void VolumeManager::OnExternalStorageReadOnlyChanged() {
-  disk_mount_manager_->RemountAllRemovableDrives(
-      GetExternalStorageAccessMode(profile_));
+  const ash::MountAccessMode access_mode =
+      GetExternalStorageAccessMode(profile_);
+  for (const auto& disk : disk_mount_manager_->disks()) {
+    disk_mount_manager_->RemountRemovableDrive(*disk, access_mode);
+  }
 }
 
 void VolumeManager::OnRemovableStorageAttached(

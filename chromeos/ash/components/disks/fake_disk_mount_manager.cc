@@ -32,9 +32,10 @@ FakeDiskMountManager::MountRequest::MountRequest(const MountRequest& other) =
 
 FakeDiskMountManager::MountRequest::~MountRequest() = default;
 
-FakeDiskMountManager::RemountAllRequest::RemountAllRequest(
+FakeDiskMountManager::RemountRequest::RemountRequest(
+    std::string device_path,
     MountAccessMode access_mode)
-    : access_mode(access_mode) {}
+    : device_path(std::move(device_path)), access_mode(access_mode) {}
 
 FakeDiskMountManager::FakeDiskMountManager() = default;
 
@@ -138,9 +139,9 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
   }
 }
 
-void FakeDiskMountManager::RemountAllRemovableDrives(
-    MountAccessMode access_mode) {
-  remount_all_requests_.emplace_back(access_mode);
+void FakeDiskMountManager::RemountRemovableDrive(const Disk& disk,
+                                                 MountAccessMode access_mode) {
+  remount_requests_.emplace_back(disk.device_path(), access_mode);
 }
 
 bool FakeDiskMountManager::FinishAllUnmountPathRequests() {
