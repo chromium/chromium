@@ -10183,6 +10183,7 @@ from previous Chrome versions.
   <int value="-1561252720" label="AutofillCreditCardUploadFeedback:disabled"/>
   <int value="-1560729847" label="AutofillCacheQueryResponses:enabled"/>
   <int value="-1560650271" label="WasmCodeCache:disabled"/>
+  <int value="-1560266377" label="MediaAppImageMantisModel:enabled"/>
   <int value="-1559789642" label="RunAllFlashInAllowMode:enabled"/>
   <int value="-1559616006" label="DefaultANGLEVulkan:enabled"/>
   <int value="-1559292789" label="SideSearch:disabled"/>
@@ -12841,6 +12842,7 @@ from previous Chrome versions.
   <int value="-508488651" label="WebviewAccelerateSmallCanvases:enabled"/>
   <int value="-508346329" label="TerminalSystemAppLegacySettings:disabled"/>
   <int value="-508250572" label="ServiceWorkerLongRunningMessage:disabled"/>
+  <int value="-508184630" label="MediaAppImageMantisModel:disabled"/>
   <int value="-508143738" label="disable-accelerated-fixed-root-background"/>
   <int value="-507935635"
       label="OnDeviceNotificationContentDetectionModel:enabled"/>

@@ -6823,6 +6823,11 @@ const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";
 
+const char kMediaAppImageMantisModelName[] =
+    "The model to use with the Mantis feature";
+const char kMediaAppImageMantisModelDescription[] =
+    "This flag controls the model to use with the Mantis feature.";
+
 const char kMicrophoneMuteSwitchDeviceName[] = "Microphone Mute Switch Device";
 const char kMicrophoneMuteSwitchDeviceDescription[] =
     "Support for detecting the state of hardware microphone mute toggle. Only "
