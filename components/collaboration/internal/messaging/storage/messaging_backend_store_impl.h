@@ -69,6 +69,8 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
   std::optional<MessagesPerGroup*> GetMessagesPerGroupForTesting(
       const data_sharing::GroupId& collaboration_id);
 
+  std::optional<collaboration_pb::Message> GetLastMessageForTesting();
+
  private:
   std::optional<MessagesPerGroup*> GetMessagesPerGroup(
       const data_sharing::GroupId& collaboration_id);
@@ -103,6 +105,9 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
 
   // Max age of GetRecentMessages should return.
   base::TimeDelta recent_message_cutoff_duration_ = base::Days(31);
+
+  // Return the last message from AddMessage() for testing purpose.
+  std::optional<collaboration_pb::Message> last_added_message_for_testing_;
 
   base::WeakPtrFactory<MessagingBackendStoreImpl> weak_ptr_factory_{this};
 };
