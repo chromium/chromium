@@ -372,7 +372,10 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
                     forDataType:(manual_fill::ManualFillDataType)dataType {
   DCHECK(IsKeyboardAccessoryUpgradeEnabled());
 
-  self.formInputAccessoryView.hidden = YES;
+  // Hide the keyboard accessory while the expanded view is visible (iPhone
+  // only).
+  self.formInputAccessoryView.hidden =
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 
   [_formInputAccessoryViewControllerDelegate
       formInputAccessoryViewController:self
@@ -411,36 +414,43 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 
   [self.leadingView addArrangedSubview:self.formSuggestionView];
 
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  BOOL isTabletFormFactor =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
     [formInputAccessoryView
-        setUpWithLeadingView:self.leadingView
-          customTrailingView:self.manualFillAccessoryViewController.view];
+              setUpWithLeadingView:self.leadingView
+                navigationDelegate:self.navigationDelegate
+                  manualFillSymbol:DefaultSymbolWithPointSize(
+                                       isTabletFormFactor ? kListBulletSymbol
+                                                          : kExpandSymbol,
+                                       kSymbolActionPointSize)
+          passwordManualFillSymbol:CustomSymbolWithPointSize(
+                                       kPasswordSymbol, kSymbolActionPointSize)
+        creditCardManualFillSymbol:DefaultSymbolWithPointSize(
+                                       kCreditCardSymbol,
+                                       kSymbolActionPointSize)
+           addressManualFillSymbol:CustomSymbolWithPointSize(
+                                       kLocationSymbol, kSymbolActionPointSize)
+                 closeButtonSymbol:DefaultSymbolWithPointSize(
+                                       kKeyboardDownSymbol,
+                                       kSymbolActionPointSize)
+                isTabletFormFactor:isTabletFormFactor];
   } else {
-    formInputAccessoryView.accessibilityViewIsModal = YES;
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
+    if (isTabletFormFactor) {
       [formInputAccessoryView
-                setUpWithLeadingView:self.leadingView
-                  navigationDelegate:self.navigationDelegate
-                    manualFillSymbol:DefaultSymbolWithPointSize(
-                                         kExpandSymbol, kSymbolActionPointSize)
-            passwordManualFillSymbol:CustomSymbolWithPointSize(
-                                         kPasswordSymbol,
-                                         kSymbolActionPointSize)
-          creditCardManualFillSymbol:DefaultSymbolWithPointSize(
-                                         kCreditCardSymbol,
-                                         kSymbolActionPointSize)
-             addressManualFillSymbol:CustomSymbolWithPointSize(
-                                         kLocationSymbol,
-                                         kSymbolActionPointSize)
-                   closeButtonSymbol:DefaultSymbolWithPointSize(
-                                         kKeyboardDownSymbol,
-                                         kSymbolActionPointSize)];
+          setUpWithLeadingView:self.leadingView
+            customTrailingView:self.manualFillAccessoryViewController.view];
     } else {
       self.formSuggestionView.trailingView =
           self.manualFillAccessoryViewController.view;
       [formInputAccessoryView setUpWithLeadingView:self.leadingView
                                 navigationDelegate:self.navigationDelegate];
     }
+  }
+
+  if (!isTabletFormFactor) {
+    formInputAccessoryView.accessibilityViewIsModal = YES;
     formInputAccessoryView.nextButton.enabled = self.formInputNextButtonEnabled;
     formInputAccessoryView.previousButton.enabled =
         self.formInputPreviousButtonEnabled;

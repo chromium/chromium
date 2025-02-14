@@ -24,6 +24,10 @@ constexpr CGFloat kLargeAccessoryHeight = 59;
 // Button target area for the large keyboard accessory.
 constexpr CGFloat kLargeButtonTargetArea = 44;
 
+// The padding between the image and the title on the manual fill button.
+// Only applies to the iPad version of this button.
+constexpr CGFloat kManualFillTitlePadding = 4;
+
 // The width for the background-colored gradient UIView.
 constexpr CGFloat ManualFillGradientWidth = 44;
 
@@ -105,6 +109,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   UIView* _contentView;
   // Whether we are using the large accessory view.
   BOOL _largeAccessoryViewEnabled;
+  // Whether the current form factor is a tablet.
+  BOOL _isTabletFormFactor;
 }
 
 #pragma mark - Public
@@ -144,9 +150,11 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
-             closeButtonSymbol:(UIImage*)closeButtonSymbol {
+             closeButtonSymbol:(UIImage*)closeButtonSymbol
+            isTabletFormFactor:(BOOL)isTabletFormFactor {
   DCHECK(manualFillSymbol);
   _largeAccessoryViewEnabled = YES;
+  _isTabletFormFactor = isTabletFormFactor;
   [self setUpWithLeadingView:leadingView
               customTrailingView:nil
               navigationDelegate:delegate
@@ -377,6 +385,10 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     addressManualFillButton.hidden = YES;
     self.addressManualFillButton = addressManualFillButton;
 
+    if (_isTabletFormFactor) {
+      closeButton.hidden = YES;
+    }
+
     navigationView = [[UIStackView alloc] initWithArrangedSubviews:@[
       passwordManualFillButton, creditCardManualFillButton,
       addressManualFillButton, manualFillButton, closeButton
@@ -419,9 +431,27 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Create the manual fill button.
 - (UIButton*)createManualFillButtonWithText:
     (FormInputAccessoryViewTextData*)textData {
-  return [self createImageButton:self.manualFillSymbol
-                          action:@selector(manualFillButtonTapped)
-              accessibilityLabel:textData.manualFillButtonAccessibilityLabel];
+  UIButton* manualFillButton =
+      [self createImageButton:self.manualFillSymbol
+                       action:@selector(manualFillButtonTapped)
+           accessibilityLabel:textData.manualFillButtonAccessibilityLabel];
+
+  // TODO(crbug.com/385172448): The title should not be added when the window is
+  // not in full screen mode.
+  if (_isTabletFormFactor && _largeAccessoryViewEnabled) {
+    [manualFillButton setTitle:textData.manualFillButtonTitle
+                      forState:UIControlStateNormal];
+    // If the button has both a title and an image, add padding around the title
+    // so that it's not directly next to the image.
+    if (self.manualFillSymbol) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.imagePadding = kManualFillTitlePadding;
+      manualFillButton.configuration = buttonConfiguration;
+    }
+  }
+
+  return manualFillButton;
 }
 
 // Create the password manual fill button.
