@@ -84,7 +84,8 @@ class PointerLockController : public ExclusiveAccessControllerBase {
   void ExitExclusiveAccessIfNecessary() override;
   void NotifyTabExclusiveAccessLost() override;
 
-  void OnBubbleHidden(content::WebContents*, ExclusiveAccessBubbleHideReason);
+  void OnBubbleHidden(base::WeakPtr<content::WebContents>,
+                      ExclusiveAccessBubbleHideReason);
 
   bool ShouldSuppressBubbleReshowForStateChange();
 
