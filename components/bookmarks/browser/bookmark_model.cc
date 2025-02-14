@@ -246,6 +246,31 @@ const BookmarkNode* BookmarkModel::account_mobile_node() const {
   return account_mobile_node_;
 }
 
+bool BookmarkModel::IsNodeVisible(const BookmarkNode& node) const {
+  if (!node.is_permanent_node()) {
+    return true;
+  }
+
+  if (!node.children().empty()) {
+    return true;
+  }
+
+  if (!BookmarkPermanentNode::IsTypeVisibleWhenEmpty(node.type())) {
+    return false;
+  }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (IsLocalOnlyNode(node) && account_bookmark_bar_node() &&
+      !HasLocalOrSyncableBookmarks(this)) {
+    // Prune this local empty permanent node, since the user has account
+    // permanent folders.
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  return true;
+}
+
 bool BookmarkModel::IsLocalOnlyNode(const BookmarkNode& node) const {
   if (is_root_node(&node)) {
     // The semantics aren't clear for the root, but returning true seems most
