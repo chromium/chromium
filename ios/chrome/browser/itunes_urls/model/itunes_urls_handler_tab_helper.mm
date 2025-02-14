@@ -34,6 +34,7 @@ const char kAppUrlHost[] = "apps.apple.com";
 
 const char kITunesProductIdPrefix[] = "id";
 const char kITunesAppPathIdentifier[] = "app";
+const char kITunesAppBundlePathIdentifier[] = "app-bundle";
 const size_t kITunesUrlPathMinComponentsCount = 2;
 const size_t kITunesUrlRegionComponentDefaultIndex = 0;
 const size_t kITunesUrlMediaTypeComponentDefaultIndex = 1;
@@ -98,7 +99,8 @@ bool ITunesUrlsHandlerTabHelper::CanHandleUrl(const GURL& url) {
   if (path_components[kITunesUrlRegionComponentDefaultIndex].size() != 2) {
     media_type_index--;
   }
-  return path_components[media_type_index] == kITunesAppPathIdentifier;
+  return path_components[media_type_index] == kITunesAppPathIdentifier ||
+      path_components[media_type_index] == kITunesAppBundlePathIdentifier;
 }
 
 void ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
