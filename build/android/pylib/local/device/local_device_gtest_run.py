@@ -578,10 +578,10 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           # need to be deployed this way are pretty static. As an optimization
           # (especially for local development), only attempt a re-deployment if
           # the contents of the files have changed.
-          if dev.PathExists(device_json_path, as_root=True):
+          try:
             device_json_contents = dev.ReadFile(device_json_path, as_root=True)
             replace_openxr_json = (device_json_contents != openxr_json_contents)
-          else:
+          except device_errors.CommandFailedError:
             replace_openxr_json = True
 
           if replace_openxr_json:
