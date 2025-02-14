@@ -14,6 +14,9 @@
   <message desc="Tooltip of the button to close the dialog." meaning="Close the dialog." name="IDS_RECORDER_CLOSE_DIALOG_BUTTON_TOOLTIP">
     Close
   </message>
+  <message desc="Button to acknowledge the instruction described in the unescapable error dialog." name="IDS_RECORDER_ERROR_DIALOG_CONSENT_BUTTON">
+    OK
+  </message>
   <message desc="Label of the menu item to choose webm as audio format in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_AUDIO_FORMAT_WEBM_OPTION">
     WEBM
   </message>
@@ -151,6 +154,12 @@
   </message>
   <message desc="Nudge to start recording when there's no existing recording in main page." name="IDS_RECORDER_MAIN_START_RECORD_NUDGE">
     Press to record
+  </message>
+  <message desc="Description of the mic-connection-error dialog before starting recording." name="IDS_RECORDER_MIC_CONNECTION_ERROR_DIALOG_DESCRIPTION">
+    Make sure a mic is connected to start recording audio
+  </message>
+  <message desc="Header of the mic-connection-error dialog before starting recording." name="IDS_RECORDER_MIC_CONNECTION_ERROR_DIALOG_HEADER">
+    Connect a mic
   </message>
   <message desc="Tooltip of the combobox to choose microphone to use in recording session." meaning="Microphone device to use in recordding session." name="IDS_RECORDER_MIC_SELECTION_MENU_BUTTON_TOOLTIP">
     Mic options

@@ -15,6 +15,7 @@ import '../components/recording-info-dialog.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
 import '../components/system-audio-consent-dialog.js';
+import '../components/error-dialog.js';
 import '../components/directives/with-tooltip.js';
 
 import {
@@ -207,6 +208,9 @@ export class MainPage extends ReactiveLitElement {
 
   private lastDeleteId: string|null = null;
 
+  // Whether there's a mic-connection-error that is not consented.
+  private readonly micConnectionErrorOccurred = signal(false);
+
   private get settingsMenu(): SettingsMenu|null {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
   }
@@ -290,10 +294,11 @@ export class MainPage extends ReactiveLitElement {
     // TODO(pihsun): The typed route accepts string only as parameters for now.
     // Have some way to integrate with schema.ts so this is not needed?
     const includeSystemAudio = settings.value.includeSystemAudio.toString();
-    const micId = assertExists(
-      this.microphoneManager.getSelectedMicId().value,
-      'There is no selected microphone.',
-    );
+    const micId = this.microphoneManager.getSelectedMicId().value;
+    if (micId === null || micId === '') {
+      this.micConnectionErrorOccurred.value = true;
+      return;
+    }
     navigateTo('record', {
       includeSystemAudio,
       micId,
@@ -393,6 +398,8 @@ export class MainPage extends ReactiveLitElement {
 
   override render(): RenderResult {
     const onboarding = settings.value.onboardingDone !== true;
+    const micConnectionError = this.micConnectionErrorOccurred.value;
+    const inertRoot = onboarding || micConnectionError;
 
     return html`
       <onboarding-dialog
@@ -413,7 +420,14 @@ export class MainPage extends ReactiveLitElement {
       <export-dialog ${ref(this.exportDialog)}></export-dialog>
       <recording-info-dialog ${ref(this.recordingInfoDialog)}>
       </recording-info-dialog>
-      <div id="root" ?inert=${onboarding}>
+      <error-dialog
+        header=${i18n.micConnectionErrorDialogHeader}
+        ?open=${micConnectionError}
+        @close=${() => this.micConnectionErrorOccurred.value = false}
+      >
+        ${i18n.micConnectionErrorDialogDescription}
+      </error-dialog>
+      <div id="root" ?inert=${inertRoot}>
         <recording-file-list
           .recordingMetadataMap=${this.recordingMetadataMap.value}
           .inlinePlayingItem=${this.inlinePlayingItemInfo.value}
