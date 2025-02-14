@@ -352,9 +352,9 @@ public class LayoutManagerImpl
                     // ScrollingBottomViewSceneLayer Since ScrollingBottomViewSceneLayer change
                     // the container size, it causes relocation tab strip scene layer.
                     ScrollingBottomViewSceneLayer.class,
+                    ContextualSearchPanel.class,
                     EdgeToEdgeBottomChinSceneLayer.class,
                     StatusIndicatorCoordinator.getSceneOverlayClass(),
-                    ContextualSearchPanel.class,
                     ReadAloudMiniPlayerSceneLayer.class
                 };
 

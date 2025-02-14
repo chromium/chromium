@@ -644,6 +644,13 @@ public class BottomAttachedUiObserverTest {
                 OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false, false);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+
         mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
