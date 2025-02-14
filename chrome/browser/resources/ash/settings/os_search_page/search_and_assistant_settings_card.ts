@@ -32,6 +32,8 @@ import {Router, routes} from '../router.js';
 
 import {getTemplate} from './search_and_assistant_settings_card.html.js';
 
+const ENTERPRISE_POLICY_DISALLOWED = 2;
+
 const SearchAndAssistantSettingsCardElementBase =
     DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement)));
 
@@ -94,6 +96,18 @@ export class SearchAndAssistantSettingsCardElement extends
         value: () => {
           return isScannerSettingsToggleVisible();
         },
+      },
+
+      isScannerAllowedByEnterprisePolicy_: {
+        type: Boolean,
+        computed: 'isEnterprisePolicyAllowed_(' +
+            'prefs.ash.scanner.enterprise_policy_allowed.value)',
+      },
+
+      enterprisePolicyToggleUncheckedValues_: {
+        type: Array,
+        readOnly: true,
+        value: () => [ENTERPRISE_POLICY_DISALLOWED],
       },
 
       /** Can be disallowed due to flag, policy, locale, etc. */
@@ -169,6 +183,10 @@ export class SearchAndAssistantSettingsCardElement extends
     return this.i18n(
         isAssistantEnabled ? 'searchGoogleAssistantEnabled' :
                              'searchGoogleAssistantDisabled');
+  }
+
+  private isEnterprisePolicyAllowed_(value: number): boolean {
+    return value !== ENTERPRISE_POLICY_DISALLOWED;
   }
 }
 

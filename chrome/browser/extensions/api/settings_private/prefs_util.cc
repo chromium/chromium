@@ -939,6 +939,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kScannerEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kScannerEnterprisePolicyAllowed] =
+      settings_api::PrefType::kNumber;
 
   // Bluetooth & Internet settings.
   (*s_allowlist)[ash::kAllowBluetooth] = settings_api::PrefType::kBoolean;
