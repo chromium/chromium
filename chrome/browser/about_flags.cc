@@ -11648,7 +11648,19 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-clipboard-contents-id",
      flag_descriptions::kClipboardContentsIdName,
      flag_descriptions::kClipboardContentsIdDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kClipboardContentsId)}
+     FEATURE_VALUE_TYPE(blink::features::kClipboardContentsId)},
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"autofill-enable-amount-extraction-allowlist-desktop",
+     flag_descriptions::kAutofillEnableAmountExtractionAllowlistDesktopName,
+     flag_descriptions::
+         kAutofillEnableAmountExtractionAllowlistDesktopDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableAmountExtractionAllowlistDesktop)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

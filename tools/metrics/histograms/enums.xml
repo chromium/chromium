@@ -13266,6 +13266,8 @@ from previous Chrome versions.
   <int value="-340255045" label="allow-nacl-socket-api"/>
   <int value="-340183901"
       label="UpdatedSupervisedUserExtensionApprovalStrings:disabled"/>
+  <int value="-340135595"
+      label="AutofillEnableAmountExtractionAllowlistDesktop:disabled"/>
   <int value="-339201954" label="WebAppEnableScopeExtensions:disabled"/>
   <int value="-339103761" label="ArcGraphicBuffersVisualizationTool:enabled"/>
   <int value="-339092189" label="CommercePriceTrackingChipExperiment:disabled"/>
@@ -16913,6 +16915,8 @@ from previous Chrome versions.
   <int value="1107543566" label="enable-one-copy"/>
   <int value="1108200393" label="PeripheralCustomization:enabled"/>
   <int value="1108663108" label="disable-device-discovery-notifications"/>
+  <int value="1109472550"
+      label="AutofillEnableAmountExtractionAllowlistDesktop:enabled"/>
   <int value="1109907837"
       label="PrefetchMainResourceNetworkIsolationKey:enabled"/>
   <int value="1110958780"

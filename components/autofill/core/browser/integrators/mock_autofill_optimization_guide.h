@@ -39,7 +39,7 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               (const CreditCard& card, const GURL& url),
               (const override));
   MOCK_METHOD(bool,
-              IsEligibleForBuyNowPayLater,
+              IsUrlEligibleForCheckoutAmountSearchForIssuerId,
               (std::string_view issuer_id, const GURL& url),
               (const override));
 };

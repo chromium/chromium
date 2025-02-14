@@ -92,8 +92,8 @@ bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {
     const GURL& url =
         autofill_manager_->client().GetLastCommittedPrimaryMainFrameURL();
     for (std::string_view issuer : BnplManager::GetSupportedBnplIssuerIds()) {
-      if (autofill_optimization_guide->IsEligibleForBuyNowPayLater(issuer,
-                                                                   url)) {
+      if (autofill_optimization_guide
+              ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(issuer, url)) {
         return true;
       }
     }

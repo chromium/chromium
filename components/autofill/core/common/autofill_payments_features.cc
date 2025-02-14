@@ -17,6 +17,14 @@ BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,
              "AutofillEnableAllowlistForBmoCardCategoryBenefits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, Chrome will have the ability to load and query the allowlist
+// for checkout amount extraction, which will be used to check if the current
+// URL is eligible for products that use the checkout amount extraction
+// algorithm.
+BASE_FEATURE(kAutofillEnableAmountExtractionAllowlistDesktop,
+             "AutofillEnableAmountExtractionAllowlistDesktop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, Chrome will extract the checkout amount from the checkout page
 // of the allowlisted merchant websites.
 BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,

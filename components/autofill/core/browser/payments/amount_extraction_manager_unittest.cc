@@ -44,7 +44,7 @@ class AmountExtractionManagerTest : public testing::Test {
         std::make_unique<AmountExtractionManager>(autofill_manager_.get());
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                 autofill_manager_->client().GetAutofillOptimizationGuide()),
-            IsEligibleForBuyNowPayLater)
+            IsUrlEligibleForCheckoutAmountSearchForIssuerId)
         .WillByDefault(testing::Return(true));
   }
 
@@ -169,7 +169,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_manager_->client().GetAutofillOptimizationGuide()),
-          IsEligibleForBuyNowPayLater)
+          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
       .WillByDefault(testing::Return(false));
 
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
