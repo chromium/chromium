@@ -202,6 +202,8 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
           {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kDialogRadius, ShapeSysTokens::kMediumSmall},
+          {ShapeContextTokens::kExtensionsMenuButtonRadius,
+           ShapeSysTokens::kXSmall},
           {ShapeContextTokens::kFindBarViewRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kMenuRadius, ShapeSysTokens::kMediumSmall},
           {ShapeContextTokens::kMenuAuxRadius, ShapeSysTokens::kMediumSmall},
