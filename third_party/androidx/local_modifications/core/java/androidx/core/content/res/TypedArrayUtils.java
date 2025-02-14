@@ -27,6 +27,7 @@ import android.util.TypedValue;
 
 import androidx.annotation.AnyRes;
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StyleableRes;
 
@@ -162,10 +163,16 @@ public class TypedArrayUtils {
             return ComplexColorCompat.from(value.data);
         }
 
-        // not a simple color, attempt to inflate complex types
-        final ComplexColorCompat complexColor = ComplexColorCompat.inflate(a.getResources(),
-                a.getResourceId(resId, 0), theme);
-        if (complexColor != null) return complexColor;
+        @ColorRes int colorRes = a.getResourceId(resId, 0);
+        if (colorRes != Resources.ID_NULL) {
+            // not a simple color, attempt to inflate complex types
+            final ComplexColorCompat complexColor =
+                    ComplexColorCompat.inflate(a.getResources(), colorRes, theme);
+            if (complexColor != null) {
+                return complexColor;
+            }
+        }
+
         return ComplexColorCompat.from(defaultValue);
     }
 
