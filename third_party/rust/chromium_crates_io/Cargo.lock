@@ -37,11 +37,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "base64"
-version = "0.13.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
@@ -119,7 +114,7 @@ name = "chromium"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "base64 0.13.1",
+ "base64",
  "bitflags 2.8.0",
  "bstr",
  "bytemuck",
@@ -1229,7 +1224,7 @@ name = "sfv"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "base64 0.22.1",
+ "base64",
  "indexmap",
  "rust_decimal",
 ]

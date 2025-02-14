@@ -19,7 +19,7 @@ rust_static_library("processor") {
     "//third_party/cloud_authenticator/cbor",
     "//third_party/cloud_authenticator/chromesync",
     "//third_party/cloud_authenticator/crypto",
-    "//third_party/rust/base64/v0_13:lib",
+    "//third_party/rust/base64/v0_22:lib",
     "//third_party/rust/bytes/v1:lib",
     "//third_party/rust/lazy_static/v1:lib",
     "//third_party/rust/prost/v0_13:lib",
