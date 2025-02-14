@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/lib/browser/headless_screen_info.h"
+#include "components/headless/screen_info/headless_screen_info.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -10,7 +10,7 @@
 namespace headless {
 namespace {
 
-TEST(ScreenInfoTest, Basic) {
+TEST(HeadlessScreenInfoTest, Basic) {
   EXPECT_EQ(HeadlessScreenInfo::FromString(" \t ").error(),
             "Invalid screen info:  \t ");
 
@@ -30,7 +30,7 @@ TEST(ScreenInfoTest, Basic) {
             HeadlessScreenInfo({.bounds = gfx::Rect(0, 0, 800, 600)}));
 }
 
-TEST(ScreenInfoTest, ScreenOrigin) {
+TEST(HeadlessScreenInfoTest, ScreenOrigin) {
   EXPECT_EQ(HeadlessScreenInfo::FromString("{100,200}").value()[0],
             HeadlessScreenInfo({.bounds = gfx::Rect(100, 200, 800, 600)}));
 
@@ -65,7 +65,7 @@ TEST(ScreenInfoTest, ScreenOrigin) {
             "Invalid screen info: 100+200");
 }
 
-TEST(ScreenInfoTest, ScreenSize) {
+TEST(HeadlessScreenInfoTest, ScreenSize) {
   EXPECT_EQ(HeadlessScreenInfo::FromString("{100x200}").value()[0],
             HeadlessScreenInfo({.bounds = gfx::Rect(100, 200)}));
 
@@ -91,7 +91,7 @@ TEST(ScreenInfoTest, ScreenSize) {
             "Invalid screen info: 100 200");
 }
 
-TEST(ScreenInfoTest, ScreenParameters) {
+TEST(HeadlessScreenInfoTest, ScreenParameters) {
   EXPECT_EQ(HeadlessScreenInfo::FromString("{xyz =}").error(),
             "Invalid screen info: xyz =");
 
@@ -123,7 +123,7 @@ TEST(ScreenInfoTest, ScreenParameters) {
             "Unknown screen info parameter: xyz");
 }
 
-TEST(ScreenInfoTest, ScreenColorDepth) {
+TEST(HeadlessScreenInfoTest, ScreenColorDepth) {
   EXPECT_EQ(HeadlessScreenInfo::FromString("{ colorDepth=16 }").value()[0],
             HeadlessScreenInfo({.color_depth = 16}));
 
@@ -140,7 +140,7 @@ TEST(ScreenInfoTest, ScreenColorDepth) {
             "Invalid screen color depth: 24x");
 }
 
-TEST(ScreenInfoTest, ScreenDevicePixelRatio) {
+TEST(HeadlessScreenInfoTest, ScreenDevicePixelRatio) {
   EXPECT_EQ(
       HeadlessScreenInfo::FromString("{ devicePixelRatio=0.5}").value()[0],
       HeadlessScreenInfo({.device_pixel_ratio = 0.5f}));
@@ -161,7 +161,7 @@ TEST(ScreenInfoTest, ScreenDevicePixelRatio) {
             "Invalid screen device pixel ratio: 1.0x");
 }
 
-TEST(ScreenInfoTest, ScreenIsInternal) {
+TEST(HeadlessScreenInfoTest, ScreenIsInternal) {
   EXPECT_EQ(HeadlessScreenInfo::FromString("{ isInternal=1 }").value()[0],
             HeadlessScreenInfo({.is_internal = true}));
 
@@ -181,7 +181,7 @@ TEST(ScreenInfoTest, ScreenIsInternal) {
             "Invalid screen is internal: xyz");
 }
 
-TEST(ScreenInfoTest, ScreenLabel) {
+TEST(HeadlessScreenInfoTest, ScreenLabel) {
   EXPECT_EQ(HeadlessScreenInfo::FromString("{ label=xyz}").value()[0],
             HeadlessScreenInfo({.label = "xyz"}));
 
@@ -211,7 +211,7 @@ TEST(ScreenInfoTest, ScreenLabel) {
             "Invalid screen info: '\\'quoted\\'");
 }
 
-TEST(ScreenInfoTest, MultipleScreens) {
+TEST(HeadlessScreenInfoTest, MultipleScreens) {
   // Explicit screen origin results in overlapped screens.
   EXPECT_THAT(HeadlessScreenInfo::FromString("{}{0,0 600x800}").value(),
               testing::ElementsAre(
@@ -263,7 +263,7 @@ TEST(ScreenInfoTest, MultipleScreens) {
               "Invalid screen info: }");
 }
 
-TEST(ScreenInfoTest, WorkArea) {
+TEST(HeadlessScreenInfoTest, WorkArea) {
   EXPECT_EQ(HeadlessScreenInfo::FromString("{ workAreaLeft=100 }").value()[0],
             HeadlessScreenInfo(
                 {.work_area_insets = gfx::Insets::TLBR(0, 100, 0, 0)}));
@@ -314,7 +314,7 @@ TEST(ScreenInfoTest, WorkArea) {
               "Invalid work area inset: -42");
 }
 
-TEST(ScreenInfoTest, Rotation) {
+TEST(HeadlessScreenInfoTest, Rotation) {
   EXPECT_EQ(HeadlessScreenInfo::FromString("{ rotation=0 }").value()[0],
             HeadlessScreenInfo({.rotation = 0}));
 

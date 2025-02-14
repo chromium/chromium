@@ -708,6 +708,7 @@ test("components_unittests") {
   if (!is_android && !is_ios) {
     deps += [
       "//components/access_code_cast/common:unit_tests",
+      "//components/headless/screen_info:unit_tests",
       "//components/live_caption:unit_tests",
       "//components/soda:unit_tests",
       "//components/storage_monitor:unit_tests",

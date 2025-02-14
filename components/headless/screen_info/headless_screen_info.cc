@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/lib/browser/headless_screen_info.h"
+#include "components/headless/screen_info/headless_screen_info.h"
 
 #include <optional>
 

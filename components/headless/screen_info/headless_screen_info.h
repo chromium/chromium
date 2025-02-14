@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_INFO_H_
-#define HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_INFO_H_
+#ifndef COMPONENTS_HEADLESS_SCREEN_INFO_HEADLESS_SCREEN_INFO_H_
+#define COMPONENTS_HEADLESS_SCREEN_INFO_HEADLESS_SCREEN_INFO_H_
 
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/types/expected.h"
-#include "headless/public/headless_export.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace headless {
 
-struct HEADLESS_EXPORT HeadlessScreenInfo {
+struct HeadlessScreenInfo {
   gfx::Rect bounds = gfx::Rect(800, 600);
   gfx::Insets work_area_insets;
   int color_depth = 24;
@@ -62,4 +61,4 @@ struct HEADLESS_EXPORT HeadlessScreenInfo {
 
 }  // namespace headless
 
-#endif  // HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_INFO_H_
+#endif  // COMPONENTS_HEADLESS_SCREEN_INFO_HEADLESS_SCREEN_INFO_H_
