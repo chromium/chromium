@@ -119,8 +119,11 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenAttachedThenOpenAttachedToSameBrowserCloses) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
-                  OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  ToggleGlicWindow(GlicWindowMode::kAttached),
+                  InAnyContext(WaitForHide(kGlicViewElementId)),
                   CheckControllerHasWidget(false));
 }
 
