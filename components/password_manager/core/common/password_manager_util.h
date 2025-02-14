@@ -7,13 +7,10 @@
 
 #include <string>
 
+#include "components/autofill/core/common/form_field_data.h"
+
 namespace autofill {
 class FormData;
-
-namespace mojom {
-enum class FormControlType;
-}  // namespace mojom
-
 }  // namespace autofill
 
 namespace password_manager::util {
@@ -29,7 +26,7 @@ bool CanFieldBeConsideredAsSingleUsername(
     const std::u16string& name,
     const std::u16string& id,
     const std::u16string& label,
-    autofill::mojom::FormControlType type);
+    std::optional<autofill::FormControlType> type);
 
 // Returns whether the field value allows to consider it as a single
 // username field.

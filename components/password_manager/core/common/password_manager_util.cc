@@ -50,7 +50,7 @@ bool CanFieldBeConsideredAsSingleUsername(
     const std::u16string& name,
     const std::u16string& id,
     const std::u16string& label,
-    autofill::mojom::FormControlType type) {
+    std::optional<autofill::FormControlType> type) {
   // Do not consider fields with very short names/ids to avoid aggregating
   // multiple unrelated fields on the server. (crbug.com/1209143)
   if (name.length() < kMinInputNameLengthForSingleUsername &&
@@ -59,13 +59,14 @@ bool CanFieldBeConsideredAsSingleUsername(
   }
   // Do not consider fields if their HTML attributes indicate they
   // are search fields.
-  return (base::ToLowerASCII(name).find(password_manager::constants::kSearch) ==
-          std::u16string::npos) &&
-         (base::ToLowerASCII(id).find(password_manager::constants::kSearch) ==
-          std::u16string::npos) &&
-         (base::ToLowerASCII(label).find(
-              password_manager::constants::kSearch) == std::u16string::npos) &&
-         (type != autofill::mojom::FormControlType::kInputSearch);
+  return base::ToLowerASCII(name).find(password_manager::constants::kSearch) ==
+             std::u16string::npos &&
+         base::ToLowerASCII(id).find(password_manager::constants::kSearch) ==
+             std::u16string::npos &&
+         base::ToLowerASCII(label).find(password_manager::constants::kSearch) ==
+             std::u16string::npos &&
+         type.has_value() &&  // Only autofillable fields have a `type` value.
+         type.value() != autofill::FormControlType::kInputSearch;
 }
 
 bool CanValueBeConsideredAsSingleUsername(const std::u16string& value) {

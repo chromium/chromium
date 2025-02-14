@@ -322,10 +322,13 @@ void AnnotateFieldsWithSignatures(
     const std::string& form_signature,
     const std::string& alternative_form_signature) {
   for (const WebFormControlElement& control_element : fields) {
+    std::optional<autofill::FormControlType> type =
+        form_util::GetAutofillFormControlType(control_element);
+    if (!type) {
+      continue;
+    }
     FieldSignature field_signature = CalculateFieldSignatureByNameAndType(
-        control_element.NameForAutofill().Utf16(),
-        form_util::ToAutofillFormControlType(
-            control_element.FormControlTypeForAutofill()));
+        control_element.NameForAutofill().Utf16(), *type);
     SetAttributeAsync(control_element, kDebugAttributeForFieldSignature,
                       base::NumberToString(field_signature.value()));
     SetAttributeAsync(control_element, kDebugAttributeForFormSignature,
@@ -800,8 +803,8 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
   std::u16string id_attribute = element.GetIdAttribute().Utf16();
   static base::NoDestructor<WebString> kLabel("label");
   std::u16string label_attribute = element.GetAttribute(*kLabel).Utf16();
-  mojom::FormControlType type_attribute = form_util::ToAutofillFormControlType(
-      element.FormControlTypeForAutofill());
+  std::optional<mojom::FormControlType> type_attribute =
+      form_util::GetAutofillFormControlType(element);
 
   if (!password_manager::util::CanFieldBeConsideredAsSingleUsername(
           name_attribute, id_attribute, label_attribute, type_attribute) ||
