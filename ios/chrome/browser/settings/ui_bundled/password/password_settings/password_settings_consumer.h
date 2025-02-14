@@ -32,6 +32,10 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 // policy.
 - (void)setManagedByPolicy:(BOOL)managedByPolicy;
 
+// Indicates whether automatic passkey upgrades setting is managed by enterprise
+// policy. If managed, the view should not display the switch for it.
+- (void)setAutomaticPasskeyUpgradesManagedByPolicy:(BOOL)managed;
+
 // Indicates whether or not the "Offer to Save Passwords" feature is enabled.
 - (void)setSavePasswordsEnabled:(BOOL)enabled;
 
