@@ -67,12 +67,10 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
   if (!browser) {
     return false;
   }
-
-  // If there is a browser, the FRE can only be shown if no other modal is
-  // currently being shown on the same tab.
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
-      browser->tab_strip_model()->GetActiveWebContents());
-  return tab->CanShowModalUI();
+  // If there is a browser, the FRE can only be shown if no
+  // other modal is currently being shown on the same tab.
+  tabs::TabInterface* tab = browser->GetActiveTabInterface();
+  return tab && tab->CanShowModalUI();
 }
 
 void GlicFreController::ShowFreDialog(Browser* browser) {
@@ -100,8 +98,7 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   fre_view_ = new GlicFreDialogView(
       profile_, gfx::Size(kFreDefaultWidth, kFreDefaultHeight));
 
-  tabs::TabInterface* tab_interface = tabs::TabInterface::GetFromContents(
-      browser->tab_strip_model()->GetActiveWebContents());
+  tabs::TabInterface* tab_interface = browser->GetActiveTabInterface();
   // Note that this call to `CreateShowDialogAndBlockTabInteraction` is
   // necessarily preceded by a call to `CanShowModalUI`. See
   // `GlicFreController::CanShowFreDialog`.
@@ -121,8 +118,7 @@ void GlicFreController::DismissFreIfOpenOnActiveTab(Browser* browser) {
     return;
   }
 
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
-      browser->tab_strip_model()->GetActiveWebContents());
+  tabs::TabInterface* tab = browser->GetActiveTabInterface();
 
   // If the FRE is being shown on the current tab, close it.
   if (fre_widget_ && tab_showing_modal_ == tab) {
