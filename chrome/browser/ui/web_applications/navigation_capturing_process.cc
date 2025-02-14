@@ -1041,11 +1041,19 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
       case blink::mojom::DisplayMode::kStandalone:
       case blink::mojom::DisplayMode::kWindowControlsOverlay:
       case blink::mojom::DisplayMode::kBorderless:
-        // TODO(https://crbug.com/393432158): Consider the
-        // navigate_params_browser
-        existing_app_host =
-            AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-                *profile_, app_id, Browser::TYPE_APP);
+        // First try to choose an existing app host based on whether the
+        // params.browser is populated and belongs to the same `app_id`.
+        // If that is not found, start looking into all active app browsers.
+        if (navigation_params_browser_ &&
+            WebAppBrowserController::IsForWebApp(navigation_params_browser_,
+                                                 app_id)) {
+          existing_app_host = {.browser = navigation_params_browser_,
+                               .tab_index = 0};
+        } else {
+          existing_app_host =
+              AppBrowserController::FindTopLevelBrowsingContextForWebApp(
+                  *profile_, app_id, Browser::TYPE_APP);
+        }
         // If no app tab was found, fall back to looking for a regular browser
         // tab.
         if (!existing_app_host) {
