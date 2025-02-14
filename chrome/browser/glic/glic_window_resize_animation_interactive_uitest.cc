@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_window_resize_animation.h"
-
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/glic_window_resize_animation.h"
+#include "chrome/browser/glic/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -32,21 +31,12 @@ base::OnceClosure BindAppend(std::string* a, const char* b) {
   return base::BindOnce(&Append, a, b);
 }
 
-class GlicWindowResizeAnimationTest : public InProcessBrowserTest {
+class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
  public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    SetFRECompletion(browser()->profile(), true);
+    test::InteractiveGlicTest::SetUpOnMainThread();
 
-    window_controller().Toggle(nullptr, /*prevent_close=*/false,
-                               InvocationSource::kOsButton);
-    ASSERT_TRUE(window_controller().GetGlicWidget());
+    RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
   }
 
   void ExpectRectBetween(const gfx::Rect& current_rect,
