@@ -170,7 +170,7 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
                             kReadingListEnableSyncTransportModeUponSignIn,
                             switches::kExplicitBrowserSigninUIOnDesktop,
 #endif
-                            kEnablePreferencesAccountStorage},
+                            switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =

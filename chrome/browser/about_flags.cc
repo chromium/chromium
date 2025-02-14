@@ -9666,7 +9666,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-preferences-account-storage",
      flag_descriptions::kEnablePreferencesAccountStorageName,
      flag_descriptions::kEnablePreferencesAccountStorageDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(syncer::kEnablePreferencesAccountStorage)},
+     FEATURE_VALUE_TYPE(switches::kEnablePreferencesAccountStorage)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

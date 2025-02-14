@@ -263,7 +263,7 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
   SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest() {
     override_features_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kEnablePreferencesAccountStorage,
+        {switches::kEnablePreferencesAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
          syncer::kReplaceSyncPromosWithSignInPromos,
          syncer::kSyncAutofillWalletCredentialData},
@@ -420,7 +420,7 @@ class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
  public:
   SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kEnablePreferencesAccountStorage},
+        /*enabled_features=*/{switches::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
   }
   ~SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest()
@@ -495,7 +495,7 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
         /*enabled_features=*/
         {syncer::kReadingListEnableSyncTransportModeUponSignIn,
          syncer::kSyncEnableBookmarksInTransportMode,
-         syncer::kEnablePreferencesAccountStorage},
+         switches::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
 
     // The Sync-to-Signin feature is only enabled in non-PRE_ tests.

@@ -61,6 +61,7 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -259,7 +260,7 @@ GetTrackingConfiguration() {
     // Add the account value equivalent for syncable prefs for tracking, by
     // prefixing the pref name with `kAccountPreferencesPrefix`.
     if (base::FeatureList::IsEnabled(
-            syncer::kEnablePreferencesAccountStorage) &&
+            switches::kEnablePreferencesAccountStorage) &&
         syncable_prefs_db.IsPreferenceSyncable(data->name)) {
       auto account_data = data->Clone();
       account_data->name = base::StringPrintf(
@@ -422,7 +423,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
                  supervised_user_settings, user_pref_store,
                  std::move(extension_prefs), async, connector);
 
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+  if (base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
     // Desktop and Mobile platforms have different implementation for account
     // preferences. Mobile platforms have a separate file to store account
     // preferences. Whereas, desktop platforms would store account preferences

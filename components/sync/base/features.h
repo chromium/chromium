@@ -63,11 +63,6 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
 // - The account store is synced. When the flag is disabled, the profile one is.
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForSyncingUsers);
 
-// Enables a separate account-scoped storage for preferences, for syncing users.
-// (Note that opposed to other "account storage" features, this one does not
-// have any effect for signed-in non-syncing users!)
-BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
-
 #if BUILDFLAG(IS_IOS)
 // On iOS, Webauthn Credential Sync is controlled by a build-time flag, because
 // these capabilities are linked to the Credential Provider Extension and must

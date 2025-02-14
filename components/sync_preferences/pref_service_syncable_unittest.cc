@@ -20,6 +20,7 @@
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -1357,7 +1358,8 @@ class PrefServiceSyncableFactoryTest : public PrefServiceSyncableTest {
 TEST_F(PrefServiceSyncableFactoryTest,
        ShouldCreateSyncServiceWithoutDualLayerStoreIfFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kEnablePreferencesAccountStorage);
+  feature_list.InitAndDisableFeature(
+      switches::kEnablePreferencesAccountStorage);
   auto pref_service =
       pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
   EXPECT_FALSE(static_cast<PrefModelAssociator*>(
@@ -1381,7 +1383,7 @@ TEST_F(PrefServiceSyncableFactoryTest,
 TEST_F(PrefServiceSyncableFactoryTest,
        ShouldCreateSyncServiceWithDualLayerStoreIfFeatureEnabled) {
   base::test::ScopedFeatureList feature_list(
-      syncer::kEnablePreferencesAccountStorage);
+      switches::kEnablePreferencesAccountStorage);
   auto pref_service =
       pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
   EXPECT_TRUE(static_cast<PrefModelAssociator*>(

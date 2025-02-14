@@ -463,7 +463,7 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                            kEnablePreferencesAccountStorage,
+                            switches::kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
@@ -496,7 +496,7 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                            kEnablePreferencesAccountStorage,
+                            switches::kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
       /*disabled_features=*/{});
 
@@ -860,7 +860,7 @@ class SyncPrefsMigrationTest : public testing::Test {
                               kReadingListEnableSyncTransportModeUponSignIn,
                               switches::kExplicitBrowserSigninUIOnDesktop,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                              kEnablePreferencesAccountStorage},
+                              switches::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
 
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());

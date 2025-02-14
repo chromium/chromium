@@ -25,6 +25,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/base:signin_switches",
     "//components/sync/base",
     "//components/sync/base:features",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",

@@ -57,6 +57,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_message_data_type_controller.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
@@ -691,7 +692,8 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     bool allow_transport_mode =
         base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos) &&
-        base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage);
+        base::FeatureList::IsEnabled(
+            switches::kEnablePreferencesAccountStorage);
     controllers.push_back(
         std::make_unique<SyncableServiceBasedDataTypeController>(
             syncer::PREFERENCES,
@@ -710,7 +712,8 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     bool allow_transport_mode =
         base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos) &&
-        base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage);
+        base::FeatureList::IsEnabled(
+            switches::kEnablePreferencesAccountStorage);
     controllers.push_back(
         std::make_unique<SyncableServiceBasedDataTypeController>(
             syncer::PRIORITY_PREFERENCES,
