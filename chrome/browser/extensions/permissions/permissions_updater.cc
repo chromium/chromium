@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/permissions/permissions_helpers.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
@@ -47,7 +46,6 @@
 #include "extensions/common/url_pattern_set.h"
 
 using content::RenderProcessHost;
-using extensions::permissions_api_helpers::PackPermissionSet;
 
 namespace extensions {
 

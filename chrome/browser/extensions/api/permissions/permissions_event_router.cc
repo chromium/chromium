@@ -8,7 +8,7 @@
 
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/permissions/permissions_helpers.h"
+#include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 #include "chrome/common/extensions/api/permissions.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/extension.h"

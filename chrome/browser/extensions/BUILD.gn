@@ -596,8 +596,6 @@ source_set("extensions") {
       "pending_extension_info.h",
       "pending_extension_manager.cc",
       "pending_extension_manager.h",
-      "permissions/permissions_helpers.cc",
-      "permissions/permissions_helpers.h",
       "permissions/permissions_updater.cc",
       "permissions/permissions_updater.h",
       "permissions/scripting_permissions_modifier.cc",

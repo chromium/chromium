@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_PERMISSIONS_PERMISSIONS_HELPERS_H_
-#define CHROME_BROWSER_EXTENSIONS_PERMISSIONS_PERMISSIONS_HELPERS_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_HELPERS_H_
+#define CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_HELPERS_H_
 
 #include <memory>
 #include <string>
@@ -19,7 +19,7 @@ namespace api {
 namespace permissions {
 struct Permissions;
 }
-}
+}  // namespace api
 
 namespace permissions_api_helpers {
 
@@ -87,4 +87,4 @@ std::unique_ptr<UnpackPermissionSetResult> UnpackPermissionSet(
 }  // namespace permissions_api_helpers
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_PERMISSIONS_PERMISSIONS_HELPERS_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_HELPERS_H_
