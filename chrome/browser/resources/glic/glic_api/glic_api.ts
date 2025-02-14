@@ -242,12 +242,12 @@ export declare interface GlicBrowserHost {
   /**
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever the focus changes due to the user switching tabs or navigating the
-   * current focused tab. `FocusedTabData` contains a TabData when available
-   * along with an `InvalidCandidateError` if it is unfit for focus. If no
-   * TabData is available, a `NoFocusErrorReason` is returned specifying why.
+   * current focused tab.
    *
    * @returns An ObservableValue for `FocusedTabData` values that will be
-   * updated when a new tab is focused or the current tab is navigated.
+   * recalculated when a new tab is focused or the current tab is navigated.
+   * When focus is recalculated the ObservableValue will be updated if any of
+   * the FocusedTabData fields change.
    */
   getFocusedTabStateV2?(): ObservableValue<FocusedTabData>;
 
