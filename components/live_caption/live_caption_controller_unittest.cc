@@ -157,15 +157,6 @@ TEST_F(LiveCaptionControllerTest, RegisterProfilePrefsCorrect) {
       testing_pref_service_.GetBoolean(prefs::kLiveCaptionMaskOffensiveWords));
   EXPECT_EQ(testing_pref_service_.GetString(prefs::kLiveCaptionLanguageCode),
             speech::kUsEnglishLocale);
-
-  // Babel Orca flags are only registered on ash.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(testing_pref_service_.GetBoolean(
-      prefs::kLiveCaptionUserMicrophoneEnabled));
-  EXPECT_EQ(testing_pref_service_.GetString(
-                prefs::kUserMicrophoneCaptionLanguageCode),
-            speech::kUsEnglishLocale);
-#endif
 }
 
 // Tests that the LiveCaptionController starts live caption

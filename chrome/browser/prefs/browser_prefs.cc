@@ -1100,6 +1100,14 @@ inline constexpr char kLocalPasswordMigrationWarningShownAtStartup[] =
     "local_passwords_migration_warning_shown_at_startup";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 2/2025.
+inline constexpr char kLiveCaptionUserMicrophoneEnabled[] =
+    "accessibility.captions.user_microphone_captioning_enabled";
+inline constexpr char kUserMicrophoneCaptionLanguageCode[] =
+    "accessibility.captions.user_microphone_language_code";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1535,6 +1543,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kLocalPasswordMigrationWarningShownAtStartup,
                                 false);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 02/2025.
+  registry->RegisterBooleanPref(kLiveCaptionUserMicrophoneEnabled, false);
+  registry->RegisterStringPref(kUserMicrophoneCaptionLanguageCode, "");
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -2824,6 +2838,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kLocalPasswordsMigrationWarningShownTimestamp);
   profile_prefs->ClearPref(kLocalPasswordMigrationWarningShownAtStartup, );
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 02/2025.
+  profile_prefs->ClearPref(kLiveCaptionUserMicrophoneEnabled);
+  profile_prefs->ClearPref(kUserMicrophoneCaptionLanguageCode);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
