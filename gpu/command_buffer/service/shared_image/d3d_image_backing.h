@@ -188,13 +188,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   static scoped_refptr<GLTextureHolder> CreateGLTexture(
       const GLFormatDesc& gl_format_desc,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       GLenum texture_target = GL_TEXTURE_2D,
       unsigned array_slice = 0u,
-      unsigned plane_index = 0u,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr);
+      unsigned plane_index = 0u);
 
   // Only for test use.
   bool HasStagingTextureForTesting() const;
