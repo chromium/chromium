@@ -1015,6 +1015,13 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
   blink::mojom::DisplayMode requested_display_mode =
       registrar.GetAppEffectiveDisplayMode(app_id);
 
+  // Opening in non-browser-tab requires OS integration. Since os integration
+  // cannot be triggered synchronously, treat this as opening in browser.
+  if (registrar.GetInstallState(app_id) ==
+      proto::INSTALLED_WITHOUT_OS_INTEGRATION) {
+    requested_display_mode = blink::mojom::DisplayMode::kBrowser;
+  }
+
   // If the developer has an in-scope link that opens a new top level browsing
   // in their own page, then force the client mode to be navigate-new. To
   // detect this, we consider both the app_id that controls the referrer url
@@ -1213,6 +1220,16 @@ BrowserAndTabOverride NavigationCapturingProcess::ForcedNewAppContext(
 BrowserAndTabOverride NavigationCapturingProcess::CapturedNewClient(
     blink::mojom::DisplayMode app_display_mode,
     Browser* host_browser) {
+  SCOPED_CRASH_KEY_STRING1024("crbug396028223", "app_display_mode",
+                              base::ToString((app_display_mode)));
+  SCOPED_CRASH_KEY_STRING1024(
+      "crbug396028223", "contains_app_controller",
+      base::ToString((!!host_browser->app_controller())));
+
+  debug_data_.Set("result", "captured new client");
+  SCOPED_CRASH_KEY_STRING1024("crbug396028223", "capturing_debug_info",
+                              debug_data_.DebugString());
+
   CHECK(first_navigation_app_id_.has_value());
   CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
       app_display_mode));
@@ -1228,7 +1245,6 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturedNewClient(
   // tab.
   SetLaunchedAppId(*first_navigation_app_id_,
                    /*force_iph_off=*/app_display_mode == DisplayMode::kBrowser);
-  debug_data_.Set("result", "captured new client");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
   return {{host_browser, -1}};
