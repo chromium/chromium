@@ -563,7 +563,8 @@ bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
       {"'sha512-", 8, mojom::IntegrityAlgorithm::kSha512},
       {"'sha-256-", 9, mojom::IntegrityAlgorithm::kSha256},
       {"'sha-384-", 9, mojom::IntegrityAlgorithm::kSha384},
-      {"'sha-512-", 9, mojom::IntegrityAlgorithm::kSha512}};
+      {"'sha-512-", 9, mojom::IntegrityAlgorithm::kSha512},
+      {"'ed25519-", 9, mojom::IntegrityAlgorithm::kEd25519}};
 
   for (auto item : SupportedPrefixes) {
     if (base::StartsWith(expression, item.prefix,
