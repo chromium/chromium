@@ -56,8 +56,9 @@
 #ifndef MEDIA_AUDIO_WIN_AUDIO_LOW_LATENCY_INPUT_WIN_H_
 #define MEDIA_AUDIO_WIN_AUDIO_LOW_LATENCY_INPUT_WIN_H_
 
-#include <Audioclient.h>
 #include <MMDeviceAPI.h>
+
+#include <Audioclient.h>
 #include <endpointvolume.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -151,6 +152,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
  private:
   class DataDiscontinuityReporter;
+  class EchoCancellationConfig;
 
   PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
@@ -183,10 +185,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   bool DesiredFormatIsSupported(HRESULT* hr);
   void SetupConverterAndStoreFormatInfo();
   HRESULT InitializeAudioEngine();
-  // Checks an echo cancellation effect is present and active on the already
-  // initialized input device.
-  HRESULT GetAcousticEchoCancellationEffectStatus(bool& aec_effect_is_present,
-                                                  bool& aec_effect_is_on);
+
   void ReportOpenResult(HRESULT hr);
   // Reports stats for format related audio client initialization
   // (IAudioClient::Initialize) errors, that is if |hr| is an error related to
@@ -338,7 +337,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   base::TimeDelta min_timestamp_diff_;
 
   // Set to true if the selected audio device supports raw audio capture.
-  // Also added to a UMS histogram.
+  // Also added to a UMA histogram.
   bool raw_processing_supported_ = false;
 
   // Set to true if the absolute difference between a QPC timestamp converted
@@ -347,13 +346,9 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // timestamps instead of default which are QPC based.
   std::optional<bool> use_fake_audio_capture_timestamps_;
 
-  // Controls whether an attempt to enable native echo cancellation is done or
-  // not. Only supported for non-loopback devices on Windows 24H2 and later.
-  bool use_echo_cancellation_ = false;
-
-  // Set to true if an attempt to enable the echo cancellation effect was
-  // requested and the initialized input device also supports the effect.
-  bool echo_cancellation_is_active_ = false;
+  // Utility class which wraps support of system AEC functionality.
+  // Will be set to nullptr during construction if AEC is not supported.
+  std::unique_ptr<EchoCancellationConfig> aec_config_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
