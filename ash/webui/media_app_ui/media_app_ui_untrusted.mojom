@@ -6,6 +6,7 @@ module ash.media_app_ui.mojom;
 
 import "chromeos/ash/components/mantis/mojom/mantis_processor.mojom";
 import "chromeos/ash/components/mantis/mojom/mantis_service.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -41,7 +42,9 @@ interface UntrustedServiceFactory {
   // closed. Therefore, it should be called once per WebUIController lifetime or
   // previous connection should be closed manually before calling this method
   // the second time (e.g. when opening new file in the same window).
-  CreateMantisUntrustedService(pending_remote<MantisUntrustedPage> page)
+  // The `dlc_uuid` is used to fetch the specific ML model assets.
+  CreateMantisUntrustedService(pending_remote<MantisUntrustedPage> page,
+                               mojo_base.mojom.Uuid? dlc_uuid)
       => (MantisUntrustedServiceResult result);
 };
 

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -12,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_service.mojom.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
@@ -133,6 +135,7 @@ MantisUntrustedServiceManager::CreateProgressObserver(
 
 void MantisUntrustedServiceManager::Create(
     mojo::PendingRemote<MantisUntrustedPage> page,
+    const std::optional<base::Uuid>& dlc_uuid,
     CreateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -140,7 +143,7 @@ void MantisUntrustedServiceManager::Create(
   // This API is designed by CrOS service to handle multiple calls safely.
   cros_service_->Initialize(
       CreateProgressObserver(std::move(page)),
-      processor.InitWithNewPipeAndPassReceiver(),
+      processor.InitWithNewPipeAndPassReceiver(), dlc_uuid,
       base::BindOnce(&MantisUntrustedServiceManager::OnInitializeDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(processor)));

@@ -445,7 +445,10 @@ const DELEGATE: ClientApiDelegate = {
   },
   async initializeMantis() {
     mantisUntrustedService?.$.close();
-    const response = await connectToMantisUntrustedService();
+    // TODO(crbug.com/395511579): Make the dlcUuid a parameter of
+    // initializeMantis.
+    const dlcUuid = null;
+    const response = await connectToMantisUntrustedService(dlcUuid);
     if (response.error) {
       return response.error;
     }

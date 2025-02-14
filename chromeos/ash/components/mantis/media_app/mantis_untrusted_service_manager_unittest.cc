@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
@@ -75,6 +76,7 @@ class MockMojoMantisService
       Initialize,
       (mojo::PendingRemote<mantis::mojom::PlatformModelProgressObserver>,
        mojo::PendingReceiver<mantis::mojom::MantisProcessor>,
+       const std::optional<base::Uuid>&,
        InitializeCallback),
       (override));
 
@@ -200,7 +202,7 @@ TEST_F(MantisUntrustedServiceManagerTest, IsNotAvailableByMantisFeatureStatus) {
 TEST_F(MantisUntrustedServiceManagerTest, CreateSuccess) {
   constexpr double kProgress = 1.0;
   EXPECT_CALL(*mock_mojo_service_, Initialize)
-      .WillOnce(testing::WithArgs<0, 2>(
+      .WillOnce(testing::WithArgs<0, 3>(
           [](mojo::PendingRemote<PlatformModelProgressObserver>
                  pending_observer,
              base::OnceCallback<void(InitializeResult)> callback) {
@@ -216,7 +218,8 @@ TEST_F(MantisUntrustedServiceManagerTest, CreateSuccess) {
   MantisUntrustedServiceManager manager(std::move(access_checker_));
 
   TestFuture<MantisUntrustedServiceResultPtr> result_future;
-  manager.Create(page.BindNewPipeAndPassRemote(), result_future.GetCallback());
+  manager.Create(page.BindNewPipeAndPassRemote(), std::nullopt,
+                 result_future.GetCallback());
 
   MantisUntrustedServiceResultPtr result = result_future.Take();
   ASSERT_FALSE(result.is_null());
@@ -225,12 +228,13 @@ TEST_F(MantisUntrustedServiceManagerTest, CreateSuccess) {
 
 TEST_F(MantisUntrustedServiceManagerTest, CreateFailed) {
   EXPECT_CALL(*mock_mojo_service_, Initialize)
-      .WillOnce(RunOnceCallback<2>(InitializeResult::kFailedToLoadLibrary));
+      .WillOnce(RunOnceCallback<3>(InitializeResult::kFailedToLoadLibrary));
   MantisUntrustedServiceManager manager(std::move(access_checker_));
 
   MockMantisUntrustedPage page;
   TestFuture<MantisUntrustedServiceResultPtr> result_future;
-  manager.Create(page.BindNewPipeAndPassRemote(), result_future.GetCallback());
+  manager.Create(page.BindNewPipeAndPassRemote(), std::nullopt,
+                 result_future.GetCallback());
 
   MantisUntrustedServiceResultPtr result = result_future.Take();
   ASSERT_FALSE(result.is_null());
