@@ -1681,13 +1681,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // storing just about enough passwords to ensure filling more than one page on
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
-// TODO(crbug.com/40910877): This test is flaky.
-- (void)FLAKY_testManyPasswords {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/40602996): Enable the test on iPad once the bug is fixed.
-    EARL_GREY_TEST_DISABLED(@"Disabled for iPad.");
-  }
-
+- (void)testManyPasswords {
   // Enough just to ensure filling more than one page on all devices.
   constexpr int kPasswordsCount = 15;
 
@@ -1707,17 +1701,18 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  // Wait for the loading indicator to disappear, and the sections to be on
-  // screen, before scrolling.
-  [[EarlGrey selectElementWithMatcher:SavedPasswordsHeaderMatcher()]
-      assertWithMatcher:grey_notNil()];
-
-  // Aim at an entry almost at the end of the list.
-  constexpr int kRemoteIndex = kPasswordsCount - 4;
-
+  // Open password details.
   [GetInteractionForPasswordEntry(
       [NSString stringWithFormat:@"example.com, %d accounts", kPasswordsCount])
       performAction:grey_tap()];
+
+  // Aim at an entry almost at the end of the list.
+  constexpr int kRemoteIndex = kPasswordsCount - 4;
+  // Using scrolling with the default `kScrollAmount` has too fine steps to
+  // reach the desired part of the list quickly. The following gives it a head
+  // start of the desired position, counting 30 points per entry and
+  // aiming at `kRemoteIndex`.
+  constexpr int kJump = kRemoteIndex * 30 + 150;
 
   // Check that the detail view loaded correctly by verifying the site content.
   [[[EarlGrey
@@ -1725,8 +1720,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
           [self matcherForPasswordDetailCellWithWebsites:
                     [NSString stringWithFormat:@"https://www%02d.example.com/",
                                                kRemoteIndex]]]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, kJump)
       onElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 
