@@ -92,6 +92,11 @@ class GURL;
 // Disables flyout menus from displaying.
 - (void)disableFlyoutMenu:(BOOL)disable;
 
+// Optional until fully integrated.
+@optional
+// Shows the overflow menu tooltip.
+- (void)requestShowOverflowMenuTooltip;
+
 @end
 
 namespace ios {

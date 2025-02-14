@@ -77,6 +77,9 @@ namespace {
 // The expected number of animations happening at the same time when exiting.
 const int kExpectedExitAnimationCount = 2;
 
+// The delay for showing the search with camera tooltip hint.
+const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
+
 }  // namespace
 
 @interface LensOverlayCoordinator () <LensOverlayConsentPresenterDelegate,
@@ -808,6 +811,32 @@ const int kExpectedExitAnimationCount = 2;
       }];
 }
 
+- (void)scheduleTooltipHintDisplay {
+  if (_isExiting || _isStopped) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf onTooltipScheduledDisplayDelayElapsed];
+      }),
+      kSearchWithCameraTooltipHintDelay);
+}
+
+- (void)onTooltipScheduledDisplayDelayElapsed {
+  if (_isExiting || _isStopped) {
+    return;
+  }
+
+  BOOL hadInteraction = self.isResultsBottomSheetCreated;
+  if (!hadInteraction) {
+    if ([_selectionViewController
+            respondsToSelector:@selector(requestShowOverflowMenuTooltip)]) {
+      [_selectionViewController requestShowOverflowMenuTooltip];
+    }
+  }
+}
+
 #pragma mark - LensOverlayConsentPresenterDelegate
 
 - (void)requestDismissalOfConsentDialog:
@@ -1104,6 +1133,10 @@ const int kExpectedExitAnimationCount = 2;
   [self disableSelectionInteraction:NO];
   [_selectionViewController setTopIconsHidden:NO];
   [_selectionViewController start];
+
+  if (IsLVFEscapeHatchEnabled()) {
+    [self scheduleTooltipHintDisplay];
+  }
 }
 
 - (void)buildResultsBottomSheetPresentation {
