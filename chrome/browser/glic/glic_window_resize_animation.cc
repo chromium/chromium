@@ -6,6 +6,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/glic_view.h"
+#include "chrome/browser/glic/glic_window_animator.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/widget/widget.h"
@@ -25,11 +26,13 @@ void RunCallbackList(std::unique_ptr<base::OnceClosureList> callbacks) {
 
 GlicWindowResizeAnimation::GlicWindowResizeAnimation(
     GlicWindowController* window_controller,
+    GlicWindowAnimator* window_animator,
     const gfx::Rect& target_bounds,
     base::TimeDelta duration,
     base::OnceClosure destruction_callback)
     : gfx::LinearAnimation(duration, kDefaultFrameRate, this),
       window_controller_(window_controller),
+      glic_window_animator_(window_animator),
       initial_bounds_(
           window_controller_->GetGlicWidget()->GetWindowBoundsInScreen()),
       new_bounds_(target_bounds),
@@ -65,7 +68,7 @@ void GlicWindowResizeAnimation::AnimateToState(double state) {
 
 void GlicWindowResizeAnimation::AnimationEnded(const Animation* animation) {
   // Destroys `this`.
-  window_controller_->ResizeFinished();
+  glic_window_animator_->ResizeFinished();
 }
 
 void GlicWindowResizeAnimation::UpdateTargetPosition(
