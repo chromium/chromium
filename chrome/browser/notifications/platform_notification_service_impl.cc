@@ -306,6 +306,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs()) &&
+      !safe_browsing::IsURLAllowlistedByPolicy(origin, *profile_->GetPrefs()) &&
       base::FeatureList::IsEnabled(
           safe_browsing::kOnDeviceNotificationContentDetectionModel)) {
     auto* notification_content_service = safe_browsing::
