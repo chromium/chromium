@@ -1985,6 +1985,8 @@ data/accessibility/css/carousel-no-tabs-expected-android-assist-data.txt
 data/accessibility/css/carousel-no-tabs-expected-android-external.txt
 data/accessibility/css/carousel-no-tabs-expected-blink.txt
 data/accessibility/css/carousel-no-tabs.html
+data/accessibility/css/carousel-positioned-buttons-expected-blink.txt
+data/accessibility/css/carousel-positioned-buttons.html
 data/accessibility/css/carousel-with-tabs-expected-android-assist-data.txt
 data/accessibility/css/carousel-with-tabs-expected-android-external.txt
 data/accessibility/css/carousel-with-tabs-expected-blink.txt
