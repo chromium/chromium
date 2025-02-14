@@ -7,7 +7,6 @@
 # and update the corresponding README.md appropriately.
 
 full_targets = [
-    "libavif",
     "d8",
     "chrome",
 ]
