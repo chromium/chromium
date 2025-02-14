@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "ui/gfx/animation/animation.h"
 
 namespace content {
@@ -39,21 +38,17 @@ void SetUpAccessibilityNotifications() {
                     ->NotifyWebContentsPreferencesChanged();
               }];
 
-  if (base::mac::MacOSVersion() >= 14'00'00 &&
-      base::FeatureList::IsEnabled(
-          features::kSonomaAccessibilityActivationRefinements)) {
-    // Set up KVO monitoring of VoiceOver state changes. KVO best practices
-    // recommend setting the context to the "address of a uniquely named
-    // static variable within the class". This allows observers to disambiguate
-    // notifications (where a class and its superclass, say, are observing the
-    // same property). We'll use the global accessibility object.
-    [[NSWorkspace sharedWorkspace]
-        addObserver:NSApp
-         forKeyPath:@"voiceOverEnabled"
-            options:(NSKeyValueObservingOptionInitial |
-                     NSKeyValueObservingOptionNew)
-            context:BrowserAccessibilityStateImpl::GetInstance()];
-  }
+  // Set up KVO monitoring of VoiceOver state changes. KVO best practices
+  // recommend setting the context to the "address of a uniquely named
+  // static variable within the class". This allows observers to disambiguate
+  // notifications (where a class and its superclass, say, are observing the
+  // same property). We'll use the global accessibility object.
+  [[NSWorkspace sharedWorkspace]
+      addObserver:NSApp
+       forKeyPath:@"voiceOverEnabled"
+          options:(NSKeyValueObservingOptionInitial |
+                   NSKeyValueObservingOptionNew)
+          context:BrowserAccessibilityStateImpl::GetInstance()];
 }
 }  // namespace
 
