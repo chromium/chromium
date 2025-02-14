@@ -457,6 +457,9 @@ void CommandLine::AppendSwitchASCII(std::string_view switch_string,
 
 void CommandLine::AppendSwitchUTF8(std::string_view switch_string,
                                    std::string_view value_string) {
+  DCHECK(IsStringUTF8(value_string))
+      << "Switch (" << switch_string << ") value (" << value_string
+      << ") is not UTF8.";
 #if BUILDFLAG(IS_WIN)
   AppendSwitchNative(switch_string, UTF8ToWide(value_string));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
