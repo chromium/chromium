@@ -292,8 +292,8 @@ void RecordDCLayerResult(DCLayerResult result, const DrawQuad* quad) {
     case DrawQuad::Material::kTextureContent: {
       auto* tex_quad = TextureDrawQuad::MaterialCast(quad);
       if (tex_quad->is_stream_video) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "GPU.DirectComposition.DCLayerResult.StreamVideo", result);
+        RecordVideoDCLayerResult(result,
+                                 gfx::ProtectedVideoType::kHardwareProtected);
       } else if (tex_quad->is_video_frame) {
         RecordVideoDCLayerResult(result, tex_quad->protected_video_type);
       } else {
