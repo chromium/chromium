@@ -76,11 +76,6 @@ class ActionMove::ActionMoveMouseView : public ActionView {
     labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding);
   }
 
-  // TODO(b/241966781): rewrite for Beta once design is ready.
-  void OnKeyBindingChange(ActionLabel* action_label,
-                          ui::DomCode code) override {
-    NOTIMPLEMENTED();
-  }
   void OnBindingToKeyboard() override { NOTIMPLEMENTED(); }
   void OnBindingToMouse(std::string mouse_action) override { NOTIMPLEMENTED(); }
   void AddTouchPoint() override { NOTIMPLEMENTED(); }
@@ -130,35 +125,6 @@ class ActionMove::ActionMoveKeyView : public ActionView {
         labels_[i]->SetTextActionLabel(std::move(GetDisplayText(keys[i])));
       }
     }
-  }
-
-  void OnKeyBindingChange(ActionLabel* action_label,
-                          ui::DomCode code) override {
-    DCHECK_EQ(labels_.size(), kActionMoveKeysSize);
-    if (labels_.size() != kActionMoveKeysSize) {
-      return;
-    }
-    auto it = std::ranges::find(labels_, action_label);
-    DCHECK(it != labels_.end());
-    if (it == labels_.end()) {
-      return;
-    }
-
-    const auto& input_binding = action_->GetCurrentDisplayedInput();
-    DCHECK_EQ(input_binding.keys().size(), kActionMoveKeysSize);
-    std::vector<ui::DomCode> new_keys = input_binding.keys();
-    new_keys[it - labels_.begin()] = code;
-
-    // If there is duplicate key in its own action, take the key away from
-    // previous index.
-    if (const int unassigned_index = input_binding.GetIndexOfKey(code);
-        unassigned_index != -1) {
-      new_keys[unassigned_index] = ui::DomCode::NONE;
-      labels_[unassigned_index]->SetDisplayMode(DisplayMode::kEditedUnbound);
-    }
-
-    auto input_element = InputElement::CreateActionMoveKeyElement(new_keys);
-    ChangeInputBinding(action_, action_label, std::move(input_element));
   }
 
   // TODO(cuicuiruan): Remove this for post MVP for editing `ActionMove`.
