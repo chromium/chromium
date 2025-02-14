@@ -198,8 +198,8 @@ scoped_refptr<App> MakeAppRecover() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   return base::MakeRefCounted<AppRecover>(
-      base::Version(command_line->GetSwitchValueASCII(kBrowserVersionSwitch)),
-      command_line->GetSwitchValueASCII(kAppGuidSwitch));
+      base::Version(command_line->GetSwitchValueUTF8(kBrowserVersionSwitch)),
+      command_line->GetSwitchValueUTF8(kAppGuidSwitch));
 }
 
 }  // namespace updater

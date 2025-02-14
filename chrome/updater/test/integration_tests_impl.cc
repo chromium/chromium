@@ -549,7 +549,7 @@ void Install(UpdaterScope scope, const base::Value::List& switches) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
-  command_line.AppendSwitchASCII(kInstallSwitch, "usagestats=1");
+  command_line.AppendSwitchUTF8(kInstallSwitch, "usagestats=1");
   for (const base::Value& cmd_line_switch : switches) {
     command_line.AppendSwitch(cmd_line_switch.GetString());
   }
@@ -572,9 +572,9 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const base::FilePath& updater_path) {
   ASSERT_FALSE(updater_path.empty());
   base::CommandLine command_line(updater_path);
-  command_line.AppendSwitchASCII(kInstallSwitch, tag);
+  command_line.AppendSwitchUTF8(kInstallSwitch, tag);
   if (!app_id.empty()) {
-    command_line.AppendSwitchASCII(kAppIdSwitch, app_id);
+    command_line.AppendSwitchUTF8(kAppIdSwitch, app_id);
   }
   if (is_silent_install) {
     ASSERT_TRUE(child_window_text_to_find.empty());
@@ -885,7 +885,7 @@ void RunServer(UpdaterScope scope, int expected_exit_code, bool internal) {
   ASSERT_TRUE(base::PathExists(*installed_executable_path));
   base::CommandLine command_line(*installed_executable_path);
   command_line.AppendSwitch(kServerSwitch);
-  command_line.AppendSwitchASCII(
+  command_line.AppendSwitchUTF8(
       kServerServiceSwitch, internal ? kServerUpdateServiceInternalSwitchValue
                                      : kServerUpdateServiceSwitchValue);
   int exit_code = -1;
@@ -1545,8 +1545,8 @@ void RunRecoveryComponent(UpdaterScope scope,
                           const std::string& app_id,
                           const base::Version& version) {
   base::CommandLine command(GetSetupExecutablePath());
-  command.AppendSwitchASCII(kBrowserVersionSwitch, version.GetString());
-  command.AppendSwitchASCII(kAppGuidSwitch, app_id);
+  command.AppendSwitchUTF8(kBrowserVersionSwitch, version.GetString());
+  command.AppendSwitchUTF8(kAppGuidSwitch, app_id);
   int exit_code = -1;
   Run(scope, command, &exit_code);
   ASSERT_EQ(exit_code, kErrorOk);

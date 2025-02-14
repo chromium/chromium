@@ -913,8 +913,8 @@ std::optional<base::CommandLine> CommandLineForLegacyFormat(
     if (base::StringPairs switch_value_pairs;
         base::SplitStringIntoKeyValuePairs(switch_name, '=', '\n',
                                            &switch_value_pairs)) {
-      command_line.AppendSwitchASCII(switch_value_pairs[0].first,
-                                     switch_value_pairs[0].second);
+      command_line.AppendSwitchUTF8(switch_value_pairs[0].first,
+                                    switch_value_pairs[0].second);
       continue;
     }
     if (is_legacy_switch(next_arg) || next_arg.empty()) {

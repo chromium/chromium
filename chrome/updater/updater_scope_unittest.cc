@@ -64,11 +64,10 @@ INSTANTIATE_TEST_SUITE_P(TagSwitchTestCases,
                          }));
 
 TEST_P(TagSwitchTest, TagPrefers) {
-  command_line_.AppendSwitchASCII(
-      GetParam().tag_switch,
-      "appguid=5F46DE36-737D-4271-91C1-C062F9FE21D9&"
-      "appname=TestApp3&"
-      "needsadmin=prefers&");
+  command_line_.AppendSwitchUTF8(GetParam().tag_switch,
+                                 "appguid=5F46DE36-737D-4271-91C1-C062F9FE21D9&"
+                                 "appname=TestApp3&"
+                                 "needsadmin=prefers&");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_),
             UpdaterScope::kSystem);
   EXPECT_TRUE(IsPrefersForCommandLine(command_line_));
@@ -76,29 +75,28 @@ TEST_P(TagSwitchTest, TagPrefers) {
 
 TEST_P(TagSwitchTest, Prefers_And_TagPrefers) {
   command_line_.AppendSwitch(kCmdLinePrefersUser);
-  command_line_.AppendSwitchASCII(
-      GetParam().tag_switch,
-      "appguid=5F46DE36-737D-4271-91C1-C062F9FE21D9&"
-      "appname=TestApp3&"
-      "needsadmin=prefers&");
+  command_line_.AppendSwitchUTF8(GetParam().tag_switch,
+                                 "appguid=5F46DE36-737D-4271-91C1-C062F9FE21D9&"
+                                 "appname=TestApp3&"
+                                 "needsadmin=prefers&");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
   EXPECT_TRUE(IsPrefersForCommandLine(command_line_));
 }
 
 TEST_P(TagSwitchTest, TagRuntime) {
-  command_line_.AppendSwitchASCII(GetParam().tag_switch, "runtime=true");
+  command_line_.AppendSwitchUTF8(GetParam().tag_switch, "runtime=true");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
 }
 
 TEST_P(TagSwitchTest, TagRuntimeUser) {
-  command_line_.AppendSwitchASCII(GetParam().tag_switch,
-                                  "runtime=true&needsadmin=false&");
+  command_line_.AppendSwitchUTF8(GetParam().tag_switch,
+                                 "runtime=true&needsadmin=false&");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
 }
 
 TEST_P(TagSwitchTest, TagRuntimeSystem) {
-  command_line_.AppendSwitchASCII(GetParam().tag_switch,
-                                  "runtime=true&needsadmin=true&");
+  command_line_.AppendSwitchUTF8(GetParam().tag_switch,
+                                 "runtime=true&needsadmin=true&");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_),
             UpdaterScope::kSystem);
 }

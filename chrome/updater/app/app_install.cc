@@ -206,7 +206,7 @@ void AppInstall::FirstTaskRun() {
     app_name_ = app_args.app_name;
   } else {
     // If no apps are present, try to use --app-id, if present.
-    app_id_ = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+    app_id_ = base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(
         kAppIdSwitch);
   }
 

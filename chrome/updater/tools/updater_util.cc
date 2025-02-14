@@ -606,7 +606,7 @@ void UpdaterUtilApp::FindApp(
 void UpdaterUtilApp::ListUpdate() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  const std::string app_id = command_line->GetSwitchValueASCII(kProductSwitch);
+  const std::string app_id = command_line->GetSwitchValueUTF8(kProductSwitch);
   if (app_id.empty()) {
     PrintUsage("Must specify a product to list update.");
     return;
@@ -665,7 +665,7 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
 
 void UpdaterUtilApp::Update() {
   const std::string app_id =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(
           kProductSwitch);
   if (app_id.empty()) {
     service_proxy_->UpdateAll(

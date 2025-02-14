@@ -521,7 +521,7 @@ void ExpectKSAdminResult(UpdaterScope scope,
 
   base::CommandLine command_line(*ksadmin_path);
   for (const auto& [key, value] : switches) {
-    command_line.AppendSwitchASCII(key, value);
+    command_line.AppendSwitchUTF8(key, value);
   }
 
   ExpectCliResult(command_line, elevate, std::move(want_stdout),

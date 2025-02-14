@@ -130,15 +130,15 @@ TagParsingResult& TagParsingResult::operator=(const TagParsingResult&) =
 TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line) {
   std::string tag = command_line.HasSwitch(kInstallSwitch)
-                        ? command_line.GetSwitchValueASCII(kInstallSwitch)
-                        : command_line.GetSwitchValueASCII(kHandoffSwitch);
+                        ? command_line.GetSwitchValueUTF8(kInstallSwitch)
+                        : command_line.GetSwitchValueUTF8(kHandoffSwitch);
   if (tag.empty()) {
     return {};
   }
 
   tagging::TagArgs tag_args;
   const tagging::ErrorCode error = tagging::Parse(
-      tag, command_line.GetSwitchValueASCII(kAppArgsSwitch), tag_args);
+      tag, command_line.GetSwitchValueUTF8(kAppArgsSwitch), tag_args);
   VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
       << "Tag parsing returned " << error << ".";
   return {tag_args, error};
