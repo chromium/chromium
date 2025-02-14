@@ -68,12 +68,8 @@ class AddressViewControllerTest : public LegacyChromeTableViewControllerTest,
 // 3. "No address items present" message is removed once there are address items
 // to be shown in the view.
 TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // TODO(crbug.com/327838014): Fails on iPad.
-    return;
-  }
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgrade);
+  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
 
   AddressViewController* address_view_controller =
       base::apple::ObjCCastStrict<AddressViewController>(controller());

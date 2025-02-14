@@ -71,12 +71,8 @@ class PasswordViewControllerTest : public LegacyChromeTableViewControllerTest,
 // 3. "No password items present" message is removed once there are password
 // items to be shown in the view.
 TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // TODO(crbug.com/327838014): Fails on iPad.
-    return;
-  }
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgrade);
+  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
 
   PasswordViewController* password_view_controller =
       base::apple::ObjCCastStrict<PasswordViewController>(controller());
@@ -178,11 +174,6 @@ TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
 // Tests that the plus address which exists in a credential is not added as a
 // manual fallback suggestion.
 TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // TODO(crbug.com/327838014): Fails on iPad.
-    return;
-  }
-
   // Test is irrelevant without the feature.
   if (!base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled)) {
@@ -190,7 +181,7 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgrade);
+  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
 
   PasswordViewController* password_view_controller =
       base::apple::ObjCCastStrict<PasswordViewController>(controller());

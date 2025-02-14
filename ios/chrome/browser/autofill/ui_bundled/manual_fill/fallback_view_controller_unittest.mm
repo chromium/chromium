@@ -26,7 +26,7 @@ class FallbackViewControllerTest : public LegacyChromeTableViewControllerTest,
                                    public base::test::WithFeatureOverride {
  public:
   FallbackViewControllerTest()
-      : base::test::WithFeatureOverride(kIOSKeyboardAccessoryUpgrade) {}
+      : base::test::WithFeatureOverride(kIOSKeyboardAccessoryUpgradeForIPad) {}
 
  protected:
   void SetUp() override {

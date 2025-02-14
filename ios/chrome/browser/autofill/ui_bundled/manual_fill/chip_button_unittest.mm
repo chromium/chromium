@@ -30,7 +30,8 @@ TEST_F(ChipButtonTest, SetTitle) {
   NSString* title = @"Title";
 
   {
-    base::test::ScopedFeatureList feature_list(kIOSKeyboardAccessoryUpgrade);
+    base::test::ScopedFeatureList feature_list(
+        kIOSKeyboardAccessoryUpgradeForIPad);
 
     ChipButton* button = [[ChipButton alloc] initWithFrame:CGRectZero];
 
@@ -40,19 +41,13 @@ TEST_F(ChipButtonTest, SetTitle) {
     EXPECT_TRUE([button_configuration.baseForegroundColor
         isEqual:[UIColor colorNamed:kTextPrimaryColor]]);
 
-    // UI updates related to the kIOSKeyboardAccessoryUpgrade feature are only
-    // applied to iPhone for now.
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      EXPECT_NSEQ(button.currentTitle, title);
-      EXPECT_NE(button.titleLabel.font, font);
-    } else {
-      EXPECT_NSEQ(button_configuration.attributedTitle.string, title);
-      EXPECT_EQ(GetTitleFont(button_configuration), font);
-    }
+    EXPECT_NSEQ(button_configuration.attributedTitle.string, title);
+    EXPECT_EQ(GetTitleFont(button_configuration), font);
   }
-  {
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kIOSKeyboardAccessoryUpgrade);
+    feature_list.InitAndDisableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
 
     ChipButton* button = [[ChipButton alloc] initWithFrame:CGRectZero];
 
