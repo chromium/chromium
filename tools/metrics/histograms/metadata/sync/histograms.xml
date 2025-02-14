@@ -425,6 +425,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.ConfigureDataTypeManager.Finished"
+    enum="BooleanIsFirstSync" expires_after="2026-02-14">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records whether the data type manager was configured for the first time
+    (i.e. whether the user signed in within the same browser session). Recorded
+    whenever sync configuration finishes successfully. Note that this metric is
+    not recorded if the configuration takes too much time or is aborted.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ConfigureDataTypeManager.IsGaiaAccountId" enum="Boolean"
     expires_after="2025-07-22">
   <owner>rushans@google.com</owner>
@@ -433,6 +445,18 @@ chromium-metrics-reviews@google.com.
     Whether the account ID used for configuring the data type manager is a Gaia
     ID. Recorded when configuring the data type manager for any reason, normally
     during startup / profile load.
+  </summary>
+</histogram>
+
+<histogram name="Sync.ConfigureDataTypeManager.Start" enum="BooleanIsFirstSync"
+    expires_after="2026-02-14">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Whether the data type manager is configured for the first time, i.e. the
+    user signs in. Recorded when configuring the data type manager is started
+    (e.g. on profile load when a user is signed in or the user signs in, enables
+    or disables sync, etc).
   </summary>
 </histogram>
 

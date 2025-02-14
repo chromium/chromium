@@ -1284,6 +1284,8 @@ void SyncServiceImpl::OnConfigureDone(
   }
 
   DCHECK_EQ(DataTypeManager::OK, result.status);
+  base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.Finished",
+                            is_first_time_sync_configure_);
 
   // We should never get in a state where we have no encrypted datatypes
   // enabled, and yet we still think we require a passphrase for decryption.
@@ -1676,6 +1678,9 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
                                 use_transport_only_mode
                                     ? ConfigureDataTypeManagerOption::kTransport
                                     : ConfigureDataTypeManagerOption::kFeature);
+
+  base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.Start",
+                            is_first_time_sync_configure_);
 
   // Record the user's choice of data types - in different ways depending on
   // whether Sync-the-feature is enabled (which uses "SyncEverything") or not
