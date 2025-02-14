@@ -1,0 +1,29 @@
+Tests encoding of a response body
+
+Results for /resources/square200.png encoding=jpeg q=undefined sizeOnly=undefined
+body=string body.length~18100
+original=15506 encoded~13600
+
+Results for /resources/square200.png encoding=webp q=0.8 sizeOnly=false
+body=string body.length~1200
+original=15506 encoded~900
+
+Results for /resources/square200.png encoding=jpeg q=1 sizeOnly=true
+body=undefined body.length~undefined
+original=15506 encoded~13600
+
+Results for /resources/square200.png encoding=jpeg q=0.5 sizeOnly=true
+body=undefined body.length~undefined
+original=15506 encoded~1200
+
+Results for /resources/square20.bmp encoding=jpeg q=0.8 sizeOnly=true
+body=undefined body.length~undefined
+original=1322 encoded~300
+
+Results for /resources/square20.bmp encoding=png q=undefined sizeOnly=undefined
+body=string body.length~100
+original=1322 encoded~100
+
+Results for /resources/load-and-stall.php?name=dummy.html&mimeType=image%2Fpng encoding=png q=undefined sizeOnly=undefined
+failed to determine
+
