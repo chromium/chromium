@@ -4,7 +4,6 @@
 
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h"
 
-#include "base/base64.h"
 #include "base/functional/callback.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -51,8 +50,7 @@ void ParentAccessDialogResultObserver::DidStartNavigation(
   }
   supervised_user::ParentAccessCallbackParsedResult callback_result =
       supervised_user::ParentAccessCallbackParsedResult::
-          ParseParentAccessCallbackResult(encoded_callback.value(),
-                                          base::Base64DecodePolicy::kForgiving);
+          ParseParentAccessCallbackResult(encoded_callback.value());
 
   // Set the `result_` according to the parsed PACP callback we received.
   // This will be handled when the navigation completes.

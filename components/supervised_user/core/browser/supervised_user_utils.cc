@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -245,11 +246,11 @@ ParentAccessCallbackParsedResult::GetCallback() const {
 // static
 ParentAccessCallbackParsedResult
 ParentAccessCallbackParsedResult::ParseParentAccessCallbackResult(
-    const std::string& encoded_parent_access_callback_proto,
-    base::Base64DecodePolicy decoding_policy) {
+    const std::string& encoded_parent_access_callback_proto) {
   std::string decoded_parent_access_callback;
-  if (!base::Base64Decode(encoded_parent_access_callback_proto,
-                          &decoded_parent_access_callback, decoding_policy)) {
+  if (!base::Base64UrlDecode(encoded_parent_access_callback_proto,
+                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                             &decoded_parent_access_callback)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
                   "parent_access_result from base64";
     return ParentAccessCallbackParsedResult(
