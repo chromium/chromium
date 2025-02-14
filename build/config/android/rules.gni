@@ -4263,6 +4263,12 @@ if (!is_robolectric && enable_java_templates) {
            _scanned_files.native_libraries != [])
     assert(_scanned_files.has_classes_jar || _scanned_files.subjars == [])
 
+    if (_extract_native_libraries && defined(_scanned_files.prefab_headers)) {
+      _output_headers_paths = get_path_info(
+              rebase_path(_scanned_files.prefab_headers, "", _output_path),
+              "abspath")
+    }
+
     action_with_pydeps(_unpack_target_name) {
       script = "//build/android/gyp/aar.py"  # Unzips the AAR
       args = [
@@ -4300,6 +4306,9 @@ if (!is_robolectric && enable_java_templates) {
         outputs += get_path_info(
                 rebase_path(_scanned_files.native_libraries, "", _output_path),
                 "abspath")
+      }
+      if (defined(_output_headers_paths)) {
+        outputs += _output_headers_paths
       }
       if (_use_scanned_assets) {
         outputs +=
@@ -4436,6 +4445,22 @@ if (!is_robolectric && enable_java_templates) {
           }
         }
         public_target_label = _target_label
+      }
+    }
+
+    if (defined(_output_headers_paths)) {
+      _config_name = "${target_name}__include_dirs_config"
+      config(_config_name) {
+        include_dirs =
+            get_path_info(rebase_path(_scanned_files.prefab_include_dirs,
+                                      "",
+                                      _output_path),
+                          "abspath")
+      }
+      source_set("${target_name}_headers") {
+        sources = _output_headers_paths
+        public_configs = [ ":$_config_name" ]
+        deps = [ ":$_unpack_target_name" ]
       }
     }
 
