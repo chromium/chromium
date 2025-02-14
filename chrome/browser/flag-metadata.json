@@ -5306,11 +5306,6 @@
     "expiry_milestone": 121
   },
   {
-    "name": "ios-keyboard-accessory-upgrade",
-    "owners": [ "noemies@google.com", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "ios-keyboard-accessory-upgrade-for-ipad",
     "owners": [ "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
     "expiry_milestone": 145

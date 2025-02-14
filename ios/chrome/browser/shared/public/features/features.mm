@@ -39,10 +39,6 @@ SegmentedDefaultBrowserExperimentTypeEnabled() {
           (int)SegmentedDefaultBrowserExperimentType::kStaticPromo));
 }
 
-BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
-             "IOSKeyboardAccessoryUpgrade",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSKeyboardAccessoryUpgradeForIPad,
              "kIOSKeyboardAccessoryUpgradeForIPad",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -782,10 +778,8 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly() {
 }
 
 bool IsKeyboardAccessoryUpgradeEnabled() {
-  return base::FeatureList::IsEnabled(ui::GetDeviceFormFactor() ==
-                                              ui::DEVICE_FORM_FACTOR_TABLET
-                                          ? kIOSKeyboardAccessoryUpgradeForIPad
-                                          : kIOSKeyboardAccessoryUpgrade);
+  return (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) ||
+         base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgradeForIPad);
 }
 
 bool IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled() {
