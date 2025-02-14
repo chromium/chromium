@@ -4,7 +4,13 @@
 
 #include "remoting/base/cloud_service_client.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringize_macros.h"
 #include "google_apis/google_api_keys.h"
@@ -293,19 +299,11 @@ namespace remoting {
 
 CloudServiceClient::CloudServiceClient(
     const std::string& api_key,
+    OAuthTokenGetter* oauth_token_getter,
+    const std::string& base_service_url,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : api_key_(api_key),
-      http_client_(ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
-                   /*oauth_token_getter=*/nullptr,
-                   url_loader_factory) {}
-
-CloudServiceClient::CloudServiceClient(
-    OAuthTokenGetter* oauth_token_getter,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : http_client_(
-          ServiceUrls::GetInstance()->remoting_cloud_private_endpoint(),
-          oauth_token_getter,
-          url_loader_factory) {}
+      http_client_(base_service_url, oauth_token_getter, url_loader_factory) {}
 
 CloudServiceClient::~CloudServiceClient() = default;
 
@@ -457,6 +455,39 @@ void CloudServiceClient::ExecuteRequest(
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(std::move(callback));
   http_client_.ExecuteRequest(std::move(request));
+}
+
+// static
+std::unique_ptr<CloudServiceClient>
+CloudServiceClient::CreateForChromotingRobotAccount(
+    OAuthTokenGetter* oauth_token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      /*api_key=*/std::string(), oauth_token_getter,
+      ServiceUrls::GetInstance()->remoting_cloud_private_endpoint(),
+      url_loader_factory));
+}
+
+// static
+std::unique_ptr<CloudServiceClient> CloudServiceClient::CreateForGcpProject(
+    const std::string& api_key,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      api_key,
+      /*oauth_token_getter=*/nullptr,
+      ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+      url_loader_factory));
+}
+
+// static
+std::unique_ptr<CloudServiceClient>
+CloudServiceClient::CreateForGceDefaultServiceAccount(
+    OAuthTokenGetter* oauth_token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      /*api_key=*/std::string(), oauth_token_getter,
+      ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+      url_loader_factory));
 }
 
 }  // namespace remoting

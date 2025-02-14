@@ -64,7 +64,8 @@ CloudHostStarter::CloudHostStarter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : HostStarterBase(url_loader_factory),
       cloud_service_client_(
-          std::make_unique<CloudServiceClient>(api_key, url_loader_factory)) {
+          CloudServiceClient::CreateForGcpProject(api_key,
+                                                  url_loader_factory)) {
   params().api_key = api_key;
 }
 
