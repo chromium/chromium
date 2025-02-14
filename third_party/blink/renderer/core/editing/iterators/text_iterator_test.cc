@@ -1152,5 +1152,14 @@ TEST_F(TextIteratorTest, BasicIterationWithoutLayoutBetweenTextNode) {
   EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<FlatTree>());
 }
 
+TEST_F(TextIteratorTest, BasicIterationWithButtonInInlineElement) {
+  static const char* body_content =
+      "<div><span>test<div style='display: inline-flex;'><button> "
+      "</button></div>;</span></div>";
+  SetBodyContent(body_content);
+  EXPECT_EQ("[test][][;]", Iterate<DOMTree>());
+  EXPECT_EQ("[test][][;]", Iterate<FlatTree>());
+}
+
 }  // namespace text_iterator_test
 }  // namespace blink

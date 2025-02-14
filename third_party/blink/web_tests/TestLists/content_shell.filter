@@ -525,7 +525,6 @@ external/wpt/editing/other/insertparagraph-in-non-splittable-element.html
 external/wpt/editing/other/join-pre-and-other-block.html*
 external/wpt/editing/other/no-beforeinput-when-no-selection.html
 external/wpt/editing/other/paste_text_with_text_transform.html
-external/wpt/editing/other/plain-text-copy-paste-of-paragraph-ending-with-non-layed-out-content.html
 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=DesignMode
 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=DesignMode&child=b
 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=DesignMode&parent=b
