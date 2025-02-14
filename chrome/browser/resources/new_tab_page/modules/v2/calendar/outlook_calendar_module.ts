@@ -74,14 +74,14 @@ export class OutlookCalendarModuleElement extends
           text: this.i18n('modulesOutlookCalendarDisableButtonText'),
         },
         {
-          action: 'info',
-          icon: 'modules:info',
-          text: this.i18n('moduleInfoButtonTitle'),
-        },
-        {
           action: 'signout',
           icon: 'modules:logout',
           text: this.i18n('modulesMicrosoftSignOutButtonText'),
+        },
+        {
+          action: 'info',
+          icon: 'modules:info',
+          text: this.i18n('moduleInfoButtonTitle'),
         },
       ],
       [
