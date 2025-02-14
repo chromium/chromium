@@ -2928,10 +2928,6 @@
       status: "stable",
     },
     {
-      name: "NavigationActivation",
-      status: "stable",
-    },
-    {
       name: "NavigationId",
       status: "experimental",
       origin_trial_feature_name: "SoftNavigationHeuristics",
