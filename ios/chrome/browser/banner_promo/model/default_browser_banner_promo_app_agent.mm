@@ -65,6 +65,10 @@ struct SceneStateData {
 
   // Number of times the promo has been displayed in this promo session.
   int _sessionDisplayCount;
+
+  // Sometimes the promo is hidden and re-shown. The Engagement Tracker should
+  // only be informed of the first dismissal.
+  BOOL _shouldAlertEngagementTrackerOfDismissal;
 }
 
 - (instancetype)init {
@@ -196,7 +200,8 @@ struct SceneStateData {
     feature_engagement::Tracker* engagementTracker =
         feature_engagement::TrackerFactory::GetForProfile(
             _mainProfileState.profile);
-    if (engagementTracker) {
+    if (engagementTracker && _shouldAlertEngagementTrackerOfDismissal) {
+      _shouldAlertEngagementTrackerOfDismissal = NO;
       engagementTracker->Dismissed(
           feature_engagement::kIPHiOSDefaultBrowserBannerPromoFeature);
     }
@@ -268,6 +273,7 @@ struct SceneStateData {
         engagementTracker->ShouldTriggerHelpUI(
             feature_engagement::kIPHiOSDefaultBrowserBannerPromoFeature)) {
       _sessionDisplayCount = 1;
+      _shouldAlertEngagementTrackerOfDismissal = YES;
       [self ensurePromoShown];
       base::UmaHistogramCounts100("IOS.DefaultBrowserBannerPromo.Shown",
                                   _sessionDisplayCount);
