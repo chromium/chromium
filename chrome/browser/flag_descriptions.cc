@@ -3754,14 +3754,6 @@ const char kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[] =
     "New single username predictions based on voting from Username First Flow "
     "with intermediate values.";
 
-const char kUsernameFirstFlowWithIntermediateValuesVotingName[] =
-    "Username first flow with intermediate values voting";
-const char kUsernameFirstFlowWithIntermediateValuesVotingDescription[] =
-    "Support voting on username first flow with intermediate values. Username "
-    "first flow is login/sign-up flow where a user has to type username first "
-    "on one page and then password on another page. Intermediate fields are "
-    "usually an OTP field or CAPTCHA.";
-
 const char kUseSearchClickForRightClickName[] =
     "Use Search+Click for right click";
 const char kUseSearchClickForRightClickDescription[] =

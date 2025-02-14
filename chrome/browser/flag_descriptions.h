@@ -1417,9 +1417,6 @@ extern const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[];
 extern const char
     kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[];
 
-extern const char kUsernameFirstFlowWithIntermediateValuesVotingName[];
-extern const char kUsernameFirstFlowWithIntermediateValuesVotingDescription[];
-
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
 

@@ -693,12 +693,9 @@ void VotesUploader::CalculateUsernamePromptEditState(
     if (!vote_data.username_candidate_value.empty()) {
       vote_data.prompt_edit = CalculateUsernamePromptEdit(
           saved_username, vote_data.username_candidate_value);
-      vote_data.is_form_overrule =
-          CalculateInFormOverrule(saved_username,
-                                  vote_data.username_candidate_value,
-                                  all_alternative_usernames) &&
-          base::FeatureList::IsEnabled(
-              features::kUsernameFirstFlowWithIntermediateValuesVoting);
+      vote_data.is_form_overrule = CalculateInFormOverrule(
+          saved_username, vote_data.username_candidate_value,
+          all_alternative_usernames);
     }
   }
   for (auto& [field_id, vote_data] : forgot_password_vote_data_) {
