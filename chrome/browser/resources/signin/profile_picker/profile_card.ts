@@ -14,6 +14,7 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
@@ -72,9 +73,11 @@ export class ProfileCardElement extends ProfileCardElementBase {
       const target = this.$.tooltip.target;
       assert(target);
       const inputElement = (target as CrInputElement).inputElement;
+
       // Disable tooltip if the local name editing is in progress.
-      if (this.isNameTruncated_(inputElement) &&
-          !this.$.nameInput.hasAttribute('focused_')) {
+      if ((this.isNameTruncated_(inputElement) &&
+           !this.$.nameInput.hasAttribute('focused_')) ||
+          this.profileState.hasEnterpriseLabel) {
         this.$.tooltip.show();
         return;
       }
@@ -107,6 +110,13 @@ export class ProfileCardElement extends ProfileCardElementBase {
     target.addEventListener('blur', hideTooltip);
     target.addEventListener('tap', hideTooltip);
     this.$.gaiaNameTooltip.addEventListener('mouseenter', hideTooltip);
+  }
+
+  protected getNameInputTooltipText(): string {
+    if (this.profileState.hasEnterpriseLabel) {
+      return loadTimeData.getString('controlledSettingPolicy');
+    }
+    return this.profileState.localProfileName;
   }
 
   private isNameTruncated_(element: HTMLElement): boolean {

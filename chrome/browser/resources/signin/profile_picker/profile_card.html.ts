@@ -55,7 +55,7 @@ export function getHtml(this: ProfileCardElement) {
 </cr-tooltip>
 <cr-tooltip id="tooltip" for="nameInput" manual-mode offset="-10"
     aria-hidden="true">
-  ${this.profileState.localProfileName}
+  ${this.getNameInputTooltipText()}
 </cr-tooltip>
 <!--_html_template_end_-->`;
 }

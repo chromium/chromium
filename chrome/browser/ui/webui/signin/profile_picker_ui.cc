@@ -109,6 +109,7 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
       {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
       {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
       {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
+      {"controlledSettingPolicy", IDS_MANAGED},
       {"needsSigninPrompt",
        IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT},
       {"profileCardInputLabel", IDS_PROFILE_PICKER_PROFILE_CARD_INPUT_LABEL},
