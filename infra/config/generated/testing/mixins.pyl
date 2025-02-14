@@ -190,6 +190,11 @@
       },
     },
   },
+  'gpu_enable_metal_debug_layers': {
+    'args': [
+      '--enable-metal-debug-layers',
+    ],
+  },
   'gpu_force_angle_d3d11': {
     'args': [
       '--extra-browser-args=--use-angle=d3d11',
@@ -233,6 +238,16 @@
   'gpu_force_command_decoder_validating': {
     'args': [
       '--extra-browser-args=--use-cmd-decoder=validating',
+    ],
+  },
+  'gpu_force_high_performance_gpu': {
+    'args': [
+      '--extra-browser-args=--force_high_performance_gpu',
+    ],
+  },
+  'gpu_force_high_performance_gpu_for_webgl': {
+    'args': [
+      '--extra-browser-args=--enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL',
     ],
   },
   'gpu_force_skia_ganesh': {
@@ -294,7 +309,6 @@
   },
   'gpu_integration_test_webgl1_args': {
     'args': [
-      '--extra-browser-args=--force_high_performance_gpu',
       '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
     ],
   },
@@ -302,7 +316,6 @@
     'args': [
       '--webgl-conformance-version=2.0.1',
       '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-      '--extra-browser-args=--force_high_performance_gpu',
     ],
   },
   'gpu_nvidia_shield_tv_stable': {

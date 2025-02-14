@@ -669,8 +669,9 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle --use-angle=vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=vulkan --force_high_performance_gpu",
           "--enforce-browser-version",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_win_runtimes.json",
           "--jobs=2"
         ],
         "merge": {
