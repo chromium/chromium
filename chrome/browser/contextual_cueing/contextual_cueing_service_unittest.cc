@@ -34,8 +34,7 @@ class ContextualCueingServiceTest : public testing::Test {
 
   void SetUp() override {
     InitializeFeatureList();
-    service_ = std::make_unique<ContextualCueingService>(
-        &page_content_extraction_service_);
+    service_ = std::make_unique<ContextualCueingService>();
   }
 
   ContextualCueingService* service() { return service_.get(); }
@@ -46,8 +45,6 @@ class ContextualCueingServiceTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ContextualCueingService> service_;
-  page_content_annotations::PageContentExtractionService
-      page_content_extraction_service_;
 };
 
 class ContextualCueingServiceTestCapCountAndMinPageCount

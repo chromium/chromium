@@ -41,7 +41,7 @@ class ContextualCueingPageDataTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(ContextualCueingPageDataTest, Basic) {
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<const std::string&> future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
   config->set_cue_label("basic label");
@@ -54,7 +54,7 @@ TEST_F(ContextualCueingPageDataTest, Basic) {
 }
 
 TEST_F(ContextualCueingPageDataTest, NonPdfPageFails) {
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<const std::string&> future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
   config->set_cue_label("basic label");
@@ -75,7 +75,7 @@ TEST_F(ContextualCueingPageDataTest, PdfPageCountFails) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<const std::string&> future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
   config->set_cue_label("pdf label");
@@ -100,7 +100,7 @@ TEST_F(ContextualCueingPageDataTest, PdfPageCountPasses) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<const std::string&> future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
   config->set_cue_label("pdf label");
@@ -125,7 +125,7 @@ TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<const std::string&> future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
   config->set_cue_label("pdf label");
