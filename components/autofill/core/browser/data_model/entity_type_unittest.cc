@@ -91,7 +91,7 @@ TEST(AutofillEntityTypeTest, EntityGetNameForI18n) {
 TEST(AutofillEntityTypeTest, AttributeGetNameForI18n) {
   using enum AttributeTypeName;
   AttributeType a = AttributeType(kPassportCountry);
-  AttributeType b = AttributeType(kCarLicensePlate);
+  AttributeType b = AttributeType(kVehicleLicensePlate);
   AttributeType c = AttributeType(kDriversLicenseExpirationDate);
   EXPECT_EQ(a.GetNameForI18n(), u"Country");
   EXPECT_EQ(b.GetNameForI18n(), u"License plate");

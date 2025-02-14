@@ -8,7 +8,7 @@
   <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_ENTITY_NAME" desc="Used as a general label for the loyalty card entity." translateable="false">
     Loyalty card
   </message>
-  <message name="IDS_AUTOFILL_AI_CAR_ENTITY_NAME" desc="Used as a general label for the car entity." translateable="false">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="Used as a general label for the vehicle entity." translateable="false">
     Car
   </message>
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME" desc="Used as a general label for the driver's license entity." translateable="false">
@@ -45,21 +45,21 @@
     Member ID
   </message>
 
-  <!-- TODO(crbug.com/395807244): Make car strings translateable. -->
-  <!-- Attributes of the car entity -->
-  <message name="IDS_AUTOFILL_AI_CAR_OWNER_ATTRIBUTE_NAME" desc="Used as a general label for the car owner attribute." translateable="false">
+  <!-- TODO(crbug.com/395807244): Make vehicle strings translateable. -->
+  <!-- Attributes of the vehicle entity -->
+  <message name="IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle owner attribute." translateable="false">
     Owner
   </message>
-  <message name="IDS_AUTOFILL_AI_CAR_LICENSE_PLATE_ATTRIBUTE_NAME" desc="Used as a general label for the car license plate attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_LICENSE_PLATE_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle license plate attribute." translateable="false">
     License plate
   </message>
-  <message name="IDS_AUTOFILL_AI_CAR_REGISTRATION_ATTRIBUTE_NAME" desc="Used as a general label for the car registration attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_VIN_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle VIN attribute." translateable="false">
     Registration
   </message>
-  <message name="IDS_AUTOFILL_AI_CAR_MAKE_ATTRIBUTE_NAME" desc="Used as a general label for the car make attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle make attribute." translateable="false">
     Make
   </message>
-  <message name="IDS_AUTOFILL_AI_CAR_MODEL_ATTRIBUTE_NAME" desc="Used as a general label for the car model attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle model attribute." translateable="false">
     Model
   </message>
 
