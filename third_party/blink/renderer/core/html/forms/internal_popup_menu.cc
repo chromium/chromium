@@ -579,7 +579,8 @@ CSSFontSelector* InternalPopupMenu::CreateCSSFontSelector(
 }
 
 void InternalPopupMenu::SetValueAndClosePopup(int num_value,
-                                              const String& string_value) {
+                                              const String& string_value,
+                                              const bool is_keyboard_event) {
   DCHECK(popup_);
   DCHECK(owner_element_);
   if (!string_value.empty()) {
@@ -608,9 +609,17 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
     event.SetTimeStamp(base::TimeTicks::Now());
     Element* owner = &OwnerElement();
     if (LocalFrame* frame = owner->GetDocument().GetFrame()) {
-      frame->GetEventHandler().HandleTargetedMouseEvent(
-          owner, event, event_type_names::kMouseup, Vector<WebMouseEvent>(),
-          Vector<WebMouseEvent>());
+      // Only dispatch mouseup event when the interaction was not keyboard
+      // initiated.
+      // https://crbug.com/40698108
+      if (!RuntimeEnabledFeatures::
+              SelectNoMouseUpForKeyboardSelectionEnabled() ||
+          !is_keyboard_event) {
+        frame->GetEventHandler().HandleTargetedMouseEvent(
+            owner, event, event_type_names::kMouseup, Vector<WebMouseEvent>(),
+            Vector<WebMouseEvent>());
+      }
+
       frame->GetEventHandler().HandleTargetedMouseEvent(
           owner, event, event_type_names::kClick, Vector<WebMouseEvent>(),
           Vector<WebMouseEvent>());

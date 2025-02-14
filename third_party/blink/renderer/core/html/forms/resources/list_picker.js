@@ -244,7 +244,7 @@ class ListPicker extends Picker {
       event.preventDefault();
     } else if (key === 'Tab' || key === 'Enter') {
       window.pagePopupController.setValueAndClosePopup(
-          0, this.selectElement_.value);
+          0, this.selectElement_.value, /* is_keyboard_event= */ true);
       event.preventDefault();
     } else if (event.altKey && (key === 'ArrowDown' || key === 'ArrowUp')) {
       // We need to add a delay here because, if we do it immediately the key

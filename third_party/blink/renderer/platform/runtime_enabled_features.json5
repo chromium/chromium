@@ -3945,6 +3945,12 @@
       depends_on: ["SelectParserRelaxation"],
     },
     {
+      // If enabled, the select element will not dispatch a mouseup event when
+      // an option is selected using the keyboard.
+      name: "SelectNoMouseUpForKeyboardSelection",
+      status: "stable",
+    },
+    {
       // Sets the minimum target size of <option> in <select> to 24x24 CSS
       // pixels to meet Accessibility standards.
       // https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html

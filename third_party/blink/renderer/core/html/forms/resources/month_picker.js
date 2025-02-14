@@ -130,7 +130,8 @@ class MonthPicker extends HTMLElement {
                 '.calendar-navigation-button, .clear-button')) {
           if (this.selectedMonth) {
             window.pagePopupController.setValueAndClosePopup(
-                0, this.selectedMonth.toString());
+                0, this.selectedMonth.toString(),
+                /* is_keyboard_event= */ true);
           } else {
             window.pagePopupController.closePopup();
           }
