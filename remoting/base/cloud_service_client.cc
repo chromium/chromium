@@ -312,6 +312,7 @@ void CloudServiceClient::ProvisionGceInstance(
     const std::string& display_name,
     const std::string& public_key,
     const std::optional<std::string>& existing_directory_id,
+    const std::optional<std::string>& instance_identity_token,
     ProvisionGceInstanceCallback callback) {
   constexpr char path[] = "/v1/provisioning:provisionGceInstance";
 
@@ -322,6 +323,10 @@ void CloudServiceClient::ProvisionGceInstance(
   request->set_version(STRINGIZE(VERSION));
   if (existing_directory_id.has_value() && !existing_directory_id->empty()) {
     request->set_existing_directory_id(*existing_directory_id);
+  }
+  if (instance_identity_token.has_value() &&
+      !instance_identity_token->empty()) {
+    request->set_instance_identity_token(*instance_identity_token);
   }
 
   ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,

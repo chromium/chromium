@@ -95,6 +95,7 @@ class CloudServiceClient {
       const std::string& display_name,
       const std::string& public_key,
       const std::optional<std::string>& existing_directory_id,
+      const std::optional<std::string>& instance_identity_token,
       ProvisionGceInstanceCallback callback);
 
   void SendHeartbeat(const std::string& directory_id,

@@ -19,6 +19,7 @@
 #include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_info.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
+#include "remoting/base/service_urls.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
@@ -43,7 +44,9 @@ class CloudHostStarter : public HostStarterBase {
 
   ~CloudHostStarter() override;
 
+  // ComputeEngineServiceClient callbacks.
   void OnApiAccessTokenRetrieved(const HttpStatus& status);
+  void OnIdentityTokenRetrieved(const HttpStatus& status);
 
   // HostStarterBase implementation.
   void RetrieveApiAccessToken() override;
@@ -63,6 +66,8 @@ class CloudHostStarter : public HostStarterBase {
 
   std::unique_ptr<PassthroughOAuthTokenGetter> api_access_token_getter_;
 
+  std::optional<std::string> instance_identity_token_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CloudHostStarter> weak_ptr_factory_{this};
@@ -79,6 +84,27 @@ CloudHostStarter::~CloudHostStarter() = default;
 
 void CloudHostStarter::RetrieveApiAccessToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Try to retrieve an Instance Identity Token before the access token. Making
+  // this query first simplifies the logic a bit as we may end up skipping the
+  // the access token request if an API_KEY is provided but we want to try to
+  // get the identity token for both scenarios.
+  compute_engine_service_client_->GetInstanceIdentityToken(
+      /*audience=*/ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+      base::BindOnce(&CloudHostStarter::OnIdentityTokenRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CloudHostStarter::OnIdentityTokenRetrieved(const HttpStatus& status) {
+  if (status.ok() && !status.response_body().empty()) {
+    instance_identity_token_ = status.response_body();
+  } else {
+    int error_code = static_cast<int>(status.error_code());
+    LOG(WARNING) << "Failed to retrieve an Instance Identity token.\n"
+                 << "  Error code: " << error_code << "\n"
+                 << "  Message: " << status.error_message() << "\n"
+                 << "  Body: " << status.response_body();
+  }
 
   // The two modes to configure a Cloud host are to generate an API_KEY and use
   // that to access the provisioning RPC or to generate an access token using
@@ -137,7 +163,7 @@ void CloudHostStarter::RegisterNewHost(
 
   cloud_service_client_->ProvisionGceInstance(
       params().owner_email, params().name, key_pair().GetPublicKey(),
-      existing_host_id(),
+      existing_host_id(), std::move(instance_identity_token_),
       base::BindOnce(&CloudHostStarter::OnProvisionGceInstanceResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
