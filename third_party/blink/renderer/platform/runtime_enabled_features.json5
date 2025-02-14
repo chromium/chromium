@@ -2332,6 +2332,7 @@
     },
     {
       name: "HighlightsFromPoint",
+      status: "test",
     },
     {
       name: "HrefTranslate",
