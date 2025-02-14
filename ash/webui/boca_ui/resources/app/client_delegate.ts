@@ -155,6 +155,7 @@ export class ClientDelegateFactory {
             materials: assignment.materials.map((material: MaterialMojom) => {
               return {title: material.title, type: material.type.valueOf()};
             }),
+            type: assignment.type.valueOf(),
           };
         });
       },

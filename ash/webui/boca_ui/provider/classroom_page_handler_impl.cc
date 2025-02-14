@@ -191,8 +191,8 @@ void ClassroomPageHandlerImpl::OnListAssignmentsFetched(
   }
 
   for (const auto& item : result.value()->items()) {
-    if (item->type() !=
-        google_apis::classroom::CourseWorkItem::Type::kAssignment) {
+    if (item->type() ==
+        google_apis::classroom::CourseWorkItem::Type::kUnspecified) {
       continue;
     }
     std::vector<mojom::MaterialPtr> materials = {};
@@ -200,19 +200,19 @@ void ClassroomPageHandlerImpl::OnListAssignmentsFetched(
       mojom::MaterialPtr material = mojom::Material::New();
       material->title = apiMaterial->title();
       switch (apiMaterial->type()) {
-        case (google_apis::classroom::Material::Type::kSharedDriveFile):
+        case google_apis::classroom::Material::Type::kSharedDriveFile:
           material->type = mojom::MaterialType::kSharedDriveFile;
           break;
-        case (google_apis::classroom::Material::Type::kYoutubeVideo):
+        case google_apis::classroom::Material::Type::kYoutubeVideo:
           material->type = mojom::MaterialType::kYoutubeVideo;
           break;
-        case (google_apis::classroom::Material::Type::kLink):
+        case google_apis::classroom::Material::Type::kLink:
           material->type = mojom::MaterialType::kLink;
           break;
-        case (google_apis::classroom::Material::Type::kForm):
+        case google_apis::classroom::Material::Type::kForm:
           material->type = mojom::MaterialType::kForm;
           break;
-        case (google_apis::classroom::Material::Type::kUnknown):
+        case google_apis::classroom::Material::Type::kUnknown:
         default:
           material->type = mojom::MaterialType::kUnknown;
           break;
@@ -226,6 +226,21 @@ void ClassroomPageHandlerImpl::OnListAssignmentsFetched(
     assignment->url = item->alternate_link();
     assignment->materials = std::move(materials);
     assignment->last_update_time = std::move(item->last_update());
+    switch (item->type()) {
+      case google_apis::classroom::CourseWorkItem::Type::kAssignment:
+        assignment->type = mojom::AssignmentType::kAssignment;
+        break;
+      case google_apis::classroom::CourseWorkItem::Type::kShortAnswerQuestion:
+        assignment->type = mojom::AssignmentType::kShortAnswerQuestion;
+        break;
+      case google_apis::classroom::CourseWorkItem::Type::
+          kMultipleChoiceQuestion:
+        assignment->type = mojom::AssignmentType::kMultipleChoiceQuestion;
+        break;
+      case google_apis::classroom::CourseWorkItem::Type::kUnspecified:
+      default:
+        assignment->type = mojom::AssignmentType::kUnspecified;
+    }
 
     fetched_assignments->push_back(std::move(assignment));
   }

@@ -47,6 +47,10 @@ constexpr char kApiResponseCourseWorkItemMaterialFormKey[] = "form";
 
 constexpr char kPublishedCourseWorkItemState[] = "PUBLISHED";
 constexpr char kAssignmentCourseWorkItemType[] = "ASSIGNMENT";
+constexpr char kShortAnswerQuestionCourseWorkItemType[] =
+    "SHORT_ANSWER_QUESTION";
+constexpr char kMultipleChoiceQuestionCourseWorkItemType[] =
+    "MULTIPLE_CHOICE_QUESTION";
 
 bool ConvertCourseWorkItemState(std::string_view input,
                                 CourseWorkItem::State* output) {
@@ -58,9 +62,15 @@ bool ConvertCourseWorkItemState(std::string_view input,
 
 bool ConvertCourseWorkItemType(std::string_view input,
                                CourseWorkItem::Type* output) {
-  *output = input == kAssignmentCourseWorkItemType
-                ? CourseWorkItem::Type::kAssignment
-                : CourseWorkItem::Type::kOther;
+  if (input == kAssignmentCourseWorkItemType) {
+    *output = CourseWorkItem::Type::kAssignment;
+  } else if (input == kShortAnswerQuestionCourseWorkItemType) {
+    *output = CourseWorkItem::Type::kShortAnswerQuestion;
+  } else if (input == kMultipleChoiceQuestionCourseWorkItemType) {
+    *output = CourseWorkItem::Type::kMultipleChoiceQuestion;
+  } else {
+    *output = CourseWorkItem::Type::kUnspecified;
+  }
   return true;
 }
 

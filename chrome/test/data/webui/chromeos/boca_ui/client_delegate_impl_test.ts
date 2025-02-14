@@ -64,6 +64,7 @@ class MockRemoteHandler extends PageHandlerRemote {
             {title: 'material-title-1', type: 0},
             {title: 'material-title-2', type: 1},
           ],
+          type: 0,
         },
         {
           title: 'assignment-title2',
@@ -73,6 +74,7 @@ class MockRemoteHandler extends PageHandlerRemote {
             {title: 'material-title-3', type: 2},
             {title: 'material-title-4', type: 3},
           ],
+          type: 1,
         },
       ],
     });
@@ -375,6 +377,7 @@ suite('ClientDelegateTest', function() {
                   {title: 'material-title-1', type: 0},
                   {title: 'material-title-2', type: 1},
                 ],
+                type: 0,
               },
               {
                 title: 'assignment-title2',
@@ -384,6 +387,7 @@ suite('ClientDelegateTest', function() {
                   {title: 'material-title-3', type: 2},
                   {title: 'material-title-4', type: 3},
                 ],
+                type: 1,
               },
             ],
             result);

@@ -61,6 +61,14 @@ struct Material {
   MaterialType type;
 };
 
+// The assignment type.
+enum AssignmentType {
+  kUnspecified,
+  kAssignment,
+  kShortAnswerQuestion,
+  kMultipleChoiceQuestion,
+};
+
 // Represents a course assignment.
 struct Assignment {
   string title;
@@ -69,6 +77,7 @@ struct Assignment {
   mojo_base.mojom.JSTime last_update_time;
   // Assignment materials.
   array<Material> materials;
+  AssignmentType type;
 };
 
 // Represents a browser window.

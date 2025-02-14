@@ -52,6 +52,7 @@ export declare interface Assignment {
   url: string;
   lastUpdateTime: Date;
   materials: Material[];
+  type: AssignmentType;
 }
 
 /**
@@ -140,6 +141,16 @@ export enum MaterialType {
   YOUTUBE_VIDEO = 2,
   LINK = 3,
   FORM = 4,
+}
+
+/**
+ * Declare course assignment type enum type
+ */
+export enum AssignmentType {
+  UNSPECIFIED = 0,
+  ASSIGNMENT = 1,
+  SHORT_ANSWER_QUESTION = 2,
+  MULTIPLE_CHOICE_QUESTION = 3,
 }
 
 /**

@@ -60,11 +60,11 @@ class CourseWorkItem {
   };
 
   // Course work item type.
-  // There are more types can be returned by the API, but current users only
-  // need "ASSIGNMENT" course work type.
   enum class Type {
     kAssignment,
-    kOther,
+    kShortAnswerQuestion,
+    kMultipleChoiceQuestion,
+    kUnspecified,
   };
 
   // Joined due date and due time of the course work item.
@@ -124,7 +124,7 @@ class CourseWorkItem {
   State state_ = State::kOther;
 
   // Type of this course work item.
-  Type type_ = Type::kOther;
+  Type type_ = Type::kUnspecified;
 
   // Absolute link to this course work in the Classroom web UI.
   GURL alternate_link_;
