@@ -5920,6 +5920,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5318" label="V8AnimationTrigger_Constructor"/>
   <int value="5319"
       label="PrivateNetworkAccessInsecureResourceNotKnownPrivate"/>
+  <int value="5320" label="GeolocationGetCurrentPositionHighAccuracy"/>
+  <int value="5321" label="GeolocationWatchPositionHighAccuracy"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

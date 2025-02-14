@@ -210,6 +210,11 @@ void Geolocation::RecordOriginTypeAccess() const {
 void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
                                      V8PositionErrorCallback* error_callback,
                                      const PositionOptions* options) {
+  if (options->enableHighAccuracy()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
+  }
+
   if (!GetFrame())
     return;
 
@@ -232,6 +237,11 @@ void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
 int Geolocation::watchPosition(V8PositionCallback* success_callback,
                                V8PositionErrorCallback* error_callback,
                                const PositionOptions* options) {
+  if (options->enableHighAccuracy()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
+  }
+
   if (!GetFrame())
     return 0;
 
