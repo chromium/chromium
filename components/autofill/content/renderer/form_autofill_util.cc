@@ -261,7 +261,6 @@ bool IsTextInput(const WebFormControlElement& element) {
     case FormControlType::kInputMonth:
     case FormControlType::kInputRadio:
     case FormControlType::kSelectOne:
-    case FormControlType::kSelectMultiple:
     case FormControlType::kTextArea:
       return false;
     case FormControlType::kInputEmail:
@@ -2269,8 +2268,7 @@ bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
 }
 
 bool IsAutofillableElement(const WebFormControlElement& element) {
-  std::optional<FormControlType> fct = GetAutofillFormControlType(element);
-  return fct && *fct != FormControlType::kSelectMultiple;
+  return GetAutofillFormControlType(element).has_value();
 }
 
 std::optional<FormControlType> ToAutofillFormControlType(
@@ -2300,8 +2298,6 @@ std::optional<FormControlType> ToAutofillFormControlType(
       return FormControlType::kInputUrl;
     case blink::mojom::FormControlType::kSelectOne:
       return FormControlType::kSelectOne;
-    case blink::mojom::FormControlType::kSelectMultiple:
-      return FormControlType::kSelectMultiple;
     case blink::mojom::FormControlType::kTextArea:
       return FormControlType::kTextArea;
     case blink::mojom::FormControlType::kButtonButton:
@@ -2322,6 +2318,7 @@ std::optional<FormControlType> ToAutofillFormControlType(
     case blink::mojom::FormControlType::kInputTime:
     case blink::mojom::FormControlType::kInputWeek:
     case blink::mojom::FormControlType::kOutput:
+    case blink::mojom::FormControlType::kSelectMultiple:
       break;
   }
   return std::nullopt;

@@ -103,6 +103,8 @@ bool IsTextAreaElementOrTextInput(const blink::WebFormControlElement& element);
 // inconsistently. Investigate where these checks are necessary.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
 
+// Returns the current FormControlType of `element` or kInputPassword if
+// `element` ever was an <input type=password>.
 std::optional<FormControlType> GetAutofillFormControlType(
     const blink::WebFormControlElement& element);
 
