@@ -199,8 +199,6 @@ void ProfileAttributesStorageIOS::SetPersonalProfileName(
 // static
 void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileInfoCache);
-  registry->RegisterIntegerPref(prefs::kNumberOfProfiles, 0);
-  registry->RegisterListPref(prefs::kLastActiveProfiles);
   registry->RegisterDictionaryPref(prefs::kProfileForScene);
   registry->RegisterStringPref(prefs::kPersonalProfileName, std::string());
   registry->RegisterListPref(prefs::kProfilesToRemove);

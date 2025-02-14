@@ -51,15 +51,7 @@ inline constexpr char kProfileInfoCache[] = "profile.info_cache";
 inline constexpr char kPersonalProfileName[] = "profile.personal";
 
 // Name of the last used profile.
-// TODO(crbug.com/325921947): Remove use of this key, kLastActiveProfiles
-// should be used.
 inline constexpr char kLastUsedProfile[] = "profile.last_used";
-
-// List of names of the profiles used during the last run of Chrome.
-inline constexpr char kLastActiveProfiles[] = "profile.last_active_profiles";
-
-// Total number of profile created for this Chrome installation.
-inline constexpr char kNumberOfProfiles[] = "profile.profiles_created";
 
 // A map of a scene and a profile.
 inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";

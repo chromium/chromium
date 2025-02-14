@@ -39,10 +39,6 @@ void MutableProfileAttributesStorageIOS::AddProfile(
     ProfileAttributesIOS attr = ProfileAttributesIOS::CreateNew(profile_name);
     update->Set(profile_name, std::move(attr).GetStorage());
   }
-
-  // Update the number of created profile.
-  prefs_->SetInteger(prefs::kNumberOfProfiles,
-                     prefs_->GetDict(prefs::kProfileInfoCache).size());
 }
 
 void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
@@ -75,10 +71,6 @@ void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
     ScopedListPrefUpdate update(prefs_, prefs::kProfilesToRemove);
     update->Append(profile_name);
   }
-
-  // Update the number of created profile.
-  prefs_->SetInteger(prefs::kNumberOfProfiles,
-                     prefs_->GetDict(prefs::kProfileInfoCache).size());
 }
 
 void MutableProfileAttributesStorageIOS::ProfileDeletionComplete(
