@@ -4,7 +4,10 @@
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "profile_context_delegate_unittest.cc" ]
+  sources = [
+    "browser_context_delegate_unittest.cc",
+    "profile_context_delegate_unittest.cc",
+  ]
 
   deps = [
     "//base",

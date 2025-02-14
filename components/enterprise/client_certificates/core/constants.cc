@@ -8,8 +8,13 @@ namespace client_certificates {
 
 const char kManagedProfileIdentityName[] = "ManagedProfileIdentity";
 
+const char kManagedBrowserIdentityName[] = "ManagedBrowserIdentity";
+
 const char kTemporaryManagedProfileIdentityName[] =
     "TemporaryManagedProfileIdentityName";
+
+const char kTemporaryManagedBrowserIdentityName[] =
+    "TemporaryManagedBrowserIdentityName";
 
 const char kKey[] = "PrivateKey";
 
