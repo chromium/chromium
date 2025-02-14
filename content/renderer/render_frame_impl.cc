@@ -1088,6 +1088,9 @@ void FillMiscNavigationParams(
   }
   navigation_params->initial_permission_statuses =
       std::move(commit_params.initial_permission_statuses);
+
+  navigation_params->force_new_document_sequence_number =
+      commit_params.force_new_document_sequence_number;
 }
 
 std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {

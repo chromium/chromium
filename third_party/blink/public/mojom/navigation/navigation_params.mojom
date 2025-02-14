@@ -670,6 +670,13 @@ struct CommitNavigationParams {
   // Whether to skip taking a screenshot of the contents when doing a
   // navigation. The screenshot is used for back/forward transition animations.
   bool should_skip_screenshot;
+
+  // When this is set to true, the renderer process should require this
+  // navigation to create a new document sequence number to avoid appearing
+  // as a same-document navigation, even if the URL seems like a match. This
+  // matters for cross-origin navigations (apart from error pages with the same
+  // precursor origin).
+  bool force_new_document_sequence_number = false;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for
