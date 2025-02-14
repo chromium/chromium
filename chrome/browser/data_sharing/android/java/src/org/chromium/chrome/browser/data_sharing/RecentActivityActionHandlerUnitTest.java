@@ -106,8 +106,7 @@ public class RecentActivityActionHandlerUnitTest {
     @Test
     public void testFocusTab() {
         mRecentActivityActionHandler.focusTab(TAB_ID_1);
-        verify(mTabModelSelector, times(1)).selectModel(false);
-        verify(mTabModel, times(1)).setIndex(eq(0), anyInt());
+        verify(mDataSharingTabGroupsDelegate, times(1)).hideTabSwitcherAndShowTab(eq(TAB_ID_1));
     }
 
     @Test

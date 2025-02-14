@@ -15,9 +15,9 @@ public interface DataSharingTabGroupsDelegate {
     /**
      * Open the tab group dialog of the given tab group id.
      *
-     * @param id The tabId of the first tab in the group.
+     * @param tabId The tabId of the first tab in the group.
      */
-    public void openTabGroupWithTabId(int tabId);
+    void openTabGroupWithTabId(int tabId);
 
     /**
      * Open url in the Chrome Custom Tab.
@@ -25,7 +25,15 @@ public interface DataSharingTabGroupsDelegate {
      * @param context The context of the current activity.
      * @param gurl The GURL of the page to be opened in CCT.
      */
-    public void openUrlInChromeCustomTab(Context context, GURL gurl);
+    void openUrlInChromeCustomTab(Context context, GURL gurl);
+
+    /**
+     * Hides tab switcher if it is showing, and brings focus to the given tab. If another tab was
+     * showing, it switches to the given tab.
+     *
+     * @param tabId The ID of the tab that it should switch to.
+     */
+    void hideTabSwitcherAndShowTab(int tabId);
 
     /**
      * Create a preview image for the tab group to show in share sheet.
@@ -34,5 +42,5 @@ public interface DataSharingTabGroupsDelegate {
      * @param size The expected size in pixels of the preview bitmap.
      * @param onResult The callback to return the preview image.
      */
-    public void getPreviewBitmap(String collaborationId, int size, Callback<Bitmap> onResult);
+    void getPreviewBitmap(String collaborationId, int size, Callback<Bitmap> onResult);
 }
