@@ -1719,7 +1719,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 }
 
 // Takes the corresponded action to `actionType` for the shared `group`.
-// Not handled TabGroupActionType: kUngroupTabGroup, kDeleteTabGroup.
+// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
 - (void)takeActionForActionType:(TabGroupActionType)actionType
                  sharedTabGroup:(const TabGroup*)group {
   [self.tabGridIdleStatusHandler
@@ -1732,8 +1732,6 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   CHECK(dataSharingService);
   CHECK(tabGroupSyncService);
 
-  const base::Uuid savedGroupId =
-      tabGroupSyncService->GetGroup(group->tab_group_id())->saved_guid();
   const tab_groups::CollaborationId collabId =
       tab_groups::utils::GetTabGroupCollabID(group, tabGroupSyncService);
   CHECK(!collabId->empty());
@@ -1742,7 +1740,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   __weak BaseGridMediator* weakSelf = self;
   auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
     BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
-    [weakSelf handTakeActionForActionTypeOutcome:success];
+    [weakSelf handleTakeActionForActionTypeOutcome:success];
   });
 
   // TODO(crbug.com/393073658): Block the screen.
@@ -1763,8 +1761,9 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   }
 }
 
-// Called when `performAction:forSharedTabGroup:` server's call returned.
-- (void)handTakeActionForActionTypeOutcome:(BOOL)success {
+// Called when `takeActionForActionType:forSharedTabGroup:` server's call
+// returned.
+- (void)handleTakeActionForActionTypeOutcome:(BOOL)success {
   // TODO(crbug.com/393073658):
   // - Unblock the screen.
   // - Show an error if needed.

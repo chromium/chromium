@@ -13,6 +13,7 @@
 class Browser;
 class BrowserList;
 class ProfileIOS;
+enum class TabGroupActionType;
 @protocol TabStripCommands;
 @protocol TabStripConsumer;
 class UrlLoadingBrowserAgent;
@@ -25,6 +26,10 @@ class Uuid;
 namespace collaboration::messaging {
 class MessagingBackendService;
 }  // namespace collaboration::messaging
+
+namespace data_sharing {
+class DataSharingService;
+}  // namespace data_sharing
 
 namespace tab_groups {
 class TabGroupId;
@@ -61,6 +66,7 @@ class WebStateID;
 - (instancetype)
        initWithConsumer:(id<TabStripConsumer>)consumer
     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+     dataSharingService:(data_sharing::DataSharingService*)dataSharingService
             browserList:(BrowserList*)browserList
        messagingService:
            (collaboration::messaging::MessagingBackendService*)messagingService
@@ -89,6 +95,11 @@ class WebStateID;
 
 // Closes and deletes all tabs in `tabGroupItem`.
 - (void)deleteGroup:(TabGroupItem*)tabGroupItem;
+
+// Takes the corresponded action to `actionType` for the shared `group`.
+// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                 sharedTabGroup:(const TabGroup*)group;
 
 @end
 

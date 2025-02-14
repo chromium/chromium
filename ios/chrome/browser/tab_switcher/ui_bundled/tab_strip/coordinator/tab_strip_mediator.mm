@@ -12,6 +12,8 @@
 #import "base/metrics/user_metrics.h"
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
+#import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -53,6 +55,9 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/gfx/image/image.h"
+
+using PeopleGroupActionOutcome =
+    data_sharing::DataSharingService::PeopleGroupActionOutcome;
 
 namespace {
 
@@ -270,6 +275,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
   // Used to get info about saved groups and to mutate them.
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+  raw_ptr<data_sharing::DataSharingService> _dataSharingService;
 
   // A service to get activity messages for a shared tab group.
   raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
@@ -287,6 +293,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 - (instancetype)
        initWithConsumer:(id<TabStripConsumer>)consumer
     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+     dataSharingService:(data_sharing::DataSharingService*)dataSharingService
             browserList:(BrowserList*)browserList
        messagingService:(collaboration::messaging::MessagingBackendService*)
                             messagingService {
@@ -294,6 +301,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     CHECK(browserList);
     _browserList = browserList;
     _tabGroupSyncService = tabGroupSyncService;
+    _dataSharingService = dataSharingService;
     _consumer = consumer;
     _messagingService = messagingService;
     if (_messagingService) {
@@ -322,6 +330,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _messagingBackendServiceBridge.reset();
     _messagingService = nullptr;
   }
+  _tabGroupSyncService = nullptr;
+  _dataSharingService = nullptr;
   _tabStripHandler = nil;
   _browserList = nullptr;
 }
@@ -419,6 +429,39 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   base::RecordAction(base::UserMetricsAction("MobileTabStripDeleteGroup"));
   CloseAllWebStatesInGroup(*_webStateList, tabGroupItem.tabGroup,
                            WebStateList::CLOSE_USER_ACTION);
+}
+
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                 sharedTabGroup:(const TabGroup*)group {
+  CHECK(_dataSharingService);
+
+  const tab_groups::CollaborationId collabId =
+      tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
+  CHECK(!collabId->empty());
+  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
+
+  __weak TabStripMediator* weakSelf = self;
+  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
+    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+    [weakSelf handleTakeActionForActionTypeOutcome:success];
+  });
+
+  // TODO(crbug.com/393073658): Block the screen.
+
+  // Asynchronously call on the server.
+  switch (actionType) {
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      _dataSharingService->LeaveGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      _dataSharingService->DeleteGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kUngroupTabGroup:
+    case TabGroupActionType::kDeleteTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      NOTREACHED();
+  }
 }
 
 #pragma mark - Public properties
@@ -954,6 +997,26 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     CloseAllWebStatesInGroup(*self.webStateList, tabGroupItem.tabGroup,
                              WebStateList::CLOSE_USER_ACTION);
   }
+}
+
+- (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem
+              sourceView:(UIView*)sourceView {
+  CHECK(IsTabGroupSyncEnabled());
+
+  [_tabStripHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kLeaveSharedTabGroup
+                              groupItem:tabGroupItem
+                             sourceView:sourceView];
+}
+
+- (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem
+               sourceView:(UIView*)sourceView {
+  CHECK(IsTabGroupSyncEnabled());
+
+  [_tabStripHandler showTabGroupConfirmationForAction:TabGroupActionType::
+                                                          kDeleteSharedTabGroup
+                                            groupItem:tabGroupItem
+                                           sourceView:sourceView];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1753,6 +1816,14 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   TabStripItemData* itemData = CreateGroupItemData(group, _dirtyGroups);
   [self.consumer updateItemData:@{itemIdentifier : itemData}
                reconfigureItems:YES];
+}
+
+// Called when `takeActionForActionType:forSharedTabGroup:` server's call
+// returned.
+- (void)handleTakeActionForActionTypeOutcome:(BOOL)success {
+  // TODO(crbug.com/393073658):
+  // - Unblock the screen.
+  // - Show an error if needed.
 }
 
 @end

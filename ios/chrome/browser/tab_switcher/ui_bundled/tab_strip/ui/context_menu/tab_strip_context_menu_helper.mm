@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/context_menu/tab_strip_context_menu_helper.h"
 
 #import "base/check.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "components/data_sharing/public/group_data.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -12,6 +15,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
@@ -24,6 +28,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "url/gurl.h"
+
+using tab_groups::SharingState;
 
 namespace {
 
@@ -191,19 +197,28 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
   base::WeakPtr<const TabGroup> tabGroup = tabGroupItem.tabGroup->GetWeakPtr();
   ShareKitService* shareKitService =
       ShareKitServiceFactory::GetForProfile(_profile);
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile);
   BOOL isSharedTabGroupSupported =
       shareKitService && shareKitService->IsSupported();
-  BOOL isTabGroupShared =
-      isSharedTabGroupSupported &&
-      tab_groups::utils::IsTabGroupShared(
-          tabGroup.get(),
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
+
+  SharingState sharingState = SharingState::kNotShared;
+  if (tab_groups::utils::IsTabGroupShared(tabGroupItem.tabGroup,
+                                          tabGroupSyncService)) {
+    collaboration::CollaborationService* collaborationService =
+        collaboration::CollaborationServiceFactory::GetForProfile(_profile);
+    data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+        tabGroupItem.tabGroup, tabGroupSyncService, collaborationService);
+    sharingState = userRole == data_sharing::MemberRole::kOwner
+                       ? SharingState::kSharedAndOwned
+                       : SharingState::kShared;
+  }
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   // Shared actions.
   NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
-  if (isTabGroupShared) {
+  if (sharingState != SharingState::kNotShared) {
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.handler manageTabGroup:tabGroup];
                    }]];
@@ -228,7 +243,7 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
   [editActions addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
                  [weakSelf.mutator addNewTabInGroup:tabGroupItem];
                }]];
-  if (!isTabGroupShared) {
+  if (sharingState == SharingState::kNotShared) {
     [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                    [weakSelf.mutator ungroupGroup:tabGroupItem
                                        sourceView:originView];
@@ -244,10 +259,32 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
           [weakSelf.mutator closeGroup:tabGroupItem];
         }]];
     if (!self.incognito) {
-      [destructiveActions
-          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-            [weakSelf.mutator deleteGroup:tabGroupItem sourceView:originView];
-          }]];
+      switch (sharingState) {
+        case SharingState::kNotShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                [weakSelf.mutator deleteGroup:tabGroupItem
+                                   sourceView:originView];
+              }]];
+          break;
+        }
+        case SharingState::kShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+                [weakSelf.mutator leaveSharedGroup:tabGroupItem
+                                        sourceView:originView];
+              }]];
+          break;
+        }
+        case SharingState::kSharedAndOwned: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+                [weakSelf.mutator deleteSharedGroup:tabGroupItem
+                                         sourceView:originView];
+              }]];
+          break;
+        }
+      }
     }
   } else {
     [destructiveActions
