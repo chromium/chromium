@@ -586,9 +586,21 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &page_info::kMerchantTrustEvaluationExperimentSurvey,
       kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey);
 
-  survey_configs.emplace_back(&page_info::kMerchantTrustLearnSurvey,
-                              kHatsSurveyTriggerMerchantTrustLearnSurvey);
-
+  // The reason for this survey params being set here instead of in a finch
+  // config is that our MerchantTrust config has 2 HaTS surveys, one manually
+  // triggered and one pop-up (default HaTS behavior), and the finch config only
+  // supports one HaTS survey per study group. e.g. There can't be 2
+  // features with same param names within the same group, hence we need to set
+  // the one of the surveys params here.
+  hats::SurveyConfig merchant_trust_learn_survey_config(
+      &page_info::kMerchantTrustLearnSurvey,
+      kHatsSurveyTriggerMerchantTrustLearnSurvey,
+      page_info::kMerchantTrustLearnSurveyTriggerId.Get());
+  merchant_trust_learn_survey_config.user_prompted =
+      page_info::kMerchantTrustLearnSurveyUserPrompted.Get();
+  merchant_trust_learn_survey_config.probability =
+      page_info::kMerchantTrustLearnSurveyProbability.Get();
+  survey_configs.push_back(merchant_trust_learn_survey_config);
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
                               kHatsSurveyTriggerAndroidStartupSurvey);
