@@ -1039,20 +1039,8 @@ void PopupViewViews::CreateSuggestionViews() {
                   std::move(filter_match), password_favicon_loader_.get()));
           rows_.push_back(row_view);
 
-          // Set element identifiers for tests.
-          if (suggestions[current_line_number].type ==
-                     SuggestionType::kFillAutofillAi) {
-            row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillAiFillElementId);
-          } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kAutofillAiError) {
-            row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillAiErrorElementId);
-          }
-
           const base::Feature* const feature =
               suggestions[current_line_number].iph_metadata.feature;
-
           // Set appropriate element ids for IPH targets, it is important to
           // set them earlier to make sure the elements are discoverable later
           // during popup's visibility change and the promo bubble showing.
