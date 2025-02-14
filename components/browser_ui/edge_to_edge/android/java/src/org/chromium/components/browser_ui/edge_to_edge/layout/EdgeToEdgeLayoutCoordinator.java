@@ -7,11 +7,16 @@ package org.chromium.components.browser_ui.edge_to_edge.layout;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.graphics.RectF;
+import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 
 import androidx.core.graphics.Insets;
+import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type;
@@ -118,11 +123,12 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         mView.setDisplayCutoutInsetLeft(cutout.left > 0 ? cutout : Insets.NONE);
         mView.setDisplayCutoutInsetRight(cutout.right > 0 ? cutout : Insets.NONE);
 
-        // Currently the EdgeToEdgeLayout does not color the caption bar, but it should add padding
-        // if necessary to account for the captionBar insets (e.g. on some OEMs).
-        // See https://crbug.com/377620837
-        Insets overallInsets =
-                windowInsets.getInsets(Type.systemBars() + Type.displayCutout() + Type.ime());
+        int paddingInsetTypes = Type.systemBars() + Type.ime();
+        if (shouldPadDisplayCutout(windowInsets, mActivity)) {
+            paddingInsetTypes += Type.displayCutout();
+        }
+
+        Insets overallInsets = windowInsets.getInsets(paddingInsetTypes);
         mView.setPadding(
                 overallInsets.left, overallInsets.top, overallInsets.right, overallInsets.bottom);
 
@@ -156,5 +162,58 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         applyStatusBarColor();
         applyNavBarColor();
         applyNavigationBarDividerColor();
+    }
+
+    // Determine if padding is necessary according to WindowManager.LayoutParams. This is intended
+    // to keep the behavior for Android 15-.
+    // Ref: https://developer.android.com/develop/ui/views/layout/display-cutout
+    private static boolean shouldPadDisplayCutout(WindowInsetsCompat insets, Activity activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P || insets == null) return true;
+
+        DisplayCutoutCompat cutout = insets.getDisplayCutout();
+        if (cutout == null) return false;
+
+        int cutoutMode = activity.getWindow().getAttributes().layoutInDisplayCutoutMode;
+        switch (cutoutMode) {
+            case WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS:
+                return false;
+            case WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER:
+                return true;
+            case WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES:
+                // For web compatibility, we should add padding when insets does not overlap with
+                // system bars.
+                DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
+                boolean isPortrait = displayMetrics.widthPixels < displayMetrics.heightPixels;
+
+                if (isPortrait) {
+                    // width < height, top / bottom are the short edge.
+                    return cutout.getSafeInsetLeft() > 0 || cutout.getSafeInsetRight() > 0;
+                }
+                // else: height > width, left / right are the short edges
+                return cutout.getSafeInsetTop() > 0 || cutout.getSafeInsetBottom() > 0;
+
+            default: // LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+                assert cutoutMode
+                        == WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+                // From Android's doc: The window is allowed to extend into the DisplayCutout area,
+                // only if the DisplayCutout is fully contained within a system bar or the
+                // DisplayCutout is not deeper than 16 dp.
+
+                Insets systemInsets = insets.getInsets(Type.systemBars());
+                Insets systemAndCutoutInsets =
+                        insets.getInsets(Type.systemBars() + Type.displayCutout());
+                if (systemInsets.equals(systemAndCutoutInsets)) {
+                    return false;
+                }
+
+                float density = activity.getResources().getDisplayMetrics().density;
+                RectF rect =
+                        new RectF(
+                                cutout.getSafeInsetLeft() / density,
+                                cutout.getSafeInsetTop() / density,
+                                cutout.getSafeInsetRight() / density,
+                                cutout.getSafeInsetBottom() / density);
+                return (rect.left > 16 || rect.top > 16 || rect.right > 16 || rect.bottom > 16);
+        }
     }
 }
