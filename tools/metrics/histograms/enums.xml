@@ -14821,6 +14821,8 @@ from previous Chrome versions.
   <int value="283182071" label="SecurityInterstitialsDarkMode:enabled"/>
   <int value="283232244" label="OmniboxUIExperimentNarrowDropdown:enabled"/>
   <int value="283822478" label="PrintPreviewCrosPrimary:enabled"/>
+  <int value="284382291"
+      label="EducationalTipDefaultBrowserPromoCard:disabled"/>
   <int value="284631756" label="EnableBrightnessControlInSettings:disabled"/>
   <int value="284756778"
       label="SearchCustomizableShortcutsInLauncher:disabled"/>
@@ -16472,6 +16474,7 @@ from previous Chrome versions.
   <int value="934236781" label="OmniboxSuggestionsRecyclerView:enabled"/>
   <int value="934292666" label="DownloadRename:enabled"/>
   <int value="934805020" label="CornerShortcuts:disabled"/>
+  <int value="935415458" label="EducationalTipDefaultBrowserPromoCard:enabled"/>
   <int value="935653796" label="CrOSLateBootMediaDynamicCgroup:enabled"/>
   <int value="935655516" label="password-import-export:disabled"/>
   <int value="936341613" label="OfflinePagesCT:disabled"/>

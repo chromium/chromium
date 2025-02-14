@@ -2618,6 +2618,9 @@ extern const char kEdgeToEdgeSafeAreaConstraintDescription[];
 extern const char kEdgeToEdgeWebOptInName[];
 extern const char kEdgeToEdgeWebOptInDescription[];
 
+extern const char kEducationalTipDefaultBrowserPromoCardName[];
+extern const char kEducationalTipDefaultBrowserPromoCardDescription[];
+
 extern const char kEducationalTipModuleName[];
 extern const char kEducationalTipModuleDescription[];
 

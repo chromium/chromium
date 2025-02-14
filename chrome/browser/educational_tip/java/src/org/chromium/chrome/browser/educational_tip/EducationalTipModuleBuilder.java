@@ -53,6 +53,11 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
             return false;
         }
 
+        if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO
+                && !ChromeFeatureList.sEducationalTipDefaultBrowserPromoCard.isEnabled()) {
+            return false;
+        }
+
         EducationalTipModuleCoordinator coordinator =
                 new EducationalTipModuleCoordinator(
                         mModuleType,
