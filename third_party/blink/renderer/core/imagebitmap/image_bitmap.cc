@@ -200,11 +200,9 @@ ImageBitmap::ParsedOptions ParseOptions(
     const ImageBitmapOptions* options,
     std::optional<gfx::Rect> crop_rect,
     scoped_refptr<StaticBitmapImage> input) {
-  auto info = input->GetSkImageInfo();
-  return ParseOptions(options, crop_rect,
-                      gfx::Size(info.width(), info.height()),
+  return ParseOptions(options, crop_rect, input->GetSize(),
                       input->CurrentFrameOrientation(),
-                      info.alphaType() == kUnpremul_SkAlphaType);
+                      input->GetAlphaType() == kUnpremul_SkAlphaType);
 }
 
 // The function dstBufferSizeHasOverflow() is being called at the beginning of
