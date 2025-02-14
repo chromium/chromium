@@ -1469,3 +1469,9 @@ crbug.com/378325771 [ Mac ] wpt_internal/css/css-overflow/scroll-markers-updated
 crbug.com/381648149 [ Mac14 ] wpt_internal/hid/hidDevice_reports.https.window.html [ Slow ]
 crbug.com/382173821 [ Mac11 ] wpt_internal/hid/hid_requestDevice.https.window.html [ Slow ]
 crbug.com/382173821 [ Mac12 ] wpt_internal/hid/hid_requestDevice.https.window.html [ Slow ]
+
+# Gardener 2025-02-12
+crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/network/preview-searchable.js [ Slow ]
+crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Slow ]
+crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-pause/debugger-eval-on-call-frame-inside-iframe.js [ Slow ]
+crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-step/debugger-step-over-inlined-scripts.js [ Slow ]
