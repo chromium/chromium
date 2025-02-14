@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 
+#import <optional>
 #import <string>
 
 #import "base/memory/raw_ptr.h"
@@ -13,6 +14,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "third_party/omnibox_proto/groups.pb.h"
+#import "url/gurl.h"
 
 using base::UserMetricsAction;
 
@@ -175,6 +178,24 @@ using base::UserMetricsAction;
     return;
   }
 
+  if (match.destination_url.is_empty()) {
+    __weak __typeof__(self) weakSelf = self;
+    ClipboardRecentContent* clipboardRecentContent =
+        ClipboardRecentContent::GetInstance();
+    if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
+      clipboardRecentContent->GetRecentURLFromClipboard(base::BindOnce(
+          [](OmniboxAutocompleteController* controller,
+             WindowOpenDisposition disposition, base::TimeTicks timestamp,
+             std::optional<GURL> optionalURL) {
+            [controller openClipboardURL:optionalURL
+                             disposition:disposition
+                               timestamp:timestamp];
+          },
+          weakSelf, disposition, matchSelectionTimestamp));
+      return;
+    }
+  }
+
   if (_omniboxViewIOS) {
     _omniboxViewIOS->OnSelectedMatchForOpening(matchCopy, disposition, GURL(),
                                                std::u16string(), row);
@@ -226,6 +247,19 @@ using base::UserMetricsAction;
   OmniboxPopupSelection selection(
       _autocompleteController->InjectAdHocMatch(match));
   _omniboxEditModel->OpenSelection(selection, timestamp, disposition);
+}
+
+- (void)openClipboardURL:(std::optional<GURL>)optionalURL
+             disposition:(WindowOpenDisposition)disposition
+               timestamp:(base::TimeTicks)timestamp {
+  if (!optionalURL || !_autocompleteController) {
+    return;
+  }
+  GURL URL = std::move(optionalURL).value();
+  [self openCustomMatch:_autocompleteController->clipboard_provider()
+                            ->NewClipboardURLMatch(URL)
+             disposition:disposition
+      selectionTimestamp:timestamp];
 }
 
 @end

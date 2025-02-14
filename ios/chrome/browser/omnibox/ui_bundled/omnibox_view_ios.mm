@@ -71,29 +71,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
 
 OmniboxViewIOS::~OmniboxViewIOS() = default;
 
-void OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch(
-    const AutocompleteMatch& match,
-    WindowOpenDisposition disposition,
-    const GURL& alternate_nav_url,
-    const std::u16string& pasted_text,
-    size_t selected_line,
-    base::TimeTicks match_selection_timestamp,
-    std::optional<GURL> optional_gurl) {
-  if (!optional_gurl) {
-    return;
-  }
-
-  GURL url = std::move(optional_gurl).value();
-
-  AutocompleteController* autocomplete_controller =
-      controller()->autocomplete_controller();
-
-  OmniboxPopupSelection selection(autocomplete_controller->InjectAdHocMatch(
-      autocomplete_controller->clipboard_provider()->NewClipboardURLMatch(
-          url)));
-  model()->OpenSelection(selection, match_selection_timestamp, disposition);
-}
-
 void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition,
@@ -730,15 +707,7 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
 
   // Fill in clipboard matches if they don't have a destination URL.
   if (match.destination_url.is_empty()) {
-    if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
-      ClipboardRecentContent* clipboard_recent_content =
-          ClipboardRecentContent::GetInstance();
-      clipboard_recent_content->GetRecentURLFromClipboard(base::BindOnce(
-          &OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch,
-          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
-          pasted_text, index, match_selection_timestamp));
-      return;
-    } else if (match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
+    if (match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
       ClipboardRecentContent* clipboard_recent_content =
           ClipboardRecentContent::GetInstance();
       clipboard_recent_content->GetRecentTextFromClipboard(base::BindOnce(
