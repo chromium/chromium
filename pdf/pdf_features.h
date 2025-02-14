@@ -17,10 +17,12 @@ namespace chrome_pdf::features {
 
 BASE_DECLARE_FEATURE(kAccessiblePDFForm);
 BASE_DECLARE_FEATURE(kPdfCr23);
+BASE_DECLARE_FEATURE(kPdfGetSaveDataInBlocks);
 BASE_DECLARE_FEATURE(kPdfIncrementalLoading);
 BASE_DECLARE_FEATURE(kPdfOopif);
 BASE_DECLARE_FEATURE(kPdfPartialLoading);
 BASE_DECLARE_FEATURE(kPdfPortfolio);
+BASE_DECLARE_FEATURE(kPdfSaveOriginalFromMemory);
 BASE_DECLARE_FEATURE(kPdfSearchify);
 BASE_DECLARE_FEATURE(kPdfSearchifySave);
 BASE_DECLARE_FEATURE(kPdfTags);

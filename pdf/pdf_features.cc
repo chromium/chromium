@@ -35,6 +35,17 @@ BASE_FEATURE(kPdfPartialLoading,
 
 BASE_FEATURE(kPdfPortfolio, "PdfPortfolio", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables PDF WebUI save to get PDF content from renderer in blocks.
+BASE_FEATURE(kPdfGetSaveDataInBlocks,
+             "PdfGetSaveDataInBlocks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Saves original PDFs to disk from the in-memory copy instead of redownloading
+// them.
+BASE_FEATURE(kPdfSaveOriginalFromMemory,
+             "PdfSaveOriginalFromMemory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPdfSearchify, "PdfSearchify", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPdfSearchifySave,
