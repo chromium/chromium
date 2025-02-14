@@ -348,7 +348,6 @@ void ScannerController::OnActiveUserSessionChanged(
 }
 
 bool ScannerController::CanShowUi() {
-  // TODO: b/395482378 - Add a check for the enterprise policy.
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
 
@@ -361,7 +360,23 @@ bool ScannerController::CanShowUi() {
 
   checks.Remove(
       specialized_features::FeatureAccessFailure::kConsentNotAccepted);
-  return checks.empty();
+  if (!checks.empty()) {
+    return false;
+  }
+
+  // Check enterprise policy.
+  const AccountId& account_id = session_controller_->GetActiveAccountId();
+  PrefService* prefs =
+      session_controller_->GetUserPrefServiceForUser(account_id);
+  // We assume a default value of 1 (allowed without model improvement) if the
+  // value is invalid, or the pref service isn't valid.
+  if (prefs != nullptr &&
+      prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
+          static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool ScannerController::CanShowFeatureSettingsToggle() {
@@ -386,7 +401,6 @@ bool ScannerController::CanShowFeatureSettingsToggle() {
 }
 
 bool ScannerController::CanStartSession() {
-  // TODO: b/395482378 - Add a check for the enterprise policy.
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
 
@@ -394,7 +408,23 @@ bool ScannerController::CanStartSession() {
     return false;
   }
 
-  return profile_scoped_delegate->CheckFeatureAccess().empty();
+  if (!profile_scoped_delegate->CheckFeatureAccess().empty()) {
+    return false;
+  }
+
+  // Check enterprise policy.
+  const AccountId& account_id = session_controller_->GetActiveAccountId();
+  PrefService* prefs =
+      session_controller_->GetUserPrefServiceForUser(account_id);
+  // We assume a default value of 1 (allowed without model improvement) if the
+  // value is invalid, or the pref service isn't valid.
+  if (prefs != nullptr &&
+      prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
+          static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    return false;
+  }
+
+  return true;
 }
 
 ScannerSession* ScannerController::StartNewSession() {
