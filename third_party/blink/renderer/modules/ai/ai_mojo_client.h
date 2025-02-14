@@ -52,6 +52,7 @@ class AIMojoClient : public ContextLifecycleObserver {
   ~AIMojoClient() override = default;
 
  protected:
+  ScriptState* GetScriptState() { return script_state_; }
   ScriptPromiseResolver<V8SessionObjectType>* GetResolver() {
     return resolver_;
   }
