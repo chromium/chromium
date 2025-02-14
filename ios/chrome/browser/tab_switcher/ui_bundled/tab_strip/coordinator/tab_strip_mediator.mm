@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/data_sharing/public/data_sharing_service.h"
@@ -19,6 +20,7 @@
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -282,6 +284,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // The bridge between the C++ MessagingBackendService observer and this
   // Objective-C class.
   std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
+  // The collaboration service for shared tab group.
+  raw_ptr<collaboration::CollaborationService> _collaborationService;
   // A set of a tab ID that has changed and a user has not seen it yet.
   std::set<tab_groups::LocalTabID> _dirtyTabs;
   // A set of a shared group ID that has changed and a user has not seen it yet.
@@ -291,15 +295,18 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (instancetype)
-       initWithConsumer:(id<TabStripConsumer>)consumer
-    tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
-     dataSharingService:(data_sharing::DataSharingService*)dataSharingService
-            browserList:(BrowserList*)browserList
-       messagingService:(collaboration::messaging::MessagingBackendService*)
-                            messagingService {
+        initWithConsumer:(id<TabStripConsumer>)consumer
+     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+      dataSharingService:(data_sharing::DataSharingService*)dataSharingService
+             browserList:(BrowserList*)browserList
+        messagingService:
+            (collaboration::messaging::MessagingBackendService*)messagingService
+    collaborationService:
+        (collaboration::CollaborationService*)collaborationService {
   if ((self = [super init])) {
     CHECK(browserList);
     _browserList = browserList;
+    _collaborationService = collaborationService;
     _tabGroupSyncService = tabGroupSyncService;
     _dataSharingService = dataSharingService;
     _consumer = consumer;
@@ -840,8 +847,48 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
           .identifier = item.identifier,
           .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned,
       });
-  if (index >= 0) {
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  // A confirmation prompt is shown to the user upon the manual closure of the
+  // final tab in a shared group.
+  BOOL displayAlert = NO;
+  const TabGroup* group = self.webStateList->GetGroupOfWebStateAt(index);
+  if (group) {
+    BOOL isSharedGroup =
+        tab_groups::utils::IsTabGroupShared(group, _tabGroupSyncService);
+    displayAlert = group->range().count() == 1 && isSharedGroup;
+  }
+
+  if (!displayAlert) {
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+    return;
+  }
+
+  data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+      group, _tabGroupSyncService, _collaborationService);
+
+  TabGroupItem* groupItem =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:self.webStateList];
+
+  switch (userRole) {
+    case data_sharing::MemberRole::kOwner:
+      [_tabStripHandler showTabGroupConfirmationForAction:
+                            TabGroupActionType::kDeleteOrKeepSharedTabGroup
+                                                groupItem:groupItem
+                                               sourceView:nil];
+      break;
+    case data_sharing::MemberRole::kMember:
+      [_tabStripHandler showTabGroupConfirmationForAction:
+                            TabGroupActionType::kLeaveOrKeepSharedTabGroup
+                                                groupItem:groupItem
+                                               sourceView:nil];
+      break;
+    case data_sharing::MemberRole::kInvitee:
+    case data_sharing::MemberRole::kUnknown:
+      NOTREACHED(base::NotFatalUntil::M140);
   }
 }
 

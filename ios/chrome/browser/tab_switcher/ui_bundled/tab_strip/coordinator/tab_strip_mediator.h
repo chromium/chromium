@@ -23,9 +23,12 @@ namespace base {
 class Uuid;
 }  // namespace base
 
-namespace collaboration::messaging {
+namespace collaboration {
+class CollaborationService;
+namespace messaging {
 class MessagingBackendService;
-}  // namespace collaboration::messaging
+}  // namespace messaging
+}  // namespace collaboration
 
 namespace data_sharing {
 class DataSharingService;
@@ -64,12 +67,14 @@ class WebStateID;
 // Designated initializer. Initializer with a TabStripConsumer, a
 // `tabGroupSyncService` and the `browserList`.
 - (instancetype)
-       initWithConsumer:(id<TabStripConsumer>)consumer
-    tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
-     dataSharingService:(data_sharing::DataSharingService*)dataSharingService
-            browserList:(BrowserList*)browserList
-       messagingService:
-           (collaboration::messaging::MessagingBackendService*)messagingService
+        initWithConsumer:(id<TabStripConsumer>)consumer
+     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+      dataSharingService:(data_sharing::DataSharingService*)dataSharingService
+             browserList:(BrowserList*)browserList
+        messagingService:
+            (collaboration::messaging::MessagingBackendService*)messagingService
+    collaborationService:
+        (collaboration::CollaborationService*)collaborationService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

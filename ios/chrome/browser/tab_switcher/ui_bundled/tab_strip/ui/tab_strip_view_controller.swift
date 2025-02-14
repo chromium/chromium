@@ -84,6 +84,9 @@ class TabStripViewController: UIViewController,
   /// Handler for tab group confirmation commands.
   public weak var tabGroupConfirmationHandler: TabGroupConfirmationCommands?
 
+  /// Group cell of the closed tab. Nil if the tab is not from a group.
+  private(set) weak var closedTabGroupView: TabStripGroupCell?
+
   /// The LayoutGuideCenter.
   @objc public var layoutGuideCenter: LayoutGuideCenter? {
     didSet {
@@ -195,6 +198,7 @@ class TabStripViewController: UIViewController,
   ) {
     // Dismisses the confirmation dialog for tab group if it's displayed.
     tabGroupConfirmationHandler?.dismissTabGroupConfirmation()
+    closedTabGroupView = nil
 
     super.viewWillTransition(to: size, with: coordinator)
     weak var weakSelf = self
@@ -453,11 +457,19 @@ class TabStripViewController: UIViewController,
   // MARK: - TabStripTabCellDelegate
 
   func closeButtonTapped(for cell: TabStripTabCell?) {
+    closedTabGroupView = nil
     guard let cell = cell,
       let indexPath = collectionView.indexPath(for: cell),
-      let item = dataSource.itemIdentifier(for: indexPath)?.tabSwitcherItem
+      let itemIdentifier = dataSource.itemIdentifier(for: indexPath),
+      let item = itemIdentifier.tabSwitcherItem
     else {
       return
+    }
+    let snapshot = dataSource.snapshot(for: .tabs)
+    if let groupIdentifier = snapshot.parent(of: itemIdentifier),
+      let groupIndexPath = dataSource.indexPath(for: groupIdentifier)
+    {
+      closedTabGroupView = collectionView.cellForItem(at: groupIndexPath) as? TabStripGroupCell
     }
     mutator?.close(item)
   }

@@ -110,15 +110,19 @@
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   data_sharing::DataSharingService* dataSharingService =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  collaboration::messaging::MessagingBackendService* messagingService =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
 
-  self.mediator = [[TabStripMediator alloc]
-         initWithConsumer:self.tabStripViewController
-      tabGroupSyncService:tabGroupSyncService
-       dataSharingService:dataSharingService
-              browserList:browserList
-         messagingService:collaboration::messaging::
-                              MessagingBackendServiceFactory::GetForProfile(
-                                  profile)];
+  self.mediator =
+      [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
+                             tabGroupSyncService:tabGroupSyncService
+                              dataSharingService:dataSharingService
+                                     browserList:browserList
+                                messagingService:messagingService
+                            collaborationService:collaborationService];
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.profile = profile;
   self.mediator.browser = self.browser;
@@ -265,6 +269,11 @@
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
                                 groupItem:(TabGroupItem*)tabGroupItem
                                sourceView:(UIView*)sourceView {
+  if (actionType == TabGroupActionType::kLeaveOrKeepSharedTabGroup ||
+      actionType == TabGroupActionType::kDeleteOrKeepSharedTabGroup) {
+    sourceView = self.tabStripViewController.closedTabGroupView;
+  }
+
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -273,6 +282,19 @@
   __weak TabStripCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf takeActionForActionType:actionType tabGroupItem:tabGroupItem];
+  };
+  _tabGroupConfirmationCoordinator.secondaryAction = ^{
+    switch (actionType) {
+      case TabGroupActionType::kUngroupTabGroup:
+      case TabGroupActionType::kDeleteTabGroup:
+      case TabGroupActionType::kLeaveSharedTabGroup:
+      case TabGroupActionType::kDeleteSharedTabGroup:
+        NOTREACHED();
+
+      case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+        break;
+    }
   };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroupItem.title;
 

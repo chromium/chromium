@@ -165,7 +165,8 @@ class TabStripMediatorTest : public PlatformTest {
                                tabGroupSyncService:tab_group_sync_service_.get()
                                 dataSharingService:data_sharing_service_.get()
                                        browserList:browser_list
-                                  messagingService:&messaging_backend_];
+                                  messagingService:&messaging_backend_
+                              collaborationService:nil];
 
     mediator_.profile = profile_.get();
     mediator_.webStateList = web_state_list_;
