@@ -94,16 +94,16 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_GLIC_GLIC_API_IMPL_GLIC_API_INJECTED_CLIENT_ROLLUP_JS));
 
-  // TODO(crbug.com/378951332): Configure an approved CSP.
-  // Set up csp override by cli flag or default to finch param value. This will
-  // be removed when we go to canary since it will no longer be needed once
-  // crbug.com/378951332 is addressed.
-  bool hasCSPOverride = command_line->HasSwitch(::switches::kCSPOverride);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ChildSrc,
-      hasCSPOverride
-          ? command_line->GetSwitchValueASCII(::switches::kCSPOverride)
-          : features::kGlicWebUICSPOverride.Get());
+  std::string allowed_origins =
+      command_line->GetSwitchValueASCII(::switches::kGlicAllowedOrigins);
+  if (allowed_origins.empty()) {
+    allowed_origins = features::kGlicAllowedOriginsOverride.Get();
+  }
+  if (allowed_origins.empty()) {
+    // TODO(crbug.com/396147389): Replace with the correct default.
+    allowed_origins = "https://*.google.com/";
+  }
+  source->AddString("glicAllowedOrigins", allowed_origins);
 
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));

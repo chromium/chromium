@@ -21,12 +21,24 @@ import type {OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, T
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason} from '../glic_api/glic_api.js';
-import type {GlicAppController} from '../glic_app_controller.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {AnnotatedPageDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType} from './request_types.js';
+
+// Implemented by the embedder of GlicApiHost.
+export interface ApiHostEmbedder {
+  // Called when the guest requests resize.
+  onGuestResizeRequest(size: {width: number, height: number}): void;
+
+  // Called after the web client is initialized.
+  showGuest(): void;
+
+  // Called when the notifyPanelWillOpen promise resolves to open the panel
+  // when triggered from the browser.
+  webClientReady(): void;
+}
 
 // Turn everything except void into a promise.
 type Promisify<T> = T extends void ? void : Promise<T>;
@@ -47,7 +59,7 @@ type HostMessageHandlerInterface = {
 class WebClientImpl implements WebClientInterface {
   constructor(
       private sender: PostMessageRequestSender,
-      private appController: GlicAppController) {}
+      private embedder: ApiHostEmbedder) {}
 
   notifyPanelOpened(attachedToWindowId: (number|null)): void {
     this.sender.requestNoResponse('glicWebClientNotifyPanelOpened', {
@@ -67,7 +79,7 @@ class WebClientImpl implements WebClientInterface {
 
     // The web client is ready to show, ensure the webview is
     // displayed.
-    this.appController.webClientReady();
+    this.embedder.webClientReady();
     const openPanelInfoMojo: OpenPanelInfoMojo = {
       webClientMode:
           (result.openPanelInfo?.startingMode as WebClientMode | undefined) ??
@@ -81,7 +93,7 @@ class WebClientImpl implements WebClientInterface {
         width: result.openPanelInfo?.resizeParams?.width,
         height: result.openPanelInfo?.resizeParams?.height,
       };
-      this.appController.onGuestResizeRequest(size);
+      this.embedder.onGuestResizeRequest(size);
       openPanelInfoMojo.panelSize = size;
     }
     return {openPanelInfo: openPanelInfoMojo};
@@ -142,7 +154,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   constructor(
       private handler: WebClientHandlerInterface,
       private sender: PostMessageRequestSender,
-      private appController: GlicAppController) {}
+      private embedder: ApiHostEmbedder) {}
 
   destroy() {
     if (this.receiver) {
@@ -151,8 +163,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   async glicBrowserWebClientCreated({}, transfer: Transferable[]) {
-    this.receiver = new WebClientReceiver(
-        new WebClientImpl(this.sender, this.appController));
+    this.receiver =
+        new WebClientReceiver(new WebClientImpl(this.sender, this.embedder));
     const {initialState} = await this.handler.webClientCreated(
         this.receiver.$.bindNewPipeAndPassRemote());
     const chromeVersion = initialState.chromeVersion.components;
@@ -176,7 +188,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserWebClientInitialized(request: {success: boolean}) {
     // The webview may have been re-shown by webui, having previously been
     // opened by the browser. In that case, show the guest frame again.
-    this.appController.showGuest();
+    this.embedder.showGuest();
 
     if (request.success) {
       this.handler.webClientInitialized();
@@ -332,7 +344,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     size: {width: number, height: number},
     options?: {durationMs?: number},
   }) {
-    this.appController.onGuestResizeRequest(request.size);
+    this.embedder.onGuestResizeRequest(request.size);
     return await this.handler.resizeWidget(
         request.size, timeDeltaFromClient(request.options?.durationMs));
   }
@@ -437,7 +449,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
-      private embeddedOrigin: string, appController: GlicAppController) {
+      private embeddedOrigin: string, embedder: ApiHostEmbedder) {
     this.postMessageReceiver =
         new PostMessageRequestReceiver(embeddedOrigin, windowProxy, this);
     this.sender = new PostMessageRequestSender(windowProxy, embeddedOrigin);
@@ -445,7 +457,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.browserProxy.handler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
     this.messageHandler =
-        new HostMessageHandler(this.handler, this.sender, appController);
+        new HostMessageHandler(this.handler, this.sender, embedder);
 
     this.bootstrapPingIntervalId =
         window.setInterval(this.bootstrapPing.bind(this), 50);

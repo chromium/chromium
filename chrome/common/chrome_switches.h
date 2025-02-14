@@ -283,10 +283,10 @@ extern const char kForceNtpMobilePromo[];
 
 #if BUILDFLAG(ENABLE_GLIC)
 extern const char kGlicGuestURL[];
-extern const char kCSPOverride[];
 extern const char kGlicAlwaysOpenFre[];
 extern const char kGlicFreURL[];
 extern const char kGlicOpenOnStartup[];
+extern const char kGlicAllowedOrigins[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

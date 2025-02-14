@@ -121,7 +121,6 @@ class GlicBorderViewUiTest : public InteractiveBrowserTest {
     command_line->AppendSwitchASCII(
         ::switches::kGlicGuestURL,
         embedded_test_server()->GetURL("/glic/test.html").spec());
-    command_line->AppendSwitchASCII(::switches::kCSPOverride, "");
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

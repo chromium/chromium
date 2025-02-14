@@ -218,6 +218,39 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
       CheckMockElementChecked({"#canAttachCheckbox"}, false));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
+                       DoesNotNavigateToUnsupportedOrigin) {
+  RunTestSequence(
+      ObserveState(kGlicUiStateHistory, &window_controller()),
+      OpenGlicWindow(GlicWindowMode::kAttached,
+                     GlicInstrumentMode::kHostAndContents),
+      WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
+      InAnyContext(ExecuteJs(test::kGlicContentsElementId,
+                             R"js(()=>{location = 'http://b.test/page';})js")),
+      // Just wait a bit and make sure the page doesn't navigate.
+      InAnyContext(CheckJsResult(test::kGlicContentsElementId, R"js(
+  ()=>{
+    const {promise, resolve} = Promise.withResolvers();
+    window.setTimeout(() => resolve(true), 1000);
+    return promise;
+  })js")));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, DoesNavigateToSupportedOrigin) {
+  RunTestSequence(
+      ObserveState(kGlicUiStateHistory, &window_controller()),
+      OpenGlicWindow(GlicWindowMode::kAttached,
+                     GlicInstrumentMode::kHostAndContents),
+      WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
+      InAnyContext(ExecuteJs(test::kGlicContentsElementId,
+                             R"js(()=>{location = './notexist';})js")),
+      // Page should navigate, and result in an error page.
+      InAnyContext(WaitForJsResult(test::kGlicContentsElementId,
+                                   R"js(()=>window.location.href)js",
+                                   testing::Eq("chrome-error://chromewebdata/"),
+                                   /*continue_across_navigation=*/true)));
+}
+
 // Tests the network being unavailable at startup.
 class GlicUiDisconnectedUiTest : public GlicUiInteractiveUiTestBase {
  public:
