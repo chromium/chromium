@@ -22786,6 +22786,32 @@
             ]
         }
     ],
+    "SpeculativeServiceWorkerWarmUp": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_05m_05c_20250214",
+                    "params": {
+                        "sw_warm_up_duration": "5m",
+                        "sw_warm_up_max_count": "5",
+                        "sw_warm_up_on_idle_timeout": "false",
+                        "sw_warm_up_request_queue_length": "100"
+                    },
+                    "enable_features": [
+                        "SpeculativeServiceWorkerWarmUp"
+                    ]
+                }
+            ]
+        }
+    ],
     "SplitCacheByNavigationInitiatorSite": [
         {
             "platforms": [
