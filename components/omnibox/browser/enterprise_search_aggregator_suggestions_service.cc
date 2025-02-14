@@ -123,6 +123,7 @@ void EnterpriseSearchAggregatorSuggestionsService::
 
   // For now, exclude recent suggestions (4) and, outside of keyword mode,
   // search suggestions (1).
+  // TODO(crbug.com/393480150): Support recent suggestions.
   auto suggestion_types_list = in_keyword_mode ? std::vector<int>{1, 2, 3, 5}
                                                : std::vector<int>{2, 3, 5};
 

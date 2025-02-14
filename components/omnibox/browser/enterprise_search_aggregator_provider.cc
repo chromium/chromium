@@ -85,6 +85,27 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
     return;
   }
 
+  // There should be no enterprise search suggestions fetched for on-focus
+  // suggestion requests, or if the input is empty.
+  if (input.IsZeroSuggest() ||
+      input.type() == metrics::OmniboxInputType::EMPTY) {
+    return;
+  }
+
+  // Request will always return 400 error response if the query is empty and
+  // recent suggestions is not the only requested suggestion type. In keyword
+  // mode, always clear matches_.
+  // TODO(crbug.com/393480150): Remove this check once recent suggestions
+  // are supported.
+  if (input.InKeywordMode()) {
+    auto adjusted_input = input;
+    AdjustTemplateURL(&adjusted_input, template_url_service_);
+    if (adjusted_input.text().empty()) {
+      matches_.clear();
+      return;
+    }
+  }
+
   input_ = input;
   done_ = false;  // Set true in callbacks.
 
@@ -155,12 +176,19 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 
-  const bool updated_matches =
-      response_code == 200 &&
-      UpdateResults(SearchSuggestionParser::ExtractJsonData(
-          source, std::move(response_body)));
-
-  // Keep showing old `matches_` if received an error response.
+  bool updated_matches = false;
+  if (response_code == 200) {
+    updated_matches = UpdateResults(SearchSuggestionParser::ExtractJsonData(
+        source, std::move(response_body)));
+  } else {
+    // Clear matches for any response that is an error.
+    // TODO(crbug.com/380642693): Add backoff if needed. This could be done by
+    // tracking the number of consecutive errors and only clearing matches if
+    // the number of errors exceeds a certain threshold. Or verifying backoff
+    // conditions from the server-side team.
+    matches_.clear();
+    updated_matches = true;
+  }
 
   loader_.reset();
   done_ = true;
