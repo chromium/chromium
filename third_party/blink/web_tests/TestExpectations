@@ -3043,7 +3043,6 @@ crbug.com/377100054 [ Win11-arm64 ] external/wpt/css/css-variables/variable-subs
 crbug.com/376770788 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?av1 [ Timeout ]
 crbug.com/377072733 [ Win11-arm64 ] external/wpt/webrtc/RTCDataChannel-send-close.html [ Skip Timeout ]
 crbug.com/376770788 [ Win11-arm64 ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-iframe.tentative.https.sub.html [ Timeout ]
-crbug.com/377212331 [ Win10.20h2 ] virtual/unload-allowed/external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html [ Skip Timeout ]
 [ Win11-arm64 ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/unpartitioned-storage-permissions-policy-self.tentative.https.sub.html [ Timeout ]
 crbug.com/40263108 [ Win11-arm64 ] virtual/prefetch-new-wait-loop/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=InvalidUrlForSpeculationRulesSet [ Timeout ]
 [ Win11-arm64 ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/unpartitioned-storage-permissions-policy-none.tentative.https.sub.html [ Timeout ]
@@ -3159,8 +3158,6 @@ crbug.com/360956937 [ Mac15 ] external/wpt/webrtc-encoded-transform/script-trans
 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-none-css_touch.html [ Crash Failure ]
 crbug.com/360246424 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-button-none-test_touch.html [ Crash Failure ]
 crbug.com/360246424 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-none_touch.html [ Crash Failure ]
-crbug.com/360182482 [ Win11-arm64 ] virtual/threaded/external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html [ Skip Timeout ]
-crbug.com/360182482 [ Win10.20h2 ] virtual/threaded/external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html [ Skip Timeout ]
 crbug.com/360246809 [ Mac15 ] external/wpt/fs/FileSystemFileHandle-sync-access-handle-back-forward-cache.https.tentative.window.html [ Skip Timeout ]
 crbug.com/360246809 [ Linux ] external/wpt/fs/FileSystemFileHandle-sync-access-handle-back-forward-cache.https.tentative.window.html [ Skip Timeout ]
 crbug.com/360201083 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-bad-chunk.https.html [ Timeout ]
@@ -3238,7 +3235,6 @@ crbug.com/353583104 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content
 crbug.com/353583078 external/wpt/trusted-types/block-text-node-insertion-into-svg-script-element.html [ Timeout ]
 crbug.com/353583105 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/config-cross-origin-apis.https.html [ Timeout ]
 crbug.com/353228155 [ Mac ] external/wpt/svg/text/reftests/textpath-letter-spacing-01.svg [ Failure ]
-crbug.com/352390129 [ Win11-arm64 ] external/wpt/permissions-policy/reporting/xr-report-only.https.html [ Timeout ]
 crbug.com/352407781 external/wpt/svg/painting/reftests/non-scaling-stroke-003.html [ Failure ]
 crbug.com/352390127 [ Win11-arm64 ] external/wpt/webcodecs/video-encoder-config.https.any.worker.html [ Failure Timeout ]
 crbug.com/352100866 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-omitted-height.html [ Failure ]
@@ -5039,7 +5035,7 @@ crbug.com/993790 external/wpt/document-policy/required-policy/separate-document-
 
 # Skipping because of unimplemented behaviour
 crbug.com/965495 external/wpt/feature-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Crash Failure Pass Timeout ]
-crbug.com/965495 external/wpt/permissions-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/965495 external/wpt/permissions-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Timeout ]
 
 crbug.com/834302 external/wpt/permissions-policy/permissions-policy-opaque-origin.https.html [ Failure ]
 
@@ -5291,10 +5287,10 @@ crbug.com/1137228 [ Win ] external/wpt/infrastructure/testdriver/click_iframe_cr
 # Rename document.featurePolicy to document.permissionsPolicy
 crbug.com/1123116 external/wpt/permissions-policy/payment-supported-by-permissions-policy.tentative.html [ Failure ]
 crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-all.https.sub.html [ Failure ]
-crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-self.https.sub.html [ Failure Timeout ]
+crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-self.https.sub.html [ Failure ]
 crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some-override.https.sub.html [ Failure ]
-crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some.https.sub.html [ Failure Timeout ]
-crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-disallowed-for-all.https.sub.html [ Failure Timeout ]
+crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some.https.sub.html [ Failure ]
+crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-disallowed-for-all.https.sub.html [ Failure ]
 
 crbug.com/1159445 [ Mac ] paint/invalidation/repaint-overlay/layers-overlay.html [ Failure ]
 
@@ -8611,7 +8607,6 @@ crbug.com/349554230 http/tests/devtools/animation/animation-group-matching.js [ 
 crbug.com/375562183 http/tests/devtools/animation/animation-empty-web-animations.js [ Failure Skip ]
 
 crbug.com/342438266 external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
-crbug.com/342438266 external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 
 crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure ]
 
