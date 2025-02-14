@@ -129,8 +129,6 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
         return nullptr;
       }
       break;
-    case AccountType::ACTIVE_DIRECTORY:
-      NOTREACHED();
   }
 
   const ProfileRequiresPolicy requires_policy_user_property =

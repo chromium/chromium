@@ -113,8 +113,6 @@ using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::Return;
 
-const char kObjectGuid[] = "12345";
-const char kAdUsername[] = "test_user@ad-domain.com";
 const char kNewUser[] = "new_test_user@gmail.com";
 const GaiaId::Literal kNewGaiaID("11111");
 const char kExistingUser[] = "existing_test_user@gmail.com";
@@ -248,8 +246,9 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     // Need to reset it manually so that we don't end up with CrosSettings
     // observer that wasn't removed.
     WizardController* controller = WizardController::default_controller();
-    if (controller && controller->current_screen())
+    if (controller && controller->current_screen()) {
       controller->current_screen()->Hide();
+    }
   }
 
   void ExpectLoginFailure() {
@@ -289,9 +288,6 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
 
   std::unique_ptr<MockSigninUI> mock_signin_ui_;
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;
-
-  const AccountId ad_account_id_ =
-      AccountId::AdFromUserEmailObjGuid(kAdUsername, kObjectGuid);
 
   const LoginManagerMixin::TestUserInfo new_user_{
       AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
@@ -436,8 +432,9 @@ class ExistingUserControllerPublicSessionTest
     // Need to reset it manually so that we don't end up with CrosSettings
     // observer that wasn't removed.
     WizardController* controller = WizardController::default_controller();
-    if (controller && controller->current_screen())
+    if (controller && controller->current_screen()) {
       controller->current_screen()->Hide();
+    }
   }
 
   // user_manager::UserManager::Observer:
@@ -492,10 +489,12 @@ class ExistingUserControllerPublicSessionTest
     RefreshDevicePolicy();
 
     // Wait for ExistingUserController to read the updated settings.
-    if (runner1.get())
+    if (runner1.get()) {
       runner1->Run();
-    if (runner2.get())
+    }
+    if (runner2.get()) {
       runner2->Run();
+    }
   }
 
   void ConfigureAutoLogin() {
@@ -810,8 +809,9 @@ class ExistingUserControllerAuthFailureTest : public OobeBaseTest {
 
     auto authenticator_builder =
         std::make_unique<StubAuthenticatorBuilder>(user_context);
-    if (failure_reason != AuthFailure::NONE)
+    if (failure_reason != AuthFailure::NONE) {
       authenticator_builder->SetUpAuthFailure(failure_reason);
+    }
 
     test::UserSessionManagerTestApi(UserSessionManager::GetInstance())
         .InjectAuthenticatorBuilder(std::move(authenticator_builder));

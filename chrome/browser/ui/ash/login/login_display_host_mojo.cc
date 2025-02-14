@@ -743,11 +743,6 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
                                              ->GetCurrentInputMethod()
                                              .id());
 
-  if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-    LOG(FATAL) << "Incorrect Active Directory user type "
-               << user_context.GetUserType();
-  }
-
   existing_user_controller_->Login(user_context, SigninSpecifics());
 }
 

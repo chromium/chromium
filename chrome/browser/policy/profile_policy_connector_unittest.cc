@@ -91,8 +91,9 @@ class PolicyServiceInitializedWaiter : PolicyService::Observer {
   // initialization. If initialization of the PolicyDomain is already complete
   // at the time Wait() is called, returns immediately.
   void Wait() {
-    if (policy_service_->IsInitializationComplete(policy_domain_))
+    if (policy_service_->IsInitializationComplete(policy_domain_)) {
       return;
+    }
     run_loop_.Run();
   }
 
@@ -201,26 +202,20 @@ TEST_F(ProfilePolicyConnectorTest, IsManagedForManagedUsers) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(ProfilePolicyConnectorTest, IsManagedForActiveDirectoryUsers) {
+TEST_F(ProfilePolicyConnectorTest, ChromeosIsManagedForGaiaUsers) {
   user_manager::ScopedUserManager scoped_user_manager_enabler(
       std::make_unique<ash::FakeChromeUserManager>());
   ProfilePolicyConnector connector;
   const AccountId account_id =
-      AccountId::AdFromUserEmailObjGuid("user@realm.example", "obj-guid");
+      AccountId::FromUserEmailGaiaId("user@domain.example", GaiaId("gaia-id"));
   std::unique_ptr<user_manager::User> user = CreateRegularUser(account_id);
   connector.Init(user.get(), &schema_registry_, cloud_policy_manager_.get(),
                  cloud_policy_store_.get(),
                  g_browser_process->browser_policy_connector(), false);
+  EXPECT_FALSE(connector.IsManaged());
+
   auto policy = std::make_unique<enterprise_management::PolicyData>();
   policy->set_state(enterprise_management::PolicyData::ACTIVE);
-  cloud_policy_store_->set_policy_data_for_testing(std::move(policy));
-  EXPECT_TRUE(connector.IsManaged());
-
-  // Policy username does not override management realm for Active Directory
-  // user.
-  policy = std::make_unique<enterprise_management::PolicyData>();
-  policy->set_state(enterprise_management::PolicyData::ACTIVE);
-  policy->set_username("test@testdomain.com");
   cloud_policy_store_->set_policy_data_for_testing(std::move(policy));
   EXPECT_TRUE(connector.IsManaged());
 
@@ -228,7 +223,7 @@ TEST_F(ProfilePolicyConnectorTest, IsManagedForActiveDirectoryUsers) {
   connector.Shutdown();
 }
 
-TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
+TEST_F(ProfilePolicyConnectorTest, ChromeosPrimaryUserPoliciesProxied) {
   auto user_manager_unique_ptr = std::make_unique<ash::FakeChromeUserManager>();
   ash::FakeChromeUserManager* user_manager = user_manager_unique_ptr.get();
   user_manager::ScopedUserManager scoped_user_manager_enabler(
@@ -245,7 +240,7 @@ TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
 
   ProfilePolicyConnector connector;
   const AccountId account_id =
-      AccountId::AdFromUserEmailObjGuid("user@realm.example", "obj-guid");
+      AccountId::FromUserEmailGaiaId("user@domain.example", GaiaId("gaia-id"));
   user_manager::User* user = user_manager->AddUser(account_id);
   user_manager->LoginUser(account_id);
   EXPECT_EQ(user, user_manager::UserManager::Get()->GetPrimaryUser());

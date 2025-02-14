@@ -312,7 +312,6 @@ bool UserManagerImpl::EnsureUser(const AccountId& account_id,
           // setting it again for the new account type.
           known_user.ClearProfileRequiresPolicy(account_id);
         }
-        known_user.SetIsEphemeralUser(user->GetAccountId(), false);
         break;
       }
 
@@ -1445,7 +1444,6 @@ User* UserManagerImpl::AddGaiaUser(const AccountId& account_id,
   SaveUserDisplayName(account_id,
                       base::UTF8ToUTF16(user->GetAccountName(
                           /*use_display_email=*/true)));
-  KnownUser(local_state_.get()).SetIsEphemeralUser(user->GetAccountId(), false);
 
   // Add to the persisted list.
   persisted_users_.push_back(user);
@@ -1461,7 +1459,6 @@ User* UserManagerImpl::AddEphemeralUser(const AccountId& account_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* user = User::CreateRegularUser(account_id, user_type);
   user_storage_.emplace_back(user);
-  KnownUser(local_state_.get()).SetIsEphemeralUser(account_id, true);
 
   return user;
 }
@@ -1669,7 +1666,6 @@ void UserManagerImpl::Initialize() {
     // local_state may be null in unit tests.
     if (local_state_) {
       KnownUser known_user(local_state_.get());
-      known_user.CleanEphemeralUsers();
       known_user.CleanObsoletePrefs();
     }
   }

@@ -51,8 +51,9 @@ namespace {
 // Creates policy key file for the user specified in |user_policy|.
 void SetUserKeys(const UserPolicyBuilder& user_policy) {
   base::FilePath user_data_dir;
-  if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
+  }
 
   const AccountId account_id =
       AccountId::FromUserEmail(user_policy.policy_data().username());
@@ -142,8 +143,9 @@ void AffiliationTestHelper::PreLoginUser(const AccountId& account_id) {
   ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
                                   "LoggedInUsers");
   base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_pref.Get(), email_value))
+  if (!base::Contains(users_pref.Get(), email_value)) {
     users_pref->Append(std::move(email_value));
+  }
 
   user_manager::KnownUser(g_browser_process->local_state())
       .SaveKnownUser(account_id);
@@ -157,7 +159,6 @@ void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
       ash::UserSessionManager::GetInstance());
   session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
 
-  CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
   ash::UserContext user_context(user_manager::UserType::kRegular, account_id);
   user_context.SetKey(ash::Key("password"));
   if (account_id.GetUserEmail() == kEnterpriseUserEmail) {
@@ -172,8 +173,9 @@ void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
       user_manager::UserManager::Get()->GetLoggedInUsers();
   for (user_manager::UserList::const_iterator it = logged_users.begin();
        it != logged_users.end(); ++it) {
-    if ((*it)->GetAccountId() == user_context.GetAccountId())
+    if ((*it)->GetAccountId() == user_context.GetAccountId()) {
       return;
+    }
   }
   ADD_FAILURE() << account_id.Serialize()
                 << " was not added via PreLoginUser()";

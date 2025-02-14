@@ -80,8 +80,9 @@ class ScopedLogIn {
   // due massive usage of InitFromArgv.
   void PreventAccessToDBus() {
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    if (!command_line.HasSwitch(switches::kTestType))
+    if (!command_line.HasSwitch(switches::kTestType)) {
       command_line.AppendSwitch(switches::kTestType);
+    }
   }
 
   void MakeAccountAvailableAsPrimaryAccount(user_manager::UserType user_type) {
@@ -201,11 +202,6 @@ class ChromeAssistantUtilTest : public testing::Test {
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return fake_user_manager_.Get();
-  }
-
-  AccountId GetActiveDirectoryUserAccountId(const TestingProfile* profile) {
-    return AccountId::AdFromUserEmailObjGuid(profile->GetProfileUserName(),
-                                             "<obj_guid>");
   }
 
   AccountId GetNonGaiaUserAccountId(const TestingProfile* profile) {
