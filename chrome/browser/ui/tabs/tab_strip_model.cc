@@ -430,6 +430,18 @@ void TabStripModel::OnChange(const TabStripModelChange& change,
   }
 }
 
+void TabStripModel::OnTabGroupDetached(const TabGroup& group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupDetached(this, group);
+  }
+}
+
+void TabStripModel::OnTabGroupAttached(const TabGroup& group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupAttached(this, group);
+  }
+}
+
 std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
     const tab_groups::TabGroupId& group_id) {
   NOTIMPLEMENTED();

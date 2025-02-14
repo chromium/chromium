@@ -764,6 +764,12 @@ class TabStripModel : public TabGroupController {
   void OnChange(const TabStripModelChange& change,
                 const TabStripSelectionChange& selection);
 
+  // Notify observers that `group` is detached from the model.
+  void OnTabGroupDetached(const TabGroup& group);
+
+  // Notify observers that `group` is attached to the model.
+  void OnTabGroupAttached(const TabGroup& group);
+
   // Detaches the tab at the specified `index` from this strip.
   // `web_contents_remove_reason` is used to indicate to observers what is going
   // to happen to the WebContents (i.e. deleted or reinserted into another tab

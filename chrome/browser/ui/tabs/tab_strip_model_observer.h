@@ -21,6 +21,7 @@
 #include "ui/base/models/list_selection_model.h"
 
 class TabStripModel;
+class TabGroup;
 
 namespace content {
 class WebContents;
@@ -358,6 +359,12 @@ class TabStripModelObserver {
   // TODO(crbug.com/40838330): Unify and generalize this and OnTabWillBeAdded,
   // e.g. via OnTabStripModelWillChange().
   virtual void OnTabWillBeRemoved(content::WebContents* contents, int index);
+
+  // Notification that a group is detached from the TabStripModel.
+  void OnTabGroupDetached(TabStripModel* model, const TabGroup& group);
+
+  // Notification that a detached group is attached to the TabStripModel.
+  void OnTabGroupAttached(TabStripModel* model, const TabGroup& group);
 
   // |change| is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are
