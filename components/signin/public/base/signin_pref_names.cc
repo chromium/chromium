@@ -179,6 +179,13 @@ const char kUserCloudSigninPolicyResponseFromPolicyTestPage[] =
 const char kExplicitBrowserSignin[] =
     "signin.signin_with_explicit_browser_signin_on";
 
+// Whether the account storage for preferences, themes and search engines is
+// enabled by default. Only set on new signins and for sync users.
+// Note: this pref is only recorded when the feature
+// `syncer::kEnablePreferencesAccountStorage` is enabled.
+const char kPrefsThemesSearchEnginesAccountStorageEnabled[] =
+    "signin.prefs_themes_search_engines_account_storage_enabled";
+
 // Boolean indicating whether the Device Bound Session Credentials should be
 // enabled. Takes precedence over the "EnableBoundSessionCredentials" feature
 // flag state. The value is controlled by the BoundSessionCredentialsEnabled

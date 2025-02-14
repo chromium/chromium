@@ -264,6 +264,7 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
     override_features_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kEnablePreferencesAccountStorage,
+         syncer::kSeparateLocalAndAccountSearchEngines,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
          syncer::kReplaceSyncPromosWithSignInPromos,
          syncer::kSyncAutofillWalletCredentialData},
@@ -485,6 +486,9 @@ IN_PROC_BROWSER_TEST_F(
 // A test fixture to cover migration behavior: In PRE_ tests, the
 // kReplaceSyncPromosWithSignInPromos is *dis*abled, in non-PRE_ tests it is
 // *en*abled.
+// This test intends to test the mobile migration behavior, but runs on desktop.
+// Desktop and mobile have different behaviors, and as a consequence is test is
+// only an approximation.
 class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
     : public SingleClientStandaloneTransportSyncTest {
  public:
@@ -494,13 +498,16 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
     default_features_.InitWithFeatures(
         /*enabled_features=*/
         {syncer::kReadingListEnableSyncTransportModeUponSignIn,
-         syncer::kSyncEnableBookmarksInTransportMode,
-         switches::kEnablePreferencesAccountStorage},
+         // This feature would not be needed on mobile, but on desktop it is a
+         // prerequisite to account storage for preferences.
+         syncer::kSeparateLocalAndAccountSearchEngines,
+         syncer::kSyncEnableBookmarksInTransportMode},
         /*disabled_features=*/{});
 
     // The Sync-to-Signin feature is only enabled in non-PRE_ tests.
-    sync_to_signin_feature_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSignInPromos, !content::IsPreTest());
+    sync_to_signin_feature_.InitWithFeatureStates(
+        {{syncer::kReplaceSyncPromosWithSignInPromos, !content::IsPreTest()},
+         {switches::kEnablePreferencesAccountStorage, !content::IsPreTest()}});
   }
   ~SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest()
       override = default;

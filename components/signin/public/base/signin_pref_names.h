@@ -76,6 +76,8 @@ extern const char kUserCloudSigninPolicyResponseFromPolicyTestPage[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kExplicitBrowserSignin[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kPrefsThemesSearchEnginesAccountStorageEnabled[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kBoundSessionCredentialsEnabled[];
 
 }  // namespace prefs

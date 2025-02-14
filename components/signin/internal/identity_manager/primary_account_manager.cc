@@ -269,6 +269,19 @@ PrimaryAccountManager::PrimaryAccountManager(
   // level are loaded.
   CHECK(primary_account_.has_value());
 
+  // `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is set for sync
+  // users and new signed in users. It is not cleared on sign out.
+  if (base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
+    if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+      scoped_pref_commit.SetBoolean(
+          prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
+    }
+  } else {
+    scoped_pref_commit.ClearPref(
+        prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
+  }
+
   // Instrument metrics to know what fraction of users without a primary
   // account previously did have one, with sync enabled.
   RecordHadPreviousSyncAccount();
@@ -302,6 +315,8 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kExplicitBrowserSigninWithoutFeatureEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kExplicitBrowserSignin, false);
+  registry->RegisterBooleanPref(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
 }
 
 // static
@@ -751,6 +766,11 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
             kExplicitBrowserSigninWithoutFeatureEnabled, true);
         if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
           scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
+        }
+        if (base::FeatureList::IsEnabled(
+                switches::kEnablePreferencesAccountStorage)) {
+          scoped_pref_commit.SetBoolean(
+              prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
         }
       }
   }
