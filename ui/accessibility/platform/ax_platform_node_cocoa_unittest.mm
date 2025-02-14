@@ -431,6 +431,20 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   }
 }
 
+// respondsToSelector for `accessibilityPerformPress`.
+TEST_P(AXPlatformNodeCocoaTest, RespondsToSelectorAccessibilityPerformPress) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kButton
+    ++++3 kGenericContainer
+  )HTML"));
+
+  EXPECT_TRUE([GetCocoaNode(2)
+      respondsToSelector:@selector(accessibilityPerformPress)]);
+  EXPECT_FALSE([GetCocoaNode(3)
+      respondsToSelector:@selector(accessibilityPerformPress)]);
+}
+
 // Tests that -addTextAnnotations:to: correctly applies attributes to the
 // attributed string it's passed.
 TEST_P(AXPlatformNodeCocoaTest, AddTextAnnotations) {
