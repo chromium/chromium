@@ -1516,6 +1516,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.7.3 -> 0.8.2"
 notes = "No new unsafe, more inlining, checked add. Minor spec compliance issues."
 
+[[audits.font-types]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.8.2 -> 0.8.3"
+notes = "Changes to reading IndexSubtable, reverting adding Tag::NULL associated constant."
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -2416,6 +2422,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.25.3 -> 0.26.0"
 notes = "Added min_byte_range() method, expose IndexSubtableList for bitmaps. No new unsafe. Gvar delta API changes."
 
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.26.0 -> 0.27.1"
+notes = "IFT impl behind feature flag."
+
 [[audits.regex]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -3183,6 +3195,12 @@ who = "Dominik Röttsches <drott@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.26.5 -> 0.27.0"
 notes = "Mostly a fuzzer fix, rejecting oversized composite outlines."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.27.0 -> 0.28.0"
+notes = "Minor clippy fix."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
