@@ -34,7 +34,7 @@ namespace remoting {
 // does not exist in other contexts.
 class ComputeEngineServiceClient {
  public:
-  using ResponseCallback = base::OnceCallback<void(HttpStatus)>;
+  using ResponseCallback = base::OnceCallback<void(const HttpStatus&)>;
 
   explicit ComputeEngineServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

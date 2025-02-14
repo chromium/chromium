@@ -10,11 +10,15 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/cloud_service_client.h"
+#include "remoting/base/compute_engine_service_client.h"
 #include "remoting/base/http_status.h"
+#include "remoting/base/oauth_token_info.h"
+#include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
@@ -31,8 +35,7 @@ using ProvisionGceInstanceResponse =
 // A helper class which provisions a cloud machine for Chrome Remote Desktop.
 class CloudHostStarter : public HostStarterBase {
  public:
-  CloudHostStarter(
-      const std::string& api_key,
+  explicit CloudHostStarter(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   CloudHostStarter(const CloudHostStarter&) = delete;
@@ -40,7 +43,10 @@ class CloudHostStarter : public HostStarterBase {
 
   ~CloudHostStarter() override;
 
+  void OnApiAccessTokenRetrieved(const HttpStatus& status);
+
   // HostStarterBase implementation.
+  void RetrieveApiAccessToken() override;
   void RegisterNewHost(const std::string& public_key,
                        std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
@@ -53,6 +59,10 @@ class CloudHostStarter : public HostStarterBase {
 
  private:
   std::unique_ptr<CloudServiceClient> cloud_service_client_;
+  std::unique_ptr<ComputeEngineServiceClient> compute_engine_service_client_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  std::unique_ptr<PassthroughOAuthTokenGetter> api_access_token_getter_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -60,25 +70,73 @@ class CloudHostStarter : public HostStarterBase {
 };
 
 CloudHostStarter::CloudHostStarter(
-    const std::string& api_key,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : HostStarterBase(url_loader_factory),
-      cloud_service_client_(
-          CloudServiceClient::CreateForGcpProject(api_key,
-                                                  url_loader_factory)) {
-  params().api_key = api_key;
-}
+      compute_engine_service_client_(
+          std::make_unique<ComputeEngineServiceClient>(url_loader_factory)),
+      url_loader_factory_(url_loader_factory) {}
 
 CloudHostStarter::~CloudHostStarter() = default;
+
+void CloudHostStarter::RetrieveApiAccessToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The two modes to configure a Cloud host are to generate an API_KEY and use
+  // that to access the provisioning RPC or to generate an access token using
+  // the default service-account. If an API_KEY is being used, we can skip the
+  // access token request since it won't be used.
+  if (params().api_key.empty()) {
+    compute_engine_service_client_->GetServiceAccountAccessToken(
+        base::BindOnce(&CloudHostStarter::OnApiAccessTokenRetrieved,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    RegisterNewHost(key_pair().GetPublicKey(), /*access_token=*/std::nullopt);
+  }
+}
+
+void CloudHostStarter::OnApiAccessTokenRetrieved(const HttpStatus& status) {
+  if (!status.ok()) {
+    HandleHttpStatusError(status);
+    return;
+  }
+  if (status.response_body().empty()) {
+    HandleError("Token response is empty.", Result::OAUTH_ERROR);
+    return;
+  }
+  auto token_payload = base::JSONReader::Read(status.response_body());
+  if (!token_payload.has_value()) {
+    HandleError("Token response was not valid JSON.", Result::OAUTH_ERROR);
+    return;
+  }
+  auto* access_token = token_payload->GetDict().FindString("access_token");
+  if (!access_token) {
+    HandleError("Token response did not include an access token field.",
+                Result::OAUTH_ERROR);
+    return;
+  }
+
+  RegisterNewHost(key_pair().GetPublicKey(), *access_token);
+}
 
 void CloudHostStarter::RegisterNewHost(
     const std::string& public_key,
     std::optional<std::string> access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // We don't expect |access_token| to be populated for this flow but
-  // |public_key| is required.
   DCHECK(!public_key.empty());
-  DCHECK(!access_token.has_value());
+
+  if (access_token.has_value() && !access_token->empty()) {
+    CHECK(params().api_key.empty());
+    OAuthTokenInfo token_info{*access_token};
+    api_access_token_getter_ =
+        std::make_unique<PassthroughOAuthTokenGetter>(token_info);
+    cloud_service_client_ =
+        CloudServiceClient::CreateForGceDefaultServiceAccount(
+            api_access_token_getter_.get(), url_loader_factory_);
+  } else {
+    CHECK(!params().api_key.empty());
+    cloud_service_client_ = CloudServiceClient::CreateForGcpProject(
+        params().api_key, url_loader_factory_);
+  }
 
   cloud_service_client_->ProvisionGceInstance(
       params().owner_email, params().name, public_key, existing_host_id(),
@@ -122,9 +180,8 @@ void CloudHostStarter::ApplyConfigValues(base::Value::Dict& config) {
 }  // namespace
 
 std::unique_ptr<HostStarter> ProvisionCloudInstance(
-    const std::string& api_key,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<CloudHostStarter>(api_key, url_loader_factory);
+  return std::make_unique<CloudHostStarter>(url_loader_factory);
 }
 
 }  // namespace remoting
