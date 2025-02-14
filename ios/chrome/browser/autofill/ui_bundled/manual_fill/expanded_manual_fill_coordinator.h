@@ -27,11 +27,16 @@ enum class ManualFillDataType;
 - (void)stopExpandedManualFillCoordinator:
     (ExpandedManualFillCoordinator*)coordinator;
 
+// Called when the user has taken action to dismiss a popover.
+- (void)expandedManualFillCoordinatorDidDismissPopover:
+    (ExpandedManualFillCoordinator*)coordinator;
+
 @end
 
 // The coordinator responsible for presenting the expanded manual fill view.
 @interface ExpandedManualFillCoordinator
-    : ChromeCoordinator <FormInputInteractionDelegate>
+    : ChromeCoordinator <FormInputInteractionDelegate,
+                         UIPopoverPresentationControllerDelegate>
 
 // The object in charge of interacting with the web view. Used to fill the data
 // in the forms.
@@ -65,6 +70,9 @@ enum class ManualFillDataType;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Presents the view controller as a popover from the passed button.
+- (void)presentFromButton:(UIButton*)button;
 
 // Returns the coordinator's view controller.
 - (UIViewController*)viewController;

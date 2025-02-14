@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -40,8 +41,21 @@
   // On iPad, dismiss the popover before the settings are presented.
   if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
       self.viewController.presentingViewController) {
-    [self.viewController dismissViewControllerAnimated:true
-                                            completion:completion];
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      // When the Keyboard Accessory Upgrade feature is enabled on tablets,
+      // fallback coordinators are coordinators of subviews of the expanded
+      // manual fill view, so they can't dismiss the entire popup, otherwise
+      // changing the type of autofill data between passwords, addresses or
+      // credit cards would dismiss the entire popup. In this case, only the
+      // completion block is executed. The popup will be dismissed when the
+      // expanded manual fill coordinator stops.
+      if (completion) {
+        completion();
+      }
+    } else {
+      [self.viewController dismissViewControllerAnimated:true
+                                              completion:completion];
+    }
     return YES;
   } else {
     if (completion) {
@@ -57,7 +71,7 @@
 - (void)presentFromButton:(UIButton*)button {
   self.viewController.modalPresentationStyle = UIModalPresentationPopover;
 
-  // `topFrontWindow` is used in order to present above the keyboard. This way
+  // `topFrontWindow` is used in order to present above the keyboard. This way,
   // the popover will be dismissed on keyboard interaction and it won't be
   // covered when the keyboard is near the top of the screen.
   UIWindow* topFrontWindow = ios::provider::GetKeyboardWindow();
