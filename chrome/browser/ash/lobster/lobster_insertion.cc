@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/lobster/lobster_insertion.h"
 
-#include "ash/lobster/lobster_image_actuator.h"
+#include "ash/lobster/lobster_image_insert_or_copy_actuator.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

@@ -623,6 +623,7 @@ class LobsterSessionImplMetricsTest : public testing::Test {
 
  private:
   base::HistogramTester histogram_tester_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 class LobsterSessionImplMetrics
