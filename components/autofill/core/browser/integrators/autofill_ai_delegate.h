@@ -72,10 +72,6 @@ class AutofillAiDelegate {
   // in chrome://settings.
   virtual bool ShouldDisplayIph(const AutofillField& field) const = 0;
 
-  // Opens the subpage of chrome settings that deals with managing information
-  // stored by the Autofill AI system.
-  virtual void GoToSettings() const = 0;
-
   // Event handler called when suggestions are shown.
   virtual void OnSuggestionsShown(
       const DenseSet<SuggestionType>& shown_suggestion_types,

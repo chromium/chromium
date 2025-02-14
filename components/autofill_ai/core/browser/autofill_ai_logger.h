@@ -23,7 +23,6 @@ class AutofillAiLogger {
   void OnFormEligibilityAvailable(autofill::FormGlobalId form_id,
                                   bool is_eligible);
   void OnFormHasDataToFill(autofill::FormGlobalId form_id);
-  void OnSuggestionsShown(autofill::FormGlobalId form_id);
   void OnTriggeredFillingSuggestions(autofill::FormGlobalId form_id);
   void OnFillingSuggestionsShown(autofill::FormGlobalId form_id);
   void OnDidFillSuggestion(autofill::FormGlobalId form_id);
@@ -47,9 +46,6 @@ class AutofillAiLogger {
     // Given a form, records whether there's data available to fill this form.
     // Whether or not this data is used for filling is irrelevant.
     bool has_data_to_fill = false;
-    // Given a form, records whether AutofillAi suggestions were
-    // shown for this form.
-    bool did_show_suggestions = false;
     // Given a form, records whether the user triggered AutofillAi
     // suggestions via manua fallback, which started loading filling
     // suggestions.

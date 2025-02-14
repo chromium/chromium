@@ -87,8 +87,6 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kPlusAddressError:
       return FillingProduct::kPlusAddresses;
-    case SuggestionType::kAutofillAiFeedback:
-      return FillingProduct::kAutofillAi;
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
@@ -99,10 +97,8 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kNone;
     case SuggestionType::kAutofillAiError:
     case SuggestionType::kAutofillAiLoadingState:
-    case SuggestionType::kEditAutofillAiData:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kManageAutofillAi:
-    case SuggestionType::kRetrieveAutofillAi:
       return FillingProduct::kAutofillAi;
   }
   NOTREACHED();

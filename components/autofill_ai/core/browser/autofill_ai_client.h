@@ -120,9 +120,6 @@ class AutofillAiClient {
   // Opens the feedback page if the feature is allowed for feedback.
   virtual void TryToOpenFeedbackPage(const std::string& feedback_id) = 0;
 
-  // Opens the settings page for Autofill AI.
-  virtual void OpenAutofillAiSettings() = 0;
-
   // Returns whether the current user is eligible for Autofill AI.
   virtual bool IsUserEligible() = 0;
 

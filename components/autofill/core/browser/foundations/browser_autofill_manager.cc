@@ -281,12 +281,9 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
-    case SuggestionType::kRetrieveAutofillAi:
     case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kFillAutofillAi:
-    case SuggestionType::kAutofillAiFeedback:
     case SuggestionType::kAutofillAiError:
-    case SuggestionType::kEditAutofillAiData:
       NOTREACHED();
   }
   NOTREACHED();
@@ -858,9 +855,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
             ukm_source_id);
       };
 
-  // Try to import the `form` into user annotations via the
-  // `AutofillAiDelegate`. `MaybeImportFromSubmittedForm()` will be called if
-  // the import was not successful.
+  // Try to import the `form` via the `AutofillAiDelegate`.
+  // `MaybeImportFromSubmittedForm()` will be called if the import was not
+  // successful.
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
       delegate && delegate->IsUserEligible()) {
     // Only upload server statistics and UMA metrics if at least some local data

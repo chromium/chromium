@@ -23,7 +23,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -191,17 +190,6 @@ void ChromeAutofillAiClient::TryToOpenFeedbackPage(
       /*category_tag=*/"autofill_with_ai",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
-}
-
-void ChromeAutofillAiClient::OpenAutofillAiSettings() {
-  web_contents_->OpenURL(
-      content::OpenURLParams(
-          GURL(
-              base::StrCat({"chrome://settings/", chrome::kAutofillAiSubPage})),
-          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK,
-          /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
 }
 
 void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(

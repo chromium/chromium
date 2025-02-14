@@ -692,21 +692,6 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
-  // TODO(crbug.com/374715256): Autofill Ai suggestions are generated
-  // asynchronously, after showing the "loading" popup. Testing for the
-  // `kAutofillAiFeedback` suggestion is a way to understand that the
-  // suggestions are generated successfully and announce it. This approach
-  // should be reconsidered in favor of something more reliable.
-  CHECK(controller(), base::NotFatalUntil::M134);
-  if (controller() &&
-      base::Contains(controller()->GetSuggestions(),
-                     SuggestionType::kAutofillAiFeedback, &Suggestion::type)) {
-    a11y_announcer_.Run(
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
-        /*polite=*/true);
-  }
-
   MaybeA11yFocusInformationalSuggestion();
 }
 
@@ -1056,10 +1041,6 @@ void PopupViewViews::CreateSuggestionViews() {
 
           // Set element identifiers for tests.
           if (suggestions[current_line_number].type ==
-              SuggestionType::kRetrieveAutofillAi) {
-            row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillAiTriggerElementId);
-          } else if (suggestions[current_line_number].type ==
                      SuggestionType::kFillAutofillAi) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillAiFillElementId);

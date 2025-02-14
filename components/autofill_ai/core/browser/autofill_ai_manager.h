@@ -49,7 +49,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
                               bool autofill_ai_shows_bubble)> callback)
       override;
   bool ShouldDisplayIph(const autofill::AutofillField& field) const override;
-  void GoToSettings() const override;
   void OnSuggestionsShown(
       const autofill::DenseSet<autofill::SuggestionType>&
           shown_suggestion_types,

@@ -1523,8 +1523,6 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kViewPasswordDetails:
-    case SuggestionType::kAutofillAiFeedback:
-    case SuggestionType::kEditAutofillAiData:
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressEntryOnTyping:
@@ -1560,7 +1558,6 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kAutofillAiError:
-    case SuggestionType::kRetrieveAutofillAi:
     case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kBnplEntry:
       return false;

@@ -38,8 +38,6 @@ constexpr char abandoned_str[] = "Abandoned";
 constexpr char eligibility[] = "Autofill.FormsAI.Funnel.%s.Eligibility";
 constexpr char readiness_after_eligibility[] =
     "Autofill.FormsAI.Funnel.%s.ReadinessAfterEligibility";
-constexpr char suggestion_after_readiness[] =
-    "Autofill.FormsAI.Funnel.%s.SuggestionAfterReadiness";
 constexpr char fill_after_suggestion[] =
     "Autofill.FormsAI.Funnel.%s.FillAfterSuggestion";
 constexpr char correction_after_fill[] =
@@ -58,14 +56,6 @@ std::string GetReadinessAfterEligibilityHistogram() {
 }
 std::string GetReadinessAfterEligibilityHistogram(bool submitted) {
   return base::StringPrintf(readiness_after_eligibility,
-                            submitted ? submitted_str : abandoned_str);
-}
-
-std::string GetSuggestionAfterReadinessHistogram() {
-  return base::StringPrintf(suggestion_after_readiness, "Aggregate");
-}
-std::string GetSuggestionAfterReadinessHistogram(bool submitted) {
-  return base::StringPrintf(suggestion_after_readiness,
                             submitted ? submitted_str : abandoned_str);
 }
 
@@ -151,8 +141,6 @@ class AutofillAiFunnelMetricsTest
     histogram_tester.ExpectTotalCount(
         GetReadinessAfterEligibilityHistogram(!submitted()), 0);
     histogram_tester.ExpectTotalCount(
-        GetSuggestionAfterReadinessHistogram(!submitted()), 0);
-    histogram_tester.ExpectTotalCount(
         GetFillAfterSuggestionHistogram(!submitted()), 0);
     histogram_tester.ExpectTotalCount(
         GetCorrectionAfterFillHistogram(!submitted()), 0);
@@ -178,19 +166,6 @@ class AutofillAiFunnelMetricsTest
     }
 
     if (user_has_data()) {
-      histogram_tester.ExpectUniqueSample(
-          GetSuggestionAfterReadinessHistogram(), user_saw_suggestions(), 1);
-      histogram_tester.ExpectUniqueSample(
-          GetSuggestionAfterReadinessHistogram(submitted()),
-          user_saw_suggestions(), 1);
-    } else {
-      histogram_tester.ExpectTotalCount(GetSuggestionAfterReadinessHistogram(),
-                                        0);
-      histogram_tester.ExpectTotalCount(
-          GetSuggestionAfterReadinessHistogram(submitted()), 0);
-    }
-
-    if (user_saw_suggestions()) {
       histogram_tester.ExpectUniqueSample(GetFillAfterSuggestionHistogram(),
                                           user_filled_suggestion(), 1);
       histogram_tester.ExpectUniqueSample(
@@ -258,9 +233,6 @@ TEST_P(AutofillAiFunnelMetricsTest, Logger) {
   if (user_has_data()) {
     test_api(manager()).logger().OnFormHasDataToFill(form.global_id());
   }
-  if (user_saw_suggestions()) {
-    test_api(manager()).logger().OnSuggestionsShown(form.global_id());
-  }
   if (user_triggered_manual_fallbacks()) {
     test_api(manager()).logger().OnTriggeredFillingSuggestions(
         form.global_id());
@@ -294,12 +266,6 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   }
   manager().OnFormSeen(*form);
 
-  if (user_saw_suggestions()) {
-    manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kRetrieveAutofillAi}, form->ToFormData(),
-        autofill::FormFieldData(),
-        /*update_suggestions_callback=*/{});
-  }
   if (user_triggered_manual_fallbacks()) {
     manager().OnSuggestionsShown(
         {autofill::SuggestionType::kAutofillAiLoadingState}, form->ToFormData(),

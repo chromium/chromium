@@ -6143,7 +6143,7 @@ Called by update_autofill_enums.py.-->
   <int value="34" label="Insecure context payment disabled message"/>
   <int value="35" label="Scan credit card"/>
   <int value="36" label="Virtual credit card entry"/>
-  <int value="37" label="(DEPRECATED) Credit card field-by-field filling"/>
+  <int value="37" label="(Obsolete) Credit card field-by-field filling"/>
   <int value="38" label="Iban entry"/>
   <int value="39" label="Create new plus address"/>
   <int value="40" label="Fill existing plus address"/>
@@ -6159,17 +6159,18 @@ Called by update_autofill_enums.py.-->
   <int value="50" label="Devtools test address entry"/>
   <int value="51" label="Devtools test address by country entry"/>
   <int value="52" label="Create new plus address inline"/>
-  <int value="53" label="Retrieve Autofill AI suggestions"/>
+  <int value="53" label="(Obsolete) Retrieve Autofill AI suggestions"/>
   <int value="54" label="Autofill AI loading state"/>
   <int value="55" label="Autofill AI filling suggestion"/>
-  <int value="56" label="Autofill AI feedback"/>
+  <int value="56" label="(Obsolete) Autofill AI feedback"/>
   <int value="57" label="Plus address error"/>
-  <int value="58" label="Autofill AI details"/>
+  <int value="58" label="(Obsolete) Autofill AI details"/>
   <int value="59" label="Autofill AI error"/>
-  <int value="60" label="Edit Autofill AI information"/>
+  <int value="60" label="(Obsolete) Edit Autofill AI information"/>
   <int value="61" label="Bnpl entry"/>
   <int value="62" label="Save and fill credit card entry"/>
   <int value="63" label="Address suggestion displayed when typing"/>
+  <int value="64" label="Manage AutofillAi information"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">

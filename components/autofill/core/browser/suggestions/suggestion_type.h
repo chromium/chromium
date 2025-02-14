@@ -136,20 +136,15 @@ enum class SuggestionType {
   // suggestions with country names as main text mean.
   kDevtoolsTestAddressByCountry = 51,
 
-  // Trigger for retrieving Autofill AI suggestions. Part of the footer.
-  kRetrieveAutofillAi = 53,
+  // kRetrieveAutofillAi = 53, // DEPRECATED
   // Loading indicator shown while retrieving Autofill AI suggestions.
   kAutofillAiLoadingState = 54,
   // Autofill AI filling suggestion.
   kFillAutofillAi = 55,
-  // Suggestion that provides users the possibility to give feedback about
-  // Autofill AI.
-  kAutofillAiFeedback = 56,
-  // kPredictionImprovementsDetails = 58, // DEPRECATED due to UX changes.
-  // Suggestion displayed when there is an error with Autofill AI.
+  // kAutofillAiFeedback = 56, // DEPRECATED
+  // kPredictionImprovementsDetails = 58, // DEPRECATED
   kAutofillAiError = 59,
-  // Suggestion for editing Autofill AI information.
-  kEditAutofillAiData = 60,
+  // kEditAutofillAiData = 60, // DEPRECATED
 
   kMaxValue = kManageAutofillAi
 };
