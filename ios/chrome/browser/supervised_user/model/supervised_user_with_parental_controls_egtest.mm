@@ -8,6 +8,7 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -701,6 +702,10 @@ static const char* kInterstitialDetails = "Details";
 
 // Tests that users can initiate the local web approval flow.
 - (void)testSupervisedUserInterstitialCanRequestLocalWebApproval {
+  // Set up histogram tracking.
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
+
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
@@ -725,6 +730,27 @@ static const char* kInterstitialDetails = "Details";
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
+
+  // Verify that metrics are recorded on bottom sheet dismissal.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          supervised_user::LocalApprovalResult::
+                                              kDeclined)
+                         forHistogram:@"FamilyLinkUser.LocalWebApprovalResult"],
+      @"Unexpected value for local web approval result histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"FamilyLinkUser.LocalWebApprovalResult"],
+      @"Unexpected total count for local web approval result histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"FamilyLinkUser."
+                           @"LocalWebApprovalCompleteRequestTotalDuration"],
+      @"Unexpected total count for local web approval duration histogram.");
 }
 
 // Tests that users can initiate the local web approval flow, and ensures the UI
