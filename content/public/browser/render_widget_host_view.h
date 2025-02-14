@@ -195,6 +195,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // than the view size if a portion of the view is obstructed (e.g. by a
   // virtual keyboard).
   virtual gfx::Size GetVisibleViewportSize() = 0;
+  virtual gfx::Size GetVisibleViewportSizeDevicePx() = 0;
 
   // Set insets for the visible region of the root window. Used to compute the
   // visible viewport.
