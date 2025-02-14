@@ -330,13 +330,13 @@ class PLATFORM_EXPORT WidgetBase
                       const gfx::Rect& window_screen_rect);
 
   // Returns the visible viewport size.
-  const gfx::Size& VisibleViewportSize() const {
-    return visible_viewport_size_device_px_;
+  const gfx::Size& VisibleViewportSizeInDIPs() const {
+    return visible_viewport_size_in_dips_;
   }
 
   // Set the visible viewport size.
-  void SetVisibleViewportSize(const gfx::Size& size_device_px) {
-    visible_viewport_size_device_px_ = size_device_px;
+  void SetVisibleViewportSizeInDIPs(const gfx::Size& size) {
+    visible_viewport_size_in_dips_ = size;
   }
 
   // Some touch start which can trigger pointerdown will not be sent to the main
@@ -574,8 +574,10 @@ class PLATFORM_EXPORT WidgetBase
   // non-zero.
   std::optional<gfx::Rect> pending_window_rect_;
 
-  // The size of the visible viewport (in device pixels).
-  gfx::Size visible_viewport_size_device_px_;
+  // The size of the visible viewport (in DIPs).
+  // TODO(dtapuska): Figure out if we can change this to Blink Space.
+  // See https://crbug.com/1131389
+  gfx::Size visible_viewport_size_in_dips_;
 
   // The AnimationTimeline for smooth scrolls in this widget.
   scoped_refptr<cc::AnimationTimeline> scroll_animation_timeline_;

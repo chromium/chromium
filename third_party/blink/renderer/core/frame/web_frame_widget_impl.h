@@ -445,7 +445,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   gfx::Rect ViewRect() override;
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect) override;
-  gfx::Size VisibleViewportSize() override;
+  gfx::Size VisibleViewportSizeInDIPs() override;
   bool IsHidden() const override;
   WebString GetLastToolTipTextForTesting() const override;
   float GetEmulatorScale() override;
