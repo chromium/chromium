@@ -163,7 +163,6 @@ dependencies = [
  "syn",
  "tinyvec",
  "unicode-linebreak",
- "wycheproof",
  "zerocopy",
 ]
 
@@ -1463,17 +1462,6 @@ version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "either",
-]
-
-[[package]]
-name = "wycheproof"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "base64 0.13.1",
- "hex",
- "serde",
- "serde_json",
 ]
 
 [[package]]

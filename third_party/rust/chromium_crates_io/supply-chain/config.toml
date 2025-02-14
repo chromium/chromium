@@ -539,9 +539,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."writeable:0.6.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."wycheproof:0.4.0"]
-criteria = ["crypto-safe", "safe-to-run"]
-
 [policy."yoke-derive:0.7.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 

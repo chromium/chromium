@@ -295,7 +295,3 @@ native_libs_roots = [ '../lib' ]
 
 [crate.windows_x86_64_msvc]
 native_libs_roots = [ '../lib' ]
-
-[crate.wycheproof]
-group = 'test'
-extra_input_roots = ['data']

@@ -48,7 +48,6 @@ small_ctor = "0.1"
 static_assertions = "1"
 strum = "0.25.0"
 strum_macros = "0.25.3"
-wycheproof = "0.4"
 
 [dependencies.bstr]
 version = "1"
