@@ -22446,7 +22446,6 @@
     "SkiaGraphite": [
         {
             "platforms": [
-                "android",
                 "mac",
                 "windows"
             ],
