@@ -27,10 +27,6 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
               (const std::vector<FormFieldData>& fields,
                bool is_autocomplete_enabled),
               (override));
-  MOCK_METHOD(void,
-              OnWebDataServiceRequestDone,
-              (WebDataServiceBase::Handle, std::unique_ptr<WDTypedResult>),
-              (override));
   MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,

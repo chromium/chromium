@@ -76,7 +76,9 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
   if (profile_database_) {
     auto query_handle = profile_database_->GetFormValuesForElementName(
-        field.name(), field.value(), kMaxAutocompleteMenuItems, this);
+        field.name(), field.value(), kMaxAutocompleteMenuItems,
+        base::BindOnce(&AutocompleteHistoryManager::OnWebDataServiceRequestDone,
+                       weak_ptr_factory_.GetWeakPtr()));
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
@@ -174,7 +176,9 @@ void AutocompleteHistoryManager::Init(
         prefs::kAutocompleteLastVersionRetentionPolicy);
     if (CHROME_VERSION_MAJOR > last_cleaned_version) {
       // Trigger the cleanup.
-      profile_database_->RemoveExpiredAutocompleteEntries(this);
+      profile_database_->RemoveExpiredAutocompleteEntries(base::BindOnce(
+          &AutocompleteHistoryManager::OnWebDataServiceRequestDone,
+          weak_ptr_factory_.GetWeakPtr()));
     }
   }
 }

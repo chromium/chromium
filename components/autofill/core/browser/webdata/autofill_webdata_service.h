@@ -63,7 +63,7 @@ class AutofillWebDataService : public WebDataServiceBase {
       const std::u16string& name,
       const std::u16string& prefix,
       int limit,
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Removes form elements recorded for Autocomplete from the database.
   void RemoveFormElementsAddedBetween(base::Time delete_begin,
@@ -112,7 +112,7 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetCountOfValuesContainedBetween(
       base::Time begin,
       base::Time end,
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Schedules a task to update autocomplete entries in the web database.
   void UpdateAutocompleteEntries(
@@ -258,7 +258,7 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Triggers an Autocomplete retention policy run which will cleanup data that
   // hasn't been used since over the retention threshold.
   virtual WebDataServiceBase::Handle RemoveExpiredAutocompleteEntries(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Schedules a task to add a server credit card to the web database.
   //

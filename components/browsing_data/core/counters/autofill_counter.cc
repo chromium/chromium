@@ -114,8 +114,10 @@ void AutofillCounter::Count() {
   // contained in the interval [start, end).
   // The `num_suggestion_` is reset to denote that new data is awaited.
   num_suggestions_.reset();
-  suggestions_query_ =
-      web_data_service_->GetCountOfValuesContainedBetween(start, end, this);
+  suggestions_query_ = web_data_service_->GetCountOfValuesContainedBetween(
+      start, end,
+      base::BindOnce(&AutofillCounter::OnWebDataServiceRequestDone,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   num_user_annotations_.reset();
 
