@@ -5,6 +5,7 @@
 #include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
 
 #include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/origin.h"
 

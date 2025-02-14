@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_runtime_features_base.h"
 #include "third_party/blink/renderer/core/dom/document.h"
