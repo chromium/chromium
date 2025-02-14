@@ -28,6 +28,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- ios
 items:
 - caption: No special restrictions. Default.
   name: DefaultDownloadSecurity
@@ -61,7 +62,6 @@ supported_on:
 - chrome.*:61-
 - chrome_os:61-
 - android:131-
-- ios:134-
 tags:
 - local-data-access
 type: int-enum
