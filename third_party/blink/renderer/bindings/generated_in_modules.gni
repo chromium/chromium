@@ -1436,6 +1436,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_role.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_format.cc",

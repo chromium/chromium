@@ -53,7 +53,7 @@ interface AILanguageModelFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AICapabilityAvailability> availability(
+  Promise<AIAvailability> availability(
     optional AILanguageModelCreateCoreOptions options = {}
   );
   [

@@ -356,7 +356,7 @@ TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
   EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
   GetAIManagerInterface()->CanCreateRewriter(GetDefaultOptions(),
                                              callback.Get());
 }
@@ -375,7 +375,7 @@ TEST_F(AIRewriterTest, CanCreateIsLanguagesSupported) {
       AITestUtils::ToMojoLanguageCodes({"en-GB", ""});
   base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
   EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
   GetAIManagerInterface()->CanCreateRewriter(std::move(options),
                                              callback.Get());
 }
@@ -389,9 +389,8 @@ TEST_F(AIRewriterTest, CanCreateUnIsLanguagesSupported) {
   options->expected_context_languages =
       AITestUtils::ToMojoLanguageCodes({"ar", "zh", "hi"});
   base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage));
   GetAIManagerInterface()->CanCreateRewriter(std::move(options),
                                              callback.Get());
 }

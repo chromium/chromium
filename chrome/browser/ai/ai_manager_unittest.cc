@@ -70,9 +70,8 @@ TEST_F(AIManagerTest, NoUAFWithInvalidOnDeviceModelPath) {
   EXPECT_CALL(callback, Run(_))
       .Times(AtMost(1))
       .WillOnce(Invoke([&](blink::mojom::ModelAvailabilityCheckResult result) {
-        EXPECT_EQ(
-            result,
-            blink::mojom::ModelAvailabilityCheckResult::kNoFeatureNotEnabled);
+        EXPECT_EQ(result, blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableFeatureNotEnabled);
       }));
 
   AIManager ai_manager = AIManager(main_rfh()->GetBrowserContext());
@@ -136,7 +135,7 @@ TEST_F(AIManagerTest, CanCreate) {
       .WillRepeatedly(testing::Invoke(
           [&](blink::mojom::ModelAvailabilityCheckResult result) {
             EXPECT_EQ(result, blink::mojom::ModelAvailabilityCheckResult::
-                                  kNoFeatureNotEnabled);
+                                  kUnavailableFeatureNotEnabled);
           }));
 
   AIManager ai_manager = AIManager(main_rfh()->GetBrowserContext());

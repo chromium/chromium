@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_create_options.h"
+#include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_rewriter.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
@@ -173,9 +174,10 @@ ScriptPromise<V8AICapabilityAvailability> AIRewriterFactory::availability(
              AIRewriterFactory* factory,
              mojom::blink::ModelAvailabilityCheckResult result) {
             AICapabilityAvailability availability =
-                HandleModelAvailabilityCheckResult(
-                    factory->GetExecutionContext(),
-                    AIMetrics::AISessionType::kRewriter, result);
+                AIAvailabilityToAICapabilityAvailability(
+                    HandleModelAvailabilityCheckResult(
+                        factory->GetExecutionContext(),
+                        AIMetrics::AISessionType::kRewriter, result));
             resolver->Resolve(AICapabilityAvailabilityToV8(availability));
           },
           WrapPersistent(resolver), WrapWeakPersistent(this)));

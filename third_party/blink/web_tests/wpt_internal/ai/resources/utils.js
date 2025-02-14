@@ -219,5 +219,5 @@ const ensureLanguageModel = async () => {
   const availability = await ai.languageModel.availability();
   // TODO(crbug.com/376789810): make it a PRECONDITION_FAILED if the model is
   // not ready.
-  assert_not_equals(availability, 'no');
+  assert_not_equals(availability, 'unavailable');
 };

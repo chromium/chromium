@@ -55,8 +55,7 @@ class AIMetrics {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 
   static std::string GetAIAPIUsageMetricName(AISessionType session_type);
-  static std::string GetAICapabilityAvailabilityMetricName(
-      AISessionType session_type);
+  static std::string GetAIAvailabilityMetricName(AISessionType session_type);
   static std::string GetAISessionRequestSizeMetricName(
       AISessionType session_type);
   static std::string GetAISessionResponseStatusMetricName(

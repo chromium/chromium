@@ -189,9 +189,10 @@ ScriptPromise<V8AICapabilityAvailability> AISummarizerFactory::availability(
              AISummarizerFactory* factory,
              mojom::blink::ModelAvailabilityCheckResult result) {
             AICapabilityAvailability availability =
-                HandleModelAvailabilityCheckResult(
-                    factory->GetExecutionContext(),
-                    AIMetrics::AISessionType::kSummarizer, result);
+                AIAvailabilityToAICapabilityAvailability(
+                    HandleModelAvailabilityCheckResult(
+                        factory->GetExecutionContext(),
+                        AIMetrics::AISessionType::kSummarizer, result));
             resolver->Resolve(AICapabilityAvailabilityToV8(availability));
           },
           WrapPersistent(resolver), WrapWeakPersistent(this)));
@@ -222,9 +223,10 @@ ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
              AISummarizerFactory* factory,
              mojom::blink::ModelAvailabilityCheckResult result) {
             AICapabilityAvailability availability =
-                HandleModelAvailabilityCheckResult(
-                    factory->GetExecutionContext(),
-                    AIMetrics::AISessionType::kSummarizer, result);
+                AIAvailabilityToAICapabilityAvailability(
+                    HandleModelAvailabilityCheckResult(
+                        factory->GetExecutionContext(),
+                        AIMetrics::AISessionType::kSummarizer, result));
             resolver->Resolve(MakeGarbageCollected<AISummarizerCapabilities>(
                 AICapabilityAvailabilityToV8(availability)));
           },

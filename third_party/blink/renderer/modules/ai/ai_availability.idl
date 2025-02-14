@@ -3,5 +3,7 @@
 // found in the LICENSE file.
 
 // https://github.com/webmachinelearning/prompt-api
-// TODO(crbug.com/395509560): remove `AICapabilityAvailability`.
-enum AICapabilityAvailability { "readily", "after-download", "no" };
+// https://github.com/webmachinelearning/writing-assistance-apis
+// https://github.com/webmachinelearning/translation-api
+
+enum AIAvailability { "unavailable", "downloadable", "downloading", "available" };

@@ -120,7 +120,18 @@ chromium-metrics-reviews@google.com.
   <owner>fergal@chromium.org</owner>
   <summary>
     Records the availability of model execution as returned in methods like
-    `ai.canCreateTextSession()`.
+    `ai.*.capabilities()`.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.{SessionType}.AvailabilityV2" enum="AIAvailability"
+    expires_after="2025-10-27">
+  <owner>leimy@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <summary>
+    Records the availability of model execution as returned in methods like
+    `ai.*.availability()`.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>

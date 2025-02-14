@@ -75,54 +75,58 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
         on_device_model_eligibility_reason) {
   switch (on_device_model_eligibility_reason) {
     case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
-      return blink::mojom::ModelAvailabilityCheckResult::kNoUnknown;
+      return blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown;
     case optimization_guide::OnDeviceModelEligibilityReason::kFeatureNotEnabled:
-      return blink::mojom::ModelAvailabilityCheckResult::kNoFeatureNotEnabled;
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kUnavailableFeatureNotEnabled;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kConfigNotAvailableForFeature:
       return blink::mojom::ModelAvailabilityCheckResult::
-          kNoConfigNotAvailableForFeature;
+          kUnavailableConfigNotAvailableForFeature;
     case optimization_guide::OnDeviceModelEligibilityReason::kGpuBlocked:
-      return blink::mojom::ModelAvailabilityCheckResult::kNoGpuBlocked;
+      return blink::mojom::ModelAvailabilityCheckResult::kUnavailableGpuBlocked;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kTooManyRecentCrashes:
       return blink::mojom::ModelAvailabilityCheckResult::
-          kNoTooManyRecentCrashes;
+          kUnavailableTooManyRecentCrashes;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kSafetyModelNotAvailable:
       return blink::mojom::ModelAvailabilityCheckResult::
-          kNoSafetyModelNotAvailable;
+          kUnavailableSafetyModelNotAvailable;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kSafetyConfigNotAvailableForFeature:
       return blink::mojom::ModelAvailabilityCheckResult::
-          kNoSafetyConfigNotAvailableForFeature;
+          kUnavailableSafetyConfigNotAvailableForFeature;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kLanguageDetectionModelNotAvailable:
       return blink::mojom::ModelAvailabilityCheckResult::
-          kNoLanguageDetectionModelNotAvailable;
+          kUnavailableLanguageDetectionModelNotAvailable;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kFeatureExecutionNotEnabled:
       return blink::mojom::ModelAvailabilityCheckResult::
-          kNoFeatureExecutionNotEnabled;
+          kUnavailableFeatureExecutionNotEnabled;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kModelAdaptationNotAvailable:
       return blink::mojom::ModelAvailabilityCheckResult::
-          kNoModelAdaptationNotAvailable;
+          kUnavailableModelAdaptationNotAvailable;
     case optimization_guide::OnDeviceModelEligibilityReason::kModelNotEligible:
-      return blink::mojom::ModelAvailabilityCheckResult::kModelNotEligible;
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kUnavailableModelNotEligible;
     case optimization_guide::OnDeviceModelEligibilityReason::kValidationPending:
-      return blink::mojom::ModelAvailabilityCheckResult::kNoValidationPending;
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kUnavailableValidationPending;
     case optimization_guide::OnDeviceModelEligibilityReason::kValidationFailed:
-      return blink::mojom::ModelAvailabilityCheckResult::kNoValidationFailed;
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kUnavailableValidationFailed;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kInsufficientDiskSpace:
       return blink::mojom::ModelAvailabilityCheckResult::
-          kNoInsufficientDiskSpace;
+          kUnavailableInsufficientDiskSpace;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kModelToBeInstalled:
     case optimization_guide::OnDeviceModelEligibilityReason::
         kNoOnDeviceFeatureUsed:
-      return blink::mojom::ModelAvailabilityCheckResult::kAfterDownload;
+      return blink::mojom::ModelAvailabilityCheckResult::kDownloadable;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kDeprecatedModelNotAvailable:
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
@@ -247,8 +251,8 @@ void AIManager::CanCreateLanguageModel(
     CanCreateLanguageModelCallback callback) {
   if (options && options->expected_input_languages.has_value() &&
       !IsLanguagesSupported(options->expected_input_languages.value())) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
     return;
   }
 
@@ -396,8 +400,8 @@ void AIManager::CanCreateSummarizer(
   if (options && !IsLanguagesSupported(options->expected_input_languages,
                                        options->expected_context_languages,
                                        options->output_language)) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
     return;
   }
   CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kSummarize,
@@ -476,8 +480,8 @@ void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
   if (options && !IsLanguagesSupported(options->expected_input_languages,
                                        options->expected_context_languages,
                                        options->output_language)) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
     return;
   }
   CanCreateSession(
@@ -511,8 +515,8 @@ void AIManager::CanCreateRewriter(
   if (options && !IsLanguagesSupported(options->expected_input_languages,
                                        options->expected_context_languages,
                                        options->output_language)) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
     return;
   }
   CanCreateSession(
@@ -565,7 +569,8 @@ void AIManager::CanCreateSession(
   if (!service) {
     std::move(callback).Run(
         /*result=*/
-        blink::mojom::ModelAvailabilityCheckResult::kNoServiceNotRunning);
+        blink::mojom::ModelAvailabilityCheckResult::
+            kUnavailableServiceNotRunning);
     return;
   }
 
@@ -581,7 +586,7 @@ void AIManager::CanCreateSession(
   }
 
   std::move(callback).Run(
-      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
+      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 }
 
 void AIManager::CreateLanguageModelForCloning(

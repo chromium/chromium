@@ -939,7 +939,7 @@ TEST_P(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
 
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
   EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
   GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
                                                   callback.Get());
 }
@@ -958,9 +958,8 @@ TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
           AITestUtils::ToMojoLanguageCodes({"ja"})});
 
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage));
   GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
                                                   callback.Get());
 }

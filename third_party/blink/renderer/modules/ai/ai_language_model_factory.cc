@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
+#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model.h"
@@ -204,9 +205,11 @@ void AILanguageModelFactory::OnGetModelInfoComplete(
 void AILanguageModelFactory::OnCanCreateSessionComplete(
     ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
     mojom::blink::ModelAvailabilityCheckResult check_result) {
-  AICapabilityAvailability availability = HandleModelAvailabilityCheckResult(
-      GetExecutionContext(), AIMetrics::AISessionType::kLanguageModel,
-      check_result);
+  AICapabilityAvailability availability =
+      AIAvailabilityToAICapabilityAvailability(
+          HandleModelAvailabilityCheckResult(
+              GetExecutionContext(), AIMetrics::AISessionType::kLanguageModel,
+              check_result));
   auto* capabilities = MakeGarbageCollected<AILanguageModelCapabilities>(
       AICapabilityAvailabilityToV8(availability));
   if (availability != AICapabilityAvailability::kReadily) {
@@ -246,25 +249,25 @@ ScriptPromise<AILanguageModelCapabilities> AILanguageModelFactory::capabilities(
 }
 
 void AILanguageModelFactory::OnCanCreateLanguageModelComplete(
-    ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
+    ScriptPromiseResolver<V8AIAvailability>* resolver,
     mojom::blink::ModelAvailabilityCheckResult check_result) {
-  AICapabilityAvailability availability = HandleModelAvailabilityCheckResult(
+  AIAvailability availability = HandleModelAvailabilityCheckResult(
       GetExecutionContext(), AIMetrics::AISessionType::kLanguageModel,
       check_result);
-  resolver->Resolve(AICapabilityAvailabilityToV8(availability));
+  resolver->Resolve(AIAvailabilityToV8(availability));
 }
 
-ScriptPromise<V8AICapabilityAvailability> AILanguageModelFactory::availability(
+ScriptPromise<V8AIAvailability> AILanguageModelFactory::availability(
     ScriptState* script_state,
     const AILanguageModelCreateCoreOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<V8AICapabilityAvailability>();
+    return ScriptPromise<V8AIAvailability>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8AICapabilityAvailability>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
           script_state);
   auto promise = resolver->Promise();
 

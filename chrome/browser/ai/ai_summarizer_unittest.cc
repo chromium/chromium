@@ -116,13 +116,12 @@ TEST_F(AISummarizerUnitTest, CreateSummarizerWithoutService) {
       callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(AtMost(1))
-      .WillOnce(testing::Invoke([&](blink::mojom::ModelAvailabilityCheckResult
-                                        result) {
-        EXPECT_EQ(
-            result,
-            blink::mojom::ModelAvailabilityCheckResult::kNoServiceNotRunning);
-        run_loop.Quit();
-      }));
+      .WillOnce(testing::Invoke(
+          [&](blink::mojom::ModelAvailabilityCheckResult result) {
+            EXPECT_EQ(result, blink::mojom::ModelAvailabilityCheckResult::
+                                  kUnavailableServiceNotRunning);
+            run_loop.Quit();
+          }));
   ai_manager.CanCreateSummarizer(GetDefaultOptions(), callback.Get());
   run_loop.Run();
 
@@ -336,7 +335,7 @@ TEST_F(AISummarizerUnitTest, CanCreateDefaultOptions) {
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
   EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
   GetAIManagerInterface()->CanCreateSummarizer(GetDefaultOptions(),
                                                callback.Get());
 }
@@ -355,7 +354,7 @@ TEST_F(AISummarizerUnitTest, CanCreateIsLanguagesSupported) {
       AITestUtils::ToMojoLanguageCodes({"en-GB", ""});
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
   EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
 }
@@ -369,9 +368,8 @@ TEST_F(AISummarizerUnitTest, CanCreateUnIsLanguagesSupported) {
   options->expected_context_languages =
       AITestUtils::ToMojoLanguageCodes({"ar", "zh", "hi"});
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage));
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
 }

@@ -29,7 +29,6 @@ class AIOnDeviceModelComponentObserver
   base::ScopedObservation<component_updater::ComponentUpdateService,
                           component_updater::ComponentUpdateService::Observer>
       component_updater_observation_{this};
-
   raw_ptr<AIManager> ai_manager_;
 };
 
