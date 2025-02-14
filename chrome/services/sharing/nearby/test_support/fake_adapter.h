@@ -60,6 +60,8 @@ class FakeAdapter : public mojom::Adapter {
   void SetAdvertisementDestroyedCallback(base::OnceClosure callback);
   const std::vector<uint8_t>* GetRegisteredAdvertisementServiceData(
       const device::BluetoothUUID& service_uuid);
+  std::optional<bool> GetRegisteredAdvertisementConnectable(
+      const device::BluetoothUUID& service_uuid);
   void SetShouldAdvertisementRegistrationSucceed(
       bool should_advertisement_registration_succeed);
   void SetShouldDiscoverySucceed(bool should_discovery_succeed);
@@ -97,7 +99,7 @@ class FakeAdapter : public mojom::Adapter {
   void OnDiscoverySessionDestroyed();
 
   bool should_advertisement_registration_succeed_ = true;
-  std::map<device::BluetoothUUID, std::vector<uint8_t>>
+  std::map<device::BluetoothUUID, std::pair<std::vector<uint8_t>, bool>>
       registered_advertisements_map_;
   base::OnceClosure on_advertisement_destroyed_callback_;
   base::OnceClosure create_local_gatt_service_callback_;
