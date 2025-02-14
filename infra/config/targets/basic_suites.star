@@ -228,7 +228,7 @@ targets.legacy_basic_suite(
                     targets.cipd_package(
                         package = "infra/3pp/tools/cpython3/linux-amd64",
                         location = "vpython_dir_linux_amd64",
-                        revision = "version:2@3.8.10.chromium.34",
+                        revision = "version:3@3.11.9.chromium.36",
                     ),
                     targets.cipd_package(
                         package = "infra/tools/luci/vpython3/linux-amd64",
