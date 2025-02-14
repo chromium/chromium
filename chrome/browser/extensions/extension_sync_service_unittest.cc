@@ -86,8 +86,9 @@ constexpr char kGoodCrx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 constexpr char kPageActionCrx[] = "obcimlgaoabeegjmmpldobjndiealpln";
 constexpr char kTheme2Crx[] = "ibcijncamhmjjdodjamgiipcgnnaeagd";
 
-ExtensionSyncData GetDisableSyncData(const Extension& extension,
-                                     int disable_reasons) {
+ExtensionSyncData GetDisableSyncData(
+    const Extension& extension,
+    const base::flat_set<int>& disable_reasons) {
   bool enabled = false;
   bool incognito_enabled = false;
   bool remote_install = false;
@@ -100,8 +101,8 @@ ExtensionSyncData GetEnableSyncData(const Extension& extension) {
   bool incognito_enabled = false;
   bool remote_install = false;
   return ExtensionSyncData(extension, enabled,
-                           extensions::disable_reason::DISABLE_NONE,
-                           incognito_enabled, remote_install, GURL());
+                           /*disable_reasons=*/{}, incognito_enabled,
+                           remote_install, GURL());
 }
 
 SyncChangeList MakeSyncChangeList(const std::string& id,
@@ -207,7 +208,7 @@ class ExtensionSyncServiceTest
   void DisableExtensionFromSync(const Extension& extension,
                                 int disable_reasons) {
     ExtensionSyncData disable_extension = GetDisableSyncData(
-        extension, extensions::disable_reason::DISABLE_USER_ACTION);
+        extension, {extensions::disable_reason::DISABLE_USER_ACTION});
     SyncChangeList list(
         1, disable_extension.GetSyncChange(SyncChange::ACTION_UPDATE));
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
@@ -347,8 +348,8 @@ TEST_F(ExtensionSyncServiceTest, DisableExtensionFromSync) {
 
   // Then sync data arrives telling us to disable `kGood0`.
   ExtensionSyncData disable_good_crx(
-      *extension, false, extensions::disable_reason::DISABLE_USER_ACTION, false,
-      false, extension_urls::GetWebstoreUpdateUrl());
+      *extension, false, {extensions::disable_reason::DISABLE_USER_ACTION},
+      false, false, extension_urls::GetWebstoreUpdateUrl());
   SyncChangeList list(
       1, disable_good_crx.GetSyncChange(SyncChange::ACTION_UPDATE));
   extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
@@ -399,7 +400,7 @@ TEST_F(ExtensionSyncServiceTest, ReenableDisabledExtensionFromSync) {
     std::unique_ptr<ExtensionSyncData> data =
         ExtensionSyncData::CreateFromSyncData(change.sync_data());
     EXPECT_EQ(kExtensionId, data->id());
-    EXPECT_EQ(0, data->disable_reasons());
+    EXPECT_TRUE(data->disable_reasons().empty());
     EXPECT_TRUE(data->enabled());
   }
 
@@ -415,8 +416,9 @@ TEST_F(ExtensionSyncServiceTest, ReenableDisabledExtensionFromSync) {
     std::unique_ptr<ExtensionSyncData> data =
         ExtensionSyncData::CreateFromSyncData(change.sync_data());
     EXPECT_EQ(kExtensionId, data->id());
-    EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-              data->disable_reasons());
+    EXPECT_THAT(data->disable_reasons(),
+                testing::UnorderedElementsAre(
+                    extensions::disable_reason::DISABLE_USER_ACTION));
     EXPECT_FALSE(data->enabled());
   }
   processor_raw->changes().clear();
@@ -523,11 +525,11 @@ TEST_F(ExtensionSyncServiceTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
 
   // Now sync data comes in that says to disable kGood0 and enable kGood2.
   ExtensionSyncData disable_good0(
-      *extension0, false, extensions::disable_reason::DISABLE_USER_ACTION,
+      *extension0, false, {extensions::disable_reason::DISABLE_USER_ACTION},
       false, false, extension_urls::GetWebstoreUpdateUrl());
-  ExtensionSyncData enable_kGood2(
-      *extension2, true, extensions::disable_reason::DISABLE_NONE, false, false,
-      extension_urls::GetWebstoreUpdateUrl());
+  ExtensionSyncData enable_kGood2(*extension2, true,
+                                  /*disable_reasons=*/{}, false, false,
+                                  extension_urls::GetWebstoreUpdateUrl());
   syncer::SyncDataList sync_data;
   sync_data.push_back(disable_good0.GetSyncData());
   sync_data.push_back(enable_kGood2.GetSyncData());
@@ -570,7 +572,7 @@ TEST_F(ExtensionSyncServiceTest, DontSelfNotify) {
 
     // Disable the extension.
     ExtensionSyncData data(
-        *extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
+        *extension, false, {extensions::disable_reason::DISABLE_USER_ACTION},
         false, false, extension_urls::GetWebstoreUpdateUrl());
     SyncChangeList list(1, data.GetSyncChange(SyncChange::ACTION_UPDATE));
 
@@ -586,8 +588,8 @@ TEST_F(ExtensionSyncServiceTest, DontSelfNotify) {
 
     // Set incognito enabled to true.
     ExtensionSyncData data(*extension, false,
-                           extensions::disable_reason::DISABLE_NONE, true,
-                           false, extension_urls::GetWebstoreUpdateUrl());
+                           /*disable_reasons=*/{}, true, false,
+                           extension_urls::GetWebstoreUpdateUrl());
     SyncChangeList list(1, data.GetSyncChange(SyncChange::ACTION_UPDATE));
 
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
@@ -603,8 +605,8 @@ TEST_F(ExtensionSyncServiceTest, DontSelfNotify) {
     // Add another disable reason.
     ExtensionSyncData data(
         *extension, false,
-        extensions::disable_reason::DISABLE_USER_ACTION |
-            extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
+        {extensions::disable_reason::DISABLE_USER_ACTION,
+         extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE},
         false, false, extension_urls::GetWebstoreUpdateUrl());
     SyncChangeList list(1, data.GetSyncChange(SyncChange::ACTION_UPDATE));
 
@@ -621,8 +623,8 @@ TEST_F(ExtensionSyncServiceTest, DontSelfNotify) {
     // Uninstall the extension.
     ExtensionSyncData data(
         *extension, false,
-        extensions::disable_reason::DISABLE_USER_ACTION |
-            extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
+        {extensions::disable_reason::DISABLE_USER_ACTION,
+         extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE},
         false, false, extension_urls::GetWebstoreUpdateUrl());
     SyncChangeList list(1, data.GetSyncChange(SyncChange::ACTION_DELETE));
 
@@ -677,8 +679,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncDataDisableReasons) {
     ASSERT_TRUE(data.get());
     EXPECT_TRUE(data->enabled());
     EXPECT_TRUE(data->supports_disable_reasons());
-    EXPECT_EQ(extensions::disable_reason::DISABLE_NONE,
-              data->disable_reasons());
+    EXPECT_TRUE(data->disable_reasons().empty());
   }
 
   // Syncable disable reason, should propagate to sync.
@@ -693,8 +694,9 @@ TEST_F(ExtensionSyncServiceTest, GetSyncDataDisableReasons) {
     ASSERT_TRUE(data.get());
     EXPECT_FALSE(data->enabled());
     EXPECT_TRUE(data->supports_disable_reasons());
-    EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-              data->disable_reasons());
+    EXPECT_THAT(data->disable_reasons(),
+                testing::UnorderedElementsAre(
+                    extensions::disable_reason::DISABLE_USER_ACTION));
   }
   service()->EnableExtension(kGoodCrx);
 
@@ -710,8 +712,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncDataDisableReasons) {
     ASSERT_TRUE(data.get());
     EXPECT_TRUE(data->enabled());
     EXPECT_TRUE(data->supports_disable_reasons());
-    EXPECT_EQ(extensions::disable_reason::DISABLE_NONE,
-              data->disable_reasons());
+    EXPECT_TRUE(data->disable_reasons().empty());
   }
   service()->EnableExtension(kGoodCrx);
 
@@ -729,8 +730,9 @@ TEST_F(ExtensionSyncServiceTest, GetSyncDataDisableReasons) {
     ASSERT_TRUE(data.get());
     EXPECT_FALSE(data->enabled());
     EXPECT_TRUE(data->supports_disable_reasons());
-    EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-              data->disable_reasons());
+    EXPECT_THAT(data->disable_reasons(),
+                testing::UnorderedElementsAre(
+                    extensions::disable_reason::DISABLE_USER_ACTION));
   }
   service()->EnableExtension(kGoodCrx);
 }
@@ -1628,11 +1630,15 @@ TEST_F(ExtensionSyncServiceTest, AccountExtensionTypeChangesWithSync) {
   // incoming sync data contains an extension ID, then that extension is part of
   // a user's account data.
   ExtensionSyncData disable_first_extension(
-      *first_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
-      false, false, extension_urls::GetWebstoreUpdateUrl());
+      *first_extension, false,
+      {extensions::disable_reason::DISABLE_USER_ACTION},
+      /*incognito_enabled=*/false, /*remote_install=*/false,
+      extension_urls::GetWebstoreUpdateUrl());
   ExtensionSyncData disable_second_extension(
-      *second_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
-      false, false, extension_urls::GetWebstoreUpdateUrl());
+      *second_extension, false,
+      {extensions::disable_reason::DISABLE_USER_ACTION},
+      /*incognito_enabled=*/false, /*remote_install=*/false,
+      extension_urls::GetWebstoreUpdateUrl());
   SyncChangeList list;
   list.push_back(
       disable_first_extension.GetSyncChange(SyncChange::ACTION_UPDATE));
@@ -2051,8 +2057,9 @@ TEST_F(BlocklistedExtensionSyncServiceTest, SyncAllowedGreylistedExtension) {
     std::unique_ptr<ExtensionSyncData> data =
         ExtensionSyncData::CreateFromSyncData(change.sync_data());
     EXPECT_EQ(extension_id, data->id());
-    EXPECT_EQ(extensions::disable_reason::DISABLE_GREYLIST,
-              data->disable_reasons());
+    EXPECT_THAT(
+        data->disable_reasons(),
+        testing::ElementsAre(extensions::disable_reason::DISABLE_GREYLIST));
     EXPECT_FALSE(data->enabled());
   }
   processor()->changes().clear();
@@ -2067,7 +2074,7 @@ TEST_F(BlocklistedExtensionSyncServiceTest, SyncAllowedGreylistedExtension) {
     std::unique_ptr<ExtensionSyncData> data =
         ExtensionSyncData::CreateFromSyncData(change.sync_data());
     EXPECT_EQ(extension_id, data->id());
-    EXPECT_EQ(0, data->disable_reasons());
+    EXPECT_TRUE(data->disable_reasons().empty());
     EXPECT_TRUE(data->enabled());
   }
   processor()->changes().clear();
@@ -2203,8 +2210,9 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
     std::unique_ptr<ExtensionSyncData> data =
         ExtensionSyncData::CreateFromSyncData(change.sync_data());
     EXPECT_EQ(second_extension_id, data->id());
-    EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-              data->disable_reasons());
+    EXPECT_THAT(
+        data->disable_reasons(),
+        testing::ElementsAre(extensions::disable_reason::DISABLE_USER_ACTION));
     EXPECT_FALSE(data->enabled());
   }
 }
@@ -2240,8 +2248,10 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   // `first_extension_id`. However, local changes (disabling and re-enabling) is
   // considered more recent so the extension should ignore this change.
   ExtensionSyncData disable_first_extension(
-      *first_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
-      false, false, extension_urls::GetWebstoreUpdateUrl());
+      *first_extension, false,
+      {extensions::disable_reason::DISABLE_USER_ACTION},
+      /*incognito_enabled=*/false, /*remote_install=*/false,
+      extension_urls::GetWebstoreUpdateUrl());
 
   syncer::SyncDataList list;
   list.push_back(disable_first_extension.GetSyncData());
@@ -2300,11 +2310,15 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   // incoming sync data contains an extension ID, then that extension is part of
   // a user's account data.
   ExtensionSyncData disable_first_extension(
-      *first_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
-      false, false, extension_urls::GetWebstoreUpdateUrl());
+      *first_extension, false,
+      {extensions::disable_reason::DISABLE_USER_ACTION},
+      /*incognito_enabled=*/false, /*remote_install=*/false,
+      extension_urls::GetWebstoreUpdateUrl());
   ExtensionSyncData disable_second_extension(
-      *second_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
-      false, false, extension_urls::GetWebstoreUpdateUrl());
+      *second_extension, false,
+      {extensions::disable_reason::DISABLE_USER_ACTION},
+      /*incognito_enabled=*/false, /*remote_install=*/false,
+      extension_urls::GetWebstoreUpdateUrl());
   SyncChangeList list;
   list.push_back(
       disable_first_extension.GetSyncChange(SyncChange::ACTION_UPDATE));

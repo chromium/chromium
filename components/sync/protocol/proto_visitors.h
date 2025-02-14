@@ -797,6 +797,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ExtensionSpecifics& proto) {
   VISIT(remote_install);
   VISIT(all_urls_enabled);
   VISIT(disable_reasons);
+  VISIT_REP(disable_reasons_list);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::GetUpdateTriggers& proto) {

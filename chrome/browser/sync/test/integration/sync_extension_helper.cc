@@ -201,6 +201,19 @@ void SyncExtensionHelper::InstallExtensionsPendingForSync(Profile* profile) {
   }
 }
 
+SyncExtensionHelper::ExtensionState::ExtensionState(
+    EnabledState state,
+    const extensions::DisableReasonSet& reasons,
+    bool incognito_enabled)
+    : enabled_state(state),
+      disable_reasons(reasons),
+      incognito_enabled(incognito_enabled) {}
+
+SyncExtensionHelper::ExtensionState::ExtensionState(ExtensionState&& other) =
+    default;
+
+SyncExtensionHelper::ExtensionState::~ExtensionState() = default;
+
 SyncExtensionHelper::ExtensionStateMap SyncExtensionHelper::GetExtensionStates(
     Profile* profile) {
   const std::string& profile_debug_name = profile->GetDebugName();
@@ -215,16 +228,12 @@ SyncExtensionHelper::ExtensionStateMap SyncExtensionHelper::GetExtensionStates(
       extensions::ExtensionSystem::Get(profile)->extension_service();
   for (const scoped_refptr<const Extension>& extension : extensions) {
     const std::string& id = extension->id();
-    extension_state_map[id] = {
-        .enabled_state = extension_service->IsExtensionEnabled(id)
-                             ? ExtensionState::ENABLED
-                             : ExtensionState::DISABLED,
-        // TODO(crbug.com/372186532): Update ExtensionStateMap to include
-        // DisableReasonSet instead of a bitflag.
-        .disable_reasons = extensions::IntegerSetToBitflag(
-            ExtensionPrefs::Get(profile)->GetDisableReasons(id)),
-        .incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile)};
-
+    extension_state_map.emplace(
+        id, ExtensionState{extension_service->IsExtensionEnabled(id)
+                               ? ExtensionState::ENABLED
+                               : ExtensionState::DISABLED,
+                           ExtensionPrefs::Get(profile)->GetDisableReasons(id),
+                           extensions::util::IsIncognitoEnabled(id, profile)});
     DVLOG(2) << "Extension " << id << " in profile " << profile_debug_name
              << " is "
              << (extension_service->IsExtensionEnabled(id) ? "enabled"
@@ -238,13 +247,10 @@ SyncExtensionHelper::ExtensionStateMap SyncExtensionHelper::GetExtensionStates(
       pending_extension_manager->GetPendingIdsForUpdateCheck();
 
   for (const std::string& id : pending_crx_ids) {
-    extension_state_map[id] = {
-        .enabled_state = ExtensionState::PENDING,
-        // TODO(crbug.com/372186532): Update ExtensionStateMap to include
-        // DisableReasonSet instead of a bitflag.
-        .disable_reasons = extensions::IntegerSetToBitflag(
-            ExtensionPrefs::Get(profile)->GetDisableReasons(id)),
-        .incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile)};
+    extension_state_map.emplace(
+        id, ExtensionState{ExtensionState::PENDING,
+                           ExtensionPrefs::Get(profile)->GetDisableReasons(id),
+                           extensions::util::IsIncognitoEnabled(id, profile)});
     DVLOG(2) << "Extension " << id << " in profile " << profile_debug_name
              << " is pending";
   }

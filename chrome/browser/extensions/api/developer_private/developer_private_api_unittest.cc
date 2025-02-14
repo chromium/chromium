@@ -3551,9 +3551,10 @@ class DeveloperPrivateApiTransportModeUnitTest
   void SimulateInitialSync(const std::vector<const Extension*>& extensions) {
     syncer::SyncDataList sync_data;
     for (const auto* extension : extensions) {
-      ExtensionSyncData data(*extension, true,
-                             extensions::disable_reason::DISABLE_NONE, false,
-                             false, extension_urls::GetWebstoreUpdateUrl());
+      ExtensionSyncData data(
+          *extension, true,
+          /*disable_reasons=*/{}, /*incognito_enabled=*/false,
+          /*remote_install=*/false, extension_urls::GetWebstoreUpdateUrl());
 
       sync_data.push_back(data.GetSyncData());
     }
@@ -3863,8 +3864,9 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   // Simulate a later sync update where the same extension was installed on
   // another device and the change is synced over.
   ExtensionSyncData extension_installed_elsewhere(
-      *extension, true, extensions::disable_reason::DISABLE_NONE, false, false,
-      extension_urls::GetWebstoreUpdateUrl());
+      *extension, true,
+      /*disable_reasons=*/{}, /*incognito_enabled=*/false,
+      /*remote_install=*/false, extension_urls::GetWebstoreUpdateUrl());
   ExtensionSyncService::Get(profile())->ProcessSyncChanges(
       FROM_HERE, {extension_installed_elsewhere.GetSyncChange(
                      syncer::SyncChange::ACTION_UPDATE)});
