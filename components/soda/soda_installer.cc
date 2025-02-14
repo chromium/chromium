@@ -28,9 +28,9 @@ namespace {
 
 constexpr int kSodaCleanUpDelayInDays = 30;
 const constexpr char* const kDefaultEnabledLanguages[] = {
-    "en-US", "fr-FR", "it-IT", "de-DE",       "es-ES",
-    "ja-JP", "hi-IN", "pt-BR", "ko-KR",       "pl-PL",
-    "th-TH", "tr-TR", "id-ID", "cmn-Hans-CN", "cmn-Hant-TW"};
+    "en-US", "fr-FR",       "it-IT",       "de-DE", "es-ES", "ja-JP",
+    "hi-IN", "pt-BR",       "ko-KR",       "pl-PL", "th-TH", "tr-TR",
+    "id-ID", "cmn-Hans-CN", "cmn-Hant-TW", "vi-VN", "ru-RU"};
 
 }  // namespace
 
