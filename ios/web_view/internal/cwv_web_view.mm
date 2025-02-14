@@ -560,15 +560,25 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (UIScrollView*)scrollView {
+  if (![self isWebStateSafeToUse]) {
+    return nil;
+  }
   return [_webState->GetWebViewProxy().scrollViewProxy asUIScrollView];
 }
 
 - (BOOL)allowsBackForwardNavigationGestures {
+  if (![self isWebStateSafeToUse]) {
+    return NO;
+  }
+
   return _webState->GetWebViewProxy().allowsBackForwardNavigationGestures;
 }
 
 - (void)setAllowsBackForwardNavigationGestures:
     (BOOL)allowsBackForwardNavigationGestures {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   _webState->GetWebViewProxy().allowsBackForwardNavigationGestures =
       allowsBackForwardNavigationGestures;
 }
@@ -584,18 +594,27 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)goBack {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   if (_webState->GetNavigationManager()) {
     _webState->GetNavigationManager()->GoBack();
   }
 }
 
 - (void)goForward {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   if (_webState->GetNavigationManager()) {
     _webState->GetNavigationManager()->GoForward();
   }
 }
 
 - (BOOL)goToBackForwardListItem:(CWVBackForwardListItem*)item {
+  if (![self isWebStateSafeToUse]) {
+    return NO;
+  }
   if (!_backForwardList) {
     return NO;  // Do nothing if |_backForwardList| is not generated yet.
   }
@@ -616,6 +635,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)reload {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   // |check_for_repost| is false because CWVWebView does not support repost form
   // dialogs.
   _webState->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
@@ -623,10 +645,16 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)stopLoading {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   _webState->Stop();
 }
 
 - (void)loadRequest:(NSURLRequest*)request {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   DCHECK_EQ(nil, request.HTTPBodyStream)
       << "request.HTTPBodyStream is not supported.";
 
@@ -640,6 +668,10 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
 - (void)evaluateJavaScript:(NSString*)javaScriptString
          completionHandler:(void (^)(id result, NSError* error))completion {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
+
   web::WebFrame* mainFrame =
       _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!mainFrame) {
@@ -687,7 +719,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 #pragma mark - UIResponder
 
 - (BOOL)becomeFirstResponder {
-  if (_webState) {
+  if ([self isWebStateSafeToUse]) {
     return [_webState->GetWebViewProxy() becomeFirstResponder];
   } else {
     return [super becomeFirstResponder];
@@ -1049,7 +1081,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 #pragma mark - Private methods
 
 - (void)updateWebStateVisibility {
-  if (_webState == nullptr) {
+  if (![self isWebStateSafeToUse]) {
     return;
   }
   if (self.superview) {
@@ -1084,8 +1116,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   }
 
   BOOL allowsBackForwardNavigationGestures =
-      _webState &&
-      _webState->GetWebViewProxy().allowsBackForwardNavigationGestures;
+      self.allowsBackForwardNavigationGestures;
 
   // CWVWebView does not support unrealized WebState, so ignore the
   // over-realization check (this simply reset the recent realization
@@ -1179,6 +1210,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
 // Adds the web view provided by |_webState| as a subview unless it has already.
 - (void)addInternalWebViewAsSubview {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   UIView* subview = _webState->GetView();
   if (subview.superview == self) {
     return;
@@ -1190,6 +1224,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (CWVBackForwardList*)backForwardList {
+  if (![self isWebStateSafeToUse]) {
+    return nil;
+  }
   if (!_backForwardList) {
     _backForwardList = [[CWVBackForwardList alloc]
         initWithNavigationManager:_webState->GetNavigationManager()];
@@ -1198,6 +1235,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)updateNavigationAvailability {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   self.canGoBack = _webState && _webState->GetNavigationManager()->CanGoBack();
   self.canGoForward =
       _webState && _webState->GetNavigationManager()->CanGoForward();
@@ -1206,6 +1246,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)updateCurrentURLs {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   self.lastCommittedURL = net::NSURLWithGURL(_webState->GetLastCommittedURL());
   self.visibleURL = net::NSURLWithGURL(_webState->GetVisibleURL());
   self.visibleLocationString = base::SysUTF16ToNSString(
@@ -1213,10 +1256,16 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)updateTitle {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   self.title = base::SysUTF16ToNSString(_webState->GetTitle());
 }
 
 - (void)updateVisibleSSLStatus {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   web::NavigationItem* visibleItem =
       _webState->GetNavigationManager()->GetVisibleItem();
   if (visibleItem) {
@@ -1228,7 +1277,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)attachSecurityInterstitialHelpersToWebStateIfNecessary {
-  if (!_webState) {
+  if (![self isWebStateSafeToUse]) {
     return;
   }
 
@@ -1264,6 +1313,10 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 #pragma mark - Internal Methods
+
+- (BOOL)isWebStateSafeToUse {
+  return _webState != nil && !_webState->IsBeingDestroyed();
+}
 
 - (void)shutDown {
   if (_webState) {

@@ -112,7 +112,8 @@ CWV_EXPORT
 // The scroll view associated with the web view.
 //
 // It is reset on state restoration.
-@property(nonatomic, readonly) UIScrollView* scrollView;
+// It is nil while the app is terminating. Otherwise it should never be nil.
+@property(nonatomic, readonly, nullable) UIScrollView* scrollView;
 
 // A Boolean value indicating whether horizontal swipe gestures will trigger
 // back-forward list navigations.
@@ -127,7 +128,8 @@ CWV_EXPORT
 
 // An equivalent of
 // https://developer.apple.com/documentation/webkit/wkwebview/1414977-backforwardlist
-@property(nonatomic, readonly, nonnull) CWVBackForwardList* backForwardList;
+// It is nil while the app is terminating. Otherwise it should never be nil.
+@property(nonatomic, readonly, nullable) CWVBackForwardList* backForwardList;
 
 // Enables Chrome's custom logic to handle long press and force touch. Defaults
 // to NO.
