@@ -4,7 +4,9 @@
 
 package org.chromium.android_webview;
 
+import android.app.Activity;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,24 +22,29 @@ import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.selection.SamsungSelectionActionMenuDelegate;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 /** A class that handles selection action mode for Android WebView. */
 @Lifetime.WebView
-public class AwActionModeCallback extends ActionModeCallback {
+public class AwActionModeCallback extends ActionModeCallback implements IntentCallback {
+    private final Context mContext;
     private final AwContents mAwContents;
+    private final SelectionPopupController mSelectionPopupController;
     private final ActionModeCallbackHelper mHelper;
     private int mAllowedMenuItems;
 
     public AwActionModeCallback(Context context, AwContents awContents, WebContents webContents) {
+        mContext = context;
         mAwContents = awContents;
-        mHelper =
-                SelectionPopupController.fromWebContents(webContents).getActionModeCallbackHelper();
+        mSelectionPopupController = SelectionPopupController.fromWebContents(webContents);
+        mHelper = mSelectionPopupController.getActionModeCallbackHelper();
         mHelper.setAllowedMenuItems(0); // No item is allowed by default for WebView.
     }
 
@@ -131,10 +138,26 @@ public class AwActionModeCallback extends ActionModeCallback {
         if (TextUtils.isEmpty(query)) return;
 
         intent.putExtra(Intent.EXTRA_PROCESS_TEXT, query);
-        try {
-            mAwContents.startProcessTextIntent(intent);
-        } catch (android.content.ActivityNotFoundException ex) {
-            // If no app handles it, do nothing.
+
+        if (ContextUtils.activityFromContext(mContext) == null) {
+            try {
+                mContext.startActivity(intent);
+            } catch (ActivityNotFoundException ex) {
+                // If no app handles it, do nothing.
+            }
+            return;
+        }
+
+        mAwContents.startActivityForResult(intent, /* callback= */ this);
+    }
+
+    // IntentCallback:
+    @Override
+    public void onIntentCompleted(int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            CharSequence value = data.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);
+            String result = (value == null) ? null : value.toString();
+            mSelectionPopupController.handleTextReplacementAction(result);
         }
     }
 }

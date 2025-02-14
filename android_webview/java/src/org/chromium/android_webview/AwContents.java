@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
@@ -175,8 +176,8 @@ public class AwContents implements SmartClipProvider {
     private static final String PRODUCT_VERSION = AwContentsStatics.getProductVersion();
 
     private static final String WEB_ARCHIVE_EXTENSION = ".mht";
-    // The request code should be unique per WebView/AwContents object.
-    private static final int PROCESS_TEXT_REQUEST_CODE = 100;
+
+    private static final int REQUEST_CODE_START = 1000;
 
     // Used to avoid enabling zooming in / out if resulting zooming will
     // produce little visible difference.
@@ -437,6 +438,10 @@ public class AwContents implements SmartClipProvider {
     private boolean mIsContentVisible;
     private boolean mIsUpdateVisibilityTaskPending;
     private Runnable mUpdateVisibilityRunnable;
+
+    private final SparseArray<WindowAndroid.IntentCallback> mOutstandingIntents =
+            new SparseArray<>();
+    private int mNextRequestCode = REQUEST_CODE_START;
 
     /**
      * Set to true if there is ever a call to {@link AwContents#getBrowserContextForPublicApi()}.
@@ -3288,44 +3293,47 @@ public class AwContents implements SmartClipProvider {
     // --------------------------------------------------------------------------------------------
     //  View and ViewGroup method implementations
     // --------------------------------------------------------------------------------------------
-    /**
-     * Calls android.view.View#startActivityForResult.  A RuntimeException will
-     * be thrown by Android framework if startActivityForResult is called with
-     * a non-Activity context.
-     */
-    public void startActivityForResult(Intent intent, int requestCode) {
-        // Even in fullscreen mode, startActivityForResult will still use the
-        // initial internal access delegate because it has access to
-        // the hidden API View#startActivityForResult.
-        mFullScreenTransitionsState
-                .getInitialInternalAccessDelegate()
-                .super_startActivityForResult(intent, requestCode);
-    }
 
-    void startProcessTextIntent(Intent intent) {
-        if (ContextUtils.activityFromContext(mContext) == null) {
-            mContext.startActivity(intent);
-            return;
+    /**
+     * Starts an activity that returns a result to the given callback. Calls
+     * android.view.View#startActivityForResult. A RuntimeException will be thrown by Android
+     * framework if startActivityForResult is called with a non-Activity context.
+     *
+     * @param intent The intent that starts the activity.
+     * @param callback The callback to receive the result from the activity.
+     * @return Whether the activity was found.
+     */
+    public boolean startActivityForResult(Intent intent, WindowAndroid.IntentCallback callback) {
+        // TODO(anukul.chand): check if we can replace existing implementation with WindowAndroid's
+        //  intent dispatch handling/tracking.
+        try {
+            // Even in fullscreen mode, startActivityForResult will still use the
+            // initial internal access delegate because it has access to
+            // the hidden API View#startActivityForResult.
+            mFullScreenTransitionsState
+                    .getInitialInternalAccessDelegate()
+                    .super_startActivityForResult(intent, mNextRequestCode);
+        } catch (ActivityNotFoundException e) {
+            return false;
         }
 
-        startActivityForResult(intent, PROCESS_TEXT_REQUEST_CODE);
+        mOutstandingIntents.put(mNextRequestCode, callback);
+        mNextRequestCode++;
+
+        return true;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO(anukul.chand): check if we can replace existing implementation with WindowAndroid's
-        //  intent dispatch handling/tracking.
         if (TRACE) Log.i(TAG, "%s onActivityResult", this);
         if (isDestroyed(NO_WARN)) return;
-        SelectionPopupController selectionPopupController =
-                SelectionPopupController.fromWebContents(mWebContents);
-        if (requestCode == PROCESS_TEXT_REQUEST_CODE
-                && resultCode == Activity.RESULT_OK
-                && data != null) {
-            CharSequence value = data.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);
-            String result = (value == null) ? null : value.toString();
-            selectionPopupController.handleTextReplacementAction(result);
+
+        WindowAndroid.IntentCallback callback = mOutstandingIntents.get(requestCode);
+        mOutstandingIntents.delete(requestCode);
+        if (callback != null) {
+            callback.onIntentCompleted(resultCode, data);
             return;
         }
+
         Log.e(TAG, "Received activity result for an unknown request code %d", requestCode);
     }
 
