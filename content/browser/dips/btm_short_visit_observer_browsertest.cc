@@ -4,10 +4,15 @@
 
 #include "content/browser/dips/btm_short_visit_observer.h"
 
+#include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/dips/dips_service_impl.h"
+#include "content/public/browser/dips_redirect_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -16,6 +21,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,6 +75,26 @@ std::vector<GURL> EntryURLs(ukm::TestUkmRecorder& ukm_recorder,
   return urls;
 }
 
+// The return type of TestUkmRecorder::GetEntriesByName().
+using UkmEntryVector =
+    std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>;
+
+// Waits for at least `n` BTM.ShortVisit events to be recorded, and returns
+// their entries.
+UkmEntryVector GetBtmShortVisits(size_t n, ukm::TestUkmRecorder& ukm_recorder) {
+  static constexpr std::string_view kEntryName = "BTM.ShortVisit";
+  UkmEntryVector entries = ukm_recorder.GetEntriesByName(kEntryName);
+  if (entries.size() >= n) {
+    return entries;
+  }
+  const size_t still_need = n - entries.size();
+  base::RunLoop run_loop;
+  ukm_recorder.SetOnAddEntryCallback(
+      kEntryName, base::BarrierClosure(still_need, run_loop.QuitClosure()));
+  run_loop.Run();
+  return ukm_recorder.GetEntriesByName(kEntryName);
+}
+
 IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, VisitDuration) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   const GURL url1 =
@@ -84,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, VisitDuration) {
   clock_.Advance(base::Milliseconds(3500));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2));
   ukm_recorder.ExpectEntryMetric(entries[0], "VisitDuration", 2);
@@ -101,14 +127,14 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, IgnoreLongVisits) {
       embedded_https_test_server().GetURL("c.test", "/empty.html");
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  clock_.Advance(base::Seconds(9));
-  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
   clock_.Advance(base::Seconds(11));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  clock_.Advance(base::Seconds(9));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
 
   // The 11-second visit is not reported.
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
-  ASSERT_THAT(EntryURLs(ukm_recorder, entries), testing::ElementsAre(url1));
+  UkmEntryVector entries = GetBtmShortVisits(1, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries), testing::ElementsAre(url2));
   ukm_recorder.ExpectEntryMetric(entries[0], "VisitDuration", 9);
 }
 
@@ -126,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents(), url2));
   ASSERT_TRUE(NavigateToURLFromRenderer(web_contents(), url3));
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2));
   ukm_recorder.ExpectEntryMetric(entries[0], "ExitWasRendererInitiated", 0);
@@ -147,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, ExitHadUserGesture) {
   ASSERT_TRUE(
       NavigateToURLFromRendererWithoutUserGesture(web_contents(), url3));
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2));
   ukm_recorder.ExpectEntryMetric(entries[0], "ExitHadUserGesture", 1);
@@ -165,17 +191,14 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, ExitPageTransition) {
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
   ASSERT_TRUE(NavigateToURL(web_contents(), url2));
-  TestNavigationObserver same_tab_observer(web_contents());
   // Click a link to navigate to url3.
   ASSERT_TRUE(ExecJs(web_contents(), R"(
       const anchor = document.createElement("a");
       anchor.href = "/title1.html";
       anchor.click(); )",
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
-  same_tab_observer.Wait();
-  ASSERT_EQ(web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(), url3);
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2));
   ukm_recorder.ExpectEntryMetric(
@@ -201,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, PreviousSiteSame) {
   ASSERT_TRUE(NavigateToURL(web_contents(), url2b));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(3, ukm_recorder);
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2a, url2b));
   // Previous site unknown.
@@ -228,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, NextSiteSame) {
   ASSERT_TRUE(NavigateToURL(web_contents(), url2b));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(3, ukm_recorder);
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2a, url2b));
   ukm_recorder.ExpectEntryMetric(entries[0], "NextSiteSame", 0);
@@ -253,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
   ASSERT_TRUE(NavigateToURL(web_contents(), url4));
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(3, ukm_recorder);
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2, url3));
   ukm_recorder.ExpectEntryMetric(entries[0], "PreviousAndNextSiteSame", 0);
@@ -279,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   clock_.Advance(base::Seconds(3));
   ASSERT_TRUE(NavigateToURLFromRenderer(web_contents(), url3));
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(1, ukm_recorder);
   // Only one UKM event is reported -- for `url1`.
   ASSERT_THAT(EntryURLs(ukm_recorder, entries), testing::ElementsAre(url1));
   // The duration is the sum of the time before and after the `url2` navigation.
@@ -316,11 +339,80 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, IgnoreAllSameSite) {
   // Visit c.test.
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
 
-  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  UkmEntryVector entries = GetBtmShortVisits(4, ukm_recorder);
   // No visits reported for url1b or url2b, because each is same-site to both of
   // the pages before/after it.
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1a, url1c, url2a, url2c));
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       TimeSinceLastInteraction) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  auto* btm_service = BtmServiceImpl::Get(web_contents()->GetBrowserContext());
+  btm_service->SetStorageClockForTesting(&clock_);
+  // Record an interaction an hour ago.
+  btm_service->storage()
+      ->AsyncCall(&BtmStorage::RecordUserActivation)
+      .WithArgs(url2, clock_.Now(), BtmCookieMode::kBlock3PC);
+  clock_.Advance(base::Hours(1));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents(), url2));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents(), url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  // No previous interaction.
+  ukm_recorder.ExpectEntryMetric(entries[0], "TimeSinceLastInteraction", -1);
+  // A typical interaction.
+  ukm_recorder.ExpectEntryMetric(entries[1], "TimeSinceLastInteraction",
+                                 ukm::GetSemanticBucketMinForDurationTiming(
+                                     base::Hours(1).InMilliseconds()));
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       TimeSinceLastInteraction_FutureInteraction) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  auto* btm_service = BtmServiceImpl::Get(web_contents()->GetBrowserContext());
+  btm_service->SetStorageClockForTesting(&clock_);
+  // Record a "future" interaction by setting the clock backwards.
+  btm_service->storage()
+      ->AsyncCall(&BtmStorage::RecordUserActivation)
+      .WithArgs(url2, clock_.Now() + base::Minutes(1),
+                BtmCookieMode::kBlock3PC);
+  clock_.Advance(-base::Hours(1));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents(), url2));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents(), url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  // No previous interaction.
+  ukm_recorder.ExpectEntryMetric(entries[0], "TimeSinceLastInteraction", -1);
+  // "Future" interaction.
+  ukm_recorder.ExpectEntryMetric(entries[1], "TimeSinceLastInteraction", -3);
 }
 
 }  // namespace
