@@ -140,6 +140,13 @@ remove_build_rs = true
 shipped = false
 bin_targets = ["cxxbridge"]
 
+[crate.fdeflate.extra_kv]
+# Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
+# PNG encoding and decoding even in Debug builds.  See
+# https://crbug.com/396419181.
+configs_to_remove = ['//build/config/compiler:default_optimization']
+configs_to_add = ['//build/config/compiler:optimize']
+
 [crate.flate2]
 ban_features = [
     # `any_zlib` feature is banned because Chromium does not use the `zlib`
@@ -147,6 +154,12 @@ ban_features = [
     # audited).
     'any_zlib',
 ]
+[crate.flate2.extra_kv]
+# Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
+# PNG encoding and decoding even in Debug builds.  See
+# https://crbug.com/396419181.
+configs_to_remove = ['//build/config/compiler:default_optimization']
+configs_to_add = ['//build/config/compiler:optimize']
 
 [crate.hex]
 group = 'test'
@@ -222,12 +235,26 @@ license_files= ["LICENSE.txt"]
 
 [crate.log]
 
+[crate.miniz_oxide.extra_kv]
+# Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
+# PNG encoding and decoding even in Debug builds.  See
+# https://crbug.com/396419181.
+configs_to_remove = ['//build/config/compiler:default_optimization']
+configs_to_add = ['//build/config/compiler:optimize']
+
 [crate.num-traits]
 # Configures the has_total_cmp feature, not necessary
 remove_build_rs = true
 
 [crate.nom]
 remove_deps = ['minimal-lexical']
+
+[crate.png.extra_kv]
+# Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
+# PNG encoding and decoding even in Debug builds.  See
+# https://crbug.com/396419181.
+configs_to_remove = ['//build/config/compiler:default_optimization']
+configs_to_add = ['//build/config/compiler:optimize']
 
 [crate.prost]
 extra_input_roots = ['../README.md']

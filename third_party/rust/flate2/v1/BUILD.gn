@@ -60,6 +60,12 @@ cargo_crate("lib") {
     "miniz_oxide",
     "rust_backend",
   ]
+  library_configs -= [ "//build/config/compiler:default_optimization" ]
+  executable_configs -= [ "//build/config/compiler:default_optimization" ]
+  proc_macro_configs -= [ "//build/config/compiler:default_optimization" ]
+  library_configs += [ "//build/config/compiler:optimize" ]
+  executable_configs += [ "//build/config/compiler:optimize" ]
+  proc_macro_configs += [ "//build/config/compiler:optimize" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

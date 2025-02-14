@@ -38,6 +38,12 @@ cargo_crate("lib") {
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/simd_adler32/v0_3:lib" ]
+  library_configs -= [ "//build/config/compiler:default_optimization" ]
+  executable_configs -= [ "//build/config/compiler:default_optimization" ]
+  proc_macro_configs -= [ "//build/config/compiler:default_optimization" ]
+  library_configs += [ "//build/config/compiler:optimize" ]
+  executable_configs += [ "//build/config/compiler:optimize" ]
+  proc_macro_configs += [ "//build/config/compiler:optimize" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]
