@@ -224,9 +224,6 @@ export declare interface GlicBrowserHost {
   canAttachPanel?(): ObservableValue<boolean>;
 
   /**
-   * @todo Replace with the separate notifications about tab change and tab
-   *       navigation. https://crbug.com/390741160
-   *
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever the focus changes due to the user switching tabs or navigating the
    * current focused tab.
@@ -235,8 +232,24 @@ export declare interface GlicBrowserHost {
    *          a new tab is focused or the current tab is navigated. The value
    *          will be `undefined` if there's no active tab or it cannot be
    *          focused (i.e. the URL is ineligible for tab context sharing).
+   *
+   * @deprecated Used `getFocusedTabStateV2` instead. This function returns a
+   * TabData on success but no information at all on failure. V2 solves this by
+   * returning error codes to signal why no focus was available.
    */
   getFocusedTabState?(): ObservableValue<TabData|undefined>;
+
+  /**
+   * Returns the observable state of the currently focused tab. Updates are sent
+   * whenever the focus changes due to the user switching tabs or navigating the
+   * current focused tab. `FocusedTabData` contains a TabData when available
+   * along with an `InvalidCandidateError` if it is unfit for focus. If no
+   * TabData is available, a `NoFocusErrorReason` is returned specifying why.
+   *
+   * @returns An ObservableValue for `FocusedTabData` values that will be
+   * updated when a new tab is focused or the current tab is navigated.
+   */
+  getFocusedTabStateV2?(): ObservableValue<FocusedTabData>;
 
   /** Returns the state of the microphone permission. */
   getMicrophonePermissionState?(): ObservableValue<boolean>;
@@ -548,6 +561,31 @@ export declare interface TabData {
   documentMimeType?: string;
 }
 
+/** Data class holding information about the focused tab state. */
+export declare interface FocusedTabData {
+  /** Stores the focused tab data if one exists. */
+  focusedTab?: TabData;
+  /**
+   * If a focus candidate exists but cannot be focused then
+   * `focusedTabCandidate` will hold its `TabData` and an
+   * `InvalidCandidateError` specifying why it is not focusable.
+   */
+  focusedTabCandidate?: FocusedTabCandidate;
+  /** If no candidate exists than the noCandidateTabError will indicate why. */
+  noCandidateTabError?: NoCandidateTabError;
+}
+
+/** Data class holding information about the focused tab candidate. */
+export declare interface FocusedTabCandidate {
+  /**
+   * Stores the focused tab candidate data if the browser has valid TabData
+   * which cannot be used for context extraction.
+   */
+  focusedTabCandidateData?: TabData;
+  /** Specifies why the candidate was invalid for focus. */
+  invalidCandidateError?: InvalidCandidateError;
+}
+
 /**
  * Annotates an image, providing security relevant information about the origins
  * from which image is composed.
@@ -605,14 +643,43 @@ export enum GetTabContextErrorReason {
   REQUEST_THROTTLED = 'REQUEST_THROTTLED',
 }
 
-// Reason why capturing desktop screenshot failed.
+/**
+ * Reason why a focused tab candidate is not valid for focus. NOTE: This may be
+ * extended in the future so avoid using complete switches on the currently used
+ * enum values.
+ */
+export enum InvalidCandidateError {
+  /** Candidate invalid for an unknown reason. */
+  UNKNOWN = 0,
+  /** The URL in the tab data is not supported. */
+  UNSUPPORTED_URL = 1,
+}
+
+/**
+ * Reason why a focused tab is not available. NOTE: This may be extended in the
+ * future so avoid using complete switches on the currently used enum values.
+ */
+export enum NoCandidateTabError {
+  /** An unknown error occurred while getting the tab data. */
+  UNKNOWN = 0,
+  /** There are no Chrome tabs available to be focused. */
+  NO_FOCUSABLE_TABS = 1,
+}
+
+/**
+ * Reason why capturing desktop screenshot failed. NOTE: This may be extended in
+ * the future so avoid using complete switches on the currently used enum
+ * values.
+ */
 export enum CaptureScreenshotErrorReason {
-  // Screen capture or frame encoding failure.
-  SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON = 0,
-  // Screen capture requested but already in progress of serving another
-  // request.
+  /** Screen capture or frame encoding failure. */
+  UNKNOWN = 0,
+  /**
+   * Screen capture requested but already in progress of serving another
+   * request.
+   */
   SCREEN_CAPTURE_REQUEST_THROTTLED = 1,
-  // User declined screen capture dialog before taking a screenshot.
+  /** User declined screen capture dialog before taking a screenshot. */
   USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
 }
 

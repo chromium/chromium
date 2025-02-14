@@ -103,7 +103,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->panel_state =
         glic_service_->window_controller().GetPanelState().Clone();
 
-    state->focused_tab = CreateTabData(glic_service_->GetFocusedTab());
+    state->focused_tab_data =
+        CreateFocusedTabData(glic_service_->GetFocusedTabData());
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
 
     std::move(callback).Run(std::move(state));
@@ -316,9 +317,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  void OnFocusedTabChanged(const content::WebContents* focused_tab) {
+  void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
     web_client_->NotifyFocusedTabChanged(
-        CreateTabData(glic_service_->GetFocusedTab()));
+        CreateFocusedTabData(focused_tab_data));
   }
 
   PrefChangeRegistrar pref_change_registrar_;

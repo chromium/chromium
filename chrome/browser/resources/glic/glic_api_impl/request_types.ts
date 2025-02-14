@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -34,7 +34,7 @@ export declare interface HostRequestTypes {
       locationPermissionEnabled: boolean,
       tabContextPermissionEnabled: boolean,
       panelState: PanelState,
-      focusedTab: TabDataPrivate|undefined,
+      focusedTabData: FocusedTabDataPrivate,
       chromeVersion: ChromeVersion,
       canAttach: boolean,
     },
@@ -234,7 +234,7 @@ export declare interface WebClientRequestTypes {
   };
   glicWebClientNotifyFocusedTabChanged: {
     request: {
-      focusedTab: TabDataPrivate|undefined,
+      focusedTabDataPrivate: FocusedTabDataPrivate,
     },
     response: void,
   };
@@ -280,6 +280,21 @@ export enum ImageAlphaType {
 // Chromium currently only uses a single color type for BitmapN32.
 export enum ImageColorType {
   BGRA = 0,
+}
+
+// FocusedTabData data for postMessage transport.
+export declare interface FocusedTabDataPrivate extends Omit<
+    FocusedTabData, 'focusedTab'|'focusedTabCandidate'|'noCandidateTabError'> {
+  focusedTab?: TabDataPrivate;
+  focusedTabCandidate?: FocusedTabCandidatePrivate;
+  noCandidateTabError?: NoCandidateTabError;
+}
+
+// FocusedTabDataCandidate data for postMessage transport.
+export declare interface FocusedTabCandidatePrivate extends Omit<
+    FocusedTabCandidate, 'focusedTabCandidateData'|'invalidCandidateError'> {
+  focusedTabCandidateData?: TabDataPrivate;
+  invalidCandidateError?: InvalidCandidateError;
 }
 
 // TabContextResult data for postMessage transport.

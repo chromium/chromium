@@ -8,6 +8,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
@@ -96,8 +97,10 @@ class GlicBorderView::BorderViewUpdater {
   BorderViewUpdater& operator=(const BorderViewUpdater&) = delete;
   ~BorderViewUpdater() = default;
 
-  // Called when the focused tab changes.
-  void OnFocusedTabChanged(const content::WebContents* contents) {
+  // Called when the focused tab changes with the focused tab data object.
+  void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
+    content::WebContents* contents =
+        focused_tab_data.focused_tab_contents.get();
     auto* previous_focus = glic_focused_contents_in_current_window_.get();
     if (contents && IsTabInCurrentWindow(contents)) {
       glic_focused_contents_in_current_window_ =

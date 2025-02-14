@@ -101,17 +101,37 @@ interface FrePageHandler {
 };
 
 // Reason why getting tab context failed.
+[Stable, Extensible]
 enum GetTabContextErrorReason {
   // A valid web contents was not available for the entire duration of context
   // gathering.
-  kWebContentsChanged,
+  [Default] kWebContentsChanged,
+};
+
+// Reason why a focused tab candidate is not valid for focus.
+[Stable, Extensible]
+enum InvalidCandidateError {
+  // Candidate was deemed invalid for focus for an unknown reason.
+  [Default] kUnknown = 0,
+  // The URL in the candidate's tab data is not supported.
+  kUnsupportedUrl = 1,
+};
+
+// Reason why a focused tab is not available.
+[Stable, Extensible]
+enum NoCandidateTabError {
+  // An unknown error occurred while getting the tab data.
+  [Default] kUnknown = 0,
+  // There are no Chrome tabs available to be focused.
+  kNoFocusableTabs = 1,
 };
 
 // Reason why capturing desktop screenshot failed. This MUST be kept in sync
 // with the glic_api.ts enum.
+[Stable, Extensible]
 enum CaptureScreenshotErrorReason {
   // Screen capture or frame encoding failure.
-  kScreenCaptureFailedForUnknownReason = 0,
+  [Default] kUnknown = 0,
   // Screen capture requested but already in progress of serving another request
   kScreenCaptureRequestThrottled = 1,
   // User declined screen capture dialog before taking a screenshot.
@@ -142,8 +162,8 @@ struct UserProfileInfo {
 // available before the web client is initialized.
 struct WebClientInitialState {
   PanelState panel_state;
-  // Initially focused tab.
-  TabData? focused_tab;
+  // Initially focused tab data.
+  FocusedTabData focused_tab_data;
   bool microphone_permission_enabled;
   bool location_permission_enabled;
   bool tab_context_permission_enabled;
@@ -376,7 +396,7 @@ interface WebClient {
   NotifyTabContextPermissionStateChanged(bool enabled);
 
   // The focused tab has changed.
-  NotifyFocusedTabChanged(TabData? tab_data);
+  NotifyFocusedTabChanged(FocusedTabData focused_tab_data);
 };
 
 // Information extracted from a tab.
@@ -439,6 +459,27 @@ struct TabData {
   skia.mojom.BitmapN32? favicon;
   // MIME type of the main document in this tab.
   string document_mime_type;
+};
+
+// Data about the focused tab state.
+union FocusedTabData {
+  // Stores the focused tab data if one exists.
+  TabData focused_tab;
+  // If a focus candidate exists but cannot be focused then
+  // `focused_tab_candidate` will hold its `TabData` and an
+  // `InvalidCandidateError` specifying why it is not focusable.
+  FocusedTabCandidate focused_tab_candidate;
+  // If no candidate exists then the `no_candidate_tab_error` will indicate why.
+  NoCandidateTabError no_candidate_tab_error;
+};
+
+// Data about the focused tab candidate.
+struct FocusedTabCandidate {
+  // Stores the focused tab candidate data when the browser has valid TabData
+  // that cannot be used for context extraction.
+  TabData focused_tab_candidate_data;
+  // Specifies why the candidate was invalid for focus.
+  InvalidCandidateError invalid_candidate_error;
 };
 
 // Information about the annotated page content.

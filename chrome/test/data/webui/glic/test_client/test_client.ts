@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelState, TabData} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelState, TabData} from '/glic/glic_api/glic_api.js';
 import {WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
@@ -13,6 +13,11 @@ interface PageElementTypes {
   focusedFavicon: HTMLImageElement;
   focusedUrl: HTMLInputElement;
   contextAccessIndicator: HTMLInputElement;
+  focusedTabLogs: HTMLSpanElement;
+  focusedFaviconV2: HTMLImageElement;
+  focusedUrlV2: HTMLInputElement;
+  contextAccessIndicatorV2: HTMLInputElement;
+  focusedTabLogsV2: HTMLSpanElement;
   syncCookiesBn: HTMLButtonElement;
   testLogsBn: HTMLButtonElement;
   syncCookieStatus: HTMLSpanElement;
@@ -78,8 +83,10 @@ class WebClient implements GlicWebClient {
     const ver = await browser.getChromeVersion();
     logMessage(`Chrome version: ${JSON.stringify(ver)}`);
 
-    const focusedTabState = this.browser.getFocusedTabState!();
+    const focusedTabState = await this.browser.getFocusedTabState!();
     focusedTabState.subscribe(focusedTabChanged);
+    const focusedTabStateV2 = await this.browser.getFocusedTabStateV2!();
+    focusedTabStateV2.subscribe(focusedTabChangedV2);
 
     // Initialize permission switches and subscribe for updates.
     const permissionStates:
@@ -137,6 +144,58 @@ async function focusedTabChanged(newValue: TabData|undefined) {
       $.focusedFavicon.src = URL.createObjectURL(fav);
     }
   }
+}
+
+async function focusedTabChangedV2(focusedTabData: FocusedTabData|undefined) {
+  $.focusedUrlV2.value = '';
+  $.focusedFaviconV2.src = '';
+  $.focusedTabLogsV2.innerText = '';
+
+  if (!focusedTabData) {
+    $.focusedTabLogsV2.innerText = 'Focused Tab State Changed: undefined';
+    return;
+  }
+
+  if (focusedTabData.noCandidateTabError &&
+      !focusedTabData.focusedTabCandidate?.invalidCandidateError) {
+    $.focusedTabLogsV2.innerText = `No Candidate Tab Error: ${
+        JSON.stringify(focusedTabData.noCandidateTabError)}`;
+    return;
+  }
+
+  if (focusedTabData.focusedTabCandidate?.invalidCandidateError) {
+    $.focusedTabLogsV2.innerText = `Focus Invalid For Extraction Error: ${
+        JSON.stringify(
+            focusedTabData.focusedTabCandidate.invalidCandidateError)}`;
+    const candidateData =
+        focusedTabData.focusedTabCandidate.focusedTabCandidateData;
+    if (candidateData) {
+      $.focusedUrlV2.value = candidateData.url || '';
+      if (candidateData.favicon) {
+        const fav = await candidateData.favicon();
+        if (fav) {
+          $.focusedFaviconV2.src = URL.createObjectURL(fav);
+        }
+      }
+    }
+    return;
+  }
+
+  if (focusedTabData.focusedTab) {
+    const focusedTab = focusedTabData.focusedTab;
+    $.focusedTabLogsV2.innerText =
+        'Focused Tab State Changed: TabData available';
+    $.focusedUrlV2.value = focusedTab.url || '';
+    if (focusedTab.favicon) {
+      const fav = await focusedTab.favicon();
+      if (fav) {
+        $.focusedFaviconV2.src = URL.createObjectURL(fav);
+      }
+    }
+    return;
+  }
+
+  $.focusedTabLogsV2.innerText = 'Focused Tab State Changed: Unknown State';
 }
 
 createGlicHostRegistryOnLoad().then((registry) => {
@@ -244,6 +303,10 @@ $.reloadpage.addEventListener('click', () => {
 
 $.contextAccessIndicator.addEventListener('click', () => {
   getBrowser()!.setContextAccessIndicator!($.contextAccessIndicator.checked);
+});
+
+$.contextAccessIndicatorV2.addEventListener('click', () => {
+  getBrowser()!.setContextAccessIndicator!($.contextAccessIndicatorV2.checked);
 });
 
 $.getpagecontext.addEventListener('click', async () => {

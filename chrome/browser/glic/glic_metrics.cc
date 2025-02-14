@@ -286,7 +286,7 @@ void GlicMetrics::OnImpressionTimerFired() {
 
 ukm::SourceId GlicMetrics::GetSourceId() {
   content::WebContents* web_contents =
-      tab_manager_->GetWebContentsForFocusedTab();
+      tab_manager_->GetFocusedTabData().focused_tab_contents.get();
   if (web_contents) {
     return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   }

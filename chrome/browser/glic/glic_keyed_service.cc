@@ -210,7 +210,8 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
 void GlicKeyedService::GetContextFromFocusedTab(
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
-  content::WebContents* web_contents = GetFocusedTab();
+  const raw_ptr<content::WebContents> web_contents =
+      GetFocusedTabData().focused_tab_contents.get();
   if (!web_contents) {
     // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
     LOG(ERROR) << "GetContextFromFocusedTab: No web contents";
@@ -245,13 +246,15 @@ void GlicKeyedService::CaptureScreenshot(
       std::move(callback));
 }
 
-content::WebContents* GlicKeyedService::GetFocusedTab() {
-  return focused_tab_manager_.GetWebContentsForFocusedTab();
+FocusedTabData GlicKeyedService::GetFocusedTabData() {
+  return focused_tab_manager_.GetFocusedTabData();
 }
 
 bool GlicKeyedService::IsContextAccessIndicatorShown(
     const content::WebContents* contents) {
-  return is_context_access_indicator_enabled_ && GetFocusedTab() == contents;
+  const raw_ptr<content::WebContents> web_contents =
+      GetFocusedTabData().focused_tab_contents.get();
+  return is_context_access_indicator_enabled_ && web_contents == contents;
 }
 
 void GlicKeyedService::WebClientCreated() {

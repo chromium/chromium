@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
+import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType} from './request_types.js';
 
 
@@ -112,12 +112,13 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   }
 
   glicWebClientNotifyFocusedTabChanged(payload: {
-    focusedTab: TabDataPrivate|undefined,
+    focusedTabDataPrivate: FocusedTabDataPrivate,
   }) {
-    const tabData = !payload.focusedTab ?
-        undefined :
-        convertTabDataFromPrivate(payload.focusedTab);
-    this.host.getFocusedTabState().assignAndSignal(tabData);
+    const focusedTabData =
+        convertFocusedTabDataFromPrivate(payload.focusedTabDataPrivate);
+    this.host.getFocusedTabStateV2().assignAndSignal(focusedTabData);
+    // Keep below for backwards compatibility.
+    this.host.getFocusedTabState().assignAndSignal(focusedTabData.focusedTab);
   }
 }
 
@@ -131,6 +132,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   canAttachPanelValue = ObservableValueImpl.withNoValue<boolean>();
   private focusedTabState =
       ObservableValueImpl.withNoValue<TabData|undefined>();
+  private focusedTabStateV2 = ObservableValueImpl.withNoValue<FocusedTabData>();
   private permissionStateMicrophone =
       ObservableValueImpl.withNoValue<boolean>();
   private permissionStateLocation = ObservableValueImpl.withNoValue<boolean>();
@@ -162,9 +164,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const state = await this.sender.requestWithResponse(
         'glicBrowserWebClientCreated', {});
     this.panelState.assignAndSignal(state.panelState);
-    this.focusedTabState.assignAndSignal(
-        state.focusedTab ? convertTabDataFromPrivate(state.focusedTab) :
-                           undefined);
+    const focusedTabData =
+        convertFocusedTabDataFromPrivate(state.focusedTabData);
+    this.focusedTabState.assignAndSignal(focusedTabData.focusedTab);
+    this.focusedTabStateV2.assignAndSignal(focusedTabData);
     this.permissionStateMicrophone.assignAndSignal(
         state.microphonePermissionEnabled);
     this.permissionStateLocation.assignAndSignal(
@@ -270,6 +273,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getFocusedTabState(): ObservableValueImpl<TabData|undefined> {
     return this.focusedTabState;
+  }
+
+  getFocusedTabStateV2(): ObservableValueImpl<FocusedTabData> {
+    return this.focusedTabStateV2;
   }
 
   getMicrophonePermissionState(): ObservableValueImpl<boolean> {
@@ -433,15 +440,33 @@ function replaceProperties<O, R>(
 }
 
 function convertTabDataFromPrivate(data: TabDataPrivate): TabData {
+  let faviconResult: Promise<Blob>|undefined;
   async function getFavicon() {
-    if (data.favicon) {
-      return rgbaImageToBlob(data.favicon);
+    if (data.favicon && !faviconResult) {
+      faviconResult = rgbaImageToBlob(data.favicon);
+      return faviconResult;
     }
-    return undefined;
+    return faviconResult;
   }
 
   const favicon = data.favicon && getFavicon;
   return replaceProperties(data, {favicon});
+}
+
+function convertFocusedTabCandidateFromPrivate(
+    data: FocusedTabCandidatePrivate): FocusedTabCandidate {
+  const focusedTabCandidateData = data.focusedTabCandidateData &&
+      convertTabDataFromPrivate(data.focusedTabCandidateData);
+  return replaceProperties(data, {focusedTabCandidateData});
+}
+
+function convertFocusedTabDataFromPrivate(data: FocusedTabDataPrivate):
+    FocusedTabData {
+  const focusedTab =
+      data.focusedTab && convertTabDataFromPrivate(data.focusedTab);
+  const focusedTabCandidate = data.focusedTabCandidate &&
+      convertFocusedTabCandidateFromPrivate(data.focusedTabCandidate);
+  return replaceProperties(data, {focusedTab, focusedTabCandidate});
 }
 
 function streamFromBuffer(buffer: Uint8Array): ReadableStream<Uint8Array> {

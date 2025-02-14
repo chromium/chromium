@@ -17,14 +17,14 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
-import type {OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
-import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason} from '../glic_api/glic_api.js';
+import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError} from '../glic_api/glic_api.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
+import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Implemented by the embedder of GlicApiHost.
@@ -136,11 +136,12 @@ class WebClientImpl implements WebClientInterface {
         });
   }
 
-  notifyFocusedTabChanged(focusedTab: (TabDataMojo|null)): void {
+  notifyFocusedTabChanged(focusedTabData: (FocusedTabDataMojo)): void {
     const transfer: Transferable[] = [];
     this.sender.requestNoResponse(
         'glicWebClientNotifyFocusedTabChanged', {
-          focusedTab: tabDataToClient(focusedTab, transfer),
+          focusedTabDataPrivate:
+              focusedTabDataToClient(focusedTabData, transfer),
         },
         transfer);
   }
@@ -171,7 +172,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
     return {
       panelState: panelStateToClient(initialState.panelState),
-      focusedTab: tabDataToClient(initialState.focusedTab, transfer),
+      focusedTabData:
+          focusedTabDataToClient(initialState.focusedTabData, transfer),
       microphonePermissionEnabled: initialState.microphonePermissionEnabled,
       locationPermissionEnabled: initialState.locationPermissionEnabled,
       tabContextPermissionEnabled: initialState.tabContextPermissionEnabled,
@@ -358,8 +360,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       throw new ErrorWithReasonImpl(
           'captureScreenshot',
           (errorReason as CaptureScreenshotErrorReason | undefined) ??
-              CaptureScreenshotErrorReason
-                  .SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON);
+              CaptureScreenshotErrorReason.UNKNOWN);
     }
     const screenshotArray = new Uint8Array(screenshot.data);
     transfer.push(screenshotArray.buffer);
@@ -610,6 +611,61 @@ function tabDataToClient(tabData: TabDataMojo|null, transfer: Transferable[]):
     favicon,
     documentMimeType: tabData.documentMimeType,
   };
+}
+
+function focusedTabCandidateToClient(
+    focusedTabCandidate: FocusedTabCandidateMojo,
+    transfer: Transferable[]): FocusedTabCandidatePrivate {
+  const focusedTabCandidateData =
+      tabDataToClient(focusedTabCandidate.focusedTabCandidateData, transfer);
+  const invalidCandidateError =
+      invalidCandidateErrorToClient(focusedTabCandidate.invalidCandidateError);
+  return {
+    focusedTabCandidateData,
+    invalidCandidateError,
+  };
+}
+
+function focusedTabDataToClient(
+    focusedTabData: FocusedTabDataMojo,
+    transfer: Transferable[]): FocusedTabDataPrivate {
+  if (focusedTabData.focusedTab) {
+    return {
+      focusedTab: tabDataToClient(focusedTabData.focusedTab, transfer),
+    };
+  }
+  if (focusedTabData.focusedTabCandidate) {
+    return {
+      focusedTabCandidate: focusedTabCandidateToClient(
+          focusedTabData.focusedTabCandidate, transfer),
+    };
+  }
+  if (focusedTabData.noCandidateTabError) {
+    return {
+      noCandidateTabError:
+          noCandidateTabErrorToClient(focusedTabData.noCandidateTabError),
+    };
+  }
+  return {noCandidateTabError: NoCandidateTabError.UNKNOWN};
+}
+
+function invalidCandidateErrorToClient(
+    mojoReason: MojoInvalidCandidateError|null): InvalidCandidateError|
+    undefined {
+  if (!mojoReason) {
+    return undefined;
+  }
+  return (mojoReason.valueOf() as InvalidCandidateError | undefined) ??
+      InvalidCandidateError.UNKNOWN;
+}
+
+function noCandidateTabErrorToClient(mojoReason: MojoNoCandidateTabError|null):
+    NoCandidateTabError|undefined {
+  if (!mojoReason) {
+    return undefined;
+  }
+  return (mojoReason.valueOf() as NoCandidateTabError) ??
+      NoCandidateTabError.UNKNOWN;
 }
 
 function getArrayBufferFromBigBuffer(bigBuffer: BigBuffer): ArrayBuffer|
