@@ -353,9 +353,7 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
 }
 
 void CanvasResourceSharedBitmap::NotifyResourceLost() {
-  // Release our reference to the SharedImage since the resource can
-  // no longer be safely recycled and its memory is needed for copy-on-write.
-  shared_image_.reset();
+  is_lost_ = true;
 }
 
 // CanvasResourceSharedImage
