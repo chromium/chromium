@@ -4148,5 +4148,42 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, PartialFirstLastNames) {
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
 }
 
+// Test fixture with flag "AutofillRelaxAddressImport" enabled.
+class FormDataImporterTest_RelaxAddressImport : public FormDataImporterTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillRelaxAddressImport};
+};
+
+// Tests that duplicate fields with identical field values are valid. They would
+// thus not abandon the import of the address.
+TEST_F(FormDataImporterTest_RelaxAddressImport,
+       DuplicateFieldsWithIdenticalValuesAreValid) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.set_value(u"First");
+  AutofillField field2;
+  field2.SetTypeTo(AutofillType(NAME_FIRST));
+  field2.set_value(u"First");
+  EXPECT_FALSE(test_api(form_data_importer())
+                   .HasInvalidFieldTypes(
+                       std::to_array<const AutofillField*>({&field, &field2})));
+}
+
+// Tests that duplicate fields with different field values are invalid. They
+// would thus abandon the import of the address.
+TEST_F(FormDataImporterTest_RelaxAddressImport,
+       DuplicateFieldsWithDifferentValuesAreInvalid) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.set_value(u"First");
+  AutofillField field2;
+  field2.SetTypeTo(AutofillType(NAME_FIRST));
+  field2.set_value(u"Other value");
+  EXPECT_TRUE(test_api(form_data_importer())
+                  .HasInvalidFieldTypes(
+                      std::to_array<const AutofillField*>({&field, &field2})));
+}
+
 }  // namespace
 }  // namespace autofill
