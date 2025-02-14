@@ -695,17 +695,17 @@ void RestrictedCookieManager::SetCanonicalCookie(
     return;
   }
 
-  // Check cookie accessibility with cookie_settings.
-  // TODO(morlovich): Try to validate site_for_cookies as well.
-  bool blocked = !cookie_settings_->IsCookieAccessible(
-      cookie, url, site_for_cookies, top_frame_origin,
-      first_party_set_metadata_,
+  const net::CookieSettingOverrides cookie_setting_overrides =
       GetCookieSettingOverrides(
           storage_access_api_status,
           /*is_ad_tagged=*/false,
           /*apply_devtools_overrides=*/apply_devtools_overrides,
-          /*force_disable_third_party_cookies=*/false),
-      &status);
+          /*force_disable_third_party_cookies=*/false);
+  // Check cookie accessibility with cookie_settings.
+  // TODO(morlovich): Try to validate site_for_cookies as well.
+  bool blocked = !cookie_settings_->IsCookieAccessible(
+      cookie, url, site_for_cookies, top_frame_origin,
+      first_party_set_metadata_, cookie_setting_overrides, &status);
 
   if (blocked) {
     // Cookie allowed by cookie_settings checks could be blocked explicitly,
@@ -728,12 +728,6 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // isolation_info is always used.
   url::Origin isolated_top_frame_origin =
       isolation_info_.top_frame_origin().value_or(url::Origin());
-  net::CookieSettingOverrides cookie_setting_overrides =
-      GetCookieSettingOverrides(
-          storage_access_api_status,
-          /*is_ad_tagged=*/false,
-          /*apply_devtools_overrides=*/apply_devtools_overrides,
-          /*force_disable_third_party_cookies=*/false);
   if (!status.IsInclude()) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
@@ -833,8 +827,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
       base::BindOnce(&RestrictedCookieManager::SetCanonicalCookieResult,
                      weak_ptr_factory_.GetWeakPtr(), url,
                      isolated_top_frame_origin, cookie_setting_overrides,
-                     site_for_cookies, cookie_copy, options,
-                     std::move(callback)),
+                     site_for_cookies, cookie_copy, std::move(callback)),
       cookie_access_result);
 }
 
@@ -844,7 +837,6 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
     const net::CookieSettingOverrides& cookie_setting_overrides,
     const net::SiteForCookies& site_for_cookies,
     const net::CanonicalCookie& cookie,
-    const net::CookieOptions& net_options,
     SetCanonicalCookieCallback user_callback,
     net::CookieAccessResult access_result) {
   // TODO(crbug.com/40632967): Only report pure INCLUDE once samesite
