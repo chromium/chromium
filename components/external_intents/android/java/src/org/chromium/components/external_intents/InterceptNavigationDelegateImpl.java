@@ -436,7 +436,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                     public void run() {
                         // Navigation may have been externally canceled, or something caused
                         // the Navigation Chain to be reset, so we should avoid leaving Chrome.
-                        if (mWebContents.isDestroyed()
+                        if (mWebContents == null
+                                || mWebContents.isDestroyed()
                                 || !params.getRedirectHandler().isOnNavigation()) {
                             cancelPendingShouldIgnoreCheck();
                             return;
