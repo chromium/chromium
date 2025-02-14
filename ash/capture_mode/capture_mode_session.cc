@@ -217,6 +217,10 @@ constexpr int kSunfishModeCaptureRegionRadiusDp = 16;
 // a region in sunfish mode.
 constexpr int kSunfishModeCaptureRegionBorderWidthDp = 6;
 
+// The radius of the focus ring drawn around the whole capture region in sunfish
+// mode.
+constexpr int kSunfishRegionFocusRingRadiusDp = 18;
+
 // The animation duration for fading in Scanner action buttons.
 constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
     base::Milliseconds(100);
@@ -2362,9 +2366,9 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
       break;
     case FineTunePosition::kCenter: {
       gfx::RectF focus_rect(region);
-      focus_rect.Inset(
-          gfx::InsetsF(-kFocusRingSpacingDp - kFocusRingStrokeWidthDp / 2));
-      canvas->DrawRect(focus_rect, focus_ring_flags);
+      focus_rect.Outset(kFocusRingSpacingDp + kFocusRingStrokeWidthDp / 2);
+      canvas->DrawRoundRect(focus_rect, kSunfishRegionFocusRingRadiusDp,
+                            focus_ring_flags);
       break;
     }
     default: {
