@@ -2907,20 +2907,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordMigrationWarning.UserAction"
-    enum="PasswordMigrationWarningUserActions" expires_after="2025-04-13">
-  <owner>izuzic@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    This histograms logs the action that the user performed in the local
-    password migration warning sheet. For the export and sync options, this is
-    recorded when the user taps &quot;Next&quot; after selecting the
-    corresponding radio button. All other actions are recorded when tapping on
-    the corresponding buttons/dismissing the sheet. Multiple buckets can be
-    recorded for the same sheet. Android only.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordNoteActionInSettings2"
     enum="PasswordNoteAction" expires_after="2025-05-11">
   <owner>derinel@google.com</owner>
