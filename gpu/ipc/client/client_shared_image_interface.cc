@@ -320,7 +320,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
   proxy_->AddReferenceToSharedImage(sync_token, mailbox);
 
   return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
-      mailbox, metadata, sync_token, holder_, texture_target));
+      mailbox, metadata, sync_token, holder_,
+      std::move(exported_shared_image.buffer_handle_), texture_target));
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(
@@ -357,7 +358,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(
       mailbox,
       SharedImageMetadata(format, size, color_space, surface_origin, alpha_type,
                           usage),
-      GenUnverifiedSyncToken(), holder_, texture_target));
+      GenUnverifiedSyncToken(), holder_, std::nullopt, texture_target));
 }
 
 Mailbox ClientSharedImageInterface::AddMailbox(const gpu::Mailbox& mailbox) {

@@ -100,7 +100,7 @@ GpuChannelSharedImageInterface::CreateSharedImageForAndroidVideo(
 
   return base::WrapRefCounted<ClientSharedImage>(
       new ClientSharedImage(mailbox, metadata, GenVerifiedSyncToken(), holder_,
-                            GL_TEXTURE_EXTERNAL_OES));
+                            std::nullopt, GL_TEXTURE_EXTERNAL_OES));
 }
 #endif
 
@@ -148,7 +148,7 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
 
   return base::WrapRefCounted<ClientSharedImage>(
       new ClientSharedImage(mailbox, metadata, GenVerifiedSyncToken(), holder_,
-                            GL_TEXTURE_EXTERNAL_OES));
+                            std::nullopt, GL_TEXTURE_EXTERNAL_OES));
 }
 #endif
 

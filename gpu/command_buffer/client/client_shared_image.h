@@ -175,7 +175,7 @@ class GPU_EXPORT ClientSharedImage
   // can properly handle shared image destruction internally.
   scoped_refptr<ClientSharedImage> MakeUnowned();
 
-  ExportedSharedImage Export();
+  ExportedSharedImage Export(bool with_buffer_handle = false);
 
   // Returns an unowned reference for the underlying shared image backing. The
   // caller should ensure that the original shared image backing created in
@@ -324,6 +324,7 @@ class GPU_EXPORT ClientSharedImage
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+                    std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
                     uint32_t texture_target);
 
   // This constructor is used only when importing an unowned ClientSharedImage,
@@ -332,6 +333,7 @@ class GPU_EXPORT ClientSharedImage
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
+                    std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
                     uint32_t texture_target);
 
   // VideoFrame needs this info currently for MappableSI.
@@ -410,11 +412,14 @@ struct GPU_EXPORT ExportedSharedImage {
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,
                       const SyncToken& sync_token,
+                      std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
                       uint32_t texture_target);
 
   Mailbox mailbox_;
   SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
+  // TODO(crbug.com/391788839): Add BufferUsage.
+  std::optional<gfx::GpuMemoryBufferHandle> buffer_handle_;
   uint32_t texture_target_ = 0;
 };
 

@@ -83,7 +83,6 @@ mojom("mojom") {
           mojom = "gfx.mojom.GpuMemoryBufferHandle"
           cpp = "::gfx::GpuMemoryBufferHandle"
           move_only = true
-          nullable_is_same_type = true
         },
         {
           mojom = "gfx.mojom.GpuMemoryBufferId"
