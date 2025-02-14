@@ -390,6 +390,9 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
       group.SetIsTransitioningToSaved(
           proto.local_group_data().is_transitioning_to_saved());
     }
+    if (proto.local_group_data().has_is_group_hidden()) {
+      group.SetIsHidden(proto.local_group_data().is_group_hidden());
+    }
     groups.emplace_back(std::move(group));
 
     // There should not be duplicate group GUIDs because they are used as
@@ -471,6 +474,7 @@ proto::LocalSharedTabGroupData GroupToLocalOnlyData(
   }
   local_group_data.set_is_transitioning_to_saved(
       group.is_transitioning_to_saved());
+  local_group_data.set_is_group_hidden(group.is_hidden());
   return local_group_data;
 }
 

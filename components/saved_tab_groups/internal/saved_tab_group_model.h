@@ -230,8 +230,15 @@ class SavedTabGroupModel {
   // One time migration of saved tab groups from v1 to v2.
   void MigrateTabGroupSavesUIUpdate();
 
-  // Mark the tab group as transitioned to shared.
-  void MarkTransitionedToShared(const base::Uuid& group_id);
+  // Start transitioning a shared tab group to a saved group. `shared_group_id`
+  // is the ID of the shared group.
+  // TODO(crbug.com/396143520): Rename this method to
+  // StartTransitioningToShared().
+  void MarkTransitionedToShared(const base::Uuid& shared_group_id);
+
+  // Mark that a tab group has completed transitioning to another group.
+  // `originating_group_id` is the ID of the originating tab group.
+  void MarkTransitionCompleted(const base::Uuid& originating_group_id);
 
   // Called to notify of the sync bridge state changes, e.g. whether initial
   // merge or disable sync are in progress. Invoked only for shared tab group

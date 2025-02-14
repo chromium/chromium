@@ -115,6 +115,8 @@ class SavedTabGroup {
 
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
+  bool is_hidden() const { return is_hidden_; }
+
   // Accessors for Tabs based on id.
   const SavedTabGroupTab* GetTab(const base::Uuid& saved_tab_guid) const;
   const SavedTabGroupTab* GetTab(const LocalTabID& local_tab_id) const;
@@ -163,6 +165,13 @@ class SavedTabGroup {
   // from the sync bridge for incoming sync updates (use
   // SetUpdatedByAttribution()).
   SavedTabGroup& SetCreatedByAttribution(GaiaId created_by);
+
+  // Sets whether the tab group should be hidden. A group is hidden in the
+  // following cases:
+  // 1. It has transitioned to shared.
+  // 2. It has transitioned to saved.
+  // 3. User has decided to leave or delete the group.
+  SavedTabGroup& SetIsHidden(bool is_hidden);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
@@ -322,6 +331,10 @@ class SavedTabGroup {
   // Whether the tab group is transitioning from shared to private, but not yet
   // completed. Can only be true if the tab group is currently shared.
   bool is_transitioning_to_saved_ = false;
+
+  // Whether a group has transitioned to a new group, either from shared to
+  // saved or vice versa. This is set on the source group.
+  bool is_hidden_ = false;
 
   // The last removed tabs which were removed from this group. Used for shared
   // tab groups only.
