@@ -9160,3 +9160,6 @@ crbug.com/391728750 [ Linux ] external/wpt/ai/translator/translator_translate.te
 #Gardener 2025-02-12
 crbug.com/392640451 [ Win11 ] editing/pasteboard/4947130.html [ Failure Pass ]
 crbug.com/392640451 [ Win11-arm64 ] editing/pasteboard/4947130.html [ Failure Pass ]
+
+#Gardener 2025-02-14
+crbug.com/396564890 [ Mac12 ] external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary-viewport-covering.tentative.html [ Failure Pass ]
