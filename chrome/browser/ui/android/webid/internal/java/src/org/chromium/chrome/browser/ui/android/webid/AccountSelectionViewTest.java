@@ -299,7 +299,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 new IdentityProviderMetadata(
                         expectedTextColor,
                         /* brandBackgroundColor= */ Color.GREEN,
-                        "https://icon-url.example",
+                        null,
                         mTestConfigUrl,
                         mTestLoginUrl,
                         false);

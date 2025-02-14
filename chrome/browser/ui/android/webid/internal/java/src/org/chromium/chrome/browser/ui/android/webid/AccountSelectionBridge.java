@@ -236,11 +236,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             // field.
             AccountSelectionBridgeJni.get()
                     .onAccountSelected(
-                            mNativeView,
-                            idpConfigUrl,
-                            account.getStringFields(),
-                            account.getPictureUrl(),
-                            account.isSignIn());
+                            mNativeView, idpConfigUrl, account.getId(), account.isSignIn());
         }
     }
 
@@ -285,8 +281,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         void onAccountSelected(
                 long nativeAccountSelectionViewAndroid,
                 @JniType("GURL") GURL idpConfigUrl,
-                @JniType("std::vector<std::string>") String[] accountFields,
-                @JniType("GURL") GURL accountPictureUrl,
+                @JniType("std::string") String accountId,
                 boolean isSignedIn);
 
         void onDismiss(

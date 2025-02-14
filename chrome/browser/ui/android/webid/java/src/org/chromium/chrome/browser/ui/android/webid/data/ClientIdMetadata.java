@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid.data;
 
+import android.graphics.Bitmap;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -16,21 +18,21 @@ import org.chromium.url.GURL;
 public class ClientIdMetadata {
     private final GURL mTermsOfServiceUrl;
     private final GURL mPrivacyPolicyUrl;
-    private final String mBrandIconUrl;
+    private final Bitmap mBrandIconBitmap;
 
     /**
      * @param termsOfServiceUrl URL for the terms of service for this client ID.
      * @param privacyPolicyUrl URL for the privacy policy for this client ID.
-     * @param brandIconUrl String of URL for the brand icon for this client ID.
+     * @param brandIconBitmap Bitmap of the brand icon for this client ID.
      */
     @CalledByNative
     public ClientIdMetadata(
             @JniType("GURL") GURL termsOfServiceUrl,
             @JniType("GURL") GURL privacyPolicyUrl,
-            @JniType("std::string") String brandIconUrl) {
+            Bitmap brandIconBitmap) {
         mTermsOfServiceUrl = termsOfServiceUrl;
         mPrivacyPolicyUrl = privacyPolicyUrl;
-        mBrandIconUrl = brandIconUrl;
+        mBrandIconBitmap = brandIconBitmap;
     }
 
     public GURL getTermsOfServiceUrl() {
@@ -41,7 +43,7 @@ public class ClientIdMetadata {
         return mPrivacyPolicyUrl;
     }
 
-    public String getBrandIconUrl() {
-        return mBrandIconUrl;
+    public Bitmap getBrandIconBitmap() {
+        return mBrandIconBitmap;
     }
 }

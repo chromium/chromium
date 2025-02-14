@@ -267,8 +267,10 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   StubAccountSelectionViewDelegate& operator=(
       const StubAccountSelectionViewDelegate&) = delete;
 
-  void OnAccountSelected(const GURL&,
-                         const content::IdentityRequestAccount&) override {}
+  void OnAccountSelected(
+      const GURL&,
+      const std::string&,
+      const content::IdentityRequestAccount::LoginState&) override {}
   void OnDismiss(DismissReason dismiss_reason) override {
     dismiss_reason_ = dismiss_reason;
     if (on_dismiss_) {
@@ -723,8 +725,10 @@ class ViewDeletingAccountSelectionViewDelegate
     view_ = std::move(view);
   }
 
-  void OnAccountSelected(const GURL&,
-                         const content::IdentityRequestAccount&) override {
+  void OnAccountSelected(
+      const GURL&,
+      const std::string&,
+      const content::IdentityRequestAccount::LoginState&) override {
     view_.reset();
   }
 

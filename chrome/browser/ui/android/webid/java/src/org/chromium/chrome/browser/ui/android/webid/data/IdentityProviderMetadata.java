@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid.data;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
@@ -16,7 +18,7 @@ import org.chromium.url.GURL;
 public class IdentityProviderMetadata {
     private final Integer mBrandTextColor;
     private final Integer mBrandBackgroundColor;
-    private final String mBrandIconUrl;
+    private final Bitmap mBrandIconBitmap;
     private final GURL mConfigUrl;
     private final GURL mLoginUrl;
     // Whether use a different account button needs to be shown, whether due to the IDP requesting
@@ -27,7 +29,7 @@ public class IdentityProviderMetadata {
     public IdentityProviderMetadata(
             long brandTextColor,
             long brandBackgroundColor,
-            @JniType("std::string") String brandIconUrl,
+            Bitmap brandIconBitmap,
             @JniType("GURL") GURL configUrl,
             @JniType("GURL") GURL loginUrl,
             boolean showUseDifferentAccountButton) {
@@ -38,7 +40,7 @@ public class IdentityProviderMetadata {
                 (brandBackgroundColor == ColorUtils.INVALID_COLOR)
                         ? null
                         : (int) brandBackgroundColor;
-        mBrandIconUrl = brandIconUrl;
+        mBrandIconBitmap = brandIconBitmap;
         mConfigUrl = configUrl;
         mLoginUrl = loginUrl;
         mShowUseDifferentAccountButton = showUseDifferentAccountButton;
@@ -52,8 +54,8 @@ public class IdentityProviderMetadata {
         return mBrandBackgroundColor;
     }
 
-    public String getBrandIconUrl() {
-        return mBrandIconUrl;
+    public Bitmap getBrandIconBitmap() {
+        return mBrandIconBitmap;
     }
 
     public GURL getConfigUrl() {

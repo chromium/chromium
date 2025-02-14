@@ -88,8 +88,10 @@ class IdentityDialogController
   content::WebContents* GetRpWebContents() override;
 
   // AccountSelectionView::Delegate:
-  void OnAccountSelected(const GURL& idp_config_url,
-                         const Account& account) override;
+  void OnAccountSelected(
+      const GURL& idp_config_url,
+      const std::string& account_id,
+      const content::IdentityRequestAccount::LoginState& login_state) override;
   void OnDismiss(DismissReason dismiss_reason) override;
   void OnLoginToIdP(const GURL& idp_config_url,
                     const GURL& idp_login_url) override;

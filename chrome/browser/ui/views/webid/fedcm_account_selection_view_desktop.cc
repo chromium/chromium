@@ -871,7 +871,9 @@ bool FedCmAccountSelectionView::NotifyDelegateOfAccountSelection(
 
   base::WeakPtr<FedCmAccountSelectionView> weak_ptr(
       weak_ptr_factory_.GetWeakPtr());
-  delegate_->OnAccountSelected(idp_data.idp_metadata.config_url, account);
+  delegate_->OnAccountSelected(
+      idp_data.idp_metadata.config_url, account.id,
+      account.login_state.value_or(Account::LoginState::kSignUp));
 
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
   // See https://crbug.com/1393650 for details.

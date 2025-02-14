@@ -22,9 +22,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
-import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.TextView;
 
@@ -39,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -208,7 +205,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                         "Test",
                         "Test",
                         /* secondaryDescription= */ null,
-                        TEST_PROFILE_PIC,
                         null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ false,
@@ -601,14 +597,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
     @Test
     @MediumTest
     public void testAccountChooserToVerifyingDialogHeaderReused() {
-        doCallback(
-                        /* index= */ 1,
-                        (Callback<Bitmap> callback) -> {
-                            callback.onResult(Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888));
-                        })
-                .when(mMockImageFetcher)
-                .fetchImage(any(), any());
-
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
@@ -650,14 +638,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
     @Test
     @MediumTest
     public void testRequestPermissionDialogToVerifyingDialogHeaderReused() {
-        doCallback(
-                        /* index= */ 1,
-                        (Callback<Bitmap> callback) -> {
-                            callback.onResult(Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888));
-                        })
-                .when(mMockImageFetcher)
-                .fetchImage(any(), any());
-
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(

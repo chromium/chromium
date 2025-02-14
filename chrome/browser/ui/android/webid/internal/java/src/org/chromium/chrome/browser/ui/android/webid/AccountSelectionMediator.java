@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -45,7 +42,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
@@ -227,7 +223,6 @@ class AccountSelectionMediator {
     private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
     private @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
-    private ImageFetcher mImageFetcher;
     private UkmRecorder mUkmRecorder;
 
     // All of the user's accounts.
@@ -285,7 +280,6 @@ class AccountSelectionMediator {
             ModelList sheetAccountItems,
             BottomSheetController bottomSheetController,
             AccountSelectionBottomSheetContent bottomSheetContent,
-            ImageFetcher imageFetcher,
             @Px int desiredAvatarSize,
             @RpMode.EnumType int rpMode,
             Context context,
@@ -296,7 +290,6 @@ class AccountSelectionMediator {
         mDelegate = delegate;
         mModel = model;
         mSheetAccountItems = sheetAccountItems;
-        mImageFetcher = imageFetcher;
         mDesiredAvatarSize = desiredAvatarSize;
         mRpMode = rpMode;
         mBottomSheetController = bottomSheetController;
@@ -577,31 +570,6 @@ class AccountSelectionMediator {
         return currentTime - mComponentShowTime > POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
     }
 
-    /* Used to show placeholder icon so that the header text wrapping does not change when the icon
-     * is fetched.
-     */
-    private void showPlaceholderIcon(IdentityProviderMetadata idpMetadata) {
-        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
-            mIdpBrandIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-            Canvas brandIconCanvas = new Canvas(mIdpBrandIcon);
-            brandIconCanvas.drawColor(Color.TRANSPARENT);
-        }
-    }
-
-    private void fetchBrandIcon(String brandIconUrl, Callback<Bitmap> callback) {
-        if (!TextUtils.isEmpty(brandIconUrl)) {
-            int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize(mRpMode);
-            ImageFetcher.Params params =
-                    ImageFetcher.Params.createNoResizing(
-                            new GURL(brandIconUrl),
-                            ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
-                            brandIconIdealSize,
-                            brandIconIdealSize);
-
-            mImageFetcher.fetchImage(params, callback);
-        }
-    }
-
     private boolean isValidBrandIcon(Bitmap bitmap) {
         return bitmap != null
                 && bitmap.getWidth() == bitmap.getHeight()
@@ -733,11 +701,6 @@ class AccountSelectionMediator {
         // TODO(crbug.com/392142580): use the full list on Android UI.
         IdentityProviderData idpData = idpDataList.get(0);
         String idpForDisplay = idpData.getIdpForDisplay();
-        // On passive mode, show placeholder icon to preserve header text wrapping when icon is
-        // fetched.
-        if (mRpMode == RpMode.PASSIVE) {
-            showPlaceholderIcon(idpData.getIdpMetadata());
-        }
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mAccounts = accounts;
@@ -766,11 +729,11 @@ class AccountSelectionMediator {
         }
 
         if (!mIsMultipleIdps) {
-            fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+            updateIdpBrandIcon(mIdpMetadata.getBrandIconBitmap());
         }
         // RP brand icon is fetched here, but not shown until the request permission dialog.
         if (mRpMode == RpMode.ACTIVE) {
-            fetchBrandIcon(mClientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
+            updateRpBrandIcon(mClientMetadata.getBrandIconBitmap());
         }
 
         if (!showAccountsInternal(newAccounts)) {
@@ -785,7 +748,6 @@ class AccountSelectionMediator {
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
-        showPlaceholderIcon(idpMetadata);
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mIdpMetadata = idpMetadata;
@@ -796,7 +758,7 @@ class AccountSelectionMediator {
             return false;
         }
         setComponentShowTime(SystemClock.elapsedRealtime());
-        fetchBrandIcon(idpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        updateIdpBrandIcon(idpMetadata.getBrandIconBitmap());
         return true;
     }
 
@@ -817,11 +779,10 @@ class AccountSelectionMediator {
 
         // Update the bottom sheet into an error bottom sheet for passive mode.
         if (mRpMode == RpMode.PASSIVE) {
-            showPlaceholderIcon(idpMetadata);
             if (!updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false)) {
                 return false;
             }
-            fetchBrandIcon(idpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+            updateIdpBrandIcon(idpMetadata.getBrandIconBitmap());
             return true;
         }
 
@@ -905,11 +866,6 @@ class AccountSelectionMediator {
     @VisibleForTesting
     void setComponentShowTime(long componentShowTime) {
         mComponentShowTime = componentShowTime;
-    }
-
-    @VisibleForTesting
-    void setImageFetcher(ImageFetcher imageFetcher) {
-        mImageFetcher = imageFetcher;
     }
 
     @VisibleForTesting
@@ -1246,7 +1202,7 @@ class AccountSelectionMediator {
         // If we were in multi IDP mode, we had not fetched the IDP brand icon yet. Fetch it now.
         // TODO(crbug.com/390790111): fetch the correct IDP, not the first one.
         if (mIsMultipleIdps) {
-            fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+            updateIdpBrandIcon(mIdpMetadata.getBrandIconBitmap());
         }
         mIsMultipleIdps = false;
 
