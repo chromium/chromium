@@ -529,7 +529,7 @@ TEST_F(BirchWeatherProviderTest, WeatherManagedUser) {
   const AccountId& account_id = AccountId::FromUserEmail("primary@test");
   TestSessionControllerClient* const session = GetSessionControllerClient();
   session->AddUserSession("primary@test", user_manager::UserType::kRegular,
-                          /*provide_pref_service=*/false,
+                          /*provide_pref_service=*/true,
                           /*is_new_profile=*/true, std::string(),
                           /*is_account_managed=*/true);
   session->SwitchActiveUser(account_id);

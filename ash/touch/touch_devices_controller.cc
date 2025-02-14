@@ -116,10 +116,12 @@ void TouchDevicesController::SetTouchscreenEnabled(
 }
 
 void TouchDevicesController::OnUserSessionAdded(const AccountId& account_id) {
-  uma_record_callback_ = base::BindOnce([](PrefService* prefs) {
-    UMA_HISTOGRAM_BOOLEAN("Touchpad.TapDragging.Started",
-                          prefs->GetBoolean(prefs::kTapDraggingEnabled));
-  });
+  PrefService* pref_service =
+      ash::Shell::Get()->session_controller()->GetUserPrefServiceForUser(
+          account_id);
+  CHECK(pref_service);
+  UMA_HISTOGRAM_BOOLEAN("Touchpad.TapDragging.Started",
+                        pref_service->GetBoolean(prefs::kTapDraggingEnabled));
 }
 
 void TouchDevicesController::OnSigninScreenPrefServiceInitialized(
@@ -128,10 +130,8 @@ void TouchDevicesController::OnSigninScreenPrefServiceInitialized(
 }
 
 void TouchDevicesController::OnActiveUserPrefServiceChanged(
-    PrefService* prefs) {
-  if (uma_record_callback_)
-    std::move(uma_record_callback_).Run(prefs);
-  ObservePrefs(prefs);
+    PrefService* pref_service) {
+  ObservePrefs(pref_service);
 }
 
 void TouchDevicesController::ObservePrefs(PrefService* prefs) {

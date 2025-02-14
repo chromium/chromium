@@ -635,10 +635,8 @@ void SessionControllerImpl::AddUserSession(const UserSession& user_session) {
 
   const AccountId account_id(user_session.user_info.account_id);
   PrefService* user_prefs = GetUserPrefServiceForUser(account_id);
-  // |user_prefs| could be null in tests.
-  if (user_prefs) {
-    OnProfilePrefServiceInitialized(account_id, user_prefs);
-  }
+  CHECK(user_prefs);
+  OnProfilePrefServiceInitialized(account_id, user_prefs);
 
   UpdateLoginStatus();
   for (auto& observer : observers_)

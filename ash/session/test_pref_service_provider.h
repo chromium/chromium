@@ -12,6 +12,7 @@
 
 class AccountId;
 class PrefService;
+class TestingPrefServiceSimple;
 
 namespace ash {
 
@@ -23,6 +24,9 @@ namespace ash {
 // references to them when that happens.
 class TestPrefServiceProvider {
  public:
+  static std::unique_ptr<TestingPrefServiceSimple>
+  CreateUserPrefServiceSimple();
+
   TestPrefServiceProvider();
 
   TestPrefServiceProvider(const TestPrefServiceProvider&) = delete;
@@ -34,7 +38,6 @@ class TestPrefServiceProvider {
   void SetSigninPrefs(std::unique_ptr<PrefService> signin_prefs);
   PrefService* GetSigninPrefs();
 
-  void CreateUserPrefs(const AccountId& account_id);
   void SetUserPrefs(const AccountId& account_id,
                     std::unique_ptr<PrefService> pref_service);
   void SetUnownedUserPrefs(const AccountId& account_id,

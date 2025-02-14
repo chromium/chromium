@@ -71,6 +71,8 @@ void TestSessionControllerClient::Reset() {
   session_info_.add_user_session_policy = AddUserSessionPolicy::ALLOWED;
   session_info_.state = session_manager::SessionState::LOGIN_PRIMARY;
   first_session_ready_fired_ = false;
+  // Emulate using the same pref service when re-login.
+  reuse_pref_service_ = true;
 
   controller_->ClearUserSessionsForTest();
   controller_->SetSessionInfo(session_info_);
@@ -141,10 +143,15 @@ void TestSessionControllerClient::AddUserSession(
 
   if (std::holds_alternative<bool>(provide_or_pref_service)) {
     bool provide = std::get<bool>(provide_or_pref_service);
+    CHECK(!default_provide_pref_service_ || provide);
     if (!default_provide_pref_service_) {
       CHECK(GetUserPrefService(account_id));
-    } else if (provide && !controller_->GetUserPrefServiceForUser(account_id)) {
-      ProvidePrefServiceForUser(account_id, /*notify*=*/false);
+    } else if (provide && !GetUserPrefService(account_id)) {
+      prefs_provider_->SetUserPrefs(
+          account_id, TestPrefServiceProvider::CreateUserPrefServiceSimple());
+    } else {
+      CHECK(!provide || reuse_pref_service_);
+      CHECK(GetUserPrefService(account_id));
     }
   } else {
     CHECK(std::holds_alternative<std::unique_ptr<PrefService>>(
@@ -173,18 +180,6 @@ void TestSessionControllerClient::AddUserSession(
   controller_->UpdateUserSession(std::move(session));
 
   MaybeNotifyFirstSessionReady();
-}
-
-PrefService* TestSessionControllerClient::ProvidePrefServiceForUser(
-    const AccountId& account_id,
-    bool notify) {
-  CHECK(!controller_->GetUserPrefServiceForUser(account_id));
-
-  prefs_provider_->CreateUserPrefs(account_id);
-  if (notify) {
-    NotifyUserPrefServiceInitialized(account_id);
-  }
-  return GetUserPrefService(account_id);
 }
 
 void TestSessionControllerClient::LockScreen() {
