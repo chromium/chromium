@@ -9,28 +9,21 @@ import {AsyncUtil} from '/common/async_util.js';
 
 import {SettingsManager} from '../../common/settings_manager.js';
 import {ChromeVox} from '../chromevox.js';
-import {TtsCapturingEventListener} from '../tts_interface.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 
-const AutomationEvent = chrome.automation.AutomationEvent;
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 
-/** @implements {TtsCapturingEventListener} */
 export class MediaAutomationHandler extends BaseAutomationHandler {
-  /** @private */
-  constructor() {
-    super(null);
-    /** @type {!Set<AutomationNode>} @private */
-    this.mediaRoots_ = new Set();
+  static MIN_WAITTIME_MS = 1000;
+  static instance: MediaAutomationHandler|null = null;
 
-    /** @type {Date} @private */
-    this.lastTtsEvent_ = new Date();
-  }
+  private mediaRoots_: Set<AutomationNode> = new Set();
+  private lastTtsEvent_: Date = new Date();
 
-  /** @private */
-  async addListeners_() {
+  private async addListeners_(): Promise<void> {
     ChromeVox.tts.addCapturingEventListener(this);
 
     this.node_ = await AsyncUtil.getDesktop();
@@ -41,7 +34,7 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
         EventType.MEDIA_STOPPED_PLAYING, this.onMediaStoppedPlaying);
   }
 
-  static async init() {
+  static async init(): Promise<void> {
     if (MediaAutomationHandler.instance) {
       throw 'Error: trying to create two instances of singleton MediaAutomationHandler';
     }
@@ -49,14 +42,12 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
     await MediaAutomationHandler.instance.addListeners_();
   }
 
-  /** @override */
-  onTtsStart() {
+  onTtsStart(): void {
     this.lastTtsEvent_ = new Date();
     this.update_({start: true});
   }
 
-  /** @override */
-  onTtsEnd() {
+  onTtsEnd(): void {
     const now = new Date();
     setTimeout(() => {
       const then = this.lastTtsEvent_;
@@ -68,15 +59,11 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
     }, MediaAutomationHandler.MIN_WAITTIME_MS);
   }
 
-  /** @override */
-  onTtsInterrupted() {
+  onTtsInterrupted(): void {
     this.onTtsEnd();
   }
 
-  /**
-   * @param {!AutomationEvent} evt
-   */
-  onMediaStartedPlaying(evt) {
+  onMediaStartedPlaying(evt: AutomationEvent): void {
     this.mediaRoots_.add(evt.target);
     const audioStrategy = SettingsManager.get('audioStrategy');
     if (ChromeVox.tts.isSpeaking() && audioStrategy === 'audioDuck') {
@@ -84,20 +71,14 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
     }
   }
 
-  /**
-   * @param {!AutomationEvent} evt
-   */
-  onMediaStoppedPlaying(evt) {
+  onMediaStoppedPlaying(): void {
     // Intentionally does nothing (to cover resume).
   }
 
   /**
    * Updates the media state for all observed automation roots.
-   * @param {{start: (boolean|undefined),
-   *          end: (boolean|undefined)}} options
-   * @private
    */
-  update_(options) {
+  private update_(options: {start?: boolean; end?: boolean}): void {
     const it = this.mediaRoots_.values();
     let item = it.next();
     const audioStrategy = SettingsManager.get('audioStrategy');
@@ -120,9 +101,3 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
     }
   }
 }
-
-/** @const {number} */
-MediaAutomationHandler.MIN_WAITTIME_MS = 1000;
-
-/** @type {MediaAutomationHandler} */
-MediaAutomationHandler.instance;
