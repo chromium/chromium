@@ -88,7 +88,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   bool IsPremultiplied() const {
     return GetSkImageInfo().alphaType() == SkAlphaType::kPremul_SkAlphaType;
   }
-  SkColorInfo GetSkColorInfo() const { return GetSkImageInfo().colorInfo(); }
 
   // Methods have exactly the same implementation for all sub-classes
   bool OriginClean() const { return is_origin_clean_; }
