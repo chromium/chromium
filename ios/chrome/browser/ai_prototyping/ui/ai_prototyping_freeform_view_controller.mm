@@ -238,6 +238,7 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
 
 - (void)serverSideSubmitButtonPressed:(UIButton*)button {
   [self disableSubmitButtons];
+  [self updateResponseField:@""];
 
   [self.mutator executeFreeformServerQuery:_queryField.text
                         systemInstructions:_systemInstructionsField.text
@@ -248,6 +249,7 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
 
 - (void)onDeviceSubmitButtonPressed:(UIButton*)button {
   [self disableSubmitButtons];
+  [self updateResponseField:@""];
 
   // TODO(crbug.com/387510419): Include stringified page context in prompt when
   // on-device is better supported.

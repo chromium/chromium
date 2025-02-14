@@ -85,10 +85,6 @@
                              model:
                                  (optimization_guide::proto::
                                       BlingPrototypingRequest_ModelEnum)model {
-  // Clear the result field text.
-  [self.consumer updateQueryResult:@""
-                        forFeature:AIPrototypingFeature::kFreeform];
-
   optimization_guide::proto::BlingPrototypingRequest request;
 
   // Set the whitespace-trimmed query on the request.
@@ -149,10 +145,6 @@
 
 - (void)executeFreeformOnDeviceQuery:
     (optimization_guide::proto::StringValue)request {
-  // Clear the result field text.
-  [self.consumer updateQueryResult:@""
-                        forFeature:AIPrototypingFeature::kFreeform];
-
   ::mojo_base::ProtoWrapper proto_wrapper = mojo_base::ProtoWrapper(request);
   __weak __typeof(self) weakSelf = self;
   _ai_prototyping_service->ExecuteOnDeviceQuery(
@@ -167,10 +159,6 @@
 - (void)executeGroupTabsWithStrategy:
     (optimization_guide::proto::
          TabOrganizationRequest_TabOrganizationModelStrategy)strategy {
-  // Clear the result field text.
-  [self.consumer updateQueryResult:@""
-                        forFeature:AIPrototypingFeature::kTabOrganization];
-
   // Ensure that tabOrganizationRequestWrapper is reset from previous attempts.
   if (_tabOrganizationRequestWrapper) {
     _tabOrganizationRequestWrapper = nil;
