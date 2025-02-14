@@ -161,6 +161,9 @@ found in the LICENSE file.
     <dimen name="recent_tabs_default_group_item_height">48dp</dimen>
     <dimen name="recent_tabs_count_text_size">10dp</dimen>
 
+    <!-- New Tab Animation -->
+    <dimen name="new_tab_animation_rect_corner_radius">10dp</dimen>
+
     <!-- Bookmarks dimensions -->
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>

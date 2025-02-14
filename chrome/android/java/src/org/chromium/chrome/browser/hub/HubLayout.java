@@ -533,7 +533,10 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             initialRect = new Rect();
             NewTabAnimationUtils.updateRects(
                     initialRect, finalRect, isRtl, /* isTopAligned= */ true);
-            cornerRadius = NewTabAnimationUtils.FOREGROUND_RADIUS;
+            cornerRadius =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.new_tab_animation_rect_corner_radius);
         } else {
             cornerRadius = 0;
             int y = finalRect.top;
@@ -557,6 +560,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                 new HubLayoutAnimationListener() {
                     @Override
                     public void onEnd(boolean wasForcedToFinish) {
+                        // TODO(crbug.com/40933120): Add fade animator.
                         doneHiding();
                     }
                 });
