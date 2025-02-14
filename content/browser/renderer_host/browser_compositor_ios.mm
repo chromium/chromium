@@ -320,6 +320,10 @@ void BrowserCompositorIOS::DidEnterBackForwardCache() {
   delegated_frame_host_->DidEnterBackForwardCache();
 }
 
+void BrowserCompositorIOS::ActivatedOrEvictedFromBackForwardCache() {
+  delegated_frame_host_->ActivatedOrEvictedFromBackForwardCache();
+}
+
 void BrowserCompositorIOS::DidNavigate() {
   if (render_widget_host_is_hidden_) {
     // Navigating while hidden should not allocate a new LocalSurfaceID. Once
