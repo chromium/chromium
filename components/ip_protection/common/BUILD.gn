@@ -620,3 +620,35 @@ source_set("ip_protection_issuer_token_crypter_unittest") {
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }
+
+source_set("ip_protection_probabilistic_reveal_token_manager") {
+  sources = [
+    "ip_protection_probabilistic_reveal_token_manager.cc",
+    "ip_protection_probabilistic_reveal_token_manager.h",
+  ]
+  public_deps = [ ":ip_protection_data_types" ]
+  deps = [
+    ":ip_protection_issuer_token_crypter",
+    ":ip_protection_issuer_token_fetcher",
+    "//base",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_manager_unittest") {
+  testonly = true
+  sources = [ "ip_protection_probabilistic_reveal_token_manager_unittest.cc" ]
+  deps = [
+    ":ip_protection_issuer_token_crypter",
+    ":ip_protection_issuer_token_fetcher",
+    ":ip_protection_probabilistic_reveal_token_manager",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
