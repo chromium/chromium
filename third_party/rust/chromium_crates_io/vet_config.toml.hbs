@@ -196,7 +196,6 @@ later if maybe we can just import their audit).
 Bumped up the exemption to 2.7.4 in June 2024, with a small and benign delta.
 """
 
-
 [[exemptions.num-bigint]]
 version = "0.4.6"
 criteria = ["safe-to-deploy", "ub-risk-2"]
@@ -247,7 +246,7 @@ Exemption updated to 1.0.19 in Feb 2025.
 
 [[exemptions.smallvec]]
 version = "1.13.2"
-criteria = ["ub-risk-2"]
+criteria = "ub-risk-2"
 notes = """
 Part of ICU4X import. Audited in google3 with ub-risk-3, however it's a widely used crate and it should
 be fine to temporarily up its rating. The google3 audit showed that it needed better encapsulation and
@@ -372,7 +371,6 @@ Part of Google-co-maintained ICU4X project.
 
 https://crbug.com/366411886
 """
-
 
 [[exemptions.zerovec-derive]]
 version = "0.11.0"
