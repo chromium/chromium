@@ -157,6 +157,33 @@ class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
                                     embedded_test_server_.base_url().spec());
   }
 
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    mixin_host_.SetUpDefaultCommandLine(command_line);
+    extensions::ExtensionBrowserTest::SetUpDefaultCommandLine(command_line);
+  }
+
+  bool SetUpUserDataDirectory() override {
+    return mixin_host_.SetUpUserDataDirectory() &&
+           extensions::ExtensionBrowserTest::SetUpUserDataDirectory();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mixin_host_.SetUpInProcessBrowserTestFixture();
+    extensions::ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    mixin_host_.SetUpLocalStatePrefService(local_state);
+    extensions::ExtensionBrowserTest::SetUpLocalStatePrefService(local_state);
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    mixin_host_.CreatedBrowserMainParts(browser_main_parts);
+    extensions::ExtensionBrowserTest::CreatedBrowserMainParts(
+        browser_main_parts);
+  }
+
   void SetUpOnMainThread() override {
     mixin_host_.SetUpOnMainThread();
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
@@ -178,16 +205,31 @@ class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
     extension = extensions::ExtensionBrowserTest::InstallExtension(path, 1);
   }
 
-  void WaitForPasswordChangeDetected() {
-    PasswordChangeWaiter password_change_waiter;
-    password_change_waiter.WaitForPasswordChange();
-  }
-
   void TearDownOnMainThread() override {
     InSessionPasswordChangeManager::ResetForTesting();
     mixin_host_.TearDownOnMainThread();
     extensions::ExtensionBrowserTest::TearDownOnMainThread();
     extensions::ExtensionBrowserTest::UninstallExtension(extension->id());
+  }
+
+  void PostRunTestOnMainThread() override {
+    mixin_host_.PostRunTestOnMainThread();
+    extensions::ExtensionBrowserTest::PostRunTestOnMainThread();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mixin_host_.TearDownInProcessBrowserTestFixture();
+    extensions::ExtensionBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void TearDown() override {
+    mixin_host_.TearDown();
+    extensions::ExtensionBrowserTest::TearDown();
+  }
+
+  void WaitForPasswordChangeDetected() {
+    PasswordChangeWaiter password_change_waiter;
+    password_change_waiter.WaitForPasswordChange();
   }
 
   FakeChangePasswordIdp fake_idp_;

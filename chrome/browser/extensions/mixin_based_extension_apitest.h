@@ -29,10 +29,12 @@ class MixinBasedExtensionApiTest : public ExtensionApiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override;
   bool SetUpUserDataDirectory() override;
+  void SetUpLocalStatePrefService(PrefService* local_state) override;
   void SetUpInProcessBrowserTestFixture() override;
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override;
   void SetUpOnMainThread() override;
+  void PostRunTestOnMainThread() override;
   void TearDownOnMainThread() override;
   void TearDownInProcessBrowserTestFixture() override;
   void TearDown() override;

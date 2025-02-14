@@ -143,6 +143,11 @@ class SupervisionExtensionTestBase
     ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    mixin_host_.SetUpLocalStatePrefService(local_state);
+    ExtensionBrowserTest::SetUpLocalStatePrefService(local_state);
+  }
+
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     mixin_host_.CreatedBrowserMainParts(browser_main_parts);
@@ -157,6 +162,11 @@ class SupervisionExtensionTestBase
   void TearDownOnMainThread() override {
     mixin_host_.TearDownOnMainThread();
     ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
+  void PostRunTestOnMainThread() override {
+    mixin_host_.PostRunTestOnMainThread();
+    ExtensionBrowserTest::PostRunTestOnMainThread();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
