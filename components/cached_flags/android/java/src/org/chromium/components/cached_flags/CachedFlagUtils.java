@@ -76,11 +76,8 @@ public class CachedFlagUtils {
      */
     static @Nullable CachedFlag getSpecificCachedFlag(String featureName) {
         if (sListsOfCachedFlags == null) {
-            // TODO(crbug.com/394854769): Disable this exception temporarily
-            // while investigating this bug
-            // throw new IllegalStateException(
-            //        "getSpecificCachedFlag() is called before setFullListOfFlags()");
-            return null;
+            throw new IllegalStateException(
+                    "getSpecificCachedFlag() is called before setFullListOfFlags()");
         }
 
         for (List<CachedFlag> listOfCachedFlags : sListsOfCachedFlags) {
@@ -100,12 +97,9 @@ public class CachedFlagUtils {
     static @Nullable CachedFeatureParam<?> getSpecificCachedFeatureParam(
             String featureName, String paramName) {
         if (sListsOfFeatureParams == null) {
-            // TODO(crbug.com/394854769): Disable this exception temporarily
-            // while investigating this bug
-            // throw new IllegalStateException(
-            //        "getSpecificCachedFeatureParam() is called before"
-            //                + " setFullListOfFeatureParams()");
-            return null;
+            throw new IllegalStateException(
+                    "getSpecificCachedFeatureParam() is called before"
+                            + " setFullListOfFeatureParams()");
         }
 
         for (List<CachedFeatureParam<?>> listOfFeatureParams : sListsOfFeatureParams) {

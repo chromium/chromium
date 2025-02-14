@@ -217,6 +217,7 @@ public class ProcessInitializationHandler {
     /** Performs the shared class initialization. */
     @CallSuper
     protected void handlePreNativeInitialization() {
+        ChromeCachedFlags.getInstance().setFullListOfFlags();
         setProcessStateSummaryForAnrs(false);
     }
 
