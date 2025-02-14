@@ -871,6 +871,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return Parent() && Parent()->IsLayoutGrid();
   }
 
+  bool IsMasonryItem() const {
+    NOT_DESTROYED();
+    return Parent() && Parent()->IsLayoutMasonry();
+  }
+
   bool IsMathItem() const {
     NOT_DESTROYED();
     return Parent() && Parent()->IsMathML();

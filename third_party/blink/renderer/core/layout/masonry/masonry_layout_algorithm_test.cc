@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/masonry/masonry_item_group.h"
 
 namespace blink {
 
@@ -99,6 +100,43 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildFixedTrackSizes) {
   EXPECT_EQ(set_count, expected_track_sizes.size());
   for (wtf_size_t i = 0; i < set_count; ++i) {
     EXPECT_EQ(TrackSize(i), LayoutUnit(expected_track_sizes[i]));
+  }
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, CollectMasonryItemGroups) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+      display: masonry;
+    }
+    </style>
+    <div id="masonry">
+      <div></div>
+      <div style="masonry-track: 1"></div>
+      <div style="masonry-track: 1 / 4"></div>
+      <div style="masonry-track: span 3"></div>
+      <div style="masonry-track: span 3 / 4"></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  MasonryNode node(GetLayoutBoxByElementId("masonry"));
+  const auto item_groups = node.CollectItemGroups(GridLineResolver(
+      node.Style(), /*column_auto_repetitions=*/0, /*row_auto_repetitions=*/0));
+
+  EXPECT_EQ(item_groups.size(), 4u);
+
+  for (const auto& [properties, items] : item_groups) {
+    wtf_size_t expected_size = 0;
+    const auto span = properties.Span();
+    if (span == GridSpan::IndefiniteGridSpan(3) ||
+        span == GridSpan::UntranslatedDefiniteGridSpan(0, 1)) {
+      expected_size = 1;
+    } else if (span == GridSpan::IndefiniteGridSpan(1) ||
+               span == GridSpan::UntranslatedDefiniteGridSpan(0, 3)) {
+      expected_size = 2;
+    }
+    EXPECT_EQ(items.size(), expected_size);
   }
 }
 

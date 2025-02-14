@@ -11,6 +11,11 @@
 namespace blink {
 
 const LayoutResult* MasonryLayoutAlgorithm::Layout() {
+  for (auto child = Node().FirstChild(); child; child = child.NextSibling()) {
+    To<BlockNode>(child).Layout(CreateConstraintSpaceForMeasure(
+        GridItemData(To<BlockNode>(child), Style(), Style())));
+  }
+
   // TODO(ethavar): Compute the actual block size.
   container_builder_.SetFragmentsTotalBlockSize(LayoutUnit());
   return container_builder_.ToBoxFragment();
