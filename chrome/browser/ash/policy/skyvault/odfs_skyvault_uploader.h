@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace ash::cloud_upload {
 
@@ -175,7 +176,9 @@ class OdfsSkyvaultUploader
 // - uploads file to a dedicated folder on OneDrive, and not to root
 // - invokes different sign-in process, that ensures only one notification is
 // TODO(aidazolic): Fix the instantiation.
-class OdfsMigrationUploader : public OdfsSkyvaultUploader {
+class OdfsMigrationUploader
+    : public OdfsSkyvaultUploader,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   using FactoryCallback =
       base::RepeatingCallback<scoped_refptr<OdfsMigrationUploader>(
@@ -204,11 +207,20 @@ class OdfsMigrationUploader : public OdfsSkyvaultUploader {
 
  private:
   // OdfsSkyvaultUploader:
+  void Run(UploadDoneCallback upload_callback) override;
   base::FilePath GetDestinationFolderPath(
       file_system_provider::ProvidedFileSystemInterface* file_system) override;
   void RequestSignIn(
       base::OnceCallback<void(base::File::Error)> on_sign_in_cb) override;
 
+  // network::NetworkConnectionTracker::NetworkConnectionObserver:
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+
+  void RunInternal();
+
+  UploadDoneCallback upload_callback_;
+  // Indicates whether there was no connection on starting the task.
+  bool waiting_for_connection_ = false;
   // Part of the source path relative to MyFiles
   const base::FilePath relative_source_path_;
   // The name of the device-unique upload root folder on Drive

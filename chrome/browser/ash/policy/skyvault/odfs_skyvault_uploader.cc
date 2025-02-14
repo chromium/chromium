@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "content/public/browser/network_service_instance.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash::cloud_upload {
@@ -403,9 +404,29 @@ OdfsMigrationUploader::OdfsMigrationUploader(
                            /*progress_callback=*/base::DoNothing(),
                            std::nullopt),
       relative_source_path_(relative_source_path),
-      upload_root_(upload_root) {}
+      upload_root_(upload_root) {
+  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
+}
 
-OdfsMigrationUploader::~OdfsMigrationUploader() = default;
+OdfsMigrationUploader::~OdfsMigrationUploader() {
+  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
+}
+
+void OdfsMigrationUploader::Run(UploadDoneCallback upload_callback) {
+  upload_callback_ = std::move(upload_callback);
+  RunInternal();
+}
+
+void OdfsMigrationUploader::RunInternal() {
+  if (!upload_callback_) {
+    return;
+  }
+
+  waiting_for_connection_ = content::GetNetworkConnectionTracker()->IsOffline();
+  if (!waiting_for_connection_) {
+    OdfsSkyvaultUploader::Run(std::move(upload_callback_));
+  }
+}
 
 base::FilePath OdfsMigrationUploader::GetDestinationFolderPath(
     file_system_provider::ProvidedFileSystemInterface* file_system) {
@@ -423,6 +444,18 @@ void OdfsMigrationUploader::RequestSignIn(
   CHECK(notification_manager);
   subscription_ = notification_manager->ShowOneDriveSignInNotification(
       std::move(on_sign_in_cb));
+}
+
+void OdfsMigrationUploader::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
+  if (waiting_for_connection_) {
+    bool is_online = !content::GetNetworkConnectionTracker()->IsOffline();
+    if (is_online) {
+      waiting_for_connection_ = false;
+      RunInternal();
+    }
+  }
+  // TODO(395843884): Fail with NetworkError if lost during upload.
 }
 
 }  // namespace ash::cloud_upload
