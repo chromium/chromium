@@ -97,8 +97,8 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
         backing_->shared_image->Map();
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage Failed.";
-      sii_->DestroySharedImage(gpu::SyncToken(),
-                               std::move(backing_->shared_image));
+      backing_->shared_image->UpdateDestructionSyncToken(gpu::SyncToken());
+      backing_->shared_image.reset();
       return;
     }
 
