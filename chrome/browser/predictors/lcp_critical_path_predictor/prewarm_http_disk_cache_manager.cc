@@ -177,14 +177,10 @@ PrewarmHttpDiskCacheManager::PrewarmJob::operator=(const PrewarmJob&) = default;
 PrewarmHttpDiskCacheManager::PrewarmJob::~PrewarmJob() = default;
 
 bool PrewarmHttpDiskCacheManager::PrewarmJob::operator==(
-    const PrewarmJob& other) const {
-  return std::tie(initiator_origin, top_frame_origin, url, request_type) ==
-         std::tie(other.initiator_origin, other.top_frame_origin, other.url,
-                  other.request_type);
-}
+    const PrewarmJob&) const = default;
 
 auto PrewarmHttpDiskCacheManager::PrewarmJob::operator<=>(
-    const PrewarmJob& other) const = default;
+    const PrewarmJob&) const = default;
 
 void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
     const PrewarmJob& prewarm_job) {
