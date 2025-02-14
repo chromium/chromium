@@ -53,6 +53,20 @@ public class TextMessagePreferenceTest {
         };
     }
 
+    static Matcher<View> hasContentDescription(CharSequence contentDescription) {
+        return new TypeSafeMatcher<>() {
+            @Override
+            protected boolean matchesSafely(View view) {
+                return view.getContentDescription() == contentDescription;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("View has content description " + contentDescription);
+            }
+        };
+    }
+
     @Before
     public void setUp() {
         mSettingsRule.launchPreference(PlaceholderSettingsForTest.class);
@@ -63,7 +77,7 @@ public class TextMessagePreferenceTest {
 
     @Test
     @SmallTest
-    public void setAccessibilityLiveRegion_viewsUpdated() {
+    public void setAccessibilityLiveRegion() {
         TextMessagePreference preference = new TextMessagePreference(mActivity, null);
         preference.setTitle("Test title");
         preference.setSummary("Test summary");
@@ -75,5 +89,33 @@ public class TextMessagePreferenceTest {
                 .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
         onView(withId(android.R.id.summary))
                 .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
+    }
+
+    @Test
+    @SmallTest
+    public void setContentDescription() {
+        TextMessagePreference preference = new TextMessagePreference(mActivity, null);
+        String title = "Test title";
+        String summary = "Test summary";
+        String titleCd = "Title content description";
+        String summaryCd = "Summary content description";
+        preference.setTitle(title);
+        preference.setSummary(summary);
+        preference.setTitleContentDescription(title);
+        preference.setSummaryContentDescription(summary);
+
+        mPreferenceScreen.addPreference(preference);
+
+        Assert.assertTrue(preference.isEnabled());
+        onView(withId(android.R.id.title)).check(matches(hasContentDescription(title)));
+        onView(withId(android.R.id.summary)).check(matches(hasContentDescription(summary)));
+
+        preference.setTitleContentDescription(titleCd);
+        onView(withId(android.R.id.title)).check(matches(hasContentDescription(titleCd)));
+        onView(withId(android.R.id.summary)).check(matches(hasContentDescription(summary)));
+
+        preference.setSummaryContentDescription(summaryCd);
+        onView(withId(android.R.id.title)).check(matches(hasContentDescription(titleCd)));
+        onView(withId(android.R.id.summary)).check(matches(hasContentDescription(summaryCd)));
     }
 }

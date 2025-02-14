@@ -22,6 +22,8 @@ public class TextMessagePreference extends ChromeBasePreference {
     private @Nullable TextView mSummaryView;
     private MovementMethod mMovementMethod = LinkMovementMethod.getInstance();
     private @Nullable Integer mLiveRegionMode;
+    private @Nullable CharSequence mTitleContentDescription;
+    private @Nullable CharSequence mSummaryContentDescription;
 
     /** Constructor for inflating from XML. */
     public TextMessagePreference(Context context, AttributeSet attrs) {
@@ -40,6 +42,30 @@ public class TextMessagePreference extends ChromeBasePreference {
         if (mLiveRegionMode != null) {
             setAccessibilityLiveRegion(mLiveRegionMode);
         }
+        if (mTitleContentDescription != null) {
+            setTitleContentDescription(mTitleContentDescription);
+        }
+        if (mSummaryContentDescription != null) {
+            setSummaryContentDescription(mSummaryContentDescription);
+        }
+    }
+
+    /**
+     * @param description Set the a11y content description of the title TextView.
+     */
+    public void setTitleContentDescription(CharSequence description) {
+        mTitleContentDescription = description;
+        if (mTitleView == null) return;
+        mTitleView.setContentDescription(description);
+    }
+
+    /**
+     * @param description Set the a11y content description of the summary TextView.
+     */
+    public void setSummaryContentDescription(CharSequence description) {
+        mSummaryContentDescription = description;
+        if (mSummaryView == null) return;
+        mSummaryView.setContentDescription(description);
     }
 
     /**

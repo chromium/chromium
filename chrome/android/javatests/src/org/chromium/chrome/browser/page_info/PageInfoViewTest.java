@@ -1479,8 +1479,6 @@ public class PageInfoViewTest {
                         withText(R.string.page_info_tracking_protection_toggle_blocked),
                         isDisplayed()));
         // Verify the a11y live region.
-        onView(withText(R.string.page_info_cookies_site_not_working_title))
-                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
         onView(
                         withText(
                                 R.string
@@ -1490,15 +1488,6 @@ public class PageInfoViewTest {
         onView(withText(R.string.page_info_tracking_protection_toggle_blocked)).perform(click());
         // Verify the a11y live region.
         Context context = ApplicationProvider.getApplicationContext();
-        String title =
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals
-                                        .page_info_cookies_blocking_restart_tracking_protection_title,
-                                DAYS_UNTIL_EXPIRATION,
-                                DAYS_UNTIL_EXPIRATION);
-        onView(withText(title))
-                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
         String description =
                 context.getString(R.string.page_info_cookies_send_feedback_description)
                         .replaceAll("<link>|</link>", "");

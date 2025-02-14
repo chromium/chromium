@@ -90,10 +90,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
         mThirdPartyCookiesSummary = findPreference(TPC_SUMMARY);
         // Set accessibility properties on the region that will change with the toggle.
-        if (mThirdPartyCookiesTitle != null) {
-            mThirdPartyCookiesTitle.setAccessibilityLiveRegion(
-                    View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        }
+        // Two a11y live regions don't work at the same time. Using a workaround of setting the
+        // content description for both the title and the summary on one of them.
+        // See crbug.com/388844792 for more background.
+        updateContentDescriptionsForA11y();
         if (mThirdPartyCookiesSummary != null) {
             mThirdPartyCookiesSummary.setAccessibilityLiveRegion(
                     View.ACCESSIBILITY_LIVE_REGION_POLITE);
@@ -215,6 +215,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                     R.string.page_info_tracking_protection_site_grant_description),
                             new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
             mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
+            updateContentDescriptionsForA11y();
             return;
         }
 
@@ -284,6 +285,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         }
+        updateContentDescriptionsForA11y();
         updateCookieSwitch();
     }
 
@@ -378,6 +380,16 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             mCookieSwitch.setSummary(
                     getString(R.string.page_info_tracking_protection_toggle_allowed));
         }
+    }
+
+    // TODO(crbug.com/388844792): Revert back to two live regions once that's supported.
+    private void updateContentDescriptionsForA11y() {
+        if (mThirdPartyCookiesTitle == null || mThirdPartyCookiesSummary == null) return;
+        // Combine both the title and the summary into a content description inside of a single a11y
+        // live region.
+        mThirdPartyCookiesTitle.setTitleContentDescription("");
+        mThirdPartyCookiesSummary.setSummaryContentDescription(
+                mThirdPartyCookiesTitle.getTitle() + " " + mThirdPartyCookiesSummary.getSummary());
     }
 
     private void updateThirdPartyCookiesTitleTemporary(int days) {
