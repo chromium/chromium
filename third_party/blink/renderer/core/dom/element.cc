@@ -1714,7 +1714,8 @@ ScrollMarkerPseudoElement* Element::FindScrollMarkerForTargetedScroll() {
 }
 
 void Element::ScrollIntoViewNoVisualUpdate(
-    mojom::blink::ScrollIntoViewParamsPtr params) {
+    mojom::blink::ScrollIntoViewParamsPtr params,
+    const Element* container) {
   if (!GetLayoutObject() || !GetDocument().GetPage()) {
     return;
   }
@@ -1743,8 +1744,9 @@ void Element::ScrollIntoViewNoVisualUpdate(
   NotifyScrollMarkerGroupOfTargetedScroll();
 
   PhysicalRect bounds = BoundingBoxForScrollIntoView();
-  scroll_into_view_util::ScrollRectToVisible(*target, bounds,
-                                             std::move(params));
+  scroll_into_view_util::ScrollRectToVisible(
+      *target, bounds, std::move(params),
+      container ? container->GetLayoutObject() : nullptr);
 
   GetDocument().SetSequentialFocusNavigationStartingPoint(originating_element);
 }
