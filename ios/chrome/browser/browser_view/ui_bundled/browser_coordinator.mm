@@ -832,8 +832,7 @@ enum class ToolbarKind {
   [_countryCodePickerCoordinator stop];
   _countryCodePickerCoordinator = nil;
 
-  [_googleOneCoordinator stop];
-  _googleOneCoordinator = nil;
+  [self hideGoogleOne];
 
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
@@ -1594,15 +1593,13 @@ enum class ToolbarKind {
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
 
-  [_googleOneCoordinator stop];
-  _googleOneCoordinator = nil;
-
   [self hideDriveFilePicker];
   [self hideContextualSheet];
   [self dismissEditAddressBottomSheet];
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissAutoDeletionActionSheet];
+  [self hideGoogleOne];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -4176,6 +4173,11 @@ enum class ToolbarKind {
                                                     entryPoint:entryPoint
                                                       identity:identity];
   [_googleOneCoordinator start];
+}
+
+- (void)hideGoogleOne {
+  [_googleOneCoordinator stop];
+  _googleOneCoordinator = nil;
 }
 
 @end

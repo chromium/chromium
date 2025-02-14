@@ -16,6 +16,9 @@
                       entryPoint:(GoogleOneEntryPoint)entryPoint
               baseViewController:(UIViewController*)baseViewController;
 
+// Hides the Google One controller and stop the coordinator.
+- (void)hideGoogleOne;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_GOOGLE_ONE_COMMANDS_H_
