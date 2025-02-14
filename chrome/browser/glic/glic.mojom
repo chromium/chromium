@@ -321,14 +321,25 @@ enum WebClientMode {
   kAudio = 1,
 };
 
+// Carries back to the browser information on how to configure the panel being
+// opened.
+struct OpenPanelInfo {
+  // Informs Chrome of the current web client mode, which may be kUnknown for
+  // clients that do not support it.
+  WebClientMode web_client_mode;
+  // The size of the panel upon opening. Temporarily, it may not be provided by
+  // the web client.
+  gfx.mojom.Size? panelSize;
+  // Resize animation duration.
+  mojo_base.mojom.TimeDelta resizeDuration;
+};
+
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
   // Informs the web client that the panel will open. Chrome will wait to open
-  // the panel until after this returns.
-  // `web_client_mode` informs Chrome of the current web client mode, which may
-  // be kUnknown for clients that do not support it.
-  NotifyPanelWillOpen(PanelState panel_state) =>
-      (WebClientMode web_client_mode);
+  // the panel until after this returns, and will use the data in the returned
+  // `OpenPanelInfo` to setup the opening panel.
+  NotifyPanelWillOpen(PanelState panel_state) => (OpenPanelInfo openPanelInfo);
 
   // Informs the web client that the panel was closed. Chrome will try to keep
   // the web client alive until this function returns.

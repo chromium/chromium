@@ -127,6 +127,10 @@ export declare interface GlicBrowserHost {
    * the animation finishes, is interrupted, or immediately if the window
    * doesn't exist yet, in which case the size will be used as the initial size
    * when the widget is eventually created. Size values are in DIPs.
+   *
+   * All provided values will go through sanity checks (e.g. checking min and
+   * max values for height and width) and may be adjusted. The web client should
+   * expect that the provided values may not be applied verbatim.
    */
   resizeWindow(width: number, height: number, options?: ResizeWindowOptions):
       Promise<void>;
@@ -371,6 +375,15 @@ export enum WebClientMode {
 export declare interface OpenPanelInfo {
   /** The mode in which the web client is opening at. */
   startingMode: WebClientMode;
+  /**
+   * @todo Make non-optional once the web client populates this value.
+   *       https://crbug.com/390476866
+   *
+   * Panel sizing information that must be specified by the web client on every
+   * open event. See documentation on `resizeWindow` for how the provided
+   * arguments will be used.
+   */
+  resizeParams?: {width: number, height: number, options?: ResizeWindowOptions};
 }
 
 /** A panel can be in one of these three states. */

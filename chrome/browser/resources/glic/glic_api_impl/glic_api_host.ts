@@ -10,13 +10,14 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import {AlphaType} from '//resources/mojo/skia/public/mojom/image_info.mojom-webui.js';
 import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
-import type {PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import type {OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason} from '../glic_api/glic_api.js';
@@ -59,7 +60,7 @@ class WebClientImpl implements WebClientInterface {
   }
 
   async notifyPanelWillOpen(panelState: PanelStateMojo):
-      Promise<{webClientMode: WebClientMode}> {
+      Promise<{openPanelInfo: OpenPanelInfoMojo}> {
     const result = await this.sender.requestWithResponse(
         'glicWebClientNotifyPanelWillOpen',
         {panelState: panelStateToClient(panelState)});
@@ -67,12 +68,23 @@ class WebClientImpl implements WebClientInterface {
     // The web client is ready to show, ensure the webview is
     // displayed.
     this.appController.webClientReady();
-
-    return {
+    const openPanelInfoMojo: OpenPanelInfoMojo = {
       webClientMode:
           (result.openPanelInfo?.startingMode as WebClientMode | undefined) ??
           WebClientMode.kUnknown,
+      panelSize: null,
+      resizeDuration: timeDeltaFromClient(
+          result.openPanelInfo?.resizeParams?.options?.durationMs),
     };
+    if (result.openPanelInfo?.resizeParams) {
+      const size = {
+        width: result.openPanelInfo?.resizeParams?.width,
+        height: result.openPanelInfo?.resizeParams?.height,
+      };
+      this.appController.onGuestResizeRequest(size);
+      openPanelInfoMojo.panelSize = size;
+    }
+    return {openPanelInfo: openPanelInfoMojo};
   }
 
   notifyPanelWasClosed(): Promise<void> {
@@ -321,14 +333,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     options?: {durationMs?: number},
   }) {
     this.appController.onGuestResizeRequest(request.size);
-    const durationMs = request.options?.durationMs ?? 0;
-    if (!Number.isFinite(durationMs)) {
-      throw new Error(
-          'Invalid resize duration: ' + request.options?.durationMs);
-    }
-    return await this.handler.resizeWidget(request.size, {
-      microseconds: BigInt(Math.floor(durationMs * 1000)),
-    });
+    return await this.handler.resizeWidget(
+        request.size, timeDeltaFromClient(request.options?.durationMs));
   }
 
   async glicBrowserCaptureScreenshot(_request: {}, transfer: Transferable[]):
@@ -630,4 +636,12 @@ function panelStateToClient(panelState: PanelStateMojo): PanelState {
     kind: panelState.kind as number,
     windowId: optionalWindowIdToClient(panelState.windowId),
   };
+}
+
+/** Takes a time value in milliseconds and converts to a Mojo TimeDelta. */
+function timeDeltaFromClient(durationMs: number = 0): TimeDelta {
+  if (!Number.isFinite(durationMs)) {
+    throw new Error('Invalid duration value: ' + durationMs);
+  }
+  return {microseconds: BigInt(Math.floor(durationMs * 1000))};
 }

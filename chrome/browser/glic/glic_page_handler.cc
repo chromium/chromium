@@ -271,10 +271,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyPanelWillOpen(
         panel_state.Clone(),
         base::BindOnce(
-            [](PanelWillOpenCallback done, glic::mojom::WebClientMode mode) {
+            [](PanelWillOpenCallback done, glic::mojom::OpenPanelInfoPtr info) {
               base::UmaHistogramEnumeration("Glic.Api.NotifyPanelWillOpen",
-                                            mode);
-              std::move(done).Run(mode);
+                                            info->web_client_mode);
+              std::move(done).Run(std::move(info));
             },
             std::move(done)));
   }

@@ -71,7 +71,6 @@ class WebClient implements GlicWebClient {
 
   async initialize(browser: GlicBrowserHost): Promise<void> {
     this.browser = browser;
-    browser.resizeWindow(400, 500);
 
     logMessage('initialize called');
     $.pageHeader!.classList.add('connected');
@@ -104,8 +103,14 @@ class WebClient implements GlicWebClient {
   async notifyPanelWillOpen(panelState: PanelState):
       Promise<void|OpenPanelInfo> {
     logMessage(`notifyPanelWillOpen(${JSON.stringify(panelState)})`);
-    this.browser!.resizeWindow(400, 500);
-    return {startingMode: WebClientMode.TEXT};
+    return {
+      startingMode: WebClientMode.TEXT,
+      resizeParams: {
+        width: pickOne([400, 500]),
+        height: pickOne([400, 500]),
+        options: {durationMs: pickOne([0, 1000])},
+      },
+    };
   }
 
   async notifyPanelClosed() {
@@ -428,4 +433,8 @@ window.addEventListener('load', () => {
 
 function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
   return new Response(stream).bytes();
+}
+
+function pickOne(choices: any[]): any {
+  return choices[Math.floor(Math.random() * choices.length)];
 }
