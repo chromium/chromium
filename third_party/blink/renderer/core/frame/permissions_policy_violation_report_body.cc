@@ -15,6 +15,9 @@ void PermissionsPolicyViolationReportBody::BuildJSONValue(
   if (!allowAttribute().empty()) {
     builder.AddString("allowAttribute", allowAttribute());
   }
+  if (!srcAttribute().empty()) {
+    builder.AddString("srcAttribute", srcAttribute());
+  }
 }
 
 }  // namespace blink

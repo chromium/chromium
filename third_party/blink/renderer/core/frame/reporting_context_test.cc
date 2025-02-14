@@ -122,6 +122,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
       const String& disposition,
       const String& message,
       const String& allow_attribute,
+      const String& src_attribute,
       const String& source_file,
       int32_t line_number,
       int32_t column_number) override {

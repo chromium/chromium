@@ -237,7 +237,8 @@ void ReportingContext::SendToReportingAPI(Report* report,
         static_cast<PermissionsPolicyViolationReportBody*>(report->body());
     GetReportingService()->QueuePotentialPermissionsPolicyViolationReport(
         url, endpoint, body->featureId(), body->disposition(), body->message(),
-        body->allowAttribute(), body->sourceFile(), line_number, column_number);
+        body->allowAttribute(), body->srcAttribute(), body->sourceFile(),
+        line_number, column_number);
   } else if (type == ReportType::kIntervention) {
     // Send the intervention report.
     const InterventionReportBody* body =

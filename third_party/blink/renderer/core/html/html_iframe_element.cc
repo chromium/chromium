@@ -680,7 +680,7 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
           permissions_policy->GetEndpointForFeature(feature));
       GetExecutionContext()->ReportPotentialPermissionsPolicyViolation(
           feature, mojom::blink::PolicyDisposition::kEnforce, endpoint,
-          /*message*/ "", allow_);
+          /*message*/ "", allow_, src_);
     } else if (auto* report_only_permissions_policy =
                    security_context.GetReportOnlyPermissionsPolicy();
                report_only_permissions_policy &&
@@ -691,7 +691,7 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
           report_only_permissions_policy->GetEndpointForFeature(feature));
       GetExecutionContext()->ReportPotentialPermissionsPolicyViolation(
           feature, mojom::blink::PolicyDisposition::kReport, endpoint,
-          /*message*/ "", allow_);
+          /*message*/ "", allow_, src_);
     }
   }
 }

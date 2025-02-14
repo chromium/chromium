@@ -652,7 +652,8 @@ void LocalDOMWindow::ReportPotentialPermissionsPolicyViolation(
     mojom::blink::PolicyDisposition disposition,
     const std::optional<String>& reporting_endpoint,
     const String& message,
-    const String& allow_attribute) const {
+    const String& allow_attribute,
+    const String& src_attribute) const {
   CHECK(GetFrame());
 
   // Construct the potential permissions policy violation report.
@@ -665,7 +666,7 @@ void LocalDOMWindow::ReportPotentialPermissionsPolicyViolation(
 
   PermissionsPolicyViolationReportBody* body =
       MakeGarbageCollected<PermissionsPolicyViolationReportBody>(
-          feature_name, message, disp_str, allow_attribute);
+          feature_name, message, disp_str, allow_attribute, src_attribute);
 
   Report* report = MakeGarbageCollected<Report>(
       ReportType::kPotentialPermissionsPolicyViolation, Url().GetString(),

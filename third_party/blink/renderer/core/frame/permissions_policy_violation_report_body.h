@@ -22,7 +22,8 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
       const String& feature_id,
       const String& message,
       const String& disposition,
-      const String& allow_attribute = WTF::g_empty_string)
+      const String& allow_attribute = WTF::g_empty_string,
+      const String& src_attribute = WTF::g_empty_string)
       : feature_id_(feature_id),
         message_((allow_attribute.empty()
                       ? "Permissions policy violation: "
@@ -31,12 +32,14 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
                       ? feature_id + " is not allowed in this document."
                       : message)),
         disposition_(disposition),
-        allow_attribute_(allow_attribute) {}
+        allow_attribute_(allow_attribute),
+        src_attribute_(src_attribute) {}
 
   const String& featureId() const { return feature_id_; }
   const String& disposition() const { return disposition_; }
   const String& message() const { return message_; }
   const String& allowAttribute() const { return allow_attribute_; }
+  const String& srcAttribute() const { return src_attribute_; }
 
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
@@ -47,6 +50,7 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
   const String message_;
   const String disposition_;
   const String allow_attribute_;
+  const String src_attribute_;
 };
 
 }  // namespace blink
