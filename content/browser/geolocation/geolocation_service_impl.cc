@@ -108,7 +108,7 @@ void GeolocationServiceImpl::CreateGeolocation(
       // outlive the GeolocationServiceImpl.
       base::BindOnce(
           &GeolocationServiceImpl::CreateGeolocationWithPermissionStatus,
-          base::Unretained(this), std::move(receiver),
+          weak_factory_.GetWeakPtr(), std::move(receiver),
           std::move(scoped_callback)));
 }
 
