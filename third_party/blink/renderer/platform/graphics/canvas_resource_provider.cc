@@ -121,7 +121,7 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
   CanvasImageProvider(cc::ImageDecodeCache* cache_n32,
                       cc::ImageDecodeCache* cache_f16,
                       const gfx::ColorSpace& target_color_space,
-                      SkColorType target_color_type,
+                      viz::SharedImageFormat canvas_format,
                       cc::PlaybackImageProvider::RasterMode raster_mode);
   CanvasImageProvider(const CanvasImageProvider&) = delete;
   CanvasImageProvider& operator=(const CanvasImageProvider&) = delete;
@@ -1298,7 +1298,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
     cc::ImageDecodeCache* cache_n32,
     cc::ImageDecodeCache* cache_f16,
     const gfx::ColorSpace& target_color_space,
-    SkColorType canvas_color_type,
+    viz::SharedImageFormat canvas_format,
     cc::PlaybackImageProvider::RasterMode raster_mode)
     : raster_mode_(raster_mode) {
   std::optional<cc::PlaybackImageProvider::Settings> settings =
@@ -1311,7 +1311,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
                                        std::move(settings));
   // If the image provider may require to decode to half float instead of
   // uint8, create a f16 PlaybackImageProvider with the passed cache.
-  if (canvas_color_type == kRGBA_F16_SkColorType) {
+  if (canvas_format == viz::SinglePlaneFormat::kRGBA_F16) {
     DCHECK(cache_f16);
     settings = cc::PlaybackImageProvider::Settings();
     settings->raster_mode = raster_mode_;
@@ -1603,8 +1603,8 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
                         : cc::PlaybackImageProvider::RasterMode::kGpu;
     }
     canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-        ImageDecodeCacheRGBA8(), cache_f16, GetColorSpace(), info_.colorType(),
-        raster_mode);
+        ImageDecodeCacheRGBA8(), cache_f16, GetColorSpace(),
+        GetSharedImageFormat(), raster_mode);
   }
   return canvas_image_provider_.get();
 }
