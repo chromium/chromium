@@ -2374,6 +2374,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensGestureTextSelectionDisabledName,
      flag_descriptions::kLensGestureTextSelectionDisabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensGestureTextSelectionDisabled)},
+    {"lens-vsint-param-enabled", flag_descriptions::kLensVsintParamEnabledName,
+     flag_descriptions::kLensVsintParamEnabledDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensVsintParamEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
