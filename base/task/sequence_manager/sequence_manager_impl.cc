@@ -44,6 +44,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 namespace base::sequence_manager {
@@ -306,6 +307,11 @@ void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {
   if (settings_.message_loop_type == MessagePumpType::UI) {
     controller_->AttachToMessagePump();
   }
+#if BUILDFLAG(USE_BLINK)
+  if (settings_.message_loop_type == MessagePumpType::IO) {
+    controller_->AttachToMessagePump();
+  }
+#endif
 #endif
 }
 
