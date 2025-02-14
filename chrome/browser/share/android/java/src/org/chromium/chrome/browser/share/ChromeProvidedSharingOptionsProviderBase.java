@@ -272,8 +272,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         maybeAddCollaborateFirstPartyOption();
 
         // Only show a limited first party share selection for automotive and PDF pages.
-        if (!isAutomotive() && !isPdfTab()) {
-            maybeAddLongScreenshotFirstPartyOption();
+        if (!isAutomotive()) {
+            if (!isPdfTab()) {
+                maybeAddLongScreenshotFirstPartyOption();
+            }
             maybeAddPrintFirstPartyOption();
         }
         maybeAddSendTabToSelfFirstPartyOption();
