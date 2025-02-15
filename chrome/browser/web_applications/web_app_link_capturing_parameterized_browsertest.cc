@@ -623,6 +623,11 @@ base::Value::Dict WebContentsToJson(const Browser& browser,
     }
   }
 
+  WebAppTabHelper* helper = WebAppTabHelper::FromWebContents(&web_contents);
+  if (helper->is_pinned_home_tab()) {
+    dict.Set("is_pinned_home_tab", true);
+  }
+
   return dict;
 }
 

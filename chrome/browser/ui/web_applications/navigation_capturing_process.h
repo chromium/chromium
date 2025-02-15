@@ -168,6 +168,10 @@ class NavigationCapturingProcess
   // For an effective client mode of `kNavigateExisting` or `kFocusExisting`,
   // both `browser` and `tab_index` will be populated, indicating the tab that
   // should be navigated or focused.
+  //
+  // If the target app uses standalone 'app' tabbed display mode, the
+  // `target_url` is used to decide if a pinned home tab or other tab should be
+  // used.
   struct ClientModeAndBrowser {
     LaunchHandler::ClientMode effective_client_mode =
         LaunchHandler::ClientMode::kNavigateNew;
@@ -175,7 +179,8 @@ class NavigationCapturingProcess
     std::optional<int> tab_index;
   };
   ClientModeAndBrowser GetEffectiveClientModeAndBrowser(
-      const webapps::AppId& app_id);
+      const webapps::AppId& app_id,
+      const GURL& target_url);
 
   // Helper methods for `GetInitialBrowserAndTabOverrideForNavigation()` that
   // return the correct return value and update internal state of this class
