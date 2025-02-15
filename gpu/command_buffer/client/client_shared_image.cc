@@ -299,7 +299,6 @@ ClientSharedImage::ClientSharedImage(
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
-    std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
     uint32_t texture_target)
     : mailbox_(mailbox),
       metadata_(metadata),
@@ -315,19 +314,30 @@ ClientSharedImage::ClientSharedImage(
 }
 
 ClientSharedImage::ClientSharedImage(
-    const Mailbox& mailbox,
-    const SharedImageMetadata& metadata,
-    const SyncToken& sync_token,
-    std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
-    uint32_t texture_target)
-    : mailbox_(mailbox),
-      metadata_(metadata),
-      creation_sync_token_(sync_token),
-      texture_target_(texture_target) {
+    ExportedSharedImage exported_si,
+    scoped_refptr<SharedImageInterfaceHolder> sii_holder)
+    : mailbox_(exported_si.mailbox_),
+      metadata_(exported_si.metadata_),
+      creation_sync_token_(exported_si.creation_sync_token_),
+      sii_holder_(std::move(sii_holder)),
+      texture_target_(exported_si.texture_target_) {
   // TODO(crbug.com/391788839): Create GpuMemoryBuffer from handle.
-  CHECK(!mailbox.IsZero());
+  CHECK(!mailbox_.IsZero());
+  CHECK(sii_holder_);
 #if !BUILDFLAG(IS_FUCHSIA)
-  CHECK(texture_target);
+  CHECK(texture_target_);
+#endif
+}
+
+ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
+    : mailbox_(exported_si.mailbox_),
+      metadata_(exported_si.metadata_),
+      creation_sync_token_(exported_si.creation_sync_token_),
+      texture_target_(exported_si.texture_target_) {
+  // TODO(crbug.com/391788839): Create GpuMemoryBuffer from handle.
+  CHECK(!mailbox_.IsZero());
+#if !BUILDFLAG(IS_FUCHSIA)
+  CHECK(texture_target_);
 #endif
 }
 
@@ -430,21 +440,21 @@ ExportedSharedImage ClientSharedImage::Export(bool with_buffer_handle) {
       !creation_sync_token_.verified_flush()) {
     sii_holder_->Get()->VerifySyncToken(creation_sync_token_);
   }
-  std::optional<gfx::GpuMemoryBufferHandle> handle = std::nullopt;
+  std::optional<gfx::GpuMemoryBufferHandle> buffer_handle;
+  std::optional<gfx::BufferUsage> buffer_usage;
   if (with_buffer_handle && gpu_memory_buffer_) {
-    handle = gpu_memory_buffer_->CloneHandle();
+    buffer_handle = gpu_memory_buffer_->CloneHandle();
+    buffer_usage = buffer_usage_.value();
   }
   return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
-                             std::move(handle), texture_target_);
+                             std::move(buffer_handle), buffer_usage,
+                             texture_target_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
     ExportedSharedImage exported_shared_image) {
-  return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
-      exported_shared_image.mailbox_, exported_shared_image.metadata_,
-      exported_shared_image.creation_sync_token_,
-      std::move(exported_shared_image.buffer_handle_),
-      exported_shared_image.texture_target_));
+  return base::WrapRefCounted<ClientSharedImage>(
+      new ClientSharedImage(std::move(exported_shared_image)));
 }
 
 gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
@@ -530,7 +540,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
 
   return ImportUnowned(ExportedSharedImage(Mailbox::Generate(), metadata,
                                            SyncToken(), std::nullopt,
-                                           texture_target));
+                                           std::nullopt, texture_target));
 }
 
 ClientSharedImage::HelperGpuMemoryBufferManager::HelperGpuMemoryBufferManager(
@@ -613,11 +623,13 @@ ExportedSharedImage::ExportedSharedImage(
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
     std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
+    std::optional<gfx::BufferUsage> buffer_usage,
     uint32_t texture_target)
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),
       buffer_handle_(std::move(buffer_handle)),
+      buffer_usage_(buffer_usage),
       texture_target_(texture_target) {}
 
 ExportedSharedImage ExportedSharedImage::Clone() const {
@@ -626,7 +638,7 @@ ExportedSharedImage ExportedSharedImage::Clone() const {
     handle = buffer_handle_->Clone();
   }
   return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
-                             std::move(handle), texture_target_);
+                             std::move(handle), buffer_usage_, texture_target_);
 }
 
 SharedImageTexture::ScopedAccess::ScopedAccess(SharedImageTexture* texture,

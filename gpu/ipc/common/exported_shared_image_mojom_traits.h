@@ -46,12 +46,22 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
     return shared_image.buffer_handle_;
   }
 
+  static std::optional<gfx::BufferUsage>& buffer_usage(
+      gpu::ExportedSharedImage& shared_image) {
+    return shared_image.buffer_usage_;
+  }
+
   static bool Read(gpu::mojom::ExportedSharedImageDataView data,
                    gpu::ExportedSharedImage* out) {
     if (!data.ReadMailbox(&out->mailbox_) ||
         !data.ReadMetadata(&out->metadata_) ||
         !data.ReadCreationSyncToken(&out->creation_sync_token_) ||
-        !data.ReadBufferHandle(&out->buffer_handle_)) {
+        !data.ReadBufferHandle(&out->buffer_handle_) ||
+        !data.ReadBufferUsage(&out->buffer_usage_)) {
+      return false;
+    }
+    // If GpuMemoryBufferHandle is passed in, BufferUsage should also be passed.
+    if (out->buffer_handle_ && !out->buffer_usage_) {
       return false;
     }
     out->texture_target_ = data.texture_target();

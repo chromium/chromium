@@ -15,11 +15,12 @@ struct ExportedSharedImage {
   gpu.mojom.SharedImageMetadata metadata;
   gpu.mojom.SyncToken creation_sync_token;
 
-  // Optional param as it is only needed when passed over VideoFrame
+  // Optional params as they are only needed when passed over VideoFrame
   // GpuMemoryBuffers for exporting/importing mappable shared images.
   // For other cases, when exporting/importing ClientSharedImage,
-  // passing a GpuMemoryBufferHandle is not needed.
+  // passing these params is not needed.
   gfx.mojom.GpuMemoryBufferHandle? buffer_handle;
+  gfx.mojom.BufferUsage? buffer_usage;
 
   // Necessary to allow the ClientSharedImage that is created from this
   // ExportedSharedImage to use the correct GL texture target.

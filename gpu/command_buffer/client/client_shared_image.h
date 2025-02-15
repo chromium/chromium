@@ -324,17 +324,15 @@ class GPU_EXPORT ClientSharedImage
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
-                    std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
                     uint32_t texture_target);
+
+  ClientSharedImage(ExportedSharedImage exported_si,
+                    scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 
   // This constructor is used only when importing an unowned ClientSharedImage,
   // in which case this ClientSharedImage is not associated with a
   // SharedImageInterface.
-  ClientSharedImage(const Mailbox& mailbox,
-                    const SharedImageMetadata& metadata,
-                    const SyncToken& sync_token,
-                    std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
-                    uint32_t texture_target);
+  explicit ClientSharedImage(ExportedSharedImage exported_si);
 
   // VideoFrame needs this info currently for MappableSI.
   // TODO(crbug.com/40263579): Once MappableSI is fully launched for VideoFrame,
@@ -413,13 +411,14 @@ struct GPU_EXPORT ExportedSharedImage {
                       const SharedImageMetadata& metadata,
                       const SyncToken& sync_token,
                       std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
+                      std::optional<gfx::BufferUsage> buffer_usage,
                       uint32_t texture_target);
 
   Mailbox mailbox_;
   SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
-  // TODO(crbug.com/391788839): Add BufferUsage.
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle_;
+  std::optional<gfx::BufferUsage> buffer_usage_;
   uint32_t texture_target_ = 0;
 };
 

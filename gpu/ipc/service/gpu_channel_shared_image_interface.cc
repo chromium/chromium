@@ -100,7 +100,7 @@ GpuChannelSharedImageInterface::CreateSharedImageForAndroidVideo(
 
   return base::WrapRefCounted<ClientSharedImage>(
       new ClientSharedImage(mailbox, metadata, GenVerifiedSyncToken(), holder_,
-                            std::nullopt, GL_TEXTURE_EXTERNAL_OES));
+                            GL_TEXTURE_EXTERNAL_OES));
 }
 #endif
 
@@ -132,7 +132,6 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
           si_info.debug_label, texture, /*dcomp_texture=*/nullptr,
           std::move(dxgi_shared_handle_state), caps, GL_TEXTURE_EXTERNAL_OES,
           array_slice, /*use_update_subresource1=*/false, is_thread_safe);
-
   if (!backing) {
     return nullptr;
   }
@@ -140,7 +139,6 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
   // Need to clear the backing since the D3D11 Video Decoder will initialize
   // the textures.
   backing->SetCleared();
-
   DCHECK(shared_image_stub_->channel()
              ->gpu_channel_manager()
              ->shared_image_manager());
@@ -148,7 +146,7 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
 
   return base::WrapRefCounted<ClientSharedImage>(
       new ClientSharedImage(mailbox, metadata, GenVerifiedSyncToken(), holder_,
-                            std::nullopt, GL_TEXTURE_EXTERNAL_OES));
+                            GL_TEXTURE_EXTERNAL_OES));
 }
 #endif
 
