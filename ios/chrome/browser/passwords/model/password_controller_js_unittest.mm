@@ -11,8 +11,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
+#import "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
@@ -33,6 +37,26 @@ using base::SysUTF8ToNSString;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using ::testing::IsTrue;
+
+@interface TestPasswordFormHelperDelegate
+    : NSObject <PasswordFormHelperDelegate>
+@property(nonatomic) NSInteger submittedFormMessageCalls;
+
+@property(nonatomic) autofill::FormData lastSubmittedForm;
+@property(nonatomic) web::WebFrame* lastSubmittedFormFrame;
+@end
+
+@implementation TestPasswordFormHelperDelegate
+
+- (void)formHelper:(PasswordFormHelper*)formHelper
+     didSubmitForm:(const autofill::FormData&)form
+           inFrame:(web::WebFrame*)frame {
+  self.submittedFormMessageCalls++;
+  self.lastSubmittedForm = form;
+  self.lastSubmittedFormFrame = frame;
+}
+
+@end
 
 // Unit tests for
 // components/password_manager/ios/resources/password_controller.js
@@ -722,6 +746,13 @@ TEST_F(PasswordControllerJsTest,
 // Checks that a touchend event from a button which contains in a password form
 // works as a submission indicator for this password form.
 TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
+  TestPasswordFormHelperDelegate* delegate =
+      [[TestPasswordFormHelperDelegate alloc] init];
+
+  PasswordFormHelper* helper =
+      [[PasswordFormHelper alloc] initWithWebState:web_state()];
+  helper.delegate = delegate;
+
   web::test::LoadHtml(@"<html><body>"
                        "<form name='login_form' id='login_form'>"
                        "  Name: <input type='text' name='username'>"
@@ -736,19 +767,6 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
   // on the button touchend event.
   FindPasswordForms();
 
-  // Replace __gCrWeb.common.sendWebKitMessage with mock method for checking of
-  // call arguments.
-  ExecuteJavaScript(
-      @"var submittedFormData = null;"
-       "var submittedFormMessageCalls = 0;"
-       "__gCrWeb.common.sendWebKitMessage = function(messageName, messageData) "
-       "{"
-       "  if (messageName == 'PasswordFormSubmitButtonClick') {"
-       "    submittedFormData = messageData;"
-       "    submittedFormMessageCalls++;"
-       "  }"
-       "}");
-
   // Simulate touchend event on the button.
   ExecuteJavaScript(
       @"document.getElementsByName('username')[0].value = 'user1';"
@@ -757,7 +775,7 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
        "document.getElementsByTagName('button')[0].dispatchEvent(e);");
 
   // Check that there was only 1 call for sendWebKitMessage.
-  EXPECT_NSEQ(@1, ExecuteJavaScript(@"submittedFormMessageCalls"));
+  ASSERT_EQ(1, delegate.submittedFormMessageCalls);
 
   auto expected_form = base::Value::Dict()
                            .Set("name", "login_form")
@@ -771,21 +789,30 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
       /*renderer_id=*/"2", /*contole_type=*/"text",
       /*identifier=*/"username", /*value=*/"user1",
       /*label=*/"Name:", /*name=*/"username");
+  expected_username_field.Set("max_length", (double)4294967295);
+
   base::Value::Dict expected_password_field = ParsedField(
       /*renderer_id=*/"3", /*contole_type=*/"password",
       /*identifier=*/"password", /*value=*/"password1",
       /*label=*/"Password:", /*name=*/"password");
+  expected_password_field.Set("max_length", (double)4294967295);
   auto expected_fields = base::Value::List()
                              .Append(std::move(expected_username_field))
                              .Append(std::move(expected_password_field));
   expected_form.Set("fields", std::move(expected_fields));
 
-  std::unique_ptr<base::Value> results = autofill::ParseJson(
-      ExecuteJavaScript(@"__gCrWeb.stringify(submittedFormData)"));
-  ASSERT_TRUE(results);
+  autofill::FieldDataManager* fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(
+          delegate.lastSubmittedFormFrame);
 
-  // Check that sendWebKitMessage was called with the correct argument.
-  EXPECT_EQ(expected_form, *results);
+  std::optional<autofill::FormData> expected_form_data =
+      autofill::ExtractFormData(
+          expected_form, false, std::u16string(), GURL(BaseUrl()),
+          url::Origin::Create(GURL(base::SysNSStringToUTF8(FormOrigin()))),
+          *fieldDataManager, GetMainWebFrame()->GetFrameId());
+  ASSERT_TRUE(expected_form_data);
+
+  EXPECT_EQ(expected_form_data.value(), delegate.lastSubmittedForm);
 }
 
 // Check that a form is filled if url of a page and url in form fill data are

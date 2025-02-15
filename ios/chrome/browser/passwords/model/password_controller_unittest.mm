@@ -1948,8 +1948,8 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
                // content to an iframe, but it is the only way for this test.
                // Reattaching it manually for test purposes.
                "       frames[0].addEventListener('unload', function(event) {"
-               "  __gCrWeb.common.sendWebKitMessage('FrameBecameUnavailable',"
-               "      frames[0].__gCrWeb.message.getFrameId());"
+               "  window.webkit.messageHandlers['FrameBecameUnavailable']."
+               "      postMessage(frames[0].__gCrWeb.message.getFrameId());"
                "});"
                "}"
                "</script>"
@@ -2018,8 +2018,8 @@ TEST_F(PasswordControllerTest,
                // content to an iframe, but it is the only way for this test.
                // Reattaching it manually for test purposes.
                "       frames[0].addEventListener('unload', function(event) {"
-               "  __gCrWeb.common.sendWebKitMessage('FrameBecameUnavailable',"
-               "      frames[0].__gCrWeb.message.getFrameId());"
+               "  window.webkit.messageHandlers['FrameBecameUnavailable']."
+               "      postMessage(frames[0].__gCrWeb.message.getFrameId());"
                "});"
                "}"
                "</script>"
