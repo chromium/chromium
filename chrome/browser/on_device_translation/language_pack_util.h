@@ -55,7 +55,11 @@ enum class SupportedLanguage {
   kSl = 32,
   kSv = 33,
   kUk = 34,
-  kMaxValue = kUk,
+  kKn = 35,
+  kTa = 36,
+  kTe = 37,
+  kMr = 38,
+  kMaxValue = kMr,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/translate/enums.xml:SupportedLanguage)
 
@@ -106,7 +110,11 @@ enum class LanguagePackKey {
   kEn_Sl = 31,
   kEn_Sv = 32,
   kEn_Uk = 33,
-  kMaxValue = kEn_Uk,
+  kEn_Kn = 34,
+  kEn_Ta = 35,
+  kEn_Te = 36,
+  kEn_Mr = 37,
+  kMaxValue = kEn_Mr,
 };
 
 // The config for a language pack component.
@@ -445,6 +453,38 @@ const LanguagePackComponentConfig kTranslateKitEnUkConfig = {
                        0xa3, 0x39, 0x69, 0x87, 0x82, 0x86, 0x10, 0xd3,
                        0x55, 0x54, 0x50, 0x94, 0x01, 0xec, 0xc5, 0xe3}};
 
+const LanguagePackComponentConfig kTranslateKitEnKnConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kKn,
+    .public_key_sha = {0x5c, 0x9d, 0x42, 0x31, 0xca, 0xf4, 0x97, 0x21,
+                       0xf8, 0xbc, 0x77, 0x54, 0x88, 0x43, 0x65, 0xf3,
+                       0xa3, 0x8e, 0x84, 0x72, 0x60, 0xc6, 0x12, 0x54,
+                       0x9b, 0x49, 0xc8, 0xef, 0xa4, 0xae, 0x16, 0x79}};
+
+const LanguagePackComponentConfig kTranslateKitEnTaConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kTa,
+    .public_key_sha = {0xab, 0xf0, 0x56, 0xfa, 0x09, 0xfe, 0x6f, 0x40,
+                       0x30, 0xe7, 0x05, 0xf1, 0x50, 0x6e, 0x3e, 0x6c,
+                       0xc1, 0xdd, 0x3c, 0xc0, 0x41, 0x49, 0x14, 0xe4,
+                       0xc2, 0xd5, 0xf6, 0xbd, 0xcd, 0x9c, 0xc4, 0x5d}};
+
+const LanguagePackComponentConfig kTranslateKitEnTeConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kTe,
+    .public_key_sha = {0xc7, 0x1c, 0x20, 0x31, 0x2a, 0x3f, 0xe8, 0x66,
+                       0xb8, 0x2a, 0x7e, 0x77, 0x35, 0xc5, 0xf7, 0x0a,
+                       0x0f, 0x4f, 0x47, 0x69, 0x1a, 0x83, 0xf7, 0xca,
+                       0x73, 0x0d, 0x8b, 0x86, 0xd8, 0x12, 0xf0, 0x39}};
+
+const LanguagePackComponentConfig kTranslateKitEnMrConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kMr,
+    .public_key_sha = {0x5e, 0x81, 0xf0, 0xcf, 0x35, 0xbc, 0x9b, 0x58,
+                       0x07, 0xf9, 0x4c, 0x25, 0x00, 0x24, 0x88, 0x45,
+                       0xff, 0x41, 0x3a, 0xd6, 0xd3, 0xb6, 0xbe, 0x40,
+                       0x9d, 0x2e, 0xe3, 0xde, 0x5e, 0x42, 0x00, 0x02}};
+
 // The config for each language pack.
 constexpr auto kLanguagePackComponentConfigMap =
     base::MakeFixedFlatMap<LanguagePackKey, const LanguagePackComponentConfig*>(
@@ -481,7 +521,11 @@ constexpr auto kLanguagePackComponentConfigMap =
          {LanguagePackKey::kEn_Sk, &kTranslateKitEnSkConfig},
          {LanguagePackKey::kEn_Sl, &kTranslateKitEnSlConfig},
          {LanguagePackKey::kEn_Sv, &kTranslateKitEnSvConfig},
-         {LanguagePackKey::kEn_Uk, &kTranslateKitEnUkConfig}});
+         {LanguagePackKey::kEn_Uk, &kTranslateKitEnUkConfig},
+         {LanguagePackKey::kEn_Kn, &kTranslateKitEnKnConfig},
+         {LanguagePackKey::kEn_Ta, &kTranslateKitEnTaConfig},
+         {LanguagePackKey::kEn_Te, &kTranslateKitEnTeConfig},
+         {LanguagePackKey::kEn_Mr, &kTranslateKitEnMrConfig}});
 static_assert(std::size(kLanguagePackComponentConfigMap) ==
                   static_cast<unsigned>(LanguagePackKey::kMaxValue) + 1,
               "All language packs must be in kLanguagePackComponentConfigMap.");

@@ -114,6 +114,10 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="vi"/>
   <int value="33" label="zh"/>
   <int value="34" label="zh-Hant"/>
+  <int value="35" label="kn"/>
+  <int value="36" label="ta"/>
+  <int value="37" label="te"/>
+  <int value="38" label="mr"/>
 </enum>
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/translate/histograms.xml:SupportedLanguage) -->
