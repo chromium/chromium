@@ -39,7 +39,7 @@ MATCHER_P2(ComplexDoubleNear, expected, tolerance,
 // Compare EllipticK to known values.
 TEST(EllipticFunctionsTest, EllipticK) {
   EXPECT_DOUBLE_EQ(EllipticK(0.0), M_PI / 2);
-  EXPECT_TRUE(isinf(EllipticK(1.0)));
+  EXPECT_TRUE(std::isinf(EllipticK(1.0)));
 
   // Compare with values verified with scipy and WolframAlpha (e.g. for m = 0.1,
   // scipy.special.ellipk(0.1) and EllipticK[0.1]). Accuracy degrades as m

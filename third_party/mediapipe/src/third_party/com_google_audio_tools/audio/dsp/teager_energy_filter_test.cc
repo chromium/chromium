@@ -99,7 +99,7 @@ TEST(TeagerEnergyFilter, StreamingTest) {
 
   std::vector<float> nonstreaming_result;
   test_filter.ProcessBlock(input_samples, &nonstreaming_result);
-  bool (*float_isfinite)(float) = isfinite;
+  bool (*float_isfinite)(float) = +[](float x) { return std::isfinite(x); };
   EXPECT_THAT(nonstreaming_result, testing::Each(testing::Truly(
       float_isfinite)));
 

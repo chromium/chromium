@@ -23,7 +23,7 @@ http_archive(
 git_repository(
     name = "gtest",
     remote = "https://github.com/google/googletest.git",
-    tag = "release-1.10.0",
+    tag = "release-1.12.1",
 )
 
 # ==== kissfft ====
@@ -50,7 +50,7 @@ http_archive(
 git_repository(
     name = "com_google_benchmark",
     remote = "https://github.com/google/benchmark.git",
-    tag = "v1.5.1",
+    tag = "v1.8.0",
 )
 
 # ===== gflags, required by glog =====

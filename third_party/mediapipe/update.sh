@@ -25,10 +25,6 @@ function join_by {
 THIRD_PARTY_DEPS=(
   "com_google_audio_tools" # https://github.com/google/multichannel-audio-tools
 )
-# Patches to apply (<directory> <patch file>)
-THIRD_PARTY_DEPS_PATCHES=(
-  "third_party/com_google_audio_tools third_party/com_google_audio_tools_fixes.diff"
-)
 
 EXCLUDE_PATTERNS=(
   # Directories
@@ -99,13 +95,6 @@ for dep in "${THIRD_PARTY_DEPS[@]}" ; do
   echo "Downloading ${ARCHIVE}..."
   mkdir -p ./third_party/${dep}
   curl -s -L "${ARCHIVE}" | tar xz --strip=1 -C ./third_party/${dep}
-done
-
-# Apply within third party dependencies.
-for patch_file in "${THIRD_PARTY_DEPS_PATCHES[@]}" ; do
-  set -- $patch_file
-  echo $1
-  git apply --directory=$1 $2 || echo "Failed to apply $2"
 done
 
 # Replace (D)CHECK with ABSL equivalents.
