@@ -139,7 +139,7 @@ constexpr wchar_t kDriversRegistryKeyPath[] =
     L"SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\";
 
 // Registry value name for a port.
-constexpr wchar_t kPortRegistryValue[] = L"Port";
+constexpr wchar_t kPortRegistryValueName[] = L"Port";
 
 // List of printer ports which are known to cause a UI dialog to be displayed
 // when printing.
@@ -155,13 +155,15 @@ std::wstring GetPrinterDriverPort(const std::string& printer_name) {
                         base::UTF8ToWide(printer_name));
   LONG result =
       reg_key.Open(HKEY_LOCAL_MACHINE, root_key.c_str(), KEY_QUERY_VALUE);
-  if (result != ERROR_SUCCESS)
+  if (result != ERROR_SUCCESS) {
     return std::wstring();
-  std::wstring port_value;
-  result = reg_key.ReadValue(kPortRegistryValue, &port_value);
-  if (result != ERROR_SUCCESS)
+  }
+  std::wstring port_value_data;
+  result = reg_key.ReadValue(kPortRegistryValueName, &port_value_data);
+  if (result != ERROR_SUCCESS) {
     return std::wstring();
-  return port_value;
+  }
+  return port_value_data;
 }
 
 std::string GetDriverVersionString(DWORDLONG version_number) {
