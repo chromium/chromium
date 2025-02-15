@@ -56,35 +56,6 @@ using testing::Pointee;
 using testing::ResultOf;
 using testing::UnorderedElementsAre;
 
-template <class T>
-class AutofillWebDataServiceWaiter : public WebDataServiceConsumer {
- public:
-  AutofillWebDataServiceWaiter() = default;
-
-  AutofillWebDataServiceWaiter(const AutofillWebDataServiceWaiter&) = delete;
-  AutofillWebDataServiceWaiter& operator=(const AutofillWebDataServiceWaiter&) =
-      delete;
-
-  T& result() {
-    if (!run_loop_.AnyQuitCalled()) {
-      // Wait for the result.
-      run_loop_.Run();
-    }
-    return result_;
-  }
-
- private:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) final {
-    result_ = static_cast<WDResult<T>*>(result.get())->GetValue();
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  T result_;
-};
-
 using WebDataServiceRequestFuture =
     base::test::TestFuture<WebDataServiceBase::Handle,
                            std::unique_ptr<WDTypedResult>>;
