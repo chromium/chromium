@@ -144,13 +144,13 @@ function compareLastOpened(
 function compareAlphabetical(
     a: chrome.bookmarks.BookmarkTreeNode,
     b: chrome.bookmarks.BookmarkTreeNode): number {
-  return a.title!.localeCompare(b.title);
+  return a.title.localeCompare(b.title);
 }
 
 function compareReverseAlphabetical(
     a: chrome.bookmarks.BookmarkTreeNode,
     b: chrome.bookmarks.BookmarkTreeNode): number {
-  return b.title!.localeCompare(a.title);
+  return b.title.localeCompare(a.title);
 }
 
 export class PowerBookmarksService {
@@ -212,7 +212,7 @@ export class PowerBookmarksService {
    */
   stopListening() {
     for (const [eventName, callback] of this.listeners_.entries()) {
-      this.bookmarksApi_.callbackRouter[eventName]!.removeListener(callback);
+      this.bookmarksApi_.callbackRouter[eventName].removeListener(callback);
     }
   }
 
@@ -347,9 +347,9 @@ export class PowerBookmarksService {
     return this.nodeMatchesContentFilters_(bookmark, labels) &&
         (!searchQuery ||
          (!!bookmark.title &&
-          bookmark.title.toLocaleLowerCase().includes(searchQuery!)) ||
+          bookmark.title.toLocaleLowerCase().includes(searchQuery)) ||
          (!!bookmark.url &&
-          bookmark.url.toLocaleLowerCase().includes(searchQuery!)));
+          bookmark.url.toLocaleLowerCase().includes(searchQuery)));
   }
 
   setMaxImageServiceRequestsForTesting(max: number) {
@@ -394,14 +394,14 @@ export class PowerBookmarksService {
       bookmark: chrome.bookmarks.BookmarkTreeNode, labels: Label[]): boolean {
     // Price tracking label
     const isPriceTracked = !!this.getPriceTrackedInfo(bookmark);
-    if (labels[0] && labels[0]!.active && !isPriceTracked) {
+    if (labels[0] && labels[0].active && !isPriceTracked) {
       return false;
     }
     return true;
   }
 
   private addListener_(eventName: string, callback: Function): void {
-    this.bookmarksApi_.callbackRouter[eventName]!.addListener(callback);
+    this.bookmarksApi_.callbackRouter[eventName].addListener(callback);
     this.listeners_.set(eventName, callback);
   }
 
@@ -437,7 +437,7 @@ export class PowerBookmarksService {
   private onMoved_(movedInfo: chrome.bookmarks.MoveInfo) {
     // Remove node from oldParent at oldIndex.
     const oldParent = this.findBookmarkWithId(movedInfo.oldParentId)!;
-    const movedNode = oldParent!.children![movedInfo.oldIndex]!;
+    const movedNode = oldParent.children![movedInfo.oldIndex];
     Object.assign(
         movedNode, {index: movedInfo.index, parentId: movedInfo.parentId});
     oldParent.children!.splice(movedInfo.oldIndex, 1);
@@ -447,14 +447,14 @@ export class PowerBookmarksService {
     if (!newParent.children) {
       newParent.children = [];
     }
-    newParent.children!.splice(movedInfo.index, 0, movedNode);
+    newParent.children.splice(movedInfo.index, 0, movedNode);
     this.delegate_.onBookmarkMoved(movedNode, oldParent, newParent);
   }
 
   private onRemoved_(id: string) {
     const oldPath = this.findPathToId(id);
     const removedNode = oldPath.pop()!;
-    const oldParent = oldPath[oldPath.length - 1]!;
+    const oldParent = oldPath[oldPath.length - 1];
     oldParent.children!.splice(oldParent.children!.indexOf(removedNode), 1);
     this.delegate_.onBookmarkRemoved(removedNode);
   }

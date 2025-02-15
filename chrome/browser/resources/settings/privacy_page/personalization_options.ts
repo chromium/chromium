@@ -185,7 +185,7 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private getPriceEmailNotificationsPrefDesc_(): string {
-    const username = this.syncStatus!.signedInUsername || '';
+    const username = this.syncStatus.signedInUsername || '';
     return loadTimeData.getStringF('priceEmailNotificationsPrefDesc', username);
   }
 

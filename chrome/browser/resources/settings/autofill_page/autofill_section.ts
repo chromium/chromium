@@ -203,7 +203,7 @@ export class SettingsAutofillSectionElement extends
         focusWithoutInk(this.$.addAddress);
       } else {
         const lastIndex = this.addresses.length - 1;
-        if (this.activeAddress!.guid === this.addresses[lastIndex]!.guid) {
+        if (this.activeAddress!.guid === this.addresses[lastIndex].guid) {
           focusWithoutInk(this.$.addressList.querySelectorAll<HTMLElement>(
               '.address-menu')[lastIndex - 1]);
         }

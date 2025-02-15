@@ -62,7 +62,7 @@ class GraphTabElement extends PolymerElement {
     this.graphDump_ = GraphDump.getRemote();
     this.client_ = new GraphChangeStreamReceiver(this.graph_);
     // Subscribe for graph updates.
-    this.graphDump_!.subscribeToChanges(
+    this.graphDump_.subscribeToChanges(
         this.client_.$.bindNewPipeAndPassRemote());
   }
 

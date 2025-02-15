@@ -364,7 +364,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         (sessionList: ForeignSession[]) =>
             this.setForeignSessions_(sessionList));
     this.shadowRoot!.querySelector('history-query-manager')!.initialize();
-    this.browserService_!.getForeignSessions().then(
+    this.browserService_.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));
 
     const mediaQuery = window.matchMedia('(max-width: 1023px)');
@@ -482,7 +482,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       // devices page or product specifications page.
       this.toolbarShadow_ = this.scrollTarget.scrollTop !== 0 &&
           (!this.showHistoryClusters_ ||
-           this.syncedTabsSelected_(this.selectedPage_!) ||
+           this.syncedTabsSelected_(this.selectedPage_) ||
            this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS);
     }
   }
@@ -624,31 +624,31 @@ export class HistoryAppElement extends HistoryAppElementBase {
       this.nonEmbeddingsResultClicked_ = true;
     }
 
-    this.browserService_!.recordHistogram(
+    this.browserService_.recordHistogram(
         'History.SearchResultClicked.Type', e.detail.resultType,
         HistoryResultType.END);
 
     // MetricsHandler uses a 100 bucket limit, so the max index is 99.
     const maxIndex = 99;
     const clampedIndex = Math.min(e.detail.index, 99);
-    this.browserService_!.recordHistogram(
+    this.browserService_.recordHistogram(
         'History.SearchResultClicked.Index', clampedIndex, maxIndex);
 
     switch (e.detail.resultType) {
       case HistoryResultType.TRADITIONAL: {
-        this.browserService_!.recordHistogram(
+        this.browserService_.recordHistogram(
             'History.SearchResultClicked.Index.Traditional', clampedIndex,
             maxIndex);
         break;
       }
       case HistoryResultType.GROUPED: {
-        this.browserService_!.recordHistogram(
+        this.browserService_.recordHistogram(
             'History.SearchResultClicked.Index.Grouped', clampedIndex,
             maxIndex);
         break;
       }
       case HistoryResultType.EMBEDDINGS: {
-        this.browserService_!.recordHistogram(
+        this.browserService_.recordHistogram(
             'History.SearchResultClicked.Index.Embeddings', clampedIndex,
             maxIndex);
         break;
@@ -668,9 +668,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
    */
   private onSelectAllCommand_(): boolean {
     if (this.$.toolbar.searchField.isSearchFocused() ||
-        this.syncedTabsSelected_(this.selectedPage_!) ||
+        this.syncedTabsSelected_(this.selectedPage_) ||
         this.historyClustersSelected_(
-            this.selectedPage_!, this.showHistoryClusters_)) {
+            this.selectedPage_, this.showHistoryClusters_)) {
       return false;
     }
     this.selectOrUnselectAll();
@@ -807,7 +807,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     const duration =
         new Date().getTime() - this.historyClustersViewStartTime_.getTime();
-    this.browserService_!.recordLongTime(
+    this.browserService_.recordLongTime(
         'History.Clusters.WebUISessionDuration', duration);
 
     this.historyClustersViewStartTime_ = null;
@@ -821,7 +821,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private closeDrawer_() {
-    const drawer = this.$.drawer.get() as CrDrawerElement;
+    const drawer = this.$.drawer.get();
     if (drawer && drawer.open) {
       drawer.close();
     }
@@ -852,7 +852,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
     this.lastRecordedSelectedPageHistogramValue_ = histogramValue;
 
-    this.browserService_!.recordHistogram(
+    this.browserService_.recordHistogram(
         'History.HistoryPageView', histogramValue,
         HistoryPageViewHistogram.END);
   }

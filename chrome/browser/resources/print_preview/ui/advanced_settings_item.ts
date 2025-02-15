@@ -81,7 +81,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
                           VendorCapabilitySelectOption): string {
     let displayName = item.display_name;
     if (!displayName && item.display_name_localized) {
-      displayName = getStringForCurrentLocale(item.display_name_localized!);
+      displayName = getStringForCurrentLocale(item.display_name_localized);
     }
     return displayName || '';
   }
@@ -132,20 +132,20 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   private getCapabilityPlaceholder_(): string {
     if (this.capability.type === 'TYPED_VALUE' &&
         this.capability.typed_value_cap &&
-        this.capability.typed_value_cap!.default !== undefined) {
-      return this.capability.typed_value_cap!.default.toString() || '';
+        this.capability.typed_value_cap.default !== undefined) {
+      return this.capability.typed_value_cap.default.toString() || '';
     }
     if (this.capability.type === 'RANGE' && this.capability.range_cap &&
-        this.capability.range_cap!.default !== undefined) {
-      return this.capability.range_cap!.default.toString() || '';
+        this.capability.range_cap.default !== undefined) {
+      return this.capability.range_cap.default.toString() || '';
     }
     return '';
   }
 
   private hasOptionWithValue_(value: string): boolean {
     return !!this.capability.select_cap &&
-        !!this.capability.select_cap!.option &&
-        this.capability.select_cap!.option.some(
+        !!this.capability.select_cap.option &&
+        this.capability.select_cap.option.some(
             option => option.value === value);
   }
 

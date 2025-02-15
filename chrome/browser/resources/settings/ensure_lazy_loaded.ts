@@ -38,5 +38,5 @@ export function ensureLazyLoaded(): Promise<void> {
             ].map(name => customElements.whenDefined(name)))
             .then(() => {});
   }
-  return lazyLoadPromise!;
+  return lazyLoadPromise;
 }

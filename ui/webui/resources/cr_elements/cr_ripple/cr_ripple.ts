@@ -224,7 +224,7 @@ export class CrRippleElement extends CrLitElement {
 
       const animation = ripple.animate(
           {
-            opacity: [opacity!.value!, 0],
+            opacity: [opacity.value, 0],
           },
           {
             duration: 150,

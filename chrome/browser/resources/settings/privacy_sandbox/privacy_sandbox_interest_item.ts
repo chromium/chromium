@@ -67,7 +67,7 @@ export class PrivacySandboxInterestItemElement extends
       return this.i18n(
           this.interest.removed ? 'topicsPageUnblockTopicA11yLabel' :
                                   'topicsPageBlockTopicA11yLabel',
-          this.interest.topic.displayString!);
+          this.interest.topic.displayString);
     } else {
       assert(!this.interest.topic);
       return this.i18n(

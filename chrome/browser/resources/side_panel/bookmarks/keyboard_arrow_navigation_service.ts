@@ -182,7 +182,7 @@ export class KeyArrowNavigationService {
           [
             ...treeElements,
             childNode,
-            ...this.traverseElements_(childNode as HTMLElement),
+            ...this.traverseElements_(childNode),
           ] :
           [...treeElements, childNode];
     }

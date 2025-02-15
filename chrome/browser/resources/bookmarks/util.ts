@@ -18,7 +18,7 @@ export function getDisplayedList(state: BookmarksPageState): string[] {
     return state.search.results;
   }
 
-  const children = state.nodes[state.selectedFolder]!.children;
+  const children = state.nodes[state.selectedFolder].children;
   assert(children);
   return children;
 }
@@ -152,7 +152,7 @@ export function isShowingSearch(state: BookmarksPageState): boolean {
 export function canEditNode(
     state: BookmarksPageState, itemId: string): boolean {
   return !isRootOrChildOfRoot(state, itemId) &&
-      !state.nodes![itemId]!.unmodifiable && state.prefs.canEdit;
+      !state.nodes[itemId].unmodifiable && state.prefs.canEdit;
 }
 
 /**
@@ -161,7 +161,7 @@ export function canEditNode(
  */
 export function canReorderChildren(
     state: BookmarksPageState, itemId: string): boolean {
-  return !isRootNode(itemId) && !state.nodes[itemId]!.unmodifiable &&
+  return !isRootNode(itemId) && !state.nodes[itemId].unmodifiable &&
       state.prefs.canEdit;
 }
 
@@ -172,7 +172,7 @@ export function hasChildFolders(id: string, nodes: NodeMap): boolean {
 
   const children = nodes[id].children;
   for (let i = 0; i < children.length; i++) {
-    if (nodes[children[i]!]!.children) {
+    if (nodes[children[i]].children) {
       return true;
     }
   }
@@ -180,7 +180,7 @@ export function hasChildFolders(id: string, nodes: NodeMap): boolean {
 }
 
 export function getDescendants(nodes: NodeMap, baseId: string): Set<string> {
-  const descendants = new Set() as Set<string>;
+  const descendants = new Set<string>();
   const stack: string[] = [];
   stack.push(baseId);
 
@@ -194,11 +194,11 @@ export function getDescendants(nodes: NodeMap, baseId: string): Set<string> {
 
     descendants.add(id);
 
-    if (!node!.children) {
+    if (!node.children) {
       continue;
     }
 
-    node!.children.forEach(function(childId) {
+    node.children.forEach(function(childId) {
       stack.push(childId);
     });
   }

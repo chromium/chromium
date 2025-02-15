@@ -140,7 +140,7 @@ function toCssClipPath(object: OverlayObject): string {
 // relative to the object bounding box, to be used in the CSS polygon()
 // function.
 function toCssPolygonVertex(object: OverlayObject, vertex: Vertex): string {
-  const objectBoundingBox = object.geometry!.boundingBox;
+  const objectBoundingBox = object.geometry.boundingBox;
   return toPercent(
              0.5 +
              (vertex.x - objectBoundingBox.box.x) /
@@ -257,7 +257,7 @@ export class ObjectLayerElement extends PolymerElement {
     }
 
     const object = this.renderedObjects[objectIndex];
-    const selectionRegion = object.geometry!.boundingBox;
+    const selectionRegion = object.geometry.boundingBox;
 
     // Issue the query.
     this.browserProxy.handler.issueLensObjectRequest(
@@ -535,7 +535,7 @@ export class ObjectLayerElement extends PolymerElement {
   private getObjectStyle(object: OverlayObject): string {
     // Objects without bounding boxes are filtered out, so guaranteed that
     // geometry is not null.
-    const objectBoundingBox = object.geometry!.boundingBox;
+    const objectBoundingBox = object.geometry.boundingBox;
 
     // TODO(b/330183480): Currently, we are assuming that object
     // coordinates are normalized. We should still implement

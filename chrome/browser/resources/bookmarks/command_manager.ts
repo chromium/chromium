@@ -250,7 +250,7 @@ export class BookmarksCommandManagerElement extends
       case Command.SHOW_IN_FOLDER:
         return this.menuSource_ === MenuSource.ITEM && itemIds.size === 1 &&
             this.getState().search.term !== '' &&
-            !isRootOrChildOfRoot(this.getState(), Array.from(itemIds)[0]!);
+            !isRootOrChildOfRoot(this.getState(), Array.from(itemIds)[0]);
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_INCOGNITO:
@@ -283,7 +283,7 @@ export class BookmarksCommandManagerElement extends
             IncognitoAvailability.DISABLED;
       case Command.SORT:
         return this.canChangeList_() &&
-            state.nodes[state.selectedFolder]!.children!.length > 1;
+            state.nodes[state.selectedFolder].children!.length > 1;
       case Command.ADD_BOOKMARK:
       case Command.ADD_FOLDER:
         return this.canChangeList_();
@@ -329,9 +329,9 @@ export class BookmarksCommandManagerElement extends
     const state = this.getState();
     switch (command) {
       case Command.EDIT: {
-        const id = Array.from(itemIds)[0]!;
+        const id = Array.from(itemIds)[0];
         this.ensureEditDialog_().then(
-            dialog => dialog.showEditDialog(state.nodes[id]!));
+            dialog => dialog.showEditDialog(state.nodes[id]));
         break;
       }
       case Command.COPY: {
@@ -347,13 +347,13 @@ export class BookmarksCommandManagerElement extends
           }
 
           this.showTitleToast_(
-              labelPromise, state.nodes[idList[0]!]!.title, false);
+              labelPromise, state.nodes[idList[0]].title, false);
         });
         break;
       }
       case Command.SHOW_IN_FOLDER: {
         const id = Array.from(itemIds)[0];
-        const parentId = state.nodes[id!]!.parentId;
+        const parentId = state.nodes[id].parentId;
         assert(parentId);
         this.dispatch(selectFolder(parentId, state.nodes));
         DialogFocusManager.getInstance().clearFocus();
@@ -363,7 +363,7 @@ export class BookmarksCommandManagerElement extends
       }
       case Command.DELETE: {
         const idList = Array.from(this.minimizeDeletionSet_(itemIds));
-        const title = state.nodes[idList[0]!]!.title;
+        const title = state.nodes[idList[0]].title;
         let labelPromise: Promise<string>;
 
         if (idList.length === 1) {
@@ -394,7 +394,7 @@ export class BookmarksCommandManagerElement extends
         break;
       case Command.OPEN:
         if (this.isFolder_(itemIds)) {
-          const folderId = Array.from(itemIds)[0]!;
+          const folderId = Array.from(itemIds)[0];
           this.dispatch(selectFolder(folderId, state.nodes));
         } else {
           this.openBookmarkIds_(Array.from(itemIds), command);
@@ -450,7 +450,7 @@ export class BookmarksCommandManagerElement extends
 
   handleKeyEvent(e: KeyboardEvent, itemIds: Set<string>): boolean {
     for (const commandTuple of this.shortcuts_) {
-      const command = commandTuple[0] as Command;
+      const command = commandTuple[0];
       const shortcut = commandTuple[1] as KeyboardShortcutList;
       if (shortcut.matchesEvent(e) && this.canExecute(command, itemIds)) {
         this.handle(command, itemIds);
@@ -484,12 +484,12 @@ export class BookmarksCommandManagerElement extends
    * call.
    */
   private minimizeDeletionSet_(itemIds: Set<string>): Set<string> {
-    const minimizedSet = new Set() as Set<string>;
+    const minimizedSet = new Set<string>();
     const nodes = this.getState().nodes;
     itemIds.forEach(function(itemId) {
       let currentId = itemId;
       while (!isRootNode(currentId)) {
-        const parentId = nodes[currentId]!.parentId;
+        const parentId = nodes[currentId].parentId;
         assert(parentId);
         currentId = parentId;
         if (itemIds.has(currentId)) {
@@ -556,12 +556,12 @@ export class BookmarksCommandManagerElement extends
     const nodes = this.getState().nodes;
 
     itemIds.forEach(function(itemId) {
-      const node = nodes[itemId]!;
+      const node = nodes[itemId];
       if (node.url) {
         result.push(node.id);
       } else {
         node.children!.forEach(function(child) {
-          const childNode = nodes[child]!;
+          const childNode = nodes[child];
           if (childNode.id && childNode.url) {
             result.push(childNode.id);
           }
@@ -577,7 +577,7 @@ export class BookmarksCommandManagerElement extends
     const nodes = this.getState().nodes;
 
     return Array.from(itemIds).some(function(id) {
-      return predicate(nodes[id]!);
+      return predicate(nodes[id]);
     });
   }
 
@@ -602,7 +602,7 @@ export class BookmarksCommandManagerElement extends
           return '';
         }
 
-        const id = Array.from(this.menuIds_)[0]!;
+        const id = Array.from(this.menuIds_)[0];
         const itemUrl = this.getState().nodes[id]!.url;
         label = itemUrl ? 'menuEdit' : 'menuRename';
         break;
@@ -779,7 +779,7 @@ export class BookmarksCommandManagerElement extends
       await this.updateCanPaste_(e.detail.targetId);
     }
     if (e.detail.targetElement) {
-      this.openCommandMenuAtElement(e.detail.targetElement!, e.detail.source);
+      this.openCommandMenuAtElement(e.detail.targetElement, e.detail.source);
     } else {
       this.openCommandMenuAtPosition(e.detail.x!, e.detail.y!, e.detail.source);
     }

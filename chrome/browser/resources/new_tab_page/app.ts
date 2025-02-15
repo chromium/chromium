@@ -394,7 +394,7 @@ export class AppElement extends AppElementBase {
           if (this.showCustomize_) {
             const toast = $$<CrToastElement>(this, '#webstoreToast');
             if (toast) {
-              toast!.hidden = false;
+              toast.hidden = false;
               toast!.show();
             }
           }

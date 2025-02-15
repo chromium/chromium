@@ -12,7 +12,6 @@ import './wallpaper_search/wallpaper_search_tile.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -255,7 +254,7 @@ export class CategoriesElement extends CategoriesElementBase {
         'NTPRicherPicker.Backgrounds.UploadClicked');
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
-      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      const announcer = getAnnouncerInstance();
       announcer.announce(this.i18n('updatedToUploadedImage'));
       this.dispatchEvent(new Event('local-image-upload'));
     }

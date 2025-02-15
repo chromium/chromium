@@ -293,7 +293,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   // Override FindShortcutMixin methods.
   override searchInputHasFocus() {
     const field = this.shadowRoot!.querySelector('cr-search-field')!;
-    return field.getSearchInput() === field.shadowRoot!.activeElement;
+    return field.getSearchInput() === field.shadowRoot.activeElement;
   }
 
   static get template() {

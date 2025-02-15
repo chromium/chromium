@@ -255,7 +255,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     assert(dialog);
     assert(this.currentInterest_);
     if (dialog.wasConfirmed()) {
-      this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
+      this.updateTopicsStateForSelectedTopic_(this.currentInterest_);
     }
     this.blockTopicDialogBody_ = '';
     this.blockTopicDialogTitle_ = '';
@@ -293,36 +293,34 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.currentInterest_ = e.detail;
     assert(!this.currentInterest_.site);
 
-    assert(this.currentInterest_!.topic);
-    assert(this.currentInterest_!.topic!.displayString);
+    assert(this.currentInterest_.topic);
+    assert(this.currentInterest_.topic.displayString);
 
     // If topic is being unblocked, show toast and update topic state.
-    if (this.currentInterest_!.removed) {
+    if (this.currentInterest_.removed) {
       const toast = this.shadowRoot!.querySelector('cr-toast');
       assert(toast);
       toast.show();
-      this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
+      this.updateTopicsStateForSelectedTopic_(this.currentInterest_);
       return;
     }
 
     this.currentChildTopics_ =
         await this.privacySandboxBrowserProxy_.getChildTopicsCurrentlyAssigned(
-            this.currentInterest_!.topic!);
+            this.currentInterest_.topic);
     // Check if currently selected topic to block has active child topics
     // if it does, show simple confirmation dialog.
     if (this.currentChildTopics_.length !== 0) {
       this.blockTopicDialogTitle_ = loadTimeData.getStringF(
-          'manageTopicsDialogTitle',
-          this.currentInterest_!.topic!.displayString);
+          'manageTopicsDialogTitle', this.currentInterest_.topic.displayString);
       this.blockTopicDialogBody_ = loadTimeData.getStringF(
-          'manageTopicsDialogBody',
-          this.currentInterest_!.topic!.displayString);
+          'manageTopicsDialogBody', this.currentInterest_.topic.displayString);
       this.shouldShowBlockTopicDialog_ = true;
       return;
     }
     // Currently selected topic doesn't have active child topics.
     // Update topics state.
-    this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
+    this.updateTopicsStateForSelectedTopic_(this.currentInterest_);
     this.blockedTopicsExpanded_ = true;
   }
 

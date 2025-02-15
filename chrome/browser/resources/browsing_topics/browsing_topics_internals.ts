@@ -262,7 +262,7 @@ async function asyncClassifyHosts(hosts: string[], sequenceNumber: number) {
 
   for (let i = 0; i < hosts.length; i++) {
     const host = hosts[i] as string;
-    const topics = topicsForHosts![i] as WebUITopic[];
+    const topics = topicsForHosts[i] as WebUITopic[];
 
     document.querySelector('#hosts-classification-result-table')!.appendChild(
         createClassificationResultRow(host, topics));
@@ -321,7 +321,7 @@ async function asyncGetModelInfo() {
     const input =
         document.querySelector<HTMLTextAreaElement>(
                     '#input-hosts-textarea')!.value;
-    const hosts = input!.split('\n');
+    const hosts = input.split('\n');
 
     const preprocessedHosts = [] as string[];
     hosts.forEach((host) => {

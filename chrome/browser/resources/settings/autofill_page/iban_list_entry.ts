@@ -104,7 +104,7 @@ export class SettingsIbanListEntryElement extends
       string {
     // Strip all whitespace and get the pure last four digits of the value.
     const strippedSummaryLabel =
-        iban.metadata ? iban.metadata!.summaryLabel.replace(/\s/g, '') : '';
+        iban.metadata ? iban.metadata.summaryLabel.replace(/\s/g, '') : '';
     const lastFourDigits = strippedSummaryLabel.substring(
         Math.max(0, strippedSummaryLabel.length - 4));
 

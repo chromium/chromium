@@ -149,8 +149,7 @@ export class PolicyTestRowElement extends CustomElement {
         assertNotReached();
     }
     if (previousValueType === this.inputType_) {
-      this.getRequiredElement<HTMLInputElement>('.value')!.value =
-          previousValue;
+      this.getRequiredElement<HTMLInputElement>('.value').value = previousValue;
     }
   }
 

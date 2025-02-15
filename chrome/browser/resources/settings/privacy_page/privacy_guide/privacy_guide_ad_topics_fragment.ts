@@ -87,7 +87,7 @@ export class PrivacyGuideAdTopicsFragmentElement extends
           PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_ON :
           PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_OFF;
     }
-    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
+    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state);
   }
 
   private onToggleChange_(e: Event) {

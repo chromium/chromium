@@ -804,7 +804,7 @@ export class ProductSpecificationsElement extends CrLitElement {
   private modifyUrls_(urls: string[]) {
     if (this.id_) {
       this.shoppingApi_.setUrlsForProductSpecificationsSet(
-          this.id_!, urls.map(url => ({url})));
+          this.id_, urls.map(url => ({url})));
     } else {
       this.createNewSet_(urls);
     }

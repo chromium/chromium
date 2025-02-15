@@ -287,7 +287,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   private showWebsiteError_(): boolean {
-    return !!this.websiteErrorMessage_ && this.websiteErrorMessage_!.length > 0;
+    return !!this.websiteErrorMessage_ && this.websiteErrorMessage_.length > 0;
   }
 
   private computeUsernameErrorMessage_(): string|null {

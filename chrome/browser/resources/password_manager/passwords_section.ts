@@ -312,7 +312,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     const importLink = this.$.importPasswords.querySelector('a');
     // Add an event listener to the import link, points to the import flow.
     assert(importLink);
-    importLink!.addEventListener('click', (event: Event) => {
+    importLink.addEventListener('click', (event: Event) => {
       // The action is triggered from a dummy anchor element poining to "#".
       // For that case preventing the default behaviour is required here.
       event.preventDefault();

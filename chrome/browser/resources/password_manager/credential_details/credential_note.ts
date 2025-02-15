@@ -46,7 +46,7 @@ export class CredentialNoteElement extends CredentialNoteElementBase {
   }
 
   private getNoteValue_(): string {
-    return !this.note ? this.i18n('emptyNote') : this.note!;
+    return !this.note ? this.i18n('emptyNote') : this.note;
   }
 
   private noteIsEmpty_(): boolean {

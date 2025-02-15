@@ -66,7 +66,7 @@ class SearchFilter {
     let match = this.matchNameOrHash(this.searchText, named);
     if (!match && checkParts) {
       for (const parts of this.searchParts) {
-        match = this.matchNameOrHash(parts['groups' in named ? 0 : 1]!, named);
+        match = this.matchNameOrHash(parts['groups' in named ? 0 : 1], named);
         if (match) {
           break;
         }

@@ -201,7 +201,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       xDirection: number, yDirection: number, currentFocus: Element|null) {
     let newFocusFolderNode = null;
     const isChildFolderNodeFocused = currentFocus &&
-        (currentFocus as HTMLElement)!.tagName === 'BOOKMARKS-FOLDER-NODE';
+        (currentFocus as HTMLElement).tagName === 'BOOKMARKS-FOLDER-NODE';
 
     if (xDirection === 1) {
       // The right arrow opens a folder if closed and goes to the first child
@@ -242,7 +242,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       // Get the next child folder node if a child is focused.
       if (!newFocusFolderNode) {
         newFocusFolderNode = this.getNextChild(
-            yDirection === -1, (currentFocus! as BookmarksFolderNodeElement));
+            yDirection === -1, (currentFocus as BookmarksFolderNodeElement));
       }
 
       // The first child's predecessor is this node.
@@ -281,7 +281,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       // A child node's predecessor is either the previous child's last visible
       // descendant, or this node, which is its immediate parent.
       newFocus =
-          index === 0 ? null : children[index - 1]!.getLastVisibleDescendant();
+          index === 0 ? null : children[index - 1].getLastVisibleDescendant();
     } else if (index < children.length - 1) {
       // A successor to a child is the next child.
       newFocus = children[index + 1]!;
@@ -351,7 +351,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     return !this.item_?.children ?
         [] :
         this.item_.children.filter(
-            itemId => !this.getState().nodes[itemId]!.url);
+            itemId => !this.getState().nodes[itemId].url);
   }
 
   protected isRootFolder_(): boolean {

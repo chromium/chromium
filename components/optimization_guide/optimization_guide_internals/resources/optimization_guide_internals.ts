@@ -118,7 +118,7 @@ class TableFilter {
     if (this.excludeFun != null) {
       for (const idx of this.filterCellIndices) {
         const text = row.cells[idx]?.textContent ?? '';
-        if (this !.excludeFun(text)) {
+        if (this.excludeFun(text)) {
           return false;
         }
       }
@@ -126,7 +126,7 @@ class TableFilter {
     if (this.includeFun != null) {
       for (const idx of this.filterCellIndices) {
         const text = row.cells[idx]?.textContent ?? '';
-        if (this !.includeFun(text)) {
+        if (this.includeFun(text)) {
           return true;
         }
       }
@@ -190,7 +190,7 @@ class TableFilter {
    * @param {!Event} e
    */
   triggerUpdate(e: Event) {
-    const elt = e!.target as HTMLElement;
+    const elt = e.target as HTMLElement;
     // Debounce: New trigger cancels an existing trigger's timeout.
     if (this.filterDelayTimeoutId != null) {
       clearTimeout(this.filterDelayTimeoutId);

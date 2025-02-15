@@ -89,7 +89,7 @@ class BucketElement extends HTMLElement {
     });
 
     this.getNode(`.control.start-record`).addEventListener('click', () => {
-      this.getNode(`.control.stop-record`)!.hidden = false;
+      this.getNode(`.control.stop-record`).hidden = false;
       this.getNode(`.control.start-record`)!.hidden = true;
 
       IdbInternalsHandler.getRemote()
@@ -104,7 +104,7 @@ class BucketElement extends HTMLElement {
     this.getNode(`.control.stop-record`).addEventListener('click', () => {
       // Show loading
       this.progressNode.style.display = 'inline';
-      this.getNode(`.control.start-record`)!.hidden = false;
+      this.getNode(`.control.start-record`).hidden = false;
       this.getNode(`.control.stop-record`)!.hidden = true;
 
       new IdbInternalsRemote()
@@ -144,9 +144,8 @@ class BucketElement extends HTMLElement {
     }
     slider.value = idx.toString();
     slider.max = (this.seriesData.length - 1).toString();
-    this.getNode('.snapshots .current-snapshot')!.textContent =
-        slider.value;
-    this.getNode('.snapshots .total-snapshots')!.textContent = slider.max;
+    this.getNode('.snapshots .current-snapshot').textContent = slider.value;
+    this.getNode('.snapshots .total-snapshots').textContent = slider.max;
     this.getNode('.snapshots .snapshot-delta')!.textContent =
         `+${snapshot.deltaRecordingStartMs}ms`;
 

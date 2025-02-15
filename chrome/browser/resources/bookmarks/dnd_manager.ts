@@ -45,11 +45,11 @@ function getBookmarkElement(path?: EventTarget[]): BookmarkElement|null {
     return null;
   }
 
-  for (let i = 0; i < path!.length; i++) {
+  for (let i = 0; i < path.length; i++) {
     const element = path![i] as Element;
     if (isBookmarkItem(element) || isBookmarkFolderNode(element) ||
         isBookmarkList(element)) {
-      return path![i] as BookmarkElement;
+      return path[i] as BookmarkElement;
     }
   }
   return null;
@@ -58,7 +58,7 @@ function getBookmarkElement(path?: EventTarget[]): BookmarkElement|null {
 function getDragElement(path: EventTarget[]): BookmarkElement|null {
   const dragElement = getBookmarkElement(path);
   for (let i = 0; i < path.length; i++) {
-    if ((path![i] as Element).tagName === 'BUTTON') {
+    if ((path[i] as Element).tagName === 'BUTTON') {
       return null;
     }
   }
@@ -67,7 +67,7 @@ function getDragElement(path: EventTarget[]): BookmarkElement|null {
 }
 
 function getBookmarkNode(bookmarkElement: BookmarkElement): BookmarkNode {
-  return Store.getInstance().data.nodes[bookmarkElement.itemId]!;
+  return Store.getInstance().data.nodes[bookmarkElement.itemId];
 }
 
 function isTextInputElement(element: HTMLElement): boolean {
@@ -125,11 +125,11 @@ export class DragInfo {
       return false;
     }
 
-    let parentId = nodes[itemId]!.parentId;
+    let parentId = nodes[itemId].parentId;
     const parents: ObjectMap<boolean> = {};
     while (parentId) {
       parents[parentId] = true;
-      parentId = nodes[parentId]!.parentId;
+      parentId = nodes[parentId].parentId;
     }
 
     return !!this.dragData && this.dragData.elements.some(function(node) {
@@ -350,14 +350,14 @@ export class DndManager {
       // delay on large amount of bookmark dragging.
       for (const itemId of displayingItems) {
         for (const element of dragData.elements) {
-          if (element!.id === itemId) {
+          if (element.id === itemId) {
             draggedNodes.push(element!.id);
             break;
           }
         }
       }
     } else {
-      draggedNodes = dragData.elements.map((item) => item!.id);
+      draggedNodes = dragData.elements.map((item) => item.id);
     }
 
     assert(draggedNodes.length === dragData.elements.length);
@@ -488,7 +488,7 @@ export class DndManager {
       // destination node's parent.
       assert(node.parentId);
       parentId = node.parentId;
-      index = state.nodes[parentId]!.children!.indexOf(node.id);
+      index = state.nodes[parentId].children!.indexOf(node.id);
 
       if (position === DropPosition.BELOW) {
         index++;
@@ -665,7 +665,7 @@ export class DndManager {
     if (isBookmarkList(overElement)) {
       const state = Store.getInstance().data;
       return !!state.selectedFolder &&
-          state.nodes[state.selectedFolder]!.children!.length === 0;
+          state.nodes[state.selectedFolder].children!.length === 0;
     }
 
     // We can only drop on a folder.

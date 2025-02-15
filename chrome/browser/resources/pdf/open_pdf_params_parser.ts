@@ -401,7 +401,7 @@ export class OpenPdfParamsParser {
         Object.assign(
             params,
             await this.parseNameddestViewParam_(
-                data.namedDestinationView, pageNumber!));
+                data.namedDestinationView, pageNumber));
       }
       return params;
     }

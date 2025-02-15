@@ -58,7 +58,7 @@ export function getHtml(this: ExperimentElement) {
 
       ${this.feature_.links ? html`
         <div class="links-container">
-          ${this.feature_.links!.map(link => html`
+          ${this.feature_.links.map(link => html`
             <a href="${link}">${link}</a>
           `)}
         </div>
