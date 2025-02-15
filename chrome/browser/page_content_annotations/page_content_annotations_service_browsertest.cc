@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -1245,6 +1246,35 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
   EXPECT_EQ(1, *ukm_recorder.GetEntryMetric(
                    entry, ukm::builders::OptimizationGuide_AnnotatedPdfContent::
                               kPdfPageCountName));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
+                       TwoPdfPageLoads) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::test::TestFuture<void> future;
+  ukm_recorder.SetOnAddEntryCallback(
+      ukm::builders::OptimizationGuide_AnnotatedPdfContent::kEntryName,
+      future.GetRepeatingCallback());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf"), 1);
+  EXPECT_TRUE(future.WaitAndClear());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf"), 1);
+  EXPECT_TRUE(future.WaitAndClear());
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::OptimizationGuide_AnnotatedPdfContent::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1, *ukm_recorder.GetEntryMetric(
+                   entries[0].get(),
+                   ukm::builders::OptimizationGuide_AnnotatedPdfContent::
+                       kPdfPageCountName));
+  EXPECT_EQ(1, *ukm_recorder.GetEntryMetric(
+                   entries[1].get(),
+                   ukm::builders::OptimizationGuide_AnnotatedPdfContent::
+                       kPdfPageCountName));
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
