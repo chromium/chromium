@@ -130,6 +130,8 @@ class CONTENT_EXPORT InterestGroupStorage {
   void RecordDebugReportCooldown(const url::Origin& origin,
                                  base::Time cooldown_start,
                                  DebugReportCooldownType cooldown_type);
+  // Clear out all entries for debug report cooldown information.
+  void DeleteAllDebugReportCooldowns();
 
   // Records a K-anonymity update for an interest group. If
   // `replace_existing_values` is true, this update will store the new
@@ -174,6 +176,11 @@ class CONTENT_EXPORT InterestGroupStorage {
 
   std::vector<std::pair<url::Origin, url::Origin>>
   GetAllInterestGroupOwnerJoinerPairs();
+
+  // Set forDebuggingOnly lockout to the time until all interest groups that
+  // previously joined expires.
+  void SetDebugReportLockoutUntilIGExpires();
+
   void RemoveInterestGroupsMatchingOwnerAndJoiner(url::Origin owner,
                                                   url::Origin joining_origin);
 
