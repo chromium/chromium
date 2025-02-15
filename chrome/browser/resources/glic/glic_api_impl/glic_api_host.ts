@@ -18,7 +18,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
 import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
-import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
+import {WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
@@ -260,11 +260,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
           Math.min(Number.MAX_SAFE_INTEGER, request.options.pdfSizeLimit),
     });
     if (!tabContext) {
-      let error = GetTabContextErrorReason.UNKNOWN;
-      if (errorReason === MojoGetTabContextErrorReason.kWebContentsChanged) {
-        error = GetTabContextErrorReason.WEB_CONTENTS_CHANGED;
-      }
-      throw new ErrorWithReasonImpl('tabContext', error);
+      throw new ErrorWithReasonImpl(
+          'tabContext',
+          (errorReason as GetTabContextErrorReason | undefined) ??
+              GetTabContextErrorReason.UNKNOWN);
     }
     const tabData = tabContext.tabData;
     let favicon: RgbaImage|undefined = undefined;

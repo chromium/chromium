@@ -16,7 +16,6 @@
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/glic_profile_configuration.h"
-#include "chrome/browser/glic/glic_tab_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
@@ -34,13 +33,14 @@ class GlicProfileManager;
 class GlicWindowController;
 class GlicWindowController;
 class GlicScreenshotCapturer;
+struct FocusedTabData;
 
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
-// non-system, etc.) browser profile if Glic flags are enabled, regardless of
-// whether the profile is enabled or disabled at runtime (currently possible via
-// enterprise policy). This is required on disabled profiles since pieces of
-// this service are the ones that monitor this runtime preference for changes
-// and cause the UI to respond to it.
+// non-system, etc.) browser profile if Glic flags are enabled, regardless
+// of whether the profile is enabled or disabled at runtime (currently
+// possible via enterprise policy). This is required on disabled profiles
+// since pieces of this service are the ones that monitor this runtime
+// preference for changes and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService {
  public:
   explicit GlicKeyedService(Profile* profile,

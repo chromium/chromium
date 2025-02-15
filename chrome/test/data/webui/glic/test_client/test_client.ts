@@ -32,6 +32,7 @@ interface PageElementTypes {
   newtabbn: HTMLButtonElement;
   reloadpage: HTMLButtonElement;
   getpagecontext: HTMLButtonElement;
+  getPageContextStatus: HTMLSpanElement;
   URL: HTMLInputElement;
   innerTextCheckbox: HTMLInputElement;
   viewportScreenshotCheckbox: HTMLInputElement;
@@ -326,6 +327,8 @@ $.getpagecontext.addEventListener('click', async () => {
   if ($.annotatedPageContentCheckbox.checked) {
     options.annotatedPageContent = true;
   }
+  $.faviconImg.src = '';
+  $.screenshotImg.src = '';
   try {
     const pageContent =
         await client!.browser!.getContextFromFocusedTab!(options);
@@ -349,23 +352,23 @@ $.getpagecontext.addEventListener('click', async () => {
         pdfDataSize =
             (await readStream(pageContent.pdfDocumentData.pdfData!)).length;
       }
-      logMessage(`Got ${pdfDataSize} bytes of PDF data (origin=${
-          pdfOrigin}, sizeLimitExceeded=${pdfSizeLimitExceeded})`);
+      $.getPageContextStatus.innerText =
+          `Got ${pdfDataSize} bytes of PDF data(origin = ${
+              pdfOrigin}, sizeLimitExceeded = ${pdfSizeLimitExceeded})`;
     }
     if (pageContent.annotatedPageData &&
         pageContent.annotatedPageData.annotatedPageContent) {
       const annotatedPageDataSize =
           (await readStream(pageContent.annotatedPageData.annotatedPageContent))
               .length;
-      logMessage(
-          `Annotated page content data length: ${annotatedPageDataSize}`);
+      $.getPageContextStatus.innerText =
+          `Annotated page content data length: ${annotatedPageDataSize}`;
     }
-    logMessage(
+    $.getPageContextStatus.innerText =
         `Finished Get Page Context. Returned data: ${
-            JSON.stringify(pageContent, null, 2)}`,
-    );
+            JSON.stringify(pageContent, null, 2)}`;
   } catch (error) {
-    logMessage(`Error getting page context: ${error}`);
+    $.getPageContextStatus.innerText = `Error getting page context: ${error}`;
   }
 });
 $.getlocation.addEventListener('click', async () => {
