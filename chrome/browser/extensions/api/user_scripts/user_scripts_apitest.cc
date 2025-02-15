@@ -403,4 +403,12 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITestWithoutDeveloperMode,
             GetInjectedElements(new_tab));
 }
 
+using ScriptingAndUserScriptsAPITest = UserScriptsAPITest;
+
+// Tests that the scripting API does not have control over the userScripts API.
+IN_PROC_BROWSER_TEST_F(ScriptingAndUserScriptsAPITest,
+                       ScriptingAPIDoesNotAffectUserScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_user_scripts")) << message_;
+}
+
 }  // namespace extensions
