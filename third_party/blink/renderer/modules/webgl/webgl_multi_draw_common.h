@@ -11,8 +11,6 @@
 
 namespace blink {
 
-class V8UnionInt32ArrayAllowSharedOrLongSequence;
-class V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence;
 class WebGLExtensionScopedContext;
 
 class WebGLMultiDrawCommon {
@@ -27,12 +25,6 @@ class WebGLMultiDrawCommon {
                      size_t size,
                      GLuint offset,
                      GLsizei drawcount);
-
-  static base::span<const int32_t> MakeSpan(
-      const V8UnionInt32ArrayAllowSharedOrLongSequence* array);
-
-  static base::span<const uint32_t> MakeSpan(
-      const V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence* array);
 };
 
 }  // namespace blink
