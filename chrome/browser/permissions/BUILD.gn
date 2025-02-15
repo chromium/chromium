@@ -4,6 +4,7 @@
 
 import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -12,8 +13,6 @@ source_set("permissions") {
   sources = [
     "chrome_permissions_client.cc",
     "chrome_permissions_client.h",
-    "contextual_notification_permission_ui_selector.cc",
-    "contextual_notification_permission_ui_selector.h",
     "crowd_deny_preload_data.cc",
     "crowd_deny_preload_data.h",
     "crowd_deny_safe_browsing_request.cc",
@@ -169,6 +168,13 @@ source_set("permissions") {
 
   if (!is_android) {
     deps += [ "//chrome/browser/ui/permission_bubble" ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    sources += [
+      "contextual_notification_permission_ui_selector.cc",
+      "contextual_notification_permission_ui_selector.h",
+    ]
   }
 }
 

@@ -167,6 +167,7 @@ source_set("keyed_service_factories") {
   deps = [
     ":api_implementations",
     "//chrome/common:buildflags",
+    "//components/safe_browsing:buildflags",
     "//extensions/buildflags",
     "//pdf:buildflags",
     "//printing/buildflags",
