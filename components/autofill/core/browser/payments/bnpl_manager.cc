@@ -12,16 +12,12 @@
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill::payments {
 
@@ -83,41 +79,10 @@ void BnplManager::InitBnplFlow(
   // TODO(crbug.com/356443046): Add integration for the BNPL dialogs.
 }
 
-std::optional<uint64_t> BnplManager::MaybeParseAmountToMonetaryMicroUnits(
-    const std::string& amount) {
-  const RE2 re(
-      R"([^0-9,eE\-]*(0|[0-9]{1,3}(,?[0-9]{3})*)(\.([0-9]{2}))[^0-9eE\-]*)");
-  std::string dollar;
-  std::string cent;
-  // The first regex capture group gives dollar and the fourth gives the cent.
-  if (!RE2::FullMatch(amount, re, &dollar, nullptr, nullptr, &cent)) {
-    return std::nullopt;
-  }
-  dollar.erase(std::remove(dollar.begin(), dollar.end(), ','), dollar.end());
-
-  uint64_t dollar_value = 0;
-  uint64_t cent_value = 0;
-  base::StringToUint64(dollar, &dollar_value);
-  base::StringToUint64(cent, &cent_value);
-
-  // Safely multiply to convert amount to micro.
-  uint64_t micro_amount = 0;
-  base::CheckedNumeric<uint64_t> checked_dollar_value =
-      base::CheckedNumeric<uint64_t>(dollar_value) * kMicrosPerDollar;
-  base::CheckedNumeric<uint64_t> checked_cent_value =
-      base::CheckedNumeric<uint64_t>(cent_value) * (kMicrosPerDollar / 100);
-  base::CheckedNumeric<uint64_t> checked_result =
-      checked_dollar_value + checked_cent_value;
-  if (!checked_result.AssignIfValid(&micro_amount)) {
-    return std::nullopt;
-  }
-  return micro_amount;
-}
-
 void BnplManager::NotifyOfSuggestionGeneration(
     const AutofillSuggestionTriggerSource trigger_source) {
   update_suggestions_barrier_callback_ = base::BarrierCallback<
-      std::variant<SuggestionsShownResponse, std::string>>(
+      std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>(
       2U, base::BindOnce(&BnplManager::MaybeUpdateSuggestionsWithBnpl,
                          weak_factory_.GetWeakPtr(), trigger_source));
 }
@@ -133,7 +98,7 @@ void BnplManager::OnSuggestionsShown(
 }
 
 void BnplManager::OnAmountExtractionReturned(
-    const std::string& extracted_amount) {
+    const std::optional<uint64_t>& extracted_amount) {
   if (update_suggestions_barrier_callback_.has_value()) {
     update_suggestions_barrier_callback_->Run(extracted_amount);
   }
@@ -167,23 +132,25 @@ void BnplManager::OnVcnDetailsFetched(
 
 void BnplManager::MaybeUpdateSuggestionsWithBnpl(
     const AutofillSuggestionTriggerSource trigger_source,
-    std::vector<std::variant<SuggestionsShownResponse, std::string>>
+    std::vector<std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>
         responses) {
   update_suggestions_barrier_callback_ = std::nullopt;
 
   SuggestionsShownResponse* suggestions_shown_response = nullptr;
-  std::string* extracted_amount = nullptr;
+  std::optional<uint64_t>* extracted_amount = nullptr;
   for (auto& response : responses) {
     if (std::holds_alternative<SuggestionsShownResponse>(response)) {
       suggestions_shown_response =
           std::get_if<SuggestionsShownResponse>(&response);
     } else {
-      extracted_amount = std::get_if<std::string>(&response);
+      extracted_amount = std::get_if<std::optional<uint64_t>>(&response);
     }
   }
 
   // TODO(crbug.com/392162610): Add protection so that this function will only
   // be triggered after completion of suggestion shown and amount extraction.
+  // If `extracted_amount` here is a nullptr, it implies the amount extraction
+  // result is never received.
   if (!suggestions_shown_response || !extracted_amount) {
     // No need to update the suggestions if the function is called with partial
     // input.
@@ -193,23 +160,22 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
     return;
   }
 
-  std::optional<uint64_t> extracted_amount_in_micros =
-      MaybeParseAmountToMonetaryMicroUnits(*extracted_amount);
-  if (!extracted_amount_in_micros.has_value()) {
+  // If `extracted_amount` here is a nullopt, it implies an amount extraction
+  // result is received but the extraction is a failure.
+  if (!extracted_amount->has_value()) {
     // No need to update the suggestions if the extracted amount is not in
-    // correct format.
+    // correct format or empty.
     return;
   }
 
   const std::vector<BnplIssuer>& bnpl_issuers =
       payments_autofill_client_->GetPaymentsDataManager().GetBnplIssuers();
 
-  if (std::none_of(
-          bnpl_issuers.begin(), bnpl_issuers.end(),
-          [&extracted_amount_in_micros](const BnplIssuer& bnpl_issuer) {
-            return ShouldShowBnplOptionForIssuer(
-                bnpl_issuer, extracted_amount_in_micros.value());
-          })) {
+  if (std::none_of(bnpl_issuers.begin(), bnpl_issuers.end(),
+                   [extracted_amount](const BnplIssuer& bnpl_issuer) {
+                     return ShouldShowBnplOptionForIssuer(
+                         bnpl_issuer, extracted_amount->value());
+                   })) {
     // If the extracted amount is not supported by any issuer, no need to update
     // the suggestion list.
     return;

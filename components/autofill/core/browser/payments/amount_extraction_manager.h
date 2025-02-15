@@ -40,6 +40,17 @@ class AmountExtractionManager {
       delete;
   virtual ~AmountExtractionManager();
 
+  // This function attempts to convert a string representation of a monetary
+  // value in dollars into a uint64_t by parsing it as a double and multiplying
+  // the result by 1,000,000. It assumes the input uses a decimal point ('.') as
+  // the separator for fractional values (not a decimal comma). The function
+  // only supports English-style monetary representations like $, USD, etc.
+  // Multiplication by 1,000,000 is done to represent the monetary value in
+  // micro-units (1 dollar = 1,000,000 micro-units), which is commonly used in
+  // systems that require high precision for financial calculations.
+  static std::optional<uint64_t> MaybeParseAmountToMonetaryMicroUnits(
+      const std::string& amount);
+
   // Decide whether amount extraction should be triggered.
   virtual bool ShouldTriggerAmountExtraction(const SuggestionsContext& context,
                                              bool should_suppress_suggestions,

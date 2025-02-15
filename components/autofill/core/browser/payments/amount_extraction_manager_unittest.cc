@@ -195,6 +195,142 @@ TEST_F(AmountExtractionManagerTest, TriggerCheckoutAmountExtraction) {
   amount_extraction_manager_->TriggerCheckoutAmountExtraction();
 }
 
+// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
+// strings to monetary values they represent in micro-units when given empty
+// string or zeros.
+TEST_F(AmountExtractionManagerTest, AmountParser_Zeros) {
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(""),
+            std::nullopt);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("$0"),
+            std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("$0.00"),
+      0ULL);
+}
+
+// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
+// strings to monetary values they represent in micro-units when given normal
+// format of strings.
+TEST_F(AmountExtractionManagerTest, AmountParser_NormalCases) {
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("$ 12.34"),
+      12'340'000ULL);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("$ 012.34"),
+      12'340'000ULL);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "USD 1,234.56"),
+            1'234'560'000ULL);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "$ 1,234.56"),
+            1'234'560'000ULL);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("$ 123.45"),
+      123'450'000ULL);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("$0.12"),
+      120'000ULL);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "USD   0.12"),
+            120'000ULL);
+}
+
+// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
+// strings to monetary values they represent in micro-units when given input
+// string with leading and tailing monetary-representing substrings.
+TEST_F(AmountExtractionManagerTest, AmountParser_LeadingAndTailingCharacters) {
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "$   1,234.56   USD"),
+            1'234'560'000ULL);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "USD $ 1,234.56 USD"),
+            1'234'560'000ULL);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "  $ 1,234.56 "),
+            1'234'560'000ULL);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "USD    1234.56    "),
+            1'234'560'000ULL);
+}
+
+// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
+// strings to std::nullopt when given negative value strings.
+TEST_F(AmountExtractionManagerTest, AmountParser_NegativeValue) {
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "$ -1,234.56"),
+            std::nullopt);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "USD -1,234.56"),
+            std::nullopt);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "USD 1,234.56- $"),
+            std::nullopt);
+}
+
+// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
+// strings to std::nullopt when given incorrect format of strings.
+TEST_F(AmountExtractionManagerTest, AmountParser_IncorrectFormatOfInputs) {
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "$ ,123.45"),
+            std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("$1,234.5"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("NaN"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("Inf"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("-Inf"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("1.234E8"),
+      std::nullopt);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "$1.234.56"),
+            std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("$ 12e2"),
+      std::nullopt);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "$ 12e2.23"),
+            std::nullopt);
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "$ 12.23e2"),
+            std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("E1.23"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("E1.23"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("e1.23"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("-1.23"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("1.23E"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("1.23e"),
+      std::nullopt);
+  EXPECT_EQ(
+      AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits("1.23-"),
+      std::nullopt);
+}
+
+// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
+// strings to std::nullopt when the converted value overflows uint64.
+TEST_F(AmountExtractionManagerTest, AmountParser_OverflowValue) {
+  EXPECT_EQ(AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+                "$19000000000000.00"),
+            std::nullopt);
+}
+
 TEST_F(AmountExtractionManagerTest,
        TriggerCheckoutAmountExtraction_Success_Metric) {
   constexpr int kDefaultAmountExtractionLatencyMs = 200;
