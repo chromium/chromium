@@ -55,6 +55,8 @@ void FormatVisibilityRow(ash::HoverHighlightView* visibility_row,
                                    /*color_id=*/cros_tokens::kCrosSysOnSurface),
                                20);
   visibility_row->SetRightViewVisible(false);
+  visibility_row->SetAccessibilityState(
+      ash::HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
   visibility_row->SetEnabled(is_row_enabled);
 }
 
@@ -439,14 +441,20 @@ void NearbyShareDetailedViewImpl::SetCheckCircle(
     case ::nearby_share::mojom::Visibility::kYourDevices:
       CHECK(your_devices_row_);
       your_devices_row_->SetRightViewVisible(true);
+      your_devices_row_->SetAccessibilityState(
+          HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX);
       break;
     case ::nearby_share::mojom::Visibility::kAllContacts:
       CHECK(contacts_row_);
       contacts_row_->SetRightViewVisible(true);
+      contacts_row_->SetAccessibilityState(
+          HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX);
       break;
     case ::nearby_share::mojom::Visibility::kNoOne:
       CHECK(hidden_row_);
       hidden_row_->SetRightViewVisible(true);
+      hidden_row_->SetAccessibilityState(
+          HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX);
       break;
     default:
       break;

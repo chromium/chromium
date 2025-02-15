@@ -26,6 +26,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -113,6 +114,7 @@ public class ChromeSiteSettingsDelegateTest {
     // Tests that getBrowsingDataInfo returns the correct sample test data in the hashmap.
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/396752397")
     public void testGetBrowsingDataInfoCookie() throws TimeoutException {
         setCookie(Scheme.HTTP, BROWSING_DATA_HOST, "'foo1=bar1'");
         setCookie(Scheme.HTTPS, BROWSING_DATA_HOST, "'foo2=bar2'");
@@ -139,6 +141,7 @@ public class ChromeSiteSettingsDelegateTest {
     // Tests that removeBrowsingData removes data correctly for a given host.
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/396752397")
     public void testRemoveBrowsingData() throws TimeoutException {
         setCookie(Scheme.HTTP, BROWSING_DATA_HOST, null);
 

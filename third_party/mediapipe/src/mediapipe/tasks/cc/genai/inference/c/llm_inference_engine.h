@@ -23,6 +23,10 @@
 #include <stdint.h>
 #endif
 
+#ifdef __EMSCRIPTEN__
+#include <functional>
+#endif  // __EMSCRIPTEN__
+
 #ifndef ODML_EXPORT
 #define ODML_EXPORT __attribute__((visibility("default")))
 #endif  // ODML_EXPORT
@@ -53,10 +57,35 @@ typedef enum {
   kLlmActivationDataTypeInt8 = 4,
 } LlmActivationDataType;
 
+// Specify the LiteRT backend to use for the LLM model. If not specified, the
+// default backend will be used.
+typedef enum {
+  // Use default backend extracted from the model.
+  kLlmPreferredBackendDefault = 0,
+
+  // Use GPU backend.
+  kLlmPreferredBackendGpu = 1,
+} LlmPreferredBackend;
+
 // LlmSessionConfig configures how to execute the model.
 typedef struct {
   // Path to the model artifact.
   const char* model_path;
+
+#ifdef __EMSCRIPTEN__
+  // Function to read model file.
+  // The function returns a pointer to heap memory that contains the model file
+  // contents started from `offset` with `size`.
+  // Since the model file is hosted on JavaScript layer and this function copies
+  // the data to the heap memory, the `mode` instructs how the source model file
+  // data should be mainuplated:
+  //   0: Data will be kept in memory after read.
+  //   1: Data will not be accessed again and can be discarded.
+  //   2: All data has been used and can be discarded.
+  using ReadDataFn =
+      std::function<void*(uint64_t offset, uint64_t size, int mode)>;
+  ReadDataFn* read_model_fn;
+#endif  // __EMSCRIPTEN__
 
   // Path to the vision encoder to use for vision modality. Optional.
   const char* vision_encoder_path;
@@ -110,6 +139,9 @@ typedef struct {
 
   // Whether the submodel should be used if available.
   bool use_submodel;
+
+  // Optional setting to prefer specific backend instead.
+  LlmPreferredBackend preferred_backend;
 } LlmModelSettings;
 
 // LlmSessionConfig configures how to execute the model.
@@ -163,7 +195,8 @@ ODML_EXPORT int LlmInferenceEngine_CreateEngine(
     const LlmModelSettings* model_settings,
     LlmInferenceEngine_Engine** engine_out, char** error_msg);
 
-// Free the engine, will wait until graph is done executing.
+// Free the engine, will release ownership of resource held by the engine.
+// Resource might be freed if no sessions are referencing to it.
 ODML_EXPORT void LlmInferenceEngine_Engine_Delete(
     LlmInferenceEngine_Engine* engine);
 

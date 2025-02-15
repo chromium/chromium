@@ -78,7 +78,7 @@ const oneGoogleBarApi = (() => {
   ].reduce((topLevelApi, def) => {
     (topLevelApi as Record<string, any>)[def.name] =
         def.fns.reduce((apiPart, [name, fnName]) => {
-          apiPart[name!] = callApi.bind(null, def.apiName, fnName!);
+          apiPart[name] = callApi.bind(null, def.apiName, fnName);
           return apiPart;
         }, {} as IndexableApi);
     return topLevelApi;

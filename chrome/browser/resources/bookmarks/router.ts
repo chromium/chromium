@@ -66,7 +66,7 @@ export class BookmarksRouter implements StoreObserver<BookmarksPageState> {
       // `Store.getInstance().data` will only evaluate after the Store is
       // initialized.
       Store.getInstance().dispatchAsync((dispatch) => {
-        dispatch(selectFolder(selectedId!, Store.getInstance().data.nodes));
+        dispatch(selectFolder(selectedId, Store.getInstance().data.nodes));
       });
     }
   }

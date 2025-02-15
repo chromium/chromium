@@ -72,13 +72,13 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   private getUsernameValue_(): string {
     return !this.passkey.username || this.passkey.username === '' ?
         this.i18n('usernamePlaceholder') :
-        this.passkey.username!;
+        this.passkey.username;
   }
 
   private getDisplayNameValue_(): string {
     return !this.passkey.displayName || this.passkey.displayName === '' ?
         this.i18n('displayNamePlaceholder') :
-        this.passkey.displayName!;
+        this.passkey.displayName;
   }
 
   private onDeleteClick_() {

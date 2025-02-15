@@ -42,8 +42,13 @@ const std::string GetExpectedHistogramName(
 }  // namespace
 
 AudioDestinationUmaReporter::AudioDestinationUmaReporter(
-    const WebAudioLatencyHint& latency_hint)
+    const WebAudioLatencyHint& latency_hint,
+    int callback_buffer_size,
+    float sample_rate)
     : latency_hint_(latency_hint) {
+  expected_callback_interval_ =
+      base::Seconds(static_cast<float>(callback_buffer_size) / sample_rate);
+
   fifo_delay_histogram_name_ =
       GetExpectedHistogramName(kFifoDelayHistogramNameBase, use_audio_worklet_,
                                /*duration=*/std::nullopt);
@@ -61,6 +66,24 @@ AudioDestinationUmaReporter::AudioDestinationUmaReporter(
       /*duration=*/std::nullopt);
   total_playout_delay_histogram_name_with_latency_tag_ =
       base::StrCat({total_playout_delay_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+
+  render_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRenderTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  render_time_ratio_histogram_name_with_latency_tag_ = base::StrCat(
+      {render_time_ratio_histogram_name_, ".", LatencyToString(latency_hint_)});
+  request_render_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRequestRenderTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  request_render_time_ratio_histogram_name_with_latency_tag_ =
+      base::StrCat({request_render_time_ratio_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+  request_render_gap_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRequestRenderGapTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  request_render_gap_time_ratio_histogram_name_with_latency_tag_ =
+      base::StrCat({request_render_gap_time_ratio_histogram_name_, ".",
                     LatencyToString(latency_hint_)});
 }
 
@@ -105,14 +128,41 @@ void AudioDestinationUmaReporter::Report() {
   base::UmaHistogramCustomCounts(
       total_playout_delay_histogram_name_with_latency_tag_,
       total_playout_delay_.InMilliseconds(), 1, 1000, 50);
-  if (++callback_count_ >= 1000) {
+  if (++callback_count_ >= kMetricsReportCycle) {
     base::UmaHistogramCustomCounts(fifo_underrun_histogram_name_,
                                    fifo_underrun_count_, 1, 1000, 50);
     base::UmaHistogramCustomCounts(
         fifo_underrun_histogram_name_with_latency_tag_, fifo_underrun_count_, 1,
         1000, 50);
+
+    int render_time_percentage =
+        PercentOfCallbackInterval(render_total_duration_);
+    int request_render_time_percentage =
+        PercentOfCallbackInterval(request_render_total_duration_);
+    int request_render_gap_time_percentage =
+        PercentOfCallbackInterval(request_render_gap_total_duration_);
+
+    base::UmaHistogramExactLinear(render_time_ratio_histogram_name_,
+                                  render_time_percentage, 101);
+    base::UmaHistogramExactLinear(
+        render_time_ratio_histogram_name_with_latency_tag_,
+        render_time_percentage, 101);
+    base::UmaHistogramExactLinear(request_render_time_ratio_histogram_name_,
+                                  request_render_time_percentage, 101);
+    base::UmaHistogramExactLinear(
+        request_render_time_ratio_histogram_name_with_latency_tag_,
+        request_render_time_percentage, 101);
+    base::UmaHistogramExactLinear(request_render_gap_time_ratio_histogram_name_,
+                                  request_render_gap_time_percentage, 101);
+    base::UmaHistogramExactLinear(
+        request_render_gap_time_ratio_histogram_name_with_latency_tag_,
+        request_render_gap_time_percentage, 101);
+
     callback_count_ = 0;
     fifo_underrun_count_ = 0;
+    render_total_duration_ = base::TimeDelta();
+    request_render_total_duration_ = base::TimeDelta();
+    request_render_gap_total_duration_ = base::TimeDelta();
     is_stream_short_ = false;
   }
 }
@@ -137,6 +187,30 @@ void AudioDestinationUmaReporter::UpdateMetricNameForDualThreadMode() {
   total_playout_delay_histogram_name_with_latency_tag_ =
       base::StrCat({total_playout_delay_histogram_name_, ".",
                     LatencyToString(latency_hint_)});
+
+  render_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRenderTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  render_time_ratio_histogram_name_with_latency_tag_ = base::StrCat(
+      {render_time_ratio_histogram_name_, ".", LatencyToString(latency_hint_)});
+  request_render_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRequestRenderTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  request_render_time_ratio_histogram_name_with_latency_tag_ =
+      base::StrCat({request_render_time_ratio_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+  request_render_gap_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRequestRenderGapTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  request_render_gap_time_ratio_histogram_name_with_latency_tag_ =
+      base::StrCat({request_render_gap_time_ratio_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+}
+
+int AudioDestinationUmaReporter::PercentOfCallbackInterval(
+    base::TimeDelta duration) {
+  return static_cast<int>(100 * (duration / expected_callback_interval_) /
+                          kMetricsReportCycle);
 }
 
 }  // namespace blink

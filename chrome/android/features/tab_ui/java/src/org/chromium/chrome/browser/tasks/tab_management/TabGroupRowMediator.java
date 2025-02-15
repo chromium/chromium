@@ -282,7 +282,7 @@ class TabGroupRowMediator {
             TabUiUtils.exitCollaborationWithoutWarning(
                     mContext,
                     mModalDialogManager,
-                    mDataSharingService,
+                    mCollaborationService,
                     collaborationId,
                     memberRole,
                     maybeBlockingResult.finishBlocking);

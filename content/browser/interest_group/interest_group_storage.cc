@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -4156,6 +4157,75 @@ bool DoRecordDebugReportLockout(sql::Database& db,
   return debug_lockout.Run();
 }
 
+std::optional<base::Time> DoGetMostDistantInterestGroupExpiration(
+    sql::Database& db,
+    base::Time now) {
+  base::Time result;
+  sql::Statement get_expiration(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT expiration "
+                            "FROM interest_groups "
+                            "WHERE expiration>? "
+                            "ORDER BY expiration DESC "
+                            "LIMIT 1"));
+  if (!get_expiration.is_valid()) {
+    DLOG(ERROR) << "GetMostDistantInterestGroupExpiration SQL statement did "
+                   "not compile: "
+                << db.GetErrorMessage();
+    return std::nullopt;
+  }
+  get_expiration.Reset(true);
+  get_expiration.BindTime(0, now);
+  if (!get_expiration.Step()) {
+    return std::nullopt;
+  }
+  return result = get_expiration.ColumnTime(0);
+}
+
+bool DoSetDebugReportLockoutUntilIGExpires(sql::Database& db, base::Time now) {
+  sql::Transaction transaction(&db);
+
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  std::optional<base::Time> maybe_expiration =
+      DoGetMostDistantInterestGroupExpiration(db, now);
+  // If all interest groups joined before now already expired, then no need to
+  // lockout.
+  if (!maybe_expiration.has_value()) {
+    sql::Statement clear_lockout(db.GetCachedStatement(
+        SQL_FROM_HERE, "DELETE FROM lockout_debugging_only_report"));
+    return clear_lockout.Run() && transaction.Commit();
+  }
+
+  sql::Statement debug_lockout(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR REPLACE "
+      "INTO lockout_debugging_only_report(id, starting_time, duration) "
+      "VALUES(1, ?, ?)"));
+  if (!debug_lockout.is_valid()) {
+    return false;
+  }
+
+  int64_t starting_time_nearest_next_hour = now.ToDeltaSinceWindowsEpoch()
+                                                .CeilToMultiple(base::Hours(1))
+                                                .InMicroseconds();
+  int64_t duration =
+      maybe_expiration->ToDeltaSinceWindowsEpoch().InMicroseconds() -
+      starting_time_nearest_next_hour;
+  if (duration < 0) {
+    duration = 0;
+  }
+
+  debug_lockout.Reset(true);
+  // Ceil to nearest hour to be stored in DB.
+  debug_lockout.BindInt64(0, starting_time_nearest_next_hour);
+  debug_lockout.BindInt64(1, duration);
+
+  return debug_lockout.Run() && transaction.Commit();
+}
+
 bool DoRecordDebugReportCooldown(sql::Database& db,
                                  const url::Origin& origin,
                                  base::Time cooldown_start,
@@ -5325,6 +5395,12 @@ bool DeleteExpiredDebugReportCooldown(sql::Database& db, base::Time now) {
   return true;
 }
 
+bool DoDeleteAllDebugReportCooldowns(sql::Database& db) {
+  sql::Statement clear_cooldown(db.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM cooldown_debugging_only_report"));
+  return clear_cooldown.Run();
+}
+
 bool ClearExpiredBiddingAndAuctionKeys(sql::Database& db, base::Time now) {
   sql::Statement clear_expired_keys(
       db.GetCachedStatement(SQL_FROM_HERE,
@@ -5925,6 +6001,18 @@ void InterestGroupStorage::RecordDebugReportCooldown(
   }
 }
 
+void InterestGroupStorage::DeleteAllDebugReportCooldowns() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+
+  if (!DoDeleteAllDebugReportCooldowns(*db_)) {
+    DLOG(ERROR) << "Could not delete all debug report cooldowns: "
+                << db_->GetErrorMessage();
+  }
+}
+
 void InterestGroupStorage::UpdateKAnonymity(
     const blink::InterestGroupKey& interest_group_key,
     const std::vector<std::string>& positive_hashed_keys,
@@ -6051,6 +6139,19 @@ InterestGroupStorage::GetAllInterestGroupOwnerJoinerPairs() {
     return {};
   }
   return std::move(maybe_result.value());
+}
+
+void InterestGroupStorage::SetDebugReportLockoutUntilIGExpires() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+
+  if (!DoSetDebugReportLockoutUntilIGExpires(*db_, base::Time::Now())) {
+    DLOG(ERROR)
+        << "Could not set debug report lockout until interest groups expire: "
+        << db_->GetErrorMessage();
+  }
 }
 
 void InterestGroupStorage::RemoveInterestGroupsMatchingOwnerAndJoiner(

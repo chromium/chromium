@@ -229,10 +229,10 @@ export class CrRadioGroupElement extends CrLitElement {
       return result;
     }) as CrRadioButtonElement[];
     this.buttonEventTracker_.removeAll();
-    this.buttons_!.forEach(el => {
-      this.buttonEventTracker_!.add(
+    this.buttons_.forEach(el => {
+      this.buttonEventTracker_.add(
           el, 'disabled-changed', () => this.populate_());
-      this.buttonEventTracker_!.add(el, 'name-changed', () => this.populate_());
+      this.buttonEventTracker_.add(el, 'name-changed', () => this.populate_());
     });
     this.update_();
   }

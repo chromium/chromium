@@ -233,7 +233,7 @@ export class SettingsSyncAccountControlElement extends
       return loadTimeData.substituteString(syncingLabel, email);
     }
 
-    return (this.shownAccount_! && this.shownAccount_!!.isPrimaryAccount) ?
+    return (this.shownAccount_! && this.shownAccount_.isPrimaryAccount) ?
         loadTimeData.substituteString(signedInLabel, email) :
         email;
   }
@@ -633,10 +633,10 @@ export class SettingsSyncAccountControlElement extends
     assert(this.shownAccount_);
     assert(this.storedAccounts_.length > 0);
     const isDefaultPromoAccount =
-        (this.shownAccount_!.email === this.storedAccounts_[0].email);
+        (this.shownAccount_.email === this.storedAccounts_[0].email);
 
     this.syncBrowserProxy_.startSyncingWithEmail(
-        this.shownAccount_!.email, isDefaultPromoAccount);
+        this.shownAccount_.email, isDefaultPromoAccount);
   }
 
   private onTurnOffButtonClick_() {

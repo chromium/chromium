@@ -192,7 +192,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     }
 
     const buttonToFocus = item.getRemoveButton() || item.getDetailsButton();
-    buttonToFocus!.focus();
+    buttonToFocus.focus();
     return true;
   }
 

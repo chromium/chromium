@@ -60,8 +60,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
 
   void OnAccountSelected(JNIEnv* env,
                          const GURL& idp_config_url,
-                         const std::vector<std::string>& account_string_fields,
-                         const GURL& account_picture_url,
+                         const std::string& account_id,
                          bool is_sign_in);
   void OnDismiss(JNIEnv* env, jint dismiss_reason);
   void OnLoginToIdP(JNIEnv* env,

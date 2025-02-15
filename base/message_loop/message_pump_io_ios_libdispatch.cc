@@ -8,9 +8,7 @@ namespace base {
 
 MessagePumpIOSForIOLibdispatch::FdWatchController::FdWatchController(
     const Location& location)
-    : FdWatchControllerInterface(location) {
-  io_thread_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
-}
+    : FdWatchControllerInterface(location) {}
 
 MessagePumpIOSForIOLibdispatch::FdWatchController::~FdWatchController() {
   StopWatchingFileDescriptor();
@@ -106,9 +104,7 @@ void MessagePumpIOSForIOLibdispatch::FdWatchController::HandleWrite() {
 }
 
 MessagePumpIOSForIOLibdispatch::MachPortWatchController::
-    MachPortWatchController(const Location& location) {
-  io_thread_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
-}
+    MachPortWatchController(const Location& location) {}
 
 MessagePumpIOSForIOLibdispatch::MachPortWatchController::
     ~MachPortWatchController() {
@@ -170,8 +166,24 @@ MessagePumpIOSForIOLibdispatch::~MessagePumpIOSForIOLibdispatch() {
   dispatch_release(queue_);
 }
 
+void MessagePumpIOSForIOLibdispatch::Attach(Delegate* delegate) {
+  // The MessagePumpIOSForIOLibdispatch does support `Run` but we need to know
+  // the task runner before any watch call is made. This cannot be done in
+  // the constructor because the task runner is not made before the pump is
+  // created.
+  if (SequencedTaskRunner::HasCurrentDefault()) {
+    io_thread_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
+  }
+
+  MessagePumpNSRunLoop::Attach(delegate);
+}
+
 void MessagePumpIOSForIOLibdispatch::DoRun(Delegate* delegate) {
-  io_thread_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
+  // If we haven't set up the current task runner ensure we do.
+  if (!io_thread_task_runner_) {
+    io_thread_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
+  }
+
   MessagePumpNSRunLoop::DoRun(delegate);
 }
 

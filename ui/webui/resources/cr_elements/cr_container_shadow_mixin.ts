@@ -69,7 +69,7 @@ export const CrContainerShadowMixin = dedupingMixin(
           this.sides_ = hasBottomShadow ?
               [CrContainerShadowSide.TOP, CrContainerShadowSide.BOTTOM] :
               [CrContainerShadowSide.TOP];
-          this.sides_!.forEach(side => {
+          this.sides_.forEach(side => {
             // The element holding the drop shadow effect to be shown.
             const shadow = document.createElement('div');
             shadow.id = `cr-container-shadow-${side}`;

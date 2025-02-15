@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_STORAGE_MESSAGING_BACKEND_STORE_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_STORAGE_MESSAGING_BACKEND_STORE_H_
 
+#include <set>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -85,7 +87,7 @@ class MessagingBackendStore {
   virtual void AddMessage(const collaboration_pb::Message& message) = 0;
 
   // Remove a message from the store.
-  virtual void RemoveMessage(const std::string& message_id) = 0;
+  virtual void RemoveMessages(const std::set<std::string>& message_ids) = 0;
 };
 
 }  // namespace collaboration::messaging

@@ -57,6 +57,12 @@ cargo_crate("lib") {
     "//third_party/rust/flate2/v1:lib",
     "//third_party/rust/miniz_oxide/v0_8:lib",
   ]
+  library_configs -= [ "//build/config/compiler:default_optimization" ]
+  executable_configs -= [ "//build/config/compiler:default_optimization" ]
+  proc_macro_configs -= [ "//build/config/compiler:default_optimization" ]
+  library_configs += [ "//build/config/compiler:optimize" ]
+  executable_configs += [ "//build/config/compiler:optimize" ]
+  proc_macro_configs += [ "//build/config/compiler:optimize" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

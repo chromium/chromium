@@ -355,7 +355,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
     } else {
       this.browserProxy
           .getRwsMembershipLabel(
-              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner!)
+              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
           .then(label => this.rwsMembershipLabel_ = label);
     }
   }

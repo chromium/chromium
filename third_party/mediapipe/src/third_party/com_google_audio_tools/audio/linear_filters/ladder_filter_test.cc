@@ -352,7 +352,7 @@ TYPED_TEST(LadderFilterMultichannelScalarTypedTest,
     // smoothing filter overshoots causing the reflection coefficients to
     // get smaller than -1, which in turn cause the scattering coefficients
     // to go nan during the sqrt computation.
-    ASSERT_FALSE(isnan(std::abs(ladder_output.sum())));
+    ASSERT_FALSE(std::isnan(std::abs(ladder_output.sum())));
     sample_count += num_samples;
   }
 }

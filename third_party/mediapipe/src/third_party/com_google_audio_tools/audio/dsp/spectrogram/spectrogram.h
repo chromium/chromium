@@ -36,7 +36,6 @@
 #define AUDIO_DSP_SPECTROGRAM_SPECTROGRAM_H_
 
 #include <complex>
-#include <optional>
 #include <deque>
 #include <vector>
 
@@ -58,14 +57,11 @@ class Spectrogram {
   // (both in samples). Internally a Hann window is used as the window
   // function. Returns true on success, after which calls to Process()
   // are possible. window_length must be greater than 1 and step
-  // length must be greater than 0. fft_length defines the fft length which must
-  // be greater than window_length and a power of 2.
-  bool Initialize(int window_length, int step_length,
-                  std::optional<int> fft_length = std::nullopt);
+  // length must be greater than 0.
+  bool Initialize(int window_length, int step_length);
 
   // Initialize with an explicit window instead of a length.
-  bool Initialize(const std::vector<double>& window, int step_length,
-                  std::optional<int> fft_length = std::nullopt);
+  bool Initialize(const vector<double>& window, int step_length);
 
   // Re-initializes/resets the internal sample buffer to the state before any
   // samples have been passed to the Compute methods.

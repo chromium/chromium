@@ -845,7 +845,7 @@ void SavedTabGroupModel::MarkTransitionedToShared(
   }
 }
 
-void SavedTabGroupModel::MarkTransitionCompleted(
+void SavedTabGroupModel::SetGroupHidden(
     const base::Uuid& originating_group_id) {
   SavedTabGroup* group = GetMutableGroup(originating_group_id);
   CHECK(group);

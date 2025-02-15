@@ -94,8 +94,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
   override ready() {
     super.ready();
     this.addEventListener('click', () => this.deselectItems_());
-    this.addEventListener('contextmenu',
-                          e => this.onContextMenu_(e as MouseEvent));
+    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
     this.addEventListener(
         'open-command-menu',
         e => this.onOpenCommandMenu_(e as CustomEvent<OpenCommandMenuDetail>));
@@ -251,7 +250,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
       return;
     }
 
-    const leadId = toHighlight[0]!;
+    const leadId = toHighlight[0];
     this.dispatch(selectAll(toHighlight, this.getState(), leadId));
 
     // Allow iron-list time to render additions to the list.
@@ -293,7 +292,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
       focusMoved = true;
     } else if (e.key === ' ' && cursorModifier) {
       this.dispatch(
-          selectItem(this.displayedIds_[focusedIndex]!, this.getState(), {
+          selectItem(this.displayedIds_[focusedIndex], this.getState(), {
             clear: false,
             range: false,
             toggle: true,
@@ -308,11 +307,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
       list.focusItem(focusedIndex);
 
       if (cursorModifier && !e.shiftKey) {
-        this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]!));
+        this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]));
       } else {
         // If shift-selecting with no anchor, use the old focus index.
         if (e.shiftKey && this.getState().selection.anchor === null) {
-          this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]!));
+          this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]));
         }
 
         // If the focus moved from something other than a Ctrl + move event,
@@ -324,7 +323,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
         };
 
         this.dispatch(selectItem(
-            this.displayedIds_[focusedIndex]!, this.getState(), config));
+            this.displayedIds_[focusedIndex], this.getState(), config));
       }
     }
 

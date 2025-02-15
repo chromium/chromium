@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions/permissions_helpers.h"
+#include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 
 #include <stddef.h>
 
@@ -33,7 +33,7 @@ using extensions::permissions_test_util::GetPatternsAsStrings;
 namespace extensions {
 
 // Tests that we can convert PermissionSets to the generated types.
-TEST(ExtensionPermissionsHelpers, Pack) {
+TEST(PermissionsApiHelpersTest, Pack) {
   APIPermissionSet apis;
   apis.insert(APIPermissionID::kTab);
 
@@ -60,7 +60,7 @@ TEST(ExtensionPermissionsHelpers, Pack) {
 
 // Tests various error conditions and edge cases when unpacking Dicts
 // into PermissionSets.
-TEST(ExtensionPermissionsHelpers, Unpack_Basic) {
+TEST(PermissionsApiHelpersTest, Unpack_Basic) {
   base::Value::List apis;
   apis.Append("tabs");
   base::Value::List origins;
@@ -182,7 +182,7 @@ TEST(ExtensionPermissionsHelpers, Unpack_Basic) {
 
 // Tests that host permissions are properly partitioned according to the
 // required/optional permission sets.
-TEST(ExtensionPermissionsHelpers, Unpack_HostSeparation) {
+TEST(PermissionsApiHelpersTest, Unpack_HostSeparation) {
   auto explicit_url_pattern = [](const char* pattern) {
     return URLPattern(Extension::kValidHostPermissionSchemes, pattern);
   };
@@ -263,7 +263,7 @@ TEST(ExtensionPermissionsHelpers, Unpack_HostSeparation) {
 
 // Tests that host permissions are properly partitioned according to the
 // required/optional permission sets.
-TEST(ExtensionPermissionsHelpers, Unpack_APISeparation) {
+TEST(PermissionsApiHelpersTest, Unpack_APISeparation) {
   constexpr APIPermissionID kRequired1 = APIPermissionID::kTab;
   constexpr APIPermissionID kRequired2 = APIPermissionID::kStorage;
   constexpr APIPermissionID kOptional1 = APIPermissionID::kCookie;
@@ -306,7 +306,7 @@ TEST(ExtensionPermissionsHelpers, Unpack_APISeparation) {
 
 // Tests that unpacking works correctly with wildcard schemes (which are
 // interesting, because they only match http | https, and not all schemes).
-TEST(ExtensionPermissionsHelpers, Unpack_WildcardSchemes) {
+TEST(PermissionsApiHelpersTest, Unpack_WildcardSchemes) {
   constexpr char kWildcardSchemePattern[] = "*://*/*";
 
   PermissionSet optional_permissions(
@@ -329,7 +329,7 @@ TEST(ExtensionPermissionsHelpers, Unpack_WildcardSchemes) {
 }
 
 // Tests that unpacking <all_urls> correctly includes or omits the file:-scheme.
-TEST(ExtensionPermissionsHelpers, Unpack_FileSchemes_AllUrls) {
+TEST(PermissionsApiHelpersTest, Unpack_FileSchemes_AllUrls) {
   // Without file access, <all_urls> should be parsed, but the resulting pattern
   // should not include file:-scheme access.
   {
@@ -394,7 +394,7 @@ TEST(ExtensionPermissionsHelpers, Unpack_FileSchemes_AllUrls) {
 
 // Tests that unpacking a pattern that explicitly specifies the file:-scheme is
 // properly placed into the |restricted_file_scheme_patterns| set.
-TEST(ExtensionPermissionsHelpers, Unpack_FileSchemes_Specific) {
+TEST(PermissionsApiHelpersTest, Unpack_FileSchemes_Specific) {
   constexpr char kFilePattern[] = "file:///*";
 
   // Without file access, the file:-scheme pattern should be populated into
@@ -458,7 +458,7 @@ TEST(ExtensionPermissionsHelpers, Unpack_FileSchemes_Specific) {
 
 // Tests that unpacking a UsbDevicePermission with a list of USB device IDs
 // preserves the device list in the result object.
-TEST(ExtensionPermissionsHelpers, Unpack_UsbDevicePermission) {
+TEST(PermissionsApiHelpersTest, Unpack_UsbDevicePermission) {
   constexpr char kDeviceListJson[] = R"([{"productId":2,"vendorId":1}])";
   constexpr char kUsbDevicesPermissionJson[] =
       R"(usbDevices|[{"productId":2,"vendorId":1}])";

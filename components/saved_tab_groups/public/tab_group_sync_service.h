@@ -248,6 +248,13 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
                                          bool success) = 0;
 
+  // Called when a collaboration group is removed. This call will mark the
+  // shared group associated with the collaboration as hidden. The actual group
+  // deletion happens in the server in response to the collaboration group
+  // deletion. This trickles back to the sync bridge thereby removing the tab
+  // group from the model.
+  virtual void OnCollaborationRemoved(const std::string& collaboration_id) = 0;
+
   // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() const = 0;
   virtual std::optional<SavedTabGroup> GetGroup(

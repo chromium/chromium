@@ -37,8 +37,9 @@ struct UnmaskDetails {
   // The type of authentication method suggested for card unmask.
   PaymentsAutofillClient::UnmaskAuthMethod unmask_auth_method =
       PaymentsAutofillClient::UnmaskAuthMethod::kUnknown;
-  // Set to true if the user should be offered opt-in for FIDO Authentication.
-  bool offer_fido_opt_in = false;
+  // Boolean to denote that the user is not opted-in to FIDO in the server, but
+  // is eligible for opt-in.
+  bool server_denotes_fido_eligible_but_not_opted_in = false;
   // Public Key Credential Request Options required for authentication.
   // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions
   base::Value::Dict fido_request_options;

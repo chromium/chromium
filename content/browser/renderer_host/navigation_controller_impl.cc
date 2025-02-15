@@ -4125,7 +4125,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
           node->current_frame_host()->GetCachedPermissionStatuses(),
-          /*should_skip_screentshot=*/false);
+          /*should_skip_screentshot=*/false,
+          /*force_new_document_sequence_number=*/false);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->as_string();

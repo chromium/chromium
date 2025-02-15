@@ -650,6 +650,17 @@ void TabGroupSyncServiceImpl::OnTabGroupUnShareComplete(
   model_->AddedLocally(std::move(cloned_group));
 }
 
+void TabGroupSyncServiceImpl::OnCollaborationRemoved(
+    const std::string& collaboration_id) {
+  CollaborationId collab(collaboration_id);
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (group.collaboration_id().has_value() &&
+        group.collaboration_id().value() == collab) {
+      model_->SetGroupHidden(group.saved_guid());
+    }
+  }
+}
+
 void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
     const LocalTabGroupID& local_group_id,
     std::string_view collaboration_id) {
@@ -1446,8 +1457,7 @@ bool TabGroupSyncServiceImpl::TransitionOriginatingTabGroupToNewGroupIfNeeded(
     return false;
   }
 
-  model_->MarkTransitionCompleted(
-      tab_group.originating_tab_group_guid().value());
+  model_->SetGroupHidden(tab_group.originating_tab_group_guid().value());
 
   if (originating_tab_group->local_group_id().has_value()) {
     // The group is open in the tab strip and needs to be transitioned with all

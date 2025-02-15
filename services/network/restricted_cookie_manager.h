@@ -232,7 +232,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CookieSettingOverrides& cookie_setting_overrides,
       const net::SiteForCookies& site_for_cookies,
       const net::CanonicalCookie& cookie,
-      const net::CookieOptions& net_options,
       SetCanonicalCookieCallback user_callback,
       net::CookieAccessResult access_result);
 

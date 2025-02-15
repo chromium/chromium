@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/pref_names.h"
@@ -131,7 +132,20 @@ std::optional<AppBrowserController::BrowserAndTabIndex>
 AppBrowserController::FindTopLevelBrowsingContextForWebApp(
     const Profile& profile,
     const webapps::AppId& app_id,
-    Browser::Type browser_type) {
+    Browser::Type browser_type,
+    HomeTabScope home_tab_scope) {
+  auto is_valid_tab = [&app_id,
+                       home_tab_scope](content::WebContents* contents) {
+    WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
+    if (app_id != tab_helper->app_id() || contents->HasOpener()) {
+      return false;
+    }
+    if (home_tab_scope == HomeTabScope::kDontCare) {
+      return true;
+    }
+    return (home_tab_scope == HomeTabScope::kInScope) ==
+           tab_helper->is_pinned_home_tab();
+  };
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
       continue;
@@ -146,22 +160,14 @@ AppBrowserController::FindTopLevelBrowsingContextForWebApp(
       continue;
     }
     // The active web contents should have preference if it is in scope.
-    content::WebContents* active_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
     if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
-      if (base::ValuesEquivalent(&app_id,
-                                 WebAppTabHelper::GetAppId(active_contents)) &&
-          !active_contents->HasOpener()) {
+      if (is_valid_tab(browser->tab_strip_model()->GetActiveWebContents())) {
         return {{browser, browser->tab_strip_model()->active_index()}};
       }
     }
     // Otherwise, use the first one for the app.
     for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      content::WebContents* contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      if (base::ValuesEquivalent(&app_id,
-                                 WebAppTabHelper::GetAppId(contents)) &&
-          !contents->HasOpener()) {
+      if (is_valid_tab(browser->tab_strip_model()->GetWebContentsAt(i))) {
         return {{browser, i}};
       }
     }

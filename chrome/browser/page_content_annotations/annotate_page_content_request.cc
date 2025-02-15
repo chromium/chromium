@@ -146,6 +146,10 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
   waiting_for_fcp_ = true;
   waiting_for_load_ = true;
 
+#if BUILDFLAG(ENABLE_PDF)
+  pdf_load_obseration_.Reset();
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   // Drop pending extraction request for the previous page, if any.
   weak_factory_.InvalidateWeakPtrs();
 }

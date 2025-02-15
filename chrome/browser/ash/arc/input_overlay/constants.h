@@ -64,38 +64,12 @@ inline constexpr int kArrowKeyMoveDistance = 2;
 // Display mode for display overlay.
 enum class DisplayMode {
   kNone,
-  // Display overlay can receive events but action labels can't be focused.
-  // It shows educational dialog.
-  // TODO(b/253646354): This will be removed when removing the Beta flag.
-  kEducation,
   // Display overlay can't receive any events. It shows input mappings as in
   // view mode and menu anchor.
   kView,
   // Display overlay can receive events and action labels can be focused. It
   // shows input mapping in edit mode.
   kEdit,
-  // Display overlay can receive events. This is the mode before entering into
-  // `kMenu`.
-  // TODO(b/253646354): This will be removed when removing the Beta flag.
-  kPreMenu,
-  // Display overlay can receive events but action labels can't be focused.
-  // It shows expanded menu and input mapping as in view mode.
-  // TODO(b/253646354): This will be removed when removing the Beta flag.
-  kMenu,
-
-  // Below are related to edit for `ActionView`.
-  // Edit mode when action is assigned a pending input binding.
-  // TODO(b/253646354): This will be removed when removing the Beta flag.
-  kEditedSuccess,
-  // Edit mode when an action is removed the input binding.
-  // TODO(b/253646354): This will be removed when removing the Beta flag.
-  kEditedUnbound,
-  // Edit mode when a wrong/unsupported input is trying to bind.
-  // TODO(b/253646354): This will be removed when removing the Beta flag.
-  kEditedError,
-  // TODO(b/253646354): This will be removed when removing the Beta flag.
-  // Restore mode when restoring the default input bindings.
-  kRestore,
 };
 
 // Binding options for different ui display stages.

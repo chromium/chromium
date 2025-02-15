@@ -84,10 +84,16 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
     raw_ptr<Browser> browser = nullptr;
     int tab_index = -1;
   };
+  enum class HomeTabScope {
+    kDontCare,   // The caller doesn't care if the returned tab is a home tab.
+    kInScope,    // Only return tabs that are a pinned home tab.
+    kOutOfScope  // Only return tabs that are not a pinned home tab.
+  };
   static std::optional<BrowserAndTabIndex> FindTopLevelBrowsingContextForWebApp(
       const Profile& profile,
       const webapps::AppId& app_id,
-      BrowserWindowInterface::Type browser_type);
+      BrowserWindowInterface::Type browser_type,
+      HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
 
   // Renders |url|'s origin as Unicode.
   static std::u16string FormatUrlOrigin(

@@ -5,6 +5,8 @@
 #ifndef GPU_IPC_COMMON_EXPORTED_SHARED_IMAGE_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_EXPORTED_SHARED_IMAGE_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -13,6 +15,8 @@
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/shared_image_metadata_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
+#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
 namespace mojo {
 
@@ -37,11 +41,27 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
     return shared_image.texture_target_;
   }
 
+  static std::optional<gfx::GpuMemoryBufferHandle>& buffer_handle(
+      gpu::ExportedSharedImage& shared_image) {
+    return shared_image.buffer_handle_;
+  }
+
+  static std::optional<gfx::BufferUsage>& buffer_usage(
+      gpu::ExportedSharedImage& shared_image) {
+    return shared_image.buffer_usage_;
+  }
+
   static bool Read(gpu::mojom::ExportedSharedImageDataView data,
                    gpu::ExportedSharedImage* out) {
     if (!data.ReadMailbox(&out->mailbox_) ||
         !data.ReadMetadata(&out->metadata_) ||
-        !data.ReadCreationSyncToken(&out->creation_sync_token_)) {
+        !data.ReadCreationSyncToken(&out->creation_sync_token_) ||
+        !data.ReadBufferHandle(&out->buffer_handle_) ||
+        !data.ReadBufferUsage(&out->buffer_usage_)) {
+      return false;
+    }
+    // If GpuMemoryBufferHandle is passed in, BufferUsage should also be passed.
+    if (out->buffer_handle_ && !out->buffer_usage_) {
       return false;
     }
     out->texture_target_ = data.texture_target();

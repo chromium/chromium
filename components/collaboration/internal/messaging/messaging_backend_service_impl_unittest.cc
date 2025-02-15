@@ -671,11 +671,10 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabGroupEventsFromLocal) {
                                      collaboration_pb::EventType::TAB_ADDED,
                                      DirtyType::kDot, base::Time::Now());
   AddMessage(message);
-
-  // Removing a tab group locally should clear all dirty tab messages for the
-  // group.
   EXPECT_TRUE(
       unowned_messaging_backend_store_->HasAnyDirtyMessages(DirtyType::kDot));
+
+  // Removing a tab group should remove all messages for the group from the DB.
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
                                            tab_groups::TriggerSource::LOCAL);
   EXPECT_FALSE(
@@ -1450,12 +1449,10 @@ TEST_F(MessagingBackendServiceImplTest, TestRemoveMessages) {
   message2.set_uuid(uuid2.AsLowercaseString());
   AddMessage(message2);
 
-  EXPECT_EQ(2u, unowned_messaging_backend_store_
-                    ->GetRecentMessagesForGroup(collaboration_group_id)
-                    .size());
   service_->RemoveMessages({uuid1, uuid2});
-  // TODO(crbug.com/389948455): Implement
-  // MessagingBackendStoreImpl::RemovMessage.
+  EXPECT_TRUE(unowned_messaging_backend_store_
+                  ->GetRecentMessagesForGroup(collaboration_group_id)
+                  .empty());
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {

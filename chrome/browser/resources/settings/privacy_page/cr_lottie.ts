@@ -272,8 +272,8 @@ export class CrLottieElement extends CrLitElement {
     assert(!this.xhr_);
 
     this.xhr_ = new XMLHttpRequest();
-    this.xhr_!.open('GET', url, true);
-    this.xhr_!.responseType = responseType;
+    this.xhr_.open('GET', url, true);
+    this.xhr_.responseType = responseType;
     this.xhr_!.send();
     this.xhr_!.onreadystatechange = () => {
       assert(this.xhr_);

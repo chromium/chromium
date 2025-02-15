@@ -8,6 +8,9 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -15,8 +18,10 @@
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/suggestions/suggestions_context.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace autofill::payments {
@@ -26,6 +31,39 @@ AmountExtractionManager::AmountExtractionManager(
     : autofill_manager_(CHECK_DEREF(autofill_manager)) {}
 
 AmountExtractionManager::~AmountExtractionManager() = default;
+
+// static
+std::optional<uint64_t>
+AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
+    const std::string& amount) {
+  const RE2 re(
+      R"([^0-9,eE\-]*(0|[0-9]{1,3}(,?[0-9]{3})*)(\.([0-9]{2}))[^0-9eE\-]*)");
+  std::string dollar;
+  std::string cent;
+  // The first regex capture group gives dollar and the fourth gives the cent.
+  if (!RE2::FullMatch(amount, re, &dollar, nullptr, nullptr, &cent)) {
+    return std::nullopt;
+  }
+  dollar.erase(std::remove(dollar.begin(), dollar.end(), ','), dollar.end());
+
+  uint64_t dollar_value = 0;
+  uint64_t cent_value = 0;
+  base::StringToUint64(dollar, &dollar_value);
+  base::StringToUint64(cent, &cent_value);
+
+  // Safely multiply to convert amount to micro.
+  uint64_t micro_amount = 0;
+  base::CheckedNumeric<uint64_t> checked_dollar_value =
+      base::CheckedNumeric<uint64_t>(dollar_value) * kMicrosPerDollar;
+  base::CheckedNumeric<uint64_t> checked_cent_value =
+      base::CheckedNumeric<uint64_t>(cent_value) * (kMicrosPerDollar / 100);
+  base::CheckedNumeric<uint64_t> checked_result =
+      checked_dollar_value + checked_cent_value;
+  if (!checked_result.AssignIfValid(&micro_amount)) {
+    return std::nullopt;
+  }
+  return micro_amount;
+}
 
 bool AmountExtractionManager::ShouldTriggerAmountExtraction(
     const SuggestionsContext& context,
@@ -92,8 +130,8 @@ bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {
     const GURL& url =
         autofill_manager_->client().GetLastCommittedPrimaryMainFrameURL();
     for (std::string_view issuer : BnplManager::GetSupportedBnplIssuerIds()) {
-      if (autofill_optimization_guide->IsEligibleForBuyNowPayLater(issuer,
-                                                                   url)) {
+      if (autofill_optimization_guide
+              ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(issuer, url)) {
         return true;
       }
     }

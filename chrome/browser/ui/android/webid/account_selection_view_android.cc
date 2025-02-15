@@ -59,8 +59,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
       is_multi_idp ? std::make_optional<std::string>(
                          account->identity_provider->idp_for_display)
                    : std::nullopt,
-      account->picture, decoded_picture,
-      account->login_state == Account::LoginState::kSignIn,
+      decoded_picture, account->login_state == Account::LoginState::kSignIn,
       account->browser_trusted_login_state == Account::LoginState::kSignIn,
       account->is_filtered_out);
 }
@@ -68,11 +67,15 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
     JNIEnv* env,
     const content::IdentityProviderMetadata& metadata) {
+  ScopedJavaLocalRef<jobject> decoded_picture = nullptr;
+  if (!metadata.brand_decoded_icon.IsEmpty()) {
+    decoded_picture =
+        gfx::ConvertToJavaBitmap(*metadata.brand_decoded_icon.ToSkBitmap());
+  }
   return Java_IdentityProviderMetadata_Constructor(
       env, ui::OptionalSkColorToJavaColor(metadata.brand_text_color),
       ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
-      metadata.brand_icon_url.spec(), metadata.config_url,
-      metadata.idp_login_url,
+      decoded_picture, metadata.config_url, metadata.idp_login_url,
       // The UI code only cares about whether it should show the add account
       // button so consider both options in the same boolean.
       metadata.supports_add_account || metadata.has_filtered_out_account);
@@ -88,9 +91,14 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityCredentialTokenError(
 ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
     JNIEnv* env,
     const content::ClientMetadata& metadata) {
+  ScopedJavaLocalRef<jobject> brand_icon_bitmap = nullptr;
+  if (!metadata.brand_decoded_icon.IsEmpty()) {
+    brand_icon_bitmap =
+        gfx::ConvertToJavaBitmap(*metadata.brand_decoded_icon.ToSkBitmap());
+  }
   return Java_ClientIdMetadata_Constructor(env, metadata.terms_of_service_url,
                                            metadata.privacy_policy_url,
-                                           metadata.brand_icon_url.spec());
+                                           brand_icon_bitmap);
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
@@ -152,32 +160,6 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaIdentityProviderDataList(
     env->SetObjectArrayElement(array.obj(), i, item.obj());
   }
   return array;
-}
-
-IdentityRequestAccountPtr ConvertFieldsToAccount(
-    JNIEnv* env,
-    const std::vector<std::string>& string_fields,
-    const GURL& picture_url,
-    bool is_sign_in) {
-  auto account_id = string_fields[0];
-  auto email = string_fields[1];
-  auto name = string_fields[2];
-  auto given_name = string_fields[3];
-
-  Account::LoginState login_state =
-      is_sign_in ? Account::LoginState::kSignIn : Account::LoginState::kSignUp;
-
-  // The following fields are only used before account selection.
-  std::vector<std::string> login_hints;
-  std::vector<std::string> domain_hints;
-  std::vector<std::string> labels;
-  Account::LoginState browser_trusted_login_state =
-      Account::LoginState::kSignUp;
-
-  return base::MakeRefCounted<Account>(
-      account_id, email, name, given_name, picture_url, std::move(login_hints),
-      std::move(domain_hints), std::move(labels), login_state,
-      browser_trusted_login_state);
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -379,12 +361,11 @@ content::WebContents* AccountSelectionViewAndroid::GetRpWebContents() {
 void AccountSelectionViewAndroid::OnAccountSelected(
     JNIEnv* env,
     const GURL& idp_config_url,
-    const std::vector<std::string>& account_string_fields,
-    const GURL& account_picture_url,
+    const std::string& account_id,
     bool is_sign_in) {
   delegate_->OnAccountSelected(
-      idp_config_url, *ConvertFieldsToAccount(env, account_string_fields,
-                                              account_picture_url, is_sign_in));
+      idp_config_url, account_id,
+      is_sign_in ? Account::LoginState::kSignIn : Account::LoginState::kSignUp);
   // The AccountSelectionViewAndroid may be destroyed.
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
   // See https://crbug.com/1393650 for details.

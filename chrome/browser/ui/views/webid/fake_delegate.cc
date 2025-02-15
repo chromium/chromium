@@ -11,8 +11,10 @@ FakeDelegate::FakeDelegate(content::WebContents* web_contents)
 
 FakeDelegate::~FakeDelegate() = default;
 
-void FakeDelegate::OnAccountSelected(const GURL& idp_config_url,
-                                     const Account& account) {
+void FakeDelegate::OnAccountSelected(
+    const GURL& idp_config_url,
+    const std::string& account_id,
+    const content::IdentityRequestAccount::LoginState& login_state) {
   if (account_selected_cb_) {
     std::move(account_selected_cb_).Run();
   }

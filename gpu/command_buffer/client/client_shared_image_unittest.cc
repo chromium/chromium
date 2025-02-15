@@ -38,7 +38,8 @@ TEST(ClientSharedImageTest, ImportUnowned) {
                                kUsage};
 
   auto client_si = ClientSharedImage::ImportUnowned(
-      ExportedSharedImage(mailbox, metadata, SyncToken(), GL_TEXTURE_2D));
+      ExportedSharedImage(mailbox, metadata, SyncToken(), std::nullopt,
+                          std::nullopt, GL_TEXTURE_2D));
 
   // Check that the ClientSI's state matches the input parameters.
   EXPECT_EQ(client_si->mailbox(), mailbox);

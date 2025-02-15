@@ -706,7 +706,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     }
 
     // Update the sparkles position to use across the circles.
-    this.sparklesPattern!.setTransform(new DOMMatrixReadOnly().translate(
+    this.sparklesPattern.setTransform(new DOMMatrixReadOnly().translate(
         this.sparklesOffset, this.sparklesOffset));
 
     this.context.save();

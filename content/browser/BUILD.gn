@@ -2805,9 +2805,8 @@ source_set("browser") {
       "IOSurface.framework",
       "UniformTypeIdentifiers.framework",
     ]
-  } else if (is_ios) {
+  } else if (is_ios || is_tvos) {
     sources += [
-      "child_process_launcher_helper_ios.mm",
       "date_time_chooser/ios/date_time_chooser_coordinator.h",
       "date_time_chooser/ios/date_time_chooser_coordinator.mm",
       "date_time_chooser/ios/date_time_chooser_delegate.h",
@@ -2840,10 +2839,15 @@ source_set("browser") {
       "web_contents/web_contents_view_ios.h",
       "web_contents/web_contents_view_ios.mm",
     ]
-    frameworks += [
-      "BrowserEngineKit.framework",
-      "IOSurface.framework",
-    ]
+
+    if (is_tvos) {
+      sources += [ "child_process_launcher_helper_tvos.mm" ]
+    } else {
+      sources += [ "child_process_launcher_helper_ios.mm" ]
+      frameworks += [ "BrowserEngineKit.framework" ]
+    }
+
+    frameworks += [ "IOSurface.framework" ]
     deps += [
       "//build:ios_buildflags",
       "//ui/accelerated_widget_mac",

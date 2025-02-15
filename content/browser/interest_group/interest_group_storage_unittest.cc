@@ -1432,6 +1432,53 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   EXPECT_EQ(expected_cooldown_map, cooldowns->debug_report_cooldown_map);
 }
 
+TEST_F(InterestGroupStorageTest, SetDebugReportLockoutUntilIGExpires) {
+  const char kName1[] = "name1";
+  const char kName2[] = "name2";
+  const char kName3[] = "name3";
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://owner.test"));
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  const base::TimeDelta kDelta = base::Days(1);
+
+  base::Time start = base::Time::Now();
+  base::Time later = start + kDelta;
+  base::Time even_later = later + kDelta;
+
+  // Already expired when joined.
+  storage->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOrigin, kName1).SetExpiry(start).Build(),
+      kOrigin.GetURL());
+
+  // Expires when time reaches `later`.
+  storage->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOrigin, kName2).SetExpiry(later).Build(),
+      kOrigin.GetURL());
+
+  // Expires when time reaches `even_later`.
+  storage->JoinInterestGroup(blink::TestInterestGroupBuilder(kOrigin, kName3)
+                                 .SetExpiry(even_later)
+                                 .Build(),
+                             kOrigin.GetURL());
+
+  std::optional<DebugReportLockout> lockout = storage->GetDebugReportLockout();
+  ASSERT_FALSE(lockout.has_value());
+
+  storage->SetDebugReportLockoutUntilIGExpires();
+  lockout = storage->GetDebugReportLockout();
+  ASSERT_TRUE(lockout.has_value());
+  base::Time expected_starting_time = base::Time::FromDeltaSinceWindowsEpoch(
+      start.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  EXPECT_EQ(expected_starting_time, lockout->starting_time);
+  EXPECT_EQ(even_later - expected_starting_time, lockout->duration);
+
+  // All IGs joined before has already expired.
+  task_environment().FastForwardBy(base::Days(3));
+  storage->SetDebugReportLockoutUntilIGExpires();
+  lockout = storage->GetDebugReportLockout();
+  ASSERT_FALSE(lockout.has_value());
+}
+
 TEST_F(InterestGroupStorageTest, DeleteExpiredDebugReportCooldown) {
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
@@ -1473,6 +1520,38 @@ TEST_F(InterestGroupStorageTest, DeleteExpiredDebugReportCooldown) {
   // Allow enough idle time to trigger maintenance.
   task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod +
                                    base::Seconds(1));
+
+  cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
+  ASSERT_TRUE(cooldowns.has_value());
+  EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
+}
+
+TEST_F(InterestGroupStorageTest, DeleteAllDebugReportCooldowns) {
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  const url::Origin test_origin2 =
+      url::Origin::Create(GURL("https://seller.example.com"));
+  std::vector<url::Origin> origins{test_origin, test_origin2};
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  base::Time time = base::Time::Now();
+  base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
+      time.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  storage->RecordDebugReportCooldown(test_origin, time,
+                                     DebugReportCooldownType::kShortCooldown);
+  storage->RecordDebugReportCooldown(test_origin2, time,
+                                     DebugReportCooldownType::kShortCooldown);
+  std::optional<DebugReportLockoutAndCooldowns> cooldowns =
+      storage->GetDebugReportLockoutAndCooldowns(origins);
+  std::map<url::Origin, DebugReportCooldown> expected_cooldown_map;
+  expected_cooldown_map[test_origin] = DebugReportCooldown(
+      expected_time, DebugReportCooldownType::kShortCooldown);
+  expected_cooldown_map[test_origin2] = DebugReportCooldown(
+      expected_time, DebugReportCooldownType::kShortCooldown);
+  ASSERT_TRUE(cooldowns.has_value());
+  EXPECT_EQ(expected_cooldown_map, cooldowns->debug_report_cooldown_map);
+
+  storage->DeleteAllDebugReportCooldowns();
 
   cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
   ASSERT_TRUE(cooldowns.has_value());

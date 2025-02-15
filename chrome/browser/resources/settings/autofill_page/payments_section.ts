@@ -571,21 +571,19 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private shouldShowAddVirtualCardButton_(): boolean {
-    if (this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+    if (this.activeCreditCard_ === null || !this.activeCreditCard_.metadata) {
       return false;
     }
-    return !!this.activeCreditCard_!.metadata!
-                 .isVirtualCardEnrollmentEligible &&
-        !this.activeCreditCard_!.metadata!.isVirtualCardEnrolled;
+    return !!this.activeCreditCard_.metadata.isVirtualCardEnrollmentEligible &&
+        !this.activeCreditCard_.metadata.isVirtualCardEnrolled;
   }
 
   private shouldShowRemoveVirtualCardButton_(): boolean {
-    if (this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+    if (this.activeCreditCard_ === null || !this.activeCreditCard_.metadata) {
       return false;
     }
-    return !!this.activeCreditCard_!.metadata!
-                 .isVirtualCardEnrollmentEligible &&
-        !!this.activeCreditCard_!.metadata!.isVirtualCardEnrolled;
+    return !!this.activeCreditCard_.metadata.isVirtualCardEnrollmentEligible &&
+        !!this.activeCreditCard_.metadata.isVirtualCardEnrolled;
   }
 
   /**

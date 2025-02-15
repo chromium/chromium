@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.url.GURL;
@@ -61,6 +62,16 @@ public class CollaborationServiceImpl implements CollaborationService {
         return CollaborationServiceImplJni.get().getGroupData(mNativePtr, collaborationId);
     }
 
+    @Override
+    public void leaveGroup(String groupId, Callback<Boolean> callback) {
+        CollaborationServiceImplJni.get().leaveGroup(mNativePtr, groupId, callback);
+    }
+
+    @Override
+    public void deleteGroup(String groupId, Callback<Boolean> callback) {
+        CollaborationServiceImplJni.get().deleteGroup(mNativePtr, groupId, callback);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -83,5 +94,11 @@ public class CollaborationServiceImpl implements CollaborationService {
                 long nativeCollaborationServiceAndroid, String collaborationId);
 
         GroupData getGroupData(long nativeCollaborationServiceAndroid, String collaborationId);
+
+        void leaveGroup(
+                long nativeCollaborationServiceAndroid, String groupId, Callback<Boolean> callback);
+
+        void deleteGroup(
+                long nativeCollaborationServiceAndroid, String groupId, Callback<Boolean> callback);
     }
 }

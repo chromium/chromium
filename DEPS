@@ -280,15 +280,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '20924303cc25c64353cffe05d8f61ec208d561e1',
+  'skia_revision': 'ff94581f1f8a1abe8fd3f8de586e2dd83486654f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'ec247a20a29e6d8bb09a0646f2ac30ea89ee9330',
+  'v8_revision': 'ba70666ac7eb99922372edfb86a2a0764edcb356',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'bef478f54e6e804b6beaf7e6233e86c8f08dbd8d',
+  'angle_revision': '51d2561b5a6b7a63db6fa30e3bdf4b5e316a8c0d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '902b7adf7a14cf2620483aca5afac6138bf1d5fd',
+  'devtools_frontend_revision': '03c3dfbc344c1b970980e8b7a23a740e00ee7546',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1119,7 +1119,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'c5038505256b91be010864e89a3f16efe0569fdf',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '49fe15f47d222ff8fad63372a18ecfe6a7ff7895',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1448,12 +1448,12 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'a6f3e90b03db1fb57bd997ad76f14dd98f0e415a',
+    '297193532c477507479da3f7953dea09ae90c4c2',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + '087e0ee5b7119e14dff6c4f2f61425eb3d8dff14',
+    'url': Var('chromium_git') + '/website.git' + '@' + '4e4b61042e75761a43c8e29387c1f19a35b028f9',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -1607,7 +1607,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'DV1r5-Mk6DUMr1cepRQC81qnqfEkpNI2j1nd6nAmtHgC',
+          'version': '8ZyeK-_rfFO_wXegi66Dhu9vxFWVve23gPHRsKnfKCgC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -1952,7 +1952,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + 'b6849f675d4237398c4a3ae806ddaf4ca461ed01',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '4c38131a16803130b66266a912029504f2cf23cd',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2586,7 +2586,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + '426b2e025aa59c23a1b6e19fbacd6b4a11bfad16',
 
   'src/third_party/pthreadpool/src':
-    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'e1469417238e13eebaa001779fa031ed25c59def',
+    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'f94ab76fe99754960035d520dce28e15b647e8cf',
 
   # Dependency of skia.
   'src/third_party/pyelftools': {
@@ -2743,7 +2743,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '54d46a7a3564dd5cb0c0f5b70c66d468b9c64d11',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'b8ffdbdf19bcc43639bc0f3c05ef7d9a4667527f',
 
   'src/third_party/turbine/cipd': {
       'packages': [
@@ -2756,7 +2756,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@dc3e8fe22d3a0b366c25f969fa06a8d6a3418629',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@cc6490ed63e71b05684267430ed98437c2e83b56',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@ef5207f9f8cce5097568efb15d3297d8b5d13014',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@09913f088a1197aba4aefd300a876b2ebbaa3391',
@@ -2765,7 +2765,7 @@ deps = {
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@fde0f9718bd60b49cf8efc80d3fb7a093c309ac0',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@a9f88a232a4cd6634e47f0f93c8fac5789387a7a',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@fe7a09b13899c5c77d956fa310286f7a7eb2c4ed',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@266d5cd69a94c1262c44307f4c4209c97f5c6ec4',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@7fac58710a3c5632fe7ebce77b56266158216347',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -4472,7 +4472,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '0246ae4da40c2e1cfdbf91ec0ac978f8b298fc0e',
+        '89e7fca303aaea70284cc77d91f03c69c3883f3e',
       'condition': 'checkout_src_internal',
   },
 
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '4565e5473176efc3b65d3605bcfa7617167d2c21',
+        '88d2bb60d23ca7482ee69354ec003a2f79eb34be',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

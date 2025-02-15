@@ -82,7 +82,6 @@ import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
-import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.sync.DataType;
@@ -153,7 +152,7 @@ public class TabGroupListMediatorUnitTest {
     @Captor
     private ArgumentCaptor<SyncService.SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
-    @Captor private ArgumentCaptor<Callback<Integer>> mActionOutcomeCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mDeleteGroupResultCallbackCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mModalPropertyModelCaptor;
 
     @Captor private ArgumentCaptor<PersistentMessageObserver> mPersistentMessageObserverCaptor;
@@ -642,9 +641,9 @@ public class TabGroupListMediatorUnitTest {
                         new MaybeBlockingResult(
                                 ActionConfirmationResult.CONFIRMATION_POSITIVE, mFinishBlocking));
 
-        verify(mDataSharingService)
-                .deleteGroup(eq(COLLABORATION_ID1), mActionOutcomeCallbackCaptor.capture());
-        mActionOutcomeCallbackCaptor.getValue().onResult(PeopleGroupActionOutcome.SUCCESS);
+        verify(mCollaborationService)
+                .deleteGroup(eq(COLLABORATION_ID1), mDeleteGroupResultCallbackCaptor.capture());
+        mDeleteGroupResultCallbackCaptor.getValue().onResult(true);
         verify(mFinishBlocking).run();
         verify(mModalDialogManager, never())
                 .showDialog(mModalPropertyModelCaptor.capture(), anyInt());
@@ -683,11 +682,9 @@ public class TabGroupListMediatorUnitTest {
                         new MaybeBlockingResult(
                                 ActionConfirmationResult.CONFIRMATION_POSITIVE, mFinishBlocking));
 
-        verify(mDataSharingService)
-                .leaveGroup(eq(COLLABORATION_ID1), mActionOutcomeCallbackCaptor.capture());
-        mActionOutcomeCallbackCaptor
-                .getValue()
-                .onResult(PeopleGroupActionOutcome.TRANSIENT_FAILURE);
+        verify(mCollaborationService)
+                .leaveGroup(eq(COLLABORATION_ID1), mDeleteGroupResultCallbackCaptor.capture());
+        mDeleteGroupResultCallbackCaptor.getValue().onResult(false);
         verify(mFinishBlocking).run();
 
         verify(mModalDialogManager).showDialog(mModalPropertyModelCaptor.capture(), anyInt());

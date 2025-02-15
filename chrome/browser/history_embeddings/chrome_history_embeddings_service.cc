@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/history_query.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 
 namespace history_embeddings {
 
@@ -26,6 +27,7 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+    passage_embeddings::PassageEmbeddingsServiceController* service_controller,
     std::unique_ptr<passage_embeddings::Embedder> embedder,
     std::unique_ptr<Answerer> answerer,
     std::unique_ptr<IntentClassifier> intent_classifier)
@@ -33,6 +35,7 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
                                history_service,
                                page_content_annotations_service,
                                optimization_guide_decider,
+                               service_controller,
                                std::move(embedder),
                                std::move(answerer),
                                std::move(intent_classifier)),

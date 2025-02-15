@@ -15,12 +15,22 @@ using testing::Return;
 namespace blink {
 
 namespace {
+
 constexpr std::string_view kFifoDelayBase = "FIFODelay";
 constexpr std::string_view kTotalPlayoutDelayBase = "TotalPlayoutDelay";
 constexpr std::string_view kFifoUnderrunCountShortBase =
     "FIFOUnderrunCount.Short";
 constexpr std::string_view kFifoUnderrunCountIntervalsBase =
     "FIFOUnderrunCount.Intervals";
+constexpr std::string_view kRenderTimeRatioBase = "RenderTimeRatio";
+constexpr std::string_view kRequestRenderTimeRatioBase =
+    "RequestRenderTimeRatio";
+constexpr std::string_view kRequestRenderGapTimeRatioBase =
+    "RequestRenderGapTimeRatio";
+
+constexpr int kFakeBufferSize = 256;
+constexpr float kFakeSamplingRate = 48000;
+
 }  // namespace
 
 class AudioDestinationUmaReporterTest
@@ -31,8 +41,8 @@ class AudioDestinationUmaReporterTest
       : latency_hint_(std::get<0>(GetParam())),
         is_audio_worklet_set_(std::get<1>(GetParam())),
         latency_tag_(std::get<2>(GetParam())) {
-    uma_reporter_ =
-        std::make_unique<AudioDestinationUmaReporter>(latency_hint_);
+    uma_reporter_ = std::make_unique<AudioDestinationUmaReporter>(
+        latency_hint_, kFakeBufferSize, kFakeSamplingRate);
   }
 
   AudioDestinationUmaReporterTest(
@@ -63,11 +73,27 @@ class AudioDestinationUmaReporterTest
 };
 
 TEST_P(AudioDestinationUmaReporterTest, BasicTest) {
+  base::TimeDelta fake_callback_interval =
+      base::Seconds(kFakeBufferSize / kFakeSamplingRate);
+  // Simulate a render duration equal to 30% of the fake callback interval.
+  base::TimeDelta fake_render_duration = fake_callback_interval * 0.3;
+  // Simulate a request render duration equal to 20% of the fake callback
+  // interval.
+  base::TimeDelta fake_request_render_duration = fake_callback_interval * 0.2;
+  // Simulate a request render gap duration equal to 10% of the fake callback
+  // interval.
+  base::TimeDelta fake_request_render_gap_duration =
+      fake_callback_interval * 0.1;
+
   for (int i = 0; i < 1000; i++) {
     base::TimeDelta fifo_delay = base::Milliseconds(i % 2 ? 10 : 40);
     uma_reporter_->UpdateFifoDelay(fifo_delay);
     base::TimeDelta infra_delay = base::Milliseconds(i % 2 ? 1 : 10);
     uma_reporter_->UpdateTotalPlayoutDelay(fifo_delay + infra_delay);
+    uma_reporter_->AddRenderDuration(fake_render_duration);
+    uma_reporter_->AddRequestRenderDuration(fake_request_render_duration);
+    uma_reporter_->AddRequestRenderGapDuration(
+        fake_request_render_gap_duration);
     uma_reporter_->Report();
   }
 
@@ -88,6 +114,24 @@ TEST_P(AudioDestinationUmaReporterTest, BasicTest) {
   histogram_tester_.ExpectBucketCount(
       GetExpectedHistogramName(kTotalPlayoutDelayBase) + latency_tag_, 50, 500);
 
+  // Due to the static_cast<int> conversion in PercentOfCallbackInterval, the
+  // floating-point part of the double result is truncated (rounded down).
+  // Therefore, we expect the exact ratio value minus 1 in the histograms.
+  // For example, if the exact ratio is 30%, the recorded value will be 29.
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kRenderTimeRatioBase), 29, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kRenderTimeRatioBase) + latency_tag_, 29, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kRequestRenderTimeRatioBase), 19, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kRequestRenderTimeRatioBase) + latency_tag_, 19,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kRequestRenderGapTimeRatioBase), 9, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kRequestRenderGapTimeRatioBase) + latency_tag_,
+      9, 1);
   uma_reporter_.reset();
 }
 

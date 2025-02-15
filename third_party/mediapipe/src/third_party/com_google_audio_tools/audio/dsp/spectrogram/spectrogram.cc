@@ -18,7 +18,6 @@
 #include "audio/dsp/spectrogram/spectrogram.h"
 
 #include <math.h>
-#include <optional>
 
 #include "audio/dsp/number_util.h"
 #include "audio/dsp/window_functions.h"
@@ -39,15 +38,14 @@ bool Spectrogram::ResetSampleBuffer() {
   return true;
 }
 
-bool Spectrogram::Initialize(int window_length, int step_length,
-                             std::optional<int> fft_length) {
+bool Spectrogram::Initialize(int window_length, int step_length) {
   std::vector<double> window;
   HannWindow().GetPeriodicSamples(window_length, &window);
-  return Initialize(window, step_length, fft_length);
+  return Initialize(window, step_length);
 }
 
-bool Spectrogram::Initialize(const std::vector<double>& window, int step_length,
-                             std::optional<int> fft_length) {
+bool Spectrogram::Initialize(const std::vector<double>& window,
+                             int step_length) {
   window_length_ = window.size();
   window_ = window;  // Copy window.
   if (window_length_ < 2) {
@@ -63,12 +61,7 @@ bool Spectrogram::Initialize(const std::vector<double>& window, int step_length,
     return false;
   }
 
-  if (fft_length.has_value() && !IsPowerOfTwoOrZero(fft_length.value())) {
-    LOG(ERROR) << "FFT length must be a power of two.";
-    initialized_ = false;
-    return false;
-  }
-  fft_length_ = fft_length.value_or(NextPowerOfTwo(window_length_));
+  fft_length_ = NextPowerOfTwo(window_length_);
   ABSL_CHECK(fft_length_ >= window_length_);
   output_frequency_channels_ = 1 + fft_length_ / 2;
 
@@ -93,11 +86,11 @@ bool Spectrogram::ComputeComplexSpectrogram(
                << "to Initialize().";
     return false;
   }
-  ABSL_CHECK(output);
+  ABSL_CHECK(output != nullptr);
   output->clear();
   int input_start = 0;
   while (GetNextWindowOfSamples(input, &input_start)) {
-    ABSL_DCHECK_EQ(input_queue_.size(), window_length_);
+    ABSL_DCHECK_EQ(window_length_, static_cast<int>(input_queue_.size()));
     ProcessCoreFFT();  // Processes input_queue_ to fft_input_output_.
     // Add a new slice vector onto the output, to save new result to.
     output->resize(output->size() + 1);
@@ -147,7 +140,7 @@ bool Spectrogram::ComputeSquaredMagnitudeSpectrogram(
   output->clear();
   int input_start = 0;
   while (GetNextWindowOfSamples(input, &input_start)) {
-    ABSL_DCHECK_EQ(input_queue_.size(), window_length_);
+    ABSL_DCHECK_EQ(window_length_, static_cast<int>(input_queue_.size()));
     ProcessCoreFFT();  // Processes input_queue_ to fft_input_output_.
     // Add a new slice vector onto the output, to save new result to.
     output->resize(output->size() + 1);
@@ -244,7 +237,7 @@ bool Spectrogram::GetNextWindowOfSamples(const vector<InputSample>& input,
     input_queue_.erase(input_queue_.begin(),
                        input_queue_.begin() +
                        input_queue_.size() - window_length_);
-    ABSL_DCHECK_EQ(window_length_, input_queue_.size());
+    ABSL_DCHECK_EQ(window_length_, static_cast<int>(input_queue_.size()));
     samples_to_next_step_ = step_length_;  // Be ready for next time.
     return true;  // Yes, input_queue_ now contains exactly a window-full.
   }

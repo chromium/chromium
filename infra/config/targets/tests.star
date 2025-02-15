@@ -2741,6 +2741,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_d3d11",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl2_args",
         "gpu_integration_test_common_args",
     ],
@@ -2754,6 +2755,7 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_gl",
         "gpu_force_skia_ganesh",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl2_args",
         "gpu_integration_test_common_args",
     ],
@@ -2766,6 +2768,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_gl",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl2_args",
         "gpu_integration_test_common_args",
     ],
@@ -2778,6 +2781,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_gles",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl2_args",
         "gpu_integration_test_common_args",
     ],
@@ -2791,16 +2795,10 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_metal",
         "gpu_force_skia_graphite",
+        "gpu_force_high_performance_gpu_for_webgl",
+        "gpu_enable_metal_debug_layers",
+        "gpu_integration_test_webgl2_args",
         "gpu_integration_test_common_args",
-    ],
-    # TODO(crbug.com/391899126): See if this could use
-    # gpu_integration_test_webgl2_args instead.
-    args = [
-        "--webgl-conformance-version=2.0.1",
-        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
-        # On dual-GPU devices we want the high-performance GPU to be active
-        "--extra-browser-args=--enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
-        "--enable-metal-debug-layers",
     ],
 )
 
@@ -2810,6 +2808,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_validating",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl2_args",
         "gpu_integration_test_common_args",
     ],
@@ -2822,6 +2821,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_d3d11",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2834,6 +2834,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_d3d9",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2847,6 +2848,7 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_gl",
         "gpu_force_skia_ganesh",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2859,6 +2861,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_gl",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2871,6 +2874,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_angle_gles",
         "gpu_force_command_decoder_passthrough",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2884,6 +2888,7 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_angle_gles",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_skia_ganesh",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2897,6 +2902,7 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_angle_gles",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_skia_graphite",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2910,15 +2916,10 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_metal",
         "gpu_force_skia_ganesh",
+        "gpu_force_high_performance_gpu_for_webgl",
+        "gpu_enable_metal_debug_layers",
+        "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
-    ],
-    # TODO(crbug.com/391899126): See if this could use
-    # gpu_integration_test_webgl1_args instead.
-    args = [
-        # On dual-GPU devices we want the high-performance GPU to be active
-        "--extra-browser-args=--enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
-        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
-        "--enable-metal-debug-layers",
     ],
 )
 
@@ -2930,15 +2931,10 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_metal",
         "gpu_force_skia_graphite",
+        "gpu_force_high_performance_gpu_for_webgl",
+        "gpu_enable_metal_debug_layers",
+        "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
-    ],
-    # TODO(crbug.com/391899126): See if this could use
-    # gpu_integration_test_webgl1_args instead.
-    args = [
-        # On dual-GPU devices we want the high-performance GPU to be active
-        "--extra-browser-args=--enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
-        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
-        "--enable-metal-debug-layers",
     ],
 )
 
@@ -2959,6 +2955,7 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "webgl1_conformance",
     mixins = [
         "has_native_resultdb_integration",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2971,6 +2968,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_validating",
         "gpu_force_skia_ganesh",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2983,6 +2981,7 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_validating",
         "gpu_force_skia_graphite",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -2994,6 +2993,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_validating",
+        "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
     ],
@@ -3006,13 +3006,9 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_vulkan",
+        "gpu_force_high_performance_gpu",
+        "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
-    ],
-    # TODO(crbug.com/391899126): See if this could use
-    # gpu_integration_test_webgl1_args instead.
-    args = [
-        # On dual-GPU devices we want the high-performance GPU to be active
-        "--extra-browser-args=--force_high_performance_gpu",
     ],
 )
 

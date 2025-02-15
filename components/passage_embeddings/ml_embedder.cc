@@ -44,18 +44,4 @@ bool MlEmbedder::TryCancel(TaskId task_id) {
   return false;
 }
 
-void MlEmbedder::SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) {
-  if (service_controller_->EmbedderReady()) {
-    std::move(callback).Run(service_controller_->GetEmbedderMetadata());
-  } else {
-    on_embedder_ready_ = std::move(callback);
-  }
-}
-
-void MlEmbedder::SetEmbedderMetadata(EmbedderMetadata metadata) {
-  if (on_embedder_ready_) {
-    std::move(on_embedder_ready_).Run(metadata);
-  }
-}
-
 }  // namespace passage_embeddings

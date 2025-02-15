@@ -242,12 +242,12 @@ export declare interface GlicBrowserHost {
   /**
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever the focus changes due to the user switching tabs or navigating the
-   * current focused tab. `FocusedTabData` contains a TabData when available
-   * along with an `InvalidCandidateError` if it is unfit for focus. If no
-   * TabData is available, a `NoFocusErrorReason` is returned specifying why.
+   * current focused tab.
    *
    * @returns An ObservableValue for `FocusedTabData` values that will be
-   * updated when a new tab is focused or the current tab is navigated.
+   * recalculated when a new tab is focused or the current tab is navigated.
+   * When focus is recalculated the ObservableValue will be updated if any of
+   * the FocusedTabData fields change.
    */
   getFocusedTabStateV2?(): ObservableValue<FocusedTabData>;
 
@@ -645,14 +645,15 @@ export declare interface ErrorWithReason<
 
 /** Reason for failure while extracting tab context. */
 export enum GetTabContextErrorReason {
-  UNKNOWN = 'UNKNOWN',
-  /**
-   * A valid web contents was not found, or was navigated or closed during
-   * context gathering.
-   */
-  WEB_CONTENTS_CHANGED = 'WEB_CONTENTS_CHANGED',
-  /** The request was throttled, try again later. */
-  REQUEST_THROTTLED = 'REQUEST_THROTTLED',
+  UNKNOWN = 0,
+  /** The web contents was navigated or closed during context gathering. */
+  WEB_CONTENTS_CHANGED = 1,
+  /** Permission to capture page context is denied. */
+  PERMISSION_DENIED = 2,
+  /** The URL in the tab data is not supported. */
+  UNSUPPORTED_URL = 3,
+  /** There are no Chrome tabs available to be focused. */
+  NO_FOCUSABLE_TABS = 4,
 }
 
 /**

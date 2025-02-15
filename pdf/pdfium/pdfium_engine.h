@@ -435,13 +435,18 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
                                  InkModeledShapeId id,
                                  bool active);
 
+  // Regenerate contents for all pages that need it due to Ink strokes.
+  void RegenerateContents();
+
   const std::map<InkModeledShapeId, FPDF_PAGEOBJECT>&
   ink_modeled_shape_map_for_testing() const {
     return ink_modeled_shape_map_;
   }
 
-  // Regenerate contents for all pages that need it due to Ink strokes.
-  void RegenerateContents();
+  const std::map<int, PDFiumPage::ScopedUnloadPreventer>&
+  stroked_pages_unload_preventers_for_testing() const {
+    return stroked_pages_unload_preventers_;
+  }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   // DocumentLoader::Client:
@@ -1235,19 +1240,28 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Map of zero-based page indices with Ink strokes to page unload preventers.
-  // Pages with Ink strokes have page references in `ink_stroke_objects_map_`,
-  // so these unload preventers ensure those page pointers stay valid by
-  // keeping the pages in memory.  Entries don't get deleted from
-  // `ink_stroke_objects_map_`, so just need one preventer per page instead of
-  // per stroke.
+  // Pages with Ink strokes have page references in `ink_stroke_data_`, so these
+  // unload preventers ensure those page handles stay valid by keeping the page
+  // in memory.  Use one unload preventer per page for simplicity.
   std::map<int, PDFiumPage::ScopedUnloadPreventer>
       stroked_pages_unload_preventers_;
 
-  // The handles for stroke path page objects within the PDF document, mapped
-  // using the `InkStrokeId` provided during stroke creation.  The handles are
-  // protected against becoming stale from page unloads by
-  // `stroked_pages_unload_preventers_`.
-  std::map<InkStrokeId, std::vector<FPDF_PAGEOBJECT>> ink_stroke_objects_map_;
+  struct InkStrokeData {
+    InkStrokeData(int page_index, std::vector<FPDF_PAGEOBJECT> page_objects);
+    InkStrokeData(InkStrokeData&&) noexcept;
+    InkStrokeData& operator=(InkStrokeData&&) noexcept;
+    ~InkStrokeData();
+
+    int page_index;
+
+    // The handles for stroke path page objects within the PDF document.
+    // `stroked_pages_unload_preventers_` protects these handles from going
+    // stale.
+    std::vector<FPDF_PAGEOBJECT> page_objects;
+  };
+
+  // Data associated for Ink strokes, keyed by stroke IDs.
+  std::map<InkStrokeId, InkStrokeData> ink_stroke_data_;
 
   // Tracks the pages which need to be regenerated before saving due to Ink
   // stroke changes.

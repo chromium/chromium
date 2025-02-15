@@ -54,8 +54,10 @@ chromium-metrics-reviews@google.com.
   <variant name="it"/>
   <variant name="iw"/>
   <variant name="ja"/>
+  <variant name="kn"/>
   <variant name="ko"/>
   <variant name="lt"/>
+  <variant name="mr"/>
   <variant name="nl"/>
   <variant name="no"/>
   <variant name="pl"/>
@@ -65,6 +67,8 @@ chromium-metrics-reviews@google.com.
   <variant name="sk"/>
   <variant name="sl"/>
   <variant name="sv"/>
+  <variant name="ta"/>
+  <variant name="te"/>
   <variant name="th"/>
   <variant name="tr"/>
   <variant name="uk"/>

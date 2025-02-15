@@ -737,15 +737,15 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     const capsHasDuplex = !!caps && !!caps.duplex && !!caps.duplex.option;
     const capsHasLongEdge = capsHasDuplex &&
-        caps!.duplex!.option.some(o => o.type === DuplexType.LONG_EDGE);
+        caps.duplex!.option.some(o => o.type === DuplexType.LONG_EDGE);
     const capsHasShortEdge = capsHasDuplex &&
-        caps!.duplex!.option.some(o => o.type === DuplexType.SHORT_EDGE);
+        caps.duplex!.option.some(o => o.type === DuplexType.SHORT_EDGE);
     this.setSettingPath_(
         'duplexShortEdge.available', capsHasLongEdge && capsHasShortEdge);
     this.setSettingPath_(
         'duplex.available',
         (capsHasLongEdge || capsHasShortEdge) &&
-            caps!.duplex!.option.some(o => o.type === DuplexType.NO_DUPLEX));
+            caps.duplex!.option.some(o => o.type === DuplexType.NO_DUPLEX));
 
     this.setSettingPath_(
         'vendorItems.available', !!caps && !!caps.vendor_capability);
@@ -970,7 +970,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         caps.media_type && caps.media_type.option &&
         caps.media_type.option.length > 0) {
       const unavailableValue =
-          caps.media_type!.option.find(o => !!o.is_default) ||
+          caps.media_type.option.find(o => !!o.is_default) ||
           caps.media_type!.option[0];
       this.setSettingPath_('mediaType.unavailableValue', unavailableValue);
     }
@@ -1446,7 +1446,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       return;
     }
 
-    const mediaSizePolicy = this.policySettings_['mediaSize']!.value;
+    const mediaSizePolicy = this.policySettings_['mediaSize'].value;
     const matchingOption = this.destination.getMediaSize(
         mediaSizePolicy.width, mediaSizePolicy.height);
     if (matchingOption !== undefined) {
@@ -1596,7 +1596,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       } else {
         cjt.print.color = {type: selectedOption.type};
         if (selectedOption.hasOwnProperty('vendor_id')) {
-          cjt.print.color!.vendor_id = selectedOption.vendor_id;
+          cjt.print.color.vendor_id = selectedOption.vendor_id;
         }
       }
     } else {
@@ -1608,7 +1608,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       if (defaultOption) {
         cjt.print.color = {type: defaultOption.type};
         if (defaultOption.hasOwnProperty('vendor_id')) {
-          cjt.print.color!.vendor_id = defaultOption.vendor_id;
+          cjt.print.color.vendor_id = defaultOption.vendor_id;
         }
       }
     }
@@ -1633,7 +1633,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       // In this case "orientation" option is hidden from user, so user can't
       // adjust it for page content, see Landscape.isCapabilityAvailable().
       // We can improve results if we set AUTO here.
-      const capability = destination.capabilities!.printer ?
+      const capability = destination.capabilities.printer ?
           destination.capabilities!.printer.page_orientation :
           null;
       if (capability && capability.option &&

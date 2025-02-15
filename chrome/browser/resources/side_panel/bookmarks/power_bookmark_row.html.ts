@@ -60,7 +60,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
     <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
         @click="${this.onTrailingIconClicked_}"
         .title="${this.trailingIconTooltip}"
-        .ariaLabel="${this.getBookmarkMenuA11yLabel_(url, title!)}">
+        .ariaLabel="${this.getBookmarkMenuA11yLabel_(url, title)}">
     </cr-icon-button>
   ` : ''}
 

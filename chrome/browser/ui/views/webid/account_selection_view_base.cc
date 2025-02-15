@@ -8,12 +8,13 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/break_iterator.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversion_utils.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -497,16 +498,18 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
 /* static */ std::u16string
 AccountSelectionViewBase::GetInitialLetterAsUppercase(
     const std::string& utf8_string) {
-  std::u16string letter;
-  base_icu::UChar32 code_point;
-  size_t char_index = 0;
-  if (!utf8_string.empty() &&
-      base::ReadUnicodeCharacter(utf8_string.data(), utf8_string.length(),
-                                 &char_index, &code_point)) {
-    base::WriteUnicodeCharacter(code_point, &letter);
-    letter = base::i18n::ToUpper(letter);
+  std::u16string utf16_string(base::UTF8ToUTF16(utf8_string));
+  base::i18n::BreakIterator iter(utf16_string,
+                                 base::i18n::BreakIterator::BREAK_CHARACTER);
+  if (!iter.Init()) {
+    return u"";
   }
-  return letter;
+
+  if (!iter.Advance()) {
+    return u"";
+  }
+
+  return base::i18n::ToUpper(iter.GetString());
 }
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(

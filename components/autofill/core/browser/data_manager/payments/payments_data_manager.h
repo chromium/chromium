@@ -35,7 +35,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service_observer.h"
-#include "components/webdata/common/web_data_service_consumer.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -68,7 +67,6 @@ class PaymentsDatabaseHelper;
 // unnecessarily inefficient, since any change causes the PayDM to reload all of
 // its data.
 class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
-                            public WebDataServiceConsumer,
                             public AccountInfoGetter,
                             public syncer::SyncServiceObserver,
                             public signin::IdentityManager::Observer {
@@ -108,10 +106,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
+  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle h,
+                                   std::unique_ptr<WDTypedResult> result);
 
   // AccountInfoGetter:
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
@@ -779,7 +775,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;
 
-  base::WeakPtrFactory<PaymentsDataManager> weak_factory_{this};
+  base::WeakPtrFactory<PaymentsDataManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

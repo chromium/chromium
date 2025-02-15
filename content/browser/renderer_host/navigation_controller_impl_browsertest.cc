@@ -5304,9 +5304,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   scoped_refptr<FrameNavigationEntry> frame_entry_blank_data =
       controller.GetLastCommittedEntry()->GetFrameEntry(inner_frame);
   int64_t dsn_blank = frame_entry_blank_data->document_sequence_number();
-  //  TODO(crbug.com/40051596): Fix Blink to use a different document sequence
-  //  number for this navigation.
-  EXPECT_EQ(dsn_a1, dsn_blank);
+  EXPECT_NE(dsn_a1, dsn_blank);
 
   // Go back. This should not be treated as same-document, because the origin
   // changed in the previous navigation.
@@ -19169,6 +19167,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(previous_frame_entry,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_TRUE(capturer.did_replace_entry());
+
+    // We keep the same history.state value, even in the error page, so that it
+    // can be used when the load later succeeds in step 4.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
   }
 
   // 4) Test successfully navigating the subframe to the same URL after a failed

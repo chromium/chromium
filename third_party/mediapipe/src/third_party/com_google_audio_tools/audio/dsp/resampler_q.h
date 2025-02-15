@@ -228,7 +228,7 @@ struct QResamplerParams {
   // between any two of the common sample rates 8 kHz, 11.025 kHz, 16 kHz,
   // 22.05 kHz, 44.1 kHz, and 48 kHz, and large enough to represent any
   // arbitrary factor with error no greater than 0.05%.
-  int max_denominator;
+  int max_denominator = 1000;
 
   // Scale factor for the resampling kernel's nonzero support radius. If
   // upsampling, the kernel radius is `filter_radius_factor` input samples. If
@@ -241,13 +241,13 @@ struct QResamplerParams {
   //
   // filter_radius_factor = 17.0 is equivalent to libresample's "high quality"
   // mode, which is probably overkill for most applications.
-  float filter_radius_factor;
+  float filter_radius_factor = 5.0f;
 
   // Antialiasing cutoff frequency as a proportion of
   //    min(input_sample_rate, output_sample_rate) / 2.
   // The default is 0.9, meaning the cutoff is at 90% of the input Nyquist
   // frequency or the output Nyquist frequency, whichever is smaller.
-  float cutoff_proportion;
+  float cutoff_proportion = 0.9f;
 
   // `kaiser_beta` is the positive beta parameter for the Kaiser window shape,
   // where larger value yields a wider transition band and stronger attenuation.
@@ -261,13 +261,7 @@ struct QResamplerParams {
   //   7.865            -80 dB
   //
   // The default is 6.0 for attenuation slightly over 60 dB.
-  float kaiser_beta;
-
-  QResamplerParams()
-      : max_denominator(1000),
-        filter_radius_factor(5.0f),
-        cutoff_proportion(0.9f),
-        kaiser_beta(6.0f) {}
+  float kaiser_beta = 6.0f;
 };
 
 template <typename ValueType> class QResampler;

@@ -258,7 +258,7 @@ export class LogoElement extends CrLitElement {
         this.showAnimation_ ? DoodleImageType.kAnimation :
                               DoodleImageType.kStatic,
         null);
-    const onClickUrl = new URL(this.doodle_!.image!.onClickUrl!.url);
+    const onClickUrl = new URL(this.doodle_!.image!.onClickUrl.url);
     if (this.imageClickParams_) {
       for (const param of new URLSearchParams(this.imageClickParams_)) {
         onClickUrl.searchParams.append(param[0], param[1]);

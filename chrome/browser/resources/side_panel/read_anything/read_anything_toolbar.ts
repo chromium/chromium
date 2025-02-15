@@ -746,8 +746,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onToolbarKeyDown_(e: KeyboardEvent) {
     const toolbar = this.$.toolbarContainer;
-    const buttons = Array.from(toolbar.querySelectorAll('.toolbar-button')) as
-        HTMLElement[];
+    const buttons =
+        Array.from(toolbar.querySelectorAll<HTMLElement>('.toolbar-button'));
     assert(buttons, 'no toolbar buttons');
 
     // Only allow focus on the currently visible and actionable elements.

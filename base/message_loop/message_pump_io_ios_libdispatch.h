@@ -118,6 +118,7 @@ class BASE_EXPORT MessagePumpIOSForIOLibdispatch
 
   ~MessagePumpIOSForIOLibdispatch() override;
 
+  void Attach(Delegate* delegate) override;
   void DoRun(Delegate* delegate) override;
 
   bool WatchFileDescriptor(int fd,

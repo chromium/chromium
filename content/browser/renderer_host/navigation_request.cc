@@ -1445,7 +1445,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
           frame_tree_node->current_frame_host()->GetCachedPermissionStatuses(),
-          /*should_skip_screenshot=*/false);
+          /*should_skip_screenshot=*/false,
+          /*force_new_document_sequence_number=*/false);
 
   commit_params->navigation_timing->system_entropy_at_navigation_start =
       SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
@@ -1597,7 +1598,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
           render_frame_host->GetCachedPermissionStatuses(),
-          /*should_skip_screenshot=*/false);
+          /*should_skip_screenshot=*/false,
+          /*force_new_document_sequence_number=*/false);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -6061,6 +6063,30 @@ void NavigationRequest::CommitErrorPage(
     return;
   }
 
+  // Ensure the renderer does not reuse the document sequence number for
+  // cross-origin navigations (which can lead to later bugs with same-document
+  // navigations appearing to be cross-origin). All error pages have unique
+  // opaque origins and are considered cross-origin.
+  //
+  // The one exception is for transitioning to or from a compatible error page,
+  // which preserves state in case a temporary failure later succeeds. Here, we
+  // must check for any cases where the committing error page has a valid
+  // precursor that agrees with the current document, whether the current
+  // document is already an error page or not. (The renderer process will narrow
+  // DSN reuse further, to cases the URL is a closer match, ignoring fragments.)
+  // See also CommitNavigation for the other direction.
+  // TODO(crbug.com/396645697): Use a different technique for preserving history
+  // item state on error pages, separate from the error page's own state.
+  RenderFrameHostImpl* previous_rfh = frame_tree_node()->current_frame_host();
+  const url::Origin& previous_origin = previous_rfh->GetLastCommittedOrigin();
+  bool is_error_page_with_same_precursor =
+      previous_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid() &&
+      commit_params_->origin_to_commit->GetTupleOrPrecursorTupleIfOpaque() ==
+          previous_origin.GetTupleOrPrecursorTupleIfOpaque();
+  if (!is_error_page_with_same_precursor) {
+    commit_params_->force_new_document_sequence_number = true;
+  }
+
   PopulateDocumentTokenForCrossDocumentNavigation();
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ =
@@ -6375,6 +6401,35 @@ void NavigationRequest::CommitNavigation() {
         GetNavigationController()->GetNavigationApiHistoryEntryVectors(
             frame_tree_node_, this);
     PopulateDocumentTokenForCrossDocumentNavigation();
+
+    // Ensure the renderer does not reuse the document sequence number for
+    // cross-origin navigations (which can lead to later bugs with same-document
+    // navigations appearing to be cross-origin).
+    //
+    // The one exception is for transitioning to or from a compatible error
+    // page, which preserves state in case a temporary failure later succeeds.
+    // Here, we must check for the case that the user navigates from an error
+    // page to a non-error page that matches the (valid) precursor origin. See
+    // also CommitErrorPage for the other direction.
+    // TODO(crbug.com/396645697): Use a different technique for preserving
+    // history item state on error pages, separate from the error page's own
+    // state.
+    RenderFrameHostImpl* previous_rfh = frame_tree_node()->current_frame_host();
+    const url::Origin& previous_origin = previous_rfh->GetLastCommittedOrigin();
+    // Skip this check if kUseBrowserCalculatedOrigin is disabled.
+    if (base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin)) {
+      bool is_cross_origin_navigation =
+          !commit_params_->origin_to_commit->IsSameOriginWith(previous_origin);
+      bool compatible_with_error_page =
+          previous_rfh->IsErrorDocument() &&
+          previous_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid() &&
+          commit_params_->origin_to_commit
+                  ->GetTupleOrPrecursorTupleIfOpaque() ==
+              previous_origin.GetTupleOrPrecursorTupleIfOpaque();
+      if (is_cross_origin_navigation && !compatible_with_error_page) {
+        commit_params_->force_new_document_sequence_number = true;
+      }
+    }
   }
 
   if (early_hints_manager_) {

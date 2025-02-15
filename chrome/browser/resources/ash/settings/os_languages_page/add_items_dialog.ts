@@ -66,26 +66,14 @@ export class OsSettingsAddItemsDialogElement extends
 
   static get properties() {
     return {
-      items: {
-        type: Array,
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
-      },
+      items: Array,
 
       /**
        * Item IDs to show in the "Suggested" section of the dialog.
        * Any items in this array which are disabled by policy, or IDs which do
        * not appear in the items array will be filtered out automatically.
        */
-      suggestedItemIds: {
-        type: Array,
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
-      },
+      suggestedItemIds: Array,
 
       header: String,
 
@@ -109,10 +97,6 @@ export class OsSettingsAddItemsDialogElement extends
       filteredItems_: {
         type: Array,
         computed: 'getFilteredItems_(items.*, lowercaseQueryString_)',
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
       },
 
       itemIdsToAdd_: {
@@ -139,10 +123,6 @@ export class OsSettingsAddItemsDialogElement extends
       suggestedItems_: {
         type: Array,
         computed: 'getSuggestedItems_(suggestedItemIds.*, itemIdsToItems_)',
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
       },
 
       showSuggestedList_: {
@@ -167,13 +147,13 @@ export class OsSettingsAddItemsDialogElement extends
   }
 
   // Public API: Items to show in the dialog (downwards data flow).
-  items: Item[];
+  items: Item[] = [];
   /**
    * Item IDs to show in the "Suggested" section of the dialog.
    * Any items in this array which are disabled by policy, or IDs which do not
    * appear in the items array will be filtered out automatically.
    */
-  suggestedItemIds: string[];
+  suggestedItemIds: string[] = [];
 
   // Public API: Strings displayed to the user, in the order a user would see
   // them (downwards data flow).
@@ -195,12 +175,12 @@ export class OsSettingsAddItemsDialogElement extends
   /** Mapping from item ID to item for use in computing `suggestedItems_`. */
   private itemIdsToItems_: Map<string, Item>;
   /** All items in this array are guaranteed to not be disabled by policy. */
-  private suggestedItems_: Item[];
+  private suggestedItems_: Item[] = [];
   /** Whether suggestedItems_ is non-empty. */
   private showSuggestedList_: boolean;
 
   // Computed properties for filtered items.
-  private filteredItems_: Item[];
+  private filteredItems_: Item[] = [];
   /** Whether filteredItems_ is non-empty. */
   private showFilteredList_: boolean;
 

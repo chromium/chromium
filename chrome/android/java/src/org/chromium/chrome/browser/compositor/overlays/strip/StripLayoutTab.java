@@ -157,7 +157,6 @@ public class StripLayoutTab extends StripLayoutView {
 
     private boolean mIsDying;
     private boolean mIsClosed;
-    private boolean mIsDraggedOffStrip;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
@@ -340,23 +339,8 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * Marks if the tab has been dragged off the strip for drag and drop.
-     *
-     * @param isDraggedOffStrip Whether the tab is dragged off the strip.
-     */
-    public void setIsDraggedOffStrip(boolean isDraggedOffStrip) {
-        mIsDraggedOffStrip = isDraggedOffStrip;
-    }
-
-    /**
-     * @return Whether the tab is dragged off the strip.
-     */
-    public boolean isDraggedOffStrip() {
-        return mIsDraggedOffStrip;
-    }
-
-    /**
      * Marks if tab container is attached to the toolbar for the Tab Strip Redesign folio treatment.
+     *
      * @param folioAttached Whether the tab should be attached or not.
      */
     public void setFolioAttached(boolean folioAttached) {

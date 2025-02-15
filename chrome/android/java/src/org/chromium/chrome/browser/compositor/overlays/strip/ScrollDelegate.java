@@ -117,13 +117,15 @@ public class ScrollDelegate {
         float totalViewWidth = 0.f;
         for (int i = 0; i < stripViews.length; i++) {
             final StripLayoutView view = stripViews[i];
+            if (view.isDraggedOffStrip()) continue;
+
             if (view instanceof final StripLayoutTab tab) {
                 if (tab.isCollapsed()) {
                     // Need to use real width here (which gets animated to effectively 0), so we
                     // don't "jump", but instead smoothly scroll when collapsing near the end of a
                     // full tab strip.
                     totalViewWidth += tab.getWidth() - tabOverlapWidth;
-                } else if (!tab.isClosed() && !tab.isDraggedOffStrip()) {
+                } else if (!tab.isClosed()) {
                     totalViewWidth += cachedTabWidth - tabOverlapWidth;
                 }
             } else if (view instanceof StripLayoutGroupTitle groupTitle) {

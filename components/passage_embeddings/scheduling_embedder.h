@@ -32,6 +32,7 @@ namespace passage_embeddings {
 // take a very long time and should be done at lower priority.
 class SchedulingEmbedder
     : public Embedder,
+      public EmbedderMetadataObserver,
       public performance_scenarios::PerformanceScenarioObserver {
  public:
   SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
@@ -55,17 +56,14 @@ class SchedulingEmbedder
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
 
-  // Sets the callback to run when the embedder is ready to process requests.
-  // The callback is invoked immediately if the embedder is ready beforehand.
-  void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) override;
-
   // Cancels computation of embeddings iff none of the passages given to
   // `ComputePassagesEmbeddings()` has been submitted to the embedder yet.
   // If successful, the callback for the canceled task will be invoked with
   // `ComputeEmbeddingsStatus::kCanceled` status.
   bool TryCancel(TaskId task_id) override;
 
-  void SetEmbedderMetadata(EmbedderMetadata metadata) override;
+  // EmbedderMetadataObserver:
+  void EmbedderMetadataUpdated(EmbedderMetadata metadata) override;
 
   // PerformanceScenarioObserver:
   void OnLoadingScenarioChanged(
@@ -176,8 +174,7 @@ class SchedulingEmbedder
 // a non-owned SchedulingEmbedder.
 class SchedulingClientEmbedder : public Embedder {
  public:
-  SchedulingClientEmbedder(SchedulingEmbedder* embedder,
-                           base::OnceCallback<void(Embedder*)> detach);
+  explicit SchedulingClientEmbedder(SchedulingEmbedder* embedder);
   ~SchedulingClientEmbedder() override;
 
   // Embedder:
@@ -188,17 +185,8 @@ class SchedulingClientEmbedder : public Embedder {
 
   bool TryCancel(TaskId task_id) override;
 
-  void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) override;
-
-  void SetEmbedderMetadata(EmbedderMetadata metadata) override;
-
  private:
   raw_ptr<SchedulingEmbedder> scheduling_embedder_;
-
-  base::OnceCallback<void(Embedder*)> detach_;
-
-  // Called once the embedder is ready.
-  OnEmbedderReadyCallback on_embedder_ready_;
 };
 
 }  // namespace passage_embeddings

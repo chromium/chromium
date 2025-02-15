@@ -69,18 +69,14 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    this.addEventListener('click', e => this.onClick_(e as MouseEvent));
-    this.addEventListener('dblclick', e => this.onDblClick_(e as MouseEvent));
+    this.addEventListener('click', e => this.onClick_(e));
+    this.addEventListener('dblclick', e => this.onDblClick_(e));
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
-    this.addEventListener('keydown', e => this.onKeydown_(e as KeyboardEvent));
-    this.addEventListener(
-        'auxclick', e => this.onMiddleClick_(e as MouseEvent));
-    this.addEventListener(
-        'mousedown', e => this.cancelMiddleMouseBehavior_(e as MouseEvent));
-    this.addEventListener(
-        'mouseup', e => this.cancelMiddleMouseBehavior_(e as MouseEvent));
-    this.addEventListener(
-        'touchstart', e => this.onTouchStart_(e as TouchEvent));
+    this.addEventListener('keydown', e => this.onKeydown_(e));
+    this.addEventListener('auxclick', e => this.onMiddleClick_(e));
+    this.addEventListener('mousedown', e => this.cancelMiddleMouseBehavior_(e));
+    this.addEventListener('mouseup', e => this.cancelMiddleMouseBehavior_(e));
+    this.addEventListener('touchstart', e => this.onTouchStart_(e));
   }
 
   override connectedCallback() {

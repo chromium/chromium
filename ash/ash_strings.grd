@@ -458,6 +458,15 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP" desc="Quick Share tile tooltip.">
         Show Quick Share settings
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP_ENABLED" desc="Quick Share tile tooltip when enabled.">
+        Show Quick Share settings. <ph name="visibility">$1<ex>Your devices</ex></ph> visibility selected
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP_DISABLED" desc="Quick Share tile tooltip when disabled.">
+        Show Quick Share settings. Quick Share disabled
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP_HIGH_VISIBILITY" desc="Quick Share tile tooltip when device is in high visibility.">
+        Show Quick Share settings. Visible to everyone for <ph name="time_remaining">$1<ex>10 min</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_SETTINGS_BUTTON_TOOLTIP" desc="Settings button tooltip.">
         Quick Share settings
       </message>

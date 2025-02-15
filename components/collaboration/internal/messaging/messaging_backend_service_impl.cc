@@ -639,12 +639,16 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
     return;
   }
 
-  // We should clear all tab messages for the group if the group is removed.
-  // They should be removed from the DB, and the UI as well if already showing.
-  // Although this doesn't seem important as the tab group UI will be gone by
-  // then, tab switcher still pulls dirty dot information based on if there are
-  // dirty tabs. Hence it's important to issue HidePersistentMessage to the UI.
-  ClearDirtyTabMessagesForGroup(*collaboration_group_id, removed_group);
+  // Remove all messages from the DB related to this tab group. The only message
+  // that will stay will be the group removal message which will be added in the
+  // next section.
+  std::vector<collaboration_pb::Message> messages =
+      store_->GetRecentMessagesForGroup(*collaboration_group_id);
+  std::set<std::string> message_uuids;
+  for (auto& message : messages) {
+    message_uuids.insert(message.uuid());
+  }
+  store_->RemoveMessages(message_uuids);
 
   if (source == tab_groups::TriggerSource::LOCAL) {
     return;
@@ -1066,9 +1070,11 @@ void MessagingBackendServiceImpl::ClearPersistentMessage(
 
 void MessagingBackendServiceImpl::RemoveMessages(
     const std::vector<base::Uuid>& message_ids) {
+  std::set<std::string> message_uuids;
   for (const base::Uuid& message_id : message_ids) {
-    store_->RemoveMessage(message_id.AsLowercaseString());
+    message_uuids.insert(message_id.AsLowercaseString());
   }
+  store_->RemoveMessages(message_uuids);
 }
 
 void MessagingBackendServiceImpl::AddActivityLogForTesting(

@@ -478,7 +478,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
                                                       UnusedSitePermissions[]) {
     // Convert the permission type lists to i18n versions and check if each list
     // includes notifications.
-    const listOfPermissionTypes = sites!.map(site => site.permissions);
+    const listOfPermissionTypes = sites.map(site => site.permissions);
     const listPermissionsIncludeNotifications = listOfPermissionTypes.map(
         permissions =>
             permissions

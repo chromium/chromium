@@ -51,7 +51,7 @@ class ActionLink extends HTMLAnchorElement {
         window.setTimeout(() => this.click(), 0);
       }
     };
-    this.addEventListener('keydown', this.boundOnKeyDown_!);
+    this.addEventListener('keydown', this.boundOnKeyDown_);
 
     function preventDefault(e: Event) {
       e.preventDefault();
@@ -74,10 +74,10 @@ class ActionLink extends HTMLAnchorElement {
         this.classList.add('no-outline');
       }
     };
-    this.addEventListener('mousedown', this.boundOnMouseDown_!);
+    this.addEventListener('mousedown', this.boundOnMouseDown_);
 
     this.boundOnBlur_ = () => this.classList.remove('no-outline');
-    this.addEventListener('blur', this.boundOnBlur_!);
+    this.addEventListener('blur', this.boundOnBlur_);
   }
 
   disconnectedCallback() {

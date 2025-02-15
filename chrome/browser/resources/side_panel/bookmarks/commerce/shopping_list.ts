@@ -137,7 +137,7 @@ export class ShoppingListElement extends PolymerElement {
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceTracking.SidePanel.ClickedTrackedProduct');
     this.bookmarksApi_.openBookmark(
-        event.model.item.bookmarkId!.toString(), 0, {
+        event.model.item.bookmarkId.toString(), 0, {
           middleButton: true,
           altKey: event.altKey,
           ctrlKey: event.ctrlKey,
@@ -154,7 +154,7 @@ export class ShoppingListElement extends PolymerElement {
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceTracking.SidePanel.ClickedTrackedProduct');
     this.bookmarksApi_.openBookmark(
-        event.model.item.bookmarkId!.toString(), 0, {
+        event.model.item.bookmarkId.toString(), 0, {
           middleButton: false,
           altKey: event.altKey,
           ctrlKey: event.ctrlKey,
@@ -169,7 +169,7 @@ export class ShoppingListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     this.bookmarksApi_.showContextMenu(
-        event.model.item.bookmarkId!.toString(), event.clientX, event.clientY,
+        event.model.item.bookmarkId.toString(), event.clientX, event.clientY,
         ActionSource.kPriceTracking);
   }
 
@@ -177,7 +177,7 @@ export class ShoppingListElement extends PolymerElement {
       event: DomRepeatEvent<BookmarkProductInfo, MouseEvent>) {
     event.preventDefault();
     event.stopPropagation();
-    const bookmarkId = event.model.item.bookmarkId!;
+    const bookmarkId = event.model.item.bookmarkId;
     if (this.untrackedItems_.includes(event.model.item)) {
       const index = this.untrackedItems_.indexOf(event.model.item);
       this.splice('untrackedItems_', index, 1);

@@ -14,6 +14,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget_observer.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace glic {
 
 bool IsBrowserGlicCompatible(Profile* profile, Browser* browser) {
@@ -38,6 +43,30 @@ Browser* FindBrowserForAttachment(Profile* profile) {
     }
   }
   return nullptr;
+}
+
+bool IsBrowserInForeground(Browser* browser) {
+  bool in_foreground = browser->IsActive();
+#if BUILDFLAG(IS_WIN)
+  // On Windows, clicking the status bar icon makes an active browser window
+  // inactive, but it will still be the last active browser. Attach to the
+  // last active browser if it's not occluded or minimized.
+  if (!in_foreground) {
+    in_foreground = browser->window()
+                        ->GetNativeWindow()
+                        ->GetHost()
+                        ->GetNativeWindowOcclusionState() ==
+                    aura::Window::OcclusionState::VISIBLE;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  return in_foreground;
+}
+
+bool IsAnyBrowserInForeground() {
+  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+  return last_active_browser && last_active_browser->is_type_normal()
+             ? IsBrowserInForeground(last_active_browser)
+             : false;
 }
 
 class BrowserAttachObservationImpl : public BrowserAttachObservation,

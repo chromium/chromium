@@ -18,8 +18,10 @@ class FakeDelegate : public AccountSelectionView::Delegate {
 
   ~FakeDelegate() override;
 
-  void OnAccountSelected(const GURL& idp_config_url,
-                         const Account& account) override;
+  void OnAccountSelected(
+      const GURL& idp_config_url,
+      const std::string& account_id,
+      const content::IdentityRequestAccount::LoginState& login_state) override;
 
   void OnDismiss(content::IdentityRequestDialogController::DismissReason
                      dismiss_reason) override {}

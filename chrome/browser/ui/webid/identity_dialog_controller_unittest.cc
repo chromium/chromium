@@ -256,7 +256,8 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedButtonCallsDismiss) {
 
   // User selects an account, and then dismisses it. The expectation set for
   // dismiss callback should pass.
-  controller.OnAccountSelected(GURL(kIdpEtldPlusOne), *accounts[0]);
+  controller.OnAccountSelected(GURL(kIdpEtldPlusOne), accounts[0]->id,
+                               *accounts[0]->login_state);
   controller.OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
 
@@ -286,7 +287,8 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedWidgetResetsDismiss) {
 
   // User selects an account, and then dismisses it. The expectation set for
   // dismiss callback should pass.
-  controller.OnAccountSelected(GURL(kIdpEtldPlusOne), *accounts[0]);
+  controller.OnAccountSelected(GURL(kIdpEtldPlusOne), accounts[0]->id,
+                               *accounts[0]->login_state);
   controller.OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
 

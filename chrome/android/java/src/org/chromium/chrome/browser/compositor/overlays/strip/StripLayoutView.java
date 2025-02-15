@@ -76,6 +76,7 @@ public abstract class StripLayoutView implements VirtualView {
     private boolean mCollapsed;
     private boolean mIsIncognito;
     private boolean mIsForegrounded;
+    private boolean mIsDraggedOffStrip;
 
     // A11y variables.
     private String mAccessibilityDescription = "";
@@ -249,6 +250,16 @@ public abstract class StripLayoutView implements VirtualView {
     /** Sets whether or not the given view should be foregrounded for reorder. */
     public void setIsForegrounded(boolean isForegrounded) {
         mIsForegrounded = isForegrounded;
+    }
+
+    /** Sets whether or not the view is dragged off the strip and should be hidden. */
+    public void setIsDraggedOffStrip(boolean isDraggedOffStrip) {
+        mIsDraggedOffStrip = isDraggedOffStrip;
+    }
+
+    /** Returns whether or not the tab is dragged off the strip and should be hidden. */
+    public boolean isDraggedOffStrip() {
+        return mIsDraggedOffStrip;
     }
 
     /**

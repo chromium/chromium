@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static android.view.KeyEvent.KEYCODE_ENTER;
+import static android.view.KeyEvent.KEYCODE_W;
+import static android.view.KeyEvent.META_ALT_ON;
+import static android.view.KeyEvent.META_CTRL_ON;
+import static android.view.KeyEvent.META_SHIFT_ON;
+
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isFocusable;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -21,13 +28,13 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.action.EspressoKey;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
@@ -154,6 +161,32 @@ public class BookmarkBarTest {
         };
     }
 
+    private @NonNull ViewAction focus() {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isFocusable());
+            }
+
+            @Override
+            public String getDescription() {
+                return "focus";
+            }
+
+            @Override
+            public void perform(@NonNull UiController uiController, @NonNull View view) {
+                // NOTE: Focus doesn't exist in touch mode except under special circumstances.
+                // Temporarily enable focusability to ensure the focus request can succeed.
+                // See https://android-developers.googleblog.com/2008/12/touch-mode.html.
+                final boolean isFocusableInTouchMode = view.isFocusableInTouchMode();
+                view.setFocusableInTouchMode(true);
+                view.requestFocus();
+                CriteriaHelper.pollUiThreadNested(view::isFocused);
+                view.setFocusableInTouchMode(isFocusableInTouchMode);
+            }
+        };
+    }
+
     private @Nullable Tab getActivityTab() {
         return sActivityTestRule.getActivity().getActivityTab();
     }
@@ -168,6 +201,23 @@ public class BookmarkBarTest {
         } catch (@NonNull Throwable e) {
             return Optional.empty();
         }
+    }
+
+    private @NonNull ViewAction pressKey(int keyCode) {
+        return pressKey(keyCode, /* metaState= */ 0);
+    }
+
+    private @NonNull ViewAction pressKey(int keyCode, int metaState) {
+        final var isAltPressed = (metaState & META_ALT_ON) != 0;
+        final var isCtrlPressed = (metaState & META_CTRL_ON) != 0;
+        final var isShiftPressed = (metaState & META_SHIFT_ON) != 0;
+        return androidx.test.espresso.action.ViewActions.pressKey(
+                new EspressoKey.Builder()
+                        .withAltPressed(isAltPressed)
+                        .withCtrlPressed(isCtrlPressed)
+                        .withKeyCode(keyCode)
+                        .withShiftPressed(isShiftPressed)
+                        .build());
     }
 
     @Test
@@ -207,19 +257,49 @@ public class BookmarkBarTest {
     @Test
     @MediumTest
     public void testOnBookmarkItemControlClick() throws ExecutionException {
-        final Tab originalTab = getActivityTab();
+        // Set up.
         final String title = "Google";
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
         mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
-        onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(KeyEvent.META_CTRL_ON));
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    final Tab currentTab = getActivityTab();
-                    Criteria.checkThat(currentTab, is(not(originalTab)));
-                    Criteria.checkThat(currentTab, notNullValue());
-                    Criteria.checkThat(currentTab.getUrl(), notNullValue());
-                    Criteria.checkThat(currentTab.getUrl(), is(url));
-                });
+
+        {
+            // Case: perform control-click via touch.
+            final Tab originalTab = getActivityTab();
+            onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(META_CTRL_ON));
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        final Tab currentTab = getActivityTab();
+                        Criteria.checkThat(currentTab, is(not(originalTab)));
+                        Criteria.checkThat(currentTab, notNullValue());
+                        Criteria.checkThat(currentTab.getUrl(), notNullValue());
+                        Criteria.checkThat(currentTab.getUrl(), is(url));
+                    });
+        }
+
+        {
+            // Close previously opened tab to prepare for the next test case.
+            final Tab originalTab = getActivityTab();
+            onViewWaiting(withId(android.R.id.content)).perform(pressKey(KEYCODE_W, META_CTRL_ON));
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        final Tab currentTab = getActivityTab();
+                        Criteria.checkThat(currentTab, is(not(originalTab)));
+                    });
+        }
+
+        {
+            // Case: perform ENTER-click to ensure control-click via touch is not sticky.
+            final Tab originalTab = getActivityTab();
+            onViewWaiting(bookmarkBarItemWithText(title)).perform(focus(), pressKey(KEYCODE_ENTER));
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        final Tab currentTab = getActivityTab();
+                        Criteria.checkThat(currentTab, is(originalTab));
+                        Criteria.checkThat(currentTab, notNullValue());
+                        Criteria.checkThat(currentTab.getUrl(), notNullValue());
+                        Criteria.checkThat(currentTab.getUrl(), is(url));
+                    });
+        }
     }
 
     @Test

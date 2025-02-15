@@ -502,12 +502,21 @@ const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+const char kAutofillEnableAmountExtractionAllowlistDesktopName[] =
+    "Enable loading and querying the checkout amount extraction allowlist on "
+    "Chrome Desktop";
+const char kAutofillEnableAmountExtractionAllowlistDesktopDescription[] =
+    "When enabled, Chrome will have the ability to load and query the "
+    "allowlist for checkout amount extraction, which will be used to check if "
+    "the current URL is eligible for products that use the checkout amount "
+    "extraction algorithm.";
 const char kAutofillEnableAmountExtractionDesktopName[] =
     "Enable checkout amount extraction on Chrome desktop";
 const char kAutofillEnableAmountExtractionDesktopDescription[] =
     "When enabled, Chrome will extract the checkout amount from the checkout "
     "page of the allowlisted merchant websites.";
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

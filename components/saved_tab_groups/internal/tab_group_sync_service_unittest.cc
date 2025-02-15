@@ -72,6 +72,7 @@ namespace tab_groups {
 namespace {
 
 constexpr char kTestCacheGuid[] = "test_cache_guid";
+constexpr char kCollaborationId[] = "collaboration";
 constexpr GaiaId::Literal kDefaultGaiaId("default_gaia_id");
 
 MATCHER_P(HasGuid, guid, "") {
@@ -2175,6 +2176,23 @@ TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroupOnRemoteAdd) {
               Not(Contains(HasGuid(group_1_.saved_guid()))));
   EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
               Contains(HasGuid(shared_group.saved_guid())));
+}
+
+TEST_F(TabGroupSyncServiceTest, OnCollaborationRemoved) {
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
+  std::optional<SavedTabGroup> shared_group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(shared_group->is_shared_tab_group());
+  ASSERT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
+
+  tab_group_sync_service_->OnCollaborationRemoved(kCollaborationId);
+  shared_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_TRUE(shared_group->is_shared_tab_group());
+  EXPECT_TRUE(shared_group->is_hidden());
+
+  EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 2u);
 }
 
 class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {

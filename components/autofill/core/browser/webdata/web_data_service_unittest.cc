@@ -56,35 +56,6 @@ using testing::Pointee;
 using testing::ResultOf;
 using testing::UnorderedElementsAre;
 
-template <class T>
-class AutofillWebDataServiceWaiter : public WebDataServiceConsumer {
- public:
-  AutofillWebDataServiceWaiter() = default;
-
-  AutofillWebDataServiceWaiter(const AutofillWebDataServiceWaiter&) = delete;
-  AutofillWebDataServiceWaiter& operator=(const AutofillWebDataServiceWaiter&) =
-      delete;
-
-  T& result() {
-    if (!run_loop_.AnyQuitCalled()) {
-      // Wait for the result.
-      run_loop_.Run();
-    }
-    return result_;
-  }
-
- private:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) final {
-    result_ = static_cast<WDResult<T>*>(result.get())->GetValue();
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  T result_;
-};
-
 using WebDataServiceRequestFuture =
     base::test::TestFuture<WebDataServiceBase::Handle,
                            std::unique_ptr<WDTypedResult>>;
@@ -93,8 +64,8 @@ template <typename T, typename Matcher>
 testing::Matcher<std::unique_ptr<WDTypedResult>> ValueOfWDResult(
     Matcher&& matcher) {
   return ResultOf(
-      [](const std::unique_ptr<WDTypedResult>& result) {
-        return static_cast<WDResult<T>*>(result.get())->GetValue();
+      [](const std::unique_ptr<WDTypedResult>& result) -> T {
+        return static_cast<WDResult<T>&>(*result).GetValue();
       },
       std::forward<Matcher>(matcher));
 }
@@ -371,10 +342,11 @@ TEST_F(WebDataServiceAutofillTest, CreditAdd) {
   wds_->AddCreditCard(card);
 
   // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
-      consumer;
-  wds_->GetCreditCards(&consumer);
-  EXPECT_THAT(consumer.result(), UnorderedElementsAre(Pointee(card)));
+  WebDataServiceRequestFuture consumer;
+  wds_->GetCreditCards(consumer.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(),
+              ValueOfWDResult<std::vector<std::unique_ptr<CreditCard>>>(
+                  UnorderedElementsAre(Pointee(card))));
 }
 
 TEST_F(WebDataServiceAutofillTest, CreditCardRemove) {
@@ -384,19 +356,20 @@ TEST_F(WebDataServiceAutofillTest, CreditCardRemove) {
   wds_->AddCreditCard(credit_card);
 
   // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
-      consumer;
-  wds_->GetCreditCards(&consumer);
-  EXPECT_THAT(consumer.result(), UnorderedElementsAre(Pointee(credit_card)));
+  WebDataServiceRequestFuture consumer;
+  wds_->GetCreditCards(consumer.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(),
+              ValueOfWDResult<std::vector<std::unique_ptr<CreditCard>>>(
+                  UnorderedElementsAre(Pointee(credit_card))));
 
   // Remove the credit card.
   wds_->RemoveCreditCard(credit_card.guid());
 
   // Check that it was removed.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
-      consumer2;
-  wds_->GetCreditCards(&consumer2);
-  ASSERT_TRUE(consumer2.result().empty());
+  WebDataServiceRequestFuture consumer2;
+  wds_->GetCreditCards(consumer2.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(),
+              ValueOfWDResult<std::vector<CreditCard>>(IsEmpty()));
 }
 
 TEST_F(WebDataServiceAutofillTest, CreditUpdate) {
@@ -409,11 +382,11 @@ TEST_F(WebDataServiceAutofillTest, CreditUpdate) {
   wds_->AddCreditCard(card2);
 
   // Check that they got added.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
-      consumer;
-  wds_->GetCreditCards(&consumer);
-  EXPECT_THAT(consumer.result(),
-              UnorderedElementsAre(Pointee(card1), Pointee(card2)));
+  WebDataServiceRequestFuture consumer;
+  wds_->GetCreditCards(consumer.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(),
+              ValueOfWDResult<std::vector<std::unique_ptr<CreditCard>>>(
+                  UnorderedElementsAre(Pointee(card1), Pointee(card2))));
 
   CreditCard card2_changed(card2);
   card2_changed.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Bill");
@@ -421,11 +394,12 @@ TEST_F(WebDataServiceAutofillTest, CreditUpdate) {
   wds_->UpdateCreditCard(card2_changed);
 
   // Check that the updates were made.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
-      consumer2;
-  wds_->GetCreditCards(&consumer2);
-  EXPECT_THAT(consumer2.result(),
-              UnorderedElementsAre(Pointee(card1), Pointee(card2_changed)));
+  WebDataServiceRequestFuture consumer2;
+  wds_->GetCreditCards(consumer2.GetCallback());
+  EXPECT_THAT(
+      consumer2.Get<1>(),
+      ValueOfWDResult<std::vector<std::unique_ptr<CreditCard>>>(
+          UnorderedElementsAre(Pointee(card1), Pointee(card2_changed))));
 }
 
 // Verify that WebDatabase.AutofillWebDataBackendImpl.OperationSuccess records

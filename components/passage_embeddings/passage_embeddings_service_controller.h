@@ -30,18 +30,19 @@ class PassageEmbeddingsServiceController {
   bool MaybeUpdateModelInfo(
       base::optional_ref<const optimization_guide::ModelInfo> model_info);
 
-  // Returns true if this service controller is ready for embeddings generation.
-  bool EmbedderReady();
-
   // Returns true if the embedder is currently running.
   bool EmbedderRunning();
 
-  // Returns the metadata about the embeddings model. This is only valid when
-  // EmbedderReady() returns true.
-  EmbedderMetadata GetEmbedderMetadata();
-
   // Returns an embedder that can be used to generate passage embeddings.
   std::unique_ptr<Embedder> MakeEmbedder();
+
+  // Subscribe for notification when embedder metadata is ready. This may
+  // result in immediate notification if metadata is ready at time of call.
+  void AddObserver(EmbedderMetadataObserver* observer);
+
+  // Must be called exactly once for each corresponding call to
+  // `AddEmbedderMetadataObserver` when observation is no longer needed.
+  void RemoveObserver(EmbedderMetadataObserver* observer);
 
  protected:
   // Embedders are the way to access the `GetEmbeddings` API. Protecting it from
@@ -59,8 +60,12 @@ class PassageEmbeddingsServiceController {
                      PassagePriority priority,
                      GetEmbeddingsCallback callback);
 
-  // Called by destructing embedders that were dispensed with observation.
-  void RemoveObserver(Embedder* embedder);
+  // Returns true if this service controller is ready for embeddings generation.
+  bool EmbedderReady();
+
+  // Returns the metadata about the embeddings model. This is only valid when
+  // EmbedderReady() returns true.
+  EmbedderMetadata GetEmbedderMetadata();
 
   // Launches the passage embeddings service and binds `cpu_logger_` to the
   // service process. Does nothing if the service is already launched.
@@ -111,7 +116,7 @@ class PassageEmbeddingsServiceController {
   std::vector<RequestId> pending_requests_;
 
   // Notifies embedders that model metadata updated.
-  base::ObserverList<Embedder> observer_list_;
+  base::ObserverList<EmbedderMetadataObserver> observer_list_;
 
   // This holds the main scheduler that receives requests from multiple separate
   // client embedders, prioritizes all the jobs, and ultimately submits batches

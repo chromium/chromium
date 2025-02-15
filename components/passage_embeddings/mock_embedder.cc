@@ -54,6 +54,4 @@ std::vector<Embedding> MockEmbedder::ComputeEmbeddingsForPassages(
                                 ComputeEmbeddingForPassage(""));
 }
 
-void MockEmbedder::SetEmbedderMetadata(EmbedderMetadata metadata) {}
-
 }  // namespace passage_embeddings

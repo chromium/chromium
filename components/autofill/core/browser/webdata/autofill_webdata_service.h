@@ -125,8 +125,10 @@ class AutofillWebDataService : public WebDataServiceBase {
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the IBAN included in the argument |result|. The consumer
   // owns the IBAN.
-  WebDataServiceBase::Handle GetLocalIbans(WebDataServiceConsumer* consumer);
-  WebDataServiceBase::Handle GetServerIbans(WebDataServiceConsumer* consumer);
+  WebDataServiceBase::Handle GetLocalIbans(
+      WebDataServiceRequestCallback consumer);
+  WebDataServiceBase::Handle GetServerIbans(
+      WebDataServiceRequestCallback consumer);
 
   // Schedules a task to update a local IBAN in the web database.
   void UpdateLocalIban(const Iban& iban);
@@ -165,65 +167,66 @@ class AutofillWebDataService : public WebDataServiceBase {
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the credit cards included in the argument |result|.  The
   // consumer owns the credit cards.
-  WebDataServiceBase::Handle GetCreditCards(WebDataServiceConsumer* consumer);
+  WebDataServiceBase::Handle GetCreditCards(
+      WebDataServiceRequestCallback consumer);
   WebDataServiceBase::Handle GetServerCreditCards(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Initiates the request for Payments customer data.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the customer data included in the argument |result|. The
   // consumer owns the data.
   WebDataServiceBase::Handle GetPaymentsCustomerData(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Initiates the request for server credit card cloud token data. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the cloud token data included in the argument |result|. The
   // consumer owns the data.
   WebDataServiceBase::Handle GetCreditCardCloudTokenData(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Initiates the request for autofill offer data. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the offer data included in the argument |result|. The
   // consumer owns the data.
   WebDataServiceBase::Handle GetAutofillOffers(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Initiates the request for virtual card usage data. The method
   // OnWebDataServiceRequestDone() of `consumer` gets called when the request is
   // finished, with the virtual card usage data included in the argument
   // `result`. The consumer owns the data.
   WebDataServiceBase::Handle GetVirtualCardUsageData(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Initiates the request for credit card benefits. The method
   // OnWebDataServiceRequestDone() of `consumer` gets called when the request is
   // finished, with the credit card benefits included in the argument `result`.
   // The consumer owns the data.
   WebDataServiceBase::Handle GetCreditCardBenefits(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Initiates the request for masked bank accounts. The method
   // OnWebDataServiceRequestDone() of `consumer` gets called when the request is
   // finished, with the masked bank accounts included in the argument `result`.
   // The consumer owns the data.
   WebDataServiceBase::Handle GetMaskedBankAccounts(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Initiates the request for payment instruments. The method
   // OnWebDataServiceRequestDone() of `consumer` gets called when the request is
   // finished, with the payment instruments included in the argument `result`.
   // The consumer owns the data.
   WebDataServiceBase::Handle GetPaymentInstruments(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Initiates the request for payment instrument creation options from local
   // storage. The method OnWebDataServiceRequestDone() of `consumer` gets called
   // when the request is finished, with the payment instrument creation options
   // included in the argument `result`. The consumer owns the data.
   WebDataServiceBase::Handle GetPaymentInstrumentCreationOptions(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Clears all the credit card benefits from the database.
   void ClearAllCreditCardBenefits();

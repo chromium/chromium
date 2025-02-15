@@ -330,10 +330,7 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::ImportSharedImage(
   shared_images_.insert(exported_shared_image.mailbox_);
 
   return base::WrapRefCounted<ClientSharedImage>(
-      new ClientSharedImage(
-          exported_shared_image.mailbox_, exported_shared_image.metadata_,
-          exported_shared_image.creation_sync_token_, holder_,
-          exported_shared_image.texture_target_));
+      new ClientSharedImage(std::move(exported_shared_image), holder_));
 }
 
 void TestSharedImageInterface::DestroySharedImage(

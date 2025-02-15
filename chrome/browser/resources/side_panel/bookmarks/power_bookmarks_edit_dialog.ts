@@ -120,14 +120,14 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
 
   private getBookmarkName_(): string {
     if (this.selectedBookmarks_.length === 1) {
-      return this.selectedBookmarks_[0]!.title;
+      return this.selectedBookmarks_[0].title;
     }
     return '';
   }
 
   private getBookmarkUrl_(): string {
     if (this.selectedBookmarks_.length === 1) {
-      return this.selectedBookmarks_[0]!.url!;
+      return this.selectedBookmarks_[0].url!;
     }
     return '';
   }
@@ -147,7 +147,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
                           undefined): string {
     if (folder && folder.id !== loadTimeData.getString('otherBookmarksId') &&
         folder.id !== loadTimeData.getString('mobileBookmarksId')) {
-      return folder!.title;
+      return folder.title;
     } else {
       return loadTimeData.getString('allBookmarks');
     }
@@ -156,7 +156,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
   private getShownFolders_(): chrome.bookmarks.BookmarkTreeNode[] {
     const activeFolder = this.getActiveFolder_();
     if (activeFolder && activeFolder.children) {
-      return activeFolder.children!.filter(this.isAvailableFolder_, this);
+      return activeFolder.children.filter(this.isAvailableFolder_, this);
     } else if (!activeFolder && this.topLevelBookmarks_) {
       return this.topLevelBookmarks_.filter(this.isAvailableFolder_, this);
     }

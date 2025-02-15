@@ -213,6 +213,11 @@ void TabGroupSyncServiceProxy::OnTabGroupUnShareComplete(
   NOTIMPLEMENTED();
 }
 
+void TabGroupSyncServiceProxy::OnCollaborationRemoved(
+    const std::string& collaboration_id) {
+  NOTIMPLEMENTED();
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceProxy::GetAllGroups() const {
   return service_->model()->saved_tab_groups();
 }

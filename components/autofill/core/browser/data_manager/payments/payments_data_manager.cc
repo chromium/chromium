@@ -47,6 +47,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/webdata/common/web_data_service_consumer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -311,6 +312,8 @@ void PaymentsDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
   }
 }
 
+// TODO(crbug.com/40100455): Consider splitting the function into lambdas
+// specific to the callsites.
 void PaymentsDataManager::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
@@ -1783,10 +1786,14 @@ void PaymentsDataManager::LoadCreditCards() {
   CancelPendingServerQuery(&pending_server_creditcards_query_);
 
   pending_creditcards_query_ =
-      database_helper_->GetLocalDatabase()->GetCreditCards(this);
+      database_helper_->GetLocalDatabase()->GetCreditCards(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
   if (database_helper_->GetServerDatabase()) {
     pending_server_creditcards_query_ =
-        database_helper_->GetServerDatabase()->GetServerCreditCards(this);
+        database_helper_->GetServerDatabase()->GetServerCreditCards(
+            base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                           weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -1798,7 +1805,9 @@ void PaymentsDataManager::LoadCreditCardCloudTokenData() {
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
 
   pending_server_creditcard_cloud_token_data_query_ =
-      database_helper_->GetServerDatabase()->GetCreditCardCloudTokenData(this);
+      database_helper_->GetServerDatabase()->GetCreditCardCloudTokenData(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentsDataManager::LoadIbans() {
@@ -1809,10 +1818,14 @@ void PaymentsDataManager::LoadIbans() {
   CancelPendingServerQuery(&pending_server_ibans_query_);
 
   pending_local_ibans_query_ =
-      database_helper_->GetLocalDatabase()->GetLocalIbans(this);
+      database_helper_->GetLocalDatabase()->GetLocalIbans(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
   if (database_helper_->GetServerDatabase()) {
     pending_server_ibans_query_ =
-        database_helper_->GetServerDatabase()->GetServerIbans(this);
+        database_helper_->GetServerDatabase()->GetServerIbans(
+            base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                           weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -1824,7 +1837,9 @@ void PaymentsDataManager::LoadMaskedBankAccounts() {
   CancelPendingServerQuery(&pending_masked_bank_accounts_query_);
 
   pending_masked_bank_accounts_query_ =
-      database_helper_->GetServerDatabase()->GetMaskedBankAccounts(this);
+      database_helper_->GetServerDatabase()->GetMaskedBankAccounts(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentsDataManager::LoadPaymentInstruments() {
@@ -1835,7 +1850,9 @@ void PaymentsDataManager::LoadPaymentInstruments() {
   CancelPendingServerQuery(&pending_payment_instruments_query_);
 
   pending_payment_instruments_query_ =
-      database_helper_->GetServerDatabase()->GetPaymentInstruments(this);
+      database_helper_->GetServerDatabase()->GetPaymentInstruments(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentsDataManager::LoadAutofillOffers() {
@@ -1846,7 +1863,9 @@ void PaymentsDataManager::LoadAutofillOffers() {
   CancelPendingServerQuery(&pending_offer_data_query_);
 
   pending_offer_data_query_ =
-      database_helper_->GetServerDatabase()->GetAutofillOffers(this);
+      database_helper_->GetServerDatabase()->GetAutofillOffers(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentsDataManager::LoadVirtualCardUsageData() {
@@ -1857,7 +1876,9 @@ void PaymentsDataManager::LoadVirtualCardUsageData() {
   CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
 
   pending_virtual_card_usage_data_query_ =
-      database_helper_->GetServerDatabase()->GetVirtualCardUsageData(this);
+      database_helper_->GetServerDatabase()->GetVirtualCardUsageData(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentsDataManager::LoadCreditCardBenefits() {
@@ -1868,7 +1889,9 @@ void PaymentsDataManager::LoadCreditCardBenefits() {
   CancelPendingServerQuery(&pending_credit_card_benefit_query_);
 
   pending_credit_card_benefit_query_ =
-      database_helper_->GetServerDatabase()->GetCreditCardBenefits(this);
+      database_helper_->GetServerDatabase()->GetCreditCardBenefits(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentsDataManager::LoadPaymentInstrumentCreationOptions() {
@@ -1880,7 +1903,9 @@ void PaymentsDataManager::LoadPaymentInstrumentCreationOptions() {
 
   pending_payment_instrument_creation_options_query_ =
       database_helper_->GetServerDatabase()
-          ->GetPaymentInstrumentCreationOptions(this);
+          ->GetPaymentInstrumentCreationOptions(
+              base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentsDataManager::CancelPendingLocalQuery(
@@ -1913,7 +1938,9 @@ void PaymentsDataManager::LoadPaymentsCustomerData() {
   CancelPendingServerQuery(&pending_customer_data_query_);
 
   pending_customer_data_query_ =
-      database_helper_->GetServerDatabase()->GetPaymentsCustomerData(this);
+      database_helper_->GetServerDatabase()->GetPaymentsCustomerData(
+          base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentsDataManager::FetchImagesForURLs(
@@ -1926,7 +1953,7 @@ void PaymentsDataManager::FetchImagesForURLs(
   image_fetcher_->FetchImagesForURLs(
       updated_urls, image_sizes,
       base::BindOnce(&PaymentsDataManager::OnCardArtImagesFetched,
-                     weak_factory_.GetMutableWeakPtr()));
+                     weak_ptr_factory_.GetMutableWeakPtr()));
 }
 
 void PaymentsDataManager::LogStoredPaymentsDataMetrics() const {

@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 
@@ -73,10 +74,31 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
   if (g_forced_profile_for_launch_) {
     return g_forced_profile_for_launch_;
   }
+
+  // If there is an active glic window open, use that profile
+  if (active_glic_) {
+    return active_glic_->profile();
+  }
+
+  // Look for a profile to use for glic based on order of activation
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (GlicEnabling::IsEnabledAndConsentForProfile(browser->profile())) {
+      return browser->profile();
+    }
+  }
+
+  // Look at the list of loaded profiles to use for glic
+  if (g_browser_process->profile_manager()) {
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      if (GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+        return profile;
+      }
+    }
+  }
+
   // TODO(https://crbug.com/379165457): Implement profile choice logic.
-  // TODO(crbug.com/382722218): This needs to avoid using a profile that's been
-  // disabled via enterprise policy.
-  return ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  return nullptr;
 }
 
 void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {

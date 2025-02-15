@@ -58,7 +58,6 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -100,7 +99,7 @@ public class TabUiUtilsUnitTest {
     @Mock private Runnable mFinishBlocking;
 
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
-    @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mOutcomeCaptor;
 
     private List<Tab> mTabsToClose;
     private SyncedGroupTestHelper mSyncedGroupTestHelper;
@@ -219,9 +218,9 @@ public class TabUiUtilsUnitTest {
                 mModalDialogManager,
                 TAB_ID);
         verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(GROUP_TITLE), any());
-        verify(mDataSharingService).deleteGroup(eq(COLLABORATION_ID1), mOutcomeCaptor.capture());
+        verify(mCollaborationService).deleteGroup(eq(COLLABORATION_ID1), mOutcomeCaptor.capture());
 
-        mOutcomeCaptor.getValue().onResult(PeopleGroupActionOutcome.TRANSIENT_FAILURE);
+        mOutcomeCaptor.getValue().onResult(false);
         verify(mModalDialogManager).showDialog(any(), anyInt());
         verify(mFinishBlocking).run();
     }
@@ -247,7 +246,7 @@ public class TabUiUtilsUnitTest {
                 mModalDialogManager,
                 TAB_ID);
         verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(GROUP_TITLE), any());
-        verify(mDataSharingService, never()).deleteGroup(any(), any());
+        verify(mCollaborationService, never()).deleteGroup(any(), any());
         verify(mFinishBlocking, never()).run();
     }
 
@@ -354,9 +353,9 @@ public class TabUiUtilsUnitTest {
                 mModalDialogManager,
                 TAB_ID);
         verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(GROUP_TITLE), any());
-        verify(mDataSharingService).leaveGroup(eq(COLLABORATION_ID1), mOutcomeCaptor.capture());
+        verify(mCollaborationService).leaveGroup(eq(COLLABORATION_ID1), mOutcomeCaptor.capture());
 
-        mOutcomeCaptor.getValue().onResult(PeopleGroupActionOutcome.TRANSIENT_FAILURE);
+        mOutcomeCaptor.getValue().onResult(false);
         verify(mModalDialogManager).showDialog(any(), anyInt());
         verify(mFinishBlocking).run();
     }

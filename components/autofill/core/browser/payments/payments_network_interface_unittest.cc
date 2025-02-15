@@ -512,7 +512,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUnmaskDetailsSuccess) {
                  "{ \"offer_fido_opt_in\": \"false\", "
                  "\"authentication_method\": \"CVC\" }");
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
-  EXPECT_EQ(false, unmask_details()->offer_fido_opt_in);
+  EXPECT_FALSE(unmask_details()->server_denotes_fido_eligible_but_not_opted_in);
   EXPECT_EQ(PaymentsAutofillClient::UnmaskAuthMethod::kCvc,
             unmask_details()->unmask_auth_method);
 }

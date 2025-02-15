@@ -42,7 +42,7 @@
 //      KaiserWindow window(radius, beta);
 //      double value = window.Eval(x);
 //
-// An arbitary window can be represented with a base class WindowFunction
+// An arbitrary window can be represented with a base class WindowFunction
 // reference, for example
 //   void SpectralAnalysis(const WindowFunction& window, /* other args */);
 //   // Call with Nuttall window.
@@ -68,7 +68,7 @@ namespace audio_dsp {
 class WindowFunction {
  public:
   explicit WindowFunction(double radius = 1.0);
-  virtual ~WindowFunction() {}
+  virtual ~WindowFunction() = default;
 
   // Sample symmetric window samples, suitable for filter design. The resulting
   // num_samples samples are symmetric. For an odd num_samples, the center
@@ -137,6 +137,24 @@ class WindowFunction {
   mutable std::vector<double> memoized_samples_;
 };
 
+// RectangularWindow implements the rectangular window (aka Dirichlet window)
+//   w(x) = 1 for |x| <= radius and 0 otherwise.
+// This is a crude and simple window, but included here for completeness.
+//
+// Spectral properties:
+// Main lobe FWHM = 0.44 / radius
+// Main lobe energy ratio = 0.9028
+// Highest sidelobe = -13.26dB
+class RectangularWindow: public WindowFunction {
+ public:
+  explicit RectangularWindow(double radius = 1.0): WindowFunction(radius) {}
+
+  double Eval(double x) const override;
+  double EvalFourierTransform(double f) const override;
+  bool zero_at_endpoints() const override { return false; }
+  std::string name() const override { return "rectangular"; }
+};
+
 // CosineWindow implements the cosine (aka sine) window
 //   w(x) = cos((pi/2) x/radius) for |x| <= radius,
 // or equivalently
@@ -157,6 +175,10 @@ class CosineWindow: public WindowFunction {
   bool zero_at_endpoints() const override { return true; }
   std::string name() const override { return "cosine"; }
 };
+
+// The cosine window is also the square root of the Hann window,
+//   w(x) = sqrt(HannWindow(radius).Eval(x)).
+using SqrtHannWindow = CosineWindow;
 
 // HammingWindow implements the Hamming window
 //   w(x) = 0.54 + 0.46 cos(pi x/radius) for |x| <= radius,

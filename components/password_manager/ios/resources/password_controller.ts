@@ -5,6 +5,7 @@
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import type {AutofillFormData} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * @fileoverview Installs Passwords management functions on the gCrWeb object.
@@ -87,7 +88,7 @@ function onSubmitButtonTouchEnd(evt: Event) {
   if (!formData) {
     return;
   }
-  gCrWeb.common.sendWebKitMessage('PasswordFormSubmitButtonClick', formData);
+  sendWebKitMessage('PasswordFormSubmitButtonClick', formData);
 }
 
 /**

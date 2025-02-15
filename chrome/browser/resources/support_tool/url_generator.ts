@@ -97,7 +97,7 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
 
   private hasDataCollectorSelected(): boolean {
     for (let index = 0; index < this.dataCollectors_.length; index++) {
-      if (this.dataCollectors_[index]!.isIncluded) {
+      if (this.dataCollectors_[index].isIncluded) {
         return true;
       }
     }

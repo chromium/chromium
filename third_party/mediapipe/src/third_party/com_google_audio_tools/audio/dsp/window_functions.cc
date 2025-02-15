@@ -198,6 +198,15 @@ double Sinhc(double x) {
 }
 }  // namespace
 
+double RectangularWindow::Eval(double x) const {
+  constexpr double kTol = 1e-12;
+  return (std::abs(x) < (1.0 + kTol) * radius()) ? 1.0 : 0.0;
+}
+
+double RectangularWindow::EvalFourierTransform(double f) const {
+  return 2.0 * radius() * Sinc(2.0 * M_PI * f * radius());
+}
+
 double CosineWindow::Eval(double x) const {
   const double y = std::abs(x / radius());
   return (y < 1.0) ? cos((M_PI / 2.0) * y) : 0.0;

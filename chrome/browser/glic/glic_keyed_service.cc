@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/glic_settings_util.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
@@ -212,20 +214,14 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
 void GlicKeyedService::GetContextFromFocusedTab(
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
-  const raw_ptr<content::WebContents> web_contents =
-      GetFocusedTabData().focused_tab_contents.get();
-  if (!web_contents) {
-    // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
-    LOG(ERROR) << "GetContextFromFocusedTab: No web contents";
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled)) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        mojom::GetTabContextErrorReason::kWebContentsChanged));
+        mojom::GetTabContextErrorReason::kPermissionDenied));
     return;
   }
-  DCHECK(web_contents->GetPrimaryMainFrame());
-
   auto fetcher = std::make_unique<glic::GlicPageContextFetcher>();
   fetcher->Fetch(
-      web_contents, options,
+      GetFocusedTabData(), options,
       base::BindOnce(
           // Bind `fetcher` to the callback to keep it in scope until it
           // returns.

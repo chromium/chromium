@@ -60,7 +60,7 @@ export function getHtml(this: TableElement) {
             ${this.contentIsProductDescription_(detail.content)? html`
               <description-section
                   .description="${this.filterProductDescription_(detail.content,
-                      detail!.title || '', rowIndex)}"
+                      detail.title || '', rowIndex)}"
                   product-name="${column.selectedItem.title}">
               </description-section>
             ` : ''}

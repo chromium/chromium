@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions/permissions_helpers.h"
+#include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 
 #include <stddef.h>
 
@@ -31,12 +31,9 @@ namespace permissions_api_helpers {
 namespace {
 
 const char kDelimiter[] = "|";
-const char kInvalidParameter[] =
-    "Invalid argument for permission '*'.";
-const char kInvalidOrigin[] =
-    "Invalid value for origin pattern *: *";
-const char kUnknownPermissionError[] =
-    "'*' is not a recognized permission.";
+const char kInvalidParameter[] = "Invalid argument for permission '*'.";
+const char kInvalidOrigin[] = "Invalid value for origin pattern *: *";
+const char kUnknownPermissionError[] = "'*' is not a recognized permission.";
 const char kUnsupportedPermissionId[] =
     "Only the usbDevices permission supports arguments.";
 
@@ -100,8 +97,9 @@ bool UnpackAPIPermissions(const std::vector<std::string>& permissions_input,
       std::unique_ptr<APIPermission> permission = UnpackPermissionWithArguments(
           permission_piece.substr(0, delimiter),
           permission_piece.substr(delimiter + 1), permission_str, error);
-      if (!permission)
+      if (!permission) {
         return false;
+      }
 
       apis.insert(std::move(permission));
     } else {
@@ -166,16 +164,19 @@ bool UnpackOriginPermissions(const std::vector<std::string>& origins_input,
     // Note that we don't check PermissionsData::AllUrlsIncludesChromeUrls()
     // here, since that's only needed for Chromevox (which doesn't use optional
     // permissions).
-    if (pattern->scheme() != content::kChromeUIScheme)
+    if (pattern->scheme() != content::kChromeUIScheme) {
       valid_schemes &= ~URLPattern::SCHEME_CHROMEUI;
+    }
 
     // Similarly, <all_urls> should only match file:-scheme URLs if file access
     // is granted.
-    if (!allow_file_access && pattern->scheme() != url::kFileScheme)
+    if (!allow_file_access && pattern->scheme() != url::kFileScheme) {
       valid_schemes &= ~URLPattern::SCHEME_FILE;
+    }
 
-    if (valid_schemes != pattern->valid_schemes())
+    if (valid_schemes != pattern->valid_schemes()) {
       pattern->SetValidSchemes(valid_schemes);
+    }
   };
 
   for (const auto& origin_str : origins_input) {
@@ -223,8 +224,9 @@ bool UnpackOriginPermissions(const std::vector<std::string>& origins_input,
       }
     }
 
-    if (!used_origin)
+    if (!used_origin) {
       result->unlisted_hosts.AddPattern(explicit_origin);
+    }
   }
 
   return true;
@@ -255,8 +257,9 @@ std::unique_ptr<Permissions> PackPermissionSet(const PermissionSet& set) {
   // to apps/extensions via the permissions API.
 
   permissions->origins.emplace();
-  for (const URLPattern& pattern : set.effective_hosts())
+  for (const URLPattern& pattern : set.effective_hosts()) {
     permissions->origins->push_back(pattern.GetAsString());
+  }
 
   return permissions;
 }

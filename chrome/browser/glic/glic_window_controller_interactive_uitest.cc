@@ -70,6 +70,12 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
         mode, "CheckControllerWidgetMode");
   }
 
+  auto CheckIfAttachedToBrowser(Browser* new_browser) {
+    return CheckResult(
+        [this] { return window_controller().attached_browser(); }, new_browser,
+        "attached to the other browser");
+  }
+
   auto SimulateGlicHotkey() {
     // TODO: Actually implement the hotkey when we know what it is.
     return Do([this]() {
@@ -131,16 +137,29 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenAttachedThenOpenAttachedToDifferentBrowser) {
   Browser* const new_browser = CreateBrowser(browser()->profile());
 
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached),
-      CheckControllerWidgetMode(GlicWindowMode::kAttached),
-      InContext(new_browser->window()->GetElementContext(),
-                PressButton(kGlicButtonElementId)),
-      CheckControllerHasWidget(true),
-      CheckControllerWidgetMode(GlicWindowMode::kAttached),
-      CheckResult([this] { return window_controller().attached_browser(); },
-                  new_browser, "attached to the other browser"));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  InContext(new_browser->window()->GetElementContext(),
+                            PressButton(kGlicButtonElementId)),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  CheckIfAttachedToBrowser(new_browser));
 }
+
+#if !BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(
+    GlicWindowControllerUiTest,
+    OpenAttachedThenOpenAttachedToDifferentBrowserWithHotkey) {
+  Browser* const new_browser = CreateBrowser(browser()->profile());
+
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  Do([&]() { new_browser->window()->Activate(); }),
+                  SimulateGlicHotkey(), CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  CheckIfAttachedToBrowser(new_browser));
+}
+#endif
 
 // Disabled due to flakes Mac; see https://crbug.com/394350688.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,

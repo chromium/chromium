@@ -51,7 +51,7 @@ class SchedulingEmbedderTest : public testing::Test {
   std::unique_ptr<SchedulingEmbedder> MakeEmbedder() {
     auto embedder = std::make_unique<SchedulingEmbedder>(
         std::make_unique<MockEmbedderWithDelay>(), 4u, 1u, false);
-    embedder->SetEmbedderMetadata(EmbedderMetadata{1, 768});
+    embedder->EmbedderMetadataUpdated(EmbedderMetadata{1, 768});
     return embedder;
   }
 

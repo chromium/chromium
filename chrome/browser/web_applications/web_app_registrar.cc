@@ -145,7 +145,6 @@ bool WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
   // supported.
   switch (display_mode) {
     case blink::mojom::DisplayMode::kUndefined:
-    case blink::mojom::DisplayMode::kTabbed:
     case blink::mojom::DisplayMode::kPictureInPicture:
       return false;
     case blink::mojom::DisplayMode::kBrowser:
@@ -154,6 +153,7 @@ bool WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
     case blink::mojom::DisplayMode::kWindowControlsOverlay:
     case blink::mojom::DisplayMode::kBorderless:
     case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kTabbed:
       return true;
   }
 }

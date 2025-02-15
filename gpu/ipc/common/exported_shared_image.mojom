@@ -7,12 +7,20 @@ module gpu.mojom;
 import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/sync_token.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
 
 // gpu::ExportedSharedImage
 struct ExportedSharedImage {
   gpu.mojom.Mailbox mailbox;
   gpu.mojom.SharedImageMetadata metadata;
   gpu.mojom.SyncToken creation_sync_token;
+
+  // Optional params as they are only needed when passed over VideoFrame
+  // GpuMemoryBuffers for exporting/importing mappable shared images.
+  // For other cases, when exporting/importing ClientSharedImage,
+  // passing these params is not needed.
+  gfx.mojom.GpuMemoryBufferHandle? buffer_handle;
+  gfx.mojom.BufferUsage? buffer_usage;
 
   // Necessary to allow the ClientSharedImage that is created from this
   // ExportedSharedImage to use the correct GL texture target.

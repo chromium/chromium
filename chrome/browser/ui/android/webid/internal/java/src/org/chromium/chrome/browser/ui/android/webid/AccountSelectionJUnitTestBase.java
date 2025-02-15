@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
 
@@ -34,7 +35,6 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialToken
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -125,7 +125,6 @@ public class AccountSelectionJUnitTestBase {
 
     @Mock Callback<Account> mAccountCallback;
     @Mock AccountSelectionComponent.Delegate mMockDelegate;
-    @Mock ImageFetcher mMockImageFetcher;
     @Mock BottomSheetController mMockBottomSheetController;
     @Mock Tab mTab;
     Context mContext;
@@ -140,7 +139,6 @@ public class AccountSelectionJUnitTestBase {
     GURL mTestUrlPrivacyPolicy;
     GURL mTestIdpBrandIconUrl;
     GURL mTestRpBrandIconUrl;
-    GURL mTestProfilePicUrl;
     GURL mTestConfigUrl;
     GURL mTestLoginUrl;
     GURL mTestErrorUrl;
@@ -161,7 +159,9 @@ public class AccountSelectionJUnitTestBase {
     ModelList mSheetAccountItems;
     View mContentView;
     IdentityProviderMetadata mIdpMetadata;
+    IdentityProviderMetadata mIdpMetadataWithoutIcon;
     IdentityProviderData mIdpData;
+    IdentityProviderData mIdpDataWithoutIcons;
     IdentityProviderMetadata mIdpMetadataWithUseDifferentAccount;
     IdentityProviderData mIdpDataWithUseDifferentAccount;
     List<Account> mNewAccountsSingleReturningAccount;
@@ -184,7 +184,6 @@ public class AccountSelectionJUnitTestBase {
         mTestUrlPrivacyPolicy = JUnitTestGURLs.RED_2;
         mTestIdpBrandIconUrl = JUnitTestGURLs.RED_3;
         mTestRpBrandIconUrl = JUnitTestGURLs.RED_3;
-        mTestProfilePicUrl = new GURL("https://profile-picture.com");
         mTestConfigUrl = new GURL("https://idp.com/fedcm.json");
         mTestLoginUrl = new GURL("https://idp.com/login");
         mTestErrorUrl = new GURL("https://idp.com/error");
@@ -197,7 +196,6 @@ public class AccountSelectionJUnitTestBase {
                         "Ana Doe",
                         "Ana",
                         /* secondaryDescription= */ null,
-                        mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
@@ -209,7 +207,6 @@ public class AccountSelectionJUnitTestBase {
                         "Bob",
                         "",
                         /* secondaryDescription= */ null,
-                        mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
@@ -221,7 +218,6 @@ public class AccountSelectionJUnitTestBase {
                         "Carl Test",
                         ":)",
                         /* secondaryDescription= */ null,
-                        mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
@@ -233,7 +229,6 @@ public class AccountSelectionJUnitTestBase {
                         "Sam E. Goto",
                         "Sam",
                         /* secondaryDescription= */ null,
-                        mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ false,
                         /* isBrowserTrustedSignIn= */ false,
@@ -245,7 +240,6 @@ public class AccountSelectionJUnitTestBase {
                         "No Subject",
                         "",
                         /* secondaryDescription= */ null,
-                        mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
@@ -257,7 +251,6 @@ public class AccountSelectionJUnitTestBase {
                         "Nicolas Pena",
                         "Nicolas",
                         /* secondaryDescription= */ null,
-                        mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
@@ -269,7 +262,6 @@ public class AccountSelectionJUnitTestBase {
                         "Nico P",
                         "Nicolas",
                         "email.com",
-                        mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
@@ -282,7 +274,16 @@ public class AccountSelectionJUnitTestBase {
                 new IdentityProviderMetadata(
                         Color.BLUE,
                         Color.GREEN,
-                        "https://icon-url.example",
+                        Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_4444),
+                        mTestConfigUrl,
+                        mTestLoginUrl,
+                        /* showUseDifferentAccountButton= */ false);
+
+        mIdpMetadataWithoutIcon =
+                new IdentityProviderMetadata(
+                        Color.BLUE,
+                        Color.GREEN,
+                        null,
                         mTestConfigUrl,
                         mTestLoginUrl,
                         /* showUseDifferentAccountButton= */ false);
@@ -294,7 +295,16 @@ public class AccountSelectionJUnitTestBase {
                         new ClientIdMetadata(
                                 mTestUrlTermsOfService,
                                 mTestUrlPrivacyPolicy,
-                                mTestRpBrandIconUrl.getSpec()),
+                                Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)),
+                        RpContext.SIGN_IN,
+                        DEFAULT_DISCLOSURE_FIELDS,
+                        /* hasLoginStatusMismatch= */ false);
+
+        mIdpDataWithoutIcons =
+                new IdentityProviderData(
+                        mTestEtldPlusOne2,
+                        mIdpMetadataWithoutIcon,
+                        new ClientIdMetadata(mTestUrlTermsOfService, mTestUrlPrivacyPolicy, null),
                         RpContext.SIGN_IN,
                         DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
@@ -303,7 +313,7 @@ public class AccountSelectionJUnitTestBase {
                 new IdentityProviderMetadata(
                         Color.BLUE,
                         Color.GREEN,
-                        "https://icon-url.example",
+                        null,
                         mTestConfigUrl,
                         mTestLoginUrl,
                         /* showUseDifferentAccountButton= */ true);
@@ -311,10 +321,7 @@ public class AccountSelectionJUnitTestBase {
                 new IdentityProviderData(
                         mTestEtldPlusOne2,
                         mIdpMetadataWithUseDifferentAccount,
-                        new ClientIdMetadata(
-                                mTestUrlTermsOfService,
-                                mTestUrlPrivacyPolicy,
-                                mTestRpBrandIconUrl.getSpec()),
+                        new ClientIdMetadata(mTestUrlTermsOfService, mTestUrlPrivacyPolicy, null),
                         RpContext.SIGN_IN,
                         DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
@@ -355,7 +362,6 @@ public class AccountSelectionJUnitTestBase {
                         mSheetAccountItems,
                         mMockBottomSheetController,
                         mBottomSheetContent,
-                        mMockImageFetcher,
                         DESIRED_AVATAR_SIZE,
                         mRpMode,
                         mContext,

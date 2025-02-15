@@ -684,7 +684,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private getSortLabel_(): string {
-    return this.sortTypes_[this.activeSortIndex_]!.label;
+    return this.sortTypes_[this.activeSortIndex_].label;
   }
 
   private updateShoppingData_() {

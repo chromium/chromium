@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/notreached.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -60,47 +61,17 @@ bool ServerCvcChecker::IsExitConditionSatisfied(std::ostream* os) {
              .size() == expected_count_;
 }
 
-class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
- public:
-  AutofillWebDataServiceConsumer() = default;
-
-  AutofillWebDataServiceConsumer(const AutofillWebDataServiceConsumer&) =
-      delete;
-  AutofillWebDataServiceConsumer& operator=(
-      const AutofillWebDataServiceConsumer&) = delete;
-
-  ~AutofillWebDataServiceConsumer() override = default;
-
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override {
-    CHECK(result->GetType() == AUTOFILL_CREDITCARDS_RESULT);
-    result_ =
-        static_cast<
-            WDResult<std::vector<std::unique_ptr<autofill::CreditCard>>>*>(
-            result.get())
-            ->GetValue();
-    run_loop_.Quit();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  std::vector<std::unique_ptr<autofill::CreditCard>>& result() {
-    return result_;
-  }
-
- private:
-  base::RunLoop run_loop_;
-  std::vector<std::unique_ptr<autofill::CreditCard>> result_;
-};
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::vector<std::unique_ptr<autofill::CreditCard>> GetServerCards(
     scoped_refptr<autofill::AutofillWebDataService> service) {
-  AutofillWebDataServiceConsumer consumer;
-  service->GetServerCreditCards(&consumer);
-  consumer.Wait();
-  return std::move(consumer.result());
+  base::test::TestFuture<WebDataServiceBase::Handle,
+                         std::unique_ptr<WDTypedResult>>
+      future;
+  service->GetServerCreditCards(future.GetCallback());
+  return static_cast<
+             WDResult<std::vector<std::unique_ptr<autofill::CreditCard>>>&>(
+             *future.Get<1>())
+      .GetValue();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

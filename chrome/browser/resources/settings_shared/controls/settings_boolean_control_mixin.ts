@@ -133,7 +133,7 @@ export const SettingsBooleanControlMixin = dedupingMixin(
             return;
           }
 
-          this.checked = this.getNewValue_(this.pref!.value);
+          this.checked = this.getNewValue_(this.pref.value);
         }
 
         /** Update the pref to the current |checked| value. */

@@ -106,115 +106,6 @@ class BnplManagerTest : public Test {
 // BNPL is currently only available for desktop platforms.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
-// strings to monetary values they represent in micro-units when given empty
-// string or zeros.
-TEST_F(BnplManagerTest, AmountParser_Zeros) {
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits(""),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$0"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$0.00"), 0ULL);
-}
-
-// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
-// strings to monetary values they represent in micro-units when given normal
-// format of strings.
-TEST_F(BnplManagerTest, AmountParser_NormalCases) {
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ 12.34"),
-            12'340'000ULL);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ 012.34"),
-            12'340'000ULL);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("USD 1,234.56"),
-            1'234'560'000ULL);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ 1,234.56"),
-            1'234'560'000ULL);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ 123.45"),
-            123'450'000ULL);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$0.12"),
-            120'000ULL);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("USD   0.12"),
-            120'000ULL);
-}
-
-// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
-// strings to monetary values they represent in micro-units when given input
-// string with leading and tailing monetary-representing substrings.
-TEST_F(BnplManagerTest, AmountParser_LeadingAndTailingCharacters) {
-  EXPECT_EQ(
-      bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$   1,234.56   USD"),
-      1'234'560'000ULL);
-  EXPECT_EQ(
-      bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("USD $ 1,234.56 USD"),
-      1'234'560'000ULL);
-  EXPECT_EQ(
-      bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("  $ 1,234.56 "),
-      1'234'560'000ULL);
-  EXPECT_EQ(
-      bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("USD    1234.56    "),
-      1'234'560'000ULL);
-}
-
-// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
-// strings to std::nullopt when given negative value strings.
-TEST_F(BnplManagerTest, AmountParser_NegativeValue) {
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ -1,234.56"),
-            std::nullopt);
-  EXPECT_EQ(
-      bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("USD -1,234.56"),
-      std::nullopt);
-  EXPECT_EQ(
-      bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("USD 1,234.56- $"),
-      std::nullopt);
-}
-
-// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
-// strings to std::nullopt when given incorrect format of strings.
-TEST_F(BnplManagerTest, AmountParser_IncorrectFormatOfInputs) {
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ ,123.45"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$1,234.5"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("NaN"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("Inf"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("-Inf"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("1.234E8"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$1.234.56"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ 12e2"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ 12e2.23"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$ 12.23e2"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("E1.23"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("E1.23"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("e1.23"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("-1.23"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("1.23E"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("1.23e"),
-            std::nullopt);
-  EXPECT_EQ(bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("1.23-"),
-            std::nullopt);
-}
-
-// Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
-// strings to std::nullopt when the converted value overflows uint64.
-TEST_F(BnplManagerTest, AmountParser_OverflowValue) {
-  EXPECT_EQ(
-      bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$19000000000000.00"),
-      std::nullopt);
-}
-
 // Tests that the initial state for a BNPL flow is set when
 // BnplManager::InitBnplFlow() is triggered.
 TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialState) {
@@ -280,7 +171,8 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{1'234'560'000ULL});
 }
 
 // Tests that update suggestions callback is called when suggestions are shown
@@ -306,7 +198,34 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{1'234'560'000ULL});
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will not be called if the amount
+// extraction engine fails to pass in an valid value.
+TEST_F(BnplManagerTest, AddBnplSuggestion_NoAmountPassedIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned(std::nullopt);
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
@@ -332,7 +251,8 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$30.00");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{30'000'000ULL});
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
@@ -357,7 +277,8 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplIssuerFeaturesDisabled) {
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{1'234'560'000ULL});
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
@@ -382,7 +303,8 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplSyncFeatureDisabled) {
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{1'234'560'000ULL});
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
@@ -408,7 +330,8 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplAllFeaturesDisabled) {
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{1'234'560'000ULL});
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
@@ -435,7 +358,8 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$50.00");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{50'000'000ULL});
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
@@ -462,7 +386,8 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$50.00");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{50'000'000ULL});
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
@@ -488,7 +413,8 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{1'234'560'000ULL});
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
@@ -514,7 +440,8 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnAmountExtractionReturned(
+      std::optional<uint64_t>{1'234'560'000ULL});
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 

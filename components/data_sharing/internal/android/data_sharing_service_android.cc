@@ -186,26 +186,6 @@ void DataSharingServiceAndroid::CreateGroup(
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
-void DataSharingServiceAndroid::LeaveGroup(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& group_id,
-    const JavaParamRef<jobject>& j_callback) {
-  data_sharing_service_->LeaveGroup(
-      GroupId(ConvertJavaStringToUTF8(env, group_id)),
-      base::BindOnce(&RunPeopleGroupActionOutcomeCallback,
-                     ScopedJavaGlobalRef<jobject>(j_callback)));
-}
-
-void DataSharingServiceAndroid::DeleteGroup(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& group_id,
-    const JavaParamRef<jobject>& j_callback) {
-  data_sharing_service_->DeleteGroup(
-      GroupId(ConvertJavaStringToUTF8(env, group_id)),
-      base::BindOnce(&RunPeopleGroupActionOutcomeCallback,
-                     ScopedJavaGlobalRef<jobject>(j_callback)));
-}
-
 void DataSharingServiceAndroid::InviteMember(
     JNIEnv* env,
     const JavaParamRef<jstring>& group_id,

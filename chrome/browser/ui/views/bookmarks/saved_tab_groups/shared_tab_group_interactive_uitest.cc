@@ -205,13 +205,7 @@ class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
 
 // Verify the feedback button is only shown when there is at least one shared
 // tab group in the current browser.
-// TODO(crbug.com/396616134): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FeedbackButtonVisible DISABLED_FeedbackButtonVisible
-#else
-#define MAYBE_FeedbackButtonVisible FeedbackButtonVisible
-#endif
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, MAYBE_FeedbackButtonVisible) {
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, FeedbackButtonVisible) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, "fake_collaboration_id",
                 data_sharing::MemberRole::kOwner, /*should_sign_in=*/false);
@@ -223,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, MAYBE_FeedbackButtonVisi
   RunTestSequence(
       // Verify the feedback button is visible when there is 1 shared tab group.
       FinishTabstripAnimations(), WaitForShow(kTabGroupHeaderElementId),
-      EnsurePresent(kSharedTabGroupFeedbackElementId),
+      WaitForShow(kSharedTabGroupFeedbackElementId),
       // Verify the feedback button is not visible if we remove it.
       HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
       WaitForShow(kTabGroupEditorBubbleId),

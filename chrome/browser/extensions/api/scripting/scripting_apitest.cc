@@ -782,25 +782,4 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, DISABLED_Basic) {
   ASSERT_TRUE(RunExtensionTest("scripting/prerendering")) << message_;
 }
 
-class ScriptingAndUserScriptsAPITest : public ScriptingAPITest {
- public:
-  ScriptingAndUserScriptsAPITest() = default;
-  ScriptingAndUserScriptsAPITest(const ScriptingAndUserScriptsAPITest&) =
-      delete;
-  ScriptingAndUserScriptsAPITest& operator=(
-      const ScriptingAndUserScriptsAPITest&) = delete;
-  ~ScriptingAndUserScriptsAPITest() override = default;
-
-  void SetUpOnMainThread() override {
-    ScriptingAPITest::SetUpOnMainThread();
-    // The userScripts API is only available to users in developer mode.
-    util::SetDeveloperModeForProfile(profile(), true);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ScriptingAndUserScriptsAPITest,
-                       ScriptingAPIDoesNotAffectUserScripts) {
-  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_user_scripts")) << message_;
-}
-
 }  // namespace extensions

@@ -622,7 +622,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
   private computeHasOtherError_(): boolean {
-    return this.syncStatus !== undefined && !!this.syncStatus!.hasError &&
+    return this.syncStatus !== undefined && !!this.syncStatus.hasError &&
         !this.isSyncPaused_ && !this.hasPassphraseError_;
   }
   // </if>

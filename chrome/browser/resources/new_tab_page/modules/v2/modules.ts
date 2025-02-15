@@ -243,7 +243,7 @@ export class ModulesV2Element extends AppElementBase {
     this.containerObserver_ = new MutationObserver(() => {
       this.updateContainerAndChildrenStyles_();
     });
-    this.containerObserver_!.observe(this.$.container, {childList: true});
+    this.containerObserver_.observe(this.$.container, {childList: true});
   }
 
   override disconnectedCallback() {
@@ -527,8 +527,8 @@ export class ModulesV2Element extends AppElementBase {
     }
 
     const moduleWrappers =
-        Array.from(this.shadowRoot!.querySelectorAll(
-            'ntp-module-wrapper:not([hidden])')) as ModuleWrapperElement[];
+        Array.from(this.shadowRoot!.querySelectorAll<ModuleWrapperElement>(
+            'ntp-module-wrapper:not([hidden])'));
     this.modulesShownToUser = moduleWrappers.length !== 0;
     if (moduleWrappers.length === 0) {
       return;

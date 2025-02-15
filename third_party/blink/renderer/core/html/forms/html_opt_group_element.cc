@@ -137,8 +137,10 @@ Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
   customizable_select_rendering_ = false;
   HTMLElement::InsertedInto(insertion_point);
   if (HTMLSelectElement* select = OwnerSelectElement()) {
-    if (&insertion_point == select)
+    if (&insertion_point == select ||
+        RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
       select->OptGroupInsertedOrRemoved(*this);
+    }
     // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
     // the case when the select's rendering is changed after insertion.
     customizable_select_rendering_ =

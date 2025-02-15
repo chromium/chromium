@@ -107,7 +107,7 @@ export class SettingsAddLanguagesDialogElement extends
   // Override FindShortcutMixin methods.
   override searchInputHasFocus() {
     return this.$.search.getSearchInput() ===
-        this.$.search.shadowRoot!.activeElement;
+        this.$.search.shadowRoot.activeElement;
   }
 
   private onSearchChanged_(e: CustomEvent<string>) {

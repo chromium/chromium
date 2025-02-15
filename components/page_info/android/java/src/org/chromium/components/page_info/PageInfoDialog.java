@@ -293,6 +293,21 @@ public class PageInfoDialog {
         if (isEnter) dialogAnimation.setStartDelay(ENTER_START_DELAY_MS);
         dialogAnimation.addListener(
                 new AnimatorListenerAdapter() {
+                    {
+                        // Do not show the dialog until we are ready to animate.
+                        // This is because the Height computed above will likely change when the
+                        // dialog re-calculates its size to accommodate the content.
+                        // We don't want any part of the dialog to be partially visible while the
+                        // scrim is fading in, and before this animation begins, so we start with
+                        // an invisible state, that is updated the moment animation begins.
+                        if (isEnter) mScrollView.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        if (isEnter) mScrollView.setVisibility(View.VISIBLE);
+                    }
+
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mCurrentAnimation = null;

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -212,11 +213,20 @@ void AutofillOptimizationGuide::OnDidParseForm(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (!server_cards.empty() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableAmountExtractionDesktop)) {
+  auto bnpl_issuer_allowlist_can_be_loaded =
+      [&payments_data_manager](std::string_view issuer_id) {
+        return base::Contains(payments_data_manager.GetBnplIssuers(), issuer_id,
+                              &BnplIssuer::issuer_id) &&
+               base::FeatureList::IsEnabled(
+                   features::kAutofillEnableAmountExtractionAllowlistDesktop);
+      };
+
+  if (bnpl_issuer_allowlist_can_be_loaded(kBnplAffirmIssuerId)) {
     optimization_types.insert(
         optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
+  }
+
+  if (bnpl_issuer_allowlist_can_be_loaded(kBnplZipIssuerId)) {
     optimization_types.insert(
         optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
   }
@@ -365,16 +375,20 @@ bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
   return false;
 }
 
-bool AutofillOptimizationGuide::IsEligibleForBuyNowPayLater(
+bool AutofillOptimizationGuide::IsUrlEligibleForCheckoutAmountSearchForIssuerId(
     std::string_view issuer_id,
     const GURL& url) const {
-  if (issuer_id == kBnplAffirmIssuerId) {
+  if (issuer_id == kBnplAffirmIssuerId &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableAmountExtractionAllowlistDesktop)) {
     return decider_->CanApplyOptimization(
                url,
                optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM,
                /*optimization_metadata=*/nullptr) ==
            optimization_guide::OptimizationGuideDecision::kTrue;
-  } else if (issuer_id == kBnplZipIssuerId) {
+  } else if (issuer_id == kBnplZipIssuerId &&
+             base::FeatureList::IsEnabled(
+                 features::kAutofillEnableAmountExtractionAllowlistDesktop)) {
     return decider_->CanApplyOptimization(
                url, optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP,
                /*optimization_metadata=*/nullptr) ==

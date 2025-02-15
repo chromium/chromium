@@ -40,6 +40,8 @@ class HeadlessModeProtocolBrowserTest
   void ProcessTestResult(const std::string& test_result);
 
  protected:
+  void AppendCommandLineExtras(base::CommandLine* command_line,
+                               std::string_view extras);
   std::string test_folder_;
   std::string script_name_;
 };
@@ -52,6 +54,24 @@ class HeadlessModeProtocolBrowserTest
 #define HEADLESS_MODE_PROTOCOL_TEST_F(TEST_FIXTURE, TEST_NAME, SCRIPT_NAME) \
   IN_PROC_BROWSER_TEST_F(TEST_FIXTURE, TEST_NAME) {                         \
     RunTestScript(SCRIPT_NAME);                                             \
+  }
+
+#define HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(            \
+    TEST_NAME, SCRIPT_NAME, COMMAND_LINE_EXTRAS)                         \
+                                                                         \
+  class HeadlessModeProtocolBrowserTestWithCommandLineExtras_##TEST_NAME \
+      : public HeadlessModeProtocolBrowserTest {                         \
+   public:                                                               \
+    void SetUpCommandLine(base::CommandLine* command_line) override {    \
+      HeadlessModeProtocolBrowserTest::SetUpCommandLine(command_line);   \
+      AppendCommandLineExtras(command_line, COMMAND_LINE_EXTRAS);        \
+    }                                                                    \
+  };                                                                     \
+                                                                         \
+  IN_PROC_BROWSER_TEST_F(                                                \
+      HeadlessModeProtocolBrowserTestWithCommandLineExtras_##TEST_NAME,  \
+      TEST_NAME) {                                                       \
+    RunTestScript(SCRIPT_NAME);                                          \
   }
 
 }  // namespace headless

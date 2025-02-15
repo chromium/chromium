@@ -139,7 +139,7 @@ constexpr wchar_t kDriversRegistryKeyPath[] =
     L"SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\";
 
 // Registry value name for a port.
-constexpr wchar_t kPortRegistryValue[] = L"Port";
+constexpr wchar_t kPortRegistryValueName[] = L"Port";
 
 // List of printer ports which are known to cause a UI dialog to be displayed
 // when printing.
@@ -155,13 +155,15 @@ std::wstring GetPrinterDriverPort(const std::string& printer_name) {
                         base::UTF8ToWide(printer_name));
   LONG result =
       reg_key.Open(HKEY_LOCAL_MACHINE, root_key.c_str(), KEY_QUERY_VALUE);
-  if (result != ERROR_SUCCESS)
+  if (result != ERROR_SUCCESS) {
     return std::wstring();
-  std::wstring port_value;
-  result = reg_key.ReadValue(kPortRegistryValue, &port_value);
-  if (result != ERROR_SUCCESS)
+  }
+  std::wstring port_value_data;
+  result = reg_key.ReadValue(kPortRegistryValueName, &port_value_data);
+  if (result != ERROR_SUCCESS) {
     return std::wstring();
-  return port_value;
+  }
+  return port_value_data;
 }
 
 std::string GetDriverVersionString(DWORDLONG version_number) {
@@ -411,12 +413,16 @@ std::optional<PrinterBasicInfo> GetBasicPrinterInfo(HANDLE printer) {
     printer_info.printer_description = base::WideToUTF8(info_2.get()->pComment);
   }
   if (info_2.get()->pLocation) {
-    printer_info.options[kLocationTagName] =
-        base::WideToUTF8(info_2.get()->pLocation);
+    std::string location = base::WideToUTF8(info_2.get()->pLocation);
+    if (!location.empty()) {
+      printer_info.options[kLocationTagName] = std::move(location);
+    }
   }
   if (info_2.get()->pDriverName) {
-    printer_info.options[kDriverNameTagName] =
-        base::WideToUTF8(info_2.get()->pDriverName);
+    std::string driver_name = base::WideToUTF8(info_2.get()->pDriverName);
+    if (!driver_name.empty()) {
+      printer_info.options[kDriverNameTagName] = std::move(driver_name);
+    }
   }
   return printer_info;
 }

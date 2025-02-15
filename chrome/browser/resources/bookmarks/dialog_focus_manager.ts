@@ -59,7 +59,7 @@ export class DialogFocusManager {
 
   private getFocusedElement_(): HTMLElement {
     let focus = document.activeElement as HTMLElement;
-    while (focus.shadowRoot && focus.shadowRoot!.activeElement) {
+    while (focus.shadowRoot && focus.shadowRoot.activeElement) {
       focus = focus.shadowRoot!.activeElement as HTMLElement;
     }
 

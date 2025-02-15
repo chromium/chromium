@@ -139,7 +139,7 @@ class SuggestInternalsAppElement extends PolymerElement {
         new Blob([this.stringifyRequests_()], {type: 'application/json'});
     a.href = URL.createObjectURL(file);
     const iso = (new Date()).toISOString();
-    iso.replace(/:/g, '').split('.')[0]!;
+    iso.replace(/:/g, '').split('.')[0];
     a.download = `suggest_internals_export_${iso}.json`;
     a.click();
   }

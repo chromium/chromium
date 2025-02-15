@@ -34,6 +34,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/passage_embeddings/embedder.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace optimization_guide {
@@ -145,8 +146,10 @@ using SearchResultCallback = base::RepeatingCallback<void(SearchResult)>;
 using QualityLogEntry =
     std::unique_ptr<optimization_guide::ModelQualityLogEntry>;
 
-class HistoryEmbeddingsService : public KeyedService,
-                                 public history::HistoryServiceObserver {
+class HistoryEmbeddingsService
+    : public KeyedService,
+      public history::HistoryServiceObserver,
+      public passage_embeddings::EmbedderMetadataObserver {
  public:
   // Number of low-order bits to use in session_id for sequence number.
   static constexpr uint64_t kSessionIdSequenceBits = 16;
@@ -161,6 +164,8 @@ class HistoryEmbeddingsService : public KeyedService,
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      passage_embeddings::PassageEmbeddingsServiceController*
+          service_controller,
       std::unique_ptr<passage_embeddings::Embedder> embedder,
       std::unique_ptr<Answerer> answerer,
       std::unique_ptr<IntentClassifier> intent_classifier);
@@ -221,6 +226,12 @@ class HistoryEmbeddingsService : public KeyedService,
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
+
+  // EmbedderMetadataObserver:
+  // Called when the embedder metadata is available. Passes the metadata to
+  // the internal storage.
+  void EmbedderMetadataUpdated(
+      passage_embeddings::EmbedderMetadata metadata) override;
 
   // This can be overridden to gate answer generation for some accounts.
   virtual bool IsAnswererUseAllowed() const;
@@ -307,13 +318,7 @@ class HistoryEmbeddingsService : public KeyedService,
     SqlDatabase sql_database;
   };
 
-  // Called when the embedder metadata is available. Passes the metadata to
-  // the internal storage.
-  void OnEmbedderMetadataReady(passage_embeddings::EmbedderMetadata metadata);
-
-  void OnOsCryptAsyncReady(passage_embeddings::EmbedderMetadata metadata,
-                           os_crypt_async::Encryptor encryptor,
-                           bool success);
+  void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor, bool success);
 
   // This can be overridden to prepare a log entry that will then be filled
   // with data and sent on destruction. Default implementation returns null.
@@ -434,7 +439,7 @@ class HistoryEmbeddingsService : public KeyedService,
   std::unique_ptr<IntentClassifier> intent_classifier_;
 
   // Metadata about the embedder.
-  std::optional<passage_embeddings::EmbedderMetadata> embedder_metadata_;
+  passage_embeddings::EmbedderMetadata embedder_metadata_{0, 0};
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.
@@ -458,6 +463,11 @@ class HistoryEmbeddingsService : public KeyedService,
       passage_embeddings::Embedder::kInvalidTaskId;
 
   base::CallbackListSubscription subscription_;
+
+  base::ScopedObservation<
+      passage_embeddings::PassageEmbeddingsServiceController,
+      passage_embeddings::EmbedderMetadataObserver>
+      embedder_metadata_observation_{this};
 
   base::WeakPtrFactory<std::atomic<size_t>> query_id_weak_ptr_factory_;
 

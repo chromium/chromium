@@ -130,8 +130,10 @@ void IdentityDialogController::OnAccountsDisplayed() {
   std::move(on_accounts_displayed_).Run();
 }
 
-void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
-                                                 const Account& account) {
+void IdentityDialogController::OnAccountSelected(
+    const GURL& idp_config_url,
+    const std::string& account_id,
+    const content::IdentityRequestAccount::LoginState& login_state) {
   CHECK(on_account_selection_);
 
   // We only allow dismiss after account selection on active modes and not on
@@ -143,9 +145,8 @@ void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
   }
 
   std::move(on_account_selection_)
-      .Run(idp_config_url, account.id,
-           account.login_state ==
-               content::IdentityRequestAccount::LoginState::kSignIn);
+      .Run(idp_config_url, account_id,
+           login_state == content::IdentityRequestAccount::LoginState::kSignIn);
 }
 
 void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {

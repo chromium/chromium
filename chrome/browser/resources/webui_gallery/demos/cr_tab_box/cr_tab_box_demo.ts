@@ -56,8 +56,7 @@ class CrTabBoxDemoElement extends CustomElement {
     const template =
         this.shadowRoot!.querySelector<HTMLTemplateElement>('#template');
     assert(template);
-    const clone =
-        document.importNode(template.content, true) as DocumentFragment;
+    const clone = document.importNode(template.content, true);
 
     const tab = clone.querySelector<HTMLElement>('div[slot=\'tab\']');
     assert(tab);

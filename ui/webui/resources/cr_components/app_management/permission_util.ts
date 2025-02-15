@@ -65,7 +65,7 @@ export function createTriStatePermission(
 
 export function isPermissionEnabled(permissionValue: PermissionValue): boolean {
   if (isBoolValue(permissionValue)) {
-    return getBoolPermissionValue(permissionValue)!;
+    return getBoolPermissionValue(permissionValue);
   }
 
   if (isTriStateValue(permissionValue)) {

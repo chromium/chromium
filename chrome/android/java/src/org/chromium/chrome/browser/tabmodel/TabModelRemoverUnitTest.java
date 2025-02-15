@@ -51,7 +51,6 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -91,6 +90,7 @@ public class TabModelRemoverUnitTest {
     @Mock private Runnable mFinishBlocking;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOnResultCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mOnDeleteGroupResultCaptor;
     @Captor private ArgumentCaptor<Callback<MaybeBlockingResult>> mOnMaybeBlockingResultCaptor;
     @Captor private ArgumentCaptor<List<Tab>> mNewTabCreationCaptor;
 
@@ -256,9 +256,10 @@ public class TabModelRemoverUnitTest {
 
         verify(mTabModel).commitAllTabClosures();
 
-        verify(mDataSharingService).deleteGroup(eq(COLLABORATION_ID), mOnResultCaptor.capture());
+        verify(mCollaborationService)
+                .deleteGroup(eq(COLLABORATION_ID), mOnDeleteGroupResultCaptor.capture());
 
-        mOnResultCaptor.getValue().onResult(PeopleGroupActionOutcome.SUCCESS);
+        mOnDeleteGroupResultCaptor.getValue().onResult(true);
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
         verify(mFinishBlocking).run();
 
@@ -299,9 +300,10 @@ public class TabModelRemoverUnitTest {
                                 ActionConfirmationResult.CONFIRMATION_NEGATIVE, mFinishBlocking));
 
         verify(mTabModel).commitAllTabClosures();
-        verify(mDataSharingService).leaveGroup(eq(COLLABORATION_ID), mOnResultCaptor.capture());
+        verify(mCollaborationService)
+                .leaveGroup(eq(COLLABORATION_ID), mOnDeleteGroupResultCaptor.capture());
 
-        mOnResultCaptor.getValue().onResult(PeopleGroupActionOutcome.PERSISTENT_FAILURE);
+        mOnDeleteGroupResultCaptor.getValue().onResult(false);
         verify(mModalDialogManager).showDialog(any(), anyInt());
         verify(mFinishBlocking).run();
 

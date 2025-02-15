@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
@@ -171,6 +172,7 @@ Browser* FindNormalBrowser(const Profile& profile) {
   }
   return nullptr;
 }
+
 }  // namespace
 
 // static
@@ -445,7 +447,7 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   std::optional<ClientModeAndBrowser> client_mode_and_browser;
   if (first_navigation_app_id_) {
     client_mode_and_browser =
-        GetEffectiveClientModeAndBrowser(*first_navigation_app_id_);
+        GetEffectiveClientModeAndBrowser(*first_navigation_app_id_, params.url);
     debug_data_.Set(
         "effective_client_mode",
         base::ToString(client_mode_and_browser->effective_client_mode));
@@ -631,6 +633,10 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
         host_window = client_mode_and_browser->browser;
       } else {
         host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
+      }
+      CHECK(host_window->app_controller()->has_tab_strip());
+      if (host_window->app_controller()->IsUrlInHomeTabScope(params.url)) {
+        return CapturedNavigateExisting(host_window, 0);
       }
       break;
     case blink::mojom::DisplayMode::kUndefined:
@@ -818,7 +824,7 @@ NavigationCapturingProcess::HandleRedirect() {
   }
 
   ClientModeAndBrowser client_mode_and_browser =
-      GetEffectiveClientModeAndBrowser(*target_app_id);
+      GetEffectiveClientModeAndBrowser(*target_app_id, final_url);
 
   // After this point:
   // - The navigation is non-user-modified.
@@ -998,7 +1004,8 @@ bool NavigationCapturingProcess::
 
 NavigationCapturingProcess::ClientModeAndBrowser
 NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
-    const webapps::AppId& app_id) {
+    const webapps::AppId& app_id,
+    const GURL& target_url) {
   WebAppProvider* provider = WebAppProvider::GetForWebApps(&*profile_);
   CHECK(provider);
   web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
@@ -1040,6 +1047,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
     switch (requested_display_mode) {
       case blink::mojom::DisplayMode::kUndefined:
       case blink::mojom::DisplayMode::kBrowser:
+        // TODO(crbug.com/396612316): Prefer `navigation_params_browser_` if it
+        // has a tab for the target app.
         existing_app_host =
             AppBrowserController::FindTopLevelBrowsingContextForWebApp(
                 *profile_, app_id, Browser::TYPE_NORMAL);
@@ -1048,19 +1057,34 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
       case blink::mojom::DisplayMode::kStandalone:
       case blink::mojom::DisplayMode::kWindowControlsOverlay:
       case blink::mojom::DisplayMode::kBorderless:
+      case blink::mojom::DisplayMode::kTabbed: {
         // First try to choose an existing app host based on whether the
         // params.browser is populated and belongs to the same `app_id`.
         // If that is not found, start looking into all active app browsers.
         if (navigation_params_browser_ &&
             WebAppBrowserController::IsForWebApp(navigation_params_browser_,
-                                                 app_id)) {
+                                                 app_id) &&
+            requested_display_mode != blink::mojom::DisplayMode::kTabbed) {
+          // TODO(crbug.com/396612316): Add support for app tabbed display mode,
+          // where we'll need home tab matching logic to determine the correct
+          // tab to use (if any).
           existing_app_host = {.browser = navigation_params_browser_,
                                .tab_index = 0};
-        } else {
-          existing_app_host =
-              AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-                  *profile_, app_id, Browser::TYPE_APP);
+          break;
         }
+
+        using HomeTabScope = AppBrowserController::HomeTabScope;
+        HomeTabScope home_tab_scope = HomeTabScope::kDontCare;
+        if (requested_display_mode == blink::mojom::DisplayMode::kTabbed &&
+            result.effective_client_mode ==
+                LaunchHandler::ClientMode::kNavigateExisting) {
+          home_tab_scope = registrar.IsUrlInHomeTabScope(target_url, app_id)
+                               ? HomeTabScope::kInScope
+                               : HomeTabScope::kOutOfScope;
+        }
+        existing_app_host =
+            AppBrowserController::FindTopLevelBrowsingContextForWebApp(
+                *profile_, app_id, Browser::TYPE_APP, home_tab_scope);
         // If no app tab was found, fall back to looking for a regular browser
         // tab.
         if (!existing_app_host) {
@@ -1069,8 +1093,7 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
                   *profile_, app_id, Browser::TYPE_NORMAL);
         }
         break;
-        // TODO(crbug.com/375504532): Support tabbed mode on desktop.
-      case blink::mojom::DisplayMode::kTabbed:
+      }
       case blink::mojom::DisplayMode::kFullscreen:
       case blink::mojom::DisplayMode::kPictureInPicture:
         NOTREACHED();
@@ -1107,10 +1130,21 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
     case blink::mojom::DisplayMode::kStandalone:
     case blink::mojom::DisplayMode::kWindowControlsOverlay:
     case blink::mojom::DisplayMode::kBorderless:
-      result.browser = AppBrowserController::FindForWebApp(*profile_, app_id);
+      // Non-tabbed standalone modes do not support opening a new tab in an
+      // existing browser. So never return a browser in this case.
       break;
-      // TODO(crbug.com/375504532): Support tabbed mode on desktop.
     case blink::mojom::DisplayMode::kTabbed:
+      // TODO(crbug.com/396612316): Use `navigation_params_browser_` if it is a
+      // tabbed app browser for the target web app.
+      result.browser = AppBrowserController::FindForWebApp(*profile_, app_id);
+      // If somehow we found a browser that doesn't have a tab strip (which
+      // might be possible if the manifest updated while a window is open),
+      // don't return it to use for new tabs.
+      if (result.browser &&
+          !result.browser->app_controller()->has_tab_strip()) {
+        result.browser = nullptr;
+      }
+      break;
     case blink::mojom::DisplayMode::kFullscreen:
     case blink::mojom::DisplayMode::kPictureInPicture:
       NOTREACHED();

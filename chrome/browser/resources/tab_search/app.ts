@@ -100,7 +100,7 @@ export class TabSearchAppElement extends CrLitElement {
       // in some cases on ChromeOS and Linux.
       const activeWindow = profileData.windows.find((t) => t.active);
       this.availableHeight_ =
-          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
+          activeWindow ? activeWindow.height : profileData.windows[0]!.height;
     });
   }
 

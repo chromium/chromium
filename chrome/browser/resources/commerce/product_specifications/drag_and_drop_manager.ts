@@ -40,7 +40,7 @@ export const IS_FIRST_COLUMN_ATTR: string = 'is-first-column';
 
 function getColumnByComposedPath(path: EventTarget[]): HTMLElement|null {
   return path.filter(node => node instanceof HTMLElement)
-             .find(p => (p as HTMLElement).classList.contains('col')) ||
+             .find(p => (p).classList.contains('col')) ||
       null;
 }
 

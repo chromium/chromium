@@ -122,10 +122,10 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     });
 
     BookmarksApiProxyImpl.getInstance().getTree().then((results) => {
-      const nodeMap = normalizeNodes(results[0]!);
+      const nodeMap = normalizeNodes(results[0]);
       const initialState = createEmptyState();
       initialState.nodes = nodeMap;
-      initialState.selectedFolder = nodeMap[ROOT_NODE_ID]!.children![0]!;
+      initialState.selectedFolder = nodeMap[ROOT_NODE_ID].children![0]!;
       const folderStateString =
           window.localStorage[LOCAL_STORAGE_FOLDER_STATE_KEY];
       initialState.folderOpenState = folderStateString ?

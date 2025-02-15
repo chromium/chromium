@@ -51,17 +51,6 @@ class BnplManager {
   void InitBnplFlow(uint64_t final_checkout_amount,
                     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
 
-  // This function attempts to convert a string representation of a monetary
-  // value in dollars into a uint64_t by parsing it as a double and multiplying
-  // the result by 1,000,000. It assumes the input uses a decimal point ('.') as
-  // the separator for fractional values (not a decimal comma). The function
-  // only supports English-style monetary representations like $, USD, etc.
-  // Multiplication by 1,000,000 is done to represent the monetary value in
-  // micro-units (1 dollar = 1,000,000 micro-units), which is commonly used in
-  // systems that require high precision for financial calculations.
-  std::optional<uint64_t> MaybeParseAmountToMonetaryMicroUnits(
-      const std::string& amount);
-
   // Notifies the BNPL manager that suggestion generation has been requested
   // with the given `trigger_source`. This must be called before
   // `OnSuggestionsShown()` and `OnAmountExtractionReturned()`, so that the
@@ -80,7 +69,8 @@ class BnplManager {
   // Runs after amount extraction completion and collects the amount extraction
   // result. This must be called after `NotifyOfSuggestionGeneration()`, so
   // that the manager can update suggestions for buy-now-pay-later.
-  void OnAmountExtractionReturned(const std::string& extracted_amount);
+  void OnAmountExtractionReturned(
+      const std::optional<uint64_t>& extracted_amount);
 
   // Returns the supported country codes for BNPL.
   static std::set<std::string> GetBnplSupportedCountries();
@@ -146,8 +136,8 @@ class BnplManager {
   // and try to show card suggestions with buy-now-pay-later suggestion.
   void MaybeUpdateSuggestionsWithBnpl(
       const AutofillSuggestionTriggerSource trigger_source,
-      std::vector<std::variant<SuggestionsShownResponse, std::string>>
-          responses);
+      std::vector<std::variant<SuggestionsShownResponse,
+                               std::optional<uint64_t>>> responses);
 
   // The associated payments autofill client.
   const raw_ref<PaymentsAutofillClient> payments_autofill_client_;
@@ -159,7 +149,7 @@ class BnplManager {
   // Callback to collect the current shown suggestion list and checkout
   // amount, and insert BNPL suggestion if the amount is eligible.
   std::optional<base::RepeatingCallback<void(
-      std::variant<SuggestionsShownResponse, std::string>)>>
+      std::variant<SuggestionsShownResponse, std::optional<uint64_t>>)>>
       update_suggestions_barrier_callback_;
 
   base::WeakPtrFactory<BnplManager> weak_factory_{this};

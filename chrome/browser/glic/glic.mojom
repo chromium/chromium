@@ -100,12 +100,19 @@ interface FrePageHandler {
   ValidateAndOpenLinkInNewTab(url.mojom.Url url);
 };
 
-// Reason why getting tab context failed.
+// Reason for failure while extracting tab context. This MUST be kept in sync
+// with the glic_api.ts enum.
 [Stable, Extensible]
 enum GetTabContextErrorReason {
-  // A valid web contents was not available for the entire duration of context
-  // gathering.
-  [Default] kWebContentsChanged,
+  [ Default] kUnknown = 0 ,
+  // The web contents was navigated or closed during context gathering.
+  [ MinVersion=1 ] kWebContentsChanged = 1,
+  // Permission to capture page context is denied.
+  [ MinVersion=1 ] kPermissionDenied = 2,
+  // The URL in the tab data is not supported.
+  [ MinVersion=1 ] kUnsupportedUrl = 3,
+  // There are no Chrome tabs available to be focused.
+  [ MinVersion=1 ] kNoFocusableTabs = 4,
 };
 
 // Reason why a focused tab candidate is not valid for focus.

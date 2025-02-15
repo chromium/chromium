@@ -110,7 +110,7 @@ export class PrivacyGuideCookiesFragmentElement extends
           PrivacyGuideSettingsStates.BLOCK_3P_TO_3P_INCOGNITO :
           PrivacyGuideSettingsStates.BLOCK_3P_TO_3P;
     }
-    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
+    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state);
   }
 
   private onCookies3pIncognitoClick_() {

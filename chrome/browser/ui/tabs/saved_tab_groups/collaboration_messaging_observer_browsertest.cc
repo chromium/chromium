@@ -321,6 +321,22 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
     EXPECT_FALSE(GetTabDataAtIndex(browser(), 0)->HasMessage());
   }
 
+  // Message has no tab group id.
+  {
+    auto message = CreateMessage("User", "URL", CollaborationEvent::TAB_ADDED,
+                                 PersistentNotificationType::DIRTY_TAB_GROUP,
+                                 tab0_id, group_id);
+
+    // Remove tab group id.
+    message.attribution.tab_group_metadata->local_tab_group_id =
+        tab_groups::LocalTabGroupID::CreateEmpty();
+
+    // No messages are delivered.
+    EXPECT_FALSE(GetTabDataAtIndex(browser(), 0)->HasMessage());
+    observer()->DisplayPersistentMessage(message);
+    EXPECT_FALSE(GetTabDataAtIndex(browser(), 0)->HasMessage());
+  }
+
   // Message has no tab metadata.
   {
     auto message =

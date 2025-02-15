@@ -310,6 +310,29 @@ alias(
     }),
 )
 
+# When "--define EXCLUDE_OPENCV_SO_LIB=1" is set in the build command,
+# the OpenCV so libraries will be excluded from the AAR package to
+# save the package size.
+config_setting(
+    name = "exclude_opencv_so_lib",
+    define_values = {
+        "EXCLUDE_OPENCV_SO_LIB": "1",
+    },
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "android_jni_opencv_cc_lib",
+    srcs = select({
+        "//mediapipe:android_arm64": ["@android_opencv//:libopencv_java4_so_arm64-v8a"],
+        "//mediapipe:android_arm": ["@android_opencv//:libopencv_java4_so_armeabi-v7a"],
+        "//mediapipe:android_x86": ["@android_opencv//:libopencv_java4_so_x86"],
+        "//mediapipe:android_x86_64": ["@android_opencv//:libopencv_java4_so_x86_64"],
+        "//conditions:default": [],
+    }),
+    alwayslink = 1,
+)
+
 cc_library(
     name = "libffmpeg",
     visibility = ["//visibility:public"],
@@ -326,76 +349,6 @@ cc_library(
             "@linux_ffmpeg//:libffmpeg",
         ],
     }),
-)
-
-android_library(
-    name = "androidx_annotation",
-    exports = [
-        "@maven//:androidx_annotation_annotation",
-    ],
-)
-
-android_library(
-    name = "androidx_appcompat",
-    exports = [
-        "@maven//:androidx_appcompat_appcompat",
-    ],
-)
-
-android_library(
-    name = "androidx_constraint_layout",
-    exports = [
-        "@maven//:androidx_constraintlayout_constraintlayout",
-    ],
-)
-
-android_library(
-    name = "androidx_core",
-    exports = [
-        "@maven//:androidx_core_core",
-    ],
-)
-
-android_library(
-    name = "androidx_legacy_support_v4",
-    exports = [
-        "@maven//:androidx_legacy_legacy_support_v4",
-    ],
-)
-
-android_library(
-    name = "androidx_material",
-    exports = [
-        "@maven//:com_google_android_material_material",
-    ],
-)
-
-android_library(
-    name = "androidx_recyclerview",
-    exports = [
-        "@maven//:androidx_recyclerview_recyclerview",
-    ],
-)
-
-android_library(
-    name = "camerax_camera2",
-    exports = [
-        "@maven//:androidx_camera_camera_camera2",
-    ],
-)
-
-android_library(
-    name = "camerax_core",
-    exports = [
-        "@maven//:androidx_camera_camera_core",
-    ],
-)
-
-android_library(
-    name = "camerax_lifecycle",
-    exports = [
-        "@maven//:androidx_camera_camera_lifecycle",
-    ],
 )
 
 java_plugin(

@@ -269,7 +269,7 @@ function initStatusDumpButton() {
     const includeIds = document.querySelector<HTMLInputElement>('#include-ids');
     assert(includeIds);
     if (!includeIds.checked) {
-      aboutInfoCopy.details = aboutInfo.details!.filter(function(el) {
+      aboutInfoCopy.details = aboutInfo.details.filter(function(el) {
         return !el.is_sensitive;
       });
     }
