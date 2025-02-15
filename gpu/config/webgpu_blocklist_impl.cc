@@ -203,7 +203,12 @@ WebGPUBlocklistResultImpl IsWebGPUAdapterBlocklisted(
     info.nextInChain = &d3dProperties;
   }
   adapter.GetInfo(&info);
+  return IsWebGPUAdapterBlocklisted(info, options);
+}
 
+WebGPUBlocklistResultImpl IsWebGPUAdapterBlocklisted(
+    const wgpu::AdapterInfo& info,
+    WebGPUBlocklistOptions options) {
   auto blocklistReason = detail::GetWebGPUAdapterBlocklistReason(info, options);
   bool blocked =
       (~options.ignores & blocklistReason) != WebGPUBlocklistReason::None;

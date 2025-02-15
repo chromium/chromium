@@ -13,6 +13,11 @@
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "gpu/config/gpu_info_collector.h"
+#include "gpu/config/gpu_util.h"
+#endif
+
 namespace ml {
 
 namespace {
@@ -49,6 +54,41 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
       "ChromeML-blocklist");
   blocklist_key.Set(kGpuBlockList.Get());
 
+  constexpr WebGPUBlocklistReason kIgnoreReasons =
+      WebGPUBlocklistReason::IndirectComputeRootConstants |
+      WebGPUBlocklistReason::Consteval22ndBit |
+      WebGPUBlocklistReason::WindowsARM;
+
+#if !BUILDFLAG(IS_IOS)
+  // Take a first pass at checking the blocklist. Creating a wgpu::Adapter can
+  // crash in some situations, so use gpu::GPUInfo to avoid this. Using
+  // wgpu::Adapter should be more accurate, so also check that later.
+  gpu::GPUInfo gpu_info;
+  gpu::CollectBasicGraphicsInfo(&gpu_info);
+  const gpu::GPUInfo::GPUDevice* device =
+      gpu_info.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
+  if (!device) {
+    device = &gpu_info.active_gpu();
+  }
+  if (device) {
+    WGPUAdapterInfo adapter_info = {
+        .description = {device->driver_version.c_str(),
+                        device->driver_version.size()},
+        .vendorID = device->vendor_id,
+        .deviceID = device->device_id,
+    };
+    if (gpu::IsWebGPUAdapterBlocklisted(
+            reinterpret_cast<const wgpu::AdapterInfo&>(adapter_info),
+            {
+                .blocklist_string = kGpuBlockList.Get(),
+                .ignores = kIgnoreReasons,
+            })
+            .blocked) {
+      return GpuBlockedReason::kBlocklisted;
+    }
+  }
+#endif
+
   QueryData query_data;
   if (!api.QueryGPUAdapter(
           [](WGPUAdapter cAdapter, void* data) {
@@ -67,10 +107,7 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
                     adapter,
                     {
                         .blocklist_string = kGpuBlockList.Get(),
-                        .ignores = WebGPUBlocklistReason::
-                                       IndirectComputeRootConstants |
-                                   WebGPUBlocklistReason::Consteval22ndBit |
-                                   WebGPUBlocklistReason::WindowsARM,
+                        .ignores = kIgnoreReasons,
                     })
                     .blocked;
             if (query_data->blocklisted) {

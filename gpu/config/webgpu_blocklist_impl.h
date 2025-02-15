@@ -71,6 +71,10 @@ WebGPUBlocklistResultImpl IsWebGPUAdapterBlocklisted(
     const wgpu::Adapter& adapter,
     WebGPUBlocklistOptions options = {});
 
+WebGPUBlocklistResultImpl IsWebGPUAdapterBlocklisted(
+    const wgpu::AdapterInfo& info,
+    WebGPUBlocklistOptions options);
+
 }  // namespace gpu
 
 #endif  // GPU_CONFIG_WEBGPU_BLOCKLIST_IMPL_H_
