@@ -491,6 +491,7 @@ class _Variant():
 
         Default values are added for certain parameters, if missing."""
         params = {
+            'enabled': 'true',
             'desc': '',
             'size': (100, 50),
             # Test name, which ultimately is used as filename. File variant
@@ -652,6 +653,7 @@ class _VariantGrid:
         # Parameters rendered for each enabled canvas types.
         self._canvas_type_params = {
             }  # type: Mapping[_CanvasType, _MutableTestParams]
+        self._enabled = None
         self._file_name = None
         self._canvas_types = None
         self._template_type = None
@@ -660,6 +662,14 @@ class _VariantGrid:
     def variants(self) -> List[_Variant]:
         """Read only getter for the list of variant in this grid."""
         return self._variants
+
+    @property
+    def enabled(self) -> bool:
+        """File name to which this grid will be written."""
+        if self._enabled is None:
+            enabled_str = self._unique_param(_CanvasType, 'enabled')
+            self._enabled = (enabled_str.strip().lower() == 'true')
+        return self._enabled
 
     @property
     def file_name(self) -> str:
@@ -1123,6 +1133,8 @@ def generate_test_files(name_to_dir_file: str) -> None:
     for test in tests:
         print(test['name'])
         for grid in _get_variant_grids(test, jinja_env, params_template_loader):
+            if not grid.enabled:
+                continue
             if test['name'] != grid.file_name:
                 print(f'  {grid.file_name}')
 
