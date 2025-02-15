@@ -319,30 +319,18 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
     return;
   }
 
-  // In the case where the user invokes the hotkey, or the status tray glic icon
-  // and the most recently used window for the glic profile is active, treat
-  // this as if the user clicked the glic button on that window.
-  // TODO(392644541): There may be edge cases w.r.t. multi-glic-profile.
-  if (!new_attached_browser) {
-    Browser* last_active_browser = chrome::FindLastActiveWithProfile(profile_);
-    if (last_active_browser && last_active_browser->is_type_normal()) {
-      bool attach_to_last_active_browser =
-          last_active_browser->IsActive() && state_ == State::kClosed;
-#if BUILDFLAG(IS_WIN)
-      // On Windows, clicking the status bar icon makes an active browser window
-      // inactive, but it will still be the last active browser. Attach to the
-      // last active browser if it's not occluded or minimized.
-      if (!attach_to_last_active_browser && state_ == State::kClosed) {
-        attach_to_last_active_browser = last_active_browser->window()
-                                            ->GetNativeWindow()
-                                            ->GetHost()
-                                            ->GetNativeWindowOcclusionState() ==
-                                        aura::Window::OcclusionState::VISIBLE;
-      }
-#endif  // BUILDFLAG(IS_WIN
-      if (attach_to_last_active_browser) {
-        new_attached_browser = last_active_browser;
-      }
+  mojom::PanelState panel_state = ComputePanelState();
+  bool is_detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
+
+  // In the case where the user invokes the hotkey, or the status tray glic
+  // icon and the most recently used window for the glic profile is active,
+  // treat this as if the user clicked the glic button on that window if
+  // Chrome is currently in the foreground and we aren't in detached state.
+  if (!new_attached_browser && !is_detached &&
+      glic::IsAnyBrowserInForeground()) {
+    Browser* last_active_browser = glic::FindBrowserForAttachment(profile_);
+    if (last_active_browser) {
+      new_attached_browser = last_active_browser;
     }
   }
 

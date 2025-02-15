@@ -19,6 +19,14 @@ Browser* FindBrowserForAttachment(Profile* profile);
 // Returns whether `browser` is compatible with glic for the given profile.
 bool IsBrowserGlicCompatible(Profile* profile, Browser* browser);
 
+// Returns whether 'browser' is in the foreground. This is based on active
+// state and on windows includes a occlusion check.
+bool IsBrowserInForeground(Browser* browser);
+
+// Returns whether any normal browser is in the foreground. Uses the same
+// semantics for determining foreground.
+bool IsAnyBrowserInForeground();
+
 // Observes changes to what value FindBrowserForAttachment() would return.
 class BrowserAttachObserver {
  public:

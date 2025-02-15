@@ -154,6 +154,8 @@ class GlicKeyedService : public KeyedService {
 
   GlicProfileManager* GetProfileManagerForTesting() { return profile_manager_; }
 
+  Profile* profile() const { return profile_; }
+
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
  private:
