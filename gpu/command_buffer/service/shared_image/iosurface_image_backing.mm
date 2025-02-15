@@ -1355,8 +1355,23 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     wgpu::SharedTextureMemory shared_texture_memory =
         dawn_texture_holder_->GetSharedTextureMemory(device);
     if (!shared_texture_memory) {
+      // NOTE: `shared_dawn_context` may be null if Graphite is not being used.
+      const auto* shared_dawn_context = context_state->dawn_context_provider();
+      const bool is_graphite_device =
+          shared_dawn_context &&
+          shared_dawn_context->GetDevice().Get() == device.Get();
+
       wgpu::SharedTextureMemoryIOSurfaceDescriptor io_surface_desc;
       io_surface_desc.ioSurface = io_surface_.get();
+      // Set storage binding usage only if explicitly needed for WebGPU - this
+      // forces the MTLTexture wrapping the IOSurface to have ShaderWrite usage
+      // which in turn prevents texture compression. It's possible this doesn't
+      // have any effect given that IOSurfaces have linear layout, but it might
+      // if the kernel chooses to create a separate allocation for the GPU.
+      io_surface_desc.allowStorageBinding =
+          (usage() & SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) &&
+          !is_graphite_device;
+
       wgpu::SharedTextureMemoryDescriptor desc = {};
       desc.nextInChain = &io_surface_desc;
 
@@ -1369,11 +1384,7 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
       // We cache the SharedTextureMemory instance that is associated with the
       // Graphite device.
       // TODO(crbug.com/345674550): Extend caching to WebGPU devices as well.
-      // NOTE: `dawn_context_provider` may be null if Graphite is not being
-      // used.
-      auto* dawn_context_provider = context_state->dawn_context_provider();
-      if (dawn_context_provider &&
-          dawn_context_provider->GetDevice().Get() == device.Get()) {
+      if (is_graphite_device) {
         // This is the Graphite device, so we cache its SharedTextureMemory
         // instance.
         dawn_texture_holder_->MaybeCacheSharedTextureMemory(
