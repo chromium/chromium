@@ -413,12 +413,16 @@ std::optional<PrinterBasicInfo> GetBasicPrinterInfo(HANDLE printer) {
     printer_info.printer_description = base::WideToUTF8(info_2.get()->pComment);
   }
   if (info_2.get()->pLocation) {
-    printer_info.options[kLocationTagName] =
-        base::WideToUTF8(info_2.get()->pLocation);
+    std::string location = base::WideToUTF8(info_2.get()->pLocation);
+    if (!location.empty()) {
+      printer_info.options[kLocationTagName] = std::move(location);
+    }
   }
   if (info_2.get()->pDriverName) {
-    printer_info.options[kDriverNameTagName] =
-        base::WideToUTF8(info_2.get()->pDriverName);
+    std::string driver_name = base::WideToUTF8(info_2.get()->pDriverName);
+    if (!driver_name.empty()) {
+      printer_info.options[kDriverNameTagName] = std::move(driver_name);
+    }
   }
   return printer_info;
 }
