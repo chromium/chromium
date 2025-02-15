@@ -602,7 +602,7 @@ PDFiumEngine::~PDFiumEngine() {
   find_results_.clear();
   selection_.clear();
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  ink_stroke_objects_map_.clear();
+  ink_stroke_data_.clear();
   stroked_pages_unload_preventers_.clear();
 #endif
 
@@ -4531,12 +4531,14 @@ void PDFiumEngine::ApplyStroke(int page_index,
   ink_stroked_pages_needing_regeneration_.insert(page_index);
 
   bool inserted =
-      ink_stroke_objects_map_.insert({id, std::move(page_objects)}).second;
+      ink_stroke_data_
+          .insert({id, InkStrokeData(page_index, std::move(page_objects))})
+          .second;
   CHECK(inserted);  // Stroke IDs should be unique when added.
 
-  // Since there is now a page reference in `ink_stroke_objects_map_`, ensure
-  // that this page has a ScopedUnloadPreventer so that the reference doesn't
-  // becomes stale if PDFiumPage::Unload() gets called.
+  // Since there are now page references in `ink_stroke_data_`, ensure that this
+  // page has a ScopedUnloadPreventer so that the references do not become stale
+  // if PDFiumPage::Unload() gets called.
   if (!stroked_pages_unload_preventers_.contains(page_index)) {
     stroked_pages_unload_preventers_.insert(
         {page_index, PDFiumPage::ScopedUnloadPreventer(pdfium_page)});
@@ -4547,9 +4549,9 @@ void PDFiumEngine::UpdateStrokeActive(int page_index,
                                       InkStrokeId id,
                                       bool active) {
   CHECK(PageIndexInBounds(page_index));
-  auto it = ink_stroke_objects_map_.find(id);
-  CHECK(it != ink_stroke_objects_map_.end());
-  for (FPDF_PAGEOBJECT page_object : it->second) {
+  auto it = ink_stroke_data_.find(id);
+  CHECK(it != ink_stroke_data_.end());
+  for (FPDF_PAGEOBJECT page_object : it->second.page_objects) {
     bool result = FPDFPageObj_SetIsActive(page_object, active);
     CHECK(result);
   }
@@ -4558,18 +4560,26 @@ void PDFiumEngine::UpdateStrokeActive(int page_index,
 
 void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
   CHECK(PageIndexInBounds(page_index));
-  auto it = ink_stroke_objects_map_.find(id);
-  CHECK(it != ink_stroke_objects_map_.end());
-  for (FPDF_PAGEOBJECT page_object : it->second) {
+  auto it = ink_stroke_data_.find(id);
+  CHECK(it != ink_stroke_data_.end());
+  for (FPDF_PAGEOBJECT page_object : it->second.page_objects) {
     bool result =
         FPDFPage_RemoveObject(pages_[page_index]->GetPage(), page_object);
     CHECK(result);
 
-    // After FPDFPage_RemoveObject(), ownership of `page_object` is transferred
-    // from the page to `this`, so free it.
+    // FPDFPage_RemoveObject() transferred ownership of `page_object` to the
+    // caller. Free it since `page_object` is being discarded.
     FPDFPageObj_Destroy(page_object);
   }
-  ink_stroke_objects_map_.erase(it);
+  ink_stroke_data_.erase(it);
+
+  bool page_still_has_strokes =
+      std::ranges::any_of(ink_stroke_data_, [page_index](const auto& it) {
+        return it.second.page_index == page_index;
+      });
+  if (!page_still_has_strokes) {
+    stroked_pages_unload_preventers_.erase(page_index);
+  }
 }
 
 PDFLoadedWithV2InkAnnotations PDFiumEngine::ContainsV2InkPath(
@@ -4635,6 +4645,18 @@ void PDFiumEngine::RegenerateContents() {
   }
   ink_stroked_pages_needing_regeneration_.clear();
 }
+
+PDFiumEngine::InkStrokeData::InkStrokeData(
+    int page_index,
+    std::vector<FPDF_PAGEOBJECT> page_objects)
+    : page_index(page_index), page_objects(std::move(page_objects)) {}
+
+PDFiumEngine::InkStrokeData::InkStrokeData(InkStrokeData&&) noexcept = default;
+
+PDFiumEngine::InkStrokeData& PDFiumEngine::InkStrokeData::operator=(
+    InkStrokeData&&) noexcept = default;
+
+PDFiumEngine::InkStrokeData::~InkStrokeData() = default;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,
