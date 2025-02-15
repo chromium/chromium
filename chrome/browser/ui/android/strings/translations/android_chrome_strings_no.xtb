@@ -1707,7 +1707,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8788265440806329501">Navigasjonsloggen er lukket</translation>
 <translation id="8788968922598763114">Åpne den sist lukkede fanen på nytt</translation>
 <translation id="8790193082819560975">Trykk for å søke etter kjøpsalternativer for produktet på en ny fane.</translation>
-<translation id="879027982257117598">Hvis du for eksempel besøker et nettsted som selger joggesko for langdistanseturer, kan det hende at nettstedet bestemmer seg for at du er interessert i å løpe maraton. Hvis du senere besøker et annet nettsted, kan det aktuelle nettstedet vise deg en annonse for joggesko som er foreslått av det første nettstedet.</translation>
+<translation id="879027982257117598">Hvis du for eksempel besøker et nettsted som selger joggesko for langdistanseturer, kan det hende at nettstedet tolker det som at du er interessert i å løpe maraton. Hvis du senere besøker et annet nettsted, kan det aktuelle nettstedet vise deg en annonse for joggesko som er foreslått av det første nettstedet.</translation>
 <translation id="8798449543960971550">Lest</translation>
 <translation id="8803526663383843427">Når funksjonen er på</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Elementet er lagret i Google-kontoen din, <ph name="ACCOUNT_EMAIL" />.}other{Elementene er lagret i Google-kontoen din, <ph name="ACCOUNT_EMAIL" />.}}</translation>
