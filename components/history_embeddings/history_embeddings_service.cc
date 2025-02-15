@@ -33,6 +33,7 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "url/gurl.h"
 
@@ -227,6 +228,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+    passage_embeddings::PassageEmbeddingsServiceController* service_controller,
     std::unique_ptr<passage_embeddings::Embedder> embedder,
     std::unique_ptr<Answerer> answerer,
     std::unique_ptr<IntentClassifier> intent_classifier)
@@ -263,11 +265,11 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
         {optimization_guide::proto::HISTORY_EMBEDDINGS});
   }
 
-  // OnEmbedderReady callback needs to be set after the storage_ construction,
-  // since the callback could be invoked immediately.
-  embedder_->SetOnEmbedderReadyCallback(
-      base::BindOnce(&HistoryEmbeddingsService::OnEmbedderMetadataReady,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // Observation needs to be set up after the `storage_` construction since the
+  // update notification could be invoked immediately.
+  if (service_controller) {
+    embedder_metadata_observation_.Observe(service_controller);
+  }
 }
 
 HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;
@@ -309,20 +311,11 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddings(
   }
 }
 
-void HistoryEmbeddingsService::OnEmbedderMetadataReady(
-    passage_embeddings::EmbedderMetadata metadata) {
-  subscription_ = os_crypt_async_->GetInstance(
-      base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
-                     weak_ptr_factory_.GetWeakPtr(), metadata));
-}
-
 void HistoryEmbeddingsService::OnOsCryptAsyncReady(
-    passage_embeddings::EmbedderMetadata metadata,
     os_crypt_async::Encryptor encryptor,
     bool success) {
-  embedder_metadata_ = metadata;
   storage_.AsyncCall(&Storage::SetEmbedderMetadata)
-      .WithArgs(metadata, std::move(encryptor));
+      .WithArgs(embedder_metadata_, std::move(encryptor));
 
   if (GetFeatureParameters().rebuild_embeddings) {
     storage_.AsyncCall(&Storage::CollectPassagesWithoutEmbeddings)
@@ -468,7 +461,7 @@ void HistoryEmbeddingsService::SendQualityLog(
     optimization_guide::proto::UiSurface ui_surface) {
   // Exit early if logging is not enabled.
   if (!GetFeatureParameters().send_quality_log ||
-      !embedder_metadata_.has_value()) {
+      !embedder_metadata_.IsValid()) {
     return;
   }
 
@@ -507,7 +500,7 @@ void HistoryEmbeddingsService::SendQualityLog(
     query_quality->set_session_id(result.session_id);
     query_quality->set_user_feedback(user_feedback);
     query_quality->set_embedding_model_version(
-        embedder_metadata_.value().model_version);
+        embedder_metadata_.model_version);
     query_quality->set_query(result.query);
     query_quality->set_num_days(num_days);
     query_quality->set_num_entered_characters(num_entered_characters);
@@ -592,6 +585,14 @@ void HistoryEmbeddingsService::OnHistoryDeletions(
   storage_.AsyncCall(&Storage::HandleHistoryDeletions)
       .WithArgs(deletion_info.IsAllHistory(), deletion_info.deleted_rows(),
                 deletion_info.deleted_visit_ids());
+}
+
+void HistoryEmbeddingsService::EmbedderMetadataUpdated(
+    passage_embeddings::EmbedderMetadata metadata) {
+  embedder_metadata_ = metadata;
+  subscription_ = os_crypt_async_->GetInstance(
+      base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool HistoryEmbeddingsService::IsAnswererUseAllowed() const {
@@ -930,7 +931,7 @@ void HistoryEmbeddingsService::OnSearchCompleted(
     std::vector<ScoredUrlRow> scored_url_rows) {
   std::vector<ScoredUrlRow> filtered;
   filtered.reserve(scored_url_rows.size());
-  float score_threshold = GetScoreThreshold(*embedder_metadata_);
+  float score_threshold = GetScoreThreshold(embedder_metadata_);
   float word_match_score_threshold =
       GetFeatureParameters().search_word_match_score_threshold;
   std::copy_if(std::make_move_iterator(scored_url_rows.begin()),

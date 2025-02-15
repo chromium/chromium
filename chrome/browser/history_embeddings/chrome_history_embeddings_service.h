@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/passage_embeddings/embedder.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "content/public/browser/browser_context.h"
 
 class Profile;
@@ -26,6 +27,8 @@ class ChromeHistoryEmbeddingsService : public HistoryEmbeddingsService {
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      passage_embeddings::PassageEmbeddingsServiceController*
+          service_controller,
       std::unique_ptr<passage_embeddings::Embedder> embedder,
       std::unique_ptr<Answerer> answerer,
       std::unique_ptr<IntentClassifier> intent_classifier);

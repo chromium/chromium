@@ -26,17 +26,10 @@ class MlEmbedder : public Embedder {
 
   bool TryCancel(TaskId task_id) override;
 
-  void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) override;
-
-  void SetEmbedderMetadata(EmbedderMetadata metadata) override;
-
  private:
   // The controller used to interact with the PassageEmbeddingsService.
   // It is a singleton and guaranteed not to be nullptr.
   raw_ptr<PassageEmbeddingsServiceController> service_controller_;
-
-  // Called once the embedder is ready.
-  OnEmbedderReadyCallback on_embedder_ready_;
 };
 
 }  // namespace passage_embeddings

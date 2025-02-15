@@ -53,13 +53,19 @@ class Embedding {
   size_t passage_word_count_ = 0;
 };
 
+class EmbedderMetadataObserver : public base::CheckedObserver {
+ public:
+  // This is notified when model metadata is updated.
+  virtual void EmbedderMetadataUpdated(EmbedderMetadata metadata) = 0;
+};
+
 // Base class that hides implementation details for how text is embedded.
-class Embedder : public base::CheckedObserver {
+class Embedder {
  public:
   using TaskId = uint64_t;
   static constexpr TaskId kInvalidTaskId = 0;
 
-  ~Embedder() override = default;
+  virtual ~Embedder() = default;
 
   // Computes embeddings for each entry in `passages`. Will invoke callback on
   // done. If successful, it is guaranteed that the number of passages in
@@ -81,15 +87,6 @@ class Embedder : public base::CheckedObserver {
   // If successful, the callback for the canceled task will be invoked with
   // `ComputeEmbeddingsStatus::kCanceled` status.
   virtual bool TryCancel(TaskId task_id) = 0;
-
-  // Sets the callback to run when the embedder is ready to process requests.
-  // The callback is invoked immediately if the embedder is ready beforehand.
-  using OnEmbedderReadyCallback =
-      base::OnceCallback<void(EmbedderMetadata metadata)>;
-  virtual void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) = 0;
-
-  // This is notified when model metadata is updated.
-  virtual void SetEmbedderMetadata(EmbedderMetadata metadata) = 0;
 
  protected:
   Embedder() = default;

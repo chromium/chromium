@@ -77,11 +77,11 @@ PassageEmbeddingsServiceController::PassageEmbeddingsServiceController()
           kSchedulerMaxJobs.Get(),
           kSchedulerMaxBatchSize.Get(),
           kUsePerformanceScenario.Get())) {
-  observer_list_.AddObserver(scheduling_embedder_.get());
+  AddObserver(scheduling_embedder_.get());
 }
 
 PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() {
-  observer_list_.RemoveObserver(scheduling_embedder_.get());
+  RemoveObserver(scheduling_embedder_.get());
 }
 
 bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
@@ -134,7 +134,8 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
 
   CHECK(EmbedderReady());
   logger.set_status(EmbeddingsModelInfoStatus::kValid);
-  observer_list_.Notify(&Embedder::SetEmbedderMetadata, GetEmbedderMetadata());
+  observer_list_.Notify(&EmbedderMetadataObserver::EmbedderMetadataUpdated,
+                        GetEmbedderMetadata());
   return true;
 }
 
@@ -163,22 +164,23 @@ void PassageEmbeddingsServiceController::OnLoadModelsResult(bool success) {
   }
 }
 
-EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
-  if (model_metadata_->score_threshold() > 0.0) {
-    return EmbedderMetadata(model_version_, model_metadata_->output_size(),
-                            model_metadata_->score_threshold());
-  }
-
-  return EmbedderMetadata(model_version_, model_metadata_->output_size());
+std::unique_ptr<Embedder> PassageEmbeddingsServiceController::MakeEmbedder() {
+  auto client =
+      std::make_unique<SchedulingClientEmbedder>(scheduling_embedder_.get());
+  return client;
 }
 
-std::unique_ptr<Embedder> PassageEmbeddingsServiceController::MakeEmbedder() {
-  auto client = std::make_unique<SchedulingClientEmbedder>(
-      scheduling_embedder_.get(),
-      base::BindOnce(&PassageEmbeddingsServiceController::RemoveObserver,
-                     weak_ptr_factory_.GetWeakPtr()));
-  observer_list_.AddObserver(client.get());
-  return client;
+void PassageEmbeddingsServiceController::AddObserver(
+    EmbedderMetadataObserver* observer) {
+  if (EmbedderReady()) {
+    observer->EmbedderMetadataUpdated(GetEmbedderMetadata());
+  }
+  observer_list_.AddObserver(observer);
+}
+
+void PassageEmbeddingsServiceController::RemoveObserver(
+    EmbedderMetadataObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 void PassageEmbeddingsServiceController::GetEmbeddings(
@@ -225,12 +227,17 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
   next_request_id_++;
 }
 
-void PassageEmbeddingsServiceController::RemoveObserver(Embedder* embedder) {
-  observer_list_.RemoveObserver(embedder);
-}
-
 bool PassageEmbeddingsServiceController::EmbedderReady() {
   return !sp_model_path_.empty() && !embeddings_model_path_.empty();
+}
+
+EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
+  if (model_metadata_->score_threshold() > 0.0) {
+    return EmbedderMetadata(model_version_, model_metadata_->output_size(),
+                            model_metadata_->score_threshold());
+  }
+
+  return EmbedderMetadata(model_version_, model_metadata_->output_size());
 }
 
 bool PassageEmbeddingsServiceController::EmbedderRunning() {

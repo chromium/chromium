@@ -145,6 +145,39 @@ class FakePassageEmbeddingsServiceController
   std::unique_ptr<FakePassageEmbeddingsService> service_;
 };
 
+class FakeMlEmbedder : public MlEmbedder, public EmbedderMetadataObserver {
+ public:
+  explicit FakeMlEmbedder(
+      PassageEmbeddingsServiceController* service_controller)
+      : MlEmbedder(service_controller) {
+    embedder_metadata_observation_.Observe(service_controller);
+  }
+
+  using OnEmbedderReadyCallback = base::OnceCallback<void(EmbedderMetadata)>;
+  void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) {
+    callback_ = std::move(callback);
+    if (callback_ && metadata_.IsValid()) {
+      std::move(callback_).Run(metadata_);
+    }
+  }
+
+ protected:
+  // EmbedderMetadataObserver:
+  void EmbedderMetadataUpdated(
+      passage_embeddings::EmbedderMetadata metadata) override {
+    metadata_ = metadata;
+    if (callback_) {
+      std::move(callback_).Run(metadata_);
+    }
+  }
+
+  EmbedderMetadata metadata_{0, 0};
+  OnEmbedderReadyCallback callback_;
+  base::ScopedObservation<PassageEmbeddingsServiceController,
+                          EmbedderMetadataObserver>
+      embedder_metadata_observation_{this};
+};
+
 }  // namespace
 
 class MlEmbedderTest : public testing::Test {
@@ -167,7 +200,8 @@ TEST_F(MlEmbedderTest, ReceivesValidModelInfo) {
   service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build());
 
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
   bool on_embedder_ready_invoked = false;
 
   ml_embedder->SetOnEmbedderReadyCallback(
@@ -185,7 +219,8 @@ TEST_F(MlEmbedderTest, ReceivesValidModelInfo) {
 
 TEST_F(MlEmbedderTest, ReceivesEmptyModelInfo) {
   service_controller_->MaybeUpdateModelInfo({});
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
   bool on_embedder_ready_invoked = false;
 
   ml_embedder->SetOnEmbedderReadyCallback(base::BindLambdaForTesting(
@@ -208,7 +243,8 @@ TEST_F(MlEmbedderTest, ReceivesModelInfoWithInvalidModelMetadata) {
   builder.SetModelMetadata(metadata_any);
 
   service_controller_->MaybeUpdateModelInfo(*builder.Build());
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
   bool on_embedder_ready_invoked = false;
 
   ml_embedder->SetOnEmbedderReadyCallback(base::BindLambdaForTesting(
@@ -226,7 +262,8 @@ TEST_F(MlEmbedderTest, ReceivesModelInfoWithoutModelMetadata) {
   builder.SetModelMetadata(std::nullopt);
 
   service_controller_->MaybeUpdateModelInfo(*builder.Build());
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
   bool on_embedder_ready_invoked = false;
 
   ml_embedder->SetOnEmbedderReadyCallback(base::BindLambdaForTesting(
@@ -247,7 +284,8 @@ TEST_F(MlEmbedderTest, ReceivesModelInfoWithoutAdditionalFiles) {
       {test_data_dir.AppendASCII("foo"), test_data_dir.AppendASCII("bar")});
 
   service_controller_->MaybeUpdateModelInfo(*builder.Build());
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
   bool on_embedder_ready_invoked = false;
 
   ml_embedder->SetOnEmbedderReadyCallback(base::BindLambdaForTesting(
@@ -264,7 +302,8 @@ TEST_F(MlEmbedderTest, ReturnsEmbeddings) {
   service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build());
 
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
 
   histogram_tester_.ExpectTotalCount(kModelInfoMetricName, 1);
   histogram_tester_.ExpectUniqueSample(kModelInfoMetricName,
@@ -288,7 +327,8 @@ TEST_F(MlEmbedderTest, ReturnsModelUnavailableErrorIfModelInfoNotValid) {
   builder.SetModelMetadata(std::nullopt);
 
   service_controller_->MaybeUpdateModelInfo(*builder.Build());
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
 
   ComputePassagesEmbeddingsFuture future;
   ml_embedder->ComputePassagesEmbeddings(PassagePriority::kPassive,
@@ -306,7 +346,8 @@ TEST_F(MlEmbedderTest, ReturnsModelUnavailableErrorIfModelInfoNotValid) {
 TEST_F(MlEmbedderTest, ReturnsExecutionFailure) {
   service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build());
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
 
   ComputePassagesEmbeddingsFuture future;
   ml_embedder->ComputePassagesEmbeddings(PassagePriority::kPassive, {"error"},
@@ -321,7 +362,8 @@ TEST_F(MlEmbedderTest, ReturnsExecutionFailure) {
 TEST_F(MlEmbedderTest, EmbedderRunningStatus) {
   service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build());
-  auto ml_embedder = std::make_unique<MlEmbedder>(service_controller_.get());
+  auto ml_embedder =
+      std::make_unique<FakeMlEmbedder>(service_controller_.get());
 
   {
     ComputePassagesEmbeddingsFuture future1;

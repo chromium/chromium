@@ -40,6 +40,7 @@
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/mock_embedder.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/scheduling_embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,6 +68,8 @@ class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      passage_embeddings::PassageEmbeddingsServiceController*
+          service_controller,
       std::unique_ptr<passage_embeddings::Embedder> embedder,
       std::unique_ptr<Answerer> answerer,
       std::unique_ptr<IntentClassifier> intent_classfier)
@@ -74,6 +77,7 @@ class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
                                  history_service,
                                  page_content_annotations_service,
                                  optimization_guide_decider,
+                                 service_controller,
                                  std::move(embedder),
                                  std::move(answerer),
                                  std::move(intent_classfier)) {}
@@ -122,9 +126,11 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         os_crypt_.get(), history_service_.get(),
         page_content_annotations_service_.get(),
         /*optimization_guide_decider=*/nullptr,
+        /*service_controller=*/nullptr,
         std::make_unique<passage_embeddings::MockEmbedder>(),
         std::make_unique<MockAnswerer>(),
         std::make_unique<MockIntentClassifier>());
+    service_->EmbedderMetadataUpdated({1, 768});
 
     ASSERT_TRUE(listener()->filter_words_hashes().empty());
     listener()->OnSearchStringsUpdate(
@@ -193,7 +199,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   }
 
   void SetMetadataScoreThreshold(double threshold) {
-    service_->embedder_metadata_->search_score_threshold = threshold;
+    service_->embedder_metadata_.search_score_threshold = threshold;
   }
 
   Answerer* GetAnswerer() { return service_->answerer_.get(); }

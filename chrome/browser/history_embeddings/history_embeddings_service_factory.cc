@@ -102,6 +102,7 @@ std::unique_ptr<KeyedService> HistoryEmbeddingsServiceFactory::
                                            ServiceAccessType::EXPLICIT_ACCESS),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      passage_embeddings::ChromePassageEmbeddingsServiceController::Get(),
       std::move(embedder), std::move(answerer), std::move(intent_classifier));
 }
 
@@ -165,6 +166,7 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
-      optimization_guide_keyed_service, std::move(embedder),
-      std::move(answerer), std::move(intent_classifier));
+      optimization_guide_keyed_service,
+      passage_embeddings::ChromePassageEmbeddingsServiceController::Get(),
+      std::move(embedder), std::move(answerer), std::move(intent_classifier));
 }

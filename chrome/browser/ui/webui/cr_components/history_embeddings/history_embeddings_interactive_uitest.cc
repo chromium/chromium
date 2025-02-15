@@ -50,6 +50,7 @@ class HistoryEmbeddingsInteractiveTest
               BuildServiceInstanceForBrowserContextForTesting(
                   context, /*answerer=*/nullptr, /*intent_classifier=*/nullptr);
         }));
+    service()->EmbedderMetadataUpdated({1, 768});
 
     InteractiveBrowserTest::SetUpOnMainThread();
   }

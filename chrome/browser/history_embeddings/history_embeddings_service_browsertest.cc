@@ -64,6 +64,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
                   context, std::make_unique<MockAnswerer>(),
                   std::make_unique<MockIntentClassifier>());
         }));
+    service()->EmbedderMetadataUpdated({1, 768});
 
     HistoryEmbeddingsTabHelper::CreateForWebContents(GetActiveWebContents());
 

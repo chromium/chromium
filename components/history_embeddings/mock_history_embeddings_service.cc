@@ -12,11 +12,12 @@ MockHistoryEmbeddingsService::MockHistoryEmbeddingsService(
     os_crypt_async::OSCryptAsync* os_crypt_async,
     history::HistoryService* history_service)
     : HistoryEmbeddingsService(
-          /*os_crypt_async=*/os_crypt_async,
+          os_crypt_async,
           history_service,
-          nullptr,
-          nullptr,
-          /*embedder=*/std::make_unique<passage_embeddings::MockEmbedder>(),
+          /*page_content_annotations_service=*/nullptr,
+          /*optimization_guide_decider=*/nullptr,
+          /*service_controller=*/nullptr,
+          std::make_unique<passage_embeddings::MockEmbedder>(),
           /*answerer=*/nullptr,
           /*intent_classifier=*/nullptr) {}
 
