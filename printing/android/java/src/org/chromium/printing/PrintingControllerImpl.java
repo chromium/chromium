@@ -21,7 +21,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.printing.PrintDocumentAdapterWrapper.PdfGenerator;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -48,6 +53,8 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     /** Printing dialog has been dismissed and cleanup has been done. */
     private static final int PRINTING_STATE_FINISHED = 2;
 
+    private static final int BUFFER_SIZE = 8 * 1024; // 8 KB
+
     /** The singleton instance for this class. */
     @VisibleForTesting protected static @Nullable PrintingController sInstance;
 
@@ -56,7 +63,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     private int mRenderProcessId;
     private int mRenderFrameId;
 
-    /** The file descriptor into which the PDF will be written.  Provided by the framework. */
+    /** The file descriptor into which the PDF will be written. Provided by the framework. */
     private @Nullable ParcelFileDescriptor mFileDescriptor;
 
     /** Dots per inch, as provided by the framework. */
@@ -273,18 +280,25 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
             return;
         }
         mPages = convertPageRangesToIntegerArray(ranges);
+        String pdfFilePath = assumeNonNull(mPrintable).getPdfFilePath();
 
-        // mRenderProcessId and mRenderFrameId could be invalid values, in this case we are going to
-        // print the main frame.
-        if (assumeNonNull(mPrintable).print(mRenderProcessId, mRenderFrameId)) {
-            mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
+        if (pdfFilePath == null) {
+            // mRenderProcessId and mRenderFrameId could be invalid values, in this case we are
+            // going to
+            // print the main frame.
+            if (mPrintable.print(mRenderProcessId, mRenderFrameId)) {
+                mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
+            } else {
+                mOnWriteCallback.onWriteFailed(mErrorMessage);
+                resetCallbacks();
+            }
+            // We are guaranteed by the framework that we will not have two onWrite calls at once.
+            // We may get a CancellationSignal, after replying it (via WriteResultCallback) we might
+            // get another onWrite call.
         } else {
-            mOnWriteCallback.onWriteFailed(mErrorMessage);
-            resetCallbacks();
+            // The print job is already a pdf. Copy to destination from the provided filepath.
+            onWriteForPdfPage(pdfFilePath, cancellationSignal);
         }
-        // We are guaranteed by the framework that we will not have two onWrite calls at once.
-        // We may get a CancellationSignal, after replying it (via WriteResultCallback) we might
-        // get another onWrite call.
     }
 
     @Override
@@ -302,6 +316,46 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
         // The printmanager contract is that onFinish() is always called as the last
         // callback. We set busy to false here.
         mIsBusy = false;
+    }
+
+    private void onWriteForPdfPage(
+            final String pdfFilePath, final CancellationSignal cancellationSignal) {
+        mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            File file = new File(pdfFilePath);
+            inputStream = new FileInputStream(file);
+            outputStream = new FileOutputStream(assumeNonNull(mFileDescriptor).getFileDescriptor());
+
+            int count;
+            byte[] data = new byte[BUFFER_SIZE];
+            while ((count = inputStream.read(data)) != -1 && !cancellationSignal.isCanceled()) {
+                outputStream.write(data, 0, count);
+            }
+
+            if (cancellationSignal.isCanceled()) {
+                assumeNonNull(mOnWriteCallback).onWriteCancelled();
+            } else {
+                mPrintingState = PRINTING_STATE_READY;
+                closeFileDescriptor();
+                assumeNonNull(mOnWriteCallback)
+                        .onWriteFinished(new PageRange[] {PageRange.ALL_PAGES});
+            }
+        } catch (Exception e) {
+            assumeNonNull(mOnWriteCallback).onWriteFailed(mErrorMessage);
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to close input or output stream.");
+            }
+        }
     }
 
     private void resetCallbacks() {
