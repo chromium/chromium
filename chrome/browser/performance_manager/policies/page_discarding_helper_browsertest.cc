@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -20,11 +21,15 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/page_navigator.h"
@@ -64,6 +69,70 @@ class FaviconWatcher final : public content::WebContentsObserver {
       content::RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) final {
     run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+};
+
+// Waits for `page_node` to transition to the LoadingState::kLoadedIdle state.
+class PageNodeIdleWaiter : public PageNodeObserver,
+                           public GraphOwnedDefaultImpl {
+ public:
+  explicit PageNodeIdleWaiter(base::WeakPtr<PageNode> page_node)
+      : page_node_(page_node) {
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
+          graph_ = graph;
+          graph_->AddPageNodeObserver(this);
+        }));
+  }
+  ~PageNodeIdleWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // PageNodeObserver:
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override {
+    if ((page_node == page_node_.get()) &&
+        page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
+      graph_->RemovePageNodeObserver(this);
+      run_loop_.Quit();
+      return;
+    }
+  }
+
+  base::RunLoop run_loop_;
+  const base::WeakPtr<PageNode> page_node_;
+  raw_ptr<Graph> graph_ = nullptr;
+};
+
+// Waits for resource coordinator to register a LifecycleUnitState::FROZEN state
+// change.
+class TabLifecycleUnitFreezeWaiter
+    : public resource_coordinator::TabLifecycleObserver {
+ public:
+  TabLifecycleUnitFreezeWaiter() {
+    resource_coordinator::TabLifecycleUnitExternal::AddTabLifecycleObserver(
+        this);
+  }
+  ~TabLifecycleUnitFreezeWaiter() override {
+    resource_coordinator::TabLifecycleUnitExternal::RemoveTabLifecycleObserver(
+        this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // resource_coordinator::TabLifecycleObserver:
+  void OnTabLifecycleStateChange(
+      content::WebContents* contents,
+      ::mojom::LifecycleUnitState previous_state,
+      ::mojom::LifecycleUnitState new_state,
+      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
+    if (new_state == ::mojom::LifecycleUnitState::FROZEN) {
+      run_loop_.Quit();
+    }
   }
 
   base::RunLoop run_loop_;
@@ -440,6 +509,70 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   // Ensure the background tab has been discarded again.
   EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
   EXPECT_TRUE(tab2->GetContents()->WasDiscarded());
+}
+
+// Regression test for crbug.com/394242157. Ensure that discarding a frozen tab
+// does not result in invalid lifecycle state transitions.
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
+                       DiscardingFrozenTabCorrectlyTransitionsLifecycleState) {
+  // Add a new background tab.
+  OpenNewBackgroundPage();
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(0);
+  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(1);
+
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab1);
+
+  // Ensure the off-thread page node has registered the background tab as idle.
+  PageNodeIdleWaiter page_node_idle_waiter(GetPageNodeAtIndex(1));
+  page_node_idle_waiter.Wait();
+
+  // Freeze the background tab and ensure the state transition has been
+  // registered by the tab lifecycle unit.
+  auto freezing_vote =
+      std::make_unique<performance_manager::freezing::FreezingVote>(
+          tab2->GetContents());
+
+  TabLifecycleUnitFreezeWaiter freeze_waiter;
+  freeze_waiter.Wait();
+
+  // Discard the background tab.
+  const auto attempt_discard = [this]() {
+    base::WeakPtr<PageNode> discard_target_page_node = GetPageNodeAtIndex(1);
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
+          ASSERT_TRUE(discard_target_page_node);
+          auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+          ASSERT_TRUE(helper);
+          EXPECT_EQ(
+              CanDiscardResult::kEligible,
+              helper->CanDiscard(discard_target_page_node.get(),
+                                 DiscardReason::URGENT, base::TimeDelta()));
+          helper->DiscardAPage(
+              base::BindLambdaForTesting(
+                  [&](std::optional<base::TimeTicks> first_discarded_at) {
+                    EXPECT_TRUE(first_discarded_at.has_value());
+                    run_loop.Quit();
+                  }),
+              DiscardReason::URGENT, base::TimeDelta());
+        }));
+    run_loop.Run();
+  };
+  attempt_discard();
+
+  // Assert the background tab has been successfully discarded.
+  EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
+  EXPECT_TRUE(tab2->GetContents()->WasDiscarded());
+
+  // Assert the lifecycle state transition is correctly registered in the
+  // lifecycle unit.
+  auto* lifecycle_unit =
+      resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+          tab2->GetContents());
+  EXPECT_EQ(::mojom::LifecycleUnitState::DISCARDED,
+            lifecycle_unit->GetTabState());
 }
 
 INSTANTIATE_TEST_SUITE_P(

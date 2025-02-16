@@ -120,6 +120,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   friend class TabLifecycleUnitSource;
 
  private:
+  void RecomputeLifecycleUnitState(LifecycleUnitStateChangeReason reason);
+
   // Same as GetSource, but cast to the most derived type.
   TabLifecycleUnitSource* GetTabSource() const;
 
@@ -199,6 +201,14 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // TimeTicks() if the tab was never "recently audible", last time at which the
   // tab was "recently audible" otherwise.
   base::TimeTicks recently_audible_time_;
+
+  // `page_lifecycle_state_` is the lifecycle state of the associated `PageNode`
+  // (`kFrozen` if all frames are frozen, `kActive` otherwise). `is_discarded_`
+  // indicates whether the tab is discarded. Together, these properties fully
+  // determine the `LifecycleUnitState`.
+  performance_manager::mojom::LifecycleState page_lifecycle_state_ =
+      performance_manager::mojom::LifecycleState::kRunning;
+  bool is_discarded_ = false;
 };
 
 }  // namespace resource_coordinator
