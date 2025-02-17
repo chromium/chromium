@@ -9,7 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
-#import "base/test/gmock_callback_support.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_file_util.h"
@@ -19,7 +18,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/mutable_profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_observer_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -32,7 +30,6 @@
 #import "testing/platform_test.h"
 
 using testing::_;
-using testing::Ne;
 using testing::UnorderedElementsAre;
 
 @interface FakeChangeProfileCommands : NSObject <ChangeProfileCommands>
@@ -126,18 +123,6 @@ class MockObserver : public AccountProfileMapper::Observer {
               OnIdentityRefreshTokenUpdated,
               (id<SystemIdentity>),
               (override));
-};
-
-class MockAttributesStorageObserver
-    : public ProfileAttributesStorageObserverIOS {
- public:
-  MockAttributesStorageObserver() = default;
-  MockAttributesStorageObserver(const MockAttributesStorageObserver&) = delete;
-  MockAttributesStorageObserver& operator=(
-      const MockAttributesStorageObserver&) = delete;
-  ~MockAttributesStorageObserver() override = default;
-
-  MOCK_METHOD(void, OnProfileAttributesUpdated, (std::string_view), (override));
 };
 
 // An "empty" implementation of ProfileIOS, used here to avoid using
@@ -271,7 +256,7 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(initialized_callback), profile));
     }
-    return true;
+    return false;
   }
 
   ProfileIOS* LoadProfile(std::string_view name) override { NOTREACHED(); }
@@ -352,8 +337,7 @@ class AccountProfileMapperTest : public PlatformTest {
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeProfileManagerIOS> profile_manager_;
   raw_ptr<FakeSystemIdentityManager> system_identity_manager_;
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
@@ -1286,129 +1270,6 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 
   // Ensure the object no longer reference the ProfileManagerIOS.
   [handler shutdown];
-}
-
-// Tests that when the SystemIdentityManager finds the hosted domain of a
-// managed account asynchronously (i.e. it wasn't available in the cache yet),
-// the AccountProfileMapper correctly assigns the managed account to a
-// managed profile once the hosted domain becomes available.
-TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
-       FetchesHostedDomainAsynchronously) {
-  // Setup FakeSystemIdentityManager to *not* synchronously return hosted
-  // domains.
-  system_identity_manager_->SetInstantlyFillHostedDomainCache(false);
-
-  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
-
-  testing::StrictMock<MockObserver> mock_personal_observer;
-  account_profile_mapper_->AddObserver(&mock_personal_observer,
-                                       kPersonalProfileName);
-
-  testing::NiceMock<MockAttributesStorageObserver> mock_attributes_observer;
-  profile_attributes_storage()->AddObserver(&mock_attributes_observer);
-
-  // Add a managed account. This should trigger the async fetch of the hosted
-  // domain. The account should show up among the identities-on-device, but
-  // should not be assigned to any profile yet.
-  EXPECT_CALL(mock_personal_observer, OnIdentitiesOnDeviceChanged());
-  system_identity_manager_->AddIdentity(google_identity);
-  // A new enterprise profile should *not* have been registered yet, since the
-  // hosted domain isn't known synchronously.
-  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
-  ASSERT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
-
-  // Wait for the hosted domain fetch to finish. Once it does, the account
-  // should get assigned to a newly-created enterprise profile.
-  base::test::TestFuture<void> future;
-  EXPECT_CALL(mock_attributes_observer,
-              OnProfileAttributesUpdated(Ne(kPersonalProfileName)))
-      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
-
-  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
-  std::string managed_profile_name = FindCreatedProfileName(
-      /*known_profile_names=*/{std::string(kPersonalProfileName)});
-  EXPECT_NSEQ(@[ google_identity ],
-              GetIdentitiesForProfile(managed_profile_name));
-
-  profile_attributes_storage()->RemoveObserver(&mock_attributes_observer);
-  account_profile_mapper_->RemoveObserver(&mock_personal_observer,
-                                          kPersonalProfileName);
-}
-
-// Tests that if a hosted domain fetch fails, AccountProfileMapper retries with
-// exponential backoff.
-TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
-       RetriesHostedDomainFetchWithBackoff) {
-  // Setup FakeSystemIdentityManager to *not* synchronously return hosted
-  // domains, and to fail hosted domain fetches for now.
-  system_identity_manager_->SetInstantlyFillHostedDomainCache(false);
-  NSError* error = [NSError errorWithDomain:@"Fetch failed"
-                                       code:123
-                                   userInfo:nil];
-  system_identity_manager_->SetGetHostedDomainError(error);
-
-  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
-
-  system_identity_manager_->AddIdentity(google_identity);
-  // A new enterprise profile should *not* have been registered yet, since the
-  // hosted domain isn't known synchronously.
-  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
-  ASSERT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
-
-  ASSERT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 0u);
-  // Wait for one GetHostedDomain() attempt to happen, but not long enough for
-  // a retry (the initial delay is 1 second).
-  task_environment_.FastForwardBy(base::Milliseconds(200));
-  EXPECT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 1u);
-  // Wait for one retry.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 2u);
-
-  // Now let the next retry succeed.
-  system_identity_manager_->SetGetHostedDomainError(nil);
-  task_environment_.FastForwardBy(base::Seconds(2));
-
-  // A managed profile should have been created, and the account assigned to it.
-  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
-  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
-  std::string managed_profile_name = FindCreatedProfileName(
-      /*known_profile_names=*/{std::string(kPersonalProfileName)});
-  EXPECT_NSEQ(@[ google_identity ],
-              GetIdentitiesForProfile(managed_profile_name));
-}
-
-// Tests that if a hosted domain fetch fails repeatedly, AccountProfileMapper
-// stops retrying after some number of attempts.
-TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
-       StopsRetryingHostedDomainFetches) {
-  // Setup FakeSystemIdentityManager to *not* synchronously return hosted
-  // domains, and to fail hosted domain fetches.
-  system_identity_manager_->SetInstantlyFillHostedDomainCache(false);
-  NSError* error = [NSError errorWithDomain:@"Fetch failed"
-                                       code:123
-                                   userInfo:nil];
-  system_identity_manager_->SetGetHostedDomainError(error);
-
-  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
-
-  system_identity_manager_->AddIdentity(google_identity);
-  // A new enterprise profile should *not* have been registered yet, since the
-  // hosted domain isn't known synchronously.
-  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
-  ASSERT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
-
-  // Wait for a long time. This should *not* result in indefinite retrying;
-  // rather, AccountProfileMapper should give up eventually, after a total of
-  // five attempts.
-  task_environment_.FastForwardBy(base::Hours(10));
-  EXPECT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 5u);
-  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
-  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
 }
 
 }  // namespace
