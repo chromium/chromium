@@ -311,19 +311,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-    bool add_scanout_usage = true;
-
-    // Scanout usage should be added only if scanout of SharedImages is
-    // supported. However, historically this was not checked.
-    // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
-    if (base::FeatureList::IsEnabled(
-            features::
-                kCameraVideoFrameHandlerAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-      add_scanout_usage &= shared_image_interface->GetCapabilities()
-                               .supports_scanout_shared_images;
-    }
-
-    if (add_scanout_usage) {
+    if (shared_image_interface->GetCapabilities()
+            .supports_scanout_shared_images) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 
