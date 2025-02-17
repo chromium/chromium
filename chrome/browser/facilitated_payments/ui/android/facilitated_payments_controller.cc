@@ -17,10 +17,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
 
-namespace {
-const int64_t kFakeInstrumentId = -1L;
-}  // namespace
-
 FacilitatedPaymentsController::FacilitatedPaymentsController(
     content::WebContents* web_contents)
     : view_(std::make_unique<
@@ -97,17 +93,6 @@ void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
   }
   if (ui_event_listener_) {
     ui_event_listener_.Run(ui_event);
-  }
-}
-
-// TODO: crbug.com/375089558 - Deprecate once Java side is able to call
-// OnUiEvent.
-void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
-  ClearJavaViewComponents();
-
-  if (on_user_decision_callback_) {
-    std::move(on_user_decision_callback_)
-        .Run(/*is_fop_selected=*/false, kFakeInstrumentId);
   }
 }
 

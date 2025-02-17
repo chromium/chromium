@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
@@ -168,7 +167,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             new PropertyModel.Builder(
                                             FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                                     .with(VISIBLE_STATE, HIDDEN)
-                                    .with(DISMISS_HANDLER, (Integer unused) -> {})
                                     .with(UI_EVENT_LISTENER, (Integer unused) -> {})
                                     .build();
                     mView =

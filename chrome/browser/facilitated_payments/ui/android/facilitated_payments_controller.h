@@ -64,9 +64,6 @@ class FacilitatedPaymentsController {
   // Called by the Java view to communicate `payments::facilitated::UiEvent`.
   void OnUiEvent(JNIEnv* env, jint event);
 
-  // Called whenever the surface gets hidden (regardless of the cause).
-  virtual void OnDismissed(JNIEnv* env);
-
   void OnBankAccountSelected(JNIEnv* env, jlong instrument_id);
 
   void OnEwalletSelected(JNIEnv* env, jlong instrument_id);

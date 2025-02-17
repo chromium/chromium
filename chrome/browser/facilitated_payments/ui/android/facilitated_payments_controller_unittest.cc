@@ -94,24 +94,6 @@ TEST_F(FacilitatedPaymentsControllerTest, Show_UserHasNoPixAccounts) {
   controller_->Show({}, base::DoNothing());
 }
 
-// Test OnDismissed method.
-TEST_F(FacilitatedPaymentsControllerTest, OnDismissed) {
-  // Show the bottom sheet and set the user decision callback.
-  base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
-      mock_on_user_decision_callback;
-  controller_->Show(bank_accounts_, mock_on_user_decision_callback.Get());
-
-  // Verify that dismissal event is forwarded to the view. Also verify that the
-  // manager is informed of the diamissal via the callback. The second
-  // OnDismissed call is triggered when the test fixture destroys the
-  // `controller`.
-  EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
-  EXPECT_CALL(mock_on_user_decision_callback,
-              Run(/*is_selected=*/false, /*selected_bank_account_id=*/-1L));
-
-  controller_->OnDismissed(nullptr);
-}
-
 // Test onBankAccountSelected method.
 TEST_F(FacilitatedPaymentsControllerTest, onBankAccountSelected) {
   base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
@@ -219,25 +201,6 @@ TEST_F(FacilitatedPaymentsControllerTest,
   EXPECT_CALL(*mock_view_, RequestShowContentForEwallet).Times(0);
 
   controller_->ShowForEwallet({}, base::DoNothing());
-}
-
-// Test OnDismissed method for eWallet.
-TEST_F(FacilitatedPaymentsControllerTest, ShowForEwallet_OnDismissed) {
-  // Show the bottom sheet and set the user decision callback.
-  base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
-      mock_on_user_decision_callback;
-  controller_->ShowForEwallet(ewallets_, mock_on_user_decision_callback.Get());
-
-  // Verify that dismissal event is forwarded to the view. Also verify that the
-  // manager is informed of the diamissal via the callback. The second
-  // OnDismissed call is triggered when the test fixture destroys the
-  // `controller`.
-  EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
-  EXPECT_CALL(mock_on_user_decision_callback,
-              Run(/*is_ewallet_selected=*/false,
-                  /*selected_ewallet_instrument_id=*/-1L));
-
-  controller_->OnDismissed(nullptr);
 }
 
 // Test OnEwalletSelected method.

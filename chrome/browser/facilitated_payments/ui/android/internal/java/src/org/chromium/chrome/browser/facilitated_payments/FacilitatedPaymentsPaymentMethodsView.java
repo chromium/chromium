@@ -38,14 +38,12 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     private FacilitatedPaymentsSequenceView mCurrentScreen;
     // The new screen to be shown replacing {@link #mCurrentScreen}.
     private FacilitatedPaymentsSequenceView mNextScreen;
-    private Callback<Integer> mDismissHandler;
     private Callback<Integer> mUiEventListener;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
-                    assert mDismissHandler != null;
                     assert mUiEventListener != null;
                     switch (reason) {
                         case StateChangeReason.BACK_PRESS: // Intentional fallthrough.
@@ -63,7 +61,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
                             mUiEventListener.onResult(UiEvent.SCREEN_CLOSED_NOT_BY_USER);
                             break;
                     }
-                    mDismissHandler.onResult(reason);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                 }
             };
@@ -125,15 +122,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
             mBottomSheetController.hideContent(this, true);
             mCurrentScreen = null;
         }
-    }
-
-    /**
-     * Sets a new listener that reacts to bottom sheet dismissal.
-     *
-     * @param dismissHandler A {@link Callback<Integer>}.
-     */
-    void setDismissHandler(Callback<Integer> dismissHandler) {
-        mDismissHandler = dismissHandler;
     }
 
     /**

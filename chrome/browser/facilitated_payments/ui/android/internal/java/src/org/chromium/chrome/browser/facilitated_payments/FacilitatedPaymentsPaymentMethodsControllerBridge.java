@@ -39,14 +39,6 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
 
     // FacilitatedPaymentsPaymentMethodsComponent.Delegate
     @Override
-    public void onDismissed() {
-        if (mNativeFacilitatedPaymentsController != 0) {
-            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
-                    .onDismissed(mNativeFacilitatedPaymentsController);
-        }
-    }
-
-    @Override
     public void onUiEvent(@UiEvent int uiEvent) {
         if (mNativeFacilitatedPaymentsController != 0) {
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
@@ -92,8 +84,6 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
 
     @NativeMethods
     interface Natives {
-        void onDismissed(long nativeFacilitatedPaymentsController);
-
         void onUiEvent(long nativeFacilitatedPaymentsController, @UiEvent int uiEvent);
 
         void onBankAccountSelected(long nativeFacilitatedPaymentsController, long instrumentId);
