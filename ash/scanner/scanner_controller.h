@@ -6,10 +6,13 @@
 #define ASH_SCANNER_SCANNER_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_session.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -89,6 +92,9 @@ class ASH_EXPORT ScannerController : public SessionObserver {
                           manta::proto::ScannerAction action,
                           scoped_refptr<base::RefCountedMemory> screenshot);
 
+  // Sets mock ScannerOutput data for testing.
+  void SetScannerResponsesForTesting(const std::vector<std::string> responses);
+
   bool HasActiveSessionForTesting() const;
 
   ScannerDelegate* delegate_for_testing() { return delegate_.get(); }
@@ -118,6 +124,9 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   // External dependencies not owned by this class:
   // Session controller, stored in `Shell`. Always outlives this class.
   raw_ref<SessionControllerImpl> session_controller_;
+
+  // Holds mock ScannerOutput data for testing.
+  std::vector<std::string> mock_scanner_responses_for_testing_;
 
   ScopedSessionObserver session_observer_{this};
 

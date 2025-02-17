@@ -57,6 +57,9 @@ class ASH_EXPORT ScannerSession {
       manta::proto::ScannerAction unpopulated_action,
       PopulateActionCallback callback);
 
+  void SetMockScannerOutput(
+      std::unique_ptr<manta::proto::ScannerOutput> mock_output);
+
  private:
   void OnActionsReturned(
       scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
@@ -66,6 +69,7 @@ class ASH_EXPORT ScannerSession {
       manta::MantaStatus status);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
+  std::unique_ptr<manta::proto::ScannerOutput> mock_scanner_output_;
 
   base::WeakPtrFactory<ScannerSession> weak_ptr_factory_{this};
 };

@@ -2794,6 +2794,7 @@ Called by update_extension_histograms.py.-->
   <int value="1920" label="AUTOFILLPRIVATE_REMOVEADDRESS"/>
   <int value="1921" label="AUTOFILLPRIVATE_REMOVEPAYMENTSENTITY"/>
   <int value="1922" label="PRINTING_GETJOBSTATUS"/>
+  <int value="1923" label="AUTOTESTPRIVATE_OVERRIDESCANNERRESPONSESFORTESTING"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

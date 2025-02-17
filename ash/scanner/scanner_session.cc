@@ -13,6 +13,7 @@
 
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
@@ -180,11 +181,23 @@ void ScannerSession::FetchActionsForImage(
   scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes =
       DownscaleImageIfNeeded(std::move(jpeg_bytes));
 
+  if (mock_scanner_output_) {
+    OnActionsReturned(downscaled_jpeg_bytes, base::TimeTicks::Now(),
+                      std::move(callback), std::move(mock_scanner_output_),
+                      manta::MantaStatus(manta::MantaStatusCode::kOk));
+    return;
+  }
+
   delegate_->FetchActionsForImage(
       downscaled_jpeg_bytes,
       base::BindOnce(&ScannerSession::OnActionsReturned,
                      weak_ptr_factory_.GetWeakPtr(), downscaled_jpeg_bytes,
                      base::TimeTicks::Now(), std::move(callback)));
+}
+
+void ScannerSession::SetMockScannerOutput(
+    std::unique_ptr<manta::proto::ScannerOutput> mock_output) {
+  mock_scanner_output_ = std::move(mock_output);
 }
 
 void ScannerSession::OnActionsReturned(
@@ -226,6 +239,12 @@ void ScannerSession::PopulateAction(
     scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
     manta::proto::ScannerAction unpopulated_action,
     PopulateActionCallback callback) {
+  if (mock_scanner_output_) {
+    OnActionPopulated(std::move(callback), std::move(mock_scanner_output_),
+                      {manta::MantaStatusCode::kOk});
+    return;
+  }
+
   delegate_->FetchActionDetailsForImage(
       std::move(downscaled_jpeg_bytes), std::move(unpopulated_action),
       base::BindOnce(&OnActionPopulated, std::move(callback)));
