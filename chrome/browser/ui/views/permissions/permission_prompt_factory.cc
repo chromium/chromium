@@ -139,13 +139,14 @@ bool ShouldCurrentRequestUseExclusiveAccessUI(
     permissions::PermissionPrompt::Delegate* delegate) {
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
-  return std::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
-        return request->request_type() ==
-                   permissions::RequestType::kPointerLock ||
-               request->request_type() ==
-                   permissions::RequestType::kKeyboardLock;
-      });
+  return permissions::feature_params::kKeyboardLockPromptUIStyle.Get() &&
+         std::ranges::all_of(
+             requests, [](permissions::PermissionRequest* request) {
+               return request->request_type() ==
+                          permissions::RequestType::kPointerLock ||
+                      request->request_type() ==
+                          permissions::RequestType::kKeyboardLock;
+             });
 }
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(
