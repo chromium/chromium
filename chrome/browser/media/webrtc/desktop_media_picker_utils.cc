@@ -9,6 +9,7 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 
+#include "base/notreached.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -53,4 +54,20 @@ gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   }
 
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
+}
+
+content::DesktopMediaID::Type AsDesktopMediaIdType(
+    DesktopMediaList::Type type) {
+  switch (type) {
+    case DesktopMediaList::Type::kScreen:
+      return content::DesktopMediaID::Type::TYPE_SCREEN;
+    case DesktopMediaList::Type::kWindow:
+      return content::DesktopMediaID::Type::TYPE_WINDOW;
+    case DesktopMediaList::Type::kWebContents:
+    case DesktopMediaList::Type::kCurrentTab:
+      return content::DesktopMediaID::Type::TYPE_WEB_CONTENTS;
+    case DesktopMediaList::Type::kNone:
+      return content::DesktopMediaID::Type::TYPE_NONE;
+  }
+  NOTREACHED();
 }

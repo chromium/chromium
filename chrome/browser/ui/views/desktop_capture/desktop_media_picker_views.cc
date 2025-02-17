@@ -1015,6 +1015,16 @@ void DesktopMediaPickerDialogView::AcceptSource() {
 void DesktopMediaPickerDialogView::AcceptSpecificSource(
     const DesktopMediaID& source) {
   VLOG(1) << "DMPDV::AcceptSpecificSource: source_id = " << source.id;
+
+  if (tabbed_pane_) {
+    for (size_t i = 0; i < categories_.size(); i++) {
+      if (AsDesktopMediaIdType(categories_[i].type) == source.type) {
+        tabbed_pane_->SelectTabAt(i, /*animate=*/false);
+        break;
+      }
+    }
+  }
+
   accepted_source_ = std::optional<DesktopMediaID>(source);
   AcceptSource();
 }
