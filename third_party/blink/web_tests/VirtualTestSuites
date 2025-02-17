@@ -4680,7 +4680,8 @@
     "bases": [
       "external/wpt/subresource-integrity/signatures/tentative/fetch.any.html",
       "external/wpt/subresource-integrity/signatures/tentative/fetch.any.worker.html",
-      "external/wpt/subresource-integrity/signatures/tentative/fetch.any.sharedworker.html"
+      "external/wpt/subresource-integrity/signatures/tentative/fetch.any.sharedworker.html",
+      "http/tests/inspector-protocol/issues/sri-message-signatures/"
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=SRIMessageSignatureEnforcement"],

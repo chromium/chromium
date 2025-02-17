@@ -2175,7 +2175,8 @@ void URLLoader::ContinueOnResponseStartedImmediately() {
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           MaybeBlockResponseForSRIMessageSignature(
               url_request_->url(), *response_,
-              /*checks_forced_by_initiator=*/!expected_signatures_.empty())) {
+              /*checks_forced_by_initiator=*/!expected_signatures_.empty(),
+              devtools_observer_, devtools_request_id().value_or(""))) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking

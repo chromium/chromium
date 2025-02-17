@@ -590,7 +590,9 @@ std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const GURL& request_url,
     const network::mojom::URLResponseHead& response,
-    bool checks_forced_by_initiator) {
+    bool checks_forced_by_initiator,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer,
+    const std::string& devtools_request_id) {
   // If the feature is disabled, never block resources.
   if (!base::FeatureList::IsEnabled(
           features::kSRIMessageSignatureEnforcement) &&
@@ -603,9 +605,18 @@ MaybeBlockResponseForSRIMessageSignature(
     return std::nullopt;
   }
   auto parsed_headers = ParseSRIMessageSignaturesFromHeaders(*response.headers);
-  if (!parsed_headers->signatures.size() ||
-      ValidateSRIMessageSignaturesOverHeaders(parsed_headers, request_url,
-                                              *response.headers)) {
+  bool passed_validation = !parsed_headers->signatures.size() ||
+                           ValidateSRIMessageSignaturesOverHeaders(
+                               parsed_headers, request_url, *response.headers);
+
+  if (devtools_observer && !devtools_request_id.empty()) {
+    for (const auto& error : parsed_headers->errors) {
+      devtools_observer->OnSRIMessageSignatureError(devtools_request_id,
+                                                    request_url, error);
+    }
+  }
+
+  if (passed_validation) {
     return std::nullopt;
   }
   return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;

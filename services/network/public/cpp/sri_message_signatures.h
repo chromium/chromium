@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -68,7 +69,9 @@ std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const GURL& request_url,
     const network::mojom::URLResponseHead& response,
-    bool checks_forced_by_initiator);
+    bool checks_forced_by_initiator,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer = nullptr,
+    const std::string& devtools_request_id = std::string());
 
 // Adds an `Accept-Signature` header to outgoing requests if the request's
 // initiator asserted signature-based integrity expectations.
