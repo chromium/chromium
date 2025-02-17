@@ -29,6 +29,7 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   let expirationDate: Date?
   // Profile avatar (to be used when multiprofile flag is enabled).
   let avatar: Image?
+  let gaiaID: String
 
 }
 
@@ -42,7 +43,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: TimelineProviderContext) -> Entry {
     return Entry(
       date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
-      avatar: nil)
+      avatar: nil, gaiaID: "")
   }
 
   // Provides a timeline entry that represents the current time and state of a widget.
@@ -50,7 +51,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
     in context: TimelineProviderContext,
     completion: @escaping (Entry) -> Void
   ) {
-    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
+    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, gaia: "")
     completion(entry)
   }
 
@@ -59,7 +60,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
     in context: TimelineProviderContext,
     completion: @escaping (Timeline<Entry>) -> Void
   ) {
-    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
+    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, gaia: "")
     let entries = [entry]
     let timeline = Timeline(
       entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
@@ -137,14 +138,16 @@ struct ShortcutsWidget: Widget {
     func placeholder(in context: TimelineProviderContext) -> Entry {
       return Entry(
         date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
-        avatar: nil)
+        avatar: nil, gaiaID: "")
     }
 
     // Provides a timeline entry that represents the current time and state of a widget.
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
 
       let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
-      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, avatar: avatar)
+      let gaiaID = configuration.gaiaForAccount(account: configuration.profile)
+      let entry = loadMostVisitedSitesEntry(
+        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID)
       return entry
     }
 
@@ -153,7 +156,9 @@ struct ShortcutsWidget: Widget {
       Entry
     > {
       let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
-      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, avatar: avatar)
+      let gaiaID = configuration.gaiaForAccount(account: configuration.profile)
+      let entry = loadMostVisitedSitesEntry(
+        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID)
       let entries = [entry]
       let timeline = Timeline(
         entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
@@ -163,7 +168,7 @@ struct ShortcutsWidget: Widget {
 #endif
 
 // Return ConfigureShortcutsWidgetEntry with the most visited sites
-func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil)
+func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil, gaia: String)
   -> ConfigureShortcutsWidgetEntry
 {
   // A type that specifies the entry of the configured timeline entry of the widget.
@@ -176,7 +181,8 @@ func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil)
     isPreview: isPreview,
     isExpired: false,
     expirationDate: nil,
-    avatar: avatar
+    avatar: avatar,
+    gaiaID: ""
   )
   // A constant of an expired entry.
   let expiredEntry = Entry(
@@ -185,7 +191,8 @@ func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil)
     isPreview: isPreview,
     isExpired: true,
     expirationDate: nil,
-    avatar: avatar
+    avatar: avatar,
+    gaiaID: gaia
   )
   // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery.
   if isPreview {
@@ -240,7 +247,8 @@ func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil)
     isPreview: isPreview,
     isExpired: false,
     expirationDate: expirationDate,
-    avatar: avatar
+    avatar: avatar,
+    gaiaID: gaia
   )
 }
 
@@ -280,10 +288,17 @@ struct ShortcutsWidgetEntryView: View {
 
   // Create a chromewidgetkit:// url to open the given URL.
   private func convertURL(url: URL) -> URL {
-    let query = URLQueryItem(name: "url", value: url.absoluteString)
+    let query_url = URLQueryItem(name: "url", value: url.absoluteString)
     var urlcomps = URLComponents(
-      url: WidgetConstants.ShortcutsWidget.open, resolvingAgainstBaseURL: false)!
-    urlcomps.queryItems = [query]
+      url: WidgetConstants.ShortcutsWidget.open,
+      resolvingAgainstBaseURL: false)!
+    if entry.gaiaID.isEmpty {
+      urlcomps.queryItems = [query_url]
+    } else {
+      // Add the gaia_id parameter only if available.
+      let query_gaia = URLQueryItem(name: "gaia_id", value: entry.gaiaID)
+      urlcomps.queryItems = [query_url, query_gaia]
+    }
     return urlcomps.url!
   }
 
@@ -296,7 +311,10 @@ struct ShortcutsWidgetEntryView: View {
     let spacing: CGFloat = 12
     let padding: CGFloat = 8
 
-    Link(destination: WidgetConstants.ShortcutsWidget.searchUrl) {
+    Link(
+      destination: destinationURL(
+        url: WidgetConstants.ShortcutsWidget.searchUrl, gaia: entry.gaiaID)
+    ) {
       ZStack {
         RoundedRectangle(cornerRadius: cornerRadius)
           .frame(height: height)
