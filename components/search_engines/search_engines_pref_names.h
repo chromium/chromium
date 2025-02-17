@@ -73,15 +73,6 @@ inline constexpr char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
 inline constexpr char kDefaultSearchProviderContextMenuAccessAllowed[] =
     "default_search_provider.context_menu_access_allowed";
 
-// Whether the prepopulated data from which the keywords were loaded is the
-// extended list that is not limited to just 5 engines.
-// This pref helps versioning the keyword data in an orthogonal way from the
-// prepopulated data version numbers, as this is dependent on runtime feature
-// state.
-// TODO(b/304947278): Deprecate when the SearchEngineChoice feature launches.
-inline constexpr char kDefaultSearchProviderKeywordsUseExtendedList[] =
-    "default_search_provider.keywords_use_extended_list";
-
 // Whether having a default search provider is enabled.
 inline constexpr char kDefaultSearchProviderEnabled[] =
     "default_search_provider.enabled";

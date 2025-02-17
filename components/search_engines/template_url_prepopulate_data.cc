@@ -186,8 +186,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed, 0);
   registry->RegisterIntegerPref(
       prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone, 0);
-  registry->RegisterBooleanPref(
-      prefs::kDefaultSearchProviderKeywordsUseExtendedList, false);
 }
 
 int GetDataVersion(PrefService* prefs) {
