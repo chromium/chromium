@@ -22,7 +22,8 @@ using ::testing::WithArg;
 
 namespace {
 
-const quic::QuicIpAddress kValidIPAddress(quic::QuicIpAddress::Loopback4());
+const quiche::QuicheIpAddress kValidIPAddress(
+    quiche::QuicheIpAddress::Loopback4());
 const quic::QuicSocketAddress kValidSocketAddress(kValidIPAddress, 80);
 
 const net::Error kFailureErrorCode = net::Error::ERR_CONNECTION_CLOSED;
