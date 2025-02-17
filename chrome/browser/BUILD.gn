@@ -5357,6 +5357,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/ash/wallpaper",
       "//chrome/browser/ui/ash/web_view",
+      "//chrome/browser/ui/ash/wm:wm",
       "//chrome/browser/ui/views/borealis",
       "//chrome/browser/ui/views/select_file_dialog_extension",
       "//chrome/browser/ui/webui/ash/add_supervision",
@@ -5901,6 +5902,10 @@ static_library("browser") {
 
       # TODO(b/215757706): Find a way to avoid the circular include.
       "//chrome/browser/ui/ash/quick_answers",
+
+      # //c/b/ui/ash/wm/coral_delegate_impl.cc includes
+      # //c/b/signin/identity_manager_factory.h.
+      "//chrome/browser/ui/ash/wm:wm",
 
       # browser_interop's use of ProfileNetworkContextService causes a circular
       # dependency:

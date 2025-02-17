@@ -18,8 +18,10 @@ static_library("wm") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_restore:app_restore",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
@@ -29,6 +31,8 @@ static_library("wm") {
     "//chromeos/ash/services/coral/public/mojom",
     "//chromeos/ui/wm",
     "//components/app_constants",
+    "//components/signin/public/identity_manager",
+    "//components/variations/service",
     "//content/public/browser",
   ]
 }
