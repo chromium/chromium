@@ -59,6 +59,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -455,6 +456,17 @@ void UmaHistogramDeferActivationTimes(const std::string& name,
                                 base::Seconds(25), 125);
 }
 
+bool IsDeviceFlexArcPreloadEnabledByPolicy() {
+  bool device_flex_arc_preload_enabled_allowed;
+  if (ash::CrosSettings::Get()->GetBoolean(
+          ash::kDeviceFlexArcPreloadEnabled,
+          &device_flex_arc_preload_enabled_allowed)) {
+    return device_flex_arc_preload_enabled_allowed;
+  }
+  // If device policy is not set, doesn't allow arcvm dlc.
+  return false;
+}
+
 bool NeedRevenDLC() {
   if (!ash::switches::IsRevenBranding()) {
     return false;
@@ -465,9 +477,9 @@ bool NeedRevenDLC() {
     return false;
   }
 
-  if (!ash::features::IsVpnAppsOnFlexEnabled()) {
-    VLOG(1) << "enable-vpn-apps-on-flex flag is off and cannot "
-               "install arcvm images.";
+  if (!IsDeviceFlexArcPreloadEnabledByPolicy()) {
+    VLOG(1) << "Reven device cannot install arcvm images because the "
+               "DeviceFlexArcPreloadEnabled policy prevents it.";
     return false;
   }
 
