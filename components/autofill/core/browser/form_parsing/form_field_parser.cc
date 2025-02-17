@@ -295,12 +295,16 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     return;
   }
 
-  // TODO(crbug.com/393118480): Include loyalty card fields.
   FieldTypeSet permitted_single_field_types{
       MERCHANT_PROMO_CODE, IBAN_VALUE,
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
   if (AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
     permitted_single_field_types.insert(ADDRESS_HOME_ZIP);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoyaltyCardsFilling)) {
+    permitted_single_field_types.insert(LOYALTY_MEMBERSHIP_ID);
   }
 
   // For historic reasons email addresses are only retained if they appear in
@@ -387,6 +391,13 @@ void FormFieldParser::ParseSingleFields(
   // IBAN pass.
   ParseFormFieldsPass(IbanFieldParser::Parse, context, processed_fields,
                       field_candidates);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoyaltyCardsFilling)) {
+    // Loyalty Cards pass.
+    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, processed_fields,
+                        field_candidates);
+  }
 
   if (AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
     // In some countries we observe address forms that are particularly small
