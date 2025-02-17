@@ -87,6 +87,12 @@ class SearchEngineChoiceService : public KeyedService {
   // TODO(crbug.com/328040066): Move to `//components/regional_capabilities`.
   int GetCountryId();
 
+  // Returns key information needed to show a search engine choice screen, like
+  // the template URLs for the engines to show. See
+  // `search_engines::ChoiceScreenData` for more details.
+  std::unique_ptr<search_engines::ChoiceScreenData> GetChoiceScreenData(
+      const SearchTermsData& search_terms_data);
+
   // Records that the choice was made by settings the timestamp if applicable.
   // Records the location from which the choice was made and the search engine
   // that was chosen.

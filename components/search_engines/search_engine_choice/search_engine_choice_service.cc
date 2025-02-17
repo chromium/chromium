@@ -333,6 +333,28 @@ int SearchEngineChoiceService::GetCountryId() {
   return regional_capabilities_service_->GetCountryId();
 }
 
+std::unique_ptr<search_engines::ChoiceScreenData>
+SearchEngineChoiceService::GetChoiceScreenData(
+    const SearchTermsData& search_terms_data) {
+  TemplateURLService::OwnedTemplateURLVector owned_template_urls;
+
+  // We call `GetPrepopulatedEngines` instead of
+  // `GetSearchProvidersUsingLoadedEngines` because the latter will return the
+  // list of search engines that might have been modified by the user (by
+  // changing the engine's keyword in settings for example).
+  // Changing this will cause issues in the icon generation behavior that's
+  // handled by `generate_search_engine_icons.py`.
+  std::vector<std::unique_ptr<TemplateURLData>> engines =
+      prepopulate_data_resolver_->GetPrepopulatedEngines();
+  for (const auto& engine : engines) {
+    owned_template_urls.push_back(std::make_unique<TemplateURL>(*engine));
+  }
+
+  return std::make_unique<search_engines::ChoiceScreenData>(
+      std::move(owned_template_urls),
+      regional_capabilities_service_->GetCountryId(), search_terms_data);
+}
+
 void SearchEngineChoiceService::RecordChoiceMade(
     ChoiceMadeLocation choice_location,
     TemplateURLService* template_url_service) {
