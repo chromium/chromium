@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -290,7 +289,17 @@ public class SearchActivity extends AsyncInitializationActivity
         mAnchorView = contentView.findViewById(R.id.toolbar);
 
         // Update the status bar's color based on the toolbar color.
-        setStatusAndNavBarColors();
+        Drawable anchorViewBackground = mAnchorView.getBackground();
+        assert anchorViewBackground instanceof GradientDrawable
+                : "Unsupported background drawable.";
+        if (anchorViewBackground instanceof GradientDrawable) {
+            int anchorViewColor =
+                    ((GradientDrawable) anchorViewBackground).getColor().getDefaultColor();
+            StatusBarColorController.setStatusBarColor(
+                    getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                    this.getWindow(),
+                    anchorViewColor);
+        }
 
         BackPressManager backPressManager = new BackPressManager();
         getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
@@ -691,29 +700,17 @@ public class SearchActivity extends AsyncInitializationActivity
         int anchorViewBackgroundColor = getColor(R.color.default_bg_color_dark_elev_3_baseline);
         GradientDrawable anchorViewBackground = (GradientDrawable) mAnchorView.getBackground();
         anchorViewBackground.setColor(anchorViewBackgroundColor);
+        // Update the status bar's color based on the toolbar color.
+        StatusBarColorController.setStatusBarColor(
+                getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                getWindow(),
+                anchorViewBackgroundColor);
+
         GradientDrawable searchBoxBackground =
                 (GradientDrawable) ((LayerDrawable) mSearchBox.getBackground()).getDrawable(0);
         searchBoxBackground.setTintList(
                 AppCompatResources.getColorStateList(
                         this, R.color.toolbar_text_box_background_incognito));
-        setStatusAndNavBarColors();
-    }
-
-    /**
-     * Sets the status and nav bar colors to match the background color of mAnchorView.
-     *
-     * <p>Make sure that mAnchorView has the desired background color before you call this method.
-     */
-    private void setStatusAndNavBarColors() {
-        Drawable anchorViewBackground = mAnchorView.getBackground();
-        assert anchorViewBackground instanceof GradientDrawable
-                : "Unsupported background drawable.";
-        int anchorViewColor =
-                ((GradientDrawable) anchorViewBackground).getColor().getDefaultColor();
-        EdgeToEdgeSystemBarColorHelper helper =
-                getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper();
-        StatusBarColorController.setStatusBarColor(helper, getWindow(), anchorViewColor);
-        helper.setNavigationBarColor(anchorViewColor);
     }
 
     @VisibleForTesting
