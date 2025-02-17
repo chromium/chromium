@@ -16,7 +16,9 @@ import android.widget.RadioGroup;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.prefs.PrefService;
 
 /** A three state(loud, cpss, quiet) radio group preference for notifications and geolocation */
@@ -71,13 +73,33 @@ public class TriStatePermissionPreference extends Preference
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        int type = ContentSettingsType.MAX_VALUE;
+        if (getKey().equals("notifications_tri_state_toggle")) {
+            type = ContentSettingsType.NOTIFICATIONS;
+        } else if (getKey().equals("location_tri_state_toggle")) {
+            type = ContentSettingsType.GEOLOCATION;
+        } else {
+            assert false : "Should not be reached";
+        }
         if (mQuiet.isChecked()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Permissions.CPSS.SiteSettingsChanged.Quiet",
+                    type,
+                    ContentSettingsType.MAX_VALUE);
             mPrefService.setBoolean(mQuietUiPref, true);
             mPrefService.setBoolean(mCpssPref, false);
         } else if (mCpss.isChecked()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Permissions.CPSS.SiteSettingsChanged.CPSS",
+                    type,
+                    ContentSettingsType.MAX_VALUE);
             mPrefService.setBoolean(mQuietUiPref, false);
             mPrefService.setBoolean(mCpssPref, true);
         } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Permissions.CPSS.SiteSettingsChanged.Loud",
+                    type,
+                    ContentSettingsType.MAX_VALUE);
             mPrefService.setBoolean(mQuietUiPref, false);
             mPrefService.setBoolean(mCpssPref, false);
         }
