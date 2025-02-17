@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">सायबरपंक</translation>
 <translation id="1129420403709586868">तुमच्या फोनमधील फोटो आणि मीडिया पहा</translation>
 <translation id="1129850422003387628">अ‍ॅप्स व्यवस्थापित करा</translation>
+<translation id="1130430615924359526">{0,plural, =1{गुप्त मोड बंद करा}other{गुप्त मोड (# विंडो) बंद करा}}</translation>
 <translation id="113050636487300043">प्रोफाइलमध्ये फरक करण्यासाठी नाव आणि रंग थीम निवडा</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> या गटाचा भाग आहे</translation>
 <translation id="1130676589211693127">उजवी बॅटरी पातळी <ph name="PERCENTAGE" />%.</translation>
@@ -1522,6 +1523,7 @@
 <translation id="2042279886444479655">ॲक्टिव्ह प्रोफाइल</translation>
 <translation id="2042427131767688936">हे डिव्हाइस सुरक्षितपणे वापरले जाऊ शकते याची खात्री करण्यासाठी, तुमची संस्था त्याची ऑपरेटिंग सिस्टीम, ब्राउझर आणि सेटिंग्ज या गोष्टींविषयीची माहिती व डिव्हाइसवर कोणते सॉफ्टवेअर इंस्टॉल केले आहे हे पाहू शकते.</translation>
 <translation id="2044014337866019681">कृपया सेशन अनलॉक करण्यासाठी तुम्ही <ph name="ACCOUNT" /> ची पडताळणी करत आहात याची खात्री करा.</translation>
+<translation id="2044750031738659219">{0,plural, =1{अतिथी विंडो बंद करा}other{अतिथी (# विंडो) बंद करा}}</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045211794962848221">तुम्हाला हा विशिष्ट मेसेज पुन्हा दिसणार नाही</translation>
 <translation id="2045838962742066664">शॉर्टहँड टायपिंग</translation>
@@ -7369,6 +7371,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6214106213498203737">वॉटरकलर</translation>
 <translation id="621470880408090483">साइटना ब्लूटूथ डिव्‍हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="6215039389782910006">{1,plural, =1{तुमचा पासवर्ड सुरक्षित ठेवण्यासाठी, <ph name="BRAND" /> हे एका मिनिटाच्या निष्क्रियतेनंतर लॉक होते}other{तुमचा पासवर्ड सुरक्षित ठेवण्यासाठी, <ph name="BRAND" /> हे # मिनिटांच्या निष्क्रियतेनंतर लॉक होते}}</translation>
+<translation id="6216154119179790291">पहिल्या टॅबवर स्क्रोल करा</translation>
 <translation id="6216239400972191926">नाकारलेल्या साइट आणि अ‍ॅप्स</translation>
 <translation id="6216601812881225442">तुमचा कंटेनर आकार बदलण्यास सपोर्ट करत नाही. Linux ला आधीच दिलेल्या जागेचे प्रमाण अ‍ॅडजस्ट करण्यासाठी, बॅकअप घ्या आणि त्यानंतर नवीन कंटेनरमध्ये रिस्टोअर करा.</translation>
 <translation id="6216696360484424239">आपोआप साइन इन करा</translation>
@@ -7565,6 +7568,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6357305427698525450">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" /> किंवा  <ph name="APP_NAME_2" /> मध्ये उघडतील.</translation>
 <translation id="6357750620525943720">इतर स्थिर आयडेंटिफायर (उदा., हॅश किंवा UUIDs)</translation>
 <translation id="6358884629796491903">ड्रॅगन</translation>
+<translation id="6359640073754977254">शेवटच्या टॅबवर स्क्रोल करा</translation>
 <translation id="6361850914223837199">एरर तपशील:</translation>
 <translation id="6362853299801475928">&amp;समस्या नोंदवणे...</translation>
 <translation id="6363786367719063276">लॉग पहा</translation>
@@ -10223,6 +10227,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8258027225380843424">इंपोर्ट यशस्वी!</translation>
 <translation id="8259048637628995340">अखंड अनुभवासाठी तुमचा Android फोन कनेक्ट करा</translation>
 <translation id="8260177673299865994">डाउनलोडशी संबंधित संरक्षणामध्ये सुधारणा करा</translation>
+<translation id="8260473380156923937">Chrome अ‍ॅप्स लवकरच डेप्रिकेट केली जातील. पर्यायांसाठी डेव्हलपरशी किंवा तुमच्या आयटी सेवा संपर्काशी संपर्क साधा.</translation>
 <translation id="8260864402787962391">माउस</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मध्ये हे एक्स्टेंशन सूचीबद्ध केले नाही आणि कदाचित तुमच्या माहिती शिवाय जोडले गेले आहे.</translation>
 <translation id="8261506727792406068">हटवा</translation>
