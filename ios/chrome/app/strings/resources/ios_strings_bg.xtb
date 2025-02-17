@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">Направените промени се виждат от всички в групата</translation>
 <translation id="2755595981383829244">Вече ще получавате известия за съдържание</translation>
 <translation id="2761788987260570878">Направете снимка на обекта на търсенето ви.</translation>
+<translation id="2761898608071930085">Използване на друг профил</translation>
 <translation id="2762000892062317888">току-що</translation>
 <translation id="2772667768515195373">Можете да използвате запазените адреси в различни продукти на Google. Този адрес е запазен в профила ви в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Известия по имейл</translation>
@@ -971,6 +972,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> вече може да използва потребителското име и паролата ви, когато ползва Google Мениджър на пароли за вход в(ъв) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5242899254250321823">Промяна на паролата на уебсайта</translation>
 <translation id="5248640482715684545">Този сайт се опитва да отвори друго приложение.</translation>
+<translation id="5250371859659394278">От неизвестен източник</translation>
 <translation id="5271265092610673171">{count,plural, =1{Едно от задължителните полета е празно. Попълнете го, преди да запазите.}other{Някои от задължителните полета са празни. Попълнете ги, преди да запазите.}}</translation>
 <translation id="5271549068863921519">Запазване на паролата</translation>
 <translation id="5279214046729249716">Да, запазване отделно</translation>
@@ -1724,6 +1726,7 @@
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">Разбрах</translation>
 <translation id="8430694217306051839">Изберете къде да се запази <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Подробности за групата раздели</translation>
 <translation id="8438566539970814960">Подобряване на търсенията и сърфирането</translation>
 <translation id="8439758443371991593">Скриване на „Добавяне към списъка за четене“</translation>
 <translation id="8449869326050867919">Паролата е споделена</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8722229818691036192">Профили на това устройство</translation>
 <translation id="8722649775263832315">Докоснете или откройте, за да търсите каквото и да е с Google Обектив</translation>
 <translation id="8723088494871522141">Скриване на „Подходящи за вас отзиви за продукт“</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} раздел}other{{COUNT} раздела}}</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8728922029615312208">Затваряне на всички</translation>
 <translation id="8730621377337864115">Готово</translation>

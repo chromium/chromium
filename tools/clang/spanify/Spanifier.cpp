@@ -1774,7 +1774,7 @@ class Spanifier {
                             hasLHS(lhs_expr_variations)),
             unaryOperator(hasOperatorName("++"),
                           hasUnaryOperand(lhs_expr_variations)),
-            // Unsafe std::raw_ptr arithmetic:
+            // Unsafe base::raw_ptr arithmetic:
             cxxOperatorCallExpr(
                 anyOf(hasOverloadedOperatorName("[]"), hasOperatorName("++")),
                 hasArgument(0, lhs_expr_variations))))));

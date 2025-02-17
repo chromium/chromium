@@ -24,4 +24,8 @@ void TestCoralDelegate::OpenFeedbackDialog(
     const std::string& group_description,
     ScannerDelegate::SendFeedbackCallback send_feedback_callback) {}
 
+bool TestCoralDelegate::CanUseGenerativeAiForCurrentProfile() {
+  return true;
+}
+
 }  // namespace ash

@@ -309,7 +309,7 @@ BASE_FEATURE(kMergeSubtypes, "MergeSubtypes", ENABLED);
 // are enabled.
 BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
-             DISABLED);
+             enable_if(IS_ANDROID));
 
 // Enables additional site search providers for the Site search Starter Pack.
 BASE_FEATURE(kStarterPackExpansion,

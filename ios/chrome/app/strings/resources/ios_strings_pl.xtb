@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="1044891598689252897">Strony będą działać normalnie</translation>
 <translation id="104491362976654916">Strona offline</translation>
+<translation id="1049200476149974839">zaprasza Cię do grupy kart. Każda osoba mająca link może edytować wszystkie karty, więc zachowaj ostrożność. Link wygaśnie za 48 godzin.</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Wylogowano. Zaloguj się ponownie, aby korzystać z zakładek, haseł i innych ustawień na swoim koncie.</translation>
 <translation id="1054745118061919935">Przechodząc dalej, akceptujesz <ph name="BEGIN_LINK" />Warunki korzystania z usługi<ph name="END_LINK" />.</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">Konto zarządzane</translation>
 <translation id="1358214951266274152">Otwórz skopiowany link</translation>
 <translation id="1360432990279830238">Wylogować i wyłączyć synchronizację?</translation>
+<translation id="1362192716574455663">Dotychczasowe dane przeglądania nie zostaną przeniesione na konto służbowe. Nadal możesz z nich korzystać, jeśli się wylogujesz lub dodasz konto osobiste.</translation>
 <translation id="1363028406613469049">Utwór</translation>
 <translation id="1364367057792633742">Nowa karta</translation>
 <translation id="1365106417372288489">Twój iPhone został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">Zamknij grupę</translation>
 <translation id="178400879184240105">Twoje hasła są unikalne</translation>
 <translation id="17906873777101817">Oferuj zapisywanie haseł i kluczy dostępu</translation>
+<translation id="1794893174442046596">Grupa kart</translation>
 <translation id="1807893857950749072">Zezwól na powiadomienia ze śledzenia cen…</translation>
 <translation id="1810976980198522421">Anuluj</translation>
 <translation id="1815941218935345331">Kod dostępu</translation>
@@ -427,6 +430,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2755485474385016903">Wszyscy członkowie grupy widzą wprowadzone zmiany</translation>
 <translation id="2755595981383829244">Będziesz teraz otrzymywać powiadomienia o treściach</translation>
 <translation id="2761788987260570878">Zrób zdjęcie wyników wyszukiwania</translation>
+<translation id="2761898608071930085">Użyj innego konta</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
 <translation id="2772667768515195373">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres jest zapisany na Twoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E-maile z powiadomieniami</translation>
@@ -1724,6 +1728,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8430694217306051839">Wybierz, gdzie zapisać plik <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Szczegóły grupy kart</translation>
 <translation id="8438566539970814960">Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8439758443371991593">Ukryj opcję Dodaj do listy Do przeczytania</translation>
 <translation id="8449869326050867919">Hasło udostępnione</translation>
@@ -1801,6 +1806,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8722229818691036192">Konta na tym urządzeniu</translation>
 <translation id="8722649775263832315">Aby rozpocząć wyszukiwanie za pomocą Obiektywu Google, kliknij coś lub zaznacz</translation>
 <translation id="8723088494871522141">Ukryj „Opinie o produktach dla Ciebie”</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} karta}few{{COUNT} karty}many{{COUNT} kart}other{{COUNT} karty}}</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8728922029615312208">Zamknij wszystko</translation>
 <translation id="8730621377337864115">Gotowe</translation>

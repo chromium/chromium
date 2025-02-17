@@ -5,6 +5,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_settings_util.h"
+#include "chrome/browser/glic/interactive_glic_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
@@ -44,18 +45,14 @@ auto ElementIsHiddenStateChange(
 }
 }  // namespace
 
-class GlicSettingsUtilUiTest : public InteractiveFeaturePromoTest {
+class GlicSettingsUtilUiTest
+    : public glic::test::InteractiveGlicFeaturePromoTest {
  public:
-  GlicSettingsUtilUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         features::kGlicKeyboardShortcutNewBadge},
-        {});
-  }
+  GlicSettingsUtilUiTest() = default;
   ~GlicSettingsUtilUiTest() override = default;
 
   void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    glic::test::InteractiveGlicFeaturePromoTest::SetUpOnMainThread();
     g_browser_process->local_state()->SetBoolean(
         glic::prefs::kGlicLauncherEnabled, true);
   }
@@ -79,9 +76,6 @@ class GlicSettingsUtilUiTest : public InteractiveFeaturePromoTest {
   const DeepQuery kKeyboardShortcutHelpBubbleQuery{
       "settings-ui",        "settings-main", "settings-basic-page",
       "settings-glic-page", "help-bubble",   "#close"};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettings) {

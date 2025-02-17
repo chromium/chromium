@@ -5864,80 +5864,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LoadingPredictor.PreconnectCount" units="origins"
-    expires_after="2023-08-27">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>1457018</component>
-  <summary>
-    The number of origins that were preconnected for a page load. It includes
-    preconnect attempts that don't result in new opened connection. Logged after
-    the preconnect manager completes all jobs attached to the page load.
-  </summary>
-</histogram>
-
-<histogram name="LoadingPredictor.PreconnectHitsPercentage" units="%"
-    expires_after="2023-09-17">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>1457018</component>
-  <summary>
-    The percentage of origins that were preconnected and requested by a page
-    load to the total number of origins that were preconnected for a page load.
-    Logged after the preconnect manager completes all jobs attached to the page
-    load.
-  </summary>
-</histogram>
-
-<histogram base="true" name="LoadingPredictor.PreconnectLearningCount"
-    units="origins" expires_after="2023-07-16">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>1457018</component>
-  <summary>
-    When the loading predictor has origins in the local database for a given
-    navigation to preconnect and preresolve, the count of predicted origins.
-  </summary>
-</histogram>
-
-<histogram base="true" name="LoadingPredictor.PreconnectLearningPrecision"
-    units="%" expires_after="2023-12-12">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>1457018</component>
-  <summary>
-    When the loading predictor has origins in the local database for a given
-    navigation to preconnect and preresolve, the precision of the predictions in
-    percentage. This is computed as 100 \times \frac{correct
-    predictions}{predictions}.
-  </summary>
-</histogram>
-
-<histogram base="true" name="LoadingPredictor.PreconnectLearningRecall"
-    units="%" expires_after="2023-09-17">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>1457018</component>
-  <summary>
-    When the loading predictor has origins in the local database for a given
-    navigation to preconnect and preresolve, the recall of the predictions, in
-    percentage. This is computed as 100 \times \frac{correct predictions}{all
-    prefetchable subresources}.
-  </summary>
-</histogram>
-
-<histogram base="true" name="LoadingPredictor.PreconnectLearningRedirectStatus"
-    enum="ResourcePrefetchPredictorRedirectStatus" expires_after="2023-06-25">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>1457018</component>
-  <summary>
-    When the prefetch predictor has origins in the local database for a given
-    navigation to preconnect and preresolve, records stats about whether
-    redirect was predicted correctly or incorrectly.
-  </summary>
-</histogram>
-
 <histogram name="LoadingPredictor.PredictorDatabaseFileSize" units="KiB"
     expires_after="2025-07-06">
   <owner>yoichio@chromium.org</owner>
@@ -5946,30 +5872,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The size, in kilobytes, of the database used for the loading prediction.
     Values can range from 1KiB to 1GiB. Logged at browser startup and daily.
-  </summary>
-</histogram>
-
-<histogram name="LoadingPredictor.PreresolveCount" units="hosts"
-    expires_after="2023-12-12">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>1457018</component>
-  <summary>
-    The number of hosts that were preresolved for a page load. It includes only
-    successful DNS lookups. Logged after the preconnect manager completes all
-    jobs attached to the page load.
-  </summary>
-</histogram>
-
-<histogram name="LoadingPredictor.PreresolveHitsPercentage" units="%"
-    expires_after="2023-12-12">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>1457018</component>
-  <summary>
-    The percentage of hosts that were preresolved and requested by a page load
-    to the total number of hosts that were preresolved for a page load. Logged
-    after the preconnect manager completes all jobs attached to the page load.
   </summary>
 </histogram>
 

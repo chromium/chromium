@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Layout</translation>
 <translation id="2244834438220057800">grünen</translation>
 <translation id="225692081236532131">Aktivierungsstatus</translation>
-<translation id="2265792117169966196">Transkriptionsmodell für <ph name="LANGUAGE_NAME" /> auswählen und herunterladen</translation>
 <translation id="2267285889943769271">Screenshot hinzufügen</translation>
 <translation id="2268044343513325586">Verfeinern</translation>
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Gerät kann nicht getestet werden. Wechsle zum Testen in den Laptop-Modus.</translation>
 <translation id="3916998944874125962">Screenshot aufnehmen</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
-<translation id="3924445055519423964">Zum Zusammenfassen der Webseite/PDF-Datei klicken</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3934185438132762746">Nicht zugewiesen: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="4483498983731992167">Transkript kann nicht erstellt werden</translation>
 <translation id="4486524074141928967">Du wirst um <ph name="TIME" /> abgemeldet</translation>
-<translation id="4487890678161807486">Auswahl der Sprache des Transkripts öffnen</translation>
 <translation id="4500722292849917410">Tastenkombination nicht verfügbar. Drücke eine neue Tastenkombination unter Verwendung einer Modifikatortaste (Strg, Alt, Umschalttaste oder <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Farbe der Benutzeroberfläche</translation>
 <translation id="4503223151711056411">Linkspfeil</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Seiten</translation>
 <translation id="4989542687859782284">Nicht verfügbar</translation>
 <translation id="4999333166442584738">Bericht ausblenden</translation>
-<translation id="5005695757087124131">Zum Vereinfachen des ausgewählten Texts klicken</translation>
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Designfarbe</translation>
@@ -1395,7 +1391,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7425832472614771259">Transkriptmodell für <ph name="LANGUAGE_NAME" /> zu <ph name="PROGRESS_PERCENTAGE" /> % heruntergeladen</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Dieser APN kann nicht deaktiviert oder entfernt werden. Aktivierte APNs vom Typ „<ph name="ATTACH" />“ müssen deaktiviert oder entfernt werden.</translation>
-<translation id="7453118953486228603">Zum Zusammenfassen des ausgewählten Texts klicken</translation>
 <translation id="7458970041932198923">Stelle eine Verbindung zu einem Netzwerk her und lade die Seite neu, um Avatare anzusehen und festzulegen.</translation>
 <translation id="7469648432129124067">Portal erkannt</translation>
 <translation id="7481312909269577407">Vorwärts</translation>

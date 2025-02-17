@@ -40,7 +40,7 @@
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/user_annotations/test_user_annotations_service.h"
+#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,6 +57,7 @@ using PredictionsByGlobalId = AutofillAiModelExecutor::PredictionsByGlobalId;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -107,16 +108,6 @@ class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
       (const override));
 };
 
-const GURL& url() {
-  static GURL url = GURL("https://example.com");
-  return url;
-}
-
-const url::Origin& origin() {
-  static url::Origin origin = url::Origin::Create(url());
-  return origin;
-}
-
 class BaseAutofillAiManagerTest : public testing::Test {
  public:
   BaseAutofillAiManagerTest() {
@@ -150,11 +141,6 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
                       {"send_title_url", "false"}});
     ON_CALL(client(), GetModelExecutor)
         .WillByDefault(Return(&model_executor()));
-    ON_CALL(client(), GetLastCommittedOrigin)
-        .WillByDefault(ReturnRef(origin()));
-    ON_CALL(client(), GetTitle).WillByDefault(Return("title"));
-    ON_CALL(client(), GetUserAnnotationsService)
-        .WillByDefault(Return(&user_annotations_service_));
     ON_CALL(client(), GetEntityDataManager)
         .WillByDefault(Return(&entity_data_manager_));
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
@@ -193,7 +179,6 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
   }
 
  private:
-  user_annotations::TestUserAnnotationsService user_annotations_service_;
   autofill::AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<autofill::EntityTable>()};
   autofill::EntityDataManager entity_data_manager_{
@@ -380,8 +365,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   std::optional<autofill::EntityInstance> entity;
   AutofillAiClient::SavePromptAcceptanceCallback save_callback;
   EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
-      .WillOnce(
-          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
+      .WillOnce(DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
   manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
@@ -390,11 +374,9 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_TRUE(autofill_ai_shows_bubble);
 
   // Accept the bubble.
-  AutofillAiClient::SavePromptAcceptanceResult callback_result =
-      AutofillAiClient::SavePromptAcceptanceResult(
-          /*prompt_was_accepted=*/true);
-  callback_result.entity = entity;
-  std::move(save_callback).Run(callback_result);
+  std::move(save_callback)
+      .Run(AutofillAiClient::SavePromptAcceptanceResult(
+          /*did_user_interact=*/true, entity));
   // Tests that the expected entity was saved.
   std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
   ASSERT_EQ(saved_entities.size(), 1u);
@@ -427,10 +409,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   const bool autofill_ai_shows_bubble = std::get<1>(autofill_callback.Take());
   EXPECT_TRUE(autofill_ai_shows_bubble);
 
-  // Accept the bubble.
-  std::move(save_callback)
-      .Run(AutofillAiClient::SavePromptAcceptanceResult(
-          /*prompt_was_accepted=*/false));
+  // Decline the bubble.
+  std::move(save_callback).Run(AutofillAiClient::SavePromptAcceptanceResult());
   // Tests that the no entity was saved.
   std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
   EXPECT_EQ(saved_entities.size(), 0u);
@@ -498,8 +478,7 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
   std::optional<autofill::EntityInstance> entity;
   AutofillAiClient::SavePromptAcceptanceCallback save_callback;
   EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
-      .WillOnce(
-          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
+      .WillOnce(DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
   manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
@@ -508,11 +487,9 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
   EXPECT_TRUE(autofill_ai_shows_bubble);
 
   // Accept the bubble.
-  AutofillAiClient::SavePromptAcceptanceResult callback_result =
-      AutofillAiClient::SavePromptAcceptanceResult(
-          /*prompt_was_accepted=*/true);
-  callback_result.entity = entity;
-  std::move(save_callback).Run(callback_result);
+  std::move(save_callback)
+      .Run(AutofillAiClient::SavePromptAcceptanceResult(
+          /*did_user_interact=*/true, entity));
   // Tests that the expected entity was saved.
   std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
   ASSERT_EQ(saved_entities.size(), 2u);
@@ -557,8 +534,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   std::optional<autofill::EntityInstance> entity;
   AutofillAiClient::SavePromptAcceptanceCallback save_callback;
   EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
-      .WillOnce(
-          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
+      .WillOnce(DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
   manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
@@ -567,11 +543,9 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   EXPECT_TRUE(autofill_ai_shows_bubble);
 
   // Accept the bubble.
-  AutofillAiClient::SavePromptAcceptanceResult callback_result =
-      AutofillAiClient::SavePromptAcceptanceResult(
-          /*prompt_was_accepted=*/true);
-  callback_result.entity = entity;
-  std::move(save_callback).Run(callback_result);
+  std::move(save_callback)
+      .Run(AutofillAiClient::SavePromptAcceptanceResult(
+          /*did_user_interact=*/true, entity));
   // Tests that the expected entity was updated.
   std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
 
@@ -605,8 +579,7 @@ TEST_F(AutofillAiManagerTest,
       autofill_callback;
   EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
   EXPECT_CALL(autofill_callback,
-              Run(Pointer(ineligible_form_structure.get()), false))
-      .Times(1);
+              Run(Pointer(ineligible_form_structure.get()), false));
   manager().MaybeImportForm(std::move(ineligible_form_structure),
                             autofill_callback.Get());
 }
@@ -614,8 +587,6 @@ TEST_F(AutofillAiManagerTest,
 class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
  public:
   IsFormAndFieldEligibleAutofillAiTest() {
-    ON_CALL(client(), GetLastCommittedOrigin)
-        .WillByDefault(ReturnRef(origin()));
     autofill::test::FormDescription form_description = {
         .fields = {{.role = autofill::NAME_FIRST,
                     .heuristic_type = autofill::NAME_FIRST}}};

@@ -43,8 +43,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -185,16 +183,16 @@ void OpenInBrowser(const GURL& event_url) {
 }
 
 ash::ManagementDeviceMode GetManagementDeviceMode(
-    policy::BrowserPolicyConnectorAsh* connector) {
-  if (!connector->IsDeviceEnterpriseManaged()) {
+    policy::BrowserPolicyConnectorAsh& connector) {
+  if (!connector.IsDeviceEnterpriseManaged()) {
     return ash::ManagementDeviceMode::kNone;
   }
 
-  if (connector->IsKioskEnrolled()) {
+  if (connector.IsKioskEnrolled()) {
     return ash::ManagementDeviceMode::kKioskSku;
   }
 
-  switch (connector->GetEnterpriseMarketSegment()) {
+  switch (connector.GetEnterpriseMarketSegment()) {
     case policy::MarketSegment::UNKNOWN:
       return ash::ManagementDeviceMode::kOther;
     case policy::MarketSegment::ENTERPRISE:
@@ -283,16 +281,18 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
   }
 };
 
-SystemTrayClientImpl::SystemTrayClientImpl()
-    : system_tray_(ash::SystemTray::Get()),
+SystemTrayClientImpl::SystemTrayClientImpl(
+    ash::system::SystemClock& system_clock,
+    policy::BrowserPolicyConnectorAsh& browser_policy_connector_ash)
+    : system_clock_(&system_clock),
+      browser_policy_connector_ash_(&browser_policy_connector_ash),
+      system_tray_(ash::SystemTray::Get()),
       enterprise_account_observer_(
           std::make_unique<EnterpriseAccountObserver>(this)) {
   // If this observes clock setting changes before ash comes up the IPCs will
   // be queued on |system_tray_|.
-  ash::system::SystemClock* clock =
-      g_browser_process->platform_part()->GetSystemClock();
-  clock->AddObserver(this);
-  system_tray_->SetUse24HourClock(clock->ShouldUse24HourClock());
+  system_clock_->AddObserver(this);
+  system_tray_->SetUse24HourClock(system_clock_->ShouldUse24HourClock());
 
   // If an upgrade is available at startup then tell ash about it.
   if (UpgradeDetector::GetInstance()->notify_upgrade()) {
@@ -300,10 +300,8 @@ SystemTrayClientImpl::SystemTrayClientImpl()
   }
 
   // If the device is enterprise managed then send ash the enterprise domain.
-  policy::BrowserPolicyConnectorAsh* policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
-      policy_connector->GetDeviceCloudPolicyManager();
+      browser_policy_connector_ash_->GetDeviceCloudPolicyManager();
   if (policy_manager) {
     policy_manager->core()->store()->AddObserver(this);
   }
@@ -327,15 +325,13 @@ SystemTrayClientImpl::~SystemTrayClientImpl() {
 
   system_tray_->SetClient(nullptr);
 
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
-      connector->GetDeviceCloudPolicyManager();
+      browser_policy_connector_ash_->GetDeviceCloudPolicyManager();
   if (policy_manager) {
     policy_manager->core()->store()->RemoveObserver(this);
   }
 
-  g_browser_process->platform_part()->GetSystemClock()->RemoveObserver(this);
+  system_clock_->RemoveObserver(this);
   UpgradeDetector::GetInstance()->RemoveObserver(this);
 }
 
@@ -954,7 +950,9 @@ bool SystemTrayClientImpl::IsUserFeedbackEnabled() {
 }
 
 SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)
-    : system_tray_(nullptr) {
+    : system_clock_(nullptr),
+      browser_policy_connector_ash_(nullptr),
+      system_tray_(nullptr) {
   DCHECK(!g_system_tray_client_instance);
   g_system_tray_client_instance = mock_instance;
 }
@@ -1023,13 +1021,11 @@ void SystemTrayClientImpl::OnStoreError(policy::CloudPolicyStore* store) {
 }
 
 void SystemTrayClientImpl::UpdateDeviceEnterpriseInfo() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   ash::DeviceEnterpriseInfo device_enterprise_info;
   device_enterprise_info.enterprise_domain_manager =
-      connector->GetEnterpriseDomainManager();
+      browser_policy_connector_ash_->GetEnterpriseDomainManager();
   device_enterprise_info.management_device_mode =
-      GetManagementDeviceMode(connector);
+      GetManagementDeviceMode(*browser_policy_connector_ash_);
   if (!last_device_enterprise_info_) {
     last_device_enterprise_info_ =
         std::make_unique<ash::DeviceEnterpriseInfo>();

@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="104491362976654916">آف لائن صفحہ</translation>
+<translation id="1049200476149974839">چاہتے ہیں کہ آپ ٹیب گروپ میں شامل ہوں۔ لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے، اس لیے احتیاط سے شامل ہوں۔ لنک کی معیاد 48 گھنٹے میں ختم ہو جائے گی۔</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
 <translation id="1053651653201045802">سائن آؤٹ ہو گئے۔ اپنے اکاؤنٹ میں بُک مارکس، پاس ورڈز اور مزید استعمال کرنے کے لیے دوبارہ سائن ان کریں۔</translation>
 <translation id="1054745118061919935">جاری رکھ کر آپ <ph name="BEGIN_LINK" />سروس کی شرائط<ph name="END_LINK" /> سے اتفاق کرتے ہیں۔</translation>
@@ -193,6 +194,7 @@
 <translation id="1780152987505130652">گروپ بند کریں</translation>
 <translation id="178400879184240105">آپ کے پاس ورڈز منفرد ہیں</translation>
 <translation id="17906873777101817">پاس ورڈز اور پاس کیز محفوظ کرنے کی پیشکش</translation>
+<translation id="1794893174442046596">ٹیب گروپ</translation>
 <translation id="1807893857950749072">قیمت کی ٹریکنگ سے متعلق اطلاعات کی اجازت دیں…</translation>
 <translation id="1810976980198522421">منسوخ کریں</translation>
 <translation id="1815941218935345331">پاس کوڈ</translation>
@@ -427,6 +429,7 @@
 <translation id="2755485474385016903">کی گئی تبدیلیاں گروپ میں موجود ہر شخص دیکھتا ہے</translation>
 <translation id="2755595981383829244">اب آپ کو مواد کی اطلاعات موصول ہوں گی</translation>
 <translation id="2761788987260570878">اپنی تلاش کی ایک تصویر لیں</translation>
+<translation id="2761898608071930085">کوئی دوسرا اکاؤنٹ استعمال کریں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="2772667768515195373">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ یہ پتہ آپ کے Google اکاؤنٹ میں محفوظ ہے، <ph name="USER_EMAIL" />۔</translation>
 <translation id="2773344962924806829">ای میل اطلاعات</translation>
@@ -1724,6 +1727,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8428634594422941299">سمجھ آ گئی</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) محفوظ کرنے کی جگہ کا انتخاب کریں</translation>
+<translation id="8434837876193928924">ٹیب گروپ کی تفصیلات</translation>
 <translation id="8438566539970814960">تلاشوں اور براؤزنگ کو بہتر بنائیں</translation>
 <translation id="8439758443371991593">'پڑھنے کی فہرست میں شامل کریں' کو چھپائیں</translation>
 <translation id="8449869326050867919">پاس ورڈ کا اشتراک کر دیا گیا</translation>
@@ -1801,6 +1805,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8722229818691036192">اس آلے پر موجود اکاؤنٹس</translation>
 <translation id="8722649775263832315">‏‫Google لینز کے ساتھ کچھ بھی تلاش کرنے کے لیے تھپتھپائیں یا نمایاں کریں</translation>
 <translation id="8723088494871522141">"آپ کیلئے پروڈکٹ کے تجزیے" کو چھپائیں</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{‫{COUNT} ٹیب}other{‫{COUNT} ٹیبز}}</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8728922029615312208">تمام بند کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>

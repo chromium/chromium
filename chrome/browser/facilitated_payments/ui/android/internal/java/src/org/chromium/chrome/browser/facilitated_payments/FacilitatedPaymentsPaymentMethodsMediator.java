@@ -58,7 +58,6 @@ import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.facilitated_payments.core.ui_utils.FopSelectorAction;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.components.payments.ui.InputProtector;
@@ -188,11 +187,6 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     void dismiss() {
         mModel.set(SCREEN, UNINITIALIZED);
         mModel.set(VISIBLE_STATE, HIDDEN);
-    }
-
-    // TODO: b/350660307 - Remove reason parameter.
-    public void onDismissed(@StateChangeReason int reason) {
-        mDelegate.onDismissed();
     }
 
     public void onUiEvent(@UiEvent int uiEvent) {

@@ -112,7 +112,7 @@ void PageImpl::SetResizableForTesting(std::optional<bool> resizable) {
 
 void PageImpl::SetResizable(std::optional<bool> resizable) {
   resizable_ = resizable;
-  delegate_->OnCanResizeFromWebAPIChanged();
+  delegate_->OnWebApiWindowResizableChanged();
 }
 
 std::optional<bool> PageImpl::GetResizable() {

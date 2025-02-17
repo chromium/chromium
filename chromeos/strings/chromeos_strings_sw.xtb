@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Swichi ya muundo</translation>
 <translation id="2244834438220057800">rangi ya kijani</translation>
 <translation id="225692081236532131">Hali ya kuwasha</translation>
-<translation id="2265792117169966196">Chagua na upakue mfumo wa manukuu wa <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Weka picha ya skrini</translation>
 <translation id="2268044343513325586">Chuja</translation>
 <translation id="2271469253353559191">Ratiba ya hali nyeusi</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Huwezi kujaribu kifaa. Badilisha utumie hali ya kompyuta ya kupakata ili ujaribu.</translation>
 <translation id="3916998944874125962">piga picha ya skrini</translation>
 <translation id="3923184630988645767">Matumizi ya data</translation>
-<translation id="3924445055519423964">Bofya ili kutayarisha muhtasari wa ukurasa wa wavuti au faili ya PDF</translation>
 <translation id="3932043219784172185">Hakuna kifaa kilichounganishwa</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> haijakabidhiwa</translation>
 <translation id="3941014780699102620">Imeshindwa kusuluhisha seva pangishi</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
 <translation id="4483498983731992167">Imeshindwa kutayarisha manukuu</translation>
 <translation id="4486524074141928967">Utaondolewa kwenye akaunti <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Fungua kiteua lugha ya unukuzi</translation>
 <translation id="4500722292849917410">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato ukitumia kitufe cha kurekebisha (ctrl, alt, shift au <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Rangi ya kiolesura</translation>
 <translation id="4503223151711056411">Kishale cha kushoto</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Kurasa</translation>
 <translation id="4989542687859782284">Hayapatikani</translation>
 <translation id="4999333166442584738">Ficha ripoti</translation>
-<translation id="5005695757087124131">Bofya ili kufupisha maandishi uliyochagua</translation>
 <translation id="500920857929044050">Komesha jaribio</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Rangi ya mandhari</translation>
@@ -1395,7 +1391,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="7425832472614771259">Mfumo wa manukuu wa <ph name="LANGUAGE_NAME" /> umepakuliwa kwa <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Imeshindwa kuzima au kuondoa APN hii. Hakikisha APN za <ph name="ATTACH" /> ulizowasha zimezimwa au kuondolewa.</translation>
-<translation id="7453118953486228603">Bofya uandae muhtasari wa maandishi uliyochagua</translation>
 <translation id="7458970041932198923">Tafadhali unganisha kwenye mtandao kisha upakie upya ukurasa ili uangalie na uweke ishara.</translation>
 <translation id="7469648432129124067">Imetambua ukurasa wa mwanzo</translation>
 <translation id="7481312909269577407">Mbele</translation>

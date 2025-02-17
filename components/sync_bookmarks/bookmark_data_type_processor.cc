@@ -337,14 +337,6 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
     if (!metadata_str.empty()) {
       LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
                                             /*is_delayed_call=*/true);
-      if (syncer::IsInitialSyncDone(
-              model_metadata.data_type_state().initial_sync_state())) {
-        // There used to be a tracker, which is dropped now due to
-        // `pending_clear_metadata_`. This isn't very different to
-        // ClearMetadataIfStopped(), in the sense that the need to wipe the
-        // local model needs to be considered.
-        TriggerWipeModelUponSyncDisabledBehavior();
-      }
       schedule_save_closure_.Run();
     }
   } else if (model_metadata
@@ -375,16 +367,7 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
   }
 
   if (!bookmark_tracker_) {
-    switch (wipe_model_upon_sync_disabled_behavior_) {
-      case syncer::WipeModelUponSyncDisabledBehavior::kNever:
-        // Nothing to do.
-        break;
-      case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
-        // Remove any previous data that may exist, if its lifetime is strongly
-        // coupled with the tracker's (sync metadata's).
-        bookmark_model_->RemoveAllSyncableNodes();
-        break;
-    }
+    TriggerWipeModelUponSyncDisabledBehavior();
   }
 
   ConnectIfReady();

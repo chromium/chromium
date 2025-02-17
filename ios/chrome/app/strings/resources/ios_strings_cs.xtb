@@ -427,6 +427,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2755485474385016903">Provedené změny vidí všichni ve skupině</translation>
 <translation id="2755595981383829244">Nyní budete dostávat oznámení o obsahu</translation>
 <translation id="2761788987260570878">Vyfoťte, co chcete vyhledat.</translation>
+<translation id="2761898608071930085">Použít jiný účet</translation>
 <translation id="2762000892062317888">právě teď</translation>
 <translation id="2772667768515195373">Uložené adresy můžete používat ve službách Google. Tato adresa je uložena ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E‑mailová oznámení</translation>
@@ -1724,6 +1725,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8428634594422941299">Rozumím</translation>
 <translation id="8430694217306051839">Vyberte, zda soubor <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) chcete uložit</translation>
+<translation id="8434837876193928924">Podrobnosti o skupině karet</translation>
 <translation id="8438566539970814960">Vylepšit vyhledávání a procházení</translation>
 <translation id="8439758443371991593">Skrýt možnost Přidat do seznamu četby</translation>
 <translation id="8449869326050867919">Heslo bylo sdíleno</translation>
@@ -1801,6 +1803,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8722229818691036192">Účty v tomto zařízení</translation>
 <translation id="8722649775263832315">Klepnutím nebo zvýrazněním můžete cokoli vyhledat pomocí Google Lens</translation>
 <translation id="8723088494871522141">Skrýt modul Recenze produktů pro vás</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} karta}few{{COUNT} karty}many{{COUNT} karty}other{{COUNT} karet}}</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
 <translation id="8728922029615312208">Zavřít vše</translation>
 <translation id="8730621377337864115">Hotovo</translation>

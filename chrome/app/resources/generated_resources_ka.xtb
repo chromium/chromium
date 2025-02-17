@@ -1184,6 +1184,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ვერ აგრძელებს <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის გამოყენებას</translation>
 <translation id="1812284620455788548">ტრანსლირდება <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">სერვისები</translation>
+<translation id="1813828404076816564">აირჩიეთ გამოხმაურების ღილაკი, რომ გამოეხმაუროთ ჩანართების გაზიარებული ჯგუფის ფუნქციას</translation>
 <translation id="18139523105317219">EDI მხარის სახელი</translation>
 <translation id="1815083418640426271">ჩასმა ჩვეულებრივი ტექსტის სახით</translation>
 <translation id="1815097521077272760">თქვენ მოწვეული ხართ ამ თამაშის კლავიატურით მართვის საცდელად.</translation>
@@ -1542,7 +1543,6 @@
 <translation id="206308717637808771">მონაცემები წაიშლება ყველა ფანჯრის დახურვისას. მონაცემებსა და იმ საიტზე, რომელსაც ათვალიერებთ, ერთი და იგივე პარამეტრი ვრცელდება.</translation>
 <translation id="2065405795449409761">Chrome-ს ავტომატიზებული სატესტო პროგრამული უზრუნველყოფა აკონტროლებს.</translation>
 <translation id="2066700471214517561">სხივთწარმომქმნელი მიკროფონი Chromebook-ის გამოყენებისას ხმის მკაფიოდ გასაგებად.</translation>
-<translation id="2067591192939433190">„<ph name="VENDOR_NAME" />“-ის</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />-მა დაასრულა <ph name="PRINTER_NAME" />-ზე ბეჭდვა</translation>
 <translation id="2071393345806050157">ლოკალური ჟურნალის ფაილი არ არის.</translation>
 <translation id="2071692954027939183">შეტყობინებები ავტომატურად დაიბლოკა, რადგან, როგორც წესი, მათ მიღებას კრძალავთ ხოლმე</translation>
@@ -4112,6 +4112,7 @@
 <translation id="3857807444929313943">აიღეთ თითი, შემდეგ კი ხელახლა შეეხეთ</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="385939467708172187">ძლიერი პაროლის გამოყენება</translation>
+<translation id="3859869403161297890">გამოგვეხმაურეთ ჩანართების გაზიარებული ჯგუფების შესახებ აქ</translation>
 <translation id="3859987779882450877">ავტომატურად შემოგთავაზებთ და შექმნის ჯგუფებს ღია ჩანართებისგან</translation>
 <translation id="386009056910366930">ჩანართების ჯგუფის „<ph name="GROUP_NAME" />“ მართვა</translation>
 <translation id="3861638017150647085">მომხმარებლის სახელი „<ph name="USERNAME" />“ მიუწვდომელია</translation>
@@ -6516,7 +6517,6 @@
 <translation id="5595307023264033512">საიტების მიერ გამოყენებული მეხსიერების საერთო მოცულობა: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">მისამართის რედაქტირება</translation>
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
-<translation id="5599819890022137981">Windows Hello-ს</translation>
 <translation id="5600348067066185292">ინსტალაცია რამდენიმე მარტივი ნაბიჯისგან შედგება. სანამ თქვენს კომპიუტერში ცვლილებები შევა, დადასტურების კიდევ ერთი საშუალება გექნებათ.</translation>
 <translation id="5600706100022181951">განახლება მობილური ინტერნეტის პაკეტის <ph name="UPDATE_SIZE_MB" /> მბაიტს მოიხმარს. გსურთ გაგრძელება?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8167,6 +8167,7 @@
 <translation id="6805478749741295868">ეს ხელოვნური ინტელექტის ექსპერიმენტული ფუნქციაა და ის ყოველთვის არ იქნება ზუსტი.</translation>
 <translation id="6805647936811177813">შედით <ph name="TOKEN_NAME" />-ში, კლიენტის სერტიფიკატის <ph name="HOST_NAME" />-დან იმპორტისთვის.</translation>
 <translation id="680572642341004180">RLZ-ის მიდევნების ჩართვა <ph name="SHORT_PRODUCT_OS_NAME" />-ში.</translation>
+<translation id="6805817411033102703">გამოხმაურება ჩანართების გაზიარებული ჯგუფების შესახებ</translation>
 <translation id="6806089545527108739">აკრძალვა, მაგრამ მოგვიანებით კითხვის კვლავ დასმა</translation>
 <translation id="680644983456221885">რეალურ დროში მოქმედი, პროაქტიური დაცვა სახიფათო საიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან. აღნიშნული შესაძლებელია თქვენი დათვალიერების მონაცემების Google-ში გაგზავნის გზით</translation>
 <translation id="6806781719264274042">მხოლოდ თქვენი კონტაქტები, Google ანგარიშით <ph name="LINK_BEGIN" />კონტაქტების ნახვა<ph name="LINK_END" /></translation>
@@ -8665,6 +8666,7 @@
 <translation id="7160911207516219534">გვერდითი პანელები</translation>
 <translation id="716210145227921528">წვდომის გასაღები წაიშალა</translation>
 <translation id="7165263843655074092">ამ მოწყობილობაზე სარგებლობთ უსაფრთხოების სტანდარტული საშუალებებით</translation>
+<translation id="7166017546802325772">ამ ჯგუფში განახლებები არ არის</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“-ს შეუძლია გამოსახულებების, ვიდეოს და ხმოვანი ფაილების წაკითხვა დაფიქსირებულ ადგილებში.</translation>
 <translation id="7166815366658507447">უსადენო ქსელი ჩართულია</translation>
 <translation id="7167327771183668296">ავტომატური დაწკაპუნებები</translation>
@@ -9240,7 +9242,6 @@
 <translation id="7586498138629385861">Chrome გააგრძელებს მუშაობას, სანამ Chrome პროგრამები გახსნილი იქნება.</translation>
 <translation id="7589461650300748890">ფრთხილად!</translation>
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
-<translation id="7591317506733736159">თქვენი Chrome პროფილიდან</translation>
 <translation id="7592060599656252486">ზოგიერთი</translation>
 <translation id="7593653750169415785">ავტომატურად დაიბლოკა, რადგან რამდენჯერმე უარყავით შეტყობინებები</translation>
 <translation id="7594725637786616550">ჩაუტარეთ Powerwash თქვენს <ph name="DEVICE_TYPE" />-ს, რომ ის ახალივით გახდეს.</translation>
@@ -10298,7 +10299,6 @@
 <translation id="831440797644402910">ამ საქაღალდის გახსნა ვერ მოხერხდა</translation>
 <translation id="8314835274931377415">გსურთ, დაიწყოთ გადამრთველით წვდომის დაყენება?</translation>
 <translation id="8315018673856831477">მეხსიერების დამზოგის ვარიანტები</translation>
-<translation id="8315044115695361734">iCloud Keychain-ის</translation>
 <translation id="8315514906653279104">მიმდინარეობს ჩართვა...</translation>
 <translation id="8317671367883557781">ქსელის კავშირის დამატება</translation>
 <translation id="8317965619823678157">პაროლების კოპირება</translation>

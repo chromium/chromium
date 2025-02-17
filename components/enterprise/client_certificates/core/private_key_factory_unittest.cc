@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
+#include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/mock_private_key.h"
 #include "components/enterprise/client_certificates/core/mock_private_key_factory.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
@@ -217,6 +218,78 @@ TEST(PrivateKeyFactoryTest, LoadPrivateKey_AllSources_Unexportable) {
   factory->LoadPrivateKey(serialized_private_key, test_future.GetCallback());
 
   EXPECT_TRUE(test_future.Get());
+}
+
+TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_AllSources_Unexportable) {
+  auto unexportable_factory = CreateMockedFactory();
+  auto software_factory = CreateMockedFactory();
+
+  base::Value::Dict serialized_private_key;
+  int unexportable_source =
+      static_cast<int>(PrivateKeySource::kUnexportableKey);
+  serialized_private_key.Set(kKeySource, unexportable_source);
+
+  EXPECT_CALL(*unexportable_factory, LoadPrivateKeyFromDict(_, _))
+      .WillOnce(
+          Invoke([&unexportable_source](
+                     const base::Value::Dict& serialized_private_key_param,
+                     PrivateKeyFactory::PrivateKeyCallback callback) {
+            EXPECT_EQ(unexportable_source,
+                      *serialized_private_key_param.FindInt(kKeySource));
+            std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
+          }));
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kSoftwareKey,
+                       std::move(software_factory));
+  map.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                       std::move(unexportable_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->LoadPrivateKeyFromDict(serialized_private_key,
+                                  test_future.GetCallback());
+
+  EXPECT_TRUE(test_future.Get());
+}
+
+TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_MissingKeySource) {
+  auto unexportable_factory = CreateMockedFactory();
+  auto software_factory = CreateMockedFactory();
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kSoftwareKey,
+                       std::move(software_factory));
+  map.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                       std::move(unexportable_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::Value::Dict serialized_private_key;
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->LoadPrivateKeyFromDict(serialized_private_key,
+                                  test_future.GetCallback());
+
+  EXPECT_FALSE(test_future.Get());
+}
+
+TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_UnsupportedKeySource) {
+  auto unexportable_factory = CreateMockedFactory();
+  auto software_factory = CreateMockedFactory();
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kSoftwareKey,
+                       std::move(software_factory));
+  map.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                       std::move(unexportable_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::Value::Dict serialized_private_key;
+  serialized_private_key.Set(kKeySource, -1);
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->LoadPrivateKeyFromDict(serialized_private_key,
+                                  test_future.GetCallback());
+
+  EXPECT_FALSE(test_future.Get());
 }
 
 }  // namespace client_certificates

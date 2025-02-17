@@ -193,6 +193,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1607312127821884567">Ignorera att ställa in visning av appar på telefonen</translation>
 <translation id="1610778689852195798">”Ångra”</translation>
 <translation id="1611993646327628135">På</translation>
+<translation id="1612679292338846734">När du aktiverar dessa funktioner kan inmatad text, dokumentinnehåll och webbadressen till sidan skickas till Googles AI-servrar. Informationen används för att generera skrivförslag, generera sammanfattningar, svara på frågor och förbättra produkten, i enlighet med <ph name="LINK_TO_SERVICE_TERMS" />. Ange inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Komprimera Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> är inte tillgängligt.</translation>
@@ -565,6 +566,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="2946119680249604491">Lägg till anslutning</translation>
 <translation id="2947835478872237115">Nuvarande batterinivå: <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> tills batteriet är fulladdat</translation>
 <translation id="2949420361496057765">Tryck på <ph name="MODIFIER" /> och klicka på en länk</translation>
+<translation id="2957159466053076448">Du kan när som helst inaktivera dessa funktioner i inställningarna. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Ljud på enheten</translation>
 <translation id="2960314608273155470">Läge för skärmbild/skärminspelning, standard är <ph name="SOURCE" /> <ph name="TYPE" />. Tryck på tabb om du vill navigera med tangentbordet.</translation>
 <translation id="2961963223658824723">Ett fel har uppstått. Försök igen om några sekunder.</translation>
@@ -1905,6 +1907,7 @@ Nyligen installerad</translation>
 <translation id="735745346212279324">VPN frånkopplat</translation>
 <translation id="7360036564632145207">Prestandan kan förbättras om du ändrar inställningen för dataåtkomstskydd för kringutrustning</translation>
 <translation id="736045644501761622">Ställ in bakgrund och stil</translation>
+<translation id="7368041336688136012">Du måste vara minst 18 år för att använda Hjälp mig läsa, Hjälp mig skriva och för att skapa bilder med AI.</translation>
 <translation id="7371404428569700291">Spela in fönster</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> minne av totalt <ph name="TOTAL_MEMORY" /> är tillgängligt</translation>
 <translation id="737315737514430195">Detta tillåter mikrofonåtkomst för alla appar och webbplatser med mikrofonbehörighet</translation>
@@ -2030,6 +2033,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Visa alla</translation>
+<translation id="7762664108390426952">Googles användarvillkor och integritetspolicy</translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
 <translation id="7769299611924763557">Giffen är snart redo</translation>
 <translation id="7773536009433685931">Aktivera wifi i stället</translation>

@@ -193,6 +193,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1607312127821884567">Zrušiť nastavovanie zobrazovania aplikácií z telefónu</translation>
 <translation id="1610778689852195798">Späť</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
+<translation id="1612679292338846734">Keď tieto funkcie zapnete, vstupný text, obsah dokumentov a webová adresa stránky môžu byť odoslané na servery umelej inteligencie od Googlu. Tieto informácie sa používajú na účely generovania návrhov formulácií aj zhrnutí, odpovedania na otázky a zlepšovania danej služby v súlade s <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádzajte žiadne osobné, citlivé ani dôverné údaje.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Zbaliť Učebňu Google</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> nie je k dispozícii.</translation>
@@ -565,6 +566,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="2946119680249604491">Pridať pripojenie</translation>
 <translation id="2947835478872237115">Aktuálna úroveň batérie: <ph name="BATTERY_PERCENTAGE" /> %, čas do plného nabitia: <ph name="TIME" /></translation>
 <translation id="2949420361496057765">Stlačte <ph name="MODIFIER" /> a kliknite na odkaz</translation>
+<translation id="2957159466053076448">Tieto funkcie môžete kedykoľvek vypnúť v Nastaveniach. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Zvuk zariadenia</translation>
 <translation id="2960314608273155470">Režim snímania, predvolené nastavenie je <ph name="SOURCE" /> <ph name="TYPE" />. Ak chcete používať navigáciu klávesnicou, stlačte kláves Tab.</translation>
 <translation id="2961963223658824723">Vyskytol sa problém. Skúste to znova o niekoľko minút.</translation>
@@ -1905,6 +1907,7 @@ Nová inštalácia</translation>
 <translation id="735745346212279324">Sieť VPN je odpojená</translation>
 <translation id="7360036564632145207">Zmenou ochrany prístupu k údajom pre nastavenie periférií môžete optimalizovať výkonnosť</translation>
 <translation id="736045644501761622">Nastaviť tapety a štýl</translation>
+<translation id="7368041336688136012">Ak chcete používať asistenta pri čítaní, asistenta pri písaní a vytvárať obrázky pomocou umelej inteligencie, musíte mať aspoň 18 rokov.</translation>
 <translation id="7371404428569700291">Okno nahrávania</translation>
 <translation id="7372069265635026568">Dostupná pamäť z celkovej kapacity <ph name="TOTAL_MEMORY" />: <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="737315737514430195">Týmto povolíte prístup k mikrofónu všetkým aplikáciám a webom s povolením používať mikrofón</translation>
@@ -2030,6 +2033,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Zobraziť všetky</translation>
+<translation id="7762664108390426952">zmluvnými podmienkami a pravidlami ochrany osobných údajov spoločnosti Google</translation>
 <translation id="7768784765476638775">Vyslovenie položky po vybratí</translation>
 <translation id="7769299611924763557">Váš gif bude čoskoro pripravený</translation>
 <translation id="7773536009433685931">Zapnúť Wi‐Fi</translation>

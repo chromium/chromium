@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Penukaran reka letak</translation>
 <translation id="2244834438220057800">hijau</translation>
 <translation id="225692081236532131">Status pengaktifan</translation>
-<translation id="2265792117169966196">Pilih dan muat turun model transkripsi <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Tambahkan tangkapan skrin</translation>
 <translation id="2268044343513325586">Perhalusi</translation>
 <translation id="2271469253353559191">Jadual mod gelap</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Tidak dapat menguji peranti. Tukar kepada mod komputer riba untuk menguji.</translation>
 <translation id="3916998944874125962">ambil tangkapan skrin</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
-<translation id="3924445055519423964">Klik untuk meringkaskan halaman web/fail PDF</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> tidak ditentukan</translation>
 <translation id="3941014780699102620">Gagal untuk menyelesaikan hos</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
 <translation id="4483498983731992167">Tidak dapat membuat transkrip</translation>
 <translation id="4486524074141928967">Anda akan dilog keluar pada pukul <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Buka pemilih bahasa transkripsi</translation>
 <translation id="4500722292849917410">Pintasan tidak tersedia. Tekan pintasan baharu menggunakan kekunci pengubah suai (ctrl, alt, shift atau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Warna antara muka</translation>
 <translation id="4503223151711056411">Anak panah ke kiri</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Halaman</translation>
 <translation id="4989542687859782284">Tidak tersedia</translation>
 <translation id="4999333166442584738">Sembunyikan laporan</translation>
-<translation id="5005695757087124131">Klik untuk meringkaskan teks yang dipilih</translation>
 <translation id="500920857929044050">Hentikan ujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Warna tema</translation>
@@ -1395,7 +1391,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7425832472614771259">Model transkripsi <ph name="LANGUAGE_NAME" /> telah <ph name="PROGRESS_PERCENTAGE" />% dimuat turun</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tidak boleh melumpuhkan atau mengalih keluar APN ini. Pastikan APN <ph name="ATTACH" /> didayakan ini dilumpuhkan atau dialih keluar.</translation>
-<translation id="7453118953486228603">Klik untuk meringkaskan teks yang dipilih</translation>
 <translation id="7458970041932198923">Sila sambung kepada rangkaian dan muatkan semula halaman itu untuk melihat dan menetapkan avatar.</translation>
 <translation id="7469648432129124067">Portal dikesan</translation>
 <translation id="7481312909269577407">Majukan</translation>

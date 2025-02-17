@@ -1188,6 +1188,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продължи да използва <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Предава се <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Услуги</translation>
+<translation id="1813828404076816564">Изберете бутона за отзиви, за да изпратите отзиви относно функцията за споделени групи раздели</translation>
 <translation id="18139523105317219">Име на EDI страна</translation>
 <translation id="1815083418640426271">Поставяне като неформатиран текст</translation>
 <translation id="1815097521077272760">Получихте покана да изпробвате управлението чрез клавиатура за тази игра.</translation>
@@ -1546,7 +1547,6 @@
 <translation id="206308717637808771">Изтриване на данните при затваряне на всички прозорци. Данните се третират като сайта, който преглеждате</translation>
 <translation id="2065405795449409761">Chrome се контролира от автоматизиран софтуер за тестване.</translation>
 <translation id="2066700471214517561">Микрофон с формиране на фазирана антенна решетка, за да звучи ясно човекът, който използва устройството Chromebook.</translation>
-<translation id="2067591192939433190">От <ph name="VENDOR_NAME" /></translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> завърши отпечатването чрез <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Няма локален регистрационен файл.</translation>
 <translation id="2071692954027939183">Известията бяха блокирани автоматично, защото обикновено не ги разрешавате</translation>
@@ -4120,6 +4120,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3857807444929313943">Вдигнете пръст и докоснете отново</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="385939467708172187">Използване на надеждна парола</translation>
+<translation id="3859869403161297890">Тук можете да изпратите отзивите си за споделените групи раздели</translation>
 <translation id="3859987779882450877">Автоматично предлага и създава групи от отворените ви раздели</translation>
 <translation id="386009056910366930">Управление на групата раздели „<ph name="GROUP_NAME" />“</translation>
 <translation id="3861638017150647085">Потребителското име „<ph name="USERNAME" />“ е заето</translation>
@@ -6524,7 +6525,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5595307023264033512">Общо хранилище, използвано от сайтовете: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Редактиране на адреса</translation>
 <translation id="5596627076506792578">Още опции</translation>
-<translation id="5599819890022137981">От Windows Hello</translation>
 <translation id="5600348067066185292">Инсталирането се извършва в няколко лесни стъпки. Ще имате друга възможност да потвърдите, преди да бъдат извършени промени в компютъра ви.</translation>
 <translation id="5600706100022181951">За изтеглянето на актуализацията ще се използват мобилни данни (<ph name="UPDATE_SIZE_MB" /> МБ). Искате ли да продължите?</translation>
 <translation id="5601503069213153581">ПИН код</translation>
@@ -8174,6 +8174,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6805478749741295868">Това е експериментална функция с AI и понякога греши.</translation>
 <translation id="6805647936811177813">Моля, влезте в(ъв) <ph name="TOKEN_NAME" />, за да импортирате сертификат за клиентската програма от <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Активиране на проследяването на RLZ в <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Отзиви за споделените групи раздели</translation>
 <translation id="6806089545527108739">Забраняване, но извеждане на запитване по-късно</translation>
 <translation id="680644983456221885">Проактивна защита в реално време срещу опасни сайтове, изтегляния и разширения, която работи чрез изпращане на данни за сърфирането ви до Google</translation>
 <translation id="6806781719264274042">Само контакти с профил в Google. <ph name="LINK_BEGIN" />Преглед на контактите<ph name="LINK_END" /></translation>
@@ -9250,7 +9251,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7586498138629385861">Браузърът ще продължи да работи, докато приложенията в Chrome са отворени.</translation>
 <translation id="7589461650300748890">Не бързайте! Внимавайте.</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
-<translation id="7591317506733736159">От потребителския ви профил в Chrome</translation>
 <translation id="7592060599656252486">Някои</translation>
 <translation id="7593653750169415785">Автоматично блокирано, понеже сте отхвърлили известията няколко пъти</translation>
 <translation id="7594725637786616550">Използвайте функцията Powerwash, за да нулирате настройките на устройството си <ph name="DEVICE_TYPE" />, така че да бъде като ново.</translation>
@@ -10308,7 +10308,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="831440797644402910">Папката не може да се отвори</translation>
 <translation id="8314835274931377415">Да започне ли настройването на „Достъп с превключване“?</translation>
 <translation id="8315018673856831477">Опции за икономия на памет</translation>
-<translation id="8315044115695361734">От iCloud Keychain</translation>
 <translation id="8315514906653279104">Включва се...</translation>
 <translation id="8317671367883557781">Добавяне на мрежова връзка</translation>
 <translation id="8317965619823678157">копиране на паролите</translation>

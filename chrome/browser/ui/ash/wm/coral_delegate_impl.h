@@ -26,6 +26,7 @@ class CoralDelegateImpl : public ash::CoralDelegate {
   void OpenFeedbackDialog(const std::string& group_description,
                           ash::ScannerDelegate::SendFeedbackCallback
                               send_feedback_callback) override;
+  bool CanUseGenerativeAiForCurrentProfile() override;
 
  private:
   // Handles launching apps and creating browsers for post login groups.

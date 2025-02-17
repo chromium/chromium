@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Düzeni değiştir</translation>
 <translation id="2244834438220057800">yeşil</translation>
 <translation id="225692081236532131">Etkinleştirme durumu</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> metne dönüştürme modelini seçin ve indirin</translation>
 <translation id="2267285889943769271">Ekran görüntüsü ekle</translation>
 <translation id="2268044343513325586">Hassaslaştır</translation>
 <translation id="2271469253353559191">Koyu mod programı</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Cihaz test edilemiyor. Test etmek için dizüstü bilgisayar moduna geçin.</translation>
 <translation id="3916998944874125962">ekran görüntüsü al</translation>
 <translation id="3923184630988645767">Veri kullanımı</translation>
-<translation id="3924445055519423964">Web sayfasını/PDF dosyasını özetlemek için tıklayın</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
 <translation id="3934185438132762746">Atanmayan <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Varsayılan olmayan ağ geçidi pinglenemedi</translation>
 <translation id="4483498983731992167">Transkript oluşturulamadı</translation>
 <translation id="4486524074141928967"><ph name="TIME" /> itibarıyla oturumunuz kapatılacak</translation>
-<translation id="4487890678161807486">Metne dönüştürme dili seçiciyi aç</translation>
 <translation id="4500722292849917410">Kısayol kullanılamıyor. Değiştirici tuş (ctrl, alt, üst karakter veya <ph name="META_KEY" />) kullanarak yeni bir kısayola basın.</translation>
 <translation id="4500966230243561393">Arayüz rengi</translation>
 <translation id="4503223151711056411">Sol ok</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Sayfalar</translation>
 <translation id="4989542687859782284">Kullanılamıyor</translation>
 <translation id="4999333166442584738">Raporu gizle</translation>
-<translation id="5005695757087124131">Seçili metni sadeleştirmek için tıklayın</translation>
 <translation id="500920857929044050">Testi durdur</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Tema rengi</translation>
@@ -1395,7 +1391,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> metne dönüştürme modeli %<ph name="PROGRESS_PERCENTAGE" /> indirildi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Bu APN devre dışı bırakılamaz veya kaldırılamaz. Etkin durumdaki <ph name="ATTACH" /> APN'lerin devre dışı bırakıldığından veya kaldırıldığından emin olun.</translation>
-<translation id="7453118953486228603">Seçili metni özetlemek için tıklayın</translation>
 <translation id="7458970041932198923">Avatarları görüntülemek ve ayarlamak için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>
 <translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7481312909269577407">İleri</translation>

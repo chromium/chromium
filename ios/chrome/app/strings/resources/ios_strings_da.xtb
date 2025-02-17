@@ -427,6 +427,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2755485474385016903">Alle i gruppen kan se de ændringer, der foretages</translation>
 <translation id="2755595981383829244">Du modtager nu indholdsnotifikationer</translation>
 <translation id="2761788987260570878">Tag et billede af din søgning</translation>
+<translation id="2761898608071930085">Brug en anden konto</translation>
 <translation id="2762000892062317888">lige nu</translation>
 <translation id="2772667768515195373">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse er gemt på din Google-konto (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Mailnotifikationer</translation>
@@ -1724,6 +1725,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8430694217306051839">Vælg, hvor du vil gemme <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Oplysninger om fanegruppen</translation>
 <translation id="8438566539970814960">Gør søgninger og browsing endnu bedre</translation>
 <translation id="8439758443371991593">Skjul Føj til læseliste</translation>
 <translation id="8449869326050867919">Adgangskoden er delt</translation>
@@ -1801,6 +1803,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8722229818691036192">Konti på denne enhed</translation>
 <translation id="8722649775263832315">Tryk eller fremhæv for at søge efter noget med Google Lens</translation>
 <translation id="8723088494871522141">Skjul "Produktanmeldelser til dig"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} fane}one{{COUNT} fane}other{{COUNT} faner}}</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8728922029615312208">Luk alle</translation>
 <translation id="8730621377337864115">Udført</translation>

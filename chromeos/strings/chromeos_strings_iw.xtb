@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">מתג הפריסה</translation>
 <translation id="2244834438220057800">ירוק</translation>
 <translation id="225692081236532131">סטטוס הפעלה</translation>
-<translation id="2265792117169966196">בחירת מודל התמלול ב<ph name="LANGUAGE_NAME" /> והורדה שלו</translation>
 <translation id="2267285889943769271">הוספה של צילום מסך</translation>
 <translation id="2268044343513325586">צמצום</translation>
 <translation id="2271469253353559191">תזמון מצב כהה</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">לא ניתן לבדוק את המכשיר. צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה.</translation>
 <translation id="3916998944874125962">צילום מסך</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
-<translation id="3924445055519423964">‏אפשר ללחוץ כדי לסכם את דף האינטרנט או קובץ ה-PDF</translation>
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
 <translation id="3934185438132762746">‫<ph name="CONTROL_TYPE" /> לא הוקצה</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
 <translation id="4483498983731992167">לא ניתן ליצור את התמליל</translation>
 <translation id="4486524074141928967">המערכת תוציא אותך מהחשבון בשעה <ph name="TIME" /></translation>
-<translation id="4487890678161807486">פתיחת הכלי לבחירת שפת התמלול</translation>
 <translation id="4500722292849917410">‏מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש שכולל מקש צירוף (Ctrl,‏ Alt,‏ Shift או <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">צבע הממשק</translation>
 <translation id="4503223151711056411">חץ שמאלה</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">דפים</translation>
 <translation id="4989542687859782284">לא זמין</translation>
 <translation id="4999333166442584738">הסתרת הדוח</translation>
-<translation id="5005695757087124131">אפשר ללחוץ כדי לפשט את הטקסט שנבחר</translation>
 <translation id="500920857929044050">הפסקת הבדיקה</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">צבע העיצוב</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259">‏התקדמות ההורדה של מודל התמלול ב<ph name="LANGUAGE_NAME" />: ‎<ph name="PROGRESS_PERCENTAGE" />%‎</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך להשבית או להסיר את פריטי ה-APN שהופעלו מסוג '<ph name="ATTACH" />'.</translation>
-<translation id="7453118953486228603">אפשר ללחוץ כדי לסכם את הטקסט שנבחר</translation>
 <translation id="7458970041932198923">כדי לראות ולהגדיר דמויות, צריך להתחבר לרשת ולטעון מחדש את הדף.</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
 <translation id="7481312909269577407">קדימה</translation>

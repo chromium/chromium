@@ -172,6 +172,8 @@ export const IFaceWithTypemap_Echo_ResponseParamsSpec: { $: mojo.internal.MojomT
 
 export interface TypemappedMojoType {
   field: number;
+  optional: (number | null);
+  optionalContainer: Array<(boolean | null)>;
 }
 
 export type Typemapped = number;
@@ -195,8 +197,46 @@ mojo.internal.TypemappedStruct<number, TypemappedMojoType> (
         undefined,
         ((value: number) => converterForTypemapped.field(value)),
     ),
+      mojo.internal.StructField<number, boolean>(
+        'optional_$flag', 1,
+        0,
+        mojo.internal.Bool,
+        false,
+        false /* nullable */,
+        0,
+        {
+          isPrimary: true,
+          linkedValueFieldName: "optional_$value",
+          originalFieldName: "optional",
+        },
+        ((value: number) => converterForTypemapped.optional(value) !== null),
+    ),
+      mojo.internal.StructField<number, number>(
+        'optional_$value', 4,
+        0,
+        mojo.internal.Int32,
+        0,
+        false /* nullable */,
+        0,
+        {
+          isPrimary: false,
+          originalFieldName: "optional",
+        },
+
+        ((value: number) => converterForTypemapped.optional(value)),
+    ),
+      mojo.internal.StructField<number, Array<(boolean | null)>>(
+        'optionalContainer', 8,
+        0,
+        mojo.internal.Array(mojo.internal.Bool, true),
+        null,
+        false /* nullable */,
+        0,
+        undefined,
+        ((value: number) => converterForTypemapped.optionalContainer(value)),
+    ),
     ],
-    [[0, 16],]);
+    [[0, 24],]);
 
 
 

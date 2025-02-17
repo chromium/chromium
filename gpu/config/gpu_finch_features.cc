@@ -408,10 +408,6 @@ BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
 BASE_FEATURE(kExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage,
              "ExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(
-    kCameraVideoFrameHandlerAddScanoutUsageOnlyIfSupportedBySharedImage,
-    "CameraVideoFrameHandlerAddScanoutUsageOnlyIfSupportedBySharedImage",
-    base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage,
              "FastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);

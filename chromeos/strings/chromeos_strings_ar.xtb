@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">مفتاح التبديل بين تنسيقات لوحة المفاتيح</translation>
 <translation id="2244834438220057800">أخضر</translation>
 <translation id="225692081236532131">حالة التفعيل</translation>
-<translation id="2265792117169966196">اختيار نموذج تحويل الصوت إلى نص باللغة <ph name="LANGUAGE_NAME" /> وتنزيله</translation>
 <translation id="2267285889943769271">إضافة لقطة شاشة</translation>
 <translation id="2268044343513325586">تحسين</translation>
 <translation id="2271469253353559191">الجدول الزمني للوضع المُعتِم</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. يُرجى الانتقال إلى وضع "الكمبيوتر المحمول" لتتمكّن من إجراء الاختبار.</translation>
 <translation id="3916998944874125962">أخذ لقطة شاشة</translation>
 <translation id="3923184630988645767">استخدام البيانات</translation>
-<translation id="3924445055519423964">‏انقر لتلخيص صفحة الويب أو ملف PDF</translation>
 <translation id="3932043219784172185">لم يتم الاتصال بأي أجهزة</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> غير مخصَّص</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
 <translation id="4483498983731992167">تعذَّر إنشاء النص</translation>
 <translation id="4486524074141928967">سيتمّ تسجيل خروجك في <ph name="TIME" /></translation>
-<translation id="4487890678161807486">فتح أداة اختيار لغة تحويل الصوت إلى نص</translation>
 <translation id="4500722292849917410">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام أحد مفاتيح التعديل (Ctrl أو Alt أو Shift أو مفتاح <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">لون الواجهة</translation>
 <translation id="4503223151711056411">السهم المتّجه لليسار</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">الصفحات</translation>
 <translation id="4989542687859782284">التجارب غير المتاحة</translation>
 <translation id="4999333166442584738">إخفاء التقرير</translation>
-<translation id="5005695757087124131">انقر لتبسيط النص المحدّد</translation>
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">لون المظهر</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259">تم تنزيل %<ph name="PROGRESS_PERCENTAGE" /> من نموذج تحويل الصوت إلى نص باللغة <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏لا يمكن إيقاف اسم نقطة الوصول (APN) هذا أو إزالته. يُرجى إيقاف أو إزالة أسماء نقاط الوصول المفعَّلة من نوع <ph name="ATTACH" />.</translation>
-<translation id="7453118953486228603">انقر لتلخيص النص المحدَّد</translation>
 <translation id="7458970041932198923">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض صور الأفاتار وتحديدها.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>

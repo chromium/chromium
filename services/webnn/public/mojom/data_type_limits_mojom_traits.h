@@ -58,13 +58,17 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.cumulative_sum_input;
   }
-  static webnn::SupportedDataTypes dequantize_linear_input(
+  static webnn::SupportedTensors dequantize_linear_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.dequantize_linear_input;
   }
-  static webnn::SupportedDataTypes dequantize_linear_scale(
+  static webnn::SupportedTensors dequantize_linear_scale(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.dequantize_linear_scale;
+  }
+  static webnn::SupportedTensors dequantize_linear_zero_point(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.dequantize_linear_zero_point;
   }
   static webnn::SupportedTensors add_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -294,15 +298,15 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.max_pool2d_input;
   }
-  static webnn::SupportedDataTypes prelu_input(
+  static webnn::SupportedTensors prelu_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.prelu_input;
   }
-  static webnn::SupportedDataTypes quantize_linear_input(
+  static webnn::SupportedTensors quantize_linear_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.quantize_linear_input;
   }
-  static webnn::SupportedDataTypes quantize_linear_zero_point(
+  static webnn::SupportedTensors quantize_linear_zero_point(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.quantize_linear_zero_point;
   }
@@ -445,6 +449,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadCumulativeSumInput(&out->cumulative_sum_input) &&
            data.ReadDequantizeLinearInput(&out->dequantize_linear_input) &&
            data.ReadDequantizeLinearScale(&out->dequantize_linear_scale) &&
+           data.ReadDequantizeLinearZeroPoint(
+               &out->dequantize_linear_zero_point) &&
            data.ReadAddInput(&out->add_input) &&
            data.ReadSubInput(&out->sub_input) &&
            data.ReadMulInput(&out->mul_input) &&

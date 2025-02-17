@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">લેઆઉટ સ્વિચ કી</translation>
 <translation id="2244834438220057800">લીલો</translation>
 <translation id="225692081236532131">સક્રિયતાની સ્થિતિ</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" />નું ટ્રાન્સક્રિપ્શન મૉડલ પસંદ અને ડાઉનલોડ કરો</translation>
 <translation id="2267285889943769271">સ્ક્રીનશૉટ ઉમેરો</translation>
 <translation id="2268044343513325586">સુધારો</translation>
 <translation id="2271469253353559191">ઘેરા મોડનું શેડ્યૂલ</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">ડિવાઇસનું પરીક્ષણ કરી શકતા નથી. પરીક્ષણ કરવા માટે લૅપટૉપ મોડ પર સ્વિચ કરો.</translation>
 <translation id="3916998944874125962">સ્ક્રીનશૉટ લો</translation>
 <translation id="3923184630988645767">ડેટા વપરાશ</translation>
-<translation id="3924445055519423964">વેબપેજ/PDF ફાઇલનો સારાંશ આપવા માટે ક્લિક કરો</translation>
 <translation id="3932043219784172185">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી</translation>
 <translation id="3934185438132762746">સોંપ્યા વિનાનું <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4483498983731992167">ટ્રાન્સક્રિપ્ટ બનાવી શકાતી નથી</translation>
 <translation id="4486524074141928967">તમને <ph name="TIME" /> વાગ્યે સાઇન આઉટ કરવામાં આવશે</translation>
-<translation id="4487890678161807486">ટ્રાન્સક્રિપ્શન ભાષા પિકર ખોલો</translation>
 <translation id="4500722292849917410">શૉર્ટકટ ઉપલબ્ધ નથી. મૉડિફાયર કી (ctrl, alt, shift અથવા <ph name="META_KEY" />)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="4500966230243561393">ઇન્ટરફેસ રંગ</translation>
 <translation id="4503223151711056411">ડાબી ઍરો કી</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">પેજ</translation>
 <translation id="4989542687859782284">અનુપલબ્ધ</translation>
 <translation id="4999333166442584738">રિપોર્ટ છુપાવો</translation>
-<translation id="5005695757087124131">પસંદ કરેલી ટેક્સ્ટને સરળ બનાવવા માટે ક્લિક કરો</translation>
 <translation id="500920857929044050">પરીક્ષણ રોકો</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">થીમનો રંગ</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />નું ટ્રાન્સક્રિપ્શન મૉડલ <ph name="PROGRESS_PERCENTAGE" />% ડાઉનલોડ કર્યું છે</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">આ APNને બંધ કરી કે કાઢી શકતા નથી. ચાલુ કરેલા <ph name="ATTACH" /> APNને બંધ કરવામાં અથવા કાઢી નાખવામાં આવ્યા હોય તેની ખાતરી કરો.</translation>
-<translation id="7453118953486228603">પસંદ કરેલી ટેક્સ્ટનો સારાંશ આપવા માટે ક્લિક કરો</translation>
 <translation id="7458970041932198923">અવતાર જોવા તેમજ તેમને સેટ કરવા માટે, કૃપા કરીને નેટવર્ક સાથે કનેક્ટ કરો અને પેજને ફરીથી લોડ કરો.</translation>
 <translation id="7469648432129124067">પોર્ટલની જાણકારી મળી</translation>
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>

@@ -2310,7 +2310,6 @@
 <translation id="5087286274860437796">伺服器憑證目前無效。</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
 <translation id="5088142053160410913">給操作員的訊息</translation>
-<translation id="5089791650329866127">這項功能會使用你已透過自動填入功能儲存的資訊，例如地址</translation>
 <translation id="5090647584136241764">新增含有類似產品的分頁，輕鬆比較重要的詳細資料</translation>
 <translation id="5093232627742069661">彈簧二摺</translation>
 <translation id="5094747076828555589">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chromium 的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
@@ -3731,7 +3730,6 @@
 <translation id="7581199239021537589">側邊 2 圖片 Y 批次</translation>
 <translation id="7582602800368606489">在 Google 日曆中快速建立新活動</translation>
 <translation id="7586676035079382730">不允許通知</translation>
-<translation id="7588460771338574392">「<ph name="PHONE_NAME" />」的密碼金鑰</translation>
 <translation id="7588707273764747927">轉印</translation>
 <translation id="7591288787774558753">要分享機密內容嗎？</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> 要求使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和網站資料</translation>
@@ -4635,7 +4633,6 @@
 <translation id="9211461151375991073">輸入 @ 可搜尋 <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">自訂外觀</translation>
 <translation id="9215416866750762878">有應用程式阻止 Chrome 建立這個網站的安全連線</translation>
-<translation id="921738974253889319">這項功能會使用你已透過自動填入功能儲存的資訊，例如地址。你可以在這個頁面查看及管理這項資料。</translation>
 <translation id="92178312226016010">你正在追蹤這項產品。</translation>
 <translation id="9218430445555521422">設為預設</translation>
 <translation id="9219103736887031265">圖片</translation>

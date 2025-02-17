@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Ndërrimi i strukturës</translation>
 <translation id="2244834438220057800">jeshile</translation>
 <translation id="225692081236532131">Statusi i aktivizimit</translation>
-<translation id="2265792117169966196">Zgjidh dhe shkarko modelin e transkriptimit në <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Shto një pamje ekrani</translation>
 <translation id="2268044343513325586">Ripërpuno</translation>
 <translation id="2271469253353559191">Planifikimi i modalitetit të errët</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Pajisja nuk mund të testohet. Kalo te modaliteti i laptopit për të kryer testin.</translation>
 <translation id="3916998944874125962">nxirr një pamje të ekranit</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
-<translation id="3924445055519423964">Kliko për të përmbledhur faqen e uebit/skedarin PDF</translation>
 <translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
 <translation id="3934185438132762746">Nuk është caktuar (<ph name="CONTROL_TYPE" />)</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
 <translation id="4483498983731992167">Transkripti nuk mund të krijohet</translation>
 <translation id="4486524074141928967">Do të dalësh nga llogaria në <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Hap zgjedhësin e gjuhës për transkriptimin</translation>
 <translation id="4500722292849917410">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur një tast modifikues (Ctrl, Alt, Shift ose "<ph name="META_KEY" />").</translation>
 <translation id="4500966230243561393">Ngjyra e ndërfaqes</translation>
 <translation id="4503223151711056411">Shigjeta majtas</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Faqet</translation>
 <translation id="4989542687859782284">Nuk ofrohen</translation>
 <translation id="4999333166442584738">Fshih raportin</translation>
-<translation id="5005695757087124131">Kliko për të thjeshtuar tekstin e zgjedhur</translation>
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Ngjyra e temës</translation>
@@ -1395,7 +1391,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7425832472614771259">Modeli i transkriptimit në <ph name="LANGUAGE_NAME" /> është shkarkuar në <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kjo APN nuk mund të çaktivizohet apo të hiqet. Sigurohu që të çaktivizohen ose të hiqen APN-të e aktivizuara <ph name="ATTACH" />.</translation>
-<translation id="7453118953486228603">Kliko për të përmbledhur tekstin e zgjedhur</translation>
 <translation id="7458970041932198923">Lidhu me një rrjet dhe ringarko faqen për të parë dhe për të caktuar simbolet.</translation>
 <translation id="7469648432129124067">U zbulua një portal</translation>
 <translation id="7481312909269577407">Përpara</translation>

@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Babalaan ka kung Ma-expose ang mga password sa Breach sa data</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
 <translation id="104491362976654916">Offline na page</translation>
+<translation id="1049200476149974839">Gusto ni [name (email)] na sumali ka sa isang grupo ng tab. Mae-edit ng sinumang may link ang lahat ng tab, kaya mag-ingat sa pagsali. Mag-e-expire ang link sa loob ng 48 oras.</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Nag-Sign out. Mag-sign in ulit para magamit ang mga bookmark, password, at higit pa sa iyong account.</translation>
 <translation id="1054745118061919935">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_LINK" />.</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">Pinamamahalaang Account</translation>
 <translation id="1358214951266274152">Bisitahin Ang Link Na Kinopya Mo</translation>
 <translation id="1360432990279830238">Mag-sign out at i-off ang pag-sync?</translation>
+<translation id="1362192716574455663">Hindi ililipat sa iyong account sa trabaho ang kasalukuyang data mula sa pag-browse. Puwede mo pa ring i-access ito sa pamamagitan ng pag-sign out o pagdaragdag ng personal na account.</translation>
 <translation id="1363028406613469049">Track</translation>
 <translation id="1364367057792633742">Bagong tab</translation>
 <translation id="1365106417372288489">Na-restore kamakailan ang iPhone mo, na posibleng nagpabago sa iyong default na browser.</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">Isara ang Grupo</translation>
 <translation id="178400879184240105">Natatangi ang iyong mga password</translation>
 <translation id="17906873777101817">Mag-alok na i-save ang mga password at passkey</translation>
+<translation id="1794893174442046596">Grupo ng tab</translation>
 <translation id="1807893857950749072">Payagan ang mga notification sa pagsubaybay sa presyo…</translation>
 <translation id="1810976980198522421">Kanselahin</translation>
 <translation id="1815941218935345331">Passcode</translation>
@@ -427,6 +430,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2755485474385016903">Nakikita ng lahat ng nasa grupo ang mga pagbabagong ginawa</translation>
 <translation id="2755595981383829244">Makakatanggap ka na ngayon ng mga notification sa content</translation>
 <translation id="2761788987260570878">Kunan ng larawan ang hinahanap mo</translation>
+<translation id="2761898608071930085">Gumamit ng Ibang Account</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
 <translation id="2772667768515195373">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Naka-save ang address na ito sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Mga notification sa email</translation>
@@ -1724,6 +1728,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8430694217306051839">Piliin kung saan ise-save ang <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Mga detalye ng grupo ng tab</translation>
 <translation id="8438566539970814960">Mas pahusayin ang mga paghahanap at pag-browse</translation>
 <translation id="8439758443371991593">I-hide ang Idagdag sa Listahan ng Babasahin</translation>
 <translation id="8449869326050867919">Na-share ang password</translation>
@@ -1801,6 +1806,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8722229818691036192">Mga account sa device na ito</translation>
 <translation id="8722649775263832315">Mag-tap o mag-highlight para maghanap ng kahit ano gamit ang Google Lens</translation>
 <translation id="8723088494871522141">I-hide ang "Mga Review ng Produkto para sa Iyo"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} tab}one{{COUNT} tab}other{{COUNT} na tab}}</translation>
 <translation id="8725066075913043281">Subukan ulit</translation>
 <translation id="8728922029615312208">Isara lahat</translation>
 <translation id="8730621377337864115">Tapos na</translation>

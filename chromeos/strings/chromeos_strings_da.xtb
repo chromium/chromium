@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Layoutskift</translation>
 <translation id="2244834438220057800">grøn</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
-<translation id="2265792117169966196">Vælg og download transskriptionsmodellen for <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Tilføj screenshot</translation>
 <translation id="2268044343513325586">Juster</translation>
 <translation id="2271469253353559191">Tidsplan for mørk tilstand</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Enheden kan ikke testes. Skift til computertilstand for at teste den.</translation>
 <translation id="3916998944874125962">tag et screenshot</translation>
 <translation id="3923184630988645767">Dataforbrug</translation>
-<translation id="3924445055519423964">Klik for at opsummere websiden/PDF-filen</translation>
 <translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
 <translation id="3934185438132762746">Ikke-tildelt <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
 <translation id="4483498983731992167">Transskriptionen kan ikke oprettes</translation>
 <translation id="4486524074141928967">Du logges ud kl. <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Åbn sprogvælgeren til transskription</translation>
 <translation id="4500722292849917410">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af en ændringstast (Ctrl, Alt, Shift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Grænsefladefarve</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Sider</translation>
 <translation id="4989542687859782284">Ikke tilgængelige</translation>
 <translation id="4999333166442584738">Skjul rapport</translation>
-<translation id="5005695757087124131">Klik for at forenkle den markerede tekst</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temafarve</translation>
@@ -1395,7 +1391,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7425832472614771259">Transskriptionsmodel for <ph name="LANGUAGE_NAME" /> – <ph name="PROGRESS_PERCENTAGE" /> % downloadet</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Dette APN kan ikke deaktiveres eller fjernes. Sørg for, at <ph name="ATTACH" /> APN'er, som er aktiveret, deaktiveres eller fjernes.</translation>
-<translation id="7453118953486228603">Klik for at få opsummeret den markerede tekst</translation>
 <translation id="7458970041932198923">Opret forbindelse til et netværk, og genindlæs siden for at se og angive avatarer.</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
 <translation id="7481312909269577407">Frem</translation>

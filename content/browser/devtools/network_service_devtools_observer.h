@@ -102,6 +102,10 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
       const std::string& devtool_request_id,
       const GURL& url,
       network::mojom::SharedDictionaryError error) override;
+  void OnSRIMessageSignatureError(
+      const std::string& devtool_request_id,
+      const GURL& url,
+      network::mojom::SRIMessageSignatureError error) override;
   void Clone(mojo::PendingReceiver<network::mojom::DevToolsObserver> listener)
       override;
 

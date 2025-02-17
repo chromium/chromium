@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core,
+       "Cannot depend on extensions because extensions are disabled.")
+
+source_set("system_display") {
+  sources = [
+    "system_display_api.cc",
+    "system_display_api.h",
+  ]
+
+  public_deps = [
+    "//extensions/browser:browser_sources",
+    "//extensions/common/api",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    ":display_info_provider",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//content/public/browser",
+    "//extensions/common",
+    "//extensions/common:mojom",
+  ]
+}
+
+source_set("display_info_provider") {
+  sources = [
+    "display_info_provider.cc",
+    "display_info_provider.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/common/api",
+    "//ui/display",
+  ]
+}

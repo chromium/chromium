@@ -427,6 +427,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2755485474385016903">Veranderinge wat gemaak word kan deur almal in die groep gesien word</translation>
 <translation id="2755595981383829244">Jy sal nou inhoudkennisgewings ontvang</translation>
 <translation id="2761788987260570878">Neem ’n foto van jou soektog</translation>
+<translation id="2761898608071930085">Gebruik 'n ander rekening</translation>
 <translation id="2762000892062317888">sopas</translation>
 <translation id="2772667768515195373">Jy kan gestoorde adresse in alle Google-produkte gebruik. Hierdie adres is in jou Google-rekening, <ph name="USER_EMAIL" />, gestoor.</translation>
 <translation id="2773344962924806829">E-poskennisgewings</translation>
@@ -1724,6 +1725,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8428634594422941299">Het dit</translation>
 <translation id="8430694217306051839">Kies waar om <ph name="FILENAME" /> te stoor (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Besonderhede van oortjiegroep</translation>
 <translation id="8438566539970814960">Maak soektogte en blaai-ervaring beter</translation>
 <translation id="8439758443371991593">Versteek Voeg by leeslys</translation>
 <translation id="8449869326050867919">Wagwoord is gedeel</translation>
@@ -1801,6 +1803,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8722229818691036192">Rekeninge op hierdie toestel</translation>
 <translation id="8722649775263832315">Tik of merk om enigiets met Google Lens te soek</translation>
 <translation id="8723088494871522141">Versteek “Produkresensies vir jou”</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} oortjie}other{{COUNT} oortjies}}</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8728922029615312208">Maak alles toe</translation>
 <translation id="8730621377337864115">Gedoen</translation>

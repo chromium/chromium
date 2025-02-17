@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">ปิดการตั้งค่าการดูแอปของโทรศัพท์</translation>
 <translation id="1610778689852195798">"เลิกทำ"</translation>
 <translation id="1611993646327628135">เปิด</translation>
+<translation id="1612679292338846734">เมื่อเปิดใช้ฟีเจอร์เหล่านี้ ระบบอาจส่งข้อความที่ป้อน เนื้อหาเอกสาร และ URL ของหน้าเว็บไปยังเซิร์ฟเวอร์ AI ของ Google ข้อมูลนี้ใช้เพื่อสร้างคำแนะนำในการเขียน สร้างข้อมูลสรุป ตอบคำถาม และปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="LINK_TO_SERVICE_TERMS" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1623768535032616219">ยุบ Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ไม่พร้อมใช้งาน</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">เพิ่มการเชื่อมต่อ</translation>
 <translation id="2947835478872237115">ระดับแบตเตอรี่ปัจจุบัน <ph name="BATTERY_PERCENTAGE" />% อีก <ph name="TIME" /> จะเต็ม</translation>
 <translation id="2949420361496057765">กด <ph name="MODIFIER" /> แล้วคลิกลิงก์</translation>
+<translation id="2957159466053076448">คุณปิดฟีเจอร์เหล่านี้ในการตั้งค่าได้ทุกเมื่อ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">เสียงจากอุปกรณ์</translation>
 <translation id="2960314608273155470">โหมดจับภาพ ค่าเริ่มต้นคือ<ph name="TYPE" /><ph name="SOURCE" /> กดแป้น Tab เพื่อไปยังส่วนต่างๆ ด้วยแป้นพิมพ์</translation>
 <translation id="2961963223658824723">เกิดข้อผิดพลาด โปรดลองอีกครั้งในอีกสักครู่</translation>
@@ -1900,6 +1902,7 @@
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>
 <translation id="7360036564632145207">การเปลี่ยนการตั้งค่าการป้องกันการเข้าถึงข้อมูลของอุปกรณ์ต่อพ่วงช่วยเพิ่มประสิทธิภาพได้</translation>
 <translation id="736045644501761622">ตั้งค่าวอลเปเปอร์และสไตล์</translation>
+<translation id="7368041336688136012">คุณต้องมีอายุไม่ต่ำกว่า 18 ปีจึงจะใช้ฟีเจอร์ช่วยฉันอ่าน ช่วยฉันเขียน และสร้างรูปภาพด้วย AI ได้</translation>
 <translation id="7371404428569700291">หน้าต่างการบันทึก</translation>
 <translation id="7372069265635026568">เหลือหน่วยความจำ <ph name="AVAILABLE_MEMORY" /> จากทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">การตั้งค่านี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟนได้</translation>
@@ -2025,6 +2028,7 @@
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">แสดงทั้งหมด</translation>
+<translation id="7762664108390426952">ข้อกำหนดในการให้บริการและนโยบายส่วนบุคคลของ Google</translation>
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
 <translation id="7769299611924763557">GIF จะพร้อมใช้งานในไม่ช้า</translation>
 <translation id="7773536009433685931">เปิด Wi-Fi แทน</translation>

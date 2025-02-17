@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Uppsetningarrofi</translation>
 <translation id="2244834438220057800">grænn</translation>
 <translation id="225692081236532131">Virkjunarstaða</translation>
-<translation id="2265792117169966196">Velja og sækja líkan textauppskriftar á þessu tungumáli: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Bæta við skjámynd</translation>
 <translation id="2268044343513325586">Þrengja</translation>
 <translation id="2271469253353559191">Áætlun dökkrar stillingar</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Ekki hægt að prófa tæki. Skiptu yfir í fartölvustillingu til að prófa</translation>
 <translation id="3916998944874125962">taka skjámynd</translation>
 <translation id="3923184630988645767">Gagnanotkun</translation>
-<translation id="3924445055519423964">Smelltu til að fá samantekt á vefsíðunni/PDF-skránni</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3934185438132762746">Ótiltekinn <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
 <translation id="4483498983731992167">Ekki tókst að búa til textauppskrift</translation>
 <translation id="4486524074141928967">Þú verður skráð(ur) út kl. <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Opna tungumálaval umritunar</translation>
 <translation id="4500722292849917410">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota breytilykil (ctrl, alt, shift eða <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Litur viðmóts</translation>
 <translation id="4503223151711056411">Ör til vinstri</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Síður</translation>
 <translation id="4989542687859782284">Ekki tiltækt</translation>
 <translation id="4999333166442584738">Fela skýrslu</translation>
-<translation id="5005695757087124131">Smelltu til að einfalda valinn texta</translation>
 <translation id="500920857929044050">Stöðva próf</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Þemalitur</translation>
@@ -1395,7 +1391,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />, textauppskrift, <ph name="PROGRESS_PERCENTAGE" />% sótt</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Hvorki er hægt að slökkva á né fjarlægja þennan aðgangsstað. Gakktu úr skugga um að slökkt sé á <ph name="ATTACH" />-aðgangsstöðum sem er kveikt á eða þeir fjarlægðir.</translation>
-<translation id="7453118953486228603">Smelltu til að taka saman valinn texta</translation>
 <translation id="7458970041932198923">Tengstu neti og endurhladdu síðunni til að skoða og stilla notendamyndir.</translation>
 <translation id="7469648432129124067">Gátt greind</translation>
 <translation id="7481312909269577407">Áfram</translation>

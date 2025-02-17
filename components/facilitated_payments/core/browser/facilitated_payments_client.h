@@ -47,22 +47,20 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   virtual bool IsInLandscapeMode() = 0;
 
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
-  // If the UI was shown, `on_user_decision_callback` is used to inform the
-  // result of user's selection: a boolean for acceptance or cancellation and
-  // the selected instrument ID in case of acceptance. `pix_account_suggestions`
-  // is the list of PIX accounts to be shown to the user for payment.
+  // `bank_account_suggestions` is the list of PIX accounts to be shown to the
+  // user for payment. `on_payment_account_selected` is the callback called with
+  // the instrument id of the bank account selected by the user for payment.
   virtual void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Shows the user's eWallet accounts from their Google Wallet, and prompts to
-  // pay. If the UI was shown, `on_user_decision_callback` is used to inform the
-  // result of user's selection: a boolean for acceptance or cancellation and
-  // the selected instrument ID in case of acceptance. `ewallet_suggestions` is
-  // the list of eWallets to be shown to the user for payment.
+  // pay. `ewallet_suggestions` is the list of eWallets to be shown to the user
+  // for payment. `on_payment_account_selected` is the callback called with the
+  // instrument id of the eWallet account selected by the user for payment.
   virtual void ShowEwalletPaymentPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Shows a progress bar while users wait for server response after selecting a
   // payment account.

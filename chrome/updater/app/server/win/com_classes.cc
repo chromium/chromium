@@ -55,10 +55,10 @@ class UpdaterAppStateImpl : public IDispatchImpl<IUpdaterAppState> {
   UpdaterAppStateImpl& operator=(const UpdaterAppStateImpl&) = delete;
 
   HRESULT RuntimeClassInitialize(const UpdateService::AppState& app_state) {
-    app_id_ = base::ASCIIToWide(app_state.app_id);
-    version_ = base::ASCIIToWide(app_state.version.GetString());
-    ap_ = base::ASCIIToWide(app_state.ap);
-    brand_code_ = base::ASCIIToWide(app_state.brand_code);
+    app_id_ = base::UTF8ToWide(app_state.app_id);
+    version_ = base::UTF8ToWide(app_state.version.GetString());
+    ap_ = base::UTF8ToWide(app_state.ap);
+    brand_code_ = base::UTF8ToWide(app_state.brand_code);
     brand_path_ = app_state.brand_path.value();
     ecp_ = app_state.ecp.value();
 

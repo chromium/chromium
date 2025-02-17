@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">చేసిన మార్పులు గ్రూప్‌లోని అందరికీ కనిపిస్తాయి</translation>
 <translation id="2755595981383829244">మీరు ఇప్పుడు కంటెంట్ నోటిఫికేషన్‌లను అందుకుంటారు</translation>
 <translation id="2761788987260570878">మీ సెర్చ్‌ను ఫోటో తీయండి</translation>
+<translation id="2761898608071930085">మరో ఖాతాను ఉపయోగించండి</translation>
 <translation id="2762000892062317888">ఇప్పుడే</translation>
 <translation id="2772667768515195373">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="USER_EMAIL" />లో సేవ్ చేయబడింది.</translation>
 <translation id="2773344962924806829">ఈమెయిల్ నోటిఫికేషన్‌లు</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8428634594422941299">అర్థమైంది</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />)ను ఎక్కడ సేవ్ చేయాలో ఎంచుకోండి</translation>
+<translation id="8434837876193928924">ట్యాబ్ గ్రూప్ వివరాలు</translation>
 <translation id="8438566539970814960">సెర్చ్‌లను, బ్రౌజింగ్‌ను మెరుగుపరచండి</translation>
 <translation id="8439758443371991593">'చదవాల్సిన లిస్ట్‌కు జోడించండి'ని దాచండి</translation>
 <translation id="8449869326050867919">పాస్‌వర్డ్ షేర్ చేయబడింది</translation>
@@ -1801,6 +1803,7 @@
 <translation id="8722229818691036192">ఈ పరికరంలోని ఖాతాలు</translation>
 <translation id="8722649775263832315">Google Lensతో ఏదైనా సెర్చ్ చేయడానికి ట్యాప్ చేయండి లేదా హైలైట్ చేయండి</translation>
 <translation id="8723088494871522141">"మీ కోసం ప్రోడక్ట్ రివ్యూలను" దాచండి</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} ట్యాబ్}other{{COUNT} ట్యాబ్‌లు}}</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8728922029615312208">అన్నింటినీ మూసివేయండి</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>

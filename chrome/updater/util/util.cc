@@ -268,7 +268,7 @@ std::wstring GetTaskNamePrefix(UpdaterScope scope) {
 }
 
 std::wstring GetTaskDisplayName(UpdaterScope scope) {
-  return base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" Task ",
+  return base::StrCat({base::UTF8ToWide(PRODUCT_FULLNAME_STRING), L" Task ",
                        IsSystemInstall(scope) ? L"System " : L"User ",
                        kUpdaterVersionUtf16});
 }

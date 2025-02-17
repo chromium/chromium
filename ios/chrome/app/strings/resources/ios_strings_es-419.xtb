@@ -427,6 +427,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2755485474385016903">Todos los integrantes del grupo verán los cambios que se realicen</translation>
 <translation id="2755595981383829244">Ahora recibirás notificaciones de contenido</translation>
 <translation id="2761788987260570878">Toma una foto de la búsqueda</translation>
+<translation id="2761898608071930085">Usar otra cuenta</translation>
 <translation id="2762000892062317888">recién</translation>
 <translation id="2772667768515195373">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notificaciones por correo electrónico</translation>
@@ -1724,6 +1725,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">Entendido</translation>
 <translation id="8430694217306051839">Elige dónde guardar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Detalles del grupo de pestañas</translation>
 <translation id="8438566539970814960">Mejorar las búsquedas y la navegación</translation>
 <translation id="8439758443371991593">Ocultar la opción Agregar a la Lista de lectura</translation>
 <translation id="8449869326050867919">Se compartió la contraseña</translation>
@@ -1801,6 +1803,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8722229818691036192">Cuentas en este dispositivo</translation>
 <translation id="8722649775263832315">Presiona o destaca cualquier elemento para buscarlo con Google Lens</translation>
 <translation id="8723088494871522141">Ocultar "Opiniones sobre productos para ti"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} pestaña}other{{COUNT} pestañas}}</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8728922029615312208">Cerrar todas</translation>
 <translation id="8730621377337864115">Listo</translation>

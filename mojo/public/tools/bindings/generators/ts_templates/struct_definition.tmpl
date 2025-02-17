@@ -79,7 +79,17 @@ mojo.internal.Struct<{{struct_type}}>(
 {%-   endif %}
 {%-   if struct in typemapped_structs %}
 {%-     set typemap = typemapped_structs[struct] %}
+{%-     if packed_field|is_nullable_value_kind_packed_field %}
+{%-       set original_name = packed_field.original_field.name %}
+{%-       if packed_field|is_primary_nullable_value_kind_packed_field %}
+        ((value: {{typemap.typename}}) => converterFor{{struct.name}}.{{original_name}}(value) !== null),
+{%-       else %}
+{#      this is ok, because null values are not encoded in the bindings lib. #}
+        ((value: {{typemap.typename}}) => converterFor{{struct.name}}.{{original_name}}(value)),
+{%-       endif %}
+{%-     else %}
         ((value: {{typemap.typename}}) => converterFor{{struct.name}}.{{packed_field.field.name}}(value)),
+{%-     endif %}
 {%-   else %}
         undefined,
 {%-   endif %}

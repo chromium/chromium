@@ -11,7 +11,6 @@
 
 #include "base/functional/callback.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/content/screen_enumerator.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 

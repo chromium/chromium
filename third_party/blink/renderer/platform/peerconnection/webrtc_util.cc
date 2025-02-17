@@ -12,6 +12,7 @@
 #include <cstring>
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 
 namespace blink {
@@ -50,6 +52,17 @@ base::TimeTicks PLATFORM_EXPORT ConvertToBaseTimeTicks(webrtc::Timestamp time) {
     return base::TimeTicks::Min();
   } else {
     return base::TimeTicks() + base::Microseconds(time.us());
+  }
+}
+
+base::TimeDelta PLATFORM_EXPORT
+ConvertToBaseTimeDelta(webrtc::TimeDelta time_delta) {
+  if (time_delta == webrtc::TimeDelta::PlusInfinity()) {
+    return base::TimeDelta::Max();
+  } else if (time_delta == webrtc::TimeDelta::MinusInfinity()) {
+    return base::TimeDelta::Min();
+  } else {
+    return base::Microseconds(time_delta.us());
   }
 }
 
@@ -90,4 +103,11 @@ std::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
 #endif  // BUILDFLAG(RTC_USE_H265)
   return std::nullopt;
 }
+
+base::TimeTicks WebRTCFrameNtpEpoch() {
+  static base::TimeTicks ntp_epoch =
+      base::TimeTicks::UnixEpoch() - base::Milliseconds(2208988800000);
+  return ntp_epoch;
+}
+
 }  // namespace blink

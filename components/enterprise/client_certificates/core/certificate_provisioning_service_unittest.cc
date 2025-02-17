@@ -69,19 +69,15 @@ class CertificateProvisioningServiceTest : public testing::Test {
  protected:
   CertificateProvisioningServiceTest() {
     RegisterProfilePrefs(pref_service_.registry());
+    RegisterLocalStatePrefs(pref_service_.registry());
+  }
+
+  const std::string pref() {
+    return prefs::kProvisionManagedClientCertificateForUserPrefs;
   }
 
   void SetPolicyPref(bool enabled) {
-    pref_service_.SetManagedPref(
-        prefs::kProvisionManagedClientCertificateForUserPrefs,
-        base::Value(enabled ? 1 : 0));
-  }
-
-  void CreateProvisioningService(
-      std::unique_ptr<KeyUploadClient> upload_client) {
-    CreateProvisioningService(
-        std::make_unique<StrictMock<MockContextDelegate>>(),
-        std::move(upload_client));
+    pref_service_.SetManagedPref(pref(), base::Value(enabled ? 1 : 0));
   }
 
   void CreateProvisioningService(
@@ -167,6 +163,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(11)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(4)
       .WillRepeatedly(Return(kIdentityName));
@@ -231,6 +230,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(8)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(4)
       .WillRepeatedly(Return(kIdentityName));
@@ -265,7 +267,13 @@ TEST_F(CertificateProvisioningServiceTest,
 TEST_F(CertificateProvisioningServiceTest,
        Created_PolicyDisabled_NothingHappens) {
   auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
-  CreateProvisioningService(std::move(mock_client));
+  auto mock_context_delegate =
+      std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(3)
+      .WillRepeatedly(Return(pref()));
+  CreateProvisioningService(std::move(mock_context_delegate),
+                            std::move(mock_client));
 
   VerifyDisabled();
 }
@@ -278,6 +286,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
       .WillRepeatedly(Return(kIdentityName));
@@ -324,6 +335,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(4)
       .WillRepeatedly(Return(kIdentityName));
@@ -375,6 +389,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
       .WillRepeatedly(Return(kIdentityName));
@@ -434,6 +451,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
       .WillRepeatedly(Return(kIdentityName));
@@ -464,6 +484,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
       .WillRepeatedly(Return(kIdentityName));
@@ -506,6 +529,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
       .WillRepeatedly(Return(kIdentityName));
@@ -548,6 +574,9 @@ TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_Resolves) {
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(4)
       .WillRepeatedly(Return(kIdentityName));
@@ -594,6 +623,9 @@ TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_FailsLoad) {
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(5)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
       .WillRepeatedly(Return(kIdentityName));
@@ -623,6 +655,9 @@ TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_LoadEmpty) {
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(5)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
       .WillRepeatedly(Return(kIdentityName));
@@ -657,6 +692,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(5)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
       .WillRepeatedly(Return(kIdentityName));
@@ -695,6 +733,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(3)
       .WillRepeatedly(Return(kIdentityName));
@@ -741,6 +782,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(7)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(3)
       .WillRepeatedly(Return(kIdentityName));
@@ -783,6 +827,9 @@ TEST_F(CertificateProvisioningServiceTest,
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(5)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(4)
       .WillRepeatedly(Return(kIdentityName));
@@ -843,6 +890,9 @@ TEST_F(
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
   auto* mock_context_delegate_ptr = mock_context_delegate.get();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(11)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(6)
       .WillRepeatedly(Return(kIdentityName));
@@ -902,6 +952,9 @@ TEST_F(CertificateProvisioningServiceTest, ConcurrentGetManagedIdentityCalls) {
 
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
+      .Times(9)
+      .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(4)
       .WillRepeatedly(Return(kIdentityName));

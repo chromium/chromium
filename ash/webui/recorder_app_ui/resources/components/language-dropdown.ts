@@ -7,16 +7,21 @@ import './cra/cra-dropdown.js';
 import './cra/cra-icon.js';
 
 import {
+  createRef,
   css,
   html,
   map,
   PropertyDeclarations,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {LangPackInfo, LanguageCode} from '../core/soda/language_info.js';
-import {assertInstanceof, checkEnumVariant} from '../core/utils/assert.js';
+import {
+  assertInstanceof,
+  checkEnumVariant,
+} from '../core/utils/assert.js';
 
 import {CraDropdown} from './cra/cra-dropdown.js';
 
@@ -27,6 +32,9 @@ export class LanguageDropdown extends ReactiveLitElement {
   static override styles = css`
     :host {
       display: block;
+
+      /* Avoid clicking outside make dropdown focused */
+      width: fit-content;
     }
   `;
 
@@ -34,7 +42,19 @@ export class LanguageDropdown extends ReactiveLitElement {
     languageList: {attribute: false},
   };
 
+  static override shadowRootOptions: ShadowRootInit = {
+    ...ReactiveLitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   languageList: LangPackInfo[] = [];
+
+  private readonly dropdown = createRef<CraDropdown>();
+
+  override async getUpdateComplete(): Promise<boolean> {
+    await this.dropdown.value?.updateComplete;
+    return super.getUpdateComplete();
+  }
 
   private onChanged(ev: Event) {
     const dropdownValue = checkEnumVariant(
@@ -62,7 +82,7 @@ export class LanguageDropdown extends ReactiveLitElement {
     // CrOS dropdown does not support showing default text when no item
     // selected. Select the hint string by-default as a workaround.
     return html`
-      <cra-dropdown @change=${this.onChanged}>
+      <cra-dropdown @change=${this.onChanged} ${ref(this.dropdown)}>
         <cra-icon name="language" slot="leading"></cra-icon>
         <cros-dropdown-option
           headline=${i18n.languageDropdownHintOption}

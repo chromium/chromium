@@ -43,9 +43,6 @@ class ChromeAccountManagerService : public KeyedService,
     Observer& operator=(const Observer&) = delete;
     ~Observer() override {}
 
-    // DEPRECATED! Use OnIdentitiesInProfileChanged() instead.
-    virtual void OnIdentityListChanged() {}
-
     // Handles change events for per-profile identity list.
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
@@ -55,9 +52,6 @@ class ChromeAccountManagerService : public KeyedService,
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
     virtual void OnIdentitiesOnDeviceChanged() {}
-
-    // DEPRECATED! Use OnIdentityInProfileUpdated() instead.
-    virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
 
     // Called when an identity in this profile is updated.
     virtual void OnIdentityInProfileUpdated(id<SystemIdentity> identity) {}

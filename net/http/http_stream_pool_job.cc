@@ -15,7 +15,6 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/base/port_util.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_pool.h"
@@ -241,15 +240,6 @@ HttpStreamPool::AttemptManager* HttpStreamPool::Job::attempt_manager() const {
 void HttpStreamPool::Job::StartInternal() {
   CHECK(attempt_manager());
   CHECK(!attempt_manager()->is_failing());
-
-  const url::SchemeHostPort& destination = group_->stream_key().destination();
-  if (!IsPortAllowedForScheme(destination.port(), destination.scheme())) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Job::OnStreamFailed, weak_ptr_factory_.GetWeakPtr(),
-                       ERR_UNSAFE_PORT, NetErrorDetails(), ResolveErrorInfo()));
-    return;
-  }
 
   attempt_manager()->StartJob(this, priority(), delegate_->allowed_bad_certs(),
                               quic_version_, request_net_log_,

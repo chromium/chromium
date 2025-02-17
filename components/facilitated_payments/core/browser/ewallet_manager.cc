@@ -163,17 +163,11 @@ void EwalletManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
 
   ShowEwalletPaymentPrompt(
       supported_ewallets_,
-      base::BindOnce(&EwalletManager::OnEwalletPaymentPromptResult,
+      base::BindOnce(&EwalletManager::OnEwalletAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EwalletManager::OnEwalletPaymentPromptResult(
-    bool is_prompt_accepted,
-    int64_t selected_instrument_id) {
-  if (!is_prompt_accepted) {
-    return;
-  }
-
+void EwalletManager::OnEwalletAccountSelected(int64_t selected_instrument_id) {
   LogEwalletFopSelected(GetAvailableEwalletsConfiguration());
   LogEwalletFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_, scheme_);
 
@@ -353,10 +347,10 @@ void EwalletManager::DismissPrompt() {
 
 void EwalletManager::ShowEwalletPaymentPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+    base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {
   ui_state_ = UiState::kFopSelector;
   client_->ShowEwalletPaymentPrompt(std::move(ewallet_suggestions),
-                                    std::move(on_user_decision_callback));
+                                    std::move(on_ewallet_account_selected));
 }
 
 void EwalletManager::ShowProgressScreen() {

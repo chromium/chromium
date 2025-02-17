@@ -134,8 +134,7 @@ LoadingPredictor::LoadingPredictor(const LoadingPredictorConfig& config,
       resource_prefetch_predictor_(
           std::make_unique<ResourcePrefetchPredictor>(config, profile)),
       stats_collector_(std::make_unique<LoadingStatsCollector>(
-          resource_prefetch_predictor_.get(),
-          config)),
+          resource_prefetch_predictor_.get())),
       loading_data_collector_(std::make_unique<LoadingDataCollector>(
           resource_prefetch_predictor_.get(),
           stats_collector_.get(),
@@ -466,7 +465,6 @@ void LoadingPredictor::PreconnectFinished(
 
   DCHECK(stats);
   active_hints_.erase(stats->url);
-  stats_collector_->RecordPreconnectStats(std::move(stats));
 }
 
 void LoadingPredictor::PrefetchInitiated(const GURL& url,

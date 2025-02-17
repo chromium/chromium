@@ -125,7 +125,9 @@ class InteractiveGlicTestT : public T {
                                 Args&&... args)
       : T(std::forward<Args>(args)...) {
     features_.InitWithFeaturesAndParameters(
-        {{features::kGlic, glic_params}, {features::kTabstripComboButton, {}}},
+        {{features::kGlic, glic_params},
+         {features::kTabstripComboButton, {}},
+         {features::kGlicKeyboardShortcutNewBadge, {}}},
         {});
   }
 

@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Cambiar diseño</translation>
 <translation id="2244834438220057800">verde</translation>
 <translation id="225692081236532131">Estado de la activación</translation>
-<translation id="2265792117169966196">Seleccionar y descargar modelo de transcripción del <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Añadir captura de pantalla</translation>
 <translation id="2268044343513325586">Restringir</translation>
 <translation id="2271469253353559191">Horario del modo Oscuro</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">No se puede probar el dispositivo. Cambia al modo Portátil para hacer la prueba.</translation>
 <translation id="3916998944874125962">hacer captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
-<translation id="3924445055519423964">Haz clic para resumir la página web o el archivo PDF</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sin asignar</translation>
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Se ha producido un error al hacer ping en la puerta de enlace de red no predeterminada</translation>
 <translation id="4483498983731992167">No se puede crear la transcripción</translation>
 <translation id="4486524074141928967">Tu sesión se cerrará a las <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Abrir selector de idioma de transcripción</translation>
 <translation id="4500722292849917410">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas usando una tecla modificadora (Ctrl, Alt, Mayús o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfaz</translation>
 <translation id="4503223151711056411">Flecha hacia la izquierda</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4989542687859782284">No disponibles</translation>
 <translation id="4999333166442584738">Ocultar informe</translation>
-<translation id="5005695757087124131">Haz clic para simplificar el texto seleccionado</translation>
 <translation id="500920857929044050">Detener prueba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Color del tema</translation>
@@ -1395,7 +1391,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7425832472614771259">Modelo de transcripción del <ph name="LANGUAGE_NAME" /> descargado al <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Este APN no se puede inhabilitar ni eliminar. Asegúrate de que los APNs <ph name="ATTACH" /> habilitados se inhabiliten o eliminen.</translation>
-<translation id="7453118953486228603">Haz clic para resumir el texto seleccionado</translation>
 <translation id="7458970041932198923">Conéctate a una red y vuelve a cargar la página para ver y elegir avatares.</translation>
 <translation id="7469648432129124067">Portal detectado</translation>
 <translation id="7481312909269577407">Adelante</translation>

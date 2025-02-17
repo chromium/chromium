@@ -88,7 +88,7 @@ HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
 
     app_key.ReadValue(kRegValuePV, &pv);
     app_key.ReadValue(kRegValueName, &name);
-    const base::Version app_version(base::WideToASCII(pv));
+    const base::Version app_version(base::WideToUTF8(pv));
 
     if (app_version.IsValid() &&
         app_version.CompareTo(

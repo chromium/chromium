@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Перемикач розкладки клавіатури</translation>
 <translation id="2244834438220057800">зеленому</translation>
 <translation id="225692081236532131">Статус активації</translation>
-<translation id="2265792117169966196">Вибрати й завантажити модель транскрипції для такої мови: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Додати знімок екрана</translation>
 <translation id="2268044343513325586">Уточнити</translation>
 <translation id="2271469253353559191">Розклад для темного режиму</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Не вдалося перевірити клавіатуру. Перейдіть у режим ноутбука й повторіть спробу.</translation>
 <translation id="3916998944874125962">зробити знімок екрана</translation>
 <translation id="3923184630988645767">Використання трафіку</translation>
-<translation id="3924445055519423964">Натисніть, щоб отримати короткий виклад вебсторінки або файлу PDF</translation>
 <translation id="3932043219784172185">Немає підключених пристроїв</translation>
 <translation id="3934185438132762746">Не призначено: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
 <translation id="4483498983731992167">Не вдалося створити текстову версію</translation>
 <translation id="4486524074141928967">Ви вийдете з облікового запису о <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Відкрити засіб вибору мови транскрипції</translation>
 <translation id="4500722292849917410">Комбінація клавіш недоступна. Натисніть нову комбінацію з використанням клавіші-модифікатора (Ctrl, Alt, Shift або клавіша <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Колір інтерфейсу</translation>
 <translation id="4503223151711056411">Стрілка вліво</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Сторінки</translation>
 <translation id="4989542687859782284">Недоступні</translation>
 <translation id="4999333166442584738">Сховати звіт</translation>
-<translation id="5005695757087124131">Натисніть, щоб спростити вибраний текст</translation>
 <translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Колір теми</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259">Завантажено <ph name="PROGRESS_PERCENTAGE" />% моделі транскрипції для такої мови: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не вдалося вимкнути або вилучити цю точку доступу. Переконайтеся, що ввімкнені точки доступу <ph name="ATTACH" /> вимкнено або вилучено.</translation>
-<translation id="7453118953486228603">Натисніть, щоб підсумувати вибраний текст</translation>
 <translation id="7458970041932198923">Щоб переглядати й налаштовувати аватари, підключіться до мережі й оновіть сторінку.</translation>
 <translation id="7469648432129124067">Виявлено портал</translation>
 <translation id="7481312909269577407">Уперед</translation>

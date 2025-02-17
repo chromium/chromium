@@ -550,12 +550,9 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
         theme_service_->SetTheme(extension);
         return ThemeSyncState::kApplied;
       }
-      const extensions::DisableReasonSet disable_reasons =
-          extensions::ExtensionPrefs::Get(profile_)->GetDisableReasons(id);
       bool is_disabled_by_user =
-          disable_reasons.size() == 1 &&
-          disable_reasons.contains(
-              extensions::disable_reason::DISABLE_USER_ACTION);
+          extensions::ExtensionPrefs::Get(profile_)->HasOnlyDisableReason(
+              id, extensions::disable_reason::DISABLE_USER_ACTION);
       if (is_disabled_by_user) {
         // The user had installed this theme but disabled it (by installing
         // another atop it); re-enable.

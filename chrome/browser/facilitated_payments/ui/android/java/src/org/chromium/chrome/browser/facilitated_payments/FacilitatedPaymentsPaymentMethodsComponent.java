@@ -24,11 +24,6 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
      * with.
      */
     interface Delegate {
-        // Deprecated: TODO: crbug.com/375089558 - Deprecate this method, onUiEvent replaces this
-        // method.
-        /** Called whenever the sheet is dismissed. */
-        void onDismissed();
-
         /**
          * Called whenever a UI event takes place.
          *

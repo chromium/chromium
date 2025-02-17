@@ -114,7 +114,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
 
   // Return the SkImageInfo of the internal representation of this image.
   virtual SkImageInfo GetSkImageInfo() const = 0;
-  gfx::Size GetSize() {
+  gfx::Size GetSize() const {
     return gfx::Size(GetSkImageInfo().width(), GetSkImageInfo().height());
   }
   SkAlphaType GetAlphaType() { return GetSkImageInfo().alphaType(); }

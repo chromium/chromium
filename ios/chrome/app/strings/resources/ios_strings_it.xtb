@@ -427,6 +427,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2755485474385016903">Le modifiche apportate sono visibili a tutti i membri del gruppo</translation>
 <translation id="2755595981383829244">Ora riceverai notifiche sui contenuti</translation>
 <translation id="2761788987260570878">Scatta una foto della tua ricerca</translation>
+<translation id="2761898608071930085">Usa un altro account</translation>
 <translation id="2762000892062317888">in questo istante</translation>
 <translation id="2772667768515195373">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo viene salvato nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notifiche via email</translation>
@@ -1724,6 +1725,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428634594422941299">Ok</translation>
 <translation id="8430694217306051839">Scegli dove salvare <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Dettagli gruppo di schede</translation>
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
 <translation id="8439758443371991593">Nascondi Aggiungi all'elenco di lettura</translation>
 <translation id="8449869326050867919">Password condivisa</translation>
@@ -1801,6 +1803,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8722229818691036192">Account su questo dispositivo</translation>
 <translation id="8722649775263832315">Tocca o evidenzia per cercare qualsiasi cosa con Google Lens</translation>
 <translation id="8723088494871522141">Nascondi "Recensioni prodotto per te"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} scheda}other{{COUNT} schede}}</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8728922029615312208">Chiudi tutte</translation>
 <translation id="8730621377337864115">Fine</translation>

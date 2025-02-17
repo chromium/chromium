@@ -182,16 +182,11 @@ void PixManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
 
   ShowPixPaymentPrompt(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
-      base::BindOnce(&PixManager::OnPixPaymentPromptResult,
+      base::BindOnce(&PixManager::OnPixAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PixManager::OnPixPaymentPromptResult(bool is_prompt_accepted,
-                                          int64_t selected_instrument_id) {
-  if (!is_prompt_accepted) {
-    // The metric for the reason of this early-return is logged in `OnUiEvent`.
-    return;
-  }
+void PixManager::OnPixAccountSelected(int64_t selected_instrument_id) {
   LogPixFopSelected();
   LogPixFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_);
   ShowProgressScreen();
@@ -350,10 +345,10 @@ void PixManager::DismissPrompt() {
 
 void PixManager::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+    base::OnceCallback<void(int64_t)> on_pix_account_selected) {
   ui_state_ = UiState::kFopSelector;
   client_->ShowPixPaymentPrompt(std::move(bank_account_suggestions),
-                                std::move(on_user_decision_callback));
+                                std::move(on_pix_account_selected));
 }
 
 void PixManager::ShowProgressScreen() {

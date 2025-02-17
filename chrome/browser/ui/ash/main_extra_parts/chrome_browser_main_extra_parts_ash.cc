@@ -283,7 +283,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // listeners, so inform the session manager that Ash is initialized.
   session_controller_client_->EmitAshInitialized();
 
-  system_tray_client_ = std::make_unique<SystemTrayClientImpl>();
+  system_tray_client_ = std::make_unique<SystemTrayClientImpl>(
+      CHECK_DEREF(g_browser_process->platform_part()->GetSystemClock()),
+      CHECK_DEREF(
+          g_browser_process->platform_part()->browser_policy_connector_ash()));
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
 
   if (ash::features::IsCoralFeatureEnabled()) {

@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">Conta gerenciada</translation>
 <translation id="1358214951266274152">Visitar o link que você copiou</translation>
 <translation id="1360432990279830238">Sair e desativar a sincronização?</translation>
+<translation id="1362192716574455663">Os dados de navegação atuais não serão transferidos para sua conta de trabalho. Você ainda pode acessar o app ao sair ou adicionar uma conta pessoal.</translation>
 <translation id="1363028406613469049">Rastrear</translation>
 <translation id="1364367057792633742">Nova guia</translation>
 <translation id="1365106417372288489">Seu iPhone foi restaurado recentemente. Isso pode ter mudado seu navegador padrão.</translation>
@@ -427,6 +428,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2755485474385016903">As mudanças feitas são vistas por todos no grupo</translation>
 <translation id="2755595981383829244">Agora você vai receber notificações de conteúdo</translation>
 <translation id="2761788987260570878">Tire uma foto da sua pesquisa</translation>
+<translation id="2761898608071930085">Usar outra conta</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="2772667768515195373">Os endereços salvos podem ser usados em vários produtos do Google. Esse endereço foi salvo na sua conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notificações por e-mail</translation>
@@ -1724,6 +1726,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8428634594422941299">Entendi</translation>
 <translation id="8430694217306051839">Escolha um local para salvar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Detalhes do grupo de guias</translation>
 <translation id="8438566539970814960">Melhorar as pesquisas e a navegação</translation>
 <translation id="8439758443371991593">Ocultar "Adicionar à Lista de leitura"</translation>
 <translation id="8449869326050867919">Senha compartilhada</translation>
@@ -1801,6 +1804,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
 <translation id="8722649775263832315">Toque ou destaque para pesquisar o que quiser com o Google Lens</translation>
 <translation id="8723088494871522141">Ocultar "Avaliações de produtos para você"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} guia}one{{COUNT} guia}other{{COUNT} guias}}</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8728922029615312208">Fechar todas</translation>
 <translation id="8730621377337864115">Concluir</translation>

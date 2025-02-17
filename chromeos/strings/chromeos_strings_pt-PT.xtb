@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Interruptor do esquema</translation>
 <translation id="2244834438220057800">verde</translation>
 <translation id="225692081236532131">Estado da ativação</translation>
-<translation id="2265792117169966196">Selecionar e transferir o modelo de transcrição <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Adicionar captura de ecrã</translation>
 <translation id="2268044343513325586">Refinar</translation>
 <translation id="2271469253353559191">Horário do modo escuro</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Não é possível testar o dispositivo. Mude para o modo de portátil para testar.</translation>
 <translation id="3916998944874125962">fazer captura de ecrã</translation>
 <translation id="3923184630988645767">Utilização de dados</translation>
-<translation id="3924445055519423964">Clique para resumir a página Web/o ficheiro PDF</translation>
 <translation id="3932043219784172185">Nenhum dispositivo ligado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> não atribuído</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
 <translation id="4483498983731992167">Não é possível criar a transcrição</translation>
 <translation id="4486524074141928967">A sua sessão vai ser terminada à(s) <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Abrir selecionador de idiomas da transcrição</translation>
 <translation id="4500722292849917410">Atalho não disponível. Prima um novo atalho através de uma tecla de modificação (Ctrl, Alt, Shift ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Páginas </translation>
 <translation id="4989542687859782284">Indisponível</translation>
 <translation id="4999333166442584738">Ocultar relatório</translation>
-<translation id="5005695757087124131">Clique para simplificar o texto selecionado</translation>
 <translation id="500920857929044050">Parar teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Cor do tema</translation>
@@ -1395,7 +1391,6 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7425832472614771259">Modelo de transcrição <ph name="LANGUAGE_NAME" />: <ph name="PROGRESS_PERCENTAGE" />% transferido</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Não é possível desativar nem remover este APN. Certifique-se de que os APNs <ph name="ATTACH" /> ativados foram desativados ou removidos.</translation>
-<translation id="7453118953486228603">Clique para resumir o texto selecionado</translation>
 <translation id="7458970041932198923">Ligue-se a uma rede e atualize a página para ver e definir avatares.</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7481312909269577407">Avançar</translation>

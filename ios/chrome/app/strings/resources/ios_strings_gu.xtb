@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="1044891598689252897">સાઇટ સામાન્ય રીતે કાર્ય કરશે</translation>
 <translation id="104491362976654916">ઑફલાઇન પેજ</translation>
+<translation id="1049200476149974839">ઇચ્છે છે કે તમે ટૅબના ગ્રૂપમાં જોડાઓ. લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફાર કરી શકે છે, તેથી સાવચેતીપૂર્વક રહીને જોડાઓ. લિંકની સમયસીમા 48 કલાકમાં સમાપ્ત થાય છે.</translation>
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="1053651653201045802">સાઇન આઉટ થયા. તમારા એકાઉન્ટમાં બુકમાર્ક, પાસવર્ડ વગેરેનો ઉપયોગ કરવા માટે ફરી સાઇન ઇન કરો.</translation>
 <translation id="1054745118061919935">આગળ વધીને, તમે <ph name="BEGIN_LINK" />સેવાની શરતો<ph name="END_LINK" /> સાથે સંમત થાઓ છો.</translation>
@@ -193,6 +194,7 @@
 <translation id="1780152987505130652">ગ્રૂપ બંધ કરો</translation>
 <translation id="178400879184240105">તમારા પાસવર્ડ વિશિષ્ટ છે</translation>
 <translation id="17906873777101817">પાસવર્ડ અને પાસકી સાચવવાની ઑફર આપો</translation>
+<translation id="1794893174442046596">ટૅબનું ગ્રૂપ</translation>
 <translation id="1807893857950749072">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશનને મંજૂરી આપો…</translation>
 <translation id="1810976980198522421">રદ કરો</translation>
 <translation id="1815941218935345331">પાસકોડ</translation>
@@ -427,6 +429,7 @@
 <translation id="2755485474385016903">કરવામાં આવેલા ફેરફારો ગ્રૂપના પ્રત્યેક સભ્યને દેખાય છે</translation>
 <translation id="2755595981383829244">હવે તમે કન્ટેન્ટ માટેના નોટિફિકેશન મેળવશો</translation>
 <translation id="2761788987260570878">તમારી શોધનો ફોટો લો</translation>
+<translation id="2761898608071930085">બીજા એકાઉન્ટનો ઉપયોગ કરો</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
 <translation id="2772667768515195373">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામાને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">ઇમેઇલ નોટિફિકેશન</translation>
@@ -1724,6 +1727,7 @@
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428634594422941299">સમજાઈ ગયું</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />)ને સાચવવા માટેનું લોકેશન પસંદ કરો</translation>
+<translation id="8434837876193928924">ટૅબના ગ્રૂપની વિગતો</translation>
 <translation id="8438566539970814960">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
 <translation id="8439758443371991593">'વાંચન સૂચિમાં ઉમેરો' છુપાવો</translation>
 <translation id="8449869326050867919">પાસવર્ડ શેર કરવામાં આવ્યો</translation>
@@ -1801,6 +1805,7 @@
 <translation id="8722229818691036192">આ ડિવાઇસ પરના એકાઉન્ટ</translation>
 <translation id="8722649775263832315">Google Lens વડે કોઈપણ વસ્તુ શોધવા માટે ટૅપ કરો અથવા હાઇલાઇટ કરો</translation>
 <translation id="8723088494871522141">"તમારા માટે પ્રોડક્ટના રિવ્યૂ" છુપાવો</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} ટૅબ}one{{COUNT} ટૅબ}other{{COUNT} ટૅબ}}</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8728922029615312208">બધા બંધ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>

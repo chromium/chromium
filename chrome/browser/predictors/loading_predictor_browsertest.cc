@@ -2047,13 +2047,6 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("nohints.com", "/")));
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
-
-  histogram_tester.ExpectUniqueSample(
-      "LoadingPredictor.PreconnectLearningRecall.OptimizationGuide", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "LoadingPredictor.PreconnectLearningPrecision.OptimizationGuide", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "LoadingPredictor.PreconnectLearningCount.OptimizationGuide", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(

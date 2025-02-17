@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
 <translation id="2161656808144014275">Matn</translation>
 <translation id="2163937499206714165">Tungi rejimni yoqish</translation>
+<translation id="2164131940279488868">Ovoz yozib olish uchun mikrofon ulanganini tekshiring</translation>
 <translation id="2173302385160625112">Internet aloqasini tekshiring</translation>
 <translation id="2180197493692062006">Xatolik yuz berdi. Ilovani qayta ochishga urining.</translation>
 <translation id="2189104374785738357">APN maʼlumotlarini tahrirlash</translation>
@@ -303,7 +304,6 @@
 <translation id="2240366984605217732">Sxemani almashtirish</translation>
 <translation id="2244834438220057800">yashil</translation>
 <translation id="225692081236532131">Aktivatsiya holati</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> trankripsiya modelini tanlash va yuklab olish</translation>
 <translation id="2267285889943769271">Skrinshot kiritish</translation>
 <translation id="2268044343513325586">Aniqlashtirish</translation>
 <translation id="2271469253353559191">Tungi rejim rejasi</translation>
@@ -610,7 +610,6 @@
 <translation id="391412459402535266">Qurilmani sinash imkonsiz. Sinash uchun laptop rejimiga oʻting</translation>
 <translation id="3916998944874125962">skrinshot olish</translation>
 <translation id="3923184630988645767">Trafik sarfi</translation>
-<translation id="3924445055519423964">Veb-sahifa yoki PDF faylni xulosalash uchun bosing</translation>
 <translation id="3932043219784172185">Hech qaysi qurilma ulanmagan!</translation>
 <translation id="3934185438132762746">Tayinlanmagan: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
@@ -734,7 +733,6 @@
 <translation id="4483049906298469269">Ikkilamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="4483498983731992167">Transkripsiya yaratilmadi</translation>
 <translation id="4486524074141928967">Siz tizimdan chiqdingiz: <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Transkripsiya tilini tanlash vositasini oching</translation>
 <translation id="4500722292849917410">Tezkor tugma ishlamayapti. Yangi tezkor tugmani oʻzgartirish tugmasi (ctrl, alt, shift yoki <ph name="META_KEY" />) bilan bosing.</translation>
 <translation id="4500966230243561393">Interfeys rangi</translation>
 <translation id="4503223151711056411">Chapga strelka</translation>
@@ -848,7 +846,6 @@
 <translation id="4988526792673242964">Sahifalar</translation>
 <translation id="4989542687859782284">Mavjud emas</translation>
 <translation id="4999333166442584738">Hisobotni yopish</translation>
-<translation id="5005695757087124131">Belgilangan matnni soddalashtirish uchun bosing</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Mavzu rangi</translation>
@@ -1395,7 +1392,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> transkripsiya modeli <ph name="PROGRESS_PERCENTAGE" />% yuklab olindi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Bu APN faolsizlantirilmadi yoki olib tashlanmadi. <ph name="ATTACH" /> APN nuqtalari faolsizlantirilishi yoki olib tashlanishi kerak</translation>
-<translation id="7453118953486228603">Belgilangan matnni xulosalash uchun bosing</translation>
 <translation id="7458970041932198923">Avatarlarni koʻrish va sozlash uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="7469648432129124067">Portal aniqlandi</translation>
 <translation id="7481312909269577407">Oldinga</translation>
@@ -1474,6 +1470,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> kafe</translation>
 <translation id="7841134249932030522">Tungi rejimni yoqish</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
+<translation id="7847923465436619066">Transkripsiya tilini tanlash vositasi</translation>
 <translation id="7849030488395653706">shimol yogʻdusi</translation>
 <translation id="7849737607196682401">toʻr</translation>
 <translation id="7850320739366109486">Bezovta qilinmasin</translation>
@@ -1660,6 +1657,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8749478549112817787">Kamera uchun fon</translation>
 <translation id="8755946156089753497">minora</translation>
 <translation id="8760616037557661287">Avvalgi soʻrovlar</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> trankripsiya modelini tanlash va yuklab olish</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos albomi</translation>
 <translation id="8775713578693478175">Modem APN</translation>
@@ -1690,6 +1688,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8876270629542503161">Qurilma — planshet</translation>
 <translation id="8881098542468797602">Tekshiruv yakunlandi</translation>
 <translation id="8882789155418924367">boyqushlar</translation>
+<translation id="8885038613856655272">Mikrofon ulang</translation>
 <translation id="8892443466059986410">Tahrirlashni bekor qilish</translation>
 <translation id="8897043028305808902">Fayl qayta nomlandi</translation>
 <translation id="8898840733695078011">Signal darajasi</translation>

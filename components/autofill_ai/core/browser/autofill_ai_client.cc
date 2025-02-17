@@ -5,22 +5,16 @@
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 
 #include <optional>
+#include <utility>
 
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 
 namespace autofill_ai {
 
 AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult(
-    bool prompt_was_accepted,
     bool did_user_interact,
     std::optional<autofill::EntityInstance> entity)
-    : prompt_was_accepted(prompt_was_accepted),
-      did_user_interact(did_user_interact),
-      entity(std::move(entity)) {}
-
-AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult(
-    bool prompt_was_accepted)
-    : prompt_was_accepted(prompt_was_accepted) {}
+    : did_user_interact(did_user_interact), entity(std::move(entity)) {}
 
 AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult() =
     default;

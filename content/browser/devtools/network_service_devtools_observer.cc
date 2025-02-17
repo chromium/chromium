@@ -394,6 +394,67 @@ protocol::String BuildSharedDictionaryError(
   }
 }
 
+protocol::String ConvertToDevtoolsEnum(
+    network::mojom::SRIMessageSignatureError error) {
+  using network::mojom::SRIMessageSignatureError;
+  namespace SRIMessageSignatureErrorEnum =
+      protocol::Audits::SRIMessageSignatureErrorEnum;
+  switch (error) {
+    case SRIMessageSignatureError::kMissingSignatureHeader:
+      return SRIMessageSignatureErrorEnum::MissingSignatureHeader;
+    case SRIMessageSignatureError::kMissingSignatureInputHeader:
+      return SRIMessageSignatureErrorEnum::MissingSignatureInputHeader;
+    case SRIMessageSignatureError::kInvalidSignatureHeader:
+      return SRIMessageSignatureErrorEnum::InvalidSignatureHeader;
+    case SRIMessageSignatureError::kInvalidSignatureInputHeader:
+      return SRIMessageSignatureErrorEnum::InvalidSignatureInputHeader;
+    case SRIMessageSignatureError::kSignatureHeaderValueIsNotByteSequence:
+      return SRIMessageSignatureErrorEnum::
+          SignatureHeaderValueIsNotByteSequence;
+    case SRIMessageSignatureError::kSignatureHeaderValueIsParameterized:
+      return SRIMessageSignatureErrorEnum::SignatureHeaderValueIsParameterized;
+    case SRIMessageSignatureError::kSignatureHeaderValueIsIncorrectLength:
+      return SRIMessageSignatureErrorEnum::
+          SignatureHeaderValueIsIncorrectLength;
+    case SRIMessageSignatureError::kSignatureInputHeaderMissingLabel:
+      return SRIMessageSignatureErrorEnum::SignatureInputHeaderMissingLabel;
+    case SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderValueNotInnerList;
+    case SRIMessageSignatureError::kSignatureInputHeaderValueMissingComponents:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderValueMissingComponents;
+    case SRIMessageSignatureError::kSignatureInputHeaderInvalidComponentType:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderInvalidComponentType;
+    case SRIMessageSignatureError::kSignatureInputHeaderInvalidComponentName:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderInvalidComponentName;
+    case SRIMessageSignatureError::
+        kSignatureInputHeaderInvalidHeaderComponentParameter:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderInvalidHeaderComponentParameter;
+    case SRIMessageSignatureError::
+        kSignatureInputHeaderInvalidDerivedComponentParameter:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderInvalidDerivedComponentParameter;
+    case SRIMessageSignatureError::kSignatureInputHeaderKeyIdLength:
+      return SRIMessageSignatureErrorEnum::SignatureInputHeaderKeyIdLength;
+    case SRIMessageSignatureError::kSignatureInputHeaderInvalidParameter:
+      return SRIMessageSignatureErrorEnum::SignatureInputHeaderInvalidParameter;
+    case SRIMessageSignatureError::
+        kSignatureInputHeaderMissingRequiredParameters:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderMissingRequiredParameters;
+    case SRIMessageSignatureError::kValidationFailedSignatureExpired:
+      return SRIMessageSignatureErrorEnum::ValidationFailedSignatureExpired;
+    case SRIMessageSignatureError::kValidationFailedSignatureMismatch:
+      return SRIMessageSignatureErrorEnum::ValidationFailedSignatureMismatch;
+    case SRIMessageSignatureError::kValidationFailedInvalidLength:
+      return SRIMessageSignatureErrorEnum::ValidationFailedInvalidLength;
+  }
+}
+
 }  // namespace
 
 void NetworkServiceDevToolsObserver::OnSharedDictionaryError(
@@ -423,6 +484,35 @@ void NetworkServiceDevToolsObserver::OnSharedDictionaryError(
               protocol::Audits::InspectorIssueCodeEnum::SharedDictionaryIssue)
           .SetDetails(std::move(details))
           .Build();
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+}
+
+void NetworkServiceDevToolsObserver::OnSRIMessageSignatureError(
+    const std::string& devtool_request_id,
+    const GURL& url,
+    network::mojom::SRIMessageSignatureError error) {
+  RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
+  if (!rfhi) {
+    return;
+  }
+  auto affected_request = protocol::Audits::AffectedRequest::Create()
+                              .SetRequestId(devtool_request_id)
+                              .SetUrl(url.spec())
+                              .Build();
+  auto issue_details =
+      protocol::Audits::SRIMessageSignatureIssueDetails::Create()
+          .SetError(ConvertToDevtoolsEnum(error))
+          .SetRequest(std::move(affected_request))
+          .Build();
+  auto details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetSriMessageSignatureIssueDetails(std::move(issue_details))
+          .Build();
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                SRIMessageSignatureIssue)
+                   .SetDetails(std::move(details))
+                   .Build();
   devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
 }
 

@@ -302,6 +302,10 @@ source_set("extensions") {
       "api/proxy/proxy_pref_transformer.h",
       "api/runtime/chrome_runtime_api_delegate.cc",
       "api/runtime/chrome_runtime_api_delegate.h",
+      "api/safe_browsing_private/safe_browsing_private_event_router.cc",
+      "api/safe_browsing_private/safe_browsing_private_event_router.h",
+      "api/safe_browsing_private/safe_browsing_private_event_router_factory.cc",
+      "api/safe_browsing_private/safe_browsing_private_event_router_factory.h",
       "api/sessions/session_id.cc",
       "api/sessions/session_id.h",
       "api/sessions/sessions_api.cc",
@@ -665,15 +669,6 @@ source_set("extensions") {
       "webstore_standalone_installer.h",
     ]
 
-    if (safe_browsing_mode != 0) {
-      sources += [
-        "api/safe_browsing_private/safe_browsing_private_event_router.cc",
-        "api/safe_browsing_private/safe_browsing_private_event_router.h",
-        "api/safe_browsing_private/safe_browsing_private_event_router_factory.cc",
-        "api/safe_browsing_private/safe_browsing_private_event_router_factory.h",
-      ]
-    }
-
     # Chrome OS does not support Native Messaging policies.
     if (!is_chromeos) {
       sources += [
@@ -941,6 +936,7 @@ source_set("extensions") {
       "//extensions/browser/api/content_settings:content_settings",
       "//extensions/browser/api/storage:settings_namespace",
       "//extensions/browser/api/storage:settings_observer",
+      "//extensions/browser/api/system_display:display_info_provider",
       "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
       "//extensions/browser/updater:keepalive",
       "//extensions/common:mojom",

@@ -2478,12 +2478,6 @@ inline constexpr char kScannerEnabled[] = "ash.scanner.enabled";
 inline constexpr char kScannerEnterprisePolicyAllowed[] =
     "ash.scanner.enterprise_policy_allowed";
 
-// A boolean pref that records whether users can submit feedback with Scanner.
-// Intended to be managed by policy.
-// TODO: b/388450143 - Delete this now-unused pref.
-inline constexpr char kScannerFeedbackEnabled[] =
-    "ash.scanner.feedback_enabled";
-
 // A dictionary that stores app icons' light vibrant colors.
 inline constexpr char kAshAppIconLightVibrantColorCache[] =
     "ash.app_icon_light_vibrant_color_cache";

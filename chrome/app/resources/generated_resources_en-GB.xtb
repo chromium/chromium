@@ -1550,7 +1550,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="206308717637808771">Delete data when you close all windows. Data is treated the same as the site that you’re viewing</translation>
 <translation id="2065405795449409761">Chrome is being controlled by automated test software.</translation>
 <translation id="2066700471214517561">Beamforming mic so that the person using the Chromebook sounds clear.</translation>
-<translation id="2067591192939433190">From '<ph name="VENDOR_NAME" />'</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> has finished printing to <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">No local log file.</translation>
 <translation id="2071692954027939183">Notifications were automatically blocked because you usually don't allow them</translation>
@@ -6527,7 +6526,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5595307023264033512">Total storage used by sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="5596627076506792578">More options</translation>
-<translation id="5599819890022137981">From Windows Hello</translation>
 <translation id="5600348067066185292">Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.</translation>
 <translation id="5600706100022181951">Update will be downloaded using <ph name="UPDATE_SIZE_MB" /> MB of mobile data. Would you like to continue?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8675,6 +8673,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7160911207516219534">Side panels</translation>
 <translation id="716210145227921528">Deleted passkey</translation>
 <translation id="7165263843655074092">You’re getting standard security protection on this device</translation>
+<translation id="7166017546802325772">No updates to this group</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" can read images, video and sound files in the ticked locations.</translation>
 <translation id="7166815366658507447">Hotspot enabled</translation>
 <translation id="7167327771183668296">Auto clicks</translation>
@@ -9251,7 +9250,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7586498138629385861">Chrome will keep running while Chrome Apps are open.</translation>
 <translation id="7589461650300748890">Whoa, there. Be careful.</translation>
 <translation id="7590883480672980941">Input settings</translation>
-<translation id="7591317506733736159">From your Chrome profile</translation>
 <translation id="7592060599656252486">Some</translation>
 <translation id="7593653750169415785">Automatically blocked because you declined notifications a few times</translation>
 <translation id="7594725637786616550">Powerwash to reset your <ph name="DEVICE_TYPE" /> to be just like new.</translation>
@@ -10309,7 +10307,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="831440797644402910">Can't open this folder</translation>
 <translation id="8314835274931377415">Start Switch Access setup?</translation>
 <translation id="8315018673856831477">Memory saver options</translation>
-<translation id="8315044115695361734">From iCloud Keychain</translation>
 <translation id="8315514906653279104">Turning on…</translation>
 <translation id="8317671367883557781">Add network connection</translation>
 <translation id="8317965619823678157">copy passwords</translation>

@@ -449,7 +449,7 @@ std::string GetInstallerText(UpdateService::ErrorCategory error_category,
          }
          return base::StrCat(
              {L"\n", GetLocalizedStringF(IDS_EXTRA_CODE_BASE,
-                                         base::ASCIIToWide(base::StringPrintf(
+                                         base::UTF8ToWide(base::StringPrintf(
                                              "%#x", extra_code)),
                                          language_w)});
        }()}));

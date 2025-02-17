@@ -20,3 +20,6 @@ crbug.com/388081043 external/wpt/editing/other/paste-clipboard-change.tentative.
 crbug.com/388081043 external/wpt/editing/other/paste-clipboard-change.tentative.html?id=text [ Crash ]
 
 # finder:enable-general
+
+# ====== New tests from wpt-importer added here ======
+crbug.com/396958489 external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]

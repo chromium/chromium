@@ -1103,7 +1103,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
                                                 OperandDataType::kUint8};
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
-  return ContextProperties(
+  ContextProperties properties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/kFloatsAndInt32,
@@ -1128,10 +1128,14 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        /*cumulative_sum_input=*/
        {kFloatsAndInt32, kMaxRank},
+       // TODO(crbug.com/396176047): Make scale and zero_point's rank match with
+       // input.
        // TODO(crbug.com/361603703): Support constant (u)int4 inputs via
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS18.compression.constexpr_blockwise_shift_scale
-       /*dequantize_linear_input=*/k8BitInts,
-       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat16To32,
+       /*dequantize_linear_input=*/{k8BitInts, kMaxRank},
+       /*dequantize_linear_scale=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(1)},
+       /*dequantize_linear_zero_point=*/{k8BitInts, SupportedRanks::UpTo(1)},
        /*add_input=*/{kFloatsAndInt32, kMaxRank},
        /*sub_input=*/{kFloatsAndInt32, kMaxRank},
        /*mul_input=*/{kFloatsAndInt32, kMaxRank},
@@ -1304,6 +1308,13 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
        /*where_value=*/{kFloatsAndInt32, kMaxRank}});
+
+  if (__builtin_available(macOS 15, *)) {
+    properties.data_type_limits.dequantize_linear_scale.ranks = kMaxRank;
+    properties.data_type_limits.dequantize_linear_zero_point.ranks = kMaxRank;
+  }
+
+  return properties;
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(
@@ -2239,11 +2250,15 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
       MILDataTypeToOperandType(input_operand_info.mil_data_type);
   const OperandDataType scale_operand_data_type =
       MILDataTypeToOperandType(scale_operand_info.mil_data_type);
+  const OperandDataType zero_point_operand_data_type =
+      MILDataTypeToOperandType(zero_point_operand_info.mil_data_type);
 
-  CHECK(context_properties_.data_type_limits.dequantize_linear_input.Has(
-      input_operand_data_type));
-  CHECK(context_properties_.data_type_limits.dequantize_linear_scale.Has(
-      scale_operand_data_type));
+  CHECK(context_properties_.data_type_limits.dequantize_linear_input.data_types
+            .Has(input_operand_data_type));
+  CHECK(context_properties_.data_type_limits.dequantize_linear_scale.data_types
+            .Has(scale_operand_data_type));
+  CHECK(context_properties_.data_type_limits.dequantize_linear_zero_point
+            .data_types.Has(zero_point_operand_data_type));
 
   // TODO(crbug.com/338529226): These params must all be constant tensors.
   if (!constant_operands_->contains(operation.zero_point_operand_id)) {
@@ -2266,19 +2281,6 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
       constant_operands_->contains(operation.input_operand_id);
   if (support_blockwise_dequantize_ && is_constant_input) {
     return AddOperationForDequantizeLinearConstBlockwise(operation, block);
-  }
-
-  // TODO(crbug.com/395920220): Expose these constraints via rankRange.
-  if (zero_point_operand_info.dimensions.size() > 1) {
-    return NewNotSupportedError(
-        "Unsupported options to dequantizeLinear. 'zeroPoint' must be a "
-        "scalar or vector. Blockwise dequantization is not supported.");
-  }
-
-  if (scale_operand_info.dimensions.size() > 1) {
-    return NewNotSupportedError(
-        "Unsupported options to dequantizeLinear. 'scale' must be a scalar "
-        "or vector. Blockwise dequantization is not supported.");
   }
 
   if (scale_operand_info.dimensions.size() == 1 &&

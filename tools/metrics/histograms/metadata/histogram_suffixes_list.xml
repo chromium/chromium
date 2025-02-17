@@ -1441,18 +1441,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="LevelDBEnv.MissingFiles"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="LoadingPredictorHintOrigin" separator=".">
-  <suffix name="Navigation"
-      label="Prediction trigged at start of navigation based on what was
-             learned locally from previous navigations to the same origin."/>
-  <suffix name="OptimizationGuide"
-      label="Prediction triggered by Optimization Guide."/>
-  <affected-histogram name="LoadingPredictor.PreconnectLearningCount"/>
-  <affected-histogram name="LoadingPredictor.PreconnectLearningPrecision"/>
-  <affected-histogram name="LoadingPredictor.PreconnectLearningRecall"/>
-  <affected-histogram name="LoadingPredictor.PreconnectLearningRedirectStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MacAudioInputVariants" separator="_">
   <suffix name="HighLatency"
       label="Measures the standard Mac audio driver (i.e. not low-latency)."/>

@@ -22,7 +22,15 @@ struct LocaleInfo;
 class SystemTray;
 enum class LoginStatus;
 enum class NotificationStyle;
+
+namespace system {
+class SystemClock;
+}  // namespace system
 }  // namespace ash
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 class Profile;
 
@@ -33,7 +41,9 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
                              public policy::CloudPolicyStore::Observer,
                              public UpgradeObserver {
  public:
-  SystemTrayClientImpl();
+  SystemTrayClientImpl(
+      ash::system::SystemClock& system_clock,
+      policy::BrowserPolicyConnectorAsh& browser_policy_connector_ash);
 
   SystemTrayClientImpl(const SystemTrayClientImpl&) = delete;
   SystemTrayClientImpl& operator=(const SystemTrayClientImpl&) = delete;
@@ -156,6 +166,9 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
 
   void UpdateDeviceEnterpriseInfo();
   void UpdateEnterpriseAccountDomainInfo(Profile* profile);
+
+  raw_ptr<ash::system::SystemClock> system_clock_;
+  raw_ptr<policy::BrowserPolicyConnectorAsh> browser_policy_connector_ash_;
 
   // The system tray model in ash.
   const raw_ptr<ash::SystemTray> system_tray_;

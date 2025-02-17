@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Prekidač za raspored</translation>
 <translation id="2244834438220057800">zelene</translation>
 <translation id="225692081236532131">Status aktivacije</translation>
-<translation id="2265792117169966196">Odabir i preuzimanje modela transkripcije za jezik <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Dodajte snimak ekrana</translation>
 <translation id="2268044343513325586">Traži detaljnije</translation>
 <translation id="2271469253353559191">Raspored tamnog načina rada</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Nije moguće testirati uređaj. Prebacite se na način rada laptopa da testirate.</translation>
 <translation id="3916998944874125962">snimanje snimka ekrana</translation>
 <translation id="3923184630988645767">Prijenos podataka</translation>
-<translation id="3924445055519423964">Sažimanje web stranice / PDF fajla klikom</translation>
 <translation id="3932043219784172185">Nije povezan nijedan uređaj</translation>
 <translation id="3934185438132762746">Nedodijeljeno: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Rješavanje hosta nije uspjelo</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Provjera pingom mrežnog pristupnika koji nije zadan nije uspjela</translation>
 <translation id="4483498983731992167">Nije moguće kreirati transkript</translation>
 <translation id="4486524074141928967">Odjavit ćete se u <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Otvaranje birača jezika za transkripciju</translation>
 <translation id="4500722292849917410">Prečica nije dostupna. Pritisnite novu prečicu koristeći modifikacijsku tipku (Ctrl, Alt, Shift ili tipku <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Boja interfejsa</translation>
 <translation id="4503223151711056411">Strelica ulijevo</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Stranice</translation>
 <translation id="4989542687859782284">Nedostupno</translation>
 <translation id="4999333166442584738">Sakrij izvještaj</translation>
-<translation id="5005695757087124131">Pojednostavljenje odabranog teksta klikom</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Boja teme</translation>
@@ -1395,7 +1391,6 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7425832472614771259">Model transkripcije za jezik <ph name="LANGUAGE_NAME" />, preuzeto <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Nije moguće onemogućiti ili ukloniti APN. Provjerite jesu li omogućeni APN-ovi (<ph name="ATTACH" />) onemogućeni ili uklonjeni.</translation>
-<translation id="7453118953486228603">Sažimanje odabranog teksta klikom</translation>
 <translation id="7458970041932198923">Povežite se s mrežom i ponovo učitajte stranicu da pregledate i postavite avatare.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7481312909269577407">Proslijedi</translation>

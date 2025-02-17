@@ -1031,6 +1031,14 @@ bool ExtensionPrefs::HasDisableReason(
   return GetDisableReasons(extension_id).contains(disable_reason);
 }
 
+bool ExtensionPrefs::HasOnlyDisableReason(
+    const ExtensionId& extension_id,
+    disable_reason::DisableReason disable_reason) const {
+  const DisableReasonSet disable_reasons = GetDisableReasons(extension_id);
+  return disable_reasons.size() == 1 &&
+         disable_reasons.contains(disable_reason);
+}
+
 void ExtensionPrefs::AddDisableReason(
     const ExtensionId& extension_id,
     disable_reason::DisableReason disable_reason) {

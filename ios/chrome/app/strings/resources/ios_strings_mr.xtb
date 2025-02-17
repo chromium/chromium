@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">व्यवस्थापित केलेले खाते</translation>
 <translation id="1358214951266274152">तुम्ही कॉपी केलेल्या लिंकला भेट द्या</translation>
 <translation id="1360432990279830238">साइन आउट करून सिंक बंद करायचे आहे का?</translation>
+<translation id="1362192716574455663">तुमच्या ऑफिस खात्यामध्ये सद्य ब्राउझिंग डेटा हलवता येणार नाही. तुम्ही साइन आउट करून किंवा वैयक्तिक खाते जोडून अजूनही तो अ‍ॅक्सेस करू शकता.</translation>
 <translation id="1363028406613469049">ट्रॅक</translation>
 <translation id="1364367057792633742">नवीन टॅब</translation>
 <translation id="1365106417372288489">तुमचा iPhone नुकताच रिस्टोअर करण्यात आला, ज्यामुळे तुमचा डीफॉल्ट ब्राउझर बदलला असावा.</translation>
@@ -427,6 +428,7 @@
 <translation id="2755485474385016903">केलेले बदल गटामधील सर्वांना दिसतात</translation>
 <translation id="2755595981383829244">तुम्हाला आता आशयाशी संबंधित सूचना मिळतील</translation>
 <translation id="2761788987260570878">तुमच्या शोधाचा फोटो घ्या</translation>
+<translation id="2761898608071930085">दुसरे खाते वापरा</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
 <translation id="2772667768515195373">तुम्ही संपूर्ण Google उत्पादनांवर सेव्ह केलेले पत्ते वापरू शकता. हा अ‍ॅड्रेस तुमच्या Google खाते (<ph name="USER_EMAIL" />) मध्ये सेव्ह केला आहे.</translation>
 <translation id="2773344962924806829">ईमेल नोटिफिकेशन</translation>
@@ -1725,6 +1727,7 @@
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8428634594422941299">समजले</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) कुठे सेव्ह करायची आहे हे निवडा</translation>
+<translation id="8434837876193928924">टॅब गटाचे तपशील</translation>
 <translation id="8438566539970814960">शोध आणि ब्राउझ करणे चांगले करा</translation>
 <translation id="8439758443371991593">वाचन सूची मध्ये जोडा हे लपवा</translation>
 <translation id="8449869326050867919">पासवर्ड शेअर केला</translation>
@@ -1802,6 +1805,7 @@
 <translation id="8722229818691036192">या डिव्हाइसवरील खाती</translation>
 <translation id="8722649775263832315">Google Lens वापरून काहीही शोधण्यासाठी टॅप करा किंवा हायलाइट करा</translation>
 <translation id="8723088494871522141">"तुमच्यासाठी उत्पादन परीक्षणे" लपवा</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} टॅब}other{{COUNT} टॅब}}</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8728922029615312208">सर्व बंद करा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>

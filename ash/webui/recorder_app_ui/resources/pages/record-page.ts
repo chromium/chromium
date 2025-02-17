@@ -641,8 +641,6 @@ export class RecordPage extends ReactiveLitElement {
     if (!toggleTranscriptionEnabled()) {
       this.transcriptionConsentDialog.value?.show();
     }
-    // TODO: b/377885042 - Show the language picker when language state is not
-    // downloaded or downloading.
     if (this.platformHandler.getSelectedLanguage() === null &&
         this.transcriptionEnabled.value) {
       this.languagePickerDialog.value?.show();
@@ -755,8 +753,6 @@ export class RecordPage extends ReactiveLitElement {
             </div>
           `;
         }
-        // TODO: b/377885042 - Update unusable state string when the spec is
-        // ready.
         switch (sodaState.kind) {
           case 'notInstalled': {
             return html`

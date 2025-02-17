@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">휴대전화 앱 보기 설정 닫기</translation>
 <translation id="1610778689852195798">"실행취소"</translation>
 <translation id="1611993646327628135">켜짐</translation>
+<translation id="1612679292338846734">이 기능을 사용 설정하면 입력 텍스트, 문서 콘텐츠, 웹페이지 URL이 Google AI 서버로 전송될 수 있습니다. 이 정보는 <ph name="LINK_TO_SERVICE_TERMS" />에 따라 작성 제안 및 요약을 생성하고, 질문에 답변하며, 제품을 개선하는 데 사용됩니다. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1623768535032616219">Google 클래스룸 접기</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> 기능을 사용할 수 없습니다.</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">연결 추가</translation>
 <translation id="2947835478872237115">현재 배터리 잔량 <ph name="BATTERY_PERCENTAGE" />%, 충전 완료까지 <ph name="TIME" /> 남음</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" /> 키를 누른 상태에서 링크 클릭</translation>
+<translation id="2957159466053076448">언제든지 설정에서 이러한 기능을 사용 중지할 수 있습니다. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">기기 오디오</translation>
 <translation id="2960314608273155470">캡처 모드, 기본값은 <ph name="SOURCE" /> <ph name="TYPE" />입니다. 키보드 탐색을 사용하려면 Tab 키를 누르세요.</translation>
 <translation id="2961963223658824723">문제가 발생했습니다. 잠시 후 다시 시도해 주세요.</translation>
@@ -1905,6 +1907,7 @@
 <translation id="735745346212279324">VPN 연결 끊김</translation>
 <translation id="7360036564632145207">주변기기 데이터 액세스 보호 설정을 변경하면 성능을 최적화할 수 있습니다.</translation>
 <translation id="736045644501761622">배경화면 및 스타일 설정</translation>
+<translation id="7368041336688136012">요약 도우미, 글쓰기 도우미, AI로 이미지 만들기 기능을 사용하려면 만 18세 이상이어야 합니다.</translation>
 <translation id="7371404428569700291">창 녹화</translation>
 <translation id="7372069265635026568">총 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" />의 메모리 사용 가능</translation>
 <translation id="737315737514430195">마이크 권한이 있는 모든 앱 및 웹사이트의 마이크 액세스를 허용합니다.</translation>
@@ -2030,6 +2033,7 @@
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">모두 표시</translation>
+<translation id="7762664108390426952">Google 서비스 약관 및 개인정보처리방침</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769299611924763557">곧 GIF가 준비됩니다</translation>
 <translation id="7773536009433685931">대신 Wi-Fi 사용 설정하기</translation>

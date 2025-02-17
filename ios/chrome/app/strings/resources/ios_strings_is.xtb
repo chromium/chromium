@@ -427,6 +427,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2755485474385016903">Allir í hópnum geta séð breytingar sem gerðar eru</translation>
 <translation id="2755595981383829244">Héðan í frá færðu efnistilkynningar</translation>
 <translation id="2761788987260570878">Taktu mynd af leitarfyrirspurninni þinni</translation>
+<translation id="2761898608071930085">Nota annan reikning</translation>
 <translation id="2762000892062317888">rétt í þessu</translation>
 <translation id="2772667768515195373">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang er vistað á Google-reikningnum þínum, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Tilkynningar í tölvupósti</translation>
@@ -1724,6 +1725,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8428634594422941299">Ég skil</translation>
 <translation id="8430694217306051839">Veldu hvar þú vilt vista <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Upplýsingar um flipahóp</translation>
 <translation id="8438566539970814960">Bæta leit og vafra</translation>
 <translation id="8439758443371991593">Fela „Bæta við leslista“</translation>
 <translation id="8449869326050867919">Aðgangsorði deilt</translation>
@@ -1801,6 +1803,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8722229818691036192">Reikningar í þessu tæki</translation>
 <translation id="8722649775263832315">Ýttu á eða yfirstrikaðu hvað sem er til að leita að því með Google-linsu</translation>
 <translation id="8723088494871522141">Fela „Umsagnir um vörur fyrir þig“</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} flipi}one{{COUNT} flipi}other{{COUNT} flipa}}</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8728922029615312208">Loka öllu</translation>
 <translation id="8730621377337864115">Lokið</translation>

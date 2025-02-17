@@ -1540,7 +1540,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="206308717637808771">Suprimeix les dades en tancar totes les finestres. Les dades es tracten de la mateixa manera que el lloc web que estàs veient.</translation>
 <translation id="2065405795449409761">Un programari de prova automatitzat està controlant Chrome.</translation>
 <translation id="2066700471214517561">Micròfon amb conformació de feix perquè la persona que utilitzi el Chromebook soni amb nitidesa.</translation>
-<translation id="2067591192939433190">De <ph name="VENDOR_NAME" /></translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha acabat d'imprimir a <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">No hi ha cap fitxer de registre local.</translation>
 <translation id="2071692954027939183">Les notificacions s'han bloquejat automàticament perquè normalment no les permets</translation>
@@ -6510,7 +6509,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5595307023264033512">Emmagatzematge total utilitzat pels llocs web: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="5596627076506792578">Més opcions</translation>
-<translation id="5599819890022137981">De Windows Hello</translation>
 <translation id="5600348067066185292">La instal·lació suposa uns pocs passos ben senzills. Tindràs una altra oportunitat de confirmar els canvis abans no s'apliquin a l'ordinador.</translation>
 <translation id="5600706100022181951">Per baixar l'actualització s'utilitzaran <ph name="UPDATE_SIZE_MB" /> MB de dades mòbils. Vols continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8656,6 +8654,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7160911207516219534">Taulers laterals</translation>
 <translation id="716210145227921528">S'ha suprimit la clau d'accés</translation>
 <translation id="7165263843655074092">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
+<translation id="7166017546802325772">No hi ha cap actualització en aquest grup</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" pot llegir imatges, vídeos i fitxers d'àudio de les ubicacions marcades.</translation>
 <translation id="7166815366658507447">Punt d'accés Wi‐Fi activat</translation>
 <translation id="7167327771183668296">Clics automàtics</translation>
@@ -9232,7 +9231,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7586498138629385861">Chrome continuarà funcionant mentre hi hagi aplicacions de Chrome obertes.</translation>
 <translation id="7589461650300748890">Aneu amb compte</translation>
 <translation id="7590883480672980941">Configuració d'introducció de text</translation>
-<translation id="7591317506733736159">Del teu perfil de Chrome</translation>
 <translation id="7592060599656252486">Parcial</translation>
 <translation id="7593653750169415785">S'ha bloquejat automàticament perquè has rebutjat les notificacions unes quantes vegades</translation>
 <translation id="7594725637786616550">Fes un Powerwash per restablir el teu dispositiu <ph name="DEVICE_TYPE" /> i que quedi com nou.</translation>
@@ -10291,7 +10289,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="831440797644402910">No es pot obrir aquesta carpeta</translation>
 <translation id="8314835274931377415">Vols iniciar la configuració d'Accés amb interruptors?</translation>
 <translation id="8315018673856831477">Opcions d'Estalvi de memòria</translation>
-<translation id="8315044115695361734">D'iCloud Keychain</translation>
 <translation id="8315514906653279104">S'està activant...</translation>
 <translation id="8317671367883557781">Afegeix una connexió de xarxa</translation>
 <translation id="8317965619823678157">copiar les contrasenyes</translation>

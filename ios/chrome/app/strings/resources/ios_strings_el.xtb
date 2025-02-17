@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">Οι αλλαγές που πραγματοποιούνται είναι ορατές σε όλους στην ομάδα</translation>
 <translation id="2755595981383829244">Στο εξής θα λαμβάνετε ειδοποιήσεις περιεχομένου</translation>
 <translation id="2761788987260570878">Τραβήξτε μια φωτογραφία της αναζήτησής σας</translation>
+<translation id="2761898608071930085">Χρήση άλλου λογαριασμού</translation>
 <translation id="2762000892062317888">μόλις τώρα</translation>
 <translation id="2772667768515195373">Μπορείτε να χρησιμοποιήσετε τις αποθηκευμένες διευθύνσεις σε όλα τα προϊόντα Google. Αυτή η διεύθυνση έχει αποθηκευτεί στον Λογαριασμό σας Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Ειδοποιήσεις μέσω ηλεκτρονικού ταχυδρομείου</translation>
@@ -1725,6 +1726,7 @@
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8428634594422941299">Το κατάλαβα</translation>
 <translation id="8430694217306051839">Επιλέξτε τοποθεσία αποθήκευσης για το αρχείο <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Λεπτομέρειες ομάδας καρτελών</translation>
 <translation id="8438566539970814960">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
 <translation id="8439758443371991593">Απόκρυψη της επιλογής Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="8449869326050867919">Ο κωδικός πρόσβασης κοινοποιήθηκε</translation>
@@ -1802,6 +1804,7 @@
 <translation id="8722229818691036192">Λογαριασμοί σε αυτή τη συσκευή</translation>
 <translation id="8722649775263832315">Πατήστε ή επισημάνετε κάτι, για να το αναζητήσετε με το Google Lens</translation>
 <translation id="8723088494871522141">Απόκρυψη της κάρτας Κριτικές προϊόντων για εσάς</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} καρτέλα}other{{COUNT} καρτέλες}}</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8728922029615312208">Κλείσιμο όλων</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>

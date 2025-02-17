@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">Киргизилген өзгөртүүлөр топтогулардын баарына көрүнөт</translation>
 <translation id="2755595981383829244">Эми контент тууралуу билдирмелерди аласыз</translation>
 <translation id="2761788987260570878">Издеп жаткан нерсеңизди сүрөткө тартыңыз</translation>
+<translation id="2761898608071930085">Башка аккаунтту колдонуу</translation>
 <translation id="2762000892062317888">жаңы эле</translation>
 <translation id="2772667768515195373">Сакталган даректериңизди Google кызматтарында колдоно аласыз. Бул дарек <ph name="USER_EMAIL" /> Google аккаунтуңузга сакталды.</translation>
 <translation id="2773344962924806829">Электрондук почта билдирмелери</translation>
@@ -1724,6 +1725,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8428634594422941299">Түшүнүктүү</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) файлы кайда сакталарын тандаңыз</translation>
+<translation id="8434837876193928924">Өтмөк тобунун чоо-жайы</translation>
 <translation id="8438566539970814960">Издөө жана серептөө аракеттериңизди жакшыртыңыз</translation>
 <translation id="8439758443371991593">"Окуу тизмесине кошуу" дегенди жашыруу</translation>
 <translation id="8449869326050867919">Сырсөз бөлүшүлдү</translation>
@@ -1801,6 +1803,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8722229818691036192">Ушул түзмөктөгү аккаунттар</translation>
 <translation id="8722649775263832315">Google Lens аркылуу издөө үчүн объектти таптап же бөлүп көрсөтүңүз</translation>
 <translation id="8723088494871522141">"Сиз үчүн тандалган товарлар тууралуу сын-пикирлер" картасын жашыруу</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} өтмөк}other{{COUNT} өтмөк}}</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
 <translation id="8728922029615312208">Баарын жабуу</translation>
 <translation id="8730621377337864115">Бүттү</translation>

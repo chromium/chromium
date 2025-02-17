@@ -611,6 +611,35 @@ Als je dit beleid toepast of niet instelt, wordt op de webpagina naar specifieke
 Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragmenten scrollen via de URL uitgezet.</translation>
 <translation id="1468702975912409463">Toestaan dat gebruikers met externe toegang URL's aan de hostzijde openen in hun lokale clientbrowser</translation>
 <translation id="1474273443907024088">TLS False Start uitzetten</translation>
+<translation id="1475494149102693892">Pas dit beleid toe om een woordenboek met bestandsextensies te maken met een bijbehorende lijst van domeinen die worden vrijgesteld van op bestandsextensies gebaseerde downloadwaarschuwingen. Hierdoor kunnen zakelijke beheerders op bestandsextensies gebaseerde downloadwaarschuwingen blokkeren voor bestanden die aan een domein in de lijst zijn gekoppeld. Als de extensie jnlp bijvoorbeeld is gekoppeld aan website1.com, zien gebruikers geen waarschuwing als ze jnlp-bestanden downloaden van website1.com, maar zien ze wel een downloadwaarschuwing als ze jnlp-bestanden downloaden van website2.com.
+
+Bestanden met bestandsextensies die zijn aangegeven voor domeinen die door dit beleid worden geïdentificeerd, vallen nog steeds onder beveiligingswaarschuwingen die niet op bestandsextensies zijn gebaseerd, zoals downloadwaarschuwingen voor gemengde content en Safe Browsing-waarschuwingen.
+
+Als je dit beleid niet toepast of niet instelt, tonen bestandstypen die op extensies gebaseerde downloadwaarschuwingen activeren, waarschuwingen aan de gebruiker.
+
+Als je dit beleid toepast, geldt het volgende:
+
+* Het URL-patroon moet worden opgemaakt volgens https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+* De ingevoerde bestandsextensie moet in kleine ASCII-letters zijn. Het voorafgaande scheidingsteken mag niet worden opgenomen als je de bestandsextensie vermeldt. Vermeld dus jnlp in plaats van .jnlp.
+
+Voorbeeld:
+
+De volgende voorbeeldwaarde voorkomt op bestandsextensies gebaseerde downloadwaarschuwingen voor exe- en jnlp-extensies voor *.example.com-domeinen en voor swf-extensies voor alle domeinen. Er wordt een op bestandsextensies gebaseerde downloadwaarschuwing aan de gebruiker getoond op elk ander domein voor exe- en jnlp-bestanden, maar niet voor swf-bestanden.
+
+[
+{ "file_extension": "jnlp", "domains": ["example.com"] },
+{ "file_extension": "exe", "domains": ["example.com"] },
+{ "file_extension": "swf", "domains": ["*"] }
+]
+
+Hoewel het voorgaande voorbeeld de onderdrukking van op bestandsextensies gebaseerde downloadwaarschuwingen voor swf-bestanden voor alle domeinen toont, wordt uit veiligheidsoverwegingen het toepassen van onderdrukking van dergelijke waarschuwingen voor alle domeinen niet aanbevolen voor gevaarlijke bestandsextensies. Dit wordt alleen in het voorbeeld getoond om te demonstreren dat het mogelijk is.
+
+Als dit beleid wordt toegepast in combinatie met <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, hebben de uitzonderingen van op bestandsextensies gebaseerde waarschuwingen die door dit beleid zijn aangegeven, voorrang op een <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />-instelling die gevaarlijke bestandstypen zou blokkeren. De uitzonderingen die door dit beleid zijn aangegeven, zijn alleen van toepassing op het gedrag voor het blokkeren van gevaarlijke bestandstypen dat is aangegeven door de waarden 1 en 2 van <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.
+
+Als dit beleid bijvoorbeeld een uitzondering opneemt voor downloads van exe-bestanden van website1.com en <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> is ingesteld om schadelijke downloads en gevaarlijke bestandstypen te blokkeren (waarde 1), zijn downloads van exe-bestanden van website1.com vrijgesteld van blokkering op basis van bestandsextensies, maar worden ze nog steeds geblokkeerd als ze schadelijk zijn.
+
+Ga naar https://chromeenterprise.google/policies/?policy=DownloadRestrictions voor meer informatie over <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Als je het beleid instelt, wordt de lijst met USB-apparaten gedefinieerd die door gebruikers mogen worden ontkoppeld van hun kernel-driver, zodat ze via de chrome.usb API rechtstreeks kunnen worden gebruikt in een web-app. Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat specifieke hardware kan worden geïdentificeerd.
 

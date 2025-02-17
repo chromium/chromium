@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
+import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
 import {MappedDictType} from './web_ui_mojo_ts_test_other_mapped_types.js';
-import {NestedMappedTypeDataView, NestedMappedTypeTypeMapper, StringDictDataView, StringDictTypeMapper} from './web_ui_ts_test.test-mojom-converters.js';
+import {NestedMappedTypeDataView, NestedMappedTypeTypeMapper, OptionalTypemapDataView, OptionalTypemapTypeMapper, StringDictDataView, StringDictTypeMapper} from './web_ui_ts_test.test-mojom-converters.js';
 
 export class NestedTypeConverter implements
     NestedMappedTypeTypeMapper<TestNode> {
@@ -29,5 +29,29 @@ export class StringDictConverter implements
 
   convert(view: StringDictDataView): StringDictType {
     return view.data;
+  }
+}
+
+export class OptionalTypemapConverter implements
+    OptionalTypemapTypeMapper<MappedOptionalContainer> {
+  optionalInt(mapped: MappedOptionalContainer): (number|null) {
+    return mapped.optionalInt;
+  }
+
+  bools(mapped: MappedOptionalContainer): Array<(boolean | null)> {
+    return mapped.bools;
+  }
+
+  optionalMap(mapped: MappedOptionalContainer):
+      {[key: string]: (boolean|null)} {
+    return mapped.optionalMap;
+  }
+
+  convert(view: OptionalTypemapDataView): MappedOptionalContainer {
+    return {
+      optionalInt: view.optionalInt,
+      bools: view.bools,
+      optionalMap: view.optionalMap,
+    };
   }
 }

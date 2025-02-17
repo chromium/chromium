@@ -409,7 +409,7 @@ export default [
   },
   {
     name: '@typescript-eslint/eslint-recommended',
-    ...tseslintOverride.default('minimatch'),
+    ...tseslintOverride('minimatch'),
   },
   {
     name: '@typescript-eslint/recommended',

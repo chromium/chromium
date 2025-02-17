@@ -27,26 +27,35 @@ export class {{struct.name}}DataView {
     this.fieldSpecs_ = fieldSpecs;
   }
 {%-    for packed_field in struct.packed.packed_fields_in_ordinal_order %}
-{%-      set f = packed_field.field %}
-
+{%-      if packed_field|is_nullable_value_kind_packed_field %}
+{#         We only have to generate one getter for nullable value. Use the primary to generate #}
+{%-        if packed_field|is_primary_nullable_value_kind_packed_field %}
+  get {{packed_field.original_field.name}}(): {{packed_field.original_field.kind|ts_type_maybe_nullable}} {
+    const flagField = this.fieldSpecs_[{{loop.index0}}];
+    return mojo.internal.decodeStructNullableValueField(this.decoder_, flagField!, this.fieldSpecs_, this.version_);
+  }
+{%-        endif %}
+{%-      else %}
+{%-        set f = packed_field.field %}
   get {{f.name}}(): {{f.kind|ts_type_maybe_nullable}} {
     const field = this.fieldSpecs_[{{loop.index0}}];
-{%-       if packed_field|is_nullable_value_kind_packed_field %}
-{# TODO(ffred): nullable primitives don't generate correct converter #}
-{# interfaces atm. #}
-    throw new Error("unsupported");
-{%-       else %}
     return mojo.internal.decodeStructField(this.decoder_, field!, this.version_);
-{%-       endif %}
   }
+{%-      endif %}
 {%-   endfor %}
 }
 
 export interface {{struct.name}}TypeMapper<T> {
   // Encoding:
   {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
+{%-      if packed_field|is_nullable_value_kind_packed_field %}
+{%-        if packed_field|is_primary_nullable_value_kind_packed_field %}
+  {{packed_field.original_field.name}}(mappedTyped: T): {{packed_field.original_field.kind|ts_type_maybe_nullable}};
+{%-        endif %}
+{%-      else %}
     {%- set f = packed_field.field %}
   {{f.name}}(mappedTyped: T): {{f.kind|ts_type_maybe_nullable}};
+{%-      endif %}
   {%- endfor %}
 
   // Decoding:

@@ -32,10 +32,10 @@ enum class IntelGpuGeneration {
   kGen9 = 9,
   kGen10 = 10,
   kGen11 = 11,
-  kGen12 = 12,
-  kGen13 = 13,
-  kGen14 = 14,
-  kMaxValue = kGen14,
+  kXe = 12,
+  kXe2 = 13,
+  kXe3 = 14,
+  kMaxValue = kXe3,
 };
 
 enum class HasDiscreteGpu {

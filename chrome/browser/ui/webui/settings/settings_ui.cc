@@ -564,7 +564,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
 #if BUILDFLAG(ENABLE_GLIC)
   AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
-  html_source->AddBoolean("showGlicSettings", GlicEnabling::IsEnabledByFlags());
+  html_source->AddBoolean("showGlicSettings",
+                          GlicEnabling::IsEnabledAndConsentForProfile(profile));
 #endif
 
   // AI

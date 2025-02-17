@@ -321,7 +321,7 @@ CSecurityDesc GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask) {
 }
 
 std::wstring GetAppClientsKey(const std::string& app_id) {
-  return GetAppClientsKey(base::ASCIIToWide(app_id));
+  return GetAppClientsKey(base::UTF8ToWide(app_id));
 }
 
 std::wstring GetAppClientsKey(const std::wstring& app_id) {
@@ -329,7 +329,7 @@ std::wstring GetAppClientsKey(const std::wstring& app_id) {
 }
 
 std::wstring GetAppClientStateKey(const std::string& app_id) {
-  return GetAppClientStateKey(base::ASCIIToWide(app_id));
+  return GetAppClientStateKey(base::UTF8ToWide(app_id));
 }
 
 std::wstring GetAppClientStateKey(const std::wstring& app_id) {
@@ -337,7 +337,7 @@ std::wstring GetAppClientStateKey(const std::wstring& app_id) {
 }
 
 std::wstring GetAppCohortKey(const std::string& app_id) {
-  return GetAppCohortKey(base::ASCIIToWide(app_id));
+  return GetAppCohortKey(base::UTF8ToWide(app_id));
 }
 
 std::wstring GetAppCohortKey(const std::wstring& app_id) {
@@ -354,11 +354,11 @@ std::string GetAppAPValue(UpdaterScope scope, const std::string& app_id) {
   base::win::RegKey client_state_key;
   if (client_state_key.Open(
           UpdaterScopeToHKeyRoot(scope),
-          GetAppClientStateKey(base::ASCIIToWide(app_id)).c_str(),
+          GetAppClientStateKey(base::UTF8ToWide(app_id)).c_str(),
           Wow6432(KEY_READ)) == ERROR_SUCCESS) {
     std::wstring ap;
     if (client_state_key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
-      return base::WideToASCII(ap);
+      return base::WideToUTF8(ap);
     }
   }
   return {};
@@ -506,7 +506,7 @@ std::string GetUACState() {
 
 std::wstring GetServiceName(bool is_internal_service) {
   std::wstring service_name = base::StrCat(
-      {base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" ",
+      {base::UTF8ToWide(PRODUCT_FULLNAME_STRING), L" ",
        is_internal_service ? kWindowsInternalServiceName : kWindowsServiceName,
        L" ", kUpdaterVersionUtf16});
   std::erase_if(service_name, base::IsAsciiWhitespace<wchar_t>);
@@ -900,11 +900,11 @@ std::optional<base::CommandLine> CommandLineForLegacyFormat(
 
     if (!is_legacy_switch(args->at(i))) {
       // This is a bare argument.
-      command_line.AppendArg(base::WideToASCII(args->at(i)));
+      command_line.AppendArg(base::WideToUTF8(args->at(i)));
       continue;
     }
 
-    std::string switch_name = base::WideToASCII(
+    std::string switch_name = base::WideToUTF8(
         std::wstring(args->at(i).begin() + 1, args->at(i).end()));
     if (switch_name.empty()) {
       VLOG(1) << "Empty switch in command line: [" << cmd_string << "]";
@@ -1056,7 +1056,7 @@ bool EulaAccepted(const std::vector<std::string>& app_ids) {
     DWORD eula_accepted = 0;
     if (base::win::RegKey(
             HKEY_LOCAL_MACHINE,
-            base::StrCat({CLIENT_STATE_MEDIUM_KEY, base::ASCIIToWide(app_id)})
+            base::StrCat({CLIENT_STATE_MEDIUM_KEY, base::UTF8ToWide(app_id)})
                 .c_str(),
             Wow6432(KEY_READ))
                 .ReadValueDW(L"eulaaccepted", &eula_accepted) ==
@@ -1103,7 +1103,7 @@ std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key) {
           &output)) {
     return {};
   }
-  return base::ASCIIToWide(output);
+  return base::UTF8ToWide(output);
 }
 
 std::wstring GetTextForSystemError(int error) {
@@ -1129,9 +1129,8 @@ std::wstring GetTextForSystemError(int error) {
       reinterpret_cast<wchar_t*>(&system_allocated_buffer), 0, nullptr);
   base::win::ScopedLocalAllocTyped<wchar_t> free_buffer(
       system_allocated_buffer);
-  return chars_written > 0
-             ? system_allocated_buffer
-             : base::ASCIIToWide(base::StringPrintf("%#x", error));
+  return chars_written > 0 ? system_allocated_buffer
+                           : base::UTF8ToWide(base::StringPrintf("%#x", error));
 }
 
 bool MigrateLegacyUpdaters(

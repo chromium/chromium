@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"

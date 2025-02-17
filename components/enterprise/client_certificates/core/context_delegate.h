@@ -29,6 +29,9 @@ class ContextDelegate {
 
   // Returns a temporary identity name for the current context.
   virtual std::string GetTemporaryIdentityName() = 0;
+
+  // Returns the pref associated with a policy for the current context.
+  virtual std::string GetPolicyPref() = 0;
 };
 
 }  // namespace client_certificates

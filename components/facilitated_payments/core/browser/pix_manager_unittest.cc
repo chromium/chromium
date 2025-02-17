@@ -175,37 +175,17 @@ TEST_F(PixManagerTest, ShowsPixPaymentPromptWhenApiClientAvailable) {
                                           /*is_api_available=*/true);
 }
 
-// If the user does not select a payment account on the payment prompt,
-// 1. Request for risk data is not made.
-// 2. Progress screen is not shown.
-// 3. Histogram is not logged.
-TEST_F(PixManagerTest, OnPixPaymentPromptResult_FopSelectorDeclined) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(*client_, ShowProgressScreen()).Times(0);
-  EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
-
-  pix_manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
-                                         /*selected_instrument_id=*/0);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.FopSelector.UserAction",
-      /*sample=*/FopSelectorAction::kFopSelected,
-      /*expected_bucket_count=*/0);
-}
-
-// If the user selects a payment account on the payment prompt,
+// If the user selects a Pix account on the payment prompt,
 // 1. Request for risk data is made.
 // 2. Progress screen is shown.
 // 3. Histogram is logged.
-TEST_F(PixManagerTest, OnPixPaymentPromptResult_FopSelected) {
+TEST_F(PixManagerTest, OnPixAccountSelected) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client_, ShowProgressScreen());
   EXPECT_CALL(*client_, LoadRiskData(testing::_));
 
-  pix_manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                         /*selected_instrument_id=*/0);
+  pix_manager_->OnPixAccountSelected(/*selected_instrument_id=*/0);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.FopSelector.UserAction",

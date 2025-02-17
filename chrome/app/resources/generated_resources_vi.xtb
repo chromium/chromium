@@ -196,6 +196,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1129348283834595293">Viễn tưởng công nghệ cao</translation>
 <translation id="1129420403709586868">Xem ảnh và nội dung nghe nhìn trên điện thoại</translation>
 <translation id="1129850422003387628">Quản lý ứng dụng</translation>
+<translation id="1130430615924359526">{0,plural, =1{Đóng cửa sổ ẩn danh}other{Đóng cửa sổ ẩn danh (# cửa sổ)}}</translation>
 <translation id="113050636487300043">Chọn một tên và bảng màu để phân biệt giữa các hồ sơ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Thuộc nhóm <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Mức pin bên phải <ph name="PERCENTAGE" />%.</translation>
@@ -1523,6 +1524,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2042279886444479655">Các hồ sơ đang hoạt động</translation>
 <translation id="2042427131767688936">Để đảm bảo bạn có thể dùng thiết bị này một cách an toàn, tổ chức bạn có thể xem thông tin về hệ điều hành, trình duyệt, chế độ cài đặt và phần mềm được cài đặt trên thiết bị.</translation>
 <translation id="2044014337866019681">Để mở khóa phiên này, hãy đảm bảo rằng bạn đang xác minh <ph name="ACCOUNT" />.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Đóng cửa sổ khách}other{Đóng cửa sổ khách (# cửa sổ)}}</translation>
 <translation id="204497730941176055">Tên Mẫu Chứng chỉ của Microsoft</translation>
 <translation id="2045211794962848221">Bạn sẽ không thấy thông báo cụ thể này nữa</translation>
 <translation id="2045838962742066664">Nhập liệu nhanh</translation>
@@ -1550,7 +1552,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="206308717637808771">Xoá dữ liệu khi bạn đóng tất cả cửa sổ. Dữ liệu được xử lý theo cách tương tự như trang web bạn đang xem</translation>
 <translation id="2065405795449409761">Chrome đang được phần mềm kiểm tra tự động kiểm soát.</translation>
 <translation id="2066700471214517561">Micrô tạo chùm tia giúp nghe rõ người dùng Chromebook.</translation>
-<translation id="2067591192939433190">Từ "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> đã in xong bằng <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Không có tệp nhật ký cục bộ.</translation>
 <translation id="2071692954027939183">Các thông báo tự động bị chặn do bạn thường xuyên không cho phép các thông báo đó</translation>
@@ -6527,7 +6528,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5595307023264033512">Tổng bộ nhớ mà các trang web sử dụng: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Chỉnh sửa địa chỉ</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
-<translation id="5599819890022137981">Từ Windows Hello</translation>
 <translation id="5600348067066185292">Quá trình cài đặt chỉ mất vài bước đơn giản. Bạn sẽ được yêu cầu xác nhận một lần nữa trước khi hệ thống thực hiện các thay đổi trên máy tính của bạn.</translation>
 <translation id="5600706100022181951">Bản cập nhật sẽ được tải xuống bằng cách dùng <ph name="UPDATE_SIZE_MB" /> MB dữ liệu di động. Bạn có muốn tiếp tục không?</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
@@ -7371,6 +7371,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6214106213498203737">Màu nước</translation>
 <translation id="621470880408090483">Không cho phép trang web kết nối với thiết bị Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Để bảo vệ mật khẩu của bạn, <ph name="BRAND" /> sẽ khoá sau 1 phút không hoạt động}other{Để bảo vệ mật khẩu của bạn, <ph name="BRAND" /> sẽ khoá sau # phút không hoạt động}}</translation>
+<translation id="6216154119179790291">Di chuyển đến thẻ đầu tiên</translation>
 <translation id="6216239400972191926">Trang web và ứng dụng bị từ chối</translation>
 <translation id="6216601812881225442">Vùng chứa của bạn không hỗ trợ việc thay đổi dung lượng. Để điều chỉnh mức dung lượng được phân bổ sẵn cho Linux, hãy sao lưu rồi khôi phục dữ liệu sang một vùng chứa mới.</translation>
 <translation id="6216696360484424239">Đăng nhập tự động</translation>
@@ -7567,6 +7568,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6357305427698525450">Một số đường liên kết được hỗ trợ vẫn sẽ mở trong <ph name="APP_NAME" /> hoặc <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Các giá trị nhận dạng ổn định khác (ví dụ: Hàm băm hoặc mã nhận dạng duy nhất (UUID))</translation>
 <translation id="6358884629796491903">Rồng</translation>
+<translation id="6359640073754977254">Di chuyển đến thẻ cuối cùng</translation>
 <translation id="6361850914223837199">Chi tiết lỗi:</translation>
 <translation id="6362853299801475928">&amp;Báo cáo sự cố...</translation>
 <translation id="6363786367719063276">Xem nhật ký</translation>
@@ -8677,6 +8679,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7160911207516219534">Bảng điều khiển bên</translation>
 <translation id="716210145227921528">Đã xoá khoá truy cập</translation>
 <translation id="7165263843655074092">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn trên thiết bị này</translation>
+<translation id="7166017546802325772">Không có nội dung cập nhật nào cho nhóm này</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" có thể đọc hình ảnh, video và tệp âm thanh trong các vị trí đã chọn.</translation>
 <translation id="7166815366658507447">Đã bật điểm phát sóng</translation>
 <translation id="7167327771183668296">Lượt nhấp tự động</translation>
@@ -9253,7 +9256,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7586498138629385861">Chrome sẽ tiếp tục chạy khi ứng dụng Chrome đang mở.</translation>
 <translation id="7589461650300748890">Oa. Hãy cẩn thận.</translation>
 <translation id="7590883480672980941">Cài đặt phương thức nhập</translation>
-<translation id="7591317506733736159">Từ hồ sơ của bạn trên Chrome</translation>
 <translation id="7592060599656252486">Một vài</translation>
 <translation id="7593653750169415785">Đã tự động chặn do bạn từ chối thông báo vài lần</translation>
 <translation id="7594725637786616550">Powerwash để đặt lại <ph name="DEVICE_TYPE" /> của bạn giống như mới.</translation>
@@ -10229,6 +10231,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8258027225380843424">Nhập thành công!</translation>
 <translation id="8259048637628995340">Kết nối điện thoại Android để có trải nghiệm liền mạch</translation>
 <translation id="8260177673299865994">Cải thiện khả năng bảo vệ khi tải tệp xuống</translation>
+<translation id="8260473380156923937">Ứng dụng Chrome sắp ngừng hoạt động. Để biết các lựa chọn thay thế, hãy liên hệ với nhà phát triển hoặc người liên hệ dịch vụ CNTT của bạn.</translation>
 <translation id="8260864402787962391">Chuột</translation>
 <translation id="8261378640211443080">Tiện ích này không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="8261506727792406068">Xoá</translation>
@@ -10311,7 +10314,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="831440797644402910">Không thể mở thư mục này</translation>
 <translation id="8314835274931377415">Bắt đầu quá trình thiết lập tính năng Tiếp cận bằng công tắc?</translation>
 <translation id="8315018673856831477">Tuỳ chọn trình tiết kiệm bộ nhớ</translation>
-<translation id="8315044115695361734">Từ Chuỗi khoá iCloud</translation>
 <translation id="8315514906653279104">Đang bật...</translation>
 <translation id="8317671367883557781">Thêm kết nối mạng</translation>
 <translation id="8317965619823678157">sao chép mật khẩu</translation>

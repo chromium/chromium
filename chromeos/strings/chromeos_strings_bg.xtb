@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Превключване на подредбата</translation>
 <translation id="2244834438220057800">зелен</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
-<translation id="2265792117169966196">Избиране и изтегляне на модела за преписи на <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Добавяне на екранна снимка</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2271469253353559191">График за тъмния режим</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Устройството не може да бъде тествано. За целта превключете към режим на лаптоп.</translation>
 <translation id="3916998944874125962">създаване на екранна снимка</translation>
 <translation id="3923184630988645767">Пренос на данни</translation>
-<translation id="3924445055519423964">Кликнете за обобщаване на уеб страницата/PDF файла</translation>
 <translation id="3932043219784172185">Няма свързано устройство</translation>
 <translation id="3934185438132762746">Незададен <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Името на хоста не бе преобразувано</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
 <translation id="4483498983731992167">Не може да се създаде препис</translation>
 <translation id="4486524074141928967">Ще излезете от профила си в <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Отваряне на инструмента за избор на език за преписите</translation>
 <translation id="4500722292849917410">Клавишната комбинация не е налице. Използвайте друга, като натиснете модифициращ клавиш (Ctrl, Alt, Shift или „<ph name="META_KEY" />“).</translation>
 <translation id="4500966230243561393">Цвят на интерфейса</translation>
 <translation id="4503223151711056411">Стрелка за наляво</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Страници</translation>
 <translation id="4989542687859782284">Експерименти, които не са налице</translation>
 <translation id="4999333166442584738">Скриване на отчета</translation>
-<translation id="5005695757087124131">Кликнете за опростяване на избрания текст</translation>
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Цвят на темата</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259">Моделът за преписи на <ph name="LANGUAGE_NAME" /> е изтеглен на <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните APN за <ph name="ATTACH" /> са деактивирани или премахнати.</translation>
-<translation id="7453118953486228603">Кликнете, за да обобщите избрания текст</translation>
 <translation id="7458970041932198923">Свържете се с мрежа и презаредете страницата, за да прегледате аватарите и да зададете такъв.</translation>
 <translation id="7469648432129124067">Открит е портал</translation>
 <translation id="7481312909269577407">Напред</translation>
@@ -1474,6 +1469,7 @@
 <translation id="7828503206075800057">Кафене, което е <ph name="CAFE_STYLE" /> и под формата на <ph name="CAFE_TYPE" /></translation>
 <translation id="7841134249932030522">Активиране на тъмния режим</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
+<translation id="7847923465436619066">Инструмент за избор на език за преписите</translation>
 <translation id="7849030488395653706">северно сияние</translation>
 <translation id="7849737607196682401">дантела</translation>
 <translation id="7850320739366109486">Не безпокойте</translation>
@@ -1660,6 +1656,7 @@
 <translation id="8749478549112817787">Фон на камерата</translation>
 <translation id="8755946156089753497">кула</translation>
 <translation id="8760616037557661287">Предишни подкани</translation>
+<translation id="876280838467039397">Изтегляне и избиране на модела за преписи на <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум в Google Снимки</translation>
 <translation id="8775713578693478175">Име на точката за достъп (APN) на модема</translation>

@@ -427,6 +427,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2755485474385016903">Changes made are seen by everyone in the group</translation>
 <translation id="2755595981383829244">You'll now receive content notifications</translation>
 <translation id="2761788987260570878">Take a photo of your search</translation>
+<translation id="2761898608071930085">Use another account</translation>
 <translation id="2762000892062317888">just now</translation>
 <translation id="2772667768515195373">You can use saved addresses across Google products. This address is saved in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Email notifications</translation>
@@ -1724,6 +1725,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428634594422941299">Got it</translation>
 <translation id="8430694217306051839">Choose where to save <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Tab group details</translation>
 <translation id="8438566539970814960">Make searches and browsing better</translation>
 <translation id="8439758443371991593">Hide Add to reading list</translation>
 <translation id="8449869326050867919">Password shared</translation>
@@ -1801,6 +1803,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8722229818691036192">Accounts on this device</translation>
 <translation id="8722649775263832315">Tap or highlight to search anything with Google Lens</translation>
 <translation id="8723088494871522141">Hide 'Product reviews for you'</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} tab}other{{COUNT} tabs}}</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8728922029615312208">Close all</translation>
 <translation id="8730621377337864115">Done</translation>

@@ -38,6 +38,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -324,6 +325,62 @@ void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
       /*image_mime_type=*/"image/jpeg");
 }
 
+void SetStringIfPresent(const base::Value::Dict* dict,
+                        const std::string& key,
+                        auto* field) {
+  if (const std::string* value = dict->FindString(key)) {
+    *field = *value;
+  }
+}
+
+manta::proto::ScannerAction ScannerActionFromValue(
+    const base::Value::Dict& dict) {
+  manta::proto::ScannerAction action;
+
+  // The input dictionary dict is expected to contain exactly one of the
+  // following top-level keys, representing the type of action to perform.
+  if (const base::Value::Dict* new_event = dict.FindDict("new_event")) {
+    auto* event = action.mutable_new_event();
+    SetStringIfPresent(new_event, "title", event->mutable_title());
+    SetStringIfPresent(new_event, "dates", event->mutable_dates());
+    SetStringIfPresent(new_event, "description", event->mutable_description());
+    SetStringIfPresent(new_event, "location", event->mutable_location());
+  } else if (const base::Value::Dict* copy_action =
+                 dict.FindDict("copy_to_clipboard")) {
+    auto* clipboard = action.mutable_copy_to_clipboard();
+    SetStringIfPresent(copy_action, "plain_text",
+                       clipboard->mutable_plain_text());
+    SetStringIfPresent(copy_action, "html_text",
+                       clipboard->mutable_html_text());
+  } else {
+    LOG(ERROR) << "Unknown scanner action type in mock response: " << dict;
+  }
+
+  return action;
+}
+
+std::unique_ptr<manta::proto::ScannerOutput> CreateMockScannerOutput(
+    const std::vector<std::string> mock_responses) {
+  auto mock_output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject* object = mock_output->add_objects();
+
+  for (const std::string& json_string : mock_responses) {
+    std::optional<base::Value> parsed_json =
+        base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
+
+    if (!parsed_json.has_value() || !parsed_json->is_dict()) {
+      LOG(ERROR) << "Invalid json string: " << json_string;
+      continue;
+    }
+
+    base::Value::Dict& action_dict = parsed_json->GetDict();
+    manta::proto::ScannerAction action = ScannerActionFromValue(action_dict);
+    if (action.action_case() != manta::proto::ScannerAction::ACTION_NOT_SET) {
+      *object->add_actions() = std::move(action);
+    }
+  }
+  return mock_output;
+}
 }  // namespace
 
 ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate,
@@ -338,7 +395,6 @@ void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kScannerEnterprisePolicyAllowed,
       static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
-  registry->RegisterBooleanPref(prefs::kScannerFeedbackEnabled, true);
 }
 
 void ScannerController::OnActiveUserSessionChanged(
@@ -446,6 +502,13 @@ void ScannerController::FetchActionsForImage(
     std::move(callback).Run({});
     return;
   }
+
+  if (!mock_scanner_responses_for_testing_.empty()) {
+    scanner_session_->SetMockScannerOutput(CreateMockScannerOutput(
+        std::move(mock_scanner_responses_for_testing_)));
+    mock_scanner_responses_for_testing_.clear();
+  }
+
   scanner_session_->FetchActionsForImage(jpeg_bytes, std::move(callback));
 }
 
@@ -458,6 +521,13 @@ void ScannerController::ExecuteAction(
   if (!scanner_session_) {
     return;
   }
+
+  if (!mock_scanner_responses_for_testing_.empty()) {
+    scanner_session_->SetMockScannerOutput(CreateMockScannerOutput(
+        std::move(mock_scanner_responses_for_testing_)));
+    mock_scanner_responses_for_testing_.clear();
+  }
+
   // Keep the existing `command_delegate_` if there is one, to allow commands
   // from previous sessions to continue in the background if needed.
   if (!command_delegate_) {
@@ -558,6 +628,11 @@ void ScannerController::OnActionFinished(
     CHECK_IS_TEST();
     std::move(on_action_finished_for_testing_).Run(success);
   }
+}
+
+void ScannerController::SetScannerResponsesForTesting(
+    std::vector<std::string> responses) {
+  mock_scanner_responses_for_testing_ = std::move(responses);
 }
 
 }  // namespace ash

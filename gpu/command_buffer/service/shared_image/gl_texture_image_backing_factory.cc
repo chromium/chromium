@@ -34,11 +34,6 @@ bool SupportScanout() {
   // usage by SCANOUT support being present in SharedImageCapabilities, then
   // GLTextureImageBacking *must* accept SCANOUT usage for this use case.
   if (!base::FeatureList::IsEnabled(
-          features::
-              kCameraVideoFrameHandlerAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
           features::kExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage)) {
     return true;
   }

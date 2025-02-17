@@ -2364,8 +2364,8 @@ bool Browser::CanUseWindowingControls(
   return true;
 }
 
-void Browser::OnCanResizeFromWebAPIChanged() {
-  window_->OnCanResizeFromWebAPIChanged();
+void Browser::OnWebApiWindowResizableChanged() {
+  window_->OnWebApiWindowResizableChanged();
 }
 
 bool Browser::GetCanResize() {

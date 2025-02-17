@@ -193,6 +193,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1607312127821884567">Odbacivanje postavljanja pregledanja aplikacija telefona</translation>
 <translation id="1610778689852195798">"Opozovite"</translation>
 <translation id="1611993646327628135">Uključeno</translation>
+<translation id="1612679292338846734">Kad uključite te značajke, tekst unosa, sadržaj dokumenta i URL web-stranice mogu se poslati poslužiteljima Googleovog AI-ja. Ti se podaci upotrebljavaju za generiranje prijedloga za pisanje, generiranje sažetaka, odgovaranje na pitanja i poboljšanje proizvoda, u skladu s <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte navoditi ništa osobno, osjetljivo ni povjerljivo.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Sužavanje Google Učionice</translation>
 <translation id="163032029566320584">Funkcija <ph name="UNAVAILABLE_DLC" /> nije dostupna.</translation>
@@ -565,6 +566,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="2946119680249604491">Dodaj vezu</translation>
 <translation id="2947835478872237115">Trenutno je baterija napunjena <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> do kraja punjenja</translation>
 <translation id="2949420361496057765">Pritisnite <ph name="MODIFIER" /> i kliknite na link</translation>
+<translation id="2957159466053076448">Te značajke uvijek možete isključiti u postavkama. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Zvuk na uređaju</translation>
 <translation id="2960314608273155470">Način rada za snimanje, zadano je <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite Tab da navigirate tastaturom.</translation>
 <translation id="2961963223658824723">Nešto nije uredu. Pokušajte ponovo za nekoliko sekundi.</translation>
@@ -1905,6 +1907,7 @@ Nova instalacija</translation>
 <translation id="735745346212279324">VPN veza je prekinuta</translation>
 <translation id="7360036564632145207">Promjenom postavke zaštite pristupa podacima za periferne uređaje možete optimizirati performanse</translation>
 <translation id="736045644501761622">Postavi pozadinsku sliku i stil</translation>
+<translation id="7368041336688136012">Da biste mogli upotrebljavati pomoć s čitanjem, pomoć pri pisanju i izradu slika pomoću AI-ja, morate imati najmanje 18 godina.</translation>
 <translation id="7371404428569700291">Snimite prozor</translation>
 <translation id="7372069265635026568">Dostupna memorija: <ph name="AVAILABLE_MEMORY" /> od ukupno <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Ovo omogućava pristup mikrofonu za sve aplikacije i web lokacije koje imaju odobrenje za njega</translation>
@@ -2030,6 +2033,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Prikaži sve</translation>
+<translation id="7762664108390426952">Googleovim uvjetima pružanja usluge i pravilima o privatnosti</translation>
 <translation id="7768784765476638775">Odaberite za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
 <translation id="7773536009433685931">Umjesto toga uključite WiFi</translation>

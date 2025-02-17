@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">所有群組成員都可查看所作的變更</translation>
 <translation id="2755595981383829244">你現在會收到內容通知</translation>
 <translation id="2761788987260570878">拍下搜尋內容</translation>
+<translation id="2761898608071930085">使用其他帳戶</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="2772667768515195373">您可在不同的 Google 產品中使用已儲存的地址。此地址已儲存在您的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="2773344962924806829">電郵通知</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">知道了</translation>
 <translation id="8430694217306051839">選擇「<ph name="FILENAME" />」(<ph name="FILE_SIZE" />) 的儲存位置</translation>
+<translation id="8434837876193928924">分頁群組詳情</translation>
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
@@ -1801,6 +1803,7 @@
 <translation id="8722229818691036192">此裝置上的帳戶</translation>
 <translation id="8722649775263832315">輕按或選取任何內容即可使用「Google 智能鏡頭」搜尋</translation>
 <translation id="8723088494871522141">隱藏「為你推薦的產品評論」</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} 個分頁}other{{COUNT} 個分頁}}</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8728922029615312208">全部關閉</translation>
 <translation id="8730621377337864115">完成</translation>

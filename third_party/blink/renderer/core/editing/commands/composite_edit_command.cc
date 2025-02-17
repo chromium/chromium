@@ -1476,9 +1476,11 @@ void CompositeEditCommand::MoveParagraphs(
           ComparePositions(visible_start, start_of_paragraph_to_move) >= 0;
       bool end_in_paragraph =
           ComparePositions(visible_end, end_of_paragraph_to_move) <= 0;
-
       const TextIteratorBehavior behavior =
-          TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
+          RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
+              ? TextIteratorBehavior::
+                    AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
+              : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
 
       start_index = 0;
       if (start_in_paragraph) {
@@ -1606,12 +1608,18 @@ void CompositeEditCommand::MoveParagraphs(
 
   // TextIterator::rangeLength requires clean layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-
-  destination_index = TextIterator::RangeLength(
-      Position::FirstPositionInNode(*GetDocument().documentElement()),
-      destination.ToParentAnchoredPosition(),
-      TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior());
-
+  if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
+    destination_index = TextIterator::RangeLength(
+        Position::FirstPositionInNode(*GetDocument().documentElement()),
+        destination.ToParentAnchoredPosition(),
+        TextIteratorBehavior::
+            AllVisiblePositionsIncludingShadowRootRangeLengthBehavior());
+  } else {
+    destination_index = TextIterator::RangeLength(
+        Position::FirstPositionInNode(*GetDocument().documentElement()),
+        destination.ToParentAnchoredPosition(),
+        TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior());
+  }
   const VisibleSelection& destination_selection =
       CreateVisibleSelection(SelectionInDOMTree::Builder()
                                  .Collapse(destination.ToPositionWithAffinity())

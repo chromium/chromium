@@ -78,12 +78,12 @@ ImageOrientation GetSourceOrientation(
 // Return the oriented size of `source`.
 gfx::Size GetSourceSize(scoped_refptr<StaticBitmapImage> source,
                         const StaticBitmapImageTransform::Params& params) {
-  const auto source_info = source->GetSkImageInfo();
+  gfx::Size source_size = source->GetSize();
   const auto source_orientation = GetSourceOrientation(source, params);
 
   return source_orientation.UsesWidthAsHeight()
-             ? gfx::Size(source_info.height(), source_info.width())
-             : gfx::Size(source_info.width(), source_info.height());
+             ? gfx::TransposeSize(source_size)
+             : source_size;
 }
 
 void ComputeSubsetParameters(scoped_refptr<StaticBitmapImage> source,
@@ -327,7 +327,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
                                 ? source_info.colorSpace()
                                 : SkColorSpace::MakeSRGB().get());
   const bool needs_alpha_change =
-      (source->GetSkImageInfo().alphaType() == kUnpremul_SkAlphaType) !=
+      (source->GetAlphaType() == kUnpremul_SkAlphaType) !=
       (!options.premultiply_alpha);
 
   // If we aren't doing anything (and this wasn't a forced copy), just return
@@ -355,11 +355,10 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
   if (!source) {
     return nullptr;
   }
-  const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
-  options.premultiply_alpha = info.alphaType() != kUnpremul_SkAlphaType;
+  options.premultiply_alpha = source->GetAlphaType() != kUnpremul_SkAlphaType;
   options.force_copy = true;
   return Apply(flush_reason, source, options);
 }
@@ -378,7 +377,6 @@ StaticBitmapImageTransform::GetWithAlphaDisposition(
     case kDontChangeAlpha:
       return source;
   }
-  const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
@@ -391,11 +389,10 @@ StaticBitmapImageTransform::ConvertToColorSpace(
     FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source,
     sk_sp<SkColorSpace> color_space) {
-  const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
-  options.premultiply_alpha = info.alphaType() != kUnpremul_SkAlphaType;
+  options.premultiply_alpha = source->GetAlphaType() != kUnpremul_SkAlphaType;
   options.force_copy = true;
   options.dest_color_space = color_space;
   return Apply(flush_reason, source, options);

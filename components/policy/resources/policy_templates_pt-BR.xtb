@@ -638,6 +638,35 @@ Se você ativar ou não configurar essa política, a rolagem via URL para fragme
 Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1468702975912409463">Permitir que usuários de acesso remoto abram URLs do lado do host no navegador cliente local</translation>
 <translation id="1474273443907024088">Desativar TLS False Start</translation>
+<translation id="1475494149102693892">Você pode ativar esta política para criar um dicionário de extensões de tipos de arquivo com uma lista de domínios correspondentes que estão isentos dos avisos de download com base na extensão do tipo de arquivo. Isso permite que os administradores corporativos bloqueiem avisos de download com base na extensão de tipo para arquivos associados a um domínio listado. Por exemplo, se a extensão "jnlp" estiver associada ao "site1.com", os usuários não vão receber um aviso ao baixar arquivos "jnlp" do "site1.com", mas vão receber um aviso baixar arquivos "jnlp" do "site2.com".
+
+Arquivos com extensões especificadas para domínios identificados por esta política, ainda estarão sujeitos a avisos de segurança não baseados na extensão do tipo do arquivo, como avisos de download de conteúdo misto e da Navegação segura.
+
+Se a política for desativada ou não estiver configurada, os tipos de arquivo que acionam avisos de download com base na extensão vão mostrar avisos ao usuário.
+
+Se você ativar a política:
+
+* O padrão de URL precisa ser formatado de acordo com https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+* A extensão do tipo de arquivo inserida precisa estar em letras minúsculas de acordo com o ASCII. O separador à esquerda não pode ser incluído ao listar as extensões do tipo de arquivo. Então, use "jnlp" em vez de ".jnlp".
+
+Exemplo:
+
+O valor de exemplo abaixo evitaria avisos de download baseados na extensão do tipo de arquivo em extensões "exe" e "jnlp" para domínios *.example.com e em extensões "swf" para todos os domínios. O usuário recebe um aviso de download com base na extensão do tipo de arquivo em qualquer outro domínio para arquivos exe e jnlp, mas não para arquivos swf.
+
+[
+  { "file_extension": "jnlp", "domains": ["example.com"] },
+  { "file_extension": "exe", "domains": ["example.com"] },
+  { "file_extension": "swf", "domains": ["*"] }
+]
+
+Observe que, embora o exemplo anterior mostre a supressão de avisos de download com base na extensão do tipo de arquivo "swf" em todos os domínios, a aplicação da supressão desse tipo de aviso em todos os domínios para extensões de tipos de arquivos perigosas não é recomendada devido a questões de segurança. A supressão é mostrada no exemplo apenas para demonstrar que pode ser feita.
+
+Se esta política estiver ativada junto com a <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, as isenções de avisos com base na extensão do tipo de arquivo especificadas por esta política terão precedência sobre uma configuração <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> que bloquearia tipos de arquivo perigosos. As exceções especificadas por esta política se aplicam apenas ao comportamento "Bloquear tipos de arquivos perigosos" especificado pelos valores 1 e 2 de <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.
+
+Por exemplo, se esta política especificar uma exceção para downloads de arquivos "exe" do "site1.com" e a política <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> estiver definida para bloquear downloads maliciosos e tipos de arquivos perigosos (valor 1), os downloads de arquivos "exe" do "site1.com" estarão isentos do bloqueio com base na extensão do tipo de arquivo, mas ainda serão bloqueados se forem maliciosos.
+
+Para mais informações sobre a política <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, acesse https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Se a política for definida, será configurada uma lista de dispositivos USB que o usuário pode remover do driver de kernel dele para uso pela API chrome.usb diretamente dentro de um app da Web. As entradas são pares de um identificador de fornecedor e um identificador de produto USB para reconhecer um hardware específico.
 

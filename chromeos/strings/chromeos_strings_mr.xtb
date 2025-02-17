@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">लेआउट स्विच</translation>
 <translation id="2244834438220057800">हिरवा</translation>
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्शन मॉडेल निवडा आणि डाउनलोड करा</translation>
 <translation id="2267285889943769271">स्क्रीनशॉट जोडा</translation>
 <translation id="2268044343513325586">सुधारित करा</translation>
 <translation id="2271469253353559191">गडद मोडचे शेड्युल</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">डिव्हाइसची चाचणी करू शकत नाही. चाचणी करण्यासाठी लॅपटॉप मोडवर स्विच करा.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट घ्या</translation>
 <translation id="3923184630988645767">डेटा वापर</translation>
-<translation id="3924445055519423964">वेबपेज/PDF फाइलचा सारांश देण्यासाठी क्लिक करा</translation>
 <translation id="3932043219784172185">कोणतेही डिव्हाइस कनेक्ट केले नाही</translation>
 <translation id="3934185438132762746">असाइन न केलेले <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="4483498983731992167">ट्रान्स्क्रिप्ट तयार करू शकत नाही</translation>
 <translation id="4486524074141928967">तुम्हाला <ph name="TIME" /> वाजता साइन आउट केले जाईल</translation>
-<translation id="4487890678161807486">ट्रान्स्क्रिप्शनचे भाषा निवडक उघडा</translation>
 <translation id="4500722292849917410">शॉर्टकट उपलब्ध नाही. नवीन मॉडिफायर की (कंट्रोल, ऑल्ट, शिफ्ट किंवा <ph name="META_KEY" />) वापरून नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="4500966230243561393">इंटरफेसचा रंग</translation>
 <translation id="4503223151711056411">लेफ्ट अ‍ॅरो</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">पेज</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4999333166442584738">अहवाल लपवा</translation>
-<translation id="5005695757087124131">निवडलेला मजकूर सोपा करण्यासाठी क्लिक करा</translation>
 <translation id="500920857929044050">चाचणी थांबवा</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">थीमचा रंग</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्शन मॉडेलचा <ph name="PROGRESS_PERCENTAGE" />% भाग डाउनलोड केला आहे</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">हे APN बंद करू शकत नाही किंवा काढून टाकू शकत नाही. सुरू केलेली <ph name="ATTACH" /> APNs बंद केल्याची किंवा काढून टाकल्याची खात्री करा.</translation>
-<translation id="7453118953486228603">निवडलेल्या मजकुराचा सारांश देण्यासाठी क्लिक करा</translation>
 <translation id="7458970041932198923">कृपया नेटवर्कशी कनेक्ट करा आणि स्क्रीन सेव्हर पाहण्यासाठी व अवतार सेट करण्यासाठी पेज रीलोड करा.</translation>
 <translation id="7469648432129124067">पोर्टल डिटेक्ट केले</translation>
 <translation id="7481312909269577407">पुढील</translation>

@@ -31,7 +31,6 @@ import {
 } from '../core/state/transcription.js';
 import {assertExhaustive} from '../core/utils/assert.js';
 
-import {CraButton} from './cra/cra-button.js';
 import {
   DESCRIPTION_NAMES as SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
 } from './speaker-label-consent-dialog-content.js';
@@ -94,7 +93,7 @@ export class OnboardingDialog extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
-  private readonly autoFocusItem = createRef<CraButton>();
+  private readonly autoFocusItem = createRef<ReactiveLitElement>();
 
   private readonly selectedLanguage = signal<LanguageCode|null>(null);
 
@@ -252,6 +251,7 @@ export class OnboardingDialog extends ReactiveLitElement {
           <language-dropdown
             .languageList=${this.platformHandler.getLangPackList()}
             @dropdown-changed=${onDropdownChange}
+            ${ref(this.autoFocusItem)}
           >
           </language-dropdown>
         `;

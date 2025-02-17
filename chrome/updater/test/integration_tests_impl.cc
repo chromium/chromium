@@ -534,7 +534,7 @@ void ExpectVersionActive(UpdaterScope scope, const std::string& version) {
                                 Wow6432(KEY_READ))
                   .ReadValue(kRegValueVersion, &version),
               ERROR_SUCCESS);
-    return base::WideToASCII(version);
+    return base::WideToUTF8(version);
   }());
 #endif  // IS_WIN
 }
@@ -1043,9 +1043,9 @@ void GetAppStates(UpdaterScope updater_scope,
           EXPECT_EQ(it->ap, *expected->FindString("ap"));
           EXPECT_EQ(it->brand_code, *expected->FindString("brand_code"));
 #if BUILDFLAG(IS_WIN)
-          EXPECT_EQ(base::WideToASCII(it->brand_path.value()),
+          EXPECT_EQ(base::WideToUTF8(it->brand_path.value()),
                     *expected->FindString("brand_path"));
-          EXPECT_EQ(base::WideToASCII(it->ecp.value()),
+          EXPECT_EQ(base::WideToUTF8(it->ecp.value()),
                     *expected->FindString("ecp"));
 #else
           EXPECT_EQ(it->brand_path.value(),
@@ -1588,7 +1588,7 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
         const base::FilePath test_executable =
             base::FilePath::FromASCII(kExecutableName).BaseName();
         return base::StrCat({test_executable.RemoveExtension().value(),
-                             base::ASCIIToWide(kExecutableSuffix),
+                             base::UTF8ToWide(kExecutableSuffix),
                              test_executable.Extension()});
       }(),
   };

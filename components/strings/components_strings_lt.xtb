@@ -2314,7 +2314,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5087286274860437796">Šiuo metu serverio sertifikatas negalioja.</translation>
 <translation id="5087580092889165836">Pridėti kortelę</translation>
 <translation id="5088142053160410913">Pranešimas operatoriui</translation>
-<translation id="5089791650329866127">Ši funkcija naudoja informaciją, kurią jau išsaugojote naudodami automatinį pildymą, pvz., adresą</translation>
 <translation id="5090647584136241764">Pridėkite skirtukų su panašiais produktais, kad galėtumėte lengvai palyginti jums svarbią informaciją</translation>
 <translation id="5093232627742069661">Z formos perlenkimas</translation>
 <translation id="5094747076828555589">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas „Chromium“. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
@@ -3736,7 +3735,6 @@ Papildoma išsami informacija:
 <translation id="7581199239021537589">2 pusė: sukti vaizdą pagal Y ašį</translation>
 <translation id="7582602800368606489">Greitai sukurkite naują „Google“ kalendoriaus įvykį</translation>
 <translation id="7586676035079382730">Pranešimai neleidžiami</translation>
-<translation id="7588460771338574392">Prieigos raktas iš „<ph name="PHONE_NAME" />“</translation>
 <translation id="7588707273764747927">Veidrodinis atspaudas</translation>
 <translation id="7591288787774558753">Bendrinti konfidencialų turinį?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> nori naudoti slapukus ir svetainės duomenis <ph name="TOP_LEVEL_URL" /></translation>
@@ -4642,7 +4640,6 @@ Papildoma išsami informacija:
 <translation id="9211461151375991073">Įveskite @, jei norite ieškoti <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Išvaizdos tinkinimas</translation>
 <translation id="9215416866750762878">Programa neleidžia „Chrome“ saugiai prisijungti prie svetainės</translation>
-<translation id="921738974253889319">Ši funkcija naudoja informaciją, kurią jau išsaugojote naudodami automatinį pildymą, pvz., adresą. Šiuos duomenis galite peržiūrėti ir tvarkyti šiame puslapyje.</translation>
 <translation id="92178312226016010">Stebite šį produktą.</translation>
 <translation id="9218430445555521422">Nustatyti kaip numatytąjį</translation>
 <translation id="9219103736887031265">Vaizdai</translation>

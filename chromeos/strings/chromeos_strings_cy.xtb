@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Switsh cynllun</translation>
 <translation id="2244834438220057800">gwyrdd</translation>
 <translation id="225692081236532131">Statws gweithredu</translation>
-<translation id="2265792117169966196">Dewis a lawrlwytho model trawsgrifio <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Ychwanegu sgrinlun</translation>
 <translation id="2268044343513325586">Mireinio</translation>
 <translation id="2271469253353559191">Amserlen Modd tywyll</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Methu â phrofi'r ddyfais. Newid i'r modd gliniadur i brofi.</translation>
 <translation id="3916998944874125962">tynnu sgrinlun</translation>
 <translation id="3923184630988645767">Defnydd data</translation>
-<translation id="3924445055519423964">Cliciwch i grynhoi'r dudalen we/ffeil PDF</translation>
 <translation id="3932043219784172185">Ni chysylltwyd dyfais</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> heb ei aseinio</translation>
 <translation id="3941014780699102620">Wedi methu â datrys y gwesteiwr</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Wedi methu â phingio porth y rhwydwaith nad yw'n ddiofyn</translation>
 <translation id="4483498983731992167">Methu â chreu trawsgrifiad</translation>
 <translation id="4486524074141928967">Byddwch yn cael eich allgofnodi yn <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Agor y dewisydd iaith trawsgrifio</translation>
 <translation id="4500722292849917410">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd gan ddefnyddio bysell addasydd (ctrl, alt, shift, neu <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Lliw rhyngwyneb</translation>
 <translation id="4503223151711056411">Saeth chwith</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Tudalennau</translation>
 <translation id="4989542687859782284">Nid yw ar gael</translation>
 <translation id="4999333166442584738">Cuddio'r adroddiad</translation>
-<translation id="5005695757087124131">Cliciwch i symleiddio'r testun a ddewiswyd</translation>
 <translation id="500920857929044050">Stopio'r prawf</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Lliw thema</translation>
@@ -1395,7 +1391,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7425832472614771259">Model trawsgrifio <ph name="LANGUAGE_NAME" /> <ph name="PROGRESS_PERCENTAGE" />% wedi'i lawrlwytho</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Methu ag analluogi na thynnu'r APN hwn. Sicrhewch fod APNs <ph name="ATTACH" /> sydd wedi'u galluogi wedi'u hanalluogi neu eu tynnu.</translation>
-<translation id="7453118953486228603">Cliciwch i grynhoi'r testun a ddewiswyd</translation>
 <translation id="7458970041932198923">Cysylltwch â rhwydwaith ac ail-lwythwch y dudalen i weld a gosod rhithffurfiau.</translation>
 <translation id="7469648432129124067">Canfuwyd porth</translation>
 <translation id="7481312909269577407">Ymlaen</translation>

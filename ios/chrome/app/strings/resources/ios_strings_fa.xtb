@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">همه افراد گروه تغییرات ایجادشده را می‌بینند</translation>
 <translation id="2755595981383829244">اکنون اعلان‌های محتوا را دریافت خواهید کرد</translation>
 <translation id="2761788987260570878">گرفتن عکس از جستجو</translation>
+<translation id="2761898608071930085">استفاده از یک حساب دیگر</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="2772667768515195373">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="USER_EMAIL" />) ذخیره شده است.</translation>
 <translation id="2773344962924806829">اعلان‌های ایمیلی</translation>
@@ -1724,6 +1725,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8428634594422941299">متوجه شدم</translation>
 <translation id="8430694217306051839">انتخاب مکان ذخیره‌سازی <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">جزئیات گروه برگه</translation>
 <translation id="8438566539970814960">بهبود جستجوها و مرور</translation>
 <translation id="8439758443371991593">پنهان کردن «افزودن به فهرست خواندن»</translation>
 <translation id="8449869326050867919">گذرواژه هم‌رسانی شد</translation>
@@ -1801,6 +1803,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8722229818691036192">حساب‌های موجود در این دستگاه</translation>
 <translation id="8722649775263832315">‏با تک‌ضرب زدن یا برجسته کردن، هر چیزی را با «لنز Google» جستجو کنید</translation>
 <translation id="8723088494871522141">پنهان کردن «مرورهای محصول برای شما»</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{‫{COUNT} برگه}one{‫{COUNT} برگه}other{‫{COUNT} برگه}}</translation>
 <translation id="8725066075913043281">تلاش دوباره</translation>
 <translation id="8728922029615312208">بستن همه</translation>
 <translation id="8730621377337864115">تمام</translation>

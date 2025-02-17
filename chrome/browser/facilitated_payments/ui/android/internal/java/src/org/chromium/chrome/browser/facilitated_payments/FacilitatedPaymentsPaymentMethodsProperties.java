@@ -25,13 +25,11 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     static final WritableIntPropertyKey SCREEN = new WritableIntPropertyKey("screen");
     static final WritableObjectPropertyKey<PropertyModel> SCREEN_VIEW_MODEL =
             new WritableObjectPropertyKey("screen_view_model");
-    static final ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
-            new ReadableObjectPropertyKey<>("dismiss_handler");
     static final ReadableObjectPropertyKey<Callback<Integer>> UI_EVENT_LISTENER =
             new ReadableObjectPropertyKey<>("ui_event_listener");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, DISMISS_HANDLER, UI_EVENT_LISTENER
+        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, UI_EVENT_LISTENER
     };
 
     // TODO: b/348595414 - Rename to FopSelectorItemType and move to a separate directory.

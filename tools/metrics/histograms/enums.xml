@@ -23391,14 +23391,6 @@ Called by update_net_error_codes.py.-->
   <int value="27" label="SHAREDSTORAGEWORKLET"/>
 </enum>
 
-<enum name="ResourcePrefetchPredictorRedirectStatus">
-  <int value="0" label="NO_REDIRECT"/>
-  <int value="1" label="NO_REDIRECT_BUT_PREDICTED"/>
-  <int value="2" label="REDIRECT_NOT_PREDICTED"/>
-  <int value="3" label="REDIRECT_WRONG_PREDICTED"/>
-  <int value="4" label="REDIRECT_CORRECTLY_PREDICTED"/>
-</enum>
-
 <enum name="ResourceType">
   <int value="0" label="(Obsolete) Main resource"/>
   <int value="1" label="Image"/>

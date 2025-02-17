@@ -321,7 +321,7 @@ base::FilePath StartProcmonLogging() {
   CHECK(base::PathExists(pmc_path));
 
   const base::FilePath pml_file(
-      dest_dir.Append(base::ASCIIToWide(base::UnlocalizedTimeFormatWithPattern(
+      dest_dir.Append(base::UTF8ToWide(base::UnlocalizedTimeFormatWithPattern(
           base::Time::Now(), "yyMMdd-HHmmss.'PML'"))));
 
   const std::wstring& cmdline = base::StrCat(

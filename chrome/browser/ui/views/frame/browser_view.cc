@@ -1865,7 +1865,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
 
   // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   // window.setResizable API should never be called from multi-tab browser.
-  CHECK(!GetCanResizeFromWebAPI());
+  CHECK(!GetWebApiWindowResizable());
 
   // If |contents_container_| already has the correct WebContents, we can save
   // some work.  This also prevents extra events from being reported by the
@@ -2884,7 +2884,7 @@ void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
   UpdateLoadingAnimations(visible);
 }
 
-std::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
+std::optional<bool> BrowserView::GetWebApiWindowResizable() const {
   // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   if (browser()->tab_strip_model()->count() > 1) {
     return std::nullopt;
@@ -2920,7 +2920,7 @@ ui::mojom::WindowShowState BrowserView::GetWindowShowState() const {
   }
 }
 
-void BrowserView::OnCanResizeFromWebAPIChanged() {
+void BrowserView::OnWebApiWindowResizableChanged() {
   // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   // The value can only be set in web apps, where there currently can only be 1
   // WebContents, the return value can be determined only by looking at the
@@ -3000,7 +3000,7 @@ void BrowserView::OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
 }
 
 void BrowserView::DidFirstVisuallyNonEmptyPaint() {
-  auto can_resize = GetCanResizeFromWebAPI();
+  auto can_resize = GetWebApiWindowResizable();
   if (cached_can_resize_from_web_api_ == can_resize) {
     return;
   }
@@ -3727,17 +3727,18 @@ bool BrowserView::GetAcceleratorForCommandId(
 // BrowserView, views::WidgetDelegate implementation:
 
 bool BrowserView::CanResize() const {
-  return WidgetDelegate::CanResize() && GetCanResizeFromWebAPI().value_or(true);
+  return WidgetDelegate::CanResize() &&
+         GetWebApiWindowResizable().value_or(true);
 }
 
 bool BrowserView::CanFullscreen() const {
   return WidgetDelegate::CanFullscreen() &&
-         GetCanResizeFromWebAPI().value_or(true);
+         GetWebApiWindowResizable().value_or(true);
 }
 
 bool BrowserView::CanMaximize() const {
   return WidgetDelegate::CanMaximize() &&
-         GetCanResizeFromWebAPI().value_or(true);
+         GetWebApiWindowResizable().value_or(true);
 }
 
 bool BrowserView::CanActivate() const {

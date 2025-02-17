@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">Կատարված փոփոխությունները տեսանելի են խմբի բոլոր անդամներին</translation>
 <translation id="2755595981383829244">Այժմ դուք կստանաք բովանդակության վերաբերյալ ծանուցումներ</translation>
 <translation id="2761788987260570878">Լուսանկարեք այն, ինչ որոնում եք</translation>
+<translation id="2761898608071930085">Օգտագործել այլ հաշիվ</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
 <translation id="2772667768515195373">Դուք կարող եք օգտագործել պահված հասցեները Google-ի արտադրանքներում։ Այս հասցեն պահվում է ձեր Google հաշվում (<ph name="USER_EMAIL" />)։</translation>
 <translation id="2773344962924806829">Ծանուցումներ էլփոստով</translation>
@@ -1724,6 +1725,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428634594422941299">Պարզ է</translation>
 <translation id="8430694217306051839">Ընտրեք, թե որտեղ պահել <ph name="FILENAME" /> ֆայլը (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Ներդիրների խմբի մասին</translation>
 <translation id="8438566539970814960">Լավացնել որոնումն ու էջերի դիտումը</translation>
 <translation id="8439758443371991593">Թաքցնել «Ավելացնել ընթերցանության ցանկում» գործողությունը</translation>
 <translation id="8449869326050867919">Գաղտնաբառը փոխանցվեց</translation>
@@ -1801,6 +1803,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8722229818691036192">Այս սարքում գրանցված հաշիվներ</translation>
 <translation id="8722649775263832315">Հպեք կամ նշեք՝ Google Տեսապակու միջոցով ցանկացած բան որոնելու համար</translation>
 <translation id="8723088494871522141">Թաքցնել «Ապրանքների մասին կարծիքներ ձեզ համար» քարտը</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} ներդիր}one{{COUNT} ներդիր}other{{COUNT} ներդիր}}</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8728922029615312208">Փակել բոլորը</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

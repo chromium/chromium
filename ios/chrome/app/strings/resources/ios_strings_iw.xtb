@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">כל חברי הקבוצה יכולים לראות את השינויים</translation>
 <translation id="2755595981383829244">עכשיו נשלח לך התראות על תוכן</translation>
 <translation id="2761788987260570878">מצלמים תמונה של מה שרוצים לחפש.</translation>
+<translation id="2761898608071930085">חשבון אחר</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
 <translation id="2772667768515195373">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הכתובת הזו שמורה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">התראות באימייל</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428634594422941299">הבנתי</translation>
 <translation id="8430694217306051839">בחירת מיקום לשמירת הקובץ <ph name="FILENAME" /> ‏(<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">פרטי קבוצת הכרטיסיות</translation>
 <translation id="8438566539970814960">שיפור החיפושים והגלישה</translation>
 <translation id="8439758443371991593">הסתרה של 'הוספה לרשימת הקריאה'</translation>
 <translation id="8449869326050867919">הסיסמה שותפה</translation>
@@ -1801,6 +1803,7 @@
 <translation id="8722229818691036192">החשבונות במכשיר הזה</translation>
 <translation id="8722649775263832315">‏אפשר ללחוץ או לסמן כדי לחפש כל דבר באמצעות Google Lens</translation>
 <translation id="8723088494871522141">הסתרת האפשרות "ביקורות על מוצרים שיכולים לעניין אותך"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{כרטיסייה אחת ({COUNT})}one{‫{COUNT} כרטיסיות}two{‫{COUNT} כרטיסיות}other{‫{COUNT} כרטיסיות}}</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8728922029615312208">סגירת הכול</translation>
 <translation id="8730621377337864115">בוצע</translation>

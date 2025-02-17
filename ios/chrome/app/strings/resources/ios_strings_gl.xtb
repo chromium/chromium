@@ -427,6 +427,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2755485474385016903">Todos os membros do grupo poden ver os cambios realizados</translation>
 <translation id="2755595981383829244">Agora recibirás notificacións de contido</translation>
 <translation id="2761788987260570878">Tira unha foto do que queiras buscar</translation>
+<translation id="2761898608071930085">Utilizar outra conta</translation>
 <translation id="2762000892062317888">agora</translation>
 <translation id="2772667768515195373">Podes usar nos produtos de Google os enderezos gardados. Este enderezo está gardado na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Notificacións por correo electrónico</translation>
@@ -1724,6 +1725,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">De acordo</translation>
 <translation id="8430694217306051839">Escolle onde gardar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Detalles do grupo de pestanas</translation>
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>
 <translation id="8449869326050867919">Compartiuse o contrasinal</translation>
@@ -1801,6 +1803,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
 <translation id="8722649775263832315">Toca ou destaca calquera elemento para buscalo con Google Lens</translation>
 <translation id="8723088494871522141">Ocultar Recensións de produtos para ti</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} pestana}other{{COUNT} pestanas}}</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8728922029615312208">Pechar todo</translation>
 <translation id="8730621377337864115">Feito</translation>

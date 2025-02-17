@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">लेआउट स्विच करने वाला बटन</translation>
 <translation id="2244834438220057800">हरे</translation>
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> में बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल चुनें और डाउनलोड करें</translation>
 <translation id="2267285889943769271">स्क्रीनशॉट जोड़ें</translation>
 <translation id="2268044343513325586">बेहतर बनाएं</translation>
 <translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए, लैपटॉप मोड पर स्विच करें.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट लें</translation>
 <translation id="3923184630988645767">डेटा खर्च</translation>
-<translation id="3924445055519423964">वेबपेज/PDF फ़ाइल की खास जानकारी देखने के लिए क्लिक करें</translation>
 <translation id="3932043219784172185">कोई भी डिवाइस कनेक्ट नहीं है</translation>
 <translation id="3934185438132762746">असाइन नहीं किया गया <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
 <translation id="4483498983731992167">ट्रांसक्रिप्ट नहीं बनाई जा सकी</translation>
 <translation id="4486524074141928967">आपको <ph name="TIME" /> पर साइन आउट कर दिया जाएगा</translation>
-<translation id="4487890678161807486">बोले जा रहे शब्दों को टेक्स्ट में बदलने की सुविधा के लिए उपलब्ध भाषा चुनने का पिकर खोलें</translation>
 <translation id="4500722292849917410">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली कुंजी (ctrl, alt, shift बटन या <ph name="META_KEY" />) के साथ नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="4500966230243561393">इंटरफ़ेस का रंग</translation>
 <translation id="4503223151711056411">लेफ़्ट ऐरो</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">पेज</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4999333166442584738">रिपोर्ट छिपाएं</translation>
-<translation id="5005695757087124131">चुने गए टेक्स्ट को आसान शब्दों में समझने के लिए क्लिक करें</translation>
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">थीम का रंग</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> में बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल <ph name="PROGRESS_PERCENTAGE" />% डाउनलोड हो गया है</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">इस एपीएन को न तो बंद किया जा सकता है और न ही हटाया जा सकता है. पक्का करें कि जिन <ph name="ATTACH" /> एपीएन को चालू किया गया था उन्हें बंद कर दिया गया है या हटा दिया गया है.</translation>
-<translation id="7453118953486228603">चुने गए टेक्स्ट की खास जानकारी पाने के लिए क्लिक करें</translation>
 <translation id="7458970041932198923">अवतार देखने और उन्हें सेट करने के लिए, किसी नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>

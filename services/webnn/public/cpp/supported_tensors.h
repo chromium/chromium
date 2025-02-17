@@ -16,8 +16,8 @@
 namespace webnn {
 
 struct SupportedRanks {
-  uint32_t min;
-  uint32_t max;
+  uint32_t min = 0;
+  uint32_t max = 0;
 
   static constexpr SupportedRanks Exactly(uint32_t rank) {
     return {rank, rank};

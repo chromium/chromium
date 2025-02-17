@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/prefs.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -102,6 +103,11 @@ TEST_F(BrowserContextDelegateTest, GetIdentityName) {
 TEST_F(BrowserContextDelegateTest, GetTemporaryIdentityName) {
   EXPECT_EQ(kTemporaryManagedBrowserIdentityName,
             BrowserContextDelegate().GetTemporaryIdentityName());
+}
+
+TEST_F(BrowserContextDelegateTest, GetPolicyPref) {
+  EXPECT_EQ(prefs::kProvisionManagedClientCertificateForBrowserPrefs,
+            BrowserContextDelegate().GetPolicyPref());
 }
 
 }  // namespace client_certificates

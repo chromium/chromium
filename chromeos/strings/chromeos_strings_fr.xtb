@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Changer de disposition</translation>
 <translation id="2244834438220057800">vert</translation>
 <translation id="225692081236532131">État d'activation</translation>
-<translation id="2265792117169966196">Sélectionner et télécharger le modèle de transcription <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Ajouter une capture d'écran</translation>
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Impossible de tester l'appareil. Passez en mode ordinateur portable pour tester.</translation>
 <translation id="3916998944874125962">faire une capture d'écran</translation>
 <translation id="3923184630988645767">Consommation des données</translation>
-<translation id="3924445055519423964">Cliquer pour résumer la page Web/le fichier PDF</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non attribué</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
 <translation id="4483498983731992167">Impossible de créer la transcription</translation>
 <translation id="4486524074141928967">Vous serez déconnecté à <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Ouvrir l'outil de sélection de langue pour la transcription</translation>
 <translation id="4500722292849917410">Raccourci non disponible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Maj ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4989542687859782284">Indisponible</translation>
 <translation id="4999333166442584738">Masquer le rapport</translation>
-<translation id="5005695757087124131">Cliquer pour simplifier le texte sélectionné</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Couleur du thème</translation>
@@ -1395,7 +1391,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7425832472614771259">Modèle de transcription <ph name="LANGUAGE_NAME" /> téléchargé à <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de supprimer cet APN. Assurez-vous que les APN <ph name="ATTACH" /> activés sont désactivés ou supprimés.</translation>
-<translation id="7453118953486228603">Cliquer pour résumer le texte sélectionné</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7481312909269577407">Avancer</translation>

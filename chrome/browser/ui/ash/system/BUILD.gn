@@ -16,7 +16,6 @@ static_library("system") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/eol",

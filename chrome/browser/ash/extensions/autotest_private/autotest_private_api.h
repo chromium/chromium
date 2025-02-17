@@ -1717,6 +1717,21 @@ class AutotestPrivateOverrideOrcaResponseForTestingFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateOverrideScannerResponsesForTestingFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateOverrideScannerResponsesForTestingFunction();
+
+  DECLARE_EXTENSION_FUNCTION(
+      "autotestPrivate.overrideScannerResponsesForTesting",
+      AUTOTESTPRIVATE_OVERRIDESCANNERRESPONSESFORTESTING)
+
+ private:
+  ~AutotestPrivateOverrideScannerResponsesForTestingFunction() override;
+
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateMakeFuseboxTempDirFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.makeFuseboxTempDir",

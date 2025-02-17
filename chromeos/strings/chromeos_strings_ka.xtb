@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">განლაგების გადართვა</translation>
 <translation id="2244834438220057800">მწვანე</translation>
 <translation id="225692081236532131">აქტივაციის სტატუსი</translation>
-<translation id="2265792117169966196">აირჩიეთ და ჩამოტვირთეთ <ph name="LANGUAGE_NAME" /> ენის ტრანსკრიფციის მოდელი</translation>
 <translation id="2267285889943769271">ეკრანის ანაბეჭდის დამატება</translation>
 <translation id="2268044343513325586">დახვეწა</translation>
 <translation id="2271469253353559191">მუქი რეჟიმის განრიგი</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">მოწყობილობის შემოწმება ვერ ხერხდება. შესამოწმებლად გადადით ლეპტოპის რეჟიმზე.</translation>
 <translation id="3916998944874125962">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3923184630988645767">მონაცემთა მოხმარება</translation>
-<translation id="3924445055519423964">დააწკაპუნეთ ვებგვერდის/PDF ფაილის შეჯამებისთვის</translation>
 <translation id="3932043219784172185">დაკავშირებული მოწყობილობები არ არის</translation>
 <translation id="3934185438132762746">მიუნიჭებელი <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ჰოსტის გარდაქმნა ვერ მოხერხდა</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="4483498983731992167">ტრანსკრიპტის შექმნა ვერ მოხერხდა</translation>
 <translation id="4486524074141928967">თქვენ სისტემიდან გამოხვალთ <ph name="TIME" />-ზე</translation>
-<translation id="4487890678161807486">გახსენით ტრანსკრიპტის ენის ამომრჩევი</translation>
 <translation id="4500722292849917410">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს მოდიფიკატორი კლავიშის (ctrl, alt, shift ან <ph name="META_KEY" />) მეშვეობით.</translation>
 <translation id="4500966230243561393">ინტერფეისის ფერი</translation>
 <translation id="4503223151711056411">ისარი მარცხნივ</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">გვერდები</translation>
 <translation id="4989542687859782284">მიუწვდომელია</translation>
 <translation id="4999333166442584738">ანგარიშის დამალვა</translation>
-<translation id="5005695757087124131">დააწკაპუნეთ მონიშნული ტექსტის გამარტივებისთვის</translation>
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">თემის ფერი</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ენის ტრანსკრიფციის მოდელის <ph name="PROGRESS_PERCENTAGE" />% ჩამოიტვირთა</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ამ APN-ის გათიშვა ან წაშლა ვერ ხერხდება. დარწმუნდით, რომ <ph name="ATTACH" /> APN-ები, რომლებიც ჩართულია, გათიშული ან წაშლილია.</translation>
-<translation id="7453118953486228603">დააწკაპუნეთ მონიშნული ტექსტის შეჯამებისთვის</translation>
 <translation id="7458970041932198923">ავატარების სანახავად და დასაყენებლად დაუკავშირდით ქსელს და გადატვირთეთ გვერდი.</translation>
 <translation id="7469648432129124067">აღმოჩენილია პორტალი</translation>
 <translation id="7481312909269577407">გადამისამართება</translation>
@@ -1474,6 +1469,7 @@
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> კაფე</translation>
 <translation id="7841134249932030522">მუქი რეჟიმის ჩართვა</translation>
 <translation id="7846634333498149051">კლავიატურა</translation>
+<translation id="7847923465436619066">ტრანსკრიფციის ენის ამომრჩევი</translation>
 <translation id="7849030488395653706">ჩრდილოეთის ციალი</translation>
 <translation id="7849737607196682401">თასმა</translation>
 <translation id="7850320739366109486">არ შემაწუხოთ</translation>
@@ -1660,6 +1656,7 @@
 <translation id="8749478549112817787">კამერის ფონი</translation>
 <translation id="8755946156089753497">კოშკი</translation>
 <translation id="8760616037557661287">წინა მოთხოვნები</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> ენის ტრანსკრიფციის მოდელის ჩამოტვირთვა და არჩევა</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ალბომი</translation>
 <translation id="8775713578693478175">მოდემის APN</translation>

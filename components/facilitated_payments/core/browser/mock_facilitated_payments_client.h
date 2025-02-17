@@ -50,12 +50,12 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
   MOCK_METHOD(void,
               ShowPixPaymentPrompt,
               (base::span<const autofill::BankAccount> pix_account_suggestions,
-               base::OnceCallback<void(bool, int64_t)>),
+               base::OnceCallback<void(int64_t)>),
               (override));
   MOCK_METHOD(void,
               ShowEwalletPaymentPrompt,
               (base::span<const autofill::Ewallet> ewallet_suggestions,
-               base::OnceCallback<void(bool, int64_t)>),
+               base::OnceCallback<void(int64_t)>),
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));

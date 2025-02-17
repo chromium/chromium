@@ -24,7 +24,7 @@ source_set("recommended_arc_apps") {
     "//chromeos/ash/experiences/arc",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
-    "//extensions/browser",
+    "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/common/api",
     "//gpu/config",
     "//services/data_decoder/public/cpp",

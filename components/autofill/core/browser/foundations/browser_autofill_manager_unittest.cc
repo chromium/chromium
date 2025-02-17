@@ -139,8 +139,6 @@ using mojom::SubmissionSource;
 using test::CreateTestAddressFormData;
 using test::CreateTestFormField;
 using test::CreateTestIbanFormData;
-using test::CreateTestPersonalInformationFormData;
-using test::CreateTestSelectField;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyNumber;

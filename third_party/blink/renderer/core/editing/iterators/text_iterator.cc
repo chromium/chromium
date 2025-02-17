@@ -309,8 +309,11 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
 
   if (HandleRememberedProgress())
     return;
-
-  while (node_ && (node_ != past_end_node_ || shadow_depth_)) {
+  bool should_continue_iteration = (node_ != past_end_node_ || shadow_depth_);
+  if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
+    should_continue_iteration = (node_ != past_end_node_);
+  }
+  while (node_ && should_continue_iteration) {
     // TODO(crbug.com/1296290): Disable this DCHECK as it's troubling CrOS engs.
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
     // |node_| shouldn't be after |past_end_node_|.
@@ -519,6 +522,12 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
     // how would this ever be?
     if (text_state_.PositionNode())
       return;
+
+    if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
+      should_continue_iteration = (node_ != past_end_node_);
+    } else {
+      should_continue_iteration = (node_ != past_end_node_ || shadow_depth_);
+    }
   }
 }
 

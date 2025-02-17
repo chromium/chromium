@@ -24,6 +24,7 @@
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
+#include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
@@ -117,10 +118,6 @@
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/component_updater/file_type_policies_component_installer.h"
-#endif
-
 namespace component_updater {
 
 void RegisterComponentsForUpdate() {
@@ -193,9 +190,10 @@ void RegisterComponentsForUpdate() {
   }
   RegisterSSLErrorAssistantComponent(cus);
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // Since file type policies are per-platform, and we don't support
+  // Fuchsia-specific component versions, we don't dynamically update file type
+  // policies on Fuchsia.
   RegisterFileTypePoliciesComponent(cus);
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // CRLSetFetcher attempts to load a CRL set from either the local disk or

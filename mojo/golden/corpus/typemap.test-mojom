@@ -5,6 +5,8 @@ module golden;
 
 struct Typemapped {
   uint8 field;
+  int32? optional;
+  array<bool?> optional_container;
 };
 
 interface IFaceWithTypemap {

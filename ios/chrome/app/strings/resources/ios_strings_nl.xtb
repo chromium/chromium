@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">Beheerd account</translation>
 <translation id="1358214951266274152">Ga naar de gekopieerde link</translation>
 <translation id="1360432990279830238">Uitloggen en synchroniseren uitzetten?</translation>
+<translation id="1362192716574455663">Bestaande browsegegevens worden niet naar je werkaccount verplaatst. Je hebt er nog steeds toegang toe door uit te loggen of een persoonlijk account toe te voegen.</translation>
 <translation id="1363028406613469049">Track</translation>
 <translation id="1364367057792633742">Nieuw tabblad</translation>
 <translation id="1365106417372288489">Je iPhone is recent hersteld, waardoor je standaardbrowser misschien is veranderd.</translation>
@@ -427,6 +428,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2755485474385016903">Aangebrachte wijzigingen zijn zichtbaar voor iedereen in de groep</translation>
 <translation id="2755595981383829244">Je krijgt nu meldingen over content</translation>
 <translation id="2761788987260570878">Maak een foto van wat je zoekt</translation>
+<translation id="2761898608071930085">Een ander account gebruiken</translation>
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="2772667768515195373">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres is opgeslagen in je Google-account <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E-mailmeldingen</translation>
@@ -1724,6 +1726,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8430694217306051839">Kies een opslaglocatie voor <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Tabbladgroepgegevens</translation>
 <translation id="8438566539970814960">Zoekopdrachten en browsefunctionaliteit verbeteren</translation>
 <translation id="8439758443371991593">Toevoegen aan leeslijst verbergen</translation>
 <translation id="8449869326050867919">Wachtwoord gedeeld</translation>
@@ -1801,6 +1804,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8722229818691036192">Accounts op dit apparaat</translation>
 <translation id="8722649775263832315">Tik of markeer om te zoeken met Google Lens</translation>
 <translation id="8723088494871522141">Productreviews voor jou verbergen</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} tabblad}other{{COUNT} tabbladen}}</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8728922029615312208">Alles sluiten</translation>
 <translation id="8730621377337864115">Klaar</translation>

@@ -1550,7 +1550,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="206308717637808771">Бардык терезелер жабылганда маалымат жок кылынсын. Маалымат сиз карап жаткан сайт сыяктуу кабыл алынат</translation>
 <translation id="2065405795449409761">Chrome автоматтык түрдө иштөөчү сынамык программа тарабынан көзөмөлдөнүүдө.</translation>
 <translation id="2066700471214517561">Багытталган микрофон Chromebook түзмөгүн колдонгон адамдын үнүн даана угууга жардам берет.</translation>
-<translation id="2067591192939433190">Кайдан: "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> принтеринде басып чыгарды</translation>
 <translation id="2071393345806050157">Жергиликтүү таржымал файлы жок.</translation>
 <translation id="2071692954027939183">Билдирмелер автоматтык түрдө бөгөттөлдү, анткени, адатта, аларга уруксат бербейсиз</translation>
@@ -6527,7 +6526,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5595307023264033512">Сайттар ээлеген жалпы орун: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Даректи өзгөртүү</translation>
 <translation id="5596627076506792578">Дагы параметрлер</translation>
-<translation id="5599819890022137981">Windows Hello'дон</translation>
 <translation id="5600348067066185292">Ал бир нече оңой кадам менен орнотулат. Өзгөртүүлөрдү компьютериңизге киргизүүдөн мурун дагы бир ырастоо мүмкүнчүлүгүңүз болот.</translation>
 <translation id="5600706100022181951">Жаңыртууну жүктөп алуу үчүн мобилдик Интернеттен <ph name="UPDATE_SIZE_MB" /> МБ сарпталат. Уланта бересизби?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8674,6 +8672,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7160911207516219534">Капталдагы тилкелер</translation>
 <translation id="716210145227921528">Киргизүүчү ачкыч өчүрүлдү</translation>
 <translation id="7165263843655074092">Бул түзмөктө стандартуу коопсуздук тутумун колдонуп жатасыз</translation>
+<translation id="7166017546802325772">Бул топто жаңыртуулар жок</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" белгиленген жерлердеги сүрөттөрдү, видеону жана үн файлдарын окуй алат.</translation>
 <translation id="7166815366658507447">Байланыш түйүнү иштетилди</translation>
 <translation id="7167327771183668296">Автоматтык чыкылдатуулар</translation>
@@ -9250,7 +9249,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7586498138629385861">Chrome колдонмолору ачылып турганда Chrome иштей берет.</translation>
 <translation id="7589461650300748890">Ушундай болмок. Абайлаңыз.</translation>
 <translation id="7590883480672980941">Киргизүү параметрлери</translation>
-<translation id="7591317506733736159">Chrome профилиңизден</translation>
 <translation id="7592060599656252486">Айрымдар</translation>
 <translation id="7593653750169415785">Автоматтык түрдө бөгөттөлдү, анткени сиз билдирмелерди бир нече жолу четке кактыңыз</translation>
 <translation id="7594725637786616550"><ph name="DEVICE_TYPE" /> түзмөгүн баштапкы абалга келтирүү үчүн "Жууп салуу" функциясын колдонуңуз.</translation>
@@ -10307,7 +10305,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="831440797644402910">Бул папка ачылбай жатат</translation>
 <translation id="8314835274931377415">Switch Access функциясын жөндөп баштайсызбы?</translation>
 <translation id="8315018673856831477">Эстутумду үнөмдөгүч параметрлери</translation>
-<translation id="8315044115695361734">iCloud Keychain'ден</translation>
 <translation id="8315514906653279104">Күйгүзүлүүдө…</translation>
 <translation id="8317671367883557781">Тармак туташуусун кошуу</translation>
 <translation id="8317965619823678157">сырсөздөрдү көчүрүү</translation>

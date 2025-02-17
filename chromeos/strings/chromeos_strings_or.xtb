@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">ଲେଆଉଟ ସ୍ୱିଚ</translation>
 <translation id="2244834438220057800">ସବୁଜ</translation>
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଚୟନ କରି ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="2267285889943769271">ସ୍କ୍ରିନସଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2268044343513325586">ମାର୍ଜିତ କରନ୍ତୁ</translation>
 <translation id="2271469253353559191">ଡାର୍କ ମୋଡ୍ ସିଡୁଲ୍</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">ଡିଭାଇସକୁ ଟେଷ୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଟେଷ୍ଟ କରିବା ପାଇଁ ଲାପଟପ ମୋଡକୁ ସ୍ୱିଚ କରନ୍ତୁ।</translation>
 <translation id="3916998944874125962">ସ୍କ୍ରିନସଟ ନିଅନ୍ତୁ</translation>
 <translation id="3923184630988645767">ଡାଟାର ବ୍ୟବହାର</translation>
-<translation id="3924445055519423964">ୱେବପୃଷ୍ଠା/PDF ଫାଇଲର ସାରାଂଶ ତିଆରି କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="3932043219784172185">କୌଣସି ଡିଭାଇସ ସଂଯୋଗ କରାଯାଇନାହିଁ</translation>
 <translation id="3934185438132762746">ଆସାଇନ କରାଯାଇନଥିବା <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4483498983731992167">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4486524074141928967">ଆପଣଙ୍କୁ <ph name="TIME" />ରେ ସାଇନ ଆଉଟ କରାଯିବ</translation>
-<translation id="4487890678161807486">ଟ୍ରାନ୍ସକ୍ରିପସନ ଭାଷା ପିକର ଖୋଲନ୍ତୁ</translation>
 <translation id="4500722292849917410">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଏକ ମୋଡିଫାୟର କୀ (ctrl, alt, shift କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="4500966230243561393">ଇଣ୍ଟରଫେସ ରଙ୍ଗ</translation>
 <translation id="4503223151711056411">ବାମ ତୀର</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
 <translation id="4989542687859782284">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4999333166442584738">ରିପୋର୍ଟ ଲୁଚାନ୍ତୁ</translation>
-<translation id="5005695757087124131">ଚୟନିତ ଟେକ୍ସଟକୁ ସରଳ କରିବାକୁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">ଥିମର ରଙ୍ଗ</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲ <ph name="PROGRESS_PERCENTAGE" />% ଡାଉନଲୋଡ କରାଯାଇଛି</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ଏହି APNକୁ ଅକ୍ଷମ କରାଯାଇପାରିବ ନାହିଁ କିମ୍ବା କାଢ଼ି ଦିଆଯାଇପାରିବ ନାହିଁ। ସକ୍ଷମ କରାଯାଇଥିବା <ph name="ATTACH" /> APNଗୁଡ଼ିକୁ ଅକ୍ଷମ କରାଯାଇଛି କିମ୍ବା କାଢ଼ି ଦିଆଯାଇଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
-<translation id="7453118953486228603">ଚୟନିତ ଟେକ୍ସଟର ସାରାଂଶ ତିଆରି କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="7458970041932198923">ଅବତାରଗୁଡ଼ିକୁ ଦେଖି ସେଟ କରିବା ପାଇଁ ଦୟାକରି ଏକ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="7469648432129124067">ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7481312909269577407">ଅଗ୍ରଗତି</translation>

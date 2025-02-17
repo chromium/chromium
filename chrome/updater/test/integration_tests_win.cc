@@ -253,7 +253,7 @@ void CheckInstallation(UpdaterScope scope,
       }
       if (!IsSystemInstall(scope)) {
         ForEachRegistryRunValueWithPrefix(
-            base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+            base::UTF8ToWide(PRODUCT_FULLNAME_STRING),
             [](const std::wstring& run_name) {
               ADD_FAILURE() << "Unexpected Run key found: " << run_name;
             });
@@ -308,7 +308,7 @@ void CheckInstallation(UpdaterScope scope,
 
       int count_entries = 0;
       ForEachServiceWithPrefix(
-          base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+          base::StrCat({base::UTF8ToWide(PRODUCT_FULLNAME_STRING),
                         is_internal_service ? kWindowsInternalServiceName
                                             : kWindowsServiceName}),
           GetLocalizedString(
@@ -360,7 +360,7 @@ void CheckInstallation(UpdaterScope scope,
                   TaskScheduler::TriggerType::TRIGGER_TYPE_LOGON);
   } else {
     task_scheduler->ForEachTaskWithPrefix(
-        base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+        base::UTF8ToWide(PRODUCT_FULLNAME_STRING),
         [](const std::wstring& task_name) {
           ADD_FAILURE() << "Unexpected task found: " << task_name;
         });
@@ -417,7 +417,7 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
   auto launch_legacy_offline_install = [&] {
     auto build_legacy_switch =
         [](const std::string& switch_name) -> std::wstring {
-      return base::ASCIIToWide(base::StrCat({"/", switch_name}));
+      return base::UTF8ToWide(base::StrCat({"/", switch_name}));
     };
     std::vector<std::wstring> install_cmd_args = {
         base::CommandLine::QuoteForCommandLineToArgvW(exe_path.value()),
@@ -620,15 +620,15 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
         {app_client_state_key_utf8, "InstallerResultUIString", "REG_SZ",
          "CoolApp"},
         {app_client_state_key_utf8, "InstallerSuccessLaunchCmdLine", "REG_SZ",
-         base::WideToASCII(post_install_cmd.GetCommandLineString())},
+         base::WideToUTF8(post_install_cmd.GetCommandLineString())},
     };
     for (const auto& reg_item : reg_items) {
       commands.push_back(base::StringPrintf(
           "REG.exe ADD \"%s\\%s\" /v %s /t %s /d %s /f /reg:32",
           reg_hive.c_str(), reg_item.subkey.c_str(), reg_item.value_name,
           reg_item.type,
-          base::WideToASCII(base::CommandLine::QuoteForCommandLineToArgvW(
-                                base::ASCIIToWide(reg_item.value)))
+          base::WideToUTF8(base::CommandLine::QuoteForCommandLineToArgvW(
+                               base::UTF8ToWide(reg_item.value)))
               .c_str()));
     }
     return base::JoinString(commands, "\n");
@@ -692,7 +692,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   const base::Version pv =
       base::MakeRefCounted<PersistedData>(scope, global_prefs->GetPrefService(),
                                           nullptr)
-          ->GetProductVersion(base::WideToASCII(kTestAppID));
+          ->GetProductVersion(base::WideToUTF8(kTestAppID));
 
   base::win::RegKey key;
   LONG registry_result =
@@ -797,7 +797,7 @@ void Clean(UpdaterScope scope) {
 
   if (!IsSystemInstall(scope)) {
     ForEachRegistryRunValueWithPrefix(
-        base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+        base::UTF8ToWide(PRODUCT_FULLNAME_STRING),
         [](const std::wstring& run_name) {
           base::win::RegKey(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_WRITE)
               .DeleteValue(run_name.c_str());
@@ -805,7 +805,7 @@ void Clean(UpdaterScope scope) {
   }
 
   if (IsSystemInstall(scope)) {
-    ForEachServiceWithPrefix(base::ASCIIToWide(PRODUCT_FULLNAME_STRING), {},
+    ForEachServiceWithPrefix(base::UTF8ToWide(PRODUCT_FULLNAME_STRING), {},
                              [](const std::wstring& service_name) {
                                EXPECT_TRUE(DeleteService(service_name));
                              });
@@ -814,7 +814,7 @@ void Clean(UpdaterScope scope) {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
   task_scheduler->ForEachTaskWithPrefix(
-      base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+      base::UTF8ToWide(PRODUCT_FULLNAME_STRING),
       [&task_scheduler](const std::wstring& task_name) {
         EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
       });
@@ -1289,7 +1289,7 @@ HRESULT DoUpdate(UpdaterScope scope,
         state->get_totalBytesToDownload(&total_bytes_to_download);
         LONG download_time_remaining_ms = 0;
         state->get_downloadTimeRemainingMs(&download_time_remaining_ms);
-        extra_data = base::ASCIIToWide(base::StringPrintf(
+        extra_data = base::UTF8ToWide(base::StringPrintf(
             "[Bytes downloaded: %lu][Bytes total: %lu][Time remaining: %ld]",
             bytes_downloaded, total_bytes_to_download,
             download_time_remaining_ms));
@@ -1310,7 +1310,7 @@ HRESULT DoUpdate(UpdaterScope scope,
         state->get_bytesDownloaded(&bytes_downloaded);
         ULONG total_bytes_to_download = 0;
         state->get_totalBytesToDownload(&total_bytes_to_download);
-        extra_data = base::ASCIIToWide(
+        extra_data = base::UTF8ToWide(
             base::StringPrintf("[Bytes downloaded: %lu][Bytes total: %lu]",
                                bytes_downloaded, total_bytes_to_download));
         EXPECT_HRESULT_SUCCEEDED(bundle->install());
@@ -1324,7 +1324,7 @@ HRESULT DoUpdate(UpdaterScope scope,
         state->get_installProgress(&install_progress);
         LONG install_time_remaining_ms = 0;
         state->get_installTimeRemainingMs(&install_time_remaining_ms);
-        extra_data = base::ASCIIToWide(
+        extra_data = base::UTF8ToWide(
             base::StringPrintf("[Install Progress: %ld][Time remaining: %ld]",
                                install_progress, install_time_remaining_ms));
         break;
@@ -1350,7 +1350,7 @@ HRESULT DoUpdate(UpdaterScope scope,
         LONG installer_result_code = 0;
         EXPECT_HRESULT_SUCCEEDED(
             state->get_installerResultCode(&installer_result_code));
-        extra_data = base::ASCIIToWide(base::StringPrintf(
+        extra_data = base::UTF8ToWide(base::StringPrintf(
             "[errorCode: %ld][completionMessage: %ls][installerResultCode: "
             "%ld]",
             error_code, completion_message.Get(), installer_result_code));
@@ -1745,7 +1745,7 @@ void RunHandoff(UpdaterScope scope, const std::string& app_id) {
   const std::wstring command_line(base::StrCat(
       {base::CommandLine::QuoteForCommandLineToArgvW(
            installed_executable_path->value()),
-       L" /handoff \"appguid=", base::ASCIIToWide(app_id), L"&needsadmin=",
+       L" /handoff \"appguid=", base::UTF8ToWide(app_id), L"&needsadmin=",
        IsSystemInstall(scope) ? L"Prefers" : L"False", L"\" /silent"}));
   VLOG(0) << " RunHandoff: " << command_line;
   const base::Process process = base::LaunchProcess(command_line, {});
@@ -2109,11 +2109,11 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
   for (const auto [app_id, policies] : values) {
     ASSERT_TRUE(policies.is_dict());
     for (const auto [name, value] : policies.GetDict()) {
-      const std::wstring& key = base::ASCIIToWide(
+      const std::wstring& key = base::UTF8ToWide(
           base::StringPrintf("%s%s", name.c_str(), app_id.c_str()));
       if (value.is_string()) {
         policy_key.WriteValue(key.c_str(),
-                              base::ASCIIToWide(value.GetString()).c_str());
+                              base::UTF8ToWide(value.GetString()).c_str());
       } else if (value.is_int()) {
         policy_key.WriteValue(key.c_str(), static_cast<DWORD>(value.GetInt()));
       } else if (value.is_bool()) {

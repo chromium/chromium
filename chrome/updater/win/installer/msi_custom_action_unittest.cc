@@ -148,9 +148,9 @@ class MsiSetInstallerResultTest
       installer_outcome.installer_result = InstallerApiResult::kCustomError;
       installer_outcome.installer_text = "some text";
       EXPECT_TRUE(SetInstallerOutcomeForTesting(
-          UpdaterScope::kSystem, base::WideToASCII(kAppId), installer_outcome));
-      ASSERT_TRUE(GetInstallerOutcome(UpdaterScope::kSystem,
-                                      base::WideToASCII(kAppId)));
+          UpdaterScope::kSystem, base::WideToUTF8(kAppId), installer_outcome));
+      ASSERT_TRUE(
+          GetInstallerOutcome(UpdaterScope::kSystem, base::WideToUTF8(kAppId)));
 
       if (OnlyInUpdaterKey()) {
         EXPECT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(KEY_WRITE))

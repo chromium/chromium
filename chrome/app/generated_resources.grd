@@ -15793,8 +15793,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_MANAGED" desc="Text to display when picker choices have been limited by enterprise policies.">
         Options for sharing are managed by your organization. Some items may be hidden.
       </message>
-      <message name="IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC" desc="Text for a button to open the screen recording setting page in system preferences on Mac." >
-        Open System Preferences
+      <message name="IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC" desc="Text for a button to open the screen recording setting page in System Settings on Mac." >
+        Open System Settings
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_RESELECT_SCREEN" desc="Text for a button appearing on the window picker dialog which is displayed when there is a secondary, system-level picker in which the user must select the content to share. Clicking this button will re-open the picker to allow the user to choose a new monitor/desktop/screen to share." >
         Choose a different screen
@@ -16905,7 +16905,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <if expr="is_macosx">
-        <message name="IDS_WEBAUTHN_BLUETOOTH_PERMISSION" desc="Body text in a dialog that appears when the user has requested some function that depends on Bluetooth, but Chrome doesn't have permission to use Bluetooth. The action on this dialog is a button that will open the macOS System Preferences so that the user can grant permission.">
+        <message name="IDS_WEBAUTHN_BLUETOOTH_PERMISSION" desc="Body text in a dialog that appears when the user has requested some function that depends on Bluetooth, but Chrome doesn't have permission to use Bluetooth. The action on this dialog is a button that will open the macOS System Settings so that the user can grant permission.">
           Chrome needs permission to use Bluetooth to connect to your device
         </message>
       </if>

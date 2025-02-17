@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">版面配置切換</translation>
 <translation id="2244834438220057800">綠色</translation>
 <translation id="225692081236532131">啟用狀態</translation>
-<translation id="2265792117169966196">選取並下載<ph name="LANGUAGE_NAME" />語音轉錄模型</translation>
 <translation id="2267285889943769271">新增螢幕截圖</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2271469253353559191">深色模式時間表</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">無法測試裝置。請切換成筆電模式進行測試。</translation>
 <translation id="3916998944874125962">拍攝螢幕截圖</translation>
 <translation id="3923184630988645767">數據用量</translation>
-<translation id="3924445055519423964">按一下即可歸納網頁/PDF 檔案的重點摘要</translation>
 <translation id="3932043219784172185">未連線到任何裝置</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" />未指定</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">無法連線偵測非預設的網路閘道</translation>
 <translation id="4483498983731992167">無法建立轉錄稿</translation>
 <translation id="4486524074141928967">系統會在<ph name="TIME" /> 將你登出</translation>
-<translation id="4487890678161807486">開啟語音轉錄語言選單</translation>
 <translation id="4500722292849917410">這組快速鍵無法使用。按下新的快速鍵時，請使用輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />鍵)。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
 <translation id="4503223151711056411">向左鍵</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">網頁</translation>
 <translation id="4989542687859782284">尚未支援</translation>
 <translation id="4999333166442584738">隱藏報告</translation>
-<translation id="5005695757087124131">按一下即可精簡所選文字</translation>
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">主題顏色</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259">正在下載<ph name="LANGUAGE_NAME" />語音轉錄模型，進度 <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">無法停用或移除這個 APN，請務必停用或移除已啟用的「<ph name="ATTACH" />」APN。</translation>
-<translation id="7453118953486228603">按一下即可取得所選文字的摘要</translation>
 <translation id="7458970041932198923">如要查看及設定顯示圖片，請連上網路並重新載入頁面。</translation>
 <translation id="7469648432129124067">已偵測到網路入口</translation>
 <translation id="7481312909269577407">往前</translation>

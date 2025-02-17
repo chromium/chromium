@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">Хийсэн өөрчлөлтийг бүлэг дэх хүн бүр хардаг</translation>
 <translation id="2755595981383829244">Та одоо контентын мэдэгдлүүд хүлээн авна</translation>
 <translation id="2761788987260570878">Хайлтынхаа зургийг авна уу</translation>
+<translation id="2761898608071930085">Өөр бүртгэл ашиглах</translation>
 <translation id="2762000892062317888">дөнгөж сая</translation>
 <translation id="2772667768515195373">Та Google-н бүтээгдэхүүнүүд дээр хадгалсан хаягуудыг ашиглах боломжтой. Энэ хаягийг таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгалсан.</translation>
 <translation id="2773344962924806829">Имэйл мэдэгдэл</translation>
@@ -1724,6 +1725,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8428634594422941299">Ойлголоо</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" />-г (<ph name="FILE_SIZE" />) хаана хадгалахыг сонгоно уу</translation>
+<translation id="8434837876193928924">Табын бүлгийн дэлгэрэнгүй мэдээлэл</translation>
 <translation id="8438566539970814960">Хайлт болон хөтлөх явцыг сайжруулаарай</translation>
 <translation id="8439758443371991593">Унших жагсаалтад нэмэхийг нуух</translation>
 <translation id="8449869326050867919">Нууц үгийг хуваалцсан</translation>
@@ -1801,6 +1803,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8722229818691036192">Энэ төхөөрөмж дээрх бүртгэлүүд</translation>
 <translation id="8722649775263832315">Google Lens-р ямар нэг зүйл хайхын тулд товших эсвэл тодруулна уу</translation>
 <translation id="8723088494871522141">"Танд зориулсан бүтээгдэхүүний шүүмж"-ийг нуух</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} таб}other{{COUNT} таб}}</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8728922029615312208">Бүгдийг хаах</translation>
 <translation id="8730621377337864115">хийсэн</translation>

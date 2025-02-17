@@ -248,6 +248,10 @@ BASE_FEATURE(kSanitizeRedirectUrlsDuringNavigation,
              "SanitizeRedirectUrlsDuringNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kDeferSpeculativeRFHWaitUntilFinalResponse{
+    &features::kDeferSpeculativeRFHCreation, "wait_until_final_response",
+    false};
+
 // Denotes the type of user agent string value sent in the User-Agent request
 // header.
 //
@@ -2913,9 +2917,6 @@ void NavigationRequest::
             ->RecordMetricsForBlockedGetFrameHostAttempt(
                 /* commit_attempt=*/true);
         return;
-      case GetFrameHostForNavigationFailed::kIntentionalDefer:
-        // We will not defer RFH creation for requests without a URL loader
-        NOTREACHED();
     }
   }
 
@@ -4658,9 +4659,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
               ->RecordMetricsForBlockedGetFrameHostAttempt(
                   /* commit_attempt=*/true);
           return;
-        case GetFrameHostForNavigationFailed::kIntentionalDefer:
-          // We only defer RFH creation when the navigation is not started yet.
-          NOTREACHED();
       }
     }
 
@@ -5136,9 +5134,6 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
             ->RecordMetricsForBlockedGetFrameHostAttempt(
                 /* commit_attempt=*/true);
         return;
-      case GetFrameHostForNavigationFailed::kIntentionalDefer:
-        // We only defer RFH creation when the navigation is not started yet.
-        NOTREACHED();
     }
   }
 
@@ -5462,7 +5457,11 @@ void NavigationRequest::OnStartChecksComplete(
   // a BFCache restore or prerender activation. Otherwise `OnResponseStarted`
   // will be called instantly and the creation of the speculative RFH is
   // redundant.
+  // TODO(crbug.com/394732486): All the speculative RFH creation will be skipped
+  // if kDeferSpeculativeRFHWaitUntilFinalResponse is set. The behavior can
+  // be more adaptive by limiting to sites that commonly use COOP.
   if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
+      !kDeferSpeculativeRFHWaitUntilFinalResponse.Get() &&
       GetAssociatedRFHType() == AssociatedRenderFrameHostType::NONE) {
     if (features::kCreateSpeculativeRFHFilterRestore.Get() &&
         loader_type != NavigationURLLoader::LoaderType::kRegular) {

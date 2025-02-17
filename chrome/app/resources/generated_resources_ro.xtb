@@ -1541,7 +1541,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="206308717637808771">Șterge datele când închizi toate ferestrele. Datele sunt tratate la fel ca site-ul pe care îl accesezi</translation>
 <translation id="2065405795449409761">Chrome este controlat de un software de testare automată.</translation>
 <translation id="2066700471214517561">Microfon cu formarea fasciculului, astfel încât persoana care folosește Chromebookul să se audă clar.</translation>
-<translation id="2067591192939433190">De la <ph name="VENDOR_NAME" /></translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> a finalizat printarea pe <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Niciun fișier jurnal local.</translation>
 <translation id="2071692954027939183">Notificările au fost blocate automat deoarece nu le permiți de obicei</translation>
@@ -6512,7 +6511,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5595307023264033512">Spațiul total de stocare folosit de site-uri: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Editează adresa</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
-<translation id="5599819890022137981">Din Windows Hello</translation>
 <translation id="5600348067066185292">Instalarea presupune câțiva pași simpli. Vei avea o altă ocazie de a confirma înainte ca modificările să se aplice pe computer.</translation>
 <translation id="5600706100022181951">Actualizarea va fi descărcată folosind <ph name="UPDATE_SIZE_MB" /> MB de date mobile Vrei să continui?</translation>
 <translation id="5601503069213153581">Cod PIN</translation>
@@ -8662,6 +8660,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7160911207516219534">Panouri laterale</translation>
 <translation id="716210145227921528">Cheia de acces a fost ștearsă</translation>
 <translation id="7165263843655074092">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
+<translation id="7166017546802325772">Nu există actualizări pentru acest grup</translation>
 <translation id="716640248772308851">Extensia „<ph name="EXTENSION" />” poate citi imagini, videoclipuri și fișiere audio în locațiile indicate.</translation>
 <translation id="7166815366658507447">Hotspot activat</translation>
 <translation id="7167327771183668296">Clicuri automate</translation>
@@ -9238,7 +9237,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7586498138629385861">Chrome va rula în continuare când sunt deschise aplicații Chrome.</translation>
 <translation id="7589461650300748890">Ușurel. Fiți atent(ă).</translation>
 <translation id="7590883480672980941">Setări de introducere a textului</translation>
-<translation id="7591317506733736159">Din profilul Chrome</translation>
 <translation id="7592060599656252486">Câteva</translation>
 <translation id="7593653750169415785">Blocate automat, deoarece ai refuzat notificările de câteva ori</translation>
 <translation id="7594725637786616550">Folosește Powerwash pentru a reseta <ph name="DEVICE_TYPE" /> la configurația din fabrică.</translation>
@@ -10296,7 +10294,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="831440797644402910">Dosarul nu poate fi deschis</translation>
 <translation id="8314835274931377415">Începi configurarea Accesului prin comutare?</translation>
 <translation id="8315018673856831477">Opțiuni pentru economisirea memoriei</translation>
-<translation id="8315044115695361734">Din iCloud Keychain</translation>
 <translation id="8315514906653279104">Se activează…</translation>
 <translation id="8317671367883557781">Adaugă o conexiune la rețea</translation>
 <translation id="8317965619823678157">copiază parolele</translation>

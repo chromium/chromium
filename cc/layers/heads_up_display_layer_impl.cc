@@ -281,14 +281,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
                                            gfx::ColorSpace());
 
     if (!pool_resource.backing()) {
-      auto backing = std::make_unique<ResourcePool::Backing>();
-      backing->shared_image_interface = sii;
-      backing->set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
-          {pool_resource.format(), pool_resource.size(),
-           pool_resource.color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-           "HeadsUpDisplayLayer"}));
-      CHECK(backing->shared_image());
-      pool_resource.set_backing(std::move(backing));
+      pool_resource.InstallSoftwareBacking(sii, "HeadsUpDisplayLayer");
     }
   }
 

@@ -1537,7 +1537,6 @@
 <translation id="206308717637808771">Барлық терезені жапқан кезде деректерді жою. Деректерге қаралып жатқан сайт параметрлері қолданылады.</translation>
 <translation id="2065405795449409761">Chrome браузері автоматты сынақ бағдарламалық құралымен басқарылады.</translation>
 <translation id="2066700471214517561">Chromebook қолданатын адамның дауысы анық естілуі үшін, микрофон сигналы бағытталады.</translation>
-<translation id="2067591192939433190">Кімнен: "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> қолданбасы <ph name="PRINTER_NAME" /> принтерінде басып шығарды.</translation>
 <translation id="2071393345806050157">Жергілікті журнал файлы жоқ.</translation>
 <translation id="2071692954027939183">Сіз әдетте хабарландыруларға рұқсат бермейтін болғандықтан, олар автоматты түрде бөгелді.</translation>
@@ -6507,7 +6506,6 @@
 <translation id="5595307023264033512">Сайттар пайдаланатын жалпы жад көлемі: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Мекенжайды өзгерту</translation>
 <translation id="5596627076506792578">Қосымша опциялар</translation>
-<translation id="5599819890022137981">Windows Hello функциясынан</translation>
 <translation id="5600348067066185292">Орнату бірнеше қарапайым қадамнан тұрады. Компьютерге өзгерістер енгізбестен бұрын, оларды растаудың тағы бір мүмкіндігі болады.</translation>
 <translation id="5600706100022181951">Жаңа нұсқаны жүктеп алуға мобильдік интернеттен <ph name="UPDATE_SIZE_MB" /> МБ алынады. Жалғастырғыңыз келе ме?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8651,6 +8649,7 @@
 <translation id="7160911207516219534">Бүйірлік панельдер</translation>
 <translation id="716210145227921528">Кіру кілті жойылды</translation>
 <translation id="7165263843655074092">Бұл құрылғыда стандартты қауіпсіздік қорғанысын алып жатырсыз</translation>
+<translation id="7166017546802325772">Бұл топқа қатысты өзгеріс жоқ.</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" кеңейтімі таңдалған орындардағы кескіндерді, бейнені және дыбыстық файлдарды оқи алады.</translation>
 <translation id="7166815366658507447">Хотспот қосулы</translation>
 <translation id="7167327771183668296">Автоматты түрде басу әрекеттері</translation>
@@ -9226,7 +9225,6 @@
 <translation id="7586498138629385861">Chrome қолданбалары ашық болғанда, Chrome жұмысын жалғастырады.</translation>
 <translation id="7589461650300748890">Байқаңыз!</translation>
 <translation id="7590883480672980941">Енгізу параметрлері</translation>
-<translation id="7591317506733736159">Chrome профиліңізден</translation>
 <translation id="7592060599656252486">Кейбір</translation>
 <translation id="7593653750169415785">Хабарландыруларды бірнеше рет қабылдамағандықтан, автоматты түрде бөгелді.</translation>
 <translation id="7594725637786616550">Powerwash функциясы <ph name="DEVICE_TYPE" /> құрылғыңызды бастапқы күйіне қайта орнатуға арналған.</translation>
@@ -10283,7 +10281,6 @@
 <translation id="831440797644402910">Бұл қалта ашылмайды</translation>
 <translation id="8314835274931377415">Switch Access-ті реттеу керек пе?</translation>
 <translation id="8315018673856831477">Жад үнемдегіштің опциялары</translation>
-<translation id="8315044115695361734">iCloud кілттер тізбегінен</translation>
 <translation id="8315514906653279104">Қосылып жатыр…</translation>
 <translation id="8317671367883557781">Желі байланысын енгізу</translation>
 <translation id="8317965619823678157">құпия сөздерді көшіру</translation>

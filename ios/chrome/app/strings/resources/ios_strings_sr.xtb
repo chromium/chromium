@@ -428,6 +428,7 @@
 <translation id="2755485474385016903">Сви у групи виде унете промене</translation>
 <translation id="2755595981383829244">Сада ћете добијати обавештења о садржају</translation>
 <translation id="2761788987260570878">Сликајте претрагу</translation>
+<translation id="2761898608071930085">Користите други налог</translation>
 <translation id="2762000892062317888">малопре</translation>
 <translation id="2772667768515195373">Можете да користите сачуване адресе у свим Google производима. Ова адреса је сачувана на Google налогу, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Обавештења имејлом</translation>
@@ -1725,6 +1726,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8428634594422941299">Важи</translation>
 <translation id="8430694217306051839">Изаберите где ће фајл <ph name="FILENAME" /> бити сачуван (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Детаљи групе картица</translation>
 <translation id="8438566539970814960">Побољшај претраге и прегледање</translation>
 <translation id="8439758443371991593">Сакриј опцију Додај на листу за читање</translation>
 <translation id="8449869326050867919">Лозинка се дели</translation>
@@ -1802,6 +1804,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8722229818691036192">Налози на овом уређају</translation>
 <translation id="8722649775263832315">Додирните или истакните да бисте претраживали помоћу Google објектива</translation>
 <translation id="8723088494871522141">Сакриј „Рецензије производа за вас“</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} картица}one{{COUNT} картица}few{{COUNT} картице}other{{COUNT} картица}}</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8728922029615312208">Затвори све</translation>
 <translation id="8730621377337864115">Готово</translation>

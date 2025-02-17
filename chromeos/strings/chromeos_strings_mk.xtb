@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Прекинувач за распоред</translation>
 <translation id="2244834438220057800">зелена</translation>
 <translation id="225692081236532131">Статус на активирање</translation>
-<translation id="2265792117169966196">Изберете и преземете го моделот за транскрипции на <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Додајте слика од екранот</translation>
 <translation id="2268044343513325586">Подобри</translation>
 <translation id="2271469253353559191">Распоред за темен режим</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Не можете да го тестирате уредот. Префрлете се на режим за лаптоп за да тестирате.</translation>
 <translation id="3916998944874125962">снимање слика од екранот</translation>
 <translation id="3923184630988645767">Интернет</translation>
-<translation id="3924445055519423964">Кликнете за да се резимира веб-страницата/PDF-датотеката</translation>
 <translation id="3932043219784172185">Нема поврзан уред</translation>
 <translation id="3934185438132762746">Неназначено <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Неуспешно отворање на хостот</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
 <translation id="4483498983731992167">Не може да се создаде транскрипција</translation>
 <translation id="4486524074141928967">Ќе се одјавите во <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Отворете го изборот на јазик на транскрипција</translation>
 <translation id="4500722292849917410">Кратенката не е достапна. Притиснете нова кратенка со копче модификатор (Ctrl, Alt, Shift или <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Боја на интерфејсот</translation>
 <translation id="4503223151711056411">Стрелка налево</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Страници</translation>
 <translation id="4989542687859782284">Недостапни</translation>
 <translation id="4999333166442584738">Скриј го извештајот</translation>
-<translation id="5005695757087124131">Кликнете за да се поедностави избраниот текст</translation>
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Боја на темата</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259">Моделот за транскрипции на <ph name="LANGUAGE_NAME" /> е преземен <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не може да се оневозможи или отстрани ова APN. Уверете се дека овозможените APN од тип <ph name="ATTACH" /> се оневозможени или отстранети.</translation>
-<translation id="7453118953486228603">Кликнете за да се резимира избраниот текст</translation>
 <translation id="7458970041932198923">Поврзете се на мрежа и повторно вчитајте ја страницата за да ги прегледате и поставите аватарите.</translation>
 <translation id="7469648432129124067">Откриен е портал</translation>
 <translation id="7481312909269577407">Напред</translation>

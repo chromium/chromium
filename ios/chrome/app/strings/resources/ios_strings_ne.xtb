@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">कुनै परिवर्तन गरिएका खण्डमा समूहमा सामेल सबै जना उक्त परिवर्तन देख्न सक्छन्</translation>
 <translation id="2755595981383829244">तपाईं अब सामग्रीसम्बन्धी सूचनाहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="2761788987260570878">आफ्नो खोजको फोटो खिच्नुहोस्</translation>
+<translation id="2761898608071930085">अर्को खाता प्रयोग गर्नुहोस्</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2772667768515195373">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="USER_EMAIL" />) मा सेभ गरिन्छ।</translation>
 <translation id="2773344962924806829">इमेल नोटिफिकेसनहरू</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428634594422941299">बुझेँ</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) सेभ गर्ने ठाउँ छनौट गर्नुहोस्</translation>
+<translation id="8434837876193928924">ट्याब समूहसम्बन्धी विवरणहरू</translation>
 <translation id="8438566539970814960">खोज तथा ब्राउजिङलाई अझ राम्रो बनाउनुहोस्</translation>
 <translation id="8439758443371991593">"रिडिङ लिस्टमा हाल्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="8449869326050867919">पासवर्ड सेयर गरिएको छ</translation>
@@ -1801,6 +1803,7 @@
 <translation id="8722229818691036192">यो डिभाइसमा लिंक गरिएका खाताहरू</translation>
 <translation id="8722649775263832315">Google लेन्स प्रयोग गरेर कुनै पनि कुरा खोज्न ट्याप वा हाइलाइट गर्नुहोस्</translation>
 <translation id="8723088494871522141">"उत्पादनसम्बन्धी समीक्षाहरू" कार्ड लुकाउनुहोस्</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} ट्याब}other{{COUNT} वटा ट्याब}}</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8728922029615312208">सबै बन्द गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>

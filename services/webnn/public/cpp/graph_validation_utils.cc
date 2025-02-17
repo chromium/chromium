@@ -30,6 +30,16 @@ namespace webnn {
 
 namespace {
 
+// The error message labels for corresponding operands.
+static constexpr char kConditionParam[] = "condition";
+static constexpr char kFalseValueParam[] = "falseValue";
+static constexpr char kIndicesParam[] = "indices";
+static constexpr char kScaleParam[] = "scale";
+static constexpr char kSlopeParam[] = "slope";
+static constexpr char kTrueValueParam[] = "trueValue";
+static constexpr char kUpdatesParam[] = "updates";
+static constexpr char kZeroPointParam[] = "zeroPoint";
+
 // Calculate the output size for conv2d based on WebNN spec:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
 // Return the calculated output size if no error.
@@ -843,6 +853,8 @@ ValidateCumulativeSumAndInferOutput(const ContextProperties& context_properties,
 // This helper method is intended to validate scale and zero_point
 // operands of quantizeLinear and dequantizeLinear against the input
 // operand.
+// TODO(crbug.com/396176047): Make scale and zero_point's rank match with
+// input.
 base::expected<void, std::string>
 ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
     base::span<const uint32_t> input_shape,
@@ -885,13 +897,22 @@ ValidateDequantizeLinearAndInferOutput(
   RETURN_IF_ERROR(ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
       input.shape(), scale.shape(), zero_point.shape(), label));
 
-  if (!context_properties.data_type_limits.dequantize_linear_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.dequantize_linear_input.Supports(
+          input)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            input.data_type(),
+        NotSupportedInputArgumentError(
+            input,
             context_properties.data_type_limits.dequantize_linear_input)));
+  }
+
+  if (!context_properties.data_type_limits.dequantize_linear_zero_point
+           .Supports(zero_point)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedArgumentError(
+            kZeroPointParam, zero_point,
+            context_properties.data_type_limits.dequantize_linear_zero_point)));
   }
 
   if (input.data_type() != zero_point.data_type()) {
@@ -899,13 +920,12 @@ ValidateDequantizeLinearAndInferOutput(
         label, "The data type of input and zero point must be the same."));
   }
 
-  static constexpr char kScaleParam[] = "scale";
-  if (!context_properties.data_type_limits.dequantize_linear_scale.Has(
-          scale.data_type())) {
+  if (!context_properties.data_type_limits.dequantize_linear_scale.Supports(
+          scale)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedArgumentTypeError(
-            kScaleParam, scale.data_type(),
+        NotSupportedArgumentError(
+            kScaleParam, scale,
             context_properties.data_type_limits.dequantize_linear_scale)));
   }
 
@@ -1318,7 +1338,6 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
                    context_properties.data_type_limits.gather_input)));
   }
 
-  static constexpr char kIndicesParam[] = "indices";
   if (!context_properties.data_type_limits.gather_indices.Has(
           indices.data_type())) {
     return base::unexpected(ErrorWithLabel(
@@ -1376,7 +1395,6 @@ ValidateGatherElementsAndInferOutput(
                    context_properties.data_type_limits.gather_elements_input)));
   }
 
-  static constexpr char kIndicesParam[] = "indices";
   if (!context_properties.data_type_limits.gather_elements_indices.Has(
           indices.data_type())) {
     return base::unexpected(ErrorWithLabel(
@@ -1431,7 +1449,7 @@ base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
     return base::unexpected(
         ErrorWithLabel(label, "The input should not be a scalar."));
   }
-  static constexpr char kIndicesParam[] = "indices";
+
   if (!context_properties.data_type_limits.gather_nd_indices.Has(
           indices.data_type())) {
     return base::unexpected(ErrorWithLabel(
@@ -2178,12 +2196,11 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
 
   const auto output_type = inputs[0].data_type();
 
-  static constexpr char kInputsParam[] = "inputs";
   if (!context_properties.data_type_limits.concat_inputs.Has(output_type)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentTypeError(
-                   kInputsParam, output_type,
-                   context_properties.data_type_limits.concat_inputs)));
+        label,
+        NotSupportedInputArgumentTypeError(
+            output_type, context_properties.data_type_limits.concat_inputs)));
   }
 
   // The loop skips the first input to avoid repeated checks.
@@ -2237,12 +2254,19 @@ base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
     const OperandDescriptor& input,
     const OperandDescriptor& slope,
     std::string_view label) {
-  if (!context_properties.data_type_limits.prelu_input.Has(input.data_type())) {
+  if (!context_properties.data_type_limits.prelu_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.prelu_input)));
+  }
+
+  if (!context_properties.data_type_limits.prelu_input.Supports(slope)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kSlopeParam, slope,
                    context_properties.data_type_limits.prelu_input)));
   }
+
   if (input.data_type() != slope.data_type()) {
     return base::unexpected(ErrorWithLabel(
         label, "The data type of slope doesn't match the data type of input."));
@@ -2270,11 +2294,19 @@ ValidateQuantizeLinearAndInferOutput(
   RETURN_IF_ERROR(ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
       input.shape(), scale.shape(), zero_point.shape(), label));
 
-  if (!context_properties.data_type_limits.quantize_linear_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.quantize_linear_input.Supports(
+          input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
+        label,
+        NotSupportedInputArgumentError(
+            input, context_properties.data_type_limits.quantize_linear_input)));
+  }
+
+  if (!context_properties.data_type_limits.quantize_linear_input.Supports(
+          scale)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kScaleParam, scale,
                    context_properties.data_type_limits.quantize_linear_input)));
   }
 
@@ -2283,12 +2315,12 @@ ValidateQuantizeLinearAndInferOutput(
         label, "The data type of input and scale must be the same."));
   }
 
-  if (!context_properties.data_type_limits.quantize_linear_zero_point.Has(
-          zero_point.data_type())) {
+  if (!context_properties.data_type_limits.quantize_linear_zero_point.Supports(
+          zero_point)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            zero_point.data_type(),
+        NotSupportedArgumentError(
+            kZeroPointParam, zero_point,
             context_properties.data_type_limits.quantize_linear_zero_point)));
   }
   // The data type of zero_point determines the output type.
@@ -2518,7 +2550,6 @@ ValidateScatterElementsAndInferOutput(
             context_properties.data_type_limits.scatter_elements_input)));
   }
 
-  static constexpr char kIndicesParam[] = "indices";
   if (!context_properties.data_type_limits.scatter_elements_indices.Supports(
           indices)) {
     return base::unexpected(ErrorWithLabel(
@@ -2581,7 +2612,6 @@ base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
             input, context_properties.data_type_limits.scatter_nd_input)));
   }
 
-  static constexpr char kIndicesParam[] = "indices";
   if (!context_properties.data_type_limits.scatter_nd_indices.Supports(
           indices)) {
     return base::unexpected(ErrorWithLabel(
@@ -2590,7 +2620,6 @@ base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
                    context_properties.data_type_limits.scatter_nd_indices)));
   }
 
-  static constexpr char kUpdatesParam[] = "updates";
   if (!context_properties.data_type_limits.scatter_nd_updates.Supports(
           updates)) {
     return base::unexpected(ErrorWithLabel(
@@ -2665,7 +2694,6 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
     const OperandDescriptor& true_value,
     const OperandDescriptor& false_value,
     std::string_view label) {
-  static constexpr char kConditionParam[] = "condition";
   if (!context_properties.data_type_limits.where_condition.Supports(
           condition)) {
     return base::unexpected(ErrorWithLabel(
@@ -2674,7 +2702,6 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
                    context_properties.data_type_limits.where_condition)));
   }
 
-  static constexpr char kTrueValueParam[] = "trueValue";
   if (!context_properties.data_type_limits.where_value.Supports(true_value)) {
     return base::unexpected(ErrorWithLabel(
         label, NotSupportedArgumentError(
@@ -2682,7 +2709,6 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
                    context_properties.data_type_limits.where_value)));
   }
 
-  static constexpr char kFalseValueParam[] = "falseValue";
   if (!context_properties.data_type_limits.where_value.Supports(false_value)) {
     return base::unexpected(ErrorWithLabel(
         label, NotSupportedArgumentError(

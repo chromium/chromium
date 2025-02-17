@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

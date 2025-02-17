@@ -119,7 +119,12 @@ BASE_FEATURE(kWaylandLinuxDrmSyncobj,
 // Controls whether support for Wayland's per-surface scaling is enabled.
 BASE_FEATURE(kWaylandPerSurfaceScale,
              "WaylandPerSurfaceScale",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_LINUX)
+);
 
 // Controls whether Wayland text-input-v3 protocol support is enabled.
 BASE_FEATURE(kWaylandTextInputV3,

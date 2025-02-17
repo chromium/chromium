@@ -92,7 +92,6 @@ source_set("webrtc") {
     "//base",
     "//build:android_buildflags",
     "//build:buildflag_header_h",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/common:mojo_bindings",

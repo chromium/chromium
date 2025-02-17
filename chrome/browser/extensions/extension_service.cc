@@ -1074,10 +1074,8 @@ void ExtensionService::CheckManagementPolicy() {
     // for update.
     ExtensionUpdater::CheckParams to_recheck;
     for (const auto& extension : registry_->disabled_extensions()) {
-      DisableReasonSet disable_reasons =
-          extension_prefs_->GetDisableReasons(extension->id());
-      if (disable_reasons.size() == 1 &&
-          disable_reasons.contains(
+      if (extension_prefs_->HasOnlyDisableReason(
+              extension->id(),
               disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY)) {
         // The minimum version check is the only thing holding this extension
         // back, so check if it can be updated to fix that.

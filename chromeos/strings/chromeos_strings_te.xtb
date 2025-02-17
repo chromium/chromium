@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">లేఅవుట్ స్విచ్</translation>
 <translation id="2244834438220057800">ఆకుపచ్చ రంగు</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> మాటల టైపింగ్ మోడల్‌ను ఎంచుకుని, డౌన్‌లోడ్ చేయండి</translation>
 <translation id="2267285889943769271">స్క్రీన్‌షాట్‌ను జోడించండి</translation>
 <translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
 <translation id="2271469253353559191">డార్క్ మోడ్ షెడ్యూల్</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">పరికరాన్ని పరీక్షించడం సాధ్యపడదు. పరీక్షించడానికి ల్యాప్‌టాప్ మోడ్‌కి మారండి.</translation>
 <translation id="3916998944874125962">స్క్రీన్‌షాట్‌ను తీస్తుంది</translation>
 <translation id="3923184630988645767">డేటా వినియోగం</translation>
-<translation id="3924445055519423964">వెబ్‌పేజీ/PDF ఫైల్‌ను సమ్మరైజ్ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="3932043219784172185">పరికరం ఏదీ కనెక్ట్ చేయబడలేదు</translation>
 <translation id="3934185438132762746">కేటాయించని <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">హోస్ట్‌ను పరిష్కరించడంలో విఫలమైంది</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="4483498983731992167">టైప్ చేసిన మాటల ఫైల్‌ను క్రియేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="4486524074141928967">మీరు <ph name="TIME" />‌కు సైన్ అవుట్ అవుతారు</translation>
-<translation id="4487890678161807486">మాటల టైపింగ్ భాష సెలెక్టర్‌ను తెరవండి</translation>
 <translation id="4500722292849917410">షార్ట్‌కట్ అందుబాటులో లేదు. మోడిఫయర్ కీని (ctrl, alt, shift, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4500966230243561393">ఇంటర్‌ఫేస్ రంగు</translation>
 <translation id="4503223151711056411">ఎడమ వైపు బాణం</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">పేజీలు</translation>
 <translation id="4989542687859782284">అందుబాటులో లేనివి</translation>
 <translation id="4999333166442584738">రిపోర్ట్‌ను దాచు</translation>
-<translation id="5005695757087124131">ఎంచుకున్న టెక్స్ట్‌ను సింప్లిఫై చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="500920857929044050">పరీక్షను ఆపండి</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">రూపం రంగు</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> మాటల టైపింగ్ మోడల్ <ph name="PROGRESS_PERCENTAGE" />% డౌన్‌లోడ్ అయింది</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ఈ APNను డిజేబుల్ చేయడం లేదా తీసివేయడం సాధ్యపడదు. ఎనేబుల్ చేసి ఉన్న <ph name="ATTACH" /> APNలు డిసేబుల్ చేయబడ్డాయని లేదా తీసివేయబడ్డాయని నిర్ధారించుకోండి.</translation>
-<translation id="7453118953486228603">ఎంచుకున్న టెక్స్ట్‌ను సమ్మరైజ్ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="7458970041932198923">అవతార్‌లను చూసి, వాటిని సెట్ చేయడానికి దయచేసి నెట్‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="7469648432129124067">పోర్టల్ గుర్తించబడింది</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>

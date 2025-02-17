@@ -23,8 +23,6 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/system_web_apps/apps/personalization_app",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chromeos/extensions/vpn_provider",
   "+chrome/browser/lifetime",
   "+chrome/browser/media/router/discovery/access_code",
@@ -50,3 +48,10 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "system_tray_client_impl_(browser|unit)test\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
+}

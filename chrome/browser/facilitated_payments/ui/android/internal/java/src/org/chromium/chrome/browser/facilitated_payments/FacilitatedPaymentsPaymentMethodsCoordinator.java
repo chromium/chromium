@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.UI_EVENT_LISTENER;
@@ -98,7 +97,6 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
         return new PropertyModel.Builder(FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                 .with(VISIBLE_STATE, HIDDEN)
                 .with(SCREEN, UNINITIALIZED)
-                .with(DISMISS_HANDLER, mediator::onDismissed)
                 .with(UI_EVENT_LISTENER, mediator::onUiEvent)
                 .build();
     }

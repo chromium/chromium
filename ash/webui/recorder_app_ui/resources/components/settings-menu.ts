@@ -46,12 +46,14 @@ import {HELP_URL} from '../core/url_constants.js';
 import {
   assert,
   assertExhaustive,
+  assertExists,
   assertInstanceof,
   assertNotReached,
 } from '../core/utils/assert.js';
 import {stopPropagation} from '../core/utils/event_handler.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
+import {CraIconButton} from './cra/cra-icon-button.js';
 import {withTooltip} from './directives/with-tooltip.js';
 import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 import {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
@@ -169,6 +171,8 @@ export class SettingsMenu extends ReactiveLitElement {
   private readonly platformHandler = usePlatformHandler();
 
   private readonly dialog = createRef<CraDialog>();
+
+  private readonly subpageButton = createRef<CraIconButton>();
 
   private readonly summaryDownloadRequested = signal(false);
 
@@ -342,6 +346,7 @@ export class SettingsMenu extends ReactiveLitElement {
           shape="circle"
           aria-label=${i18n.settingsOptionsLanguageSubpageButtonAriaLabel}
           @click=${this.onLanguagePickerExpand}
+          ${ref(this.subpageButton)}
         >
           <cra-icon slot="icon" name="chevron_right"></cra-icon>
         </cra-icon-button>
@@ -586,6 +591,12 @@ export class SettingsMenu extends ReactiveLitElement {
   private onSubpageCloseClick() {
     assert(this.transcriptionLanguageExpanded.value);
     this.transcriptionLanguageExpanded.value = false;
+    this.updateComplete.then(() => {
+      const subpageButton = assertExists(this.subpageButton.value);
+      subpageButton.updateComplete.then(() => {
+        subpageButton.focus();
+      });
+    });
   }
 
   private renderSettingsBody(): RenderResult {

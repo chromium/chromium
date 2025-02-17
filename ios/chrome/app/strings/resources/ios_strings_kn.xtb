@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">ಮಾಡಿದ ಬದಲಾವಣೆಗಳನ್ನು ಗುಂಪಿನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರೂ ನೋಡುತ್ತಾರೆ</translation>
 <translation id="2755595981383829244">ಈಗ ನೀವು ಕಂಟೆಂಟ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸುತ್ತೀರಿ</translation>
 <translation id="2761788987260570878">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಫೋಟೋವನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
+<translation id="2761898608071930085">ಮತ್ತೊಂದು ಖಾತೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
 <translation id="2772667768515195373">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="USER_EMAIL" /> ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2773344962924806829">ಇಮೇಲ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8428634594422941299">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) ಅನ್ನು ಎಲ್ಲಿ ಸೇವ್ ಮಾಡಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="8434837876193928924">ಟ್ಯಾಬ್ ಗುಂಪಿನ ವಿವರಗಳು</translation>
 <translation id="8438566539970814960">ಹುಡುಕಾಟಗಳನ್ನು ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಉತ್ತಮಗೊಳಿಸುವಂತೆ ಮಾಡಿ</translation>
 <translation id="8439758443371991593">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8449869326050867919">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
@@ -1801,6 +1803,7 @@
 <translation id="8722229818691036192">ಈ ಸಾಧನದಲ್ಲಿನ ಖಾತೆಗಳು</translation>
 <translation id="8722649775263832315">Google Lens ಮೂಲಕ ಏನನ್ನಾದರೂ ಹುಡುಕಲು ಟ್ಯಾಪ್ ಮಾಡಿ ಅಥವಾ ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="8723088494871522141">"ನಿಮಗಾಗಿ ಉತ್ಪನ್ನ ವಿಮರ್ಶೆಗಳು" ಅನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} ಟ್ಯಾಬ್}one{{COUNT} ಟ್ಯಾಬ್‌ಗಳು}other{{COUNT} ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8728922029615312208">ಎಲ್ಲವನ್ನೂ ಮುಚ್ಚಿರಿ</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
