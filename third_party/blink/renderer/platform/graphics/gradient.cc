@@ -147,6 +147,20 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
     Color color = stops_[i].color;
     color.ConvertToColorSpace(color_space_interpolation_space_);
     if (color.HasNoneParams()) {
+      if (stops_.size() == 1) {
+        // If there is only one stop and it has none parameters, we don't need
+        // to resolve missing components at all, but for logic reuse, we still
+        // call `ResolveStopColorWithMissingParams` with a dummy three
+        // components all none color.
+        pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
+        colors.push_back(ResolveStopColorWithMissingParams(
+            color,
+            Color::FromColorSpace(color.GetColorSpace(), std::nullopt,
+                                  std::nullopt, std::nullopt),
+            color_space_interpolation_space_, color_filter_.get()));
+        break;
+      }
+
       if (i != 0) {
         // Fill left
         pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));

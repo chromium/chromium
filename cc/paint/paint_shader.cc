@@ -590,7 +590,7 @@ void PaintShader::SetColorsAndPositions(const SkColor4f* colors,
                                         int count) {
 #if DCHECK_IS_ON()
   static const int kMaxShaderColorsSupported = 10000;
-  DCHECK_GE(count, 2);
+  DCHECK_GE(count, 1);
   DCHECK_LE(count, kMaxShaderColorsSupported);
 #endif
   colors_.assign(colors, colors + count);
