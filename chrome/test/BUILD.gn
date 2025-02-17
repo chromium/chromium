@@ -2386,6 +2386,7 @@ if (!is_android) {
       "//components/resources",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/browser",
+      "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:client_side_detection_images_cache",
       "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/browser:safe_browsing_service",
@@ -3714,10 +3715,7 @@ if (!is_android) {
     }
 
     if (safe_browsing_mode != 0) {
-      deps += [
-        "//components/safe_browsing/content/browser:client_side_detection",
-        "//components/safe_browsing/content/common/proto:download_file_types_proto",
-      ]
+      deps += [ "//components/safe_browsing/content/common/proto:download_file_types_proto" ]
     }
 
     if (is_linux) {
@@ -6702,6 +6700,7 @@ test("unit_tests") {
     "//components/resources",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/browser:client_side_detection_images_cache",
     "//components/safe_browsing/content/browser:client_side_detection_service",
     "//components/safe_browsing/content/browser/notification_content_detection",
@@ -9189,8 +9188,6 @@ test("unit_tests") {
 
     if (safe_browsing_mode == 1) {
       sources += [ "../browser/extensions/blocklist_unittest.cc" ]
-      deps +=
-          [ "//components/safe_browsing/content/browser:client_side_detection" ]
     }
   }
 

@@ -59,6 +59,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
@@ -139,6 +140,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
@@ -274,12 +276,10 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
-#include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
-#include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #endif
 
 using content::WebContents;
@@ -514,6 +514,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         safe_browsing::AsyncCheckTracker::
             IsPlatformEligibleForSyncCheckerCheckAllowlist());
   }
+#endif
   // SafeBrowsingTabObserver creates a ClientSideDetectionHost, which observes
   // events from PermissionRequestManager and AsyncCheckTracker in its
   // constructor. Therefore, PermissionRequestManager and AsyncCheckTracker need
@@ -521,9 +522,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   safe_browsing::SafeBrowsingTabObserver::CreateForWebContents(
       web_contents,
       std::make_unique<safe_browsing::ChromeSafeBrowsingTabObserverDelegate>());
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::TriggerCreator::MaybeCreateTriggersForWebContents(
       profile, web_contents);
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);
   SearchEngineTabHelper::CreateForWebContents(web_contents);
   if (site_engagement::SiteEngagementService::IsEnabled()) {
