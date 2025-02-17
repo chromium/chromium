@@ -142,7 +142,7 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
       MakeGarbageCollected<AILanguageDetectorCreateTask>(
           GetExecutionContext(), task_runner_, resolver,
           language_detection_model_, options);
-  GetLangaugeDetectionDriverRemote()->GetLanguageDetectionModel(WTF::BindOnce(
+  GetLanguageDetectionDriverRemote()->GetLanguageDetectionModel(WTF::BindOnce(
       [](RejectOnDestructionHelper<AILanguageDetector> resolver_holder,
          AILanguageDetectorCreateTask* create_task, base::File model_file) {
         auto resolver(resolver_holder.Take());
@@ -163,7 +163,7 @@ AILanguageDetectorFactory::capabilities(ScriptState* script_state) {
   // The call may silently fail on mojo connection errors. The
   // RejectOnDestructionHelper class is created to reject the promise if
   // such error happens.
-  GetLangaugeDetectionDriverRemote()->GetLanguageDetectionModelStatus(
+  GetLanguageDetectionDriverRemote()->GetLanguageDetectionModelStatus(
       WTF::BindOnce(
           [](RejectOnDestructionHelper<AILanguageDetectorCapabilities> resolver,
              AILanguageDetectorCapabilities::LanguageDetectionModelStatus
@@ -178,7 +178,7 @@ AILanguageDetectorFactory::capabilities(ScriptState* script_state) {
 
 HeapMojoRemote<
     language_detection::mojom::blink::ContentLanguageDetectionDriver>&
-AILanguageDetectorFactory::GetLangaugeDetectionDriverRemote() {
+AILanguageDetectorFactory::GetLanguageDetectionDriverRemote() {
   if (!language_detection_driver_.is_bound()) {
     if (GetExecutionContext()) {
       GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(

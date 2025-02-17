@@ -39,7 +39,7 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
 
   HeapMojoRemote<
       language_detection::mojom::blink::ContentLanguageDetectionDriver>&
-  GetLangaugeDetectionDriverRemote();
+  GetLanguageDetectionDriverRemote();
 
  private:
   class AILanguageDetectorCreateTask
