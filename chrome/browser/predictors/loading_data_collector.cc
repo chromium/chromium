@@ -353,9 +353,6 @@ void LoadingDataCollector::RecordPageDestroyed(
 }
 
 void LoadingDataCollector::CleanupAbandonedNavigations() {
-  if (stats_collector_)
-    stats_collector_->CleanupAbandonedStats();
-
   static const base::TimeDelta max_navigation_age =
       base::Seconds(config_.max_navigation_lifetime_seconds);
 
