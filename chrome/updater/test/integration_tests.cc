@@ -186,7 +186,7 @@ struct TestApp {
 
   std::string GetInstallCommandLineArgs(bool install_v1) const {
 #if BUILDFLAG(IS_WIN)
-    return base::WideToASCII(
+    return base::WideToUTF8(
         GetInstallCommandSwitches(install_v1).GetCommandLineString());
 #else
     return GetInstallCommandSwitches(install_v1).GetCommandLineString();
@@ -677,7 +677,7 @@ class IntegrationTest : public ::testing::Test {
         base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
                           GetAppClientsKey(appid).c_str(), Wow6432(KEY_READ))
             .ReadValue(kRegValuePV, &pv));
-    EXPECT_EQ(pv, base::ASCIIToWide(expected_version.GetString()));
+    EXPECT_EQ(pv, base::UTF8ToWide(expected_version.GetString()));
 #else
     const base::FilePath app_json_path =
         GetInstallDirectory(GetUpdaterScopeForTesting())
@@ -3023,7 +3023,7 @@ TEST_P(IntegrationTestDeviceManagement, IPolicyStatus) {
                                              : CLSID_PolicyStatusUserClass,
                            nullptr, CLSCTX_ALL, IID_PPV_ARGS(&unknown)));
 
-    const base::win::ScopedBstr app_id(base::ASCIIToWide(kApp1.appid));
+    const base::win::ScopedBstr app_id(base::UTF8ToWide(kApp1.appid));
     Microsoft::WRL::ComPtr<IPolicyStatus4> policy_status;
     ASSERT_TRUE(SUCCEEDED(unknown.CopyTo(is_system_install
                                              ? __uuidof(IPolicyStatus4System)
@@ -3079,7 +3079,7 @@ TEST_P(IntegrationTestDeviceManagement, IPolicyStatus) {
                                VARIANT_FALSE);
     }
     {
-      const base::win::ScopedBstr app_id2(base::ASCIIToWide(kApp2.appid));
+      const base::win::ScopedBstr app_id2(base::UTF8ToWide(kApp2.appid));
       Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
       EXPECT_HRESULT_SUCCEEDED(policy_status->get_effectivePolicyForAppUpdates(
           app_id2.Get(), &policy));
@@ -5532,7 +5532,7 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
     ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
     if (!GetTestCase().installer_cmd_line.empty()) {
       const std::wstring post_install_launch_command_line =
-          base::ASCIIToWide(GetTestCase().installer_cmd_line);
+          base::UTF8ToWide(GetTestCase().installer_cmd_line);
       EXPECT_EQ(test::IsProcessRunning(post_install_launch_command_line),
                 GetTestCase().interactive_install || always_launch_cmd);
       EXPECT_TRUE(test::KillProcesses(post_install_launch_command_line, 0));

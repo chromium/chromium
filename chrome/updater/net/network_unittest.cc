@@ -227,7 +227,7 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
 TEST_F(UpdaterDownloadTest, URLMonFetcher) {
   EXPECT_FALSE(base::PathExists(dest_));
   EXPECT_HRESULT_SUCCEEDED(
-      ::URLDownloadToFile(nullptr, base::ASCIIToWide(gurl_.spec()).c_str(),
+      ::URLDownloadToFile(nullptr, base::UTF8ToWide(gurl_.spec()).c_str(),
                           dest_.value().c_str(), 0, nullptr));
   EXPECT_TRUE(base::PathExists(dest_));
 }

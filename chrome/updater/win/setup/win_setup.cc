@@ -121,7 +121,7 @@ int Setup(UpdaterScope scope) {
                                          true);
     install_list->AddSetRegValueWorkItem(
         key, key_path, KEY_WOW64_32KEY, kRegValueName,
-        base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
+        base::UTF8ToWide(PRODUCT_FULLNAME_STRING), true);
   }
 
   const base::FilePath updater_exe = GetExecutableRelativePath();

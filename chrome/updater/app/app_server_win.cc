@@ -51,7 +51,7 @@ namespace updater {
 namespace {
 
 std::wstring GetCOMGroup(const std::wstring& prefix, UpdaterScope scope) {
-  return base::StrCat({prefix, base::ASCIIToWide(UpdaterScopeToString(scope))});
+  return base::StrCat({prefix, base::UTF8ToWide(UpdaterScopeToString(scope))});
 }
 
 std::wstring COMGroup(UpdaterScope scope) {
@@ -164,9 +164,9 @@ bool AddSwapGoogleUpdateWorkItems(UpdaterScope scope,
   list->AddSetRegValueWorkItem(
       root, GetAppClientStateKey(kLegacyGoogleUpdateAppID), KEY_WOW64_32KEY,
       kRegValuePV, kUpdaterVersionUtf16, true);
-  list->AddSetRegValueWorkItem(
-      root, google_update_appid_key, KEY_WOW64_32KEY, kRegValueName,
-      base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
+  list->AddSetRegValueWorkItem(root, google_update_appid_key, KEY_WOW64_32KEY,
+                               kRegValueName,
+                               base::UTF8ToWide(PRODUCT_FULLNAME_STRING), true);
   list->AddSetRegValueWorkItem(
       root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
       [scope, &updater_path] {

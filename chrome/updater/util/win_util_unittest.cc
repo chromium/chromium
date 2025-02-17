@@ -69,7 +69,7 @@ constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
 
 TEST(WinUtil, GetServiceName) {
   for (const bool is_internal_service : {true, false}) {
-    EXPECT_EQ(base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+    EXPECT_EQ(base::StrCat({base::UTF8ToWide(PRODUCT_FULLNAME_STRING),
                             is_internal_service ? kWindowsInternalServiceName
                                                 : kWindowsServiceName,
                             kUpdaterVersionUtf16}),
@@ -381,7 +381,7 @@ TEST(WinUtil, IsGuid) {
 
 TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
   constexpr int kRunEntries = 6;
-  const std::wstring kRunEntryPrefix(base::ASCIIToWide(test::GetTestName()));
+  const std::wstring kRunEntryPrefix(base::UTF8ToWide(test::GetTestName()));
 
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
@@ -407,7 +407,7 @@ TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
 
 TEST(WinUtil, DeleteRegValue) {
   constexpr int kRegValues = 6;
-  const std::wstring kRegValuePrefix(base::ASCIIToWide(test::GetTestName()));
+  const std::wstring kRegValuePrefix(base::UTF8ToWide(test::GetTestName()));
 
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
@@ -432,7 +432,7 @@ TEST(WinUtil, ForEachServiceWithPrefix) {
   }
 
   constexpr int kNumServices = 6;
-  const std::wstring kServiceNamePrefix(base::ASCIIToWide(test::GetTestName()));
+  const std::wstring kServiceNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumServices; ++count) {
     std::wstring service_name(kServiceNamePrefix);
@@ -458,7 +458,7 @@ TEST(WinUtil, DeleteService) {
   }
 
   constexpr int kNumServices = 6;
-  const std::wstring kServiceNamePrefix(base::ASCIIToWide(test::GetTestName()));
+  const std::wstring kServiceNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumServices; ++count) {
     std::wstring service_name(kServiceNamePrefix);
@@ -481,14 +481,14 @@ TEST(WinUtil, GetAppAPValue) {
   EXPECT_EQ(ap, "");
 
   base::win::RegKey client_state_key(CreateAppClientStateKey(
-      GetUpdaterScopeForTesting(), base::ASCIIToWide(kTestAppID)));
+      GetUpdaterScopeForTesting(), base::UTF8ToWide(kTestAppID)));
   EXPECT_EQ(client_state_key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
 
   ap = GetAppAPValue(GetUpdaterScopeForTesting(), kTestAppID);
   EXPECT_EQ(ap, "TestAP");
 
   DeleteAppClientStateKey(GetUpdaterScopeForTesting(),
-                          base::ASCIIToWide(kTestAppID));
+                          base::UTF8ToWide(kTestAppID));
 }
 
 struct WinUtilGetRegKeyContentsTestCase {
