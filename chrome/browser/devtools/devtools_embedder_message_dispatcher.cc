@@ -390,6 +390,11 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandler("removeFileSystem", &Delegate::RemoveFileSystem, delegate);
   d->RegisterHandler("upgradeDraggedFileSystemPermissions",
                      &Delegate::UpgradeDraggedFileSystemPermissions, delegate);
+  d->RegisterHandlerWithCallback("connectAutomaticFileSystem",
+                                 &Delegate::ConnectAutomaticFileSystem,
+                                 delegate);
+  d->RegisterHandler("disconnectAutomaticFileSystem",
+                     &Delegate::DisconnectAutomaticFileSystem, delegate);
   d->RegisterHandler("indexPath", &Delegate::IndexPath, delegate);
   d->RegisterHandlerWithCallback("loadNetworkResource",
                                  &Delegate::LoadNetworkResource, delegate);

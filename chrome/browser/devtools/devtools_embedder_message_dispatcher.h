@@ -59,6 +59,12 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RemoveFileSystem(const std::string& file_system_path) = 0;
     virtual void UpgradeDraggedFileSystemPermissions(
         const std::string& file_system_url) = 0;
+    virtual void ConnectAutomaticFileSystem(DispatchCallback callback,
+                                            const std::string& file_system_path,
+                                            const std::string& file_system_uuid,
+                                            bool add_if_missing) = 0;
+    virtual void DisconnectAutomaticFileSystem(
+        const std::string& file_system_path) = 0;
     virtual void IndexPath(int index_request_id,
                            const std::string& file_system_path,
                            const std::string& excluded_folders) = 0;

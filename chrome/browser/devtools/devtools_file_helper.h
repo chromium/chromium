@@ -67,6 +67,7 @@ class DevToolsFileHelper {
 
   ~DevToolsFileHelper();
 
+  using ConnectCallback = base::OnceCallback<void(bool)>;
   using SaveCallback = base::OnceCallback<void(const std::string&)>;
   using ShowInfoBarCallback =
       base::RepeatingCallback<void(const std::u16string&,
@@ -112,6 +113,22 @@ class DevToolsFileHelper {
       const std::string& file_system_url,
       const ShowInfoBarCallback& show_info_bar_callback);
 
+  // Attempts to automatically connect to the |file_system_path| (identified
+  // by path and |file_system_uuid|). If this is the first time that the
+  // |file_system_path| is being connected and |add_if_missing| is true, the
+  // user will be asked to grant permission to do so, and upon confirming,
+  // the |file_system_path| will be remembered in the profile.
+  // Invokes |connect_callback| with the result.
+  void ConnectAutomaticFileSystem(
+      const std::string& file_system_path,
+      const std::string& file_system_uuid,
+      bool add_if_missing,
+      const ShowInfoBarCallback& show_info_bar_callback,
+      ConnectCallback connect_callback);
+
+  // Disconnects the automatically connected |file_system_path|.
+  void DisconnectAutomaticFileSystem(const std::string& file_system_path);
+
   // Loads file system paths from prefs, grants permissions and registers
   // isolated file system for those of them that contain magic file and passes
   // FileSystem structs for registered file systems to |callback|.
@@ -141,6 +158,11 @@ class DevToolsFileHelper {
   void AddUserConfirmedFileSystem(const std::string& type,
                                   const base::FilePath& path,
                                   bool allowed);
+  void ConnectUserConfirmedAutomaticFileSystem(
+      ConnectCallback connect_callback,
+      const std::string& file_system_path,
+      const std::string& file_system_uuid,
+      bool allowed);
   void FailedToAddFileSystem(const std::string& error);
   void FileSystemPathsSettingChangedOnUI();
   void FilePathsChanged(const std::vector<std::string>& changed_paths,
@@ -155,6 +177,8 @@ class DevToolsFileHelper {
   PrefChangeRegistrar pref_change_registrar_;
   using PathToType = std::map<std::string, std::string>;
   PathToType file_system_paths_;
+  using PathToUUID = std::map<std::string, std::string>;
+  PathToUUID connected_automatic_file_systems_;
   std::unique_ptr<DevToolsFileWatcher, DevToolsFileWatcher::Deleter>
       file_watcher_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
