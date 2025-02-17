@@ -80,9 +80,6 @@ namespace {
 
 using base::test::RunOnceCallback;
 using test::CreateTestAddressFormData;
-using test::CreateTestCreditCardFormData;
-using test::CreateTestPersonalInformationFormData;
-using test::CreateTestUnclassifiedFormData;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyOf;
