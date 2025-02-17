@@ -631,8 +631,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Removes the used NoVarySearchCache entry from the NoVarySearchCache, sets
   // `use_no_vary_search_cache_` to false, and restarts the transaction from the
   // beginning.
-  int RestartWithoutNoVarySearchCache(RestartCacheEntryAction entry_action,
-                                      NoVarySearchUseResult restart_reason);
+  [[nodiscard]] int RestartWithoutNoVarySearchCache(
+      RestartCacheEntryAction entry_action,
+      NoVarySearchUseResult restart_reason);
 
   static std::string_view NoVarySearchUseResultToString(
       NoVarySearchUseResult result);
