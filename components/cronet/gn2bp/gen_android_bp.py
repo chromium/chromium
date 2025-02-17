@@ -55,8 +55,6 @@ CPP_VERSION = 'c++17'
 
 EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
 
-CRONET_API_MODULE_NAME = "cronet_aml_api_java"
-
 # All module names are prefixed with this string to avoid collisions.
 module_prefix = 'cronet_aml_'
 
