@@ -8,14 +8,22 @@ import './settings-row.js';
 import './spoken-message.js';
 import './language-list.js';
 
-import {css, html} from 'chrome://resources/mwc/lit/index.js';
+import {
+  createRef,
+  css,
+  html,
+  PropertyValues,
+  ref,
+} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {LanguageCode} from '../core/soda/language_info.js';
 import {setTranscriptionLanguage} from '../core/state/transcription.js';
+import {assertExists} from '../core/utils/assert.js';
 
+import {CraButton} from './cra/cra-button.js';
 import {withTooltip} from './directives/with-tooltip.js';
 
 /**
@@ -84,6 +92,8 @@ export class LanguagePicker extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
+  private readonly backButton = createRef<CraButton>();
+
   private onCloseClick() {
     this.dispatchEvent(new Event('close'));
   }
@@ -125,6 +135,13 @@ export class LanguagePicker extends ReactiveLitElement {
     `;
   }
 
+  protected override firstUpdated(_changedProperties: PropertyValues): void {
+    const backButton = assertExists(this.backButton.value);
+    backButton.updateComplete.then(() => {
+      backButton.focus();
+    });
+  }
+
   override render(): RenderResult {
     const selectedLanguage = this.platformHandler.getSelectedLanguage();
     return html`
@@ -136,8 +153,9 @@ export class LanguagePicker extends ReactiveLitElement {
             size="small"
             shape="circle"
             aria-label=${i18n.languagePickerBackButtonAriaLabel}
-            ${withTooltip(i18n.languagePickerBackButtonTooltip)}
             @click=${this.onCloseClick}
+            ${withTooltip(i18n.languagePickerBackButtonTooltip)}
+            ${ref(this.backButton)}
           >
             <cra-icon slot="icon" name="arrow_back"></cra-icon>
           </cra-icon-button>
