@@ -182,10 +182,12 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   page_action_icon_controller_->Init(params, this);
 
   bool create_extensions_container = true;
-  auto display_mode =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsElidedExtensionsMenu)
-          ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
-          : ExtensionsToolbarContainer::DisplayMode::kCompact;
+  auto display_mode = (base::FeatureList::IsEnabled(
+                           features::kDesktopPWAsElidedExtensionsMenu) ||
+                       // Extensions are not supported inside Isolated Web Apps.
+                       app_controller->IsIsolatedWebApp())
+                          ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
+                          : ExtensionsToolbarContainer::DisplayMode::kCompact;
 #if BUILDFLAG(IS_CHROMEOS)
   // Let the system web app decide if it needs to show the extensions container.
   // Use compact display mode because we do not render the app menu for system

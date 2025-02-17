@@ -35,6 +35,8 @@ class View;
 }  // namespace views
 
 namespace web_app {
+class BundledIsolatedWebApp;
+class IsolatedWebAppUrlInfo;
 struct WebAppInstallInfo;
 }  // namespace web_app
 
@@ -62,6 +64,9 @@ class WebAppFrameToolbarTestHelper {
       Browser* browser,
       std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       const GURL& start_url);
+  web_app::IsolatedWebAppUrlInfo InstallAndLaunchIsolatedWebApp(
+      Profile* profile,
+      web_app::BundledIsolatedWebApp* iwa);
 
   GURL LoadTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
@@ -113,6 +118,8 @@ class WebAppFrameToolbarTestHelper {
   void SetOriginTextLabelForTesting(const std::u16string& label_text);
 
  private:
+  void SetViews(Browser* app_browser);
+
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_ =
