@@ -389,11 +389,10 @@ StaticBitmapImageTransform::ConvertToColorSpace(
     FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source,
     sk_sp<SkColorSpace> color_space) {
-  const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
-  options.premultiply_alpha = info.alphaType() != kUnpremul_SkAlphaType;
+  options.premultiply_alpha = source->GetAlphaType() != kUnpremul_SkAlphaType;
   options.force_copy = true;
   options.dest_color_space = color_space;
   return Apply(flush_reason, source, options);
