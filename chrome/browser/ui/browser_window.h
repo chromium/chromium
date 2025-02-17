@@ -612,9 +612,9 @@ class BrowserWindow : public ui::BaseWindow,
   // of a full titlebar. This is only supported for desktop web apps.
   virtual bool IsBorderlessModeEnabled() const = 0;
 
-  // Notifies `BrowserView` about the resizable boolean having been set vith
+  // Notifies `BrowserView` about the resizable boolean having been set with
   // `window.setResizable(bool)` API.
-  virtual void OnCanResizeFromWebAPIChanged() = 0;
+  virtual void OnWebApiWindowResizableChanged() = 0;
 
   // Returns the overall resizability of the `BrowserView` when considering
   // both the value set by the `window.setResizable(bool)` API and browser's

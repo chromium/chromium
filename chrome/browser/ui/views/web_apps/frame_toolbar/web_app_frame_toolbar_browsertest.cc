@@ -1972,7 +1972,7 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
                       std::optional<bool> web_api_can_resize_expected) {
     EXPECT_EQ(helper()->browser_view()->CanResize(),
               browser_view_can_resize_expected);
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
+    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
               web_api_can_resize_expected);
 
 #if defined(USE_AURA)
@@ -2061,13 +2061,13 @@ IN_PROC_BROWSER_TEST_F(
 
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 
   // Navigates to the second page of the app.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2085,7 +2085,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 
   // Sets the resizability true for the second page.
   SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
@@ -2096,9 +2096,10 @@ IN_PROC_BROWSER_TEST_F(
   content::WaitForLoadStop(web_contents);
   // Reads the resizability from the BFCache if it's enabled. Otherwise null.
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+    EXPECT_FALSE(helper()->browser_view()->GetWebApiWindowResizable().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
+              std::nullopt);
   }
 
   // Navigates forward to the already visited second page.
@@ -2106,9 +2107,10 @@ IN_PROC_BROWSER_TEST_F(
   content::WaitForLoadStop(web_contents);
   // Reads the resizability from the BFCache if it's enabled. Otherwise null.
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+    EXPECT_TRUE(helper()->browser_view()->GetWebApiWindowResizable().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
+              std::nullopt);
   }
 }
 
@@ -2129,16 +2131,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(),
                                            GURL("http://www.google.com/")));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 
   // Returning to the original URL then reads the resizability from the BFCache
   // if it's enabled.
   web_contents->GetController().GoBack();
   content::WaitForLoadStop(web_contents);
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+    EXPECT_TRUE(helper()->browser_view()->GetWebApiWindowResizable().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
+              std::nullopt);
   }
 }
 

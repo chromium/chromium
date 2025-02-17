@@ -11418,8 +11418,8 @@ void WebContentsImpl::CancelPreviewByMojoBinderPolicy(
   }
 }
 
-void WebContentsImpl::OnCanResizeFromWebAPIChanged() {
-  delegate_->OnCanResizeFromWebAPIChanged();
+void WebContentsImpl::OnWebApiWindowResizableChanged() {
+  delegate_->OnWebApiWindowResizableChanged();
 }
 
 FrameTreeNodeId WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {

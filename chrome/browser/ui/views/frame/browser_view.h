@@ -466,7 +466,7 @@ class BrowserView : public BrowserWindow,
   void UpdateWebAppStatusIconsVisiblity();
 
   // Getter for the `window.setResizable(bool)` state.
-  std::optional<bool> GetCanResizeFromWebAPI() const;
+  std::optional<bool> GetWebApiWindowResizable() const;
 
   // Return the tab strip index of the single tab (if any) that is inactive but
   // part of a split view. Assumes there is max one split view in the tab
@@ -531,7 +531,7 @@ class BrowserView : public BrowserWindow,
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
-  void OnCanResizeFromWebAPIChanged() override;
+  void OnWebApiWindowResizableChanged() override;
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
   void EnterFullscreen(const GURL& url,

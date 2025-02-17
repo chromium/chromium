@@ -469,7 +469,7 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Notifies `BrowserView` about the resizable boolean having been set vith
   // `window.setResizable(bool)` API.
-  virtual void OnCanResizeFromWebAPIChanged() {}
+  virtual void OnWebApiWindowResizableChanged() {}
   // Returns the overall resizability of the `BrowserView` when considering
   // both the value set by the AWC API and browser's "native" resizability.
   virtual bool GetCanResize();
