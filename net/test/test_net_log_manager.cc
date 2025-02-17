@@ -78,6 +78,9 @@ TestNetLogManager::TestNetLogManager(NetLog* net_log,
 
   file_net_log_observer_ = FileNetLogObserver::CreateUnboundedPreExisting(
       std::move(file), capture_mode, std::move(constants));
+  // Try to write events to file as soon as they are added. This will record
+  // events as much as possible even when a test fails with a crash.
+  file_net_log_observer_->set_num_write_queue_events(1);
   file_net_log_observer_->StartObserving(net_log);
 }
 
