@@ -9338,9 +9338,10 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   shell()->LoadURL(url);
   VerifyDeferSpeculativeRFHActionUMA(histogram_tester,
                                      DeferSpeculativeRFHAction::kNotDeferred);
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
   NavigationRequest* navigation_request = main_frame()->navigation_request();
   ASSERT_EQ(navigation_request->state(),
-            NavigationRequest::NavigationState::WAITING_FOR_RENDERER_RESPONSE);
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
   ASSERT_FALSE(navigation_request->HasLoader());
   ASSERT_TRUE(GetMainFrameSpeculativeRFH(web_contents));
   ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
