@@ -97,6 +97,8 @@ class PermissionPromptAndroid : public PermissionPrompt {
   base::android::ScopedJavaLocalRef<jintArray> GetBoldRanges(JNIEnv* env) const;
   bool IsOneTimePermissionRequest() const;
 
+  bool IsShowing() const { return this == delegate()->GetCurrentPrompt(); }
+
  protected:
   Delegate* delegate() const { return delegate_; }
 

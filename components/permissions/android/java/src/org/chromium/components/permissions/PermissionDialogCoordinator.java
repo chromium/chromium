@@ -162,7 +162,11 @@ public class PermissionDialogCoordinator {
         // The tab may have navigated or been closed while we were waiting for Chrome Home to close.
         // For some embedders (e.g. WebEngine) the layout might not be inflated and so the
         // ModalDialogManager is not available.
-        if (mDialogDelegate == null || mModalDialogManager == null) {
+        if (mModalDialogManager == null) {
+            mCoordinatorDelegate.onPermissionDialogResult(ContentSettingValues.DEFAULT);
+            if (mDialogDelegate != null) {
+                mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_NO_DIALOG_MANAGER);
+            }
             mCoordinatorDelegate.onPermissionDialogEnded();
             return false;
         }

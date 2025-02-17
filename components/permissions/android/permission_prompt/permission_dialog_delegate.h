@@ -97,6 +97,7 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // Reset the java JNI object object. Called from Java once the permission
   // dialog has been responded to.
   void Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  bool IsJavaDelegateDestroyed() const { return !java_delegate_; }
 
   // Notify Java side to update content view of the dialog associated with this
   // object.
@@ -110,6 +111,8 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
  private:
   // On navigation or page destruction, hide the dialog.
   void DismissDialog();
+
+  void DestroyJavaDelegate() { java_delegate_.reset(); }
 
   // WebContentsObserver:
   void PrimaryPageChanged(content::Page&) override;

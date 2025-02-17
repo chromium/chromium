@@ -171,6 +171,7 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Autodismissed after prompt was accepted but OS permission was
              denied"/>
+  <int value="5" label="Autodismissed due to no modal dialog manager"/>
 </enum>
 
 <enum name="PermissionRequestIgnoredReason">

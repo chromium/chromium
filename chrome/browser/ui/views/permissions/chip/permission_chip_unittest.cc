@@ -90,6 +90,9 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
 
   bool RecreateView() override { return false; }
+  const permissions::PermissionPrompt* GetCurrentPrompt() const override {
+    return nullptr;
+  }
 
   bool WasCurrentRequestAlreadyDisplayed() override {
     return was_current_request_already_displayed_;

@@ -23,6 +23,18 @@ PermissionDialog::PermissionDialog(content::WebContents* web_contents,
 
 PermissionDialog::~PermissionDialog() = default;
 
+// static
+std::unique_ptr<PermissionDialog> PermissionDialog::Create(
+    content::WebContents* web_contents,
+    Delegate* delegate) {
+  auto prompt = std::make_unique<PermissionDialog>(web_contents, delegate);
+  if (!prompt->permission_dialog_delegate() ||
+      prompt->permission_dialog_delegate()->IsJavaDelegateDestroyed()) {
+    return nullptr;
+  }
+  return prompt;
+}
+
 PermissionPromptDisposition PermissionDialog::GetPromptDisposition() const {
   return PermissionPromptDisposition::MODAL_DIALOG;
 }

@@ -44,6 +44,19 @@ EmbeddedPermissionPromptAndroid::~EmbeddedPermissionPromptAndroid() {
   }
 }
 
+// static
+std::unique_ptr<EmbeddedPermissionPromptAndroid>
+EmbeddedPermissionPromptAndroid::Create(content::WebContents* web_contents,
+                                        Delegate* delegate) {
+  auto prompt =
+      std::make_unique<EmbeddedPermissionPromptAndroid>(web_contents, delegate);
+  if (!prompt->permission_dialog_delegate() ||
+      prompt->permission_dialog_delegate()->IsJavaDelegateDestroyed()) {
+    return nullptr;
+  }
+  return prompt;
+}
+
 PermissionPromptDisposition
 EmbeddedPermissionPromptAndroid::GetPromptDisposition() const {
   return PermissionPromptDisposition::MODAL_DIALOG;
