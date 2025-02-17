@@ -1613,6 +1613,24 @@
             ]
         }
     ],
+    "AutofillAiTeamfoodV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAiWithDataSchema"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillBetterLocalHeuristicPlaceholderSupport": [
         {
             "platforms": [
