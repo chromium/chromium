@@ -27,29 +27,15 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::CreateTabGroupTextField;
 using chrome_test_util::DeleteSharedConfirmationButton;
 using chrome_test_util::DeleteSharedGroupButton;
-using chrome_test_util::FakeJoinFlowView;
-using chrome_test_util::FakeShareFlowView;
 using chrome_test_util::LeaveSharedGroupButton;
 using chrome_test_util::LeaveSharedGroupConfirmationButton;
-using chrome_test_util::NavigationBarSaveButton;
-using chrome_test_util::ShareGroupButton;
 using chrome_test_util::UngroupButton;
 
 namespace {
 
-NSString* const kGroupTitle1 = @"Group Title 1";
-
-// Returns a matcher for the currently selected tab strip tab cell.
-id<GREYMatcher> TabStripTabCellSelectedMatcher() {
-  return grey_allOf(grey_kindOfClassName(@"UIView"),
-                    grey_not(grey_kindOfClassName(@"UILabel")),
-                    grey_accessibilityTrait(UIAccessibilityTraitSelected),
-                    grey_ancestor(grey_kindOfClassName(@"TabStripTabCell")),
-                    grey_sufficientlyVisible(), nil);
-}
+NSString* const kGroupTitle = @"shared group";
 
 // Returns a matcher for a tab strip group cell with `title` as title.
 id<GREYMatcher> TabStripGroupCellMatcher(NSString* title) {
@@ -60,54 +46,11 @@ id<GREYMatcher> TabStripGroupCellMatcher(NSString* title) {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Returns a matcher for a context menu button with an accessibility label
-// matching `accessibility_label_id`.
-id<GREYMatcher> ContextMenuButtonMatcher(int accessibility_label_id) {
-  return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabelId(accessibility_label_id),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
-}
-
-// Returns a matcher for a context menu button with an accessibility label
-// matching `accessibility_label_id` and `accessibility_label_number` (in case
-// the accessibility label string depends on some integer input).
-id<GREYMatcher> ContextMenuButtonMatcher(int accessibility_label_id,
-                                         int accessibility_label_number) {
-  return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabelIdAndNumberForPlural(
-          accessibility_label_id, accessibility_label_number),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
-}
-
-// Adds the tab matching `tab_cell_matcher` to a new group with title
-// `group_title`.
-void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
-                      NSString* group_title,
-                      bool sub_menu = false) {
-  [[EarlGrey selectElementWithMatcher:tab_cell_matcher]
-      performAction:grey_longPress()];
-  if (sub_menu) {
-    [[EarlGrey
-        selectElementWithMatcher:ContextMenuButtonMatcher(
-                                     IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP,
-                                     1)] performAction:grey_tap()];
-    [[EarlGrey selectElementWithMatcher:
-                   ContextMenuButtonMatcher(
-                       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU)]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:
-                   ContextMenuButtonMatcher(
-                       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1)]
-        performAction:grey_tap()];
-  }
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                              kCreateTabGroupViewIdentifier)];
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupTextField()]
-      performAction:grey_replaceText(group_title)];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kCreateTabGroupViewIdentifier)];
+// Adds a shared tab group. User's role depends on its fake identity.
+void AddSharedGroup() {
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
+                                                          kGroupTitle)];
 }
 
 }  // namespace
@@ -138,8 +81,21 @@ void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
   [ChromeEarlGrey
       setUserDefaultsObject:@YES
                      forKey:kSharedTabGroupUserEducationShownOnceKey];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                         enableHistorySync:YES];
+
+  // `fakeIdentity2` joins shared groups as member.
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  if ([self
+          isRunningTest:@selector(testTabStripSharedGroupDeleteSharedGroup)]) {
+    // `fakeIdentity2` joins shared groups as owner.
+    identity = [FakeSystemIdentity fakeIdentity2];
+  }
+  [SigninEarlGreyUI signinWithFakeIdentity:identity enableHistorySync:YES];
+}
+
+- (void)tearDownHelper {
+  [super tearDownHelper];
+  // Delete all groups.
+  [TabGroupAppInterface cleanup];
 }
 
 // Tests that deleting a shared tab group from tab strip works.
@@ -147,24 +103,10 @@ void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
-
-  // Add the current tab to a new group.
-  AddTabToNewGroup(TabStripTabCellSelectedMatcher(), kGroupTitle1);
-
-  // Share the group.
-  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
-      performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
-      assertWithMatcher:grey_notVisible()];
+  AddSharedGroup();
 
   // Long press the group.
-  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle)]
       performAction:grey_longPress()];
 
   // Verify that the leave and ungroup buttons are not available.
@@ -184,7 +126,7 @@ void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
   GREYCondition* groupsDeletedCheck =
       [GREYCondition conditionWithName:@"Wait for tab groups to be deleted"
                                  block:^{
-                                   return [ChromeEarlGrey mainTabCount] == 0;
+                                   return [ChromeEarlGrey mainTabCount] == 1;
                                  }];
   bool groupsDeleted = [groupsDeletedCheck waitWithTimeout:10];
   GREYAssertTrue(groupsDeleted, @"Failed to delete the shared group");
@@ -195,23 +137,10 @@ void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
-
-  [TabGroupAppInterface mockSharedEntitiesPreview];
-  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
-      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
-  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
-
-  // Verify that it opened the Join flow.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()];
-
-  // Join the group.
-  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
-      assertWithMatcher:grey_notVisible()];
+  AddSharedGroup();
 
   // Long press the group.
-  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(@"shared group")]
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle)]
       performAction:grey_longPress()];
 
   // Verify that the delete and ungroup buttons are not available.
