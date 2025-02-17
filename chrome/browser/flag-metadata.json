@@ -5112,6 +5112,11 @@
     "expiry_milestone": 139
   },
   {
+    "name": "ignore-device-flex-arc-enabled-policy",
+    "owners": [ "tinghaolin@google.com", "chromeos-flex-eng@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ignore-gpu-blocklist",
     "owners": [ "kbr@chromium.org", "zmo@chromium.org" ],
     // A debugging flag intended for end-users where there may not be any other

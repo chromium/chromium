@@ -17869,6 +17869,7 @@ from previous Chrome versions.
       label="AutofillOfferToSaveCardWithSameLastFour:enabled"/>
   <int value="1472042346" label="ClickToCall:enabled"/>
   <int value="1472060209" label="OmniboxSteadyStateTextStyle:disabled"/>
+  <int value="1472719830" label="IgnoreDeviceFlexArcEnabledPolicy:enabled"/>
   <int value="1472798894" label="UseIDNA2008NonTransitional:enabled"/>
   <int value="1472938299" label="WellKnownChangePassword:disabled"/>
   <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>
@@ -18408,6 +18409,7 @@ from previous Chrome versions.
   <int value="1680248931" label="use-fake-device-for-media-stream:enabled"/>
   <int value="1680381128" label="SmartZoom:enabled"/>
   <int value="1680524929" label="AutofillEnableSupportForLandmark:disabled"/>
+  <int value="1680963577" label="IgnoreDeviceFlexArcEnabledPolicy:disabled"/>
   <int value="1681219077" label="VoiceButtonInTopToolbar:enabled"/>
   <int value="1681510941" label="AndroidElegantTextHeight:disabled"/>
   <int value="1681612611" label="CodeBasedRBD:disabled"/>

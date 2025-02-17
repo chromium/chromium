@@ -1019,6 +1019,12 @@ BASE_FEATURE(kFlexFirmwareUpdate,
              "FlexFirmwareUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to ignore policy setting for enabling VPN Apps
+// for ChromeOS Flex.
+BASE_FEATURE(kIgnoreDeviceFlexArcEnabledPolicy,
+             "IgnoreDeviceFlexArcEnabledPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Vpn Apps for ChromeOS Flex.
 BASE_FEATURE(kVpnAppsOnFlex,
              "VpnAppsOnFlex",
@@ -3618,6 +3624,10 @@ bool IsFlexAutoEnrollmentEnabled() {
 bool IsFlexFirmwareUpdateEnabled() {
   return switches::IsRevenBranding() &&
          base::FeatureList::IsEnabled(kFlexFirmwareUpdate);
+}
+
+bool ShouldIgnoreDeviceFlexArcEnabledPolicy() {
+  return base::FeatureList::IsEnabled(kIgnoreDeviceFlexArcEnabledPolicy);
 }
 
 bool IsVpnAppsOnFlexEnabled() {
