@@ -41,7 +41,7 @@ VideoConferenceManagerAsh::~VideoConferenceManagerAsh() = default;
 void VideoConferenceManagerAsh::RegisterCppClient(
     crosapi::mojom::VideoConferenceManagerClient* client,
     const base::UnguessableToken& client_id) {
-  client_id_to_wrapper_.try_emplace(client_id, client, this);
+  client_id_to_wrapper_.try_emplace(client_id, client);
 }
 
 void VideoConferenceManagerAsh::GetMediaApps(
