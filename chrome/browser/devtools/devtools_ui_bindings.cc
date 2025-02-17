@@ -1797,6 +1797,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(devtools_animation_styles_in_styles_tab_dict));
   }
 
+  base::Value::Dict css_value_tracing_dict;
+  css_value_tracing_dict.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(::features::kDevToolsCssValueTracing));
+  response_dict.Set("devToolsCssValueTracing",
+                    std::move(css_value_tracing_dict));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }

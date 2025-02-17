@@ -149,4 +149,9 @@ BASE_FEATURE(kDevToolsWellKnown,
              "DevToolsWellKnown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether DevTools will offer the new CSS value tracing UI.
+BASE_FEATURE(kDevToolsCssValueTracing,
+             "DevToolsCssValueTracing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
