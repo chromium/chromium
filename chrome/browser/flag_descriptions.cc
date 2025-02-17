@@ -146,10 +146,6 @@ const char kIgnoreDeviceFlexArcEnabledPolicyName[] =
 const char kIgnoreDeviceFlexArcEnabledPolicyDescription[] =
     "Allows users to disable VPN app enabling on ChromeOS Flex devices.";
 
-const char kVpnAppsOnFlexName[] = "Enable VPN Apps on Flex";
-const char kVpnAppsOnFlexDescription[] =
-    "Enables support for VPN Apps on Flex devices.";
-
 const char kAnnotatorModeName[] = "Enable annotator tool";
 const char kAnnotatorModeDescription[] =
     "Enables the tool for annotating across the OS.";

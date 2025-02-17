@@ -4051,11 +4051,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-vpn-apps-on-flex",
-    "owners": [ "jiaozhou@google.com", "chromeos-flex-eng@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "enable-vulkan",
     "owners": [ "vasilyt@chromium.org", "kylechar@chromium.org" ],
     "expiry_milestone": 140

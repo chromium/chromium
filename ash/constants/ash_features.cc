@@ -1025,11 +1025,6 @@ BASE_FEATURE(kIgnoreDeviceFlexArcEnabledPolicy,
              "IgnoreDeviceFlexArcEnabledPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Vpn Apps for ChromeOS Flex.
-BASE_FEATURE(kVpnAppsOnFlex,
-             "VpnAppsOnFlex",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls Floating SSO feature which can move cookies between ChromeOS
 // enterprise devices. The feature is also guarded by an enterprise policy. This
 // flag controls if we are allowed to launch the service observing the policy
@@ -3628,11 +3623,6 @@ bool IsFlexFirmwareUpdateEnabled() {
 
 bool ShouldIgnoreDeviceFlexArcEnabledPolicy() {
   return base::FeatureList::IsEnabled(kIgnoreDeviceFlexArcEnabledPolicy);
-}
-
-bool IsVpnAppsOnFlexEnabled() {
-  return switches::IsRevenBranding() &&
-         base::FeatureList::IsEnabled(kVpnAppsOnFlex);
 }
 
 bool IsFloatingSsoAllowed() {

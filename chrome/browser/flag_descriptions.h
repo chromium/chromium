@@ -107,9 +107,6 @@ extern const char kAndroidBrowserControlsInVizDescription[];
 extern const char kIgnoreDeviceFlexArcEnabledPolicyName[];
 extern const char kIgnoreDeviceFlexArcEnabledPolicyDescription[];
 
-extern const char kVpnAppsOnFlexName[];
-extern const char kVpnAppsOnFlexDescription[];
-
 extern const char kAnnotatorModeName[];
 extern const char kAnnotatorModeDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
