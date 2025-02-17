@@ -3349,7 +3349,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTestDefaultFieldTrialValue,
       default_search->url_ref().ReplaceSearchTerms(
           search_terms_args, template_url_service->search_terms_data(),
           nullptr);
-  EXPECT_TRUE(base::Contains(navigation_generated_url, "pf=cs"));
+  EXPECT_TRUE(base::Contains(navigation_generated_url, "pf=op"));
 }
 
 class SearchPrefetchServiceNavigationPrefetchBrowserTest
