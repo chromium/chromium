@@ -1111,7 +1111,8 @@ void AutofillAgent::ApplyFieldsAction(
       if (WebInputElement input_element =
               form_util::GetFormControlByRendererId(field.renderer_id)
                   .DynamicTo<WebInputElement>();
-          input_element && filled_field_ids.contains(field.renderer_id)) {
+          input_element && filled_field_ids.contains(field.renderer_id) &&
+          input_element.IsTextField()) {
         if (auto form_it = std::ranges::find(filled_forms, field.host_form_id,
                                              &FormData::renderer_id);
             form_it != filled_forms.end()) {
