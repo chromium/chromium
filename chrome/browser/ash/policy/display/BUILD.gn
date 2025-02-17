@@ -53,7 +53,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/settings",
     "//components/policy/proto",
     "//content/test:test_support",
-    "//extensions/browser",
+    "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/common/api",
     "//testing/gtest",
     "//ui/display",

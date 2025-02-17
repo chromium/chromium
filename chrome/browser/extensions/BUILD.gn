@@ -936,6 +936,7 @@ source_set("extensions") {
       "//extensions/browser/api/content_settings:content_settings",
       "//extensions/browser/api/storage:settings_namespace",
       "//extensions/browser/api/storage:settings_observer",
+      "//extensions/browser/api/system_display:display_info_provider",
       "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
       "//extensions/browser/updater:keepalive",
       "//extensions/common:mojom",

@@ -4531,6 +4531,7 @@ if (!is_android) {
         "//extensions:chrome_extensions_browsertests_sources",
         "//extensions/browser:test_support",
         "//extensions/browser/api/storage:settings_namespace",
+        "//extensions/browser/api/system_display:display_info_provider",
         "//extensions/browser/updater",
         "//extensions/buildflags",
         "//extensions/common:mojom",
@@ -9167,6 +9168,7 @@ test("unit_tests") {
         "//chromeos/ash/components/dbus/image_burner",
         "//chromeos/components/mgs:test_support",
         "//content/public/browser",
+        "//extensions/browser/api/system_display:display_info_provider",
         "//net",
         "//net:test_support",
       ]

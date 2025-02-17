@@ -108,10 +108,10 @@ class DisplayInfoProvider : public display::DisplayObserver {
                              ErrorCallback callback);
 
  protected:
-  explicit DisplayInfoProvider(display::Screen* screen = nullptr);
+  explicit DisplayInfoProvider(display::Screen* screen);
 
   // Trigger OnDisplayChangedEvent
-  void DispatchOnDisplayChangedEvent();
+  virtual void DispatchOnDisplayChangedEvent() = 0;
 
   // Convert a vector of Displays into a DisplayUnitInfoList. This function
   // needs to be thread-safe since it is called via PostTask.
@@ -142,6 +142,9 @@ class DisplayInfoProvider : public display::DisplayObserver {
   raw_ptr<display::Screen> provided_screen_ = nullptr;
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
+
+  // Created on demand and will leak when the process exits.
+  static DisplayInfoProvider* g_display_info_provider;
 };
 
 }  // namespace extensions

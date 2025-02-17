@@ -71,6 +71,7 @@ group("api_implementations") {
       "//extensions/browser/api/sockets_tcp",
       "//extensions/browser/api/sockets_tcp_server",
       "//extensions/browser/api/sockets_udp",
+      "//extensions/browser/api/system_display",
       "//extensions/browser/api/system_info",
       "//extensions/browser/api/system_storage",
       "//extensions/browser/api/user_scripts",
