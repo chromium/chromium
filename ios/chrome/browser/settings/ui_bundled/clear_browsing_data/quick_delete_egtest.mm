@@ -1031,6 +1031,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // also tests that the tabs in tab groups get closed when the deletion of tabs
 // is selected.
 - (void)testTabsForDeletionInTabGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Set pref to close tabs.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kCloseTabs];

@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">عرض جميع جداول المقارنة</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإدارة المعلومات والخصوصية والأمان في حسابك على Google.</translation>
+<translation id="1793473605302304726">الدفع على أقساط</translation>
 <translation id="1793631236004319016">آخر استخدام قبل <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، تتوفّر عدة إجراءات، اضغط على مفتاح التبويب (Tab) للتنقّل بينها.</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3413,6 +3414,7 @@
 <translation id="7042616127917168121">تحسين النتائج</translation>
 <translation id="7043552168914147882">ورق بملحقات</translation>
 <translation id="7044081119134178347">تم السماح باستخدام الكاميرا هذه المرّة.</translation>
+<translation id="704738887031336226">عرض خيارات <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />الدفع على أقساط<ph name="PAY_OVER_TIME_HELP_LINK_END" /> عند الدفع</translation>
 <translation id="7048095965575426564">‏‫Fanfold أوروبي</translation>
 <translation id="7050187094878475250">لقد حاولت الوصول إلى <ph name="DOMAIN" />، ولكن الخادم قدم شهادة مدة صلاحيتها طويلة جدًا مما يجعلها غير جديرة بالثقة.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{تتعذَّر إضافة هذه البطاقة الآن}zero{تتعذَّر إضافة هذه البطاقات الآن}two{تتعذَّر إضافة هاتين البطاقتين الآن}few{تتعذَّر إضافة هذه البطاقات الآن}many{تتعذَّر إضافة هذه البطاقات الآن}other{تتعذَّر إضافة هذه البطاقات الآن}}</translation>

@@ -469,15 +469,18 @@ class CORE_EXPORT StyleCascade {
   bool ResolveIfInto(CSSParserTokenStream&,
                      CascadeResolver&,
                      const CSSParserContext&,
+                     FunctionContext*,
                      TokenSequence&);
 
   bool EvalIfCondition(CSSParserTokenStream& stream,
                        CascadeResolver& resolver,
                        const CSSParserContext& context,
+                       FunctionContext*,
                        bool& is_attr_tainted);
   KleeneValue EvalIfStyleFeature(const MediaQueryFeatureExpNode&,
                                  CascadeResolver&,
                                  const CSSParserContext& context,
+                                 FunctionContext*,
                                  bool& is_attr_tainted);
   bool EvalIfKeyword(const CSSValue& value,
                      CSSVariableData* query_value,

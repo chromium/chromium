@@ -218,6 +218,9 @@ TemplateURLServiceTestUtil::SetUpRequiredServicesWithCustomLocalState(
 
             return std::make_unique<search_engines::SearchEngineChoiceService>(
                 *profile->GetPrefs(), local_state, *regional_capabilities,
+                CHECK_DEREF(
+                    TemplateURLPrepopulateData::ResolverFactory::GetInstance()
+                        ->GetForProfile(profile)),
                 /*is_profile_eligible_for_dse_guest_propagation=*/false);
           }),
   });

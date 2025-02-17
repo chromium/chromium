@@ -470,6 +470,7 @@
 <translation id="1791415068765905273">ಎಲ್ಲಾ ಹೋಲಿಕೆಯ ಟೇಬಲ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಮಾಹಿತಿ, ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷತೆಯನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="1793473605302304726">ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸಿ</translation>
 <translation id="1793631236004319016">ಕೊನೆಯದಾಗಿ <ph name="NUM_HOURS_MINUTES_SECONDS" /> ಹಿಂದೆ ಬಳಸಲಾಗಿದೆ</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಅನೇಕ ಕ್ರಿಯೆಗಳು ಲಭ್ಯವಿವೆ. ಅವುಗಳನ್ನು ಒಂದೊಂದಾಗಿ ನೋಡಲು ಟ್ಯಾಬ್ ಒತ್ತಿ</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3408,6 +3409,7 @@
 <translation id="7042616127917168121">ಫಲಿತಾಂಶಗಳನ್ನು ರೀಫೈನ್ ಮಾಡಿ</translation>
 <translation id="7043552168914147882">ಟ್ಯಾಬ್ ಸ್ಟಾಕ್</translation>
 <translation id="7044081119134178347">ಈ ಬಾರಿ ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="704738887031336226">ಚೆಕ್ ಔಟ್‌ನಲ್ಲಿ <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸುವ<ph name="PAY_OVER_TIME_HELP_LINK_END" /> ಆಯ್ಕೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿರುವಿರಿ, ಆದರೆ ಸರ್ವರ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿರಲು ತುಂಬ ಉದ್ದವಾದ ವಾಯಿದೆ ಅವಧಿಯನ್ನು ಹೊಂದಿರುವ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸಲ್ಲಿಸಿದೆ.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ಇದೀಗ ಈ ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}one{ಇದೀಗ ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}other{ಇದೀಗ ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}}</translation>

@@ -7,6 +7,7 @@
 
 @class NSString;
 @class NSArray;
+class ProfileIOS;
 
 namespace crash_keys {
 
@@ -76,6 +77,10 @@ void SetIncognitoTabCount(int tabCount);
 // Sets a key indicating that destroying and rebuilding the incognito browser
 // state is in progress, otherwise remove the key.
 void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress);
+
+// Sets a key in profile dictionary to store the count of bookmark nodes in
+// `profile`.
+void SetBookmarkNodesCount(int bookmarks_count, ProfileIOS* profile);
 
 // Sets a key to help debug a crash when animating from grid to visible tab.
 // `to_view_controller` is the view controller about to be presented. The

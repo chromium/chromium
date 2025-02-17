@@ -1274,6 +1274,39 @@ void DevToolsUIBindings::UpgradeDraggedFileSystemPermissions(
                           weak_factory_.GetWeakPtr()));
 }
 
+void DevToolsUIBindings::ConnectAutomaticFileSystem(
+    DispatchCallback callback,
+    const std::string& file_system_path,
+    const std::string& file_system_uuid,
+    bool add_if_missing) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
+  file_helper_->ConnectAutomaticFileSystem(
+      file_system_path, file_system_uuid, add_if_missing,
+      BindRepeating(&DevToolsUIBindings::ShowDevToolsInfoBar,
+                    weak_factory_.GetWeakPtr()),
+      BindOnce(&DevToolsUIBindings::ConnectAutomaticFileSystemDone,
+               weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DevToolsUIBindings::ConnectAutomaticFileSystemDone(
+    DispatchCallback callback,
+    bool success) {
+  base::Value::Dict result_dict;
+  result_dict.Set("success", success);
+  base::Value result(std::move(result_dict));
+  std::move(callback).Run(&result);
+}
+
+void DevToolsUIBindings::DisconnectAutomaticFileSystem(
+    const std::string& file_system_path) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
+  file_helper_->DisconnectAutomaticFileSystem(file_system_path);
+}
+
 void DevToolsUIBindings::IndexPath(
     int index_request_id,
     const std::string& file_system_path,
@@ -1763,6 +1796,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     response_dict.Set("devToolsAnimationStylesInStylesTab",
                       std::move(devtools_animation_styles_in_styles_tab_dict));
   }
+
+  base::Value::Dict css_value_tracing_dict;
+  css_value_tracing_dict.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(::features::kDevToolsCssValueTracing));
+  response_dict.Set("devToolsCssValueTracing",
+                    std::move(css_value_tracing_dict));
 
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);

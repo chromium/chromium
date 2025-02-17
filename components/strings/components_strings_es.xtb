@@ -471,6 +471,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1791415068765905273">Mostrar todas las tablas comparativas</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar la información, la privacidad y la seguridad de tu cuenta de Google</translation>
+<translation id="1793473605302304726">Pagar a plazos</translation>
 <translation id="1793631236004319016">Último uso: hace <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hay varias acciones disponibles, pulsa Tabulador para desplazarte entre ellas</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3411,6 +3412,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7042616127917168121">Acotar los resultados</translation>
 <translation id="7043552168914147882">Stock de fichas</translation>
 <translation id="7044081119134178347">Cámara permitida esta vez</translation>
+<translation id="704738887031336226">Muestra las opciones de <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />pago a plazos<ph name="PAY_OVER_TIME_HELP_LINK_END" /> al tramitar la compra</translation>
 <translation id="7048095965575426564">Continuo europeo</translation>
 <translation id="7050187094878475250">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado cuyo periodo de validez es demasiado largo para que se considere de confianza.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ahora no se puede guardar esta tarjeta}other{Ahora no se pueden guardar estas tarjetas}}</translation>

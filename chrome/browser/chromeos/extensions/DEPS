@@ -47,5 +47,8 @@ specific_include_rules = {
   ],
   "wallpaper_api\.h": [
     "+ash/public/mojom/wallpaper.mojom.h",
-  ]
+  ],
+  "system_log_apitest\.cc": [
+    "+chrome/browser/ash/test",
+  ],
 }

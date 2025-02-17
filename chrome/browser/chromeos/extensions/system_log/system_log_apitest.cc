@@ -13,12 +13,12 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/ash/test/kiosk_logged_in_browser_test_mixin.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
@@ -27,7 +27,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -37,7 +36,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/common/extension_api.h"
@@ -400,21 +398,17 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Verifies the systemLog API logs in Kiosk sessions.
 class SystemLogKioskSessionApitest : public SystemLogUserSessionApitest {
  public:
-  void SetUpOnMainThread() override {
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    chromeos::SetUpFakeKioskSession();
+  static constexpr char kKioskUserName[] =
+      "example@kiosk-apps.device-local.localhost";
 
-    SystemLogUserSessionApitest::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    user_manager_.Reset();
-    SystemLogUserSessionApitest::TearDownOnMainThread();
+  SystemLogKioskSessionApitest() {
+    // Do not create User by LoggedInUserMixin, because
+    // user log-in is handled by KioskBrowserTestMixin.
+    set_chromeos_user_ = false;
   }
 
  private:
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
+  ash::KioskLoggedInBrowserTestMixin kiosk_mixin_{&mixin_host_, kKioskUserName};
 };
 
 // Logs EVENT or DEBUG extension logs depending on the

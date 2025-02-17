@@ -944,7 +944,8 @@ public class TouchToFillViewTest {
                                 .getString(
                                         R.string.touch_to_fill_sheet_passkey_credential_context)));
 
-        CredManSupportProvider.setupForTesting(/*override*/ false);
+        CredManSupportProvider.setupForTesting(
+                /* overrideAndroidVersion= */ null, /* overrideForcesGpm= */ null);
     }
 
     private ChromeActivity getActivity() {

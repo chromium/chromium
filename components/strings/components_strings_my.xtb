@@ -472,6 +472,7 @@
 <translation id="1791415068765905273">နှိုင်းယှဉ်မှု ဇယားအားလုံးကို ပြပါ</translation>
 <translation id="1791429645902722292">Google ကစမတ်သော့ခတ်</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သင့်အချက်အလက်၊ ပုဂ္ဂိုလ်ရေးနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
+<translation id="1793473605302304726">ငွေခွဲ၍ပေးချေရန်</translation>
 <translation id="1793631236004319016">ပြီးခဲ့သော <ph name="NUM_HOURS_MINUTES_SECONDS" /> က သုံးထားသည်</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ လုပ်ဆောင်ချက် အများအပြား ရရှိနိုင်သည်၊ ၎င်းတို့ကိုပတ်ကြည့်ရန် Tab နှိပ်ပါ</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3411,6 +3412,7 @@
 <translation id="7042616127917168121">ရလဒ်များ ပိုမိုတိကျအောင် ပြုလုပ်ရန်</translation>
 <translation id="7043552168914147882">တဘ်စတော့</translation>
 <translation id="7044081119134178347">ဤတစ်ကြိမ်အတွက် ကင်မရာ ခွင့်ပြုထားသည်</translation>
+<translation id="704738887031336226">ငွေရှင်းသည့်အခါ <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />ငွေခွဲ၍ပေးချေရန်<ph name="PAY_OVER_TIME_HELP_LINK_END" /> ရွေးစရာများကို ပြပါ</translation>
 <translation id="7048095965575426564">ဥရောပ ဘာဂျာခေါက်</translation>
 <translation id="7050187094878475250">သင် <ph name="DOMAIN" /> သို့ ရောက်ရန် ကြိုးပမ်းခဲ့သော်လည်း၊ ယုံကြည်နိုင်ရန်အလို့ငှာ ကာလလွန်စွာကြာမြင့်သော ခွင့်ပြုကာလပါသည့် အသိအမှတ်ပြုလက်မှတ်တစ်ခုအား ဆာဗာမှ ပြသခဲ့သည်။</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ဤကတ်ကို ယခုသိမ်း၍ မရပါ}other{ဤကတ်များကို ယခုသိမ်း၍ မရပါ}}</translation>

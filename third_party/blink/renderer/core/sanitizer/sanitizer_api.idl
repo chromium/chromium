@@ -11,7 +11,7 @@
 ]
 interface Sanitizer {
   [RaisesException]
-  constructor(optional SanitizerConfig config = {});
+  constructor(optional (SanitizerConfig or SanitizerPresets) configuration = "default");
 
   // Query configuration:
   SanitizerConfig get();

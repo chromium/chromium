@@ -193,6 +193,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1607312127821884567">Tutup penyiapan untuk melihat aplikasi ponsel Anda</translation>
 <translation id="1610778689852195798">"Urungkan"</translation>
 <translation id="1611993646327628135">Aktif</translation>
+<translation id="1612679292338846734">Saat Anda mengaktifkan fitur ini, teks input, konten dokumen, dan URL halaman web mungkin dikirimkan ke server AI Google. Informasi ini digunakan untuk membuat saran penulisan, membuat ringkasan, menjawab pertanyaan, dan meningkatkan kualitas produk, yang tunduk pada <ph name="LINK_TO_SERVICE_TERMS" />. Jangan menyertakan informasi apa pun yang bersifat pribadi, sensitif, atau rahasia.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Ciutkan Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> tidak tersedia.</translation>
@@ -565,6 +566,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="2946119680249604491">Tambahkan koneksi</translation>
 <translation id="2947835478872237115">Level baterai saat ini <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> sampai penuh</translation>
 <translation id="2949420361496057765">Tekan <ph name="MODIFIER" />, lalu klik link</translation>
+<translation id="2957159466053076448">Anda dapat menonaktifkan fitur ini kapan saja di Setelan. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio perangkat</translation>
 <translation id="2960314608273155470">Mode Tangkapan Layar, opsi defaultnya adalah <ph name="TYPE" /> <ph name="SOURCE" />. Tekan tab untuk menavigasi dengan keyboard.</translation>
 <translation id="2961963223658824723">Terjadi error. Coba lagi dalam beberapa detik.</translation>
@@ -1905,6 +1907,7 @@ Baru diinstal</translation>
 <translation id="735745346212279324">VPN terputus</translation>
 <translation id="7360036564632145207">Mengubah setelan perlindungan akses data untuk periferal dapat mengoptimalkan performa</translation>
 <translation id="736045644501761622">Setel wallpaper &amp; gaya</translation>
+<translation id="7368041336688136012">Anda harus berusia minimal 18 tahun untuk menggunakan fitur Bantu baca dan Bantu tulis, serta membuat gambar dengan AI.</translation>
 <translation id="7371404428569700291">Rekam jendela</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> memori tersedia dari total <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Tindakan ini akan mengizinkan akses mikrofon untuk semua aplikasi dan situs yang memiliki izin mikrofon</translation>
@@ -2030,6 +2033,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Tampilkan semua</translation>
+<translation id="7762664108390426952">Persyaratan Layanan dan Kebijakan Privasi Google</translation>
 <translation id="7768784765476638775">Klik untuk diucapkan</translation>
 <translation id="7769299611924763557">GIF Anda akan segera siap</translation>
 <translation id="7773536009433685931">Aktifkan Wi-Fi</translation>

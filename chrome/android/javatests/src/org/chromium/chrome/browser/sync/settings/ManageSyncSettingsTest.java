@@ -126,7 +126,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
-@Features.DisableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
+@Features.DisableFeatures(SigninFeatures.HISTORY_OPT_IN_IPH)
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 6;
 
@@ -515,8 +515,8 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
-    public void testSyncHistoryAndTabsToggle_historyOptInEntryPointsEnabled() {
+    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_IPH)
+    public void testSyncHistoryAndTabsToggle_historyOptInIphEnabled() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncTestUtil.waitForSyncTransportActive();
 
@@ -562,9 +562,8 @@ public class ManageSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     @DisabledTest(message = "https://crbug.com/394583571")
-    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
-    public void
-            testSyncHistoryAndTabsToggle_typeManagedByCustodian_historyOptInEntryPointsEnabled() {
+    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_IPH)
+    public void testSyncHistoryAndTabsToggle_typeManagedByCustodian_historyOptInIphEnabled() {
         setupMockSyncService();
         mSyncTestRule.setUpAccountAndSignInForTesting();
         when(mSyncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)).thenReturn(true);
@@ -580,8 +579,8 @@ public class ManageSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     @DisabledTest(message = "https://crbug.com/395041422")
-    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
-    public void testSyncHistoryAndTabsToggle_typesManagedByPolicy_historyOptInEntryPointsEnabled() {
+    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_IPH)
+    public void testSyncHistoryAndTabsToggle_typesManagedByPolicy_historyOptInIphEnabled() {
         setupMockSyncService();
         mSyncTestRule.setUpAccountAndSignInForTesting();
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(true);

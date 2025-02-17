@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
@@ -47,7 +46,6 @@ public class SafetyHubFetchTaskTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         SafetyHubFetchServiceFactory.setSafetyHubFetchServiceForTesting(mSafetyHubFetchService);
@@ -58,7 +56,7 @@ public class SafetyHubFetchTaskTest {
                                     return null;
                                 })
                 .when(mSafetyHubFetchService)
-                .fetchCredentialsCount(any());
+                .fetchAccountCredentialsCount(any());
     }
 
     @Test
@@ -70,7 +68,7 @@ public class SafetyHubFetchTaskTest {
                         .onStartTaskBeforeNativeLoaded(mContext, params, mTaskFinishedCallback);
 
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
-        verify(mSafetyHubFetchService, never()).fetchCredentialsCount(any());
+        verify(mSafetyHubFetchService, never()).fetchAccountCredentialsCount(any());
         verify(mTaskFinishedCallback, never()).taskFinished(anyBoolean());
     }
 
@@ -80,7 +78,7 @@ public class SafetyHubFetchTaskTest {
 
         new SafetyHubFetchTask().onStartTaskWithNative(mContext, params, mTaskFinishedCallback);
 
-        verify(mSafetyHubFetchService, times(1)).fetchCredentialsCount(any());
+        verify(mSafetyHubFetchService, times(1)).fetchAccountCredentialsCount(any());
         verify(mTaskFinishedCallback, times(1)).taskFinished(anyBoolean());
     }
 

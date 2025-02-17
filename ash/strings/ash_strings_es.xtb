@@ -193,6 +193,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1607312127821884567">Cerrar la configuración de la visualización de las aplicaciones de tu teléfono</translation>
 <translation id="1610778689852195798">"Deshacer"</translation>
 <translation id="1611993646327628135">Sí</translation>
+<translation id="1612679292338846734">Si activas estas funciones, el texto de entrada, el contenido del documento y la URL de la página web podrían enviarse a los servidores de la IA de Google. Esta información se usa para generar sugerencias de escritura y resúmenes, responder preguntas y mejorar el producto, de acuerdo con los <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1623768535032616219">Contraer Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> no está disponible.</translation>
@@ -565,6 +566,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="2946119680249604491">Añadir conexión</translation>
 <translation id="2947835478872237115">Nivel de batería actual: <ph name="BATTERY_PERCENTAGE" /> % (<ph name="TIME" /> hasta completar la carga)</translation>
 <translation id="2949420361496057765">Pulsa <ph name="MODIFIER" /> y haz clic en un enlace</translation>
+<translation id="2957159466053076448">Puedes desactivar estas funciones en cualquier momento en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio del dispositivo</translation>
 <translation id="2960314608273155470">Modo de captura, establecido en <ph name="TYPE" /> <ph name="SOURCE" />. Pulsa el tabulador para desplazarte por el teclado.</translation>
 <translation id="2961963223658824723">Se ha producido un error. Vuelve a intentarlo en unos segundos.</translation>
@@ -1906,6 +1908,7 @@ Nueva instalación</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7360036564632145207">Si cambias la protección de acceso a datos desde periféricos, puedes optimizar el rendimiento</translation>
 <translation id="736045644501761622">Configurar fondo de pantalla y estilo</translation>
+<translation id="7368041336688136012">Debes tener al menos 18 años para usar Ayúdame a leer, Ayúdame a escribir y crear imágenes con IA.</translation>
 <translation id="7371404428569700291">Grabar ventana</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de memoria disponible de un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Esto permite que accedan al micrófono todas las aplicaciones y sitios web con el permiso de micrófono</translation>
@@ -2031,6 +2034,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7749443890790263709">Has alcanzado el número máximo de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Mostrar todo</translation>
+<translation id="7762664108390426952">Términos del Servicio y la Política de Privacidad de Google</translation>
 <translation id="7768784765476638775">Enunciar selección</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
 <translation id="7773536009433685931">Activar Wi‐Fi en su lugar</translation>

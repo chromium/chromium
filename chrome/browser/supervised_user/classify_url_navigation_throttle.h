@@ -59,7 +59,8 @@ MaybeCreateClassifyUrlNavigationThrottleFor(
 class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
  public:
   static std::unique_ptr<ClassifyUrlNavigationThrottle> MakeUnique(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationHandle* navigation_handle,
+      SupervisedUserURLFilter* url_filter);
 
   ClassifyUrlNavigationThrottle(const ClassifyUrlNavigationThrottle&) = delete;
   ClassifyUrlNavigationThrottle& operator=(
@@ -111,8 +112,8 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
     std::optional<base::ElapsedTimer> elapsed_;
   };
 
-  explicit ClassifyUrlNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+  ClassifyUrlNavigationThrottle(content::NavigationHandle* navigation_handle,
+                                SupervisedUserURLFilter* url_filter);
 
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
@@ -162,7 +163,7 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // (success) case.
   std::optional<base::ElapsedTimer> waiting_for_decision_;
 
-  raw_ptr<supervised_user::SupervisedUserURLFilter> url_filter_;
+  raw_ptr<SupervisedUserURLFilter> url_filter_;
   base::WeakPtrFactory<ClassifyUrlNavigationThrottle> weak_ptr_factory_{this};
 };
 

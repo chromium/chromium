@@ -212,6 +212,14 @@ void KioskControllerImpl::StartSession(const KioskAppId& app_id,
 void KioskControllerImpl::StartSessionAfterCrash(const KioskAppId& app,
                                                  Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kPreventKioskAutolaunchForTesting)) {
+    LOG(WARNING) << "Skipping to launch " << app << " for "
+                 << profile->GetPath() << " due to --"
+                 << ash::switches::kPreventKioskAutolaunchForTesting
+                 << " flag.";
+    return;
+  }
   crash_recovery_launcher_ =
       std::make_unique<CrashRecoveryLauncher>(CHECK_DEREF(profile), app);
   crash_recovery_launcher_->Start(

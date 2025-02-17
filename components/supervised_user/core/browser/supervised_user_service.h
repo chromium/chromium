@@ -141,6 +141,7 @@ class SupervisedUserService : public KeyedService {
  private:
   friend class SupervisedUserServiceExtensionTestBase;
   friend class ::SupervisedUserServiceFactory;
+  friend class ClassifyUrlNavigationThrottleTest;
   FRIEND_TEST_ALL_PREFIXES(
       SupervisedUserServiceExtensionTest,
       ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls);

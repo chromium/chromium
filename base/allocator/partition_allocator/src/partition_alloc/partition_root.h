@@ -2478,7 +2478,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
   constexpr bool no_hooks = ContainsFlags(alloc_flags, AllocFlags::kNoHooks);
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   bool overridden = false;
-  size_t old_usable_size;
+  size_t old_usable_size = 0;
   if (!no_hooks && hooks_enabled) [[unlikely]] {
     overridden = PartitionAllocHooks::ReallocOverrideHookIfEnabled(
         &old_usable_size, ptr);
@@ -2520,6 +2520,21 @@ void* PartitionRoot::ReallocInline(void* ptr,
       }
     }
   }
+
+#if PA_BUILDFLAG(REALLOC_GROWTH_FACTOR_MITIGATION)
+  // Some nVidia drivers have a performance bug where they repeatedly realloc a
+  // buffer with a small 4144 byte increment instead of using a growth factor to
+  // amortize the cost of a memcpy. To work around this, we apply a growth
+  // factor to the new size to avoid this issue. This workaround is only
+  // intended to be used for Skia bots, and is not intended to be a general
+  // solution.
+  if (new_size > old_usable_size && new_size > 12 << 20) {
+    // 1.5x growth factor.
+    // Note that in case of integer overflow, the std::max ensures that the
+    // new_size is at least as large as the old_usable_size.
+    new_size = std::max(new_size, old_usable_size * 3 / 2);
+  }
+#endif
 
   // This realloc cannot be resized in-place. Sadness.
   void* ret = AllocInternal<alloc_flags>(

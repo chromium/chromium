@@ -8,7 +8,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_element_namespace.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_element_namespace_with_attributes.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_presets.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerattributenamespace_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespace_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespacewithattributes_string.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -21,9 +23,20 @@
 
 namespace blink {
 
-Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
-                             ExceptionState& exception_state) {
-  return Create(sanitizer_config, /*safe*/ false, exception_state);
+Sanitizer* Sanitizer::Create(
+    const V8UnionSanitizerConfigOrSanitizerPresets* config_or_preset,
+    ExceptionState& exception_state) {
+  if (!config_or_preset) {
+    return Create(nullptr, /*safe*/ false, exception_state);
+  } else if (config_or_preset->IsSanitizerConfig()) {
+    return Create(config_or_preset->GetAsSanitizerConfig(), /*safe*/ false,
+                  exception_state);
+  } else if (config_or_preset->IsSanitizerPresets()) {
+    return Create(config_or_preset->GetAsSanitizerPresets().AsEnum(),
+                  exception_state);
+  } else {
+    NOTREACHED();
+  }
 }
 
 Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
@@ -31,6 +44,7 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
                              ExceptionState& exception_state) {
   Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
   if (!sanitizer_config) {
+    // Default case: Set from builtin Sanitizer.
     sanitizer->setFrom(*(safe ? SanitizerBuiltins::GetDefaultSafe()
                               : SanitizerBuiltins::GetDefaultUnsafe()));
   } else {
@@ -41,7 +55,14 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
     // replaced with `exception_state.ThrowTypeError(...); return nullptr;`.
     CHECK(success);
   }
-  CHECK(sanitizer);
+  return sanitizer;
+}
+
+Sanitizer* Sanitizer::Create(const V8SanitizerPresets::Enum preset,
+                             ExceptionState&) {
+  CHECK_EQ(preset, V8SanitizerPresets::Enum::kDefault);
+  Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
+  sanitizer->setFrom(*SanitizerBuiltins::GetDefaultSafe());
   return sanitizer;
 }
 

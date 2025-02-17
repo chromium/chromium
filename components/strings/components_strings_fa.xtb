@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">نمایش همه جدول‌های مقایسه</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="1793473605302304726">پرداخت اقساطی</translation>
 <translation id="1793631236004319016">آخرین‌بار <ph name="NUM_HOURS_MINUTES_SECONDS" /> قبل استفاده شده است</translation>
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، چند کنش دردسترس است، برای جابه‌جایی بین آن‌ها، کلید Tab را فشار دهید</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3411,6 +3412,7 @@
 <translation id="7042616127917168121">پالایش نتایج</translation>
 <translation id="7043552168914147882">دسته برگ</translation>
 <translation id="7044081119134178347">دوربین این بار مجاز شد</translation>
+<translation id="704738887031336226">نمایش گزینه‌های <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />پرداخت اقساطی<ph name="PAY_OVER_TIME_HELP_LINK_END" /> هنگام تسویه‌حساب</translation>
 <translation id="7048095965575426564">تاشوی اروپایی</translation>
 <translation id="7050187094878475250">تلاش کردید به دامنه <ph name="DOMAIN" /> بروید اما گواهینامه‌ای که سرور ارائه کرد، دارای یک تاریخ اعتبار بسیار طولانی است و مورداعتماد نیست.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{درحال‌حاضر این کارت ذخیره نمی‌شود}one{درحال‌حاضر این کارت‌ها ذخیره نمی‌شوند}other{درحال‌حاضر این کارت‌ها ذخیره نمی‌شوند}}</translation>

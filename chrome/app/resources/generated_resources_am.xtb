@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">ሳይበርፓንክ</translation>
 <translation id="1129420403709586868">የስልክዎን ፎቶዎች እና ሚዲያ ይመልከቱ</translation>
 <translation id="1129850422003387628">መተግበሪያዎችን አቀናብር</translation>
+<translation id="1130430615924359526">{0,plural, =1{ማንነት የማያሳውቅ ሁነታን ዝጋ}one{ማንነት የማያሳውቅ ሁነታን ዝጋ (# መስኮት)}other{ማንነት የማያሳውቅ ሁነታን ዝጋ (# መስኮቶች)}}</translation>
 <translation id="113050636487300043">በመገለጫዎች መካከል ለመለየት አንድ ስም እና የቀለም ገጽታ ይምረጡ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - የቡድን <ph name="GROUP_NAME" /> አካል</translation>
 <translation id="1130676589211693127">የቀኝ ባትሪ ደረጃ <ph name="PERCENTAGE" />%</translation>
@@ -1521,6 +1522,7 @@
 <translation id="2042279886444479655">ንቁ መገለጫዎች</translation>
 <translation id="2042427131767688936">ይህ መሣሪያ ደህንነቱ በተጠበቀ ሁኔታ ጥቅም ላይ መዋል መቻሉን ለማረጋገጥ ድርጅትዎ ስለሥርዓተ ክወናው፣ አሳሹ እና ቅንብሮቹ እና በመሣሪያው ላይ ምን ዓይነት ሶፍትዌር እንደተጫነ መረጃ ማየት ይችላል።</translation>
 <translation id="2044014337866019681">እባክዎ ክፍለ-ጊዜውን ለመክፈት <ph name="ACCOUNT" />ን እያረጋገጡ መሆንዎን ያረጋግጡ።</translation>
+<translation id="2044750031738659219">{0,plural, =1{እንግዳን ዝጋ}one{እንግዳን ዝጋ (# መስኮት)}other{እንግዳን ዝጋ (# መስኮቶች)}}</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045211794962848221">ይህን የተወሰነ መልዕክት በድጋሚ አያዩም</translation>
 <translation id="2045838962742066664">የአጭር አጻጻፍ ትየባ</translation>
@@ -7363,6 +7365,7 @@
 <translation id="6214106213498203737">የውሃ ቀለም</translation>
 <translation id="621470880408090483">ጣቢያዎች ከብሉቱዝ መሣሪያዎች ጋር እንዲገናኙ አይፍቀዱ</translation>
 <translation id="6215039389782910006">{1,plural, =1{የይለፍ ቃላትዎን ደህንነት ለማስጠበቅ <ph name="BRAND" /> ከእንቅስቃሴ-አልባነት 1 ደቂቃ በኋላ ይቆልፋል}one{የይለፍ ቃላትዎን ደህንነት ለማስጠበቅ <ph name="BRAND" /> ከእንቅስቃሴ-አልባነት # ደቂቃ በኋላ ይቆልፋል}other{የይለፍ ቃላትዎን ደህንነት ለማስጠበቅ <ph name="BRAND" /> ከእንቅስቃሴ-አልባነት # ደቂቃዎች በኋላ ይቆልፋል}}</translation>
+<translation id="6216154119179790291">ወደ መጀመሪያ ትር ያሸብልሉ</translation>
 <translation id="6216239400972191926">ተቀባይነት ያላገኙ ጣቢያዎች እና መተግበሪያዎች</translation>
 <translation id="6216601812881225442">የእርስዎ መያዣ መጠን መቀየርን አይደግፍም። ለLinux ቅድሚያ የተመደበው የቦታ መጠንን ለማስተካከል ምትኬ ያስቀምጡ እና አዲስ መያዣ ላይ ወደነበረበት ይመልሱ።</translation>
 <translation id="6216696360484424239">በራስ ሰር በመለያ ግባ</translation>
@@ -7559,6 +7562,7 @@
 <translation id="6357305427698525450">አንዳንድ የሚደገፉ አገናኞች አሁንም በ<ph name="APP_NAME" /> ወይም <ph name="APP_NAME_2" /> ውስጥ ይከፈታሉ።</translation>
 <translation id="6357750620525943720">ሌሎች ቋሚ ለዪዎች (ለምሳሌ፣ ሃሾች ወይም UUIDዎች)</translation>
 <translation id="6358884629796491903">ድራጎን</translation>
+<translation id="6359640073754977254">ወደ መጨረሻ ትር ያሸብልሉ</translation>
 <translation id="6361850914223837199">የስህተት ዝርዝሮች፦</translation>
 <translation id="6362853299801475928">&amp;ችግር ሪፖርት አድርግ...</translation>
 <translation id="6363786367719063276">ምዝግብ ማስታወሻ ይመልከቱ</translation>
@@ -10226,6 +10230,7 @@ nil</translation>
 <translation id="8258027225380843424">ማምጣት ተሳክቷል</translation>
 <translation id="8259048637628995340">እንከን የለሽ ተሞክሮ ለማግኘት የAndroid ስልክዎን ያገናኙ</translation>
 <translation id="8260177673299865994">የማውረድ ጥበቃን ያሻሽሉ</translation>
+<translation id="8260473380156923937">Chrome መተግበሪያዎች በቅርቡ ይቋረጣሉ። ለአማራጮች ገንቢውን ወይም የአይቲ የአገልግሎት ዕውቂያዎን ያነጋግሩ።</translation>
 <translation id="8260864402787962391">መዳፊት</translation>
 <translation id="8261378640211443080">ይህ ቅጥያ በ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ውስጥ ያልተጠቀሰ ሲሆን እርስዎ ሳያውቁት የታከለ ሊሆን ይችላል።</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>

@@ -123,12 +123,34 @@ source_set("buildflag_macro") {
   public_configs = [ ":public_includes" ]
 }
 
+# When developers are repeatedly growing a buffer with `realloc`, they are
+# expected to request a new size that is larger than the current size by
+# some growth factor. This growth factor allows to amortize the cost of
+# memcpy. Unfortunately, some nVidia drivers have a bug where they repeatedly
+# increase the buffer by 4144 byte only.
+#
+# In particular, most Skia Linux bots are using the affected nVidia driver. So
+# this flag is used as a workaround for Skia standalone, not in production.
+#
+# External link:
+#   https://forums.developer.nvidia.com/t/550-54-14-very-bad-performance-due-to-bunch-of-reallocations-during-glcore-initialization/287027
+#
+# Internal discussion at @chrome-memory-safety:
+#   https://groups.google.com/a/google.com/d/msgid/chrome-memory-safety/CAAzos5HrexY2njz2YzWrffTq1xEfkx15GVpSvHUyQED6wBSXvA%40mail.gmail.com?utm_medium=email&utm_source=footer
+declare_args() {
+  partition_alloc_realloc_growth_factor_mitigation = false
+}
+
 pa_buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ASSERT_CPP_20=$assert_cpp20",
     "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
+    "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
+    "DCHECKS_ARE_ON=$partition_alloc_dchecks_are_on",
+    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+    "ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=$enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support",
     "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
     "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
@@ -143,6 +165,7 @@ pa_buildflag_header("buildflags") {
     "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
+    "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
     "FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=$force_disable_backup_ref_ptr_feature",
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
     "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
@@ -156,6 +179,7 @@ pa_buildflag_header("buildflags") {
     "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
     "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
     "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
+    "REALLOC_GROWTH_FACTOR_MITIGATION=$partition_alloc_realloc_growth_factor_mitigation",
     "RECORD_ALLOC_INFO=$record_alloc_info",
     "SMALLER_PARTITION_COOKIE=$smaller_partition_cookie",
     "STACK_SCAN_SUPPORTED=$stack_scan_supported",
@@ -171,11 +195,6 @@ pa_buildflag_header("buildflags") {
     "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
-    "ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=$enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support",
-    "DCHECKS_ARE_ON=$partition_alloc_dchecks_are_on",
-    "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
-    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
-    "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
   ]
 }
 

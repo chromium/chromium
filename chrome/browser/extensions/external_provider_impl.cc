@@ -57,6 +57,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_switches.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/extensions/signin_screen_extensions_external_loader.h"
@@ -696,7 +697,11 @@ void ExternalProviderImpl::CreateExternalProviders(
   // mode.
   if (IsRunningInForcedAppMode()) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (profiles::IsChromeAppKioskSession()) {
+    if (profiles::IsChromeAppKioskSession() &&
+        // If kPreventKioskAutolaunchForTesting is specified,
+        // the app won't be provided, so skip these providers.
+        !base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ash::switches::kPreventKioskAutolaunchForTesting)) {
       ManifestLocation location = ManifestLocation::kExternalPolicy;
 
       if (!connector->IsDeviceEnterpriseManaged())

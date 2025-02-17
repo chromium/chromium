@@ -13,8 +13,8 @@
 struct TemplateURLData;
 class PrefService;
 
-namespace search_engines {
-class SearchEngineChoiceService;
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
 }
 
 namespace TemplateURLPrepopulateData {
@@ -25,9 +25,9 @@ namespace TemplateURLPrepopulateData {
 // `TemplateURLPrepopulateData`.
 class Resolver : public KeyedService {
  public:
-  Resolver(
-      PrefService& prefs,
-      search_engines::SearchEngineChoiceService& search_engine_choice_service);
+  Resolver(PrefService& prefs,
+           regional_capabilities::RegionalCapabilitiesService&
+               regional_capabilities);
 
   // Returns the prepopulated URLs for the profile country.
   std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines() const;
@@ -53,8 +53,8 @@ class Resolver : public KeyedService {
 
  private:
   raw_ref<PrefService> profile_prefs_;
-  raw_ref<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
+  raw_ref<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_;
 };
 
 }  // namespace TemplateURLPrepopulateData

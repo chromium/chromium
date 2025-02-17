@@ -962,14 +962,15 @@ views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
 }
 
 bool DesktopMediaPickerDialogView::Accept() {
-  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  CHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
-  // Ok button should only be enabled when a source is selected.
-  std::optional<DesktopMediaID> source_optional =
-      accepted_source_.has_value() ? accepted_source_
-                                   : GetSelectedController()->GetSelection();
-  DesktopMediaID source = source_optional.value();
+  // Accept() can only be called if IsDialogButtonEnabled() for the OK button,
+  // which implies that at least one of these two options has_value().
+  DesktopMediaID source = accepted_source_.has_value()
+                              ? accepted_source_.value()
+                              : GetSelectedController()->GetSelection().value();
   source.audio_share = IsAudioSharingApprovedByUser();
+
   if (request_source_ == RequestSource::kGetDisplayMedia) {
     RecordUmaSelection(dialog_type_, capturer_global_id_, source,
                        GetSelectedSourceListType(), dialog_open_time_);
@@ -1014,6 +1015,16 @@ void DesktopMediaPickerDialogView::AcceptSource() {
 void DesktopMediaPickerDialogView::AcceptSpecificSource(
     const DesktopMediaID& source) {
   VLOG(1) << "DMPDV::AcceptSpecificSource: source_id = " << source.id;
+
+  if (tabbed_pane_) {
+    for (size_t i = 0; i < categories_.size(); i++) {
+      if (AsDesktopMediaIdType(categories_[i].type) == source.type) {
+        tabbed_pane_->SelectTabAt(i, /*animate=*/false);
+        break;
+      }
+    }
+  }
+
   accepted_source_ = std::optional<DesktopMediaID>(source);
   AcceptSource();
 }

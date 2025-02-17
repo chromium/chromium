@@ -69,11 +69,10 @@ FocusedTabData::FocusedTabData(
       focused_tab_candidate =
           FocusedTabCandidate(web_contents, invalid_candidate_error.value());
     } else {
-      if (no_candidate_tab_error) {
-        this->no_candidate_tab_error = no_candidate_tab_error;
-      } else {
+      if (!no_candidate_tab_error) {
         no_candidate_tab_error = glic::mojom::NoCandidateTabError::kUnknown;
       }
+      this->no_candidate_tab_error = std::move(*no_candidate_tab_error);
     }
   }
 }

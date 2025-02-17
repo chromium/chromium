@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/variations/service/variations_service.h"
@@ -40,6 +41,8 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
       CHECK_DEREF(profile.GetPrefs()), g_browser_process->local_state(),
       CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
                       GetForProfile(&profile)),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(&profile)),
       is_profile_elibile_for_dse_guest_propagation,
       g_browser_process->variations_service());
 }
@@ -58,6 +61,7 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
               .Build()) {
   DependsOn(
       regional_capabilities::RegionalCapabilitiesServiceFactory::GetInstance());
+  DependsOn(TemplateURLPrepopulateData::ResolverFactory::GetInstance());
 }
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;

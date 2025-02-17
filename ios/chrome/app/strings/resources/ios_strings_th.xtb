@@ -658,6 +658,7 @@
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3904270275864974753">แก้ไขภาพสไลด์</translation>
 <translation id="3909222758573607742">บันทึกรหัสผ่านและรายการอื่นๆ ในบัญชี</translation>
+<translation id="3913463964270756493">ซ่อนหน้าจอ Search ด้วย Google Lens</translation>
 <translation id="3914640181019354363">ตรวจหาที่อยู่</translation>
 <translation id="3922185497376658606">โหลดหน้าเว็บล่วงหน้า</translation>
 <translation id="3922395466317605522">ปรับแต่งเมนู</translation>
@@ -975,6 +976,7 @@
 <translation id="5238596603078743134">ตอนนี้ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ได้</translation>
 <translation id="5242899254250321823">เปลี่ยนรหัสผ่านในเว็บไซต์</translation>
 <translation id="5248640482715684545">เว็บไซต์นี้พยายามเปิดแอปพลิเคชันอื่น</translation>
+<translation id="5250371859659394278">จากแหล่งที่มาที่ไม่รู้จัก</translation>
 <translation id="5271265092610673171">{count,plural, =1{ไม่มีข้อมูลในช่องที่ต้องกรอก โปรดป้อนข้อมูลก่อนบันทึก}other{ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก}}</translation>
 <translation id="5271549068863921519">บันทึกรหัสผ่าน</translation>
 <translation id="5279214046729249716">ใช่ แยกกัน</translation>

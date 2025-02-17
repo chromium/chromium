@@ -158,6 +158,11 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RemoveFileSystem(const std::string& file_system_path) override;
   void UpgradeDraggedFileSystemPermissions(
       const std::string& file_system_url) override;
+  void ConnectAutomaticFileSystem(DispatchCallback callback,
+                                  const std::string& file_system_path,
+                                  const std::string& file_system_uuid,
+                                  bool add_if_missing) final;
+  void DisconnectAutomaticFileSystem(const std::string& file_system_path) final;
   void IndexPath(int index_request_id,
                  const std::string& file_system_path,
                  const std::string& excluded_folders) override;
@@ -268,6 +273,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void FileSavedAs(const std::string& url, const std::string& file_system_path);
   void CanceledFileSaveAs(const std::string& url);
   void AppendedTo(const std::string& url);
+  void ConnectAutomaticFileSystemDone(DispatchCallback callback, bool success);
   void IndexingTotalWorkCalculated(int request_id,
                                    const std::string& file_system_path,
                                    int total_work);

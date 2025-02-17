@@ -50,12 +50,16 @@ hello<script>alert('i am a test')</script>
 
 #data
 <plaintext><p>text</p>
+#config
+{}
 #document
 | <plaintext>
 |   "<p>text</p>"
 
 #data
 <xmp>TEXT</xmp>
+#config
+{}
 #document
 | <xmp>
 |   "TEXT"
@@ -88,17 +92,10 @@ test
 | "bla"
 
 #data
-<custom-element>test2</custom-element>bla
-#config
-{ "customElements": true }
-#document
-| "test2bla"
-
-#data
 <custom-element>test3</custom-element>bla
 #config
 { "elements": ["custom-element"] }
-#document,
+#document
 | <custom-element>
 |   "test3"
 | "bla"
@@ -150,13 +147,25 @@ test
 #config
 { "removeElements": ["div"], "elements": ["div"] }
 #document
-| "bla"
+| <p>
+|   "bla"
 
 #data
 <p id='test'>Click.</p>
 #config
-{ "removeAttributes": [] },
+{ "removeAttributes": [] }
 #document
+| <p>
+|   id="test"
+|   "Click."
+
+#data
+<p id='test'>Click.</p>
+#config
+{ "removeAttributes": ["id"] }
+#document
+| <p>
+|   "Click."
 
 #data
 <p id='test'>Click.</p>
@@ -180,7 +189,7 @@ test
 #config
 { "elements": [
   { "name": "p", "attributes": ["title"] },
-  { "name": "div", "attributes": ["id"] },
+  { "name": "div", "attributes": ["id"] }
 ]}
 #document
 | <p>
@@ -196,8 +205,8 @@ test
 { "elements":
   [
     { "name": "p", "removeAttributes": ["title"] },
-    { "name": "div", "removeAttributes": ["id"] },
-  ],
+    { "name": "div", "removeAttributes": ["id"] }
+  ]
 }
 #document
 | <p>
@@ -246,6 +255,8 @@ test
 }
 #document
 | <div>
+|   id="div"
+|   title="div"
 |   "DIV"
 
 #data
@@ -412,7 +423,9 @@ test
 <p>comment<!-- hello -->in<!-- </p> -->text</p>
 #document
 | <p>
-|   "commentintext"
+|   "comment"
+|   "in"
+|   "text"
 
 #data
 <p>comment<!-- hello -->in<!-- </p> -->text</p>
@@ -432,7 +445,9 @@ test
 { "comments": false }
 #document
 | <p>
-|   "commentintext"
+|   "comment"
+|   "in"
+|   "text"
 
 #data
 <svg></svg>
@@ -454,8 +469,8 @@ test
 #document
 | <div>
 |   "balabala"
-|     <dl>
-|       "test"
+|   <dl>
+|     "test"
 
 #data
 <div>balabala<dl>test</dl></div>
@@ -514,7 +529,10 @@ test
   "elements": ["div"]}
 #document
 | <div>
-|   "balabalatest"
+|   "balabala"
+|   "test"
+| "t"
+| "custom-element"
 
 #data
 <div>test<div>p</div>tt<p>div</p></div><test>test</test>
@@ -528,30 +546,6 @@ test
 |   "div"
 | <test>
 |   "test"
-
-#data
-<div>balabala<i>test</i></div><test>t</test><custom-element>custom-element</custom-element>
-#config
-{
-  "removeElements": [123, "test", "i", "custom-element"],
-  "unknownMarkup": true,
-}
-#document
-| <div>
-|   "balabala"
-
-#data
-<div>balabala<i>test</i></div><test>t</test><custom-element>custom-element</custom-element>
-#config
-{
-  "replaceWithChildrenElements": [123, "test", "i", "custom-element"],
-  "unknownMarkup": true,
-}
-#document
-| <div>
-|   "balabala"
-|   "test"
-| "t"
 
 #data
 test<div>p</div>tt<p>div</p><test>test</test>

@@ -4185,5 +4185,55 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
                       std::to_array<const AutofillField*>({&field, &field2})));
 }
 
+// Tests that duplicate fields with identical field values are valid for the
+// case where a <select> field follows an <input> field and the input field's
+// value is the selected option's value. They would thus not abandon the import
+// of the address.
+TEST_F(FormDataImporterTest_RelaxAddressImport,
+       InputFollowedBySelectWithIdenticalValuesAreValid) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY));
+  field.set_value(u"US");
+  AutofillField field2(
+      test::CreateTestSelectField("Country", "country", "US", "country",
+                                  {"DE", "US"}, {"Germany", "United States"}));
+  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY));
+  const std::array<const autofill::AutofillField*, 2> section_fields =
+      std::to_array<const AutofillField*>({&field, &field2});
+
+  EXPECT_FALSE(
+      test_api(form_data_importer()).HasInvalidFieldTypes(section_fields));
+  EXPECT_THAT(
+      test_api(form_data_importer()).GetObservedFieldValues(section_fields),
+      ::testing::ElementsAre(
+          ::testing::Pair(::testing::Eq(ADDRESS_HOME_COUNTRY),
+                          ::testing::Eq(u"United States"))));
+}
+
+// Tests that duplicate fields with identical field values are valid for the
+// case where a <select> field is followed by an <input> field and the input
+// field's value is the selected option's value. They would thus not abandon the
+// import of the address.
+TEST_F(FormDataImporterTest_RelaxAddressImport,
+       SelectFollowedByInputWithIdenticalValuesAreValid) {
+  AutofillField field(
+      test::CreateTestSelectField("Country", "country", "US", "country",
+                                  {"DE", "US"}, {"Germany", "United States"}));
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY));
+  AutofillField field2;
+  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY));
+  field2.set_value(u"US");
+  const std::array<const autofill::AutofillField*, 2> section_fields =
+      std::to_array<const AutofillField*>({&field, &field2});
+
+  EXPECT_FALSE(
+      test_api(form_data_importer()).HasInvalidFieldTypes(section_fields));
+  EXPECT_THAT(
+      test_api(form_data_importer()).GetObservedFieldValues(section_fields),
+      ::testing::ElementsAre(
+          ::testing::Pair(::testing::Eq(ADDRESS_HOME_COUNTRY),
+                          ::testing::Eq(u"United States"))));
+}
+
 }  // namespace
 }  // namespace autofill

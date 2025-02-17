@@ -111,12 +111,22 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     /** Defines the context menu modes */
-    @IntDef({ContextMenuMode.NORMAL, ContextMenuMode.CUSTOM_TAB, ContextMenuMode.WEB_APP})
+    @IntDef({ContextMenuMode.NORMAL, ContextMenuMode.CUSTOM_TAB, ContextMenuMode.WEB_APP,
+            ContextMenuMode.NETWORK_BOUND_TAB})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContextMenuMode {
         int NORMAL = 0; /* Default mode*/
         int CUSTOM_TAB = 1; /* Custom tab mode */
         int WEB_APP = 2; /* Full screen mode */
+        /**
+         * Network bound tab mode, designed for multi-network Custom Tab (CCT), see {@link
+         * org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider#
+         * hasTargetNetwork()}, corresponding to
+         * {@link org.chromium.chrome.browser.customtabs.CustomTabsUiType#NETWORK_BOUND_TAB}.
+         * This mode inherits the context menu of CUSTOM_TAB mode with the exception of "Open in
+         * new Chrome tab" and "Open in Incognito tab" items, which are omitted.
+         */
+        int NETWORK_BOUND_TAB = 3;
     }
 
     static class ContextMenuUma {
@@ -357,7 +367,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             boolean isSrcDownloadableScheme =
                     UrlUtilities.isDownloadableScheme(mParams.getSrcUrl());
             // Avoid showing open image option for same image which is already opened.
-            if (mMode == ContextMenuMode.CUSTOM_TAB
+            if ((mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.NETWORK_BOUND_TAB)
                     && !mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
                 imageGroup.add(createListItem(Item.OPEN_IMAGE));
             }
@@ -433,7 +443,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             groupedItems.add(new Pair<>(null, sharedHighlightingGroup));
         }
 
-        if (mMode != ContextMenuMode.NORMAL && FirstRunStatus.getFirstRunFlowComplete()) {
+        // Only add below items to the front of link group iff it's in the CUSTOM_TAB or WEB_APP
+        // mode.
+        if ((mMode == ContextMenuMode.WEB_APP || mMode == ContextMenuMode.CUSTOM_TAB)
+                && FirstRunStatus.getFirstRunFlowComplete()) {
             ModelList items =
                     groupedItems.isEmpty()
                             ? new ModelList()
@@ -1050,7 +1063,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private boolean enableShareFromContextMenu() {
         return ShareUtils.enableShareForAutomotive(
-                mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.WEB_APP);
+                mMode == ContextMenuMode.CUSTOM_TAB
+                        || mMode == ContextMenuMode.NETWORK_BOUND_TAB
+                        || mMode == ContextMenuMode.WEB_APP);
     }
 
     private void showDownloadRestrictedToast() {

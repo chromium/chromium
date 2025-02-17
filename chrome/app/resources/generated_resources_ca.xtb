@@ -1183,6 +1183,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no pot continuar utilitzant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">S'està emetent <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Serveis</translation>
+<translation id="1813828404076816564">Selecciona el botó de suggeriments per enviar suggeriments sobre la funció de grups de pestanyes compartits</translation>
 <translation id="18139523105317219">Nom de la part EDI</translation>
 <translation id="1815083418640426271">Enganxa com a text sense format</translation>
 <translation id="1815097521077272760">T'han convidat a provar el control per teclat en aquest joc.</translation>
@@ -4107,6 +4108,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3857807444929313943">Aixeca el dit i toca de nou</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="385939467708172187">Utilitza una contrasenya segura</translation>
+<translation id="3859869403161297890">Envia els teus suggeriments sobre els grups de pestanyes compartits aquí</translation>
 <translation id="3859987779882450877">Suggereix i crea grups automàticament des de les pestanyes obertes</translation>
 <translation id="386009056910366930">Gestiona el grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">El nom d'usuari "<ph name="USERNAME" />" no està disponible</translation>
@@ -8155,6 +8157,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6805478749741295868">Aquesta funció d'IA és experimental i el resultat no sempre serà correcte.</translation>
 <translation id="6805647936811177813">Inicieu la sessió a <ph name="TOKEN_NAME" /> per importar el certificat de client de <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Activa el seguiment RLZ a <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Suggeriments sobre els grups de pestanyes compartits</translation>
 <translation id="6806089545527108739">No permetis, però pregunta més tard</translation>
 <translation id="680644983456221885">Protecció proactiva en temps real contra baixades, extensions i llocs web perillosos basada en les teves dades de navegació enviades a Google</translation>
 <translation id="6806781719264274042">Només els teus contactes amb un Compte de Google. <ph name="LINK_BEGIN" />Mostra els contactes<ph name="LINK_END" />.</translation>

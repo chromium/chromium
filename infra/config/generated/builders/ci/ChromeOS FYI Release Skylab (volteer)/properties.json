@@ -34,7 +34,6 @@
                 ],
                 "config": "chromium"
               },
-              "run_tests_serially": true,
               "skylab_upload_location": {
                 "gs_bucket": "chromium-ci-skylab",
                 "gs_extra": "chromeos_gpu"

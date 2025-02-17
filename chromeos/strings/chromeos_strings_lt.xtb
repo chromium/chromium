@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
 <translation id="2161656808144014275">Tekstas</translation>
 <translation id="2163937499206714165">Įjungti tamsų režimą</translation>
+<translation id="2164131940279488868">Įsitikinkite, jog mikrofonas prijungtas, kad galėtumėte pradėti garso įrašymą</translation>
 <translation id="2173302385160625112">Patikrinkite interneto ryšį</translation>
 <translation id="2180197493692062006">Kažkas nepavyko. Pabandykite iš naujo atidaryti programą.</translation>
 <translation id="2189104374785738357">APN išsamios informacijos redagavimas</translation>
@@ -1469,6 +1470,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> kavinė</translation>
 <translation id="7841134249932030522">Įgalinti tamsų režimą</translation>
 <translation id="7846634333498149051">Klaviatūra</translation>
+<translation id="7847923465436619066">Transkribavimo kalbos rinkiklis</translation>
 <translation id="7849030488395653706">šiaurės pašvaistė</translation>
 <translation id="7849737607196682401">nėrinių</translation>
 <translation id="7850320739366109486">Netrukdyti</translation>
@@ -1655,6 +1657,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8749478549112817787">Fotoaparato fonas</translation>
 <translation id="8755946156089753497">bokštas</translation>
 <translation id="8760616037557661287">Ankstesnės užklausos</translation>
+<translation id="876280838467039397">Atsisiųskite ir pasirinkite <ph name="LANGUAGE_NAME" /> k. transkribavimo modelį</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">„Google“ nuotraukų albumas</translation>
 <translation id="8775713578693478175">Modemo APN</translation>
@@ -1685,6 +1688,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8876270629542503161">Įrenginys yra planšetinis kompiuteris.</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>
 <translation id="8882789155418924367">pelėdos</translation>
+<translation id="8885038613856655272">Mikrofono prijungimas</translation>
 <translation id="8892443466059986410">Atšaukti šaukinio redagavimą</translation>
 <translation id="8897043028305808902">Failas pervardytas</translation>
 <translation id="8898840733695078011">Signalo stiprumas</translation>

@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_delegated_source_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
@@ -87,21 +88,6 @@ std::vector<DesktopMediaList::Type> GetSourceTypes(bool prefer_current_tab,
     return {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow,
             DesktopMediaList::Type::kWebContents};
   }
-}
-
-DesktopMediaID::Type GetSourceIdType(DesktopMediaList::Type type) {
-  switch (type) {
-    case DesktopMediaList::Type::kScreen:
-      return DesktopMediaID::Type::TYPE_SCREEN;
-    case DesktopMediaList::Type::kWindow:
-      return DesktopMediaID::Type::TYPE_WINDOW;
-    case DesktopMediaList::Type::kWebContents:
-    case DesktopMediaList::Type::kCurrentTab:
-      return DesktopMediaID::Type::TYPE_WEB_CONTENTS;
-    case DesktopMediaList::Type::kNone:
-      return DesktopMediaID::Type::TYPE_NONE;
-  }
-  NOTREACHED();
 }
 
 std::string GetTypeAsTestNameString(const DesktopMediaList::Type& type) {
@@ -289,7 +275,7 @@ class DesktopMediaPickerViewsTest
   bool NewOrder() const { return config().new_order; }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(,
                          DesktopMediaPickerViewsTest,
                          testing::ValuesIn(kDefaultProductSourceConfigs));
 
@@ -466,7 +452,12 @@ TEST_P(DesktopMediaPickerViewsTest, DoneWithAudioShare) {
 }
 
 TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
-  DesktopMediaID fake_id(DesktopMediaID::TYPE_SCREEN, 222);
+  // The first pane is tabs in the new order or when PreferCurrentTab is set,
+  // otherwise the first pane is the entire screen.
+  DesktopMediaID::Type type = PreferCurrentTab() || NewOrder()
+                                  ? DesktopMediaID::TYPE_WEB_CONTENTS
+                                  : DesktopMediaID::TYPE_SCREEN;
+  DesktopMediaID fake_id(type, 222);
 
   media_lists_[DesktopMediaList::Type::kWindow]->AddSourceByFullMediaID(
       fake_id);
@@ -534,7 +525,7 @@ class DesktopMediaPickerViewsPerTypeTest
  public:
   DesktopMediaPickerViewsPerTypeTest()
       : DesktopMediaPickerViewsTestBase(config().GetSourceTypes()),
-        source_id_type_(GetSourceIdType(type())) {}
+        source_id_type_(AsDesktopMediaIdType(type())) {}
   ~DesktopMediaPickerViewsPerTypeTest() override = default;
 
   void SetUp() override {
@@ -569,7 +560,7 @@ class DesktopMediaPickerViewsPerTypeTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    ,
     DesktopMediaPickerViewsPerTypeTest,
     testing::Combine(testing::ValuesIn(kDefaultProductSourceConfigs),
                      testing::Values(DesktopMediaList::Type::kCurrentTab,
@@ -673,6 +664,48 @@ TEST_P(DesktopMediaPickerViewsPerTypeTest, ClearSelection) {
   // Clear the selection and assert that nothing is selected.
   test_api_.GetSelectedController()->ClearSelection();
   EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
+}
+
+class DesktopMediaPickerViewsPerTypeAndAudioTest
+    : public DesktopMediaPickerViewsTestBase,
+      public testing::WithParamInterface<
+          std::tuple<DesktopMediaList::Type, bool, bool>> {
+ public:
+  DesktopMediaPickerViewsPerTypeAndAudioTest()
+      : DesktopMediaPickerViewsTestBase(
+            GetSourceTypes(/*prefer_current_tab=*/false, /*new_order=*/true)) {}
+  ~DesktopMediaPickerViewsPerTypeAndAudioTest() override = default;
+
+  void MaybeCreatePickerViews() override {
+    CreatePickerViews(RequireAudio(), SystemAudio());
+  }
+
+  DesktopMediaList::Type Type() const { return std::get<0>(GetParam()); }
+  bool RequireAudio() const { return std::get<1>(GetParam()); }
+  bool SystemAudio() const { return std::get<2>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DesktopMediaPickerViewsPerTypeAndAudioTest,
+    testing::Combine(testing::Values(DesktopMediaList::Type::kWebContents,
+                                     DesktopMediaList::Type::kWindow,
+                                     DesktopMediaList::Type::kScreen),
+                     testing::Bool(),
+                     testing::Bool()));
+
+TEST_P(DesktopMediaPickerViewsPerTypeAndAudioTest, AcceptSpecific) {
+  DesktopMediaID fake_id(AsDesktopMediaIdType(Type()), 333);
+
+  // Audio is enabled by default for tabs
+  if (RequireAudio() &&
+      AsDesktopMediaIdType(Type()) == DesktopMediaID::TYPE_WEB_CONTENTS) {
+    fake_id.audio_share = true;
+  }
+  media_lists_[Type()]->AddSourceByFullMediaID(fake_id);
+
+  GetPickerDialogView()->AcceptSpecificSource(fake_id);
+  EXPECT_EQ(fake_id, WaitForPickerDone());
 }
 
 class DesktopMediaPickerViewsSystemAudioTest
@@ -899,7 +932,7 @@ class DesktopMediaPickerPreferredDisplaySurfaceTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    ,
     DesktopMediaPickerPreferredDisplaySurfaceTest,
     testing::Combine(
         testing::Values(
@@ -947,7 +980,7 @@ class DesktopMediaPickerDoubleClickTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    ,
     DesktopMediaPickerDoubleClickTest,
     testing::Values(std::make_pair(DesktopMediaList::Type::kWindow,
                                    DesktopMediaID::TYPE_WINDOW),
@@ -1031,7 +1064,8 @@ TEST_F(DelegatedSourceListTest, TestSelection) {
   // before the observer will be set for adding items to the list.
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
   media_lists_[DesktopMediaList::Type::kScreen]->AddSourceByFullMediaID(
-      DesktopMediaID(GetSourceIdType(DesktopMediaList::Type::kScreen), 10));
+      DesktopMediaID(AsDesktopMediaIdType(DesktopMediaList::Type::kScreen),
+                     10));
 
   // On MacOS, the added source is automatically selected.
   ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
@@ -1053,7 +1087,8 @@ TEST_F(DelegatedSourceListTest, TestSelection) {
   // before the observer will be set for adding items to the list.
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
   media_lists_[DesktopMediaList::Type::kScreen]->AddSourceByFullMediaID(
-      DesktopMediaID(GetSourceIdType(DesktopMediaList::Type::kScreen), 10));
+      DesktopMediaID(AsDesktopMediaIdType(DesktopMediaList::Type::kScreen),
+                     10));
   ASSERT_FALSE(test_api_.GetSelectedSourceId().has_value());
 
   // Indicate that a selection has been made and ensure that our one source is
@@ -1169,7 +1204,7 @@ TEST_F(DelegatedSourceListTest, EnsureNoWebContentsSelected) {
                  {DesktopMediaList::Type::kScreen});
   CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
   const auto web_contents_source_type =
-      GetSourceIdType(DesktopMediaList::Type::kWebContents);
+      AsDesktopMediaIdType(DesktopMediaList::Type::kWebContents);
 
   // Add a couple of tabs
   media_lists_[DesktopMediaList::Type::kWebContents]->AddSourceByFullMediaID(

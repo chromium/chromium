@@ -10051,9 +10051,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFlexFirmwareUpdateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFlexFirmwareUpdate)},
 
-    {"enable-vpn-apps-on-flex", flag_descriptions::kVpnAppsOnFlexName,
-     flag_descriptions::kVpnAppsOnFlexDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kVpnAppsOnFlex)},
+    {"ignore-device-flex-arc-enabled-policy",
+     flag_descriptions::kIgnoreDeviceFlexArcEnabledPolicyName,
+     flag_descriptions::kIgnoreDeviceFlexArcEnabledPolicyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kIgnoreDeviceFlexArcEnabledPolicy)},
 
     {"ipp-first-setup-for-usb-printers",
      flag_descriptions::kIppFirstSetupForUsbPrintersName,

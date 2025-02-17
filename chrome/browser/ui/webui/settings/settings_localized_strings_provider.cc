@@ -31,7 +31,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -82,11 +82,11 @@
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/features.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -2385,14 +2385,12 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddString("searchExplanationLearnMoreURL",
                          chrome::kOmniboxLearnMoreURL);
 
-  search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile);
-  int country_id = search_engine_choice_service
-                       ? search_engine_choice_service->GetCountryId()
-                       : country_codes::GetCurrentCountryID();
+  regional_capabilities::RegionalCapabilitiesService* regional_capabilities =
+      regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
+          profile);
   html_source->AddLocalizedString(
       "searchEnginesSettingsDialogSubtitle",
-      search_engines::IsEeaChoiceCountry(country_id)
+      regional_capabilities->IsInEeaCountry()
           ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE
           : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA);
 

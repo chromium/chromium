@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">تمام موازنہ ٹیبلز دکھائیں</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے Google اکاؤنٹ میں اپنی معلومات، رازداری اور سیکیورٹی کا نظم کرنے کیلئے Tab، پھر Enter دبائیں</translation>
+<translation id="1793473605302304726">وقت کے ساتھ ادائیگی کریں</translation>
 <translation id="1793631236004319016"><ph name="NUM_HOURS_MINUTES_SECONDS" /> پہلے آخری بار استعمال کی گئی</translation>
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، متعدد کارروائیاں دستیاب ہیں، ہر ایک پر جانے کیلئے Tab دبائیں</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3413,6 +3414,7 @@
 <translation id="7042616127917168121">نتائج کو بہتر بنائیں</translation>
 <translation id="7043552168914147882">ٹیب اسٹاک</translation>
 <translation id="7044081119134178347">اس بار کیمرا کی اجازت ہے</translation>
+<translation id="704738887031336226">چیک آؤٹ پر <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />وقت کے ساتھ ادائیگی کریں<ph name="PAY_OVER_TIME_HELP_LINK_END" /> کے اختیارات دکھائیں</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی، لیکن سرور نے ایک سرٹیفکیٹ پیش کیا جس کے جواز کا عرصہ اتنا طویل ہے کہ اس پر بھروسہ نہیں کیا جا سکتا۔</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{اس کارڈ کو ابھی محفوظ نہیں کیا جا سکتا}other{ان کارڈز کو ابھی محفوظ نہیں کیا جا سکتا}}</translation>

@@ -454,7 +454,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                         mActivity,
                         this,
                         profile,
-                        new HistorySyncConfig(),
+                        mConfig.historySyncConfig,
                         mSigninAccessPoint,
                         /* showEmailInFooter= */ !mDidShowSigninStep,
                         shouldSignOutOnDecline,

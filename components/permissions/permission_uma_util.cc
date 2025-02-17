@@ -369,8 +369,9 @@ void RecordPermissionUsageUkm(ContentSettingsType permission_type,
                               std::optional<ukm::SourceId> source_id) {
   RecordUmaForWhetherUsageUkmWasRecorded(permission_type,
                                          source_id.has_value());
-  if (!source_id.has_value())
+  if (!source_id.has_value()) {
     return;
+  }
 
   ukm::builders::PermissionUsage builder(source_id.value());
   builder.SetPermissionType(static_cast<int64_t>(
@@ -425,8 +426,9 @@ void RecordPermissionActionUkm(
   }
 
   // Only record the permission change if the origin is in the history.
-  if (!source_id.has_value())
+  if (!source_id.has_value()) {
     return;
+  }
 
   const int loud_ui_prompts_count_for_request_type =
       loud_ui_actions_counts_for_request_type.total();
@@ -499,8 +501,9 @@ void RecordPermissionActionUkm(
           GetRoundedRatioForUkm(actions_counts.ignores, prompts_count))
       .SetStats_AllPrompts_Count(BucketizeValue(prompts_count));
 
-  if (ui_reason.has_value())
+  if (ui_reason.has_value()) {
     builder.SetPromptDispositionReason(static_cast<int64_t>(ui_reason.value()));
+  }
 
   if (predicted_grant_likelihood.has_value()) {
     builder.SetPredictionsApiResponse_GrantLikelihood(
@@ -519,9 +522,10 @@ void RecordPermissionActionUkm(
 
   if (has_three_consecutive_denies.has_value()) {
     int64_t satisfied_adaptive_triggers = 0;
-    if (has_three_consecutive_denies.value())
+    if (has_three_consecutive_denies.value()) {
       satisfied_adaptive_triggers |=
           static_cast<int64_t>(AdaptiveTriggers::THREE_CONSECUTIVE_DENIES);
+    }
     builder.SetSatisfiedAdaptiveTriggers(satisfied_adaptive_triggers);
   }
 
@@ -596,17 +600,20 @@ void RecordElementAnchoredPermissionPromptActionUkm(
 // Returns 0 if no version available.
 // Returns 1 if a version has invalid format.
 int ConvertCrowdDenyVersionToInt(const std::optional<base::Version>& version) {
-  if (!version.has_value() || !version.value().IsValid())
+  if (!version.has_value() || !version.value().IsValid()) {
     return 0;
+  }
 
   const std::vector<uint32_t>& full_version = version.value().components();
-  if (full_version.size() != 4)
+  if (full_version.size() != 4) {
     return 1;
+  }
 
   const int kCrowdDenyMinYearLimit = 2020;
   const int year = base::checked_cast<int>(full_version.at(0));
-  if (year < kCrowdDenyMinYearLimit)
+  if (year < kCrowdDenyMinYearLimit) {
     return 1;
+  }
 
   const int month = base::checked_cast<int>(full_version.at(1));
   const int day = base::checked_cast<int>(full_version.at(2));
@@ -1034,8 +1041,9 @@ void PermissionUmaUtil::PermissionPromptResolved(
     ContentSettingsType permission = request->GetContentSettingsType();
     // TODO(timloh): We only record these metrics for permissions which have a
     // ContentSettingsType, as otherwise they don't support GetGestureType.
-    if (permission == ContentSettingsType::DEFAULT)
+    if (permission == ContentSettingsType::DEFAULT) {
       continue;
+    }
 
     PermissionRequestGestureType gesture_type = request->GetGestureType();
     const GURL& requesting_origin = request->requesting_origin();
@@ -1211,8 +1219,9 @@ PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
 
 PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
   scoped_revocation_reporter_in_scope = false;
-  if (!is_initially_allowed_)
+  if (!is_initially_allowed_) {
     return;
+  }
   if (!IsRequestablePermissionType(content_type_) ||
       !PermissionUtil::IsPermission(content_type_)) {
     return;
@@ -1613,6 +1622,21 @@ std::string PermissionUmaUtil::GetOneTimePermissionEventHistogram(
   std::string permission_type = GetPermissionRequestString(
       GetUmaValueForRequestType(ContentSettingsTypeToRequestType(type)));
   return "Permissions.OneTimePermission." + permission_type + ".Event";
+}
+
+// static
+std::string PermissionUmaUtil::GetPredictionModelString(
+    PredictionModelType model_type) {
+  switch (model_type) {
+    case PredictionModelType::kServerSide:
+      return "PredictionService";
+    case PredictionModelType::kTfLiteOnDevice:
+      return "OnDevicePredictionService";
+    case PredictionModelType::kGenAiOnDevice:
+      return "AIv1";
+    default:
+      NOTREACHED();
+  }
 }
 
 // static

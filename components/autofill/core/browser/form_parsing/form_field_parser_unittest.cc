@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
@@ -39,7 +40,8 @@ class FormFieldParserTest : public FormFieldParserTestBase,
                       LanguageCode language = LanguageCode(""),
                       bool is_form_tag = true) {
     ParsingContext context(client_country, language,
-                           GetActivePatternFile().value());
+                           GetActivePatternFile().value(),
+                           GetActiveRegexFeatures());
     FormFieldParser::ParseFormFields(context, fields_, is_form_tag,
                                      field_candidates_map_);
     return field_candidates_map_.size();
@@ -48,7 +50,8 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   // Like `ParseFormFields()`, but using `ParseSingleFields()` instead.
   int ParseSingleFields() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternFile().value());
+                           GetActivePatternFile().value(),
+                           GetActiveRegexFeatures());
     FormFieldParser::ParseSingleFields(context, fields_, field_candidates_map_);
     return field_candidates_map_.size();
   }
@@ -76,8 +79,6 @@ class FormFieldParserTest : public FormFieldParserTestBase,
                                          AutofillScanner* scanner) override {
     return nullptr;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 struct MatchTestCase {
@@ -219,6 +220,37 @@ TEST_F(FormFieldParserTest, ParseFormFieldsForSingleFieldPromoCode) {
 TEST_F(FormFieldParserTest, ParseSingleFieldsIban) {
   // Parse single field IBAN.
   AddTextFormFieldData("", "IBAN", IBAN_VALUE);
+  EXPECT_EQ(1, ParseSingleFields());
+  TestClassificationExpectations();
+
+  // Don't parse other fields.
+  // UNKNOWN_TYPE is used as the expected type, which prevents it from being
+  // part of the expectations in `TestClassificationExpectations()`.
+  AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
+  EXPECT_EQ(1, ParseSingleFields());
+  TestClassificationExpectations();
+}
+
+// Tests that loyalty cards are parsed as part of `ParseFormFields`.
+TEST_F(FormFieldParserTest, ParseFormFieldsFieldsLoyaltyCard) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillEnableLoyaltyCardsFilling};
+  AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
+  AddTextFormFieldData("", "Frequent Flyer", LOYALTY_MEMBERSHIP_ID);
+
+  // `ParseSingleFields` should detect the loyalty card field.
+  EXPECT_EQ(2, ParseFormFields());
+  TestClassificationExpectations();
+}
+
+// Test that `ParseSingleFields` parses a single loyalty card field.
+// LOYALTY_MEMBERSHIP_ID is allowlisted to be produced by the field
+// classification even if the form does not have >= 3 recognized field types.
+TEST_F(FormFieldParserTest, ParseSingleFieldsLoyaltyCard) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillEnableLoyaltyCardsFilling};
+  // Parse single field loyalty card.
+  AddTextFormFieldData("", "frequent-flyer", LOYALTY_MEMBERSHIP_ID);
   EXPECT_EQ(1, ParseSingleFields());
   TestClassificationExpectations();
 

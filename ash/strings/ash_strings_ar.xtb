@@ -194,6 +194,7 @@
 <translation id="1607312127821884567">عدم إعداد ميزة عرض التطبيقات في هاتفك</translation>
 <translation id="1610778689852195798">"تراجع"</translation>
 <translation id="1611993646327628135">مُفعَّل</translation>
+<translation id="1612679292338846734">‏عند تفعيل هذه الميزات، قد يتم إرسال الإدخالات النصية ومحتوى المستندات وعنوان URL لصفحة الويب إلى خوادم ذكاء Google الاصطناعي. وتُستخدم هذه المعلومات لإنشاء اقتراحات الكتابة والملخّصات والإجابة عن الأسئلة وتحسين المنتج، وذلك بما يتوافق مع <ph name="LINK_TO_SERVICE_TERMS" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1623768535032616219">‏تصغير Google Classroom</translation>
 <translation id="163032029566320584">ميزة "<ph name="UNAVAILABLE_DLC" />" غير متوفّرة.</translation>
@@ -564,6 +565,7 @@
 <translation id="2946119680249604491">إضافة اتصال</translation>
 <translation id="2947835478872237115">مستوى شحن البطارية الحالي %<ph name="BATTERY_PERCENTAGE" />، ويتبقّى <ph name="TIME" /> على اكتماله.</translation>
 <translation id="2949420361496057765">اضغط على <ph name="MODIFIER" /> ثم انقر على الرابط.</translation>
+<translation id="2957159466053076448">يمكنك إيقاف هذه الميزات في أي وقت من خلال "الإعدادات". <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">صوت الجهاز</translation>
 <translation id="2960314608273155470">‏وضع الالتقاط، الإعداد التلقائي هو <ph name="SOURCE" /> <ph name="TYPE" />. اضغط على مفتاح Tab للتنقّل على لوحة المفاتيح.</translation>
 <translation id="2961963223658824723">حدث خطأ. يُرجى إعادة المحاولة خلال بضع ثوانٍ.</translation>
@@ -1904,6 +1906,7 @@
 <translation id="735745346212279324">‏تم قطع اتصال شبكة VPN</translation>
 <translation id="7360036564632145207">يمكن تحسين أداء الأجهزة الملحقة من خلال تغيير إعدادات الحماية من الوصول إلى البيانات.</translation>
 <translation id="736045644501761622">ضبط الخلفية والأسلوب</translation>
+<translation id="7368041336688136012">يجب ألّا يقل عمرك عن 18 عامًا لاستخدام ميزات "ما الخلاصة؟" و"ساعدني في الكتابة" وإنشاء الصور باستخدام الذكاء الاصطناعي.</translation>
 <translation id="7371404428569700291">تسجيل فيديو للنافذة</translation>
 <translation id="7372069265635026568">مساحة الذاكرة المتوفّرة: <ph name="AVAILABLE_MEMORY" /> من إجمالي <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">يتيح هذا الإجراء وصول كل التطبيقات والمواقع الإلكترونية إلى الميكروفون من خلال منحها إذن استخدام الميكروفون.</translation>
@@ -2029,6 +2032,7 @@
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">عرض الكل</translation>
+<translation id="7762664108390426952">‏بنود خدمة وسياسة خصوصية Google</translation>
 <translation id="7768784765476638775">الاختيار والاستماع</translation>
 <translation id="7769299611924763557">‏سيصبح ملف GIF جاهزًا بعد قليل.</translation>
 <translation id="7773536009433685931">‏تفعيل شبكة Wi-Fi</translation>

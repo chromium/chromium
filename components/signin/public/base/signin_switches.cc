@@ -28,6 +28,11 @@ BASE_FEATURE(kHistoryOptInEntryPoints,
              "HistoryOptInEntryPoints",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Add history opt-in IPH in settings on Android.
+BASE_FEATURE(kHistoryOptInIph,
+             "HistoryOptInIph",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to bypass double-checking that signin callers have correctly gotten
 // the user to accept account management. This check is slow and not strictly
 // necessary, so disable it while we work on adding caching.

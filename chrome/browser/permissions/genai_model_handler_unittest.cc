@@ -56,7 +56,7 @@ constexpr char kModelAvailableAtInquiryTimeHistogram[] =
     "Permissions.AIv1.AvailableAtInquiryTime";
 constexpr char kModelDownloadSuccessHistogram[] =
     "Permissions.AIv1.DownloadSuccess";
-constexpr char kModelFetchTimeHistogram[] = "Permissions.AIv1.FetchTime";
+constexpr char kModelDownloadTimeHistogram[] = "Permissions.AIv1.DownloadTime";
 constexpr char kSessionCreationTimeHistogram[] =
     "Permissions.AIv1.SessionCreationTime";
 constexpr char kExecutionDurationHistogram[] =
@@ -65,7 +65,8 @@ constexpr char kExecutionSuccessHistogram[] =
     "Permissions.AIv1.ExecutionSuccess";
 constexpr char kResponseParseSuccessHistogram[] =
     "Permissions.AIv1.ResponseParseSuccess";
-
+constexpr char kPreviousSessionFinishedInTimeHistogram[] =
+    "Permissions.AIv1.PreviousSessionFinishedInTime";
 }  // namespace
 
 namespace permissions {
@@ -268,7 +269,7 @@ TEST_F(GenAiModelHandlerTest, ModelDownloadsSuccessfully) {
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
   histogram_tester.ExpectUniqueSample(kModelDownloadSuccessHistogram, true, 1);
-  histogram_tester.ExpectTotalCount(kModelFetchTimeHistogram, 1);
+  histogram_tester.ExpectTotalCount(kModelDownloadTimeHistogram, 1);
 
   EXPECT_TRUE(genai_model_handler_->IsOnDeviceModelAvailable());
 }
@@ -471,10 +472,10 @@ TEST_F(GenAiModelHandlerTest, FailForNewSessionIfOldIsStillRunning) {
 
   histogram_tester.ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
                                       true, 1);
-
-  // We check for one successfully created session and one failure.
-  EXPECT_THAT(histogram_tester.GetAllSamples(kSessionCreationSuccessHistogram),
-              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+  histogram_tester.ExpectUniqueSample(kSessionCreationSuccessHistogram, true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(kPreviousSessionFinishedInTimeHistogram,
+                                      false, 1);
   histogram_tester.ExpectTotalCount(kSessionCreationTimeHistogram, 1);
   histogram_tester.ExpectTotalCount(kExecutionDurationHistogram, 0);
   histogram_tester.ExpectTotalCount(kExecutionSuccessHistogram, 0);

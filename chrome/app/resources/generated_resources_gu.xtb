@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">સાઇબરપન્ક</translation>
 <translation id="1129420403709586868">તમારા ફોનના ફોટા અને મીડિયા જુઓ</translation>
 <translation id="1129850422003387628">ઍપ મેનેજ કરો</translation>
+<translation id="1130430615924359526">{0,plural, =1{છૂપો મોડ બંધ કરો}one{છૂપા મોડમાં (# વિન્ડો) બંધ કરો}other{છૂપા મોડમાં (# વિન્ડો) બંધ કરો}}</translation>
 <translation id="113050636487300043">વિવિધ પ્રોફાઇલને અલગ તારવવા માટે નામ અને રંગ થીમ પસંદ કરો</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - ગ્રૂપ <ph name="GROUP_NAME" />નો ભાગ છે</translation>
 <translation id="1130676589211693127">જમણા વાયરલેસ ઇયરબડમાં બૅટરીનું લેવલ <ph name="PERCENTAGE" />% છે.</translation>
@@ -1510,6 +1511,7 @@
 <translation id="2042279886444479655">સક્રિય પ્રોફાઇલ</translation>
 <translation id="2042427131767688936">ખાતરી કરો કે આ ડિવાઇસનો સુરક્ષિત રીતે ઉપયોગ કરી શકાય છે, તમારી સંસ્થા તેની ઑપરેટિંગ સિસ્ટમ, બ્રાઉઝર અને સેટિંગ તેમજ ડિવાઇસ પર કયું સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે તે વિશેની માહિતી જોઈ શકે છે.</translation>
 <translation id="2044014337866019681">કૃપા કરીને ખાતરી કરો કે સત્રને અનલૉક કરવા માટે તમે <ph name="ACCOUNT" />ની ચકાસણી કરી રહ્યાં છો.</translation>
+<translation id="2044750031738659219">{0,plural, =1{અતિથિ વિન્ડો બંધ કરો}one{અતિથિ (# વિન્ડો) બંધ કરો}other{અતિથિ (# વિન્ડો) બંધ કરો}}</translation>
 <translation id="204497730941176055">Microsoft પ્રમાણપત્ર નમૂના નામ</translation>
 <translation id="2045211794962848221">તમને આ ચોક્કસ મેસેજ ફરીથી દેખાશે નહીં</translation>
 <translation id="2045838962742066664">શૉર્ટહેન્ડ ટાઇપિંગ</translation>
@@ -7356,6 +7358,7 @@ USB ડિવાઇસ</translation>
 <translation id="6214106213498203737">વૉટરકલર</translation>
 <translation id="621470880408090483">સાઇટને બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="6215039389782910006">{1,plural, =1{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, 1 મિનિટની નિષ્ક્રિયતા પછી <ph name="BRAND" /> લૉક થાય છે}one{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, # મિનિટની નિષ્ક્રિયતા પછી <ph name="BRAND" /> લૉક થાય છે}other{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, # મિનિટની નિષ્ક્રિયતા પછી <ph name="BRAND" /> લૉક થાય છે}}</translation>
+<translation id="6216154119179790291">પહેલા ટૅબ પર સ્ક્રોલ કરો</translation>
 <translation id="6216239400972191926">નકારેલી સાઇટ અને ઍપ</translation>
 <translation id="6216601812881225442">તમારા કન્ટેનરનું કદ બદલવાની સુવિધા ઉપલબ્ધ નથી. Linux માટે અગાઉથી ફાળવેલી સ્પેસ ગોઠવવા માટે, બૅકઅપ લો અને ત્યાર બાદ નવા કન્ટેનરમાં રિસ્ટોર કરો.</translation>
 <translation id="6216696360484424239">ઑટોમેટિક રીતે સાઇન ઇન કરો</translation>
@@ -7552,6 +7555,7 @@ USB ડિવાઇસ</translation>
 <translation id="6357305427698525450">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" /> અથવા <ph name="APP_NAME_2" />માં ખૂલશે.</translation>
 <translation id="6357750620525943720">અન્ય સ્થિર ઓળખકર્તાઓ (દા.ત., હૅશ કે UUID)</translation>
 <translation id="6358884629796491903">ડ્રેગન</translation>
+<translation id="6359640073754977254">છેલ્લા ટૅબ પર સ્ક્રોલ કરો</translation>
 <translation id="6361850914223837199">ભૂલ વિગતો:</translation>
 <translation id="6362853299801475928">&amp;સમસ્યાની જાણ કરો...</translation>
 <translation id="6363786367719063276">લૉગ જુઓ</translation>
@@ -10208,6 +10212,7 @@ USB ડિવાઇસ</translation>
 <translation id="8258027225380843424">આયાત કરવું સફળ થયું!</translation>
 <translation id="8259048637628995340">વિક્ષેપરહિત અનુભવ માટે, તમારો Android ફોન કનેક્ટ કરો</translation>
 <translation id="8260177673299865994">ડાઉનલોડની પ્રક્રિયા સંબંધિત સંરક્ષણ બહેતર બનાવો</translation>
+<translation id="8260473380156923937">Chrome ઍપ ટૂંક સમયમાં કાયમ માટે બંધ કરી દેવામાં આવશે. વિકલ્પો માટે ડેવલપર અથવા તમારી IT સેવાનો સંપર્ક કરો.</translation>
 <translation id="8260864402787962391">માઉસ</translation>
 <translation id="8261378640211443080">આ એક્સટેન્શન <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>

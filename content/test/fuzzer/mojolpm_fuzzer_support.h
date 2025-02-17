@@ -51,6 +51,12 @@ class FuzzerEnvironment {
 
   TestContentClientInitializer content_client_initializer_;
   base::test::ScopedFeatureList feature_list_;
+
+  // TODO(391728753) Enable AsanBrpInstantiationCheck. This is currently
+  // disabled because this new check is failing. We should fix the failures and
+  // enable this check. Note that this check is not necessarily a security
+  // issue, as long as the assigned dangling pointer isn't used.
+  base::test::ScopedFeatureList disable_asan_brp_instantiation_check_;
 };
 
 // If we can also safely re-use a single BrowserTaskEnvironment and the

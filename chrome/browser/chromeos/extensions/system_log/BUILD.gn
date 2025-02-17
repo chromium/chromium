@@ -44,6 +44,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/profiles:profile",

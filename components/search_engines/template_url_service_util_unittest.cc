@@ -273,29 +273,19 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     // struct as input to set the database's initial state.
     size_t keyword_engines_count = 0;
 
-    // Whether the database is expected to be configured to show the extended
-    // list with more than 5 keywords search engines. Gets set in prefs, not
-    // in the database metadata.
-    std::optional<bool> use_extended_list = std::nullopt;
-
     // Formatter method for Google Test.
     friend std::ostream& operator<<(std::ostream& out,
                                     const KeywordTestMetadata& m) {
       return out << "{data_version=" << m.data_version
                  << ", country=" << m.country
                  << ", keyword_engines_count=" << m.keyword_engines_count
-                 << ", use_extended_list="
-                 << (m.use_extended_list.has_value()
-                         ? (*m.use_extended_list ? "yes" : "no")
-                         : "unset")
                  << "}";
     }
 
     // Needed to be able to use EXPECT_EQ with this struct.
     bool operator==(const KeywordTestMetadata& rhs) const {
       return data_version == rhs.data_version && country == rhs.country &&
-             keyword_engines_count == rhs.keyword_engines_count &&
-             use_extended_list == rhs.use_extended_list;
+             keyword_engines_count == rhs.keyword_engines_count;
     }
   };
 
@@ -317,13 +307,6 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
   // providers are loaded.
   KeywordTestMetadata SimulateFromDatabaseState(
       KeywordTestMetadata initial_state) {
-    if (initial_state.use_extended_list.has_value()) {
-      prefs().SetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList,
-                         *initial_state.use_extended_list);
-    } else {
-      prefs().ClearPref(prefs::kDefaultSearchProviderKeywordsUseExtendedList);
-    }
-
     TemplateURLService::OwnedTemplateURLVector template_urls;
     WDKeywordsResult::Metadata resource_metadata;
     resource_metadata.builtin_keyword_data_version = initial_state.data_version;
@@ -331,21 +314,15 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     CallGetSearchProvidersUsingLoadedEngines(search_engines_test_environment_,
                                              &template_urls, resource_metadata,
                                              os_crypt_.get());
-
-    std::optional<bool> use_extended_list_output =
-        prefs().HasPrefPath(
-            prefs::kDefaultSearchProviderKeywordsUseExtendedList)
-            ? std::optional<bool>(prefs().GetBoolean(
-                  prefs::kDefaultSearchProviderKeywordsUseExtendedList))
-            : std::nullopt;
     size_t keyword_engines_count =
         template_urls.size() -
         TemplateURLStarterPackData::GetStarterPackEngines().size();
 
-    return {.data_version = resource_metadata.builtin_keyword_data_version,
-            .country = resource_metadata.builtin_keyword_country,
-            .keyword_engines_count = keyword_engines_count,
-            .use_extended_list = use_extended_list_output};
+    return {
+        .data_version = resource_metadata.builtin_keyword_data_version,
+        .country = resource_metadata.builtin_keyword_country,
+        .keyword_engines_count = keyword_engines_count,
+    };
   }
 
   PrefService& prefs() {
@@ -384,9 +361,7 @@ TEST_F(TemplateURLServiceUtilLoadTest,
   // update anything.
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
                                       .country = kNonEeaCountryId});
-  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u}));
+  EXPECT_EQ(output, kNoUpdate);
 
   // Missing country ID doesn't trigger an update either.
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion});
@@ -401,21 +376,11 @@ TEST_F(TemplateURLServiceUtilLoadTest,
       {.data_version = kCurrentDataVersion, .country = kOtherEeaCountryId});
   EXPECT_EQ(output, kDefaultUpdatedState);
 
-  // If the extended list was previously used, the function will re-run to
-  // shorten it.
-  output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion, .use_extended_list = true});
-  EXPECT_EQ(output, kDefaultUpdatedState);
-
   // If database's data version is more recent than the one built-in to the
-  // client, the updates are suppressed, including shortening the list.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion + 1,
-                                      .country = kOtherEeaCountryId,
-                                      .use_extended_list = true});
-  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u,
-                                         .use_extended_list = true}));
+  // client, the updates are suppressed.
+  output = SimulateFromDatabaseState(
+      {.data_version = kCurrentDataVersion + 1, .country = kOtherEeaCountryId});
+  EXPECT_EQ(output, kNoUpdate);
 }
 
 TEST_F(TemplateURLServiceUtilLoadTest,
@@ -430,12 +395,9 @@ TEST_F(TemplateURLServiceUtilLoadTest,
   const KeywordTestMetadata kDefaultUpdatedState = {
       .data_version = kCurrentDataVersion,
       .country = kEeaCountryId,
-      .keyword_engines_count = kEeaKeywordEnginesCount,
-      .use_extended_list = true};
-  const KeywordTestMetadata kNoUpdate = {.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u,
-                                         .use_extended_list = true};
+      .keyword_engines_count = kEeaKeywordEnginesCount};
+  const KeywordTestMetadata kNoUpdate = {
+      .data_version = 0, .country = 0, .keyword_engines_count = 0u};
 
   // Initial state: nothing. Simulates a fresh install.
   // The function should populate the profile with 8 engines and current
@@ -445,40 +407,26 @@ TEST_F(TemplateURLServiceUtilLoadTest,
 
   // When using the latest metadata from the binary, the function should not
   // update anything.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
-                                      .country = kEeaCountryId,
-                                      .use_extended_list = true});
+  output = SimulateFromDatabaseState(
+      {.data_version = kCurrentDataVersion, .country = kEeaCountryId});
   EXPECT_EQ(output, kNoUpdate);
 
   // Missing country ID doesn't trigger an update either.
-  output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion, .use_extended_list = true});
+  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion});
   EXPECT_EQ(output, kNoUpdate);
 
   // Out of date keyword data versions trigger updates
-  output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion - 1, .use_extended_list = true});
+  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion - 1});
   EXPECT_EQ(output, kDefaultUpdatedState);
 
   // Country changes trigger updates
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
-                                      .country = kOtherEeaCountryId,
-                                      .use_extended_list = true});
-  EXPECT_EQ(output, kDefaultUpdatedState);
-
-  // If the short list was previously used, the function will re-run to
-  // extend it.
   output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion, .use_extended_list = std::nullopt});
+      {.data_version = kCurrentDataVersion, .country = kOtherEeaCountryId});
   EXPECT_EQ(output, kDefaultUpdatedState);
 
   // If database's data version is more recent than the one built-in to the
-  // client, the updates are suppressed, including extending the list.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion + 1,
-                                      .country = kOtherEeaCountryId,
-                                      .use_extended_list = std::nullopt});
-  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u,
-                                         .use_extended_list = std::nullopt}));
+  // client, the updates are suppressed.
+  output = SimulateFromDatabaseState(
+      {.data_version = kCurrentDataVersion + 1, .country = kOtherEeaCountryId});
+  EXPECT_EQ(output, kNoUpdate);
 }

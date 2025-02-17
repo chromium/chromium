@@ -1092,6 +1092,10 @@ inline constexpr char kUsedPolicyCertificates[] =
 inline constexpr char kUserAgentClientHintsGREASEUpdateEnabled[] =
     "policy.user_agent_client_hints_grease_update_enabled";
 
+// Deprecated 02/2025.
+inline constexpr char kDefaultSearchProviderKeywordsUseExtendedList[] =
+    "default_search_provider.keywords_use_extended_list";
+
 #if BUILDFLAG(IS_ANDROID)
 // Deprecated 2/2025.
 inline constexpr char kLocalPasswordsMigrationWarningShownTimestamp[] =
@@ -1540,6 +1544,10 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 01/2025.
   registry->RegisterBooleanPref(kUsedPolicyCertificates, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 02/2025.
+  registry->RegisterBooleanPref(kDefaultSearchProviderKeywordsUseExtendedList,
+                                false);
 
 #if BUILDFLAG(IS_ANDROID)
   // Deprecated 02/2025.
@@ -2842,6 +2850,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 01/2025.
   profile_prefs->ClearPref(kUsedPolicyCertificates);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 02/2025.
+  profile_prefs->ClearPref(kDefaultSearchProviderKeywordsUseExtendedList);
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 02/2025.

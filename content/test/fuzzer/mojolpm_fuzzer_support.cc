@@ -4,6 +4,7 @@
 
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/command_line.h"
 #include "base/debug/asan_service.h"
 #include "base/i18n/icu_util.h"
@@ -49,6 +50,9 @@ FuzzerEnvironment::FuzzerEnvironment(int argc, const char* const* argv)
     : command_line_initialized_(base::CommandLine::Init(argc, argv)),
       fuzzer_thread_("fuzzer_thread") {
   base::test::InitScopedFeatureListForTesting(feature_list_);
+
+  disable_asan_brp_instantiation_check_.InitAndDisableFeature(
+      base::features::kAsanBrpInstantiationCheck);
 
   TestTimeouts::Initialize();
 

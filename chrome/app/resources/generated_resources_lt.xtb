@@ -1196,6 +1196,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> negalima toliau naudoti „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“</translation>
 <translation id="1812284620455788548">Perduodamas skirtukas <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Paslaugos</translation>
+<translation id="1813828404076816564">Pasirinkite atsiliepimų mygtuką, kad galėtumėte išsiųsti atsiliepimą apie bendrinamų skirtukų grupių funkciją</translation>
 <translation id="18139523105317219">EDI šalies pavadinimas</translation>
 <translation id="1815083418640426271">Įklijuoti kaip grynąjį tekstą</translation>
 <translation id="1815097521077272760">Buvote pakviesti išbandyti šio žaidimo valdymą klaviatūra.</translation>
@@ -4127,6 +4128,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="3857807444929313943">Patraukite ir vėl prilieskite</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="385939467708172187">Naudokite sudėtingą slaptažodį</translation>
+<translation id="3859869403161297890">Čia galite išsiųsti atsiliepimą apie bendrinamas skirtukų grupes</translation>
 <translation id="3859987779882450877">Automatiškai siūlo ir kuria grupes iš atidarytų skirtukų</translation>
 <translation id="386009056910366930">Skirtukų grupės „<ph name="GROUP_NAME" />“ tvarkymas</translation>
 <translation id="3861638017150647085">Naudotojo vardas „<ph name="USERNAME" />“ nepasiekiamas</translation>
@@ -8188,6 +8190,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6805478749741295868">Tai yra eksperimentinė DI funkcija ir ji ne visada pateikia tinkamus atsakymus.</translation>
 <translation id="6805647936811177813">Jei norite importuoti programos sertifikatą iš <ph name="HOST_NAME" />, prisijunkite prie „<ph name="TOKEN_NAME" />“.</translation>
 <translation id="680572642341004180">Įgalinti RLZ stebėjimą „<ph name="SHORT_PRODUCT_OS_NAME" />“.</translation>
+<translation id="6805817411033102703">Bendrinamų skirtukų grupių atsiliepimai</translation>
 <translation id="6806089545527108739">Neleisti, bet klausti vėliau</translation>
 <translation id="680644983456221885">Realiuoju laiku teikiama proaktyvi apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių, pagrįsta jūsų naršymo duomenimis, siunčiamais „Google“</translation>
 <translation id="6806781719264274042">Tik jūsų kontaktai su „Google“ paskyra. <ph name="LINK_BEGIN" />Peržiūrėti kontaktus<ph name="LINK_END" /></translation>

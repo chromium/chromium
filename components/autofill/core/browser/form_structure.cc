@@ -748,7 +748,6 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
     FormFieldParser::ParseFormFields(context, fields_, is_form_element(),
                                      field_type_map);
   } else if (ShouldRunHeuristicsForSingleFields()) {
-    // TODO(crbug.com/393118480): Include loyalty card fields.
     FormFieldParser::ParseSingleFields(context, fields_, field_type_map);
     FormFieldParser::ParseStandaloneCVCFields(context, fields_, field_type_map);
 

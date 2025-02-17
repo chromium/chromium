@@ -10,6 +10,7 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_prepopulate_data_resolver_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/browser_state.h"
@@ -20,6 +21,7 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SearchEngineChoiceService",
                                     ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::RegionalCapabilitiesServiceFactory::GetInstance());
+  DependsOn(ios::TemplateURLPrepopulateDataResolverFactory::GetInstance());
 }
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;
@@ -48,6 +50,8 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetLocalState(),
       CHECK_DEREF(
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)),
+      CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(
+          profile)),
       /*is_profile_elibile_for_dse_guest_propagation=*/false,
       GetApplicationContext()->GetVariationsService());
 }

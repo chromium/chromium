@@ -2881,7 +2881,7 @@ int HttpCache::Transaction::BeginCacheValidation() {
         // restart the transaction. However, don't remove the cache entry, as it
         // might still be usable by a future request with the
         // LOAD_SKIP_CACHE_VALIDATION flag.
-        RestartWithoutNoVarySearchCache(
+        return RestartWithoutNoVarySearchCache(
             RestartCacheEntryAction::kDontErase,
             NoVarySearchUseResult::kCouldntConditionalize);
       }

@@ -35,40 +35,23 @@
 
 namespace {
 
-// Indicates whether updates to the search engines database are needed.
-struct MergeEngineRequirements {
-  // `metadata.HasBuiltinKeywordUpdate()` and
-  // `metadata.HasStarterPackUpdate()` indicate the status for the
-  // two types of search engines, and when they are `true`, individual fields
-  // will contain the associated metadata that should be also added to the
-  // database.
-  WDKeywordsResult::Metadata metadata;
-
-  // The status to which `prefs::kDefaultSearchProviderKeywordsUseExtendedList`
-  // should be set.
-  enum class ShouldKeywordsUseExtendedList { kUnknown, kYes, kNo };
-  ShouldKeywordsUseExtendedList should_keywords_use_extended_list =
-      ShouldKeywordsUseExtendedList::kUnknown;
-};
-
-MergeEngineRequirements ComputeMergeEnginesRequirements(
+// Computes whether updates to the search engines database are needed.
+//
+// `metadata.HasBuiltinKeywordUpdate()` and
+// `metadata.HasStarterPackUpdate()` indicate the status for the
+// two types of search engines, and when they are `true`, individual fields
+// will contain the associated metadata that should be also added to the
+// database.
+WDKeywordsResult::Metadata ComputeMergeEnginesRequirements(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
     const WDKeywordsResult::Metadata& keywords_metadata) {
-  if (!prefs) {
-    CHECK_IS_TEST();
-    return {};
-  }
-  if (!search_engine_choice_service) {
-    CHECK_IS_TEST();
-    return {};
-  }
+  CHECK(prefs);
+  CHECK(search_engine_choice_service);
 
   const int prepopulate_resource_keyword_version =
       TemplateURLPrepopulateData::GetDataVersion(prefs);
   const int country_id = search_engine_choice_service->GetCountryId();
-  const bool should_keywords_use_extended_list =
-      search_engines::IsEeaChoiceCountry(country_id);
 
   bool update_builtin_keywords;
   if (regional_capabilities::HasSearchEngineCountryListOverride()) {
@@ -92,37 +75,25 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
     // client will have this data populated when the search engine choice
     // feature gets enabled.
     update_builtin_keywords = true;
-  } else if (prefs->GetBoolean(
-                 prefs::kDefaultSearchProviderKeywordsUseExtendedList) !=
-             should_keywords_use_extended_list) {
-    // The state of the search engine choice feature has changed.
-    // We started writing the pref while we were not checking the country
-    // before. Once the feature flag is removed, we can clean up this pref.
-    update_builtin_keywords = true;
   } else {
     update_builtin_keywords = false;
   }
 
-  MergeEngineRequirements merge_requirements;
+  WDKeywordsResult::Metadata out_metadata;
 
   if (update_builtin_keywords) {
-    merge_requirements.metadata.builtin_keyword_data_version =
+    out_metadata.builtin_keyword_data_version =
         prepopulate_resource_keyword_version;
-    merge_requirements.metadata.builtin_keyword_country = country_id;
-    merge_requirements.should_keywords_use_extended_list =
-        should_keywords_use_extended_list
-            ? MergeEngineRequirements::ShouldKeywordsUseExtendedList::kYes
-            : MergeEngineRequirements::ShouldKeywordsUseExtendedList::kNo;
+    out_metadata.builtin_keyword_country = country_id;
   }
 
   const int starter_pack_data_version =
       TemplateURLStarterPackData::GetDataVersion();
   if (keywords_metadata.starter_pack_version < starter_pack_data_version) {
-    merge_requirements.metadata.starter_pack_version =
-        starter_pack_data_version;
+    out_metadata.starter_pack_version = starter_pack_data_version;
   }
 
-  return merge_requirements;
+  return out_metadata;
 }
 
 }  // namespace
@@ -610,16 +581,17 @@ void GetSearchProvidersUsingLoadedEngines(
                                 default_search_provider, template_urls,
                                 search_terms_data, removed_keyword_guids);
 
-  MergeEngineRequirements merge_requirements = ComputeMergeEnginesRequirements(
-      prefs, search_engine_choice_service, in_out_keywords_metadata);
+  WDKeywordsResult::Metadata required_metadata =
+      ComputeMergeEnginesRequirements(prefs, search_engine_choice_service,
+                                      in_out_keywords_metadata);
 
-  if (merge_requirements.metadata.HasBuiltinKeywordData()) {
+  if (required_metadata.HasBuiltinKeywordData()) {
     MergeEnginesFromPrepopulateData(service, &prepopulated_urls, template_urls,
                                     default_search_provider,
                                     removed_keyword_guids);
   }
 
-  if (merge_requirements.metadata.HasStarterPackData()) {
+  if (required_metadata.HasStarterPackData()) {
     bool overwrite_user_edits =
         (in_out_keywords_metadata.starter_pack_version <
          TemplateURLStarterPackData::GetFirstCompatibleDataVersion());
@@ -629,19 +601,7 @@ void GetSearchProvidersUsingLoadedEngines(
                               : TemplateURLMergeOption::kDefault));
   }
 
-  in_out_keywords_metadata = merge_requirements.metadata;
-  switch (merge_requirements.should_keywords_use_extended_list) {
-    case MergeEngineRequirements::ShouldKeywordsUseExtendedList::kUnknown:
-      // Do nothing.
-      break;
-    case MergeEngineRequirements::ShouldKeywordsUseExtendedList::kYes:
-      prefs->SetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList,
-                        true);
-      break;
-    case MergeEngineRequirements::ShouldKeywordsUseExtendedList::kNo:
-      prefs->ClearPref(prefs::kDefaultSearchProviderKeywordsUseExtendedList);
-      break;
-  }
+  in_out_keywords_metadata = required_metadata;
 }
 
 bool DeDupeEncodings(std::vector<std::string>* encodings) {

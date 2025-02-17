@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">すべての比較表を表示</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
+<translation id="1793473605302304726">後払い</translation>
 <translation id="1793631236004319016">前回の使用: <ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。複数の操作が可能で、Tab キーを押すと操作が切り替わります</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3411,6 +3412,7 @@
 <translation id="7042616127917168121">結果を絞り込む</translation>
 <translation id="7043552168914147882">タブストック</translation>
 <translation id="7044081119134178347">一時的にカメラを許可しました</translation>
+<translation id="704738887031336226">購入手続き時に<ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />後払い<ph name="PAY_OVER_TIME_HELP_LINK_END" />オプションを表示する</translation>
 <translation id="7048095965575426564">欧州ファンフォールド</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーに提示された証明書の有効期限が長すぎて信頼性を確認できませんでした。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{現在、このカードは保存できません}other{現在、これらのカードは保存できません}}</translation>

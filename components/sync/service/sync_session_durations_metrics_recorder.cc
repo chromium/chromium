@@ -98,7 +98,7 @@ void SyncSessionDurationsMetricsRecorder::OnSessionStarted(
   signin_session_timer_ = std::make_unique<base::ElapsedTimer>();
   sync_account_session_timer_ = std::make_unique<base::ElapsedTimer>();
 
-  history_sync_recorder_.OnSessionStarted(session_start);
+  history_sync_recorder_.OnSessionStarted();
 }
 
 void SyncSessionDurationsMetricsRecorder::OnSessionEnded(

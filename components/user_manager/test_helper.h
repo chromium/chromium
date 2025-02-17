@@ -30,6 +30,10 @@ class TestHelper {
   static void RegisterPersistedUser(PrefService& local_state,
                                     const AccountId& account_id);
 
+  // Records the `user_id` as a Kiosk app user to the given `local_state`.
+  static void RegisterKioskAppUser(PrefService& local_state,
+                                   std::string_view user_id);
+
   // Returns the fake username hash for testing.
   // Valid AccountId must be used, otherwise CHECKed.
   static std::string GetFakeUsernameHash(const AccountId& account_id);

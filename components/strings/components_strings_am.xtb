@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">ሁሉንም የንጽጽር ሠንጠረዦች አሳይ</translation>
 <translation id="1791429645902722292">Google ዘመናዊ ቁልፍ</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle መለያዎ ውስጥ የእርስዎን መረጃ፣ ግላዊነት እና ደህንነት ለማስተዳደር ትር ከዚያ አስገባን ይጫኑ</translation>
+<translation id="1793473605302304726">በጊዜ ሂደት ይክፈሉ</translation>
 <translation id="1793631236004319016">ለመጨረሻ ጊዜ ጥቅም ላይ የዋለው ከ<ph name="NUM_HOURS_MINUTES_SECONDS" /> በፊት</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ርካታ እርምጃዎች ይገኛሉ፣ በእነሱ ውስጥ ለማሰስ ትርን ይጫኑ</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3410,6 +3411,7 @@
 <translation id="7042616127917168121">ውጤቶችን አጥራ</translation>
 <translation id="7043552168914147882">የትር ክምችት</translation>
 <translation id="7044081119134178347">ካሜራ ለዚህ ጊዜ ይፈቀዳል</translation>
+<translation id="704738887031336226">ክፍያ ማጠናቀቅ ወቅት <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />በጊዜ ሂደት ይክፈሉ<ph name="PAY_OVER_TIME_HELP_LINK_END" /> አማራጭን አሳይ</translation>
 <translation id="7048095965575426564">የአውሮፓ ፋንፎልድ</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> ጋር ለመድረስ ሞክረዋል፣ ነገር ግን አገልጋዩ አስተማማኝ ለመሆን የሚያስቸግር በጣም ረጅም የሆነ የማረጋገጫ ጊዜ ነው ያለው።</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ይህ ካርድ አሁን ሊቀመጥ አይችልም}one{እነዚህ ካርዶች አሁን ሊቀመጡ አይችሉም}other{እነዚህ ካርዶች አሁን ሊቀመጡ አይችሉም}}</translation>

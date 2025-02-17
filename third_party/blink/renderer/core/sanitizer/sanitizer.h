@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_presets.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_names.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -17,6 +18,7 @@ class Node;
 class QualifiedName;
 class SanitizerConfig;
 class SanitizerElementNamespace;
+class V8UnionSanitizerConfigOrSanitizerPresets;
 class V8UnionSanitizerAttributeNamespaceOrString;
 class V8UnionSanitizerElementNamespaceWithAttributesOrString;
 class V8UnionSanitizerElementNamespaceOrString;
@@ -25,11 +27,13 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Called by JS constructor, new Sanitizer(config).
-  static Sanitizer* Create(const SanitizerConfig*, ExceptionState&);
+  // Called by WebIDL for Sanitizer constructor, new Sanitizer(xxx).
+  static Sanitizer* Create(const V8UnionSanitizerConfigOrSanitizerPresets*,
+                           ExceptionState&);
 
   // Called by Sanitizer API, to implement setHTML / setHTMLUnsafe & friends.
   static Sanitizer* Create(const SanitizerConfig*, bool safe, ExceptionState&);
+  static Sanitizer* Create(const V8SanitizerPresets::Enum, ExceptionState&);
 
   Sanitizer() = default;
   ~Sanitizer() override = default;

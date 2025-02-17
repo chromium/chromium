@@ -2604,6 +2604,28 @@
             ]
         }
     ],
+    "AutofillRelaxAddressImport": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableImportWhenMultiplePhoneNumbers",
+                        "AutofillRelaxAddressImport"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillSharedStorageServerCardData": [
         {
             "platforms": [
@@ -24135,6 +24157,27 @@
             ]
         }
     ],
+    "UpdateRequestForCorsRedirect": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UpdateRequestForCorsRedirect"
+                    ]
+                }
+            ]
+        }
+    ],
     "UploadOfficeToCloud": [
         {
             "platforms": [
@@ -24176,6 +24219,21 @@
                     "enable_features": [
                         "MachPortRendezvousValidatePeerRequirements",
                         "UseAdHocSigningForWebAppShims"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UseAvailableMemoryThresholds": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAvailableMemoryThresholds"
                     ]
                 }
             ]

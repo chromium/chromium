@@ -243,6 +243,7 @@ class SecurityOrigin;
 class SelectorQueryCache;
 class SerializedScriptValue;
 class SetHTMLOptions;
+class SetHTMLUnsafeOptions;
 class Settings;
 class SlotAssignmentEngine;
 class StyleEngine;
@@ -2115,7 +2116,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // should be merged.
   static Document* parseHTMLUnsafe(ExecutionContext* context,
                                    const String& html,
-                                   SetHTMLOptions* options,
+                                   SetHTMLUnsafeOptions* options,
                                    ExceptionState& exception_state);
   static Document* parseHTML(ExecutionContext* context,
                              const String& html,
@@ -2422,8 +2423,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // Common implementation for parseHTML and parseHTMLUnsafe.
   static Document* parseHTMLInternal(ExecutionContext* context,
                                      const String& html,
-                                     SetHTMLOptions* options,
-                                     bool safe,
                                      ExceptionState& exception_state);
 
   // Mutable because the token is lazily-generated on demand if no token is

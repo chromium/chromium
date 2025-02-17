@@ -1676,6 +1676,7 @@ TEST_F(ArcSessionManagerTest, RequestDisableWithArcDataRemoval) {
 // Hardware check enablement test case on the board that supports
 // the arcvm dlc method. (Only the reven board has arcvm dlc feature now).
 TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
+  cros_settings_test_helper_.ReplaceDeviceSettingsProviderWithStub();
   cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
       "example.com", "fake-device-id");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -1683,10 +1684,9 @@ TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
-  // Enable enable-android-vpn-apps-on-flex chrome flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeature(ash::features::kVpnAppsOnFlex);
+  // Enable DeviceFlexArcPreloadEnabled policy.
+  cros_settings_test_helper_.SetBoolean(ash::kDeviceFlexArcPreloadEnabled,
+                                        true);
   auto mock_hardware_checker_ =
       std::make_unique<MockArcDlcInstallHardwareChecker>();
   EXPECT_CALL(*mock_hardware_checker_, IsCompatible(::testing::_))
@@ -1754,8 +1754,9 @@ TEST_F(ArcSessionManagerTest, NoArcVmInstallOnUnmanaged) {
 }
 
 // Verify that the hardware check is not being run to install
-// the arcvm DLC image when enable-android-vpn-apps-on-flex flag is off.
-TEST_F(ArcSessionManagerTest, NoArcVmInstallWithFlagOff) {
+// the arcvm DLC image when DeviceFlexArcPreloadEnabled policy is off.
+TEST_F(ArcSessionManagerTest, NoArcVmInstallWithPolicyOff) {
+  cros_settings_test_helper_.ReplaceDeviceSettingsProviderWithStub();
   cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
       "example.com", "fake-device-id");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -1763,10 +1764,9 @@ TEST_F(ArcSessionManagerTest, NoArcVmInstallWithFlagOff) {
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
-  // Disable enable-android-vpn-apps-on-flex chrome flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndDisableFeature(ash::features::kVpnAppsOnFlex);
+  // Disable DeviceFlexArcPreloadEnabled policy.
+  cros_settings_test_helper_.SetBoolean(ash::kDeviceFlexArcPreloadEnabled,
+                                        false);
   auto mock_hardware_checker_ =
       std::make_unique<MockArcDlcInstallHardwareChecker>();
   EXPECT_CALL(*mock_hardware_checker_, IsCompatible(::testing::_)).Times(0);

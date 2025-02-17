@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -27,8 +26,6 @@ namespace autofill {
 // from an incognito session is persisted unintentionally.
 class EntityDataManager : public KeyedService {
  public:
-  using LoadCallback = base::OnceCallback<void(std::vector<EntityInstance>)>;
-
   explicit EntityDataManager(
       scoped_refptr<AutofillWebDataService> profile_database);
   EntityDataManager(const EntityDataManager&) = delete;

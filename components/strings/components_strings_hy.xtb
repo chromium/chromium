@@ -475,6 +475,7 @@
 <translation id="1791415068765905273">Ցույց տալ համեմատման բոլոր աղյուսակները</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google հաշվում ձեր տվյալները, գաղտնիությունն ու անվտանգությունը կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="1793473605302304726">Վճարման ժամանակը</translation>
 <translation id="1793631236004319016">Վերջին անգամ օգտագործվել է <ph name="NUM_HOURS_MINUTES_SECONDS" /> առաջ</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Հասանելի են բազմաթիվ գործողություններ։ Դրանք ընտրելու համար սեղմեք Tab:</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3420,6 +3421,7 @@
 <translation id="7042616127917168121">Որոնման պայմանների հստակեցում</translation>
 <translation id="7043552168914147882">Բաժանարար</translation>
 <translation id="7044081119134178347">Տրվել է տեսախցիկն օգտագործելու մեկանգամյա թույլտվություն</translation>
+<translation id="704738887031336226">Ցույց տալ <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />վճարման ժամանակը<ph name="PAY_OVER_TIME_HELP_LINK_END" /> տարբերակները վճարման հաստատման էջին</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Դուք փորձում էիք մտնել <ph name="DOMAIN" />, սակայն սերվերի կողմից ներկայացված վկայականի վավերականության ժամկետը չափազանց երկար է, ինչը վստահություն չի ներշնչում:</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Քարտն այս պահին չի կարող պահվել}one{Քարտն այս պահին չի կարող պահվել}other{Քարտերն այս պահին չեն կարող պահվել}}</translation>

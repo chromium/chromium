@@ -39,6 +39,7 @@ source_set("impl") {
     ":search_engine_choice",
     "//chrome/browser:browser_process",
     "//chrome/browser/regional_capabilities",
+    "//chrome/browser/search_engines",
     "//components/search_engines",
     "//components/variations/service",
   ]

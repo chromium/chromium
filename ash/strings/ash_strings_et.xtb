@@ -193,6 +193,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1607312127821884567">Teie telefoni rakenduste kuvamise seadistamisest loobumine</translation>
 <translation id="1610778689852195798">„Võta tagasi“</translation>
 <translation id="1611993646327628135">Sees</translation>
+<translation id="1612679292338846734">Kui lülitate need funktsioonid sisse, võidakse sisendtekst, dokumendi sisu ja veebilehe URL saata Google'i AI serveritesse. Seda teavet kasutatakse selleks, et genereerida kirjutamissoovitusi ja kokkuvõtteid, vastata küsimustele ning täiustada toodet dokumendi <ph name="LINK_TO_SERVICE_TERMS" /> kohaselt. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1623768535032616219">Google Classroomi ahendamine</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> pole saadaval.</translation>
@@ -565,6 +566,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="2946119680249604491">Lisa ühendus</translation>
 <translation id="2947835478872237115">Praegune aku laetuse tase <ph name="BATTERY_PERCENTAGE" />%, täislaadimiseni <ph name="TIME" /></translation>
 <translation id="2949420361496057765">Vajutage klahvi <ph name="MODIFIER" /> ja klõpsake lingil</translation>
+<translation id="2957159466053076448">Saate need funktsioonid seadetes igal ajal välja lülitada. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Seadme heli</translation>
 <translation id="2960314608273155470">Jäädvustusrežiim, vaikeseade on <ph name="SOURCE" /> <ph name="TYPE" />. Klaviatuuriga navigeerimiseks vajutage tabulaatorit.</translation>
 <translation id="2961963223658824723">Midagi läks valesti. Proovige mõne sekundi pärast uuesti.</translation>
@@ -1906,6 +1908,7 @@ Uus installimine</translation>
 <translation id="735745346212279324">VPN-i ühendus on katkestatud</translation>
 <translation id="7360036564632145207">Välisseadmete jaoks andmetele juurdepääsu kaitse seade muutmine võib jõudlust optimeerida</translation>
 <translation id="736045644501761622">Taustapildi ja stiili seadistamine</translation>
+<translation id="7368041336688136012">Funktsioonide Aita mul lugeda ja Aita mul kirjutada kasutamiseks ning AI-ga piltide loomiseks peate olema vähemalt 18-aastane.</translation>
 <translation id="7371404428569700291">Akna salvestamine</translation>
 <translation id="7372069265635026568">Saadaval mälu <ph name="AVAILABLE_MEMORY" />, kokku <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">See lubab kõikidel mikrofonile juurdepääsemise loaga rakendustel ja veebisaitidel mikrofonile juurde pääseda</translation>
@@ -2031,6 +2034,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Kuva kõik</translation>
+<translation id="7762664108390426952">Google'i teenusetingimused ja privaatsuseeskirjad</translation>
 <translation id="7768784765476638775">Vali ja kuula</translation>
 <translation id="7769299611924763557">Teie GIF on varsti valmis</translation>
 <translation id="7773536009433685931">Lülita sisse hoopis WiFi</translation>

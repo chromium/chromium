@@ -107,6 +107,7 @@ static_library("session") {
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/memory",
+    "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/experiences/arc/intent_helper",

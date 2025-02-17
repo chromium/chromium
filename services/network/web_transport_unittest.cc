@@ -330,7 +330,7 @@ class WebTransportTest : public testing::TestWithParam<std::string_view> {
         quic::QuicCryptoServerConfig::ConfigOptions(),
         quic::AllSupportedVersions(), &backend_);
     EXPECT_TRUE(http_server_->CreateUDPSocketAndListen(quic::QuicSocketAddress(
-        quic::QuicSocketAddress(quic::QuicIpAddress::Any6(), /*port=*/0))));
+        quic::QuicSocketAddress(quiche::QuicheIpAddress::Any6(), /*port=*/0))));
 
     auto* quic_context =
         network_context_->url_request_context()->quic_context();

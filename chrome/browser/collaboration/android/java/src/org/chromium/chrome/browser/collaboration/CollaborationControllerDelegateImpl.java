@@ -320,6 +320,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                 HistorySyncConfig.OptInMode.REQUIRED)
+                        .historySyncTitleId(R.string.collaboration_sync_title)
+                        .historySyncSubtitleId(R.string.collaboration_sync_description)
                         .build();
         return mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                 mActivity,

@@ -65,62 +65,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-// First part of a switch-account-after-switching-profile continuation: Sign out
-// the current account if it's different from the desired one.
-void ChangeProfileSignOutIfMismatchContinuation(
-    id<SystemIdentity> expected_identity,
-    SceneState* scene_state,
-    base::OnceClosure closure) {
-  Browser* browser =
-      scene_state.browserProviderInterface.mainBrowserProvider.browser;
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-
-  id<SystemIdentity> existing_identity =
-      authentication_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (!existing_identity || existing_identity == expected_identity) {
-    // No need to sign-out as either the correct identity is signed-in or
-    // no identity is signed-in.
-    std::move(closure).Run();
-    return;
-  }
-
-  // Signing out is only allowed in the personal profile. Phrased another way,
-  // we shouldn't try to a work profile with a non-matching account.
-  // TODO(crbug.com/375605174): AuthenticationService should probably enforce
-  // this internally.
-  CHECK_EQ(browser->GetProfile()->GetProfileName(),
-           GetApplicationContext()
-               ->GetAccountProfileMapper()
-               ->GetPersonalProfileName());
-
-  authentication_service->SignOut(
-      signin_metrics::ProfileSignout::kChangeAccountInAccountMenu,
-      base::CallbackToBlock(std::move(closure)));
-}
-
-// Second part of a switch-account-after-switching-profile continuation: Sign in
-// the desired account if it's not already signed in.
-void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
-                                     SceneState* scene_state,
-                                     base::OnceClosure closure) {
-  Browser* browser =
-      scene_state.browserProviderInterface.mainBrowserProvider.browser;
-  // TODO(crbug.com/375604649): This should probably go through
-  // AuthenticationFlow rather than using AuthenticationService directly, so
-  // that the snackbar gets shown, and also the enterprise onboarding screen if
-  // necessary.
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-  authentication_service->SignIn(identity,
-                                 signin_metrics::AccessPoint::kAccountMenu);
-  std::move(closure).Run();
-}
-
-}  // anonymous namespace
-
 @interface AccountMenuCoordinator () <AccountMenuMediatorDelegate,
                                       ManageAccountsCoordinatorDelegate,
                                       UIAdaptivePresentationControllerDelegate>
@@ -149,7 +93,6 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
   id<ApplicationCommands> _applicationHandler;
-  id<ChangeProfileCommands> _changeProfileHandler;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Callback to hide the activity overlay.
   base::ScopedClosureRunner _activityOverlayCallback;
@@ -182,9 +125,6 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
   _prefService = profile->GetPrefs();
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);
-  _changeProfileHandler = HandlerForProtocol(
-      self.browser->GetSceneState().profileState.appState.appCommandDispatcher,
-      ChangeProfileCommands);
 
   _viewController = [[AccountMenuViewController alloc] init];
 
@@ -321,20 +261,6 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
     }
   };
   [_signoutActionSheetCoordinator start];
-}
-
-- (void)triggerProfileSwitchToProfileNamed:(std::string_view)profileName
-               andSigninWithSystemIdentity:(id<SystemIdentity>)identity {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  SceneState* sceneState = self.browser->GetSceneState();
-
-  ChangeProfileContinuation continuation = ChainChangeProfileContinuations(
-      base::BindOnce(&ChangeProfileSignOutIfMismatchContinuation, identity),
-      base::BindOnce(&ChangeProfileSignInContinuation, identity));
-
-  [_changeProfileHandler changeProfile:profileName
-                              forScene:sceneState
-                          continuation:std::move(continuation)];
 }
 
 - (void)didTapAddAccountWithCompletion:

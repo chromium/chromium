@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">તુલના માટેના તમામ ટેબલ બતાવો</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Google એકાઉન્ટમાં તમારી માહિતી, પ્રાઇવસી અને સુરક્ષા મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
+<translation id="1793473605302304726">હપ્તેથી ચુકવણી કરો</translation>
 <translation id="1793631236004319016">છેલ્લે <ph name="NUM_HOURS_MINUTES_SECONDS" /> પહેલાં ઉપયોગ કર્યો હતો</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, એકથી વધારે ક્રિયાઓ ઉપલબ્ધ છે, એ બધી પર નજર કરવા માટે Tab કી દબાવો</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3411,6 +3412,7 @@
 <translation id="7042616127917168121">પરિણામોને રિફાઇન કરો</translation>
 <translation id="7043552168914147882">ટૅબ સ્ટૉક</translation>
 <translation id="7044081119134178347">આ વખતે કૅમેરાને મંજૂરી આપી છે</translation>
+<translation id="704738887031336226">ચેકઆઉટ વખતે <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />હપ્તેથી ચુકવણી કરો<ph name="PAY_OVER_TIME_HELP_LINK_END" />ના વિકલ્પો બતાવો</translation>
 <translation id="7048095965575426564">યુરોપિયન ફૅનફોલ્ડ</translation>
 <translation id="7050187094878475250">તમે <ph name="DOMAIN" /> પર પહોંચવાનો પ્રયાસ કરેલો, પરંતુ સર્વરે એવું પ્રમાણપત્ર પ્રસ્તુત કર્યું જેની માન્યતા અવધિ, વિશ્વસનીય હોવા માટે ખૂબ લાંબી છે.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{આ કાર્ડ અત્યારે સાચવી શકાતું નથી}one{આ કાર્ડ અત્યારે સાચવી શકાતાં નથી}other{આ કાર્ડ અત્યારે સાચવી શકાતાં નથી}}</translation>

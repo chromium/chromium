@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_UTILS_H_
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "ui/gfx/image/image_skia.h"
 
 // TODO(crbug.com/40267977): Move GDMPreferCurrentTabResult, RecordUma to
@@ -29,5 +30,7 @@ void RecordUma(GDMPreferCurrentTabResult result,
                base::TimeTicks dialog_open_time);
 
 gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size);
+
+content::DesktopMediaID::Type AsDesktopMediaIdType(DesktopMediaList::Type type);
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_UTILS_H_

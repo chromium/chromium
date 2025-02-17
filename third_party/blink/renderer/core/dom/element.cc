@@ -7594,8 +7594,6 @@ void Element::SetInnerHTMLInternal(
     const String& html,
     ParseDeclarativeShadowRoots parse_declarative_shadows,
     ForceHtml force_html,
-    SanitizeHtml sanitize_html,
-    SetHTMLOptions* set_html_options,
     ExceptionState& exception_state) {
   if (html.empty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
@@ -7620,20 +7618,6 @@ void Element::SetInnerHTMLInternal(
             .getPartRoot()
             .SwapPartsList(fragment->getPartRoot());
       }
-      if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
-        // TODO(vogelheim): The interaction of sanitization with DOMParts
-        // handling above is still unclear.
-        // We need to know the container that we're parsing into (and not just
-        // the temporary fragment), and sanitization needs to happen before
-        // connecting the result to a live DOM tree.
-        if (sanitize_html == SanitizeHtml::kSanitizeSafe) {
-          SanitizerAPI::SanitizeSafeInternal(container, set_html_options,
-                                             exception_state);
-        } else if (sanitize_html == SanitizeHtml::kSanitizeUnsafe) {
-          SanitizerAPI::SanitizeUnsafeInternal(container, set_html_options,
-                                               exception_state);
-        }
-      }
     }
   }
 }
@@ -7642,8 +7626,7 @@ void Element::setInnerHTML(const String& html,
                            ExceptionState& exception_state) {
   probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kDontParse,
-                       ForceHtml::kDontForce, SanitizeHtml::kDont,
-                       /*set_html_options=*/nullptr, exception_state);
+                       ForceHtml::kDontForce, exception_state);
 }
 
 void Element::setOuterHTML(const String& html,
@@ -11349,17 +11332,16 @@ void Element::setHTMLUnsafe(const String& html,
                             ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, SanitizeHtml::kSanitizeUnsafe,
-                       /*set_html_options=*/nullptr, exception_state);
+                       ForceHtml::kForce, exception_state);
 }
 
 void Element::setHTMLUnsafe(const String& html,
-                            SetHTMLOptions* options,
+                            SetHTMLUnsafeOptions* options,
                             ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, SanitizeHtml::kSanitizeUnsafe,
-                       options, exception_state);
+                       ForceHtml::kForce, exception_state);
+  SanitizerAPI::SanitizeUnsafeInternal(this, options, exception_state);
 }
 
 void Element::setHTML(const String& html,
@@ -11367,8 +11349,8 @@ void Element::setHTML(const String& html,
                       ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, SanitizeHtml::kSanitizeSafe, options,
-                       exception_state);
+                       ForceHtml::kForce, exception_state);
+  SanitizerAPI::SanitizeSafeInternal(this, options, exception_state);
 }
 
 }  // namespace blink

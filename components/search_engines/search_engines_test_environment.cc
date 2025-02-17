@@ -33,6 +33,7 @@ SearchEnginesTestEnvironment::ServiceFactories CreateDefaultFactories(
         return std::make_unique<SearchEngineChoiceService>(
             environment.pref_service(), &environment.local_state(),
             environment.regional_capabilities_service(),
+            environment.prepopulate_data_resolver(),
             /*is_profile_eligible_for_dse_guest_propagation=*/false);
       });
 
@@ -118,7 +119,7 @@ SearchEnginesTestEnvironment::prepopulate_data_resolver() {
   if (!prepopulate_data_resolver_) {
     prepopulate_data_resolver_ =
         std::make_unique<TemplateURLPrepopulateData::Resolver>(
-            pref_service(), search_engine_choice_service());
+            pref_service(), regional_capabilities_service());
   }
   return *prepopulate_data_resolver_;
 }

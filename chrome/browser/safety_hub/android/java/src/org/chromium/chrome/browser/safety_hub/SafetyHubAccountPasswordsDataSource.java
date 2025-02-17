@@ -211,7 +211,7 @@ public class SafetyHubAccountPasswordsDataSource
     }
 
     @Override
-    public void passwordCountsChanged() {
+    public void accountPasswordCountsChanged() {
         updateState();
     }
 
@@ -257,6 +257,6 @@ public class SafetyHubAccountPasswordsDataSource
     }
 
     public void triggerNewCredentialFetch() {
-        mSafetyHubFetchService.fetchCredentialsCount(success -> {});
+        mSafetyHubFetchService.fetchAccountCredentialsCount(success -> {});
     }
 }

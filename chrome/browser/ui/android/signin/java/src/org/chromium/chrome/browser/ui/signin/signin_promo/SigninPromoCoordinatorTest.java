@@ -213,14 +213,13 @@ public class SigninPromoCoordinatorTest {
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testPrimaryButtonClick(@SigninAccessPoint int accessPoint) {
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Shown.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Continued.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncPromo.Continued.Count."
+                                + getAccessPointToHistogramName(accessPoint));
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(
+                        accessPoint,
+                        /* hasAccounts= */ accessPoint == SigninAccessPoint.HISTORY_PAGE);
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
@@ -247,22 +246,20 @@ public class SigninPromoCoordinatorTest {
         assertEquals(config.historyOptInMode, historyOptInMode);
         assertNull(config.selectedCoreAccountId);
         histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testBookmarksAccountSettingsPromoPrimaryButtonClick() {
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Shown.Count."
-                                        + getAccessPointToHistogramName(
-                                                SigninAccessPoint.BOOKMARK_MANAGER))
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Continued.Count."
-                                        + getAccessPointToHistogramName(
-                                                SigninAccessPoint.BOOKMARK_MANAGER))
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncPromo.Continued.Count."
+                                + getAccessPointToHistogramName(
+                                        SigninAccessPoint.BOOKMARK_MANAGER));
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(
+                        SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         disableBookmarksAndReadingListDataTypes();
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
@@ -272,6 +269,7 @@ public class SigninPromoCoordinatorTest {
 
         verify(mOnOpenSettings).run();
         histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
     }
 
     @Test
@@ -283,14 +281,11 @@ public class SigninPromoCoordinatorTest {
             return;
         }
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Shown.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Continued.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncPromo.Continued.Count."
+                                + getAccessPointToHistogramName(accessPoint));
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
 
@@ -316,18 +311,15 @@ public class SigninPromoCoordinatorTest {
         assertEquals(HistorySyncConfig.OptInMode.NONE, config.historyOptInMode);
         assertNull(config.selectedCoreAccountId);
         histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testBookmarksAccountSettingsPromoSecondaryButtonHidden() {
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Shown.Count."
-                                        + getAccessPointToHistogramName(
-                                                SigninAccessPoint.BOOKMARK_MANAGER))
-                        .build();
+                getPromoImpressionHistogramWatcher(
+                        SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         disableBookmarksAndReadingListDataTypes();
 
@@ -344,14 +336,14 @@ public class SigninPromoCoordinatorTest {
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testDismissButtonClick(@SigninAccessPoint int accessPoint) {
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Shown.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Dismissed.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncPromo.Dismissed.Count."
+                                + getAccessPointToHistogramName(accessPoint));
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(
+                        accessPoint,
+                        /* hasAccounts= */ accessPoint == SigninAccessPoint.HISTORY_PAGE);
+
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
@@ -372,6 +364,7 @@ public class SigninPromoCoordinatorTest {
                     assertFalse(mPromoCoordinator.canShowPromo());
                 });
         histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
     }
 
     @Test
@@ -542,6 +535,18 @@ public class SigninPromoCoordinatorTest {
             case SigninAccessPoint.RECENT_TABS -> "RecentTabs";
             default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
         };
+    }
+
+    private static HistogramWatcher getPromoImpressionHistogramWatcher(
+            @SigninAccessPoint int accessPoint, boolean hasAccounts) {
+        String promoActionSuffix = hasAccounts ? "WithDefault" : "NewAccountNoExistingAccount";
+        return HistogramWatcher.newBuilder()
+                .expectAnyRecord(
+                        "Signin.SyncPromo.Shown.Count."
+                                + getAccessPointToHistogramName(accessPoint))
+                .expectIntRecord("Signin.SignIn.Offered", accessPoint)
+                .expectIntRecord("Signin.SignIn.Offered." + promoActionSuffix, accessPoint)
+                .build();
     }
 
     private static String getAccessPointToHistogramName(@SigninAccessPoint int accessPoint) {

@@ -227,12 +227,8 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       identity_manager_(sync_prefs_.IsLocalSyncEnabled()
                             ? nullptr
                             : sync_client_->GetIdentityManager()),
-      auth_manager_(std::make_unique<SyncAuthManager>(
-          identity_manager_,
-          base::BindRepeating(&SyncServiceImpl::AccountStateChanged,
-                              base::Unretained(this)),
-          base::BindRepeating(&SyncServiceImpl::CredentialsChanged,
-                              base::Unretained(this)))),
+      auth_manager_(std::make_unique<SyncAuthManager>(identity_manager_,
+                                                      /*delegate=*/this)),
       channel_(init_params.channel),
       debug_identifier_(std::move(init_params.debug_identifier)),
       sync_service_url_(
@@ -542,61 +538,6 @@ bool SyncServiceImpl::ShouldClearTransportDataForAccount(
       // start over fresh.
       return true;
   }
-}
-
-void SyncServiceImpl::AccountStateChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsSignedIn()) {
-    // The account was signed out, so shut down.
-    sync_disabled_by_admin_ = false;
-    StopAndClear(ResetEngineReason::kNotSignedIn);
-    DCHECK(!engine_);
-  } else {
-    // Either a new account was signed in, or the existing account's
-    // `is_sync_consented` bit was changed. Start up or reconfigure.
-    if (!engine_) {
-      TryStart();
-      NotifyObservers();
-    } else {
-      ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
-    }
-  }
-}
-
-void SyncServiceImpl::CredentialsChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // If the engine isn't allowed to start anymore due to the credentials change,
-  // then shut down. This happens when there is a persistent auth error (e.g.
-  // the user signs out on the web), which implies the "Sync paused" state.
-  if (!IsEngineAllowedToRun()) {
-    // If the engine currently exists, then ResetEngine() will notify observers
-    // anyway. Otherwise, notify them here. (One relevant case is when entering
-    // the PAUSED state before the engine was created, e.g. during deferred
-    // startup.)
-    if (!engine_) {
-      DVLOG(2) << "Notify observers on credentials changed";
-      NotifyObservers();
-    }
-    ResetEngine(ResetEngineReason::kCredentialsChanged);
-    return;
-  }
-
-  if (!engine_) {
-    TryStart();
-  } else {
-    // If the engine already exists, just propagate the new credentials.
-    SyncCredentials credentials = auth_manager_->GetCredentials();
-    if (credentials.access_token.empty()) {
-      engine_->InvalidateCredentials();
-    } else {
-      engine_->UpdateCredentials(credentials);
-    }
-  }
-
-  DVLOG(2) << "Notify observers on credentials changed";
-  NotifyObservers();
 }
 
 bool SyncServiceImpl::IsEngineAllowedToRun() const {
@@ -1316,6 +1257,61 @@ void SyncServiceImpl::OnConfigureStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   engine_->StartConfiguration();
   DVLOG(2) << "Notify observers OnConfigureStart";
+  NotifyObservers();
+}
+
+void SyncServiceImpl::SyncAuthAccountStateChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsSignedIn()) {
+    // The account was signed out, so shut down.
+    sync_disabled_by_admin_ = false;
+    StopAndClear(ResetEngineReason::kNotSignedIn);
+    DCHECK(!engine_);
+  } else {
+    // Either a new account was signed in, or the existing account's
+    // `is_sync_consented` bit was changed. Start up or reconfigure.
+    if (!engine_) {
+      TryStart();
+      NotifyObservers();
+    } else {
+      ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+    }
+  }
+}
+
+void SyncServiceImpl::SyncAuthCredentialsChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If the engine isn't allowed to start anymore due to the credentials change,
+  // then shut down. This happens when there is a persistent auth error (e.g.
+  // the user signs out on the web), which implies the "Sync paused" state.
+  if (!IsEngineAllowedToRun()) {
+    // If the engine currently exists, then ResetEngine() will notify observers
+    // anyway. Otherwise, notify them here. (One relevant case is when entering
+    // the PAUSED state before the engine was created, e.g. during deferred
+    // startup.)
+    if (!engine_) {
+      DVLOG(2) << "Notify observers on credentials changed";
+      NotifyObservers();
+    }
+    ResetEngine(ResetEngineReason::kCredentialsChanged);
+    return;
+  }
+
+  if (!engine_) {
+    TryStart();
+  } else {
+    // If the engine already exists, just propagate the new credentials.
+    SyncCredentials credentials = auth_manager_->GetCredentials();
+    if (credentials.access_token.empty()) {
+      engine_->InvalidateCredentials();
+    } else {
+      engine_->UpdateCredentials(credentials);
+    }
+  }
+
+  DVLOG(2) << "Notify observers on credentials changed";
   NotifyObservers();
 }
 

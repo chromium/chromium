@@ -6,8 +6,8 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 
 namespace TemplateURLPrepopulateData {
@@ -37,7 +37,8 @@ ResolverFactory::ResolverFactory()
               // as it would not have access to some services it depends on.
               .WithSystem(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(search_engines::SearchEngineChoiceServiceFactory::GetInstance());
+  DependsOn(
+      regional_capabilities::RegionalCapabilitiesServiceFactory::GetInstance());
 }
 ResolverFactory::~ResolverFactory() = default;
 
@@ -48,9 +49,8 @@ ResolverFactory::BuildServiceInstanceForBrowserContext(
   CHECK(profile);
   return std::make_unique<Resolver>(
       CHECK_DEREF(profile->GetPrefs()),
-      CHECK_DEREF(
-          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-              profile)));
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile)));
 }
 
 }  // namespace TemplateURLPrepopulateData

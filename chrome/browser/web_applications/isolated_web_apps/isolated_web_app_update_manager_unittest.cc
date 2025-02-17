@@ -919,7 +919,6 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AssertAppNotInstalled(iwa_to_uninstall);
 }
 
-// TODO(crbug.com/338380813): The test is flaky on asan ChromeOS builder.
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
 
@@ -947,7 +946,6 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 }
 
-// TODO(crbug.com/326527744): This test is flaky on asan ChromeOS builder.
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
        StopsNonStartedUpdateApplyTasksIfIwaIsUninstalled) {
   InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));

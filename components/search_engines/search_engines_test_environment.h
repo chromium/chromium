@@ -113,9 +113,9 @@ class SearchEnginesTestEnvironment {
   // in order to ensure destruction correctness.
   std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
       regional_capabilities_service_;
-  std::unique_ptr<SearchEngineChoiceService> search_engine_choice_service_;
   std::unique_ptr<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
+  std::unique_ptr<SearchEngineChoiceService> search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   bool released_template_url_service_ = false;
 };

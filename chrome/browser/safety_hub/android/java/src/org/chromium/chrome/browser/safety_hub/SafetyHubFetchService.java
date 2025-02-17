@@ -14,9 +14,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
-import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -32,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 /** Manages the scheduling of Safety Hub fetch jobs. */
 public class SafetyHubFetchService implements SigninManager.SignInStateObserver, Destroyable {
     interface Observer {
-        void passwordCountsChanged();
+        void accountPasswordCountsChanged();
 
         void updateStatusChanged();
     }
@@ -55,18 +53,9 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     private final SigninManager mSigninManager;
 
     /**
-     * These booleans indicate if the specific type of credentials count has returned. They are used
-     * so the callback of `fetchCredentialsCount` call is only ran once.
+     * Passwords fetch service for account passwords. Should only be used if the user is signed-in.
      */
-    private boolean mBreachedCredentialsCountFetched;
-    private boolean mWeakCredentialsCountFetched;
-    private boolean mReusedCredentialsCountFetched;
-
-    /**
-     * Indicates if any of the credential counts has returned with an error. Used when running the
-     * `fetchCredentialsCount` callback to indicate if a rescheduled is needed.
-     */
-    private boolean mCredentialCountError;
+    private final SafetyHubPasswordsFetchService mAccountPasswordsFetchService;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     SafetyHubFetchService(Profile profile) {
@@ -77,6 +66,14 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
         if (mSigninManager != null) {
             mSigninManager.addSignInStateObserver(this);
         }
+
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
+        PrefService prefService = UserPrefs.get(mProfile);
+        mAccountPasswordsFetchService =
+                new SafetyHubPasswordsFetchService(
+                        passwordManagerHelper,
+                        prefService,
+                        SafetyHubUtils.getAccountEmail(profile));
 
         // Fetch latest update status.
         UpdateStatusProvider.getInstance().addObserver(mUpdateCallback);
@@ -115,15 +112,15 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
 
     /** See {@link ChromeActivitySessionTracker#onForegroundSessionStart()}. */
     public void onForegroundSessionStart() {
-        scheduleOrCancelFetchJob(/* delayMs= */ 0);
+        scheduleOrCancelAccountPasswordsFetchJob(/* delayMs= */ 0);
     }
 
     /**
-     * Schedules the fetch job to run after the given delay. If there is already a pending scheduled
-     * task, then the newly requested task is dropped by the BackgroundTaskScheduler. This behaviour
-     * is defined by setting updateCurrent to false.
+     * Schedules the account passwords fetch job to run after the given delay. If there is already a
+     * pending scheduled task, then the newly requested task is dropped by the
+     * BackgroundTaskScheduler. This behaviour is defined by setting updateCurrent to false.
      */
-    private void scheduleFetchJobAfterDelay(long delayMs) {
+    private void scheduleAccountPasswordsFetchJobAfterDelay(long delayMs) {
         TaskInfo.TimingInfo oneOffTimingInfo =
                 TaskInfo.OneOffInfo.create()
                         .setWindowStartTimeMs(delayMs)
@@ -140,14 +137,14 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
                 .schedule(ContextUtils.getApplicationContext(), taskInfo);
     }
 
-    /** Cancels the fetch job if there is any pending. */
-    private void cancelFetchJob() {
+    /** Cancels the account passwords fetch job if there is any pending. */
+    private void cancelAccountPasswordsFetchJob() {
         BackgroundTaskSchedulerFactory.getScheduler()
                 .cancel(ContextUtils.getApplicationContext(), TaskIds.SAFETY_HUB_JOB_ID);
     }
 
-    /** Schedules the next fetch job to run after a delay. */
-    private void scheduleNextFetchJob() {
+    /** Schedules the next account passwords fetch job to run after a delay. */
+    private void scheduleNextAccountPasswordsFetchJob() {
         int nextFetchDelayInDays =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.SAFETY_HUB,
@@ -155,22 +152,19 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
                         SAFETY_HUB_JOB_INTERVAL_IN_DAYS);
         long nextFetchDelayMs = TimeUnit.DAYS.toMillis(nextFetchDelayInDays);
 
-        // Cancel existing job if it wasn't already stopped.
-        cancelFetchJob();
+        // Cancel existing account password fetch job if it wasn't already stopped.
+        cancelAccountPasswordsFetchJob();
 
-        scheduleOrCancelFetchJob(nextFetchDelayMs);
+        scheduleOrCancelAccountPasswordsFetchJob(nextFetchDelayMs);
     }
 
-    private boolean checkConditions() {
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
+    private boolean checkConditionsForAccountPasswords() {
         boolean isSignedIn = SafetyHubUtils.isSignedIn(mProfile);
         String accountEmail = SafetyHubUtils.getAccountEmail(mProfile);
 
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB)
-                && isSignedIn
-                && PasswordManagerUtilBridge.areMinUpmRequirementsMet()
-                && passwordManagerHelper.canUseUpm()
-                && accountEmail != null;
+        return isSignedIn
+                && accountEmail != null
+                && mAccountPasswordsFetchService.canPerformFetch();
     }
 
     /**
@@ -178,139 +172,41 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * counts for the currently signed-in profile. `onFinishedCallback` is triggered when all calls
      * to GMSCore have returned.
      */
-    void fetchCredentialsCount(Callback<Boolean> onFinishedCallback) {
-        if (!checkConditions()) {
-            onFinishedCallback.onResult(/* result= */ false);
-            cancelFetchJob();
+    void fetchAccountCredentialsCount(Callback<Boolean> onFinishedCallback) {
+        if (!checkConditionsForAccountPasswords()) {
+            onFinishedCallback.onResult(/* needsReschedule */ false);
+            cancelAccountPasswordsFetchJob();
             return;
         }
 
-        mCredentialCountError = false;
-        mBreachedCredentialsCountFetched = false;
-        mWeakCredentialsCountFetched = false;
-        mReusedCredentialsCountFetched = false;
+        Callback<Boolean> onFinishedFetchCallback =
+                (errorOccurred) -> {
+                    notifyAccountPasswordCountsChanged();
+                    onFinishedCallback.onResult(/* needsReschedule */ errorOccurred);
+                    if (!errorOccurred) {
+                        scheduleNextAccountPasswordsFetchJob();
+                    }
+                };
 
-        fetchBreachedCredentialsCount(onFinishedCallback);
-        fetchWeakCredentialsCount(onFinishedCallback);
-        fetchReusedCredentialsCount(onFinishedCallback);
+        mAccountPasswordsFetchService.fetchPasswordsCount(onFinishedFetchCallback);
     }
 
     /**
-     * Makes a call to GMSCore to fetch the latest leaked credentials count for the currently
-     * signed-in profile.
+     * Schedules the background account passwords fetch job to run after the given delay if the
+     * conditions are met, cancels and cleans up prefs otherwise.
      */
-    private void fetchBreachedCredentialsCount(Callback<Boolean> onFinishedCallback) {
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
-        PrefService prefService = UserPrefs.get(mProfile);
-
-        passwordManagerHelper.getBreachedCredentialsCount(
-                PasswordCheckReferrer.SAFETY_CHECK,
-                SafetyHubUtils.getAccountEmail(mProfile),
-                count -> {
-                    mBreachedCredentialsCountFetched = true;
-                    prefService.setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
-                    onFetchCredentialsFinished(onFinishedCallback);
-                },
-                error -> {
-                    mBreachedCredentialsCountFetched = true;
-                    mCredentialCountError = true;
-                    onFetchCredentialsFinished(onFinishedCallback);
-                });
-    }
-
-    /**
-     * Makes a call to GMSCore to fetch the latest weak credentials count for the currently
-     * signed-in profile.
-     */
-    private void fetchWeakCredentialsCount(Callback<Boolean> onFinishedCallback) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
-            mWeakCredentialsCountFetched = true;
-            onFetchCredentialsFinished(onFinishedCallback);
-            return;
-        }
-
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
-        PrefService prefService = UserPrefs.get(mProfile);
-
-        passwordManagerHelper.getWeakCredentialsCount(
-                PasswordCheckReferrer.SAFETY_CHECK,
-                SafetyHubUtils.getAccountEmail(mProfile),
-                count -> {
-                    mWeakCredentialsCountFetched = true;
-                    prefService.setInteger(Pref.WEAK_CREDENTIALS_COUNT, count);
-                    onFetchCredentialsFinished(onFinishedCallback);
-                },
-                error -> {
-                    mWeakCredentialsCountFetched = true;
-                    mCredentialCountError = true;
-                    onFetchCredentialsFinished(onFinishedCallback);
-                });
-    }
-
-    /**
-     * Makes a call to GMSCore to fetch the latest reused credentials count for the currently
-     * signed-in profile.
-     */
-    private void fetchReusedCredentialsCount(Callback<Boolean> onFinishedCallback) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
-            mReusedCredentialsCountFetched = true;
-            onFetchCredentialsFinished(onFinishedCallback);
-            return;
-        }
-
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
-        PrefService prefService = UserPrefs.get(mProfile);
-
-        passwordManagerHelper.getReusedCredentialsCount(
-                PasswordCheckReferrer.SAFETY_CHECK,
-                SafetyHubUtils.getAccountEmail(mProfile),
-                count -> {
-                    mReusedCredentialsCountFetched = true;
-                    prefService.setInteger(Pref.REUSED_CREDENTIALS_COUNT, count);
-                    onFetchCredentialsFinished(onFinishedCallback);
-                },
-                error -> {
-                    mReusedCredentialsCountFetched = true;
-                    mCredentialCountError = true;
-                    onFetchCredentialsFinished(onFinishedCallback);
-                });
-    }
-
-    private void onFetchCredentialsFinished(Callback<Boolean> onFinishedCallback) {
-        if (!mBreachedCredentialsCountFetched
-                || !mWeakCredentialsCountFetched
-                || !mReusedCredentialsCountFetched) {
-            return;
-        }
-
-        notifyPasswordCountsChanged();
-        onFinishedCallback.onResult(/* result= */ mCredentialCountError);
-        if (!mCredentialCountError) {
-            scheduleNextFetchJob();
-        }
-    }
-
-    /**
-     * Schedules the background fetch job to run after the given delay if the conditions are met,
-     * cancels and cleans up prefs otherwise.
-     */
-    private void scheduleOrCancelFetchJob(long delayMs) {
-        if (checkConditions()) {
-            scheduleFetchJobAfterDelay(delayMs);
+    private void scheduleOrCancelAccountPasswordsFetchJob(long delayMs) {
+        if (checkConditionsForAccountPasswords()) {
+            scheduleAccountPasswordsFetchJobAfterDelay(delayMs);
         } else {
-            // Clean up account specific prefs.
-            PrefService prefService = UserPrefs.get(mProfile);
-            prefService.clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
-            prefService.clearPref(Pref.WEAK_CREDENTIALS_COUNT);
-            prefService.clearPref(Pref.REUSED_CREDENTIALS_COUNT);
-
-            cancelFetchJob();
+            mAccountPasswordsFetchService.clearPrefs();
+            cancelAccountPasswordsFetchJob();
         }
     }
 
-    private void notifyPasswordCountsChanged() {
+    private void notifyAccountPasswordCountsChanged() {
         for (Observer observer : mObservers) {
-            observer.passwordCountsChanged();
+            observer.accountPasswordCountsChanged();
         }
     }
 
@@ -329,11 +225,12 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
 
     @Override
     public void onSignedIn() {
-        scheduleOrCancelFetchJob(/* delayMs= */ 0);
+        mAccountPasswordsFetchService.setAccount(SafetyHubUtils.getAccountEmail(mProfile));
+        scheduleOrCancelAccountPasswordsFetchJob(/* delayMs= */ 0);
     }
 
     @Override
     public void onSignedOut() {
-        scheduleOrCancelFetchJob(/* delayMs= */ 0);
+        scheduleOrCancelAccountPasswordsFetchJob(/* delayMs= */ 0);
     }
 }

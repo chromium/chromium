@@ -738,7 +738,10 @@ ci.gpu.linux_builder(
                 "volteer",
             ],
         ),
-        run_tests_serially = True,
+        # Tests are not run serially on this tester due to the increased
+        # overhead from Skylab making builds take ~2x as long compared to
+        # the VM builder. A 6+ hour cycle time for a CI tester is quite
+        # long, so enable parallel suites to reduce build times.
         skylab_upload_location = builder_config.skylab_upload_location(
             gs_bucket = "chromium-ci-skylab",
             gs_extra = "chromeos_gpu",

@@ -471,6 +471,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1791415068765905273">Kuva kõik võrdlustabelid</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma Google'i kontol teabe, privaatsuse ja turvalisuse haldamiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
+<translation id="1793473605302304726">Järelmaks</translation>
 <translation id="1793631236004319016">Viimati kasutati <ph name="NUM_HOURS_MINUTES_SECONDS" /> tagasi</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, saadaval on mitu toimingut, vajutage nende vahel vahetamiseks tabulaatorit</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3411,6 +3412,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7042616127917168121">Otsingutulemuste täpsustamine</translation>
 <translation id="7043552168914147882">Registrilehed</translation>
 <translation id="7044081119134178347">Kaamera seekord lubatud</translation>
+<translation id="704738887031336226"><ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />Järelmaksuvõimalused<ph name="PAY_OVER_TIME_HELP_LINK_END" /> kuvatakse kassas</translation>
 <translation id="7048095965575426564">Euroopa lõõtspaber</translation>
 <translation id="7050187094878475250">Üritasite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas sertifikaadi, mille kehtivusaeg on liiga pikk, et olla usaldusväärne.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Seda kaarti ei saa praegu salvestada}other{Neid kaarte ei saa praegu salvestada}}</translation>

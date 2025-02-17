@@ -153,6 +153,12 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kCreateURLLoaderPipeAsync);
 // requests be processed?
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kAdAuctionEventRegistration);
 
+// Updates the request body, headers, and referrer policy for CORS
+// redirects, following 4.4. HTTP-redirect fetch:
+// https://fetch.spec.whatwg.org/#http-redirect-fetch
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kUpdateRequestForCorsRedirect);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

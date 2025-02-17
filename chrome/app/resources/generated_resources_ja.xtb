@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">サイバーパンク</translation>
 <translation id="1129420403709586868">スマートフォンの写真とメディアを表示します</translation>
 <translation id="1129850422003387628">アプリの管理</translation>
+<translation id="1130430615924359526">{0,plural, =1{シークレット モードを終了}other{シークレット モードを終了（# 個のウィンドウ）}}</translation>
 <translation id="113050636487300043">各プロフィールを区別できるように名前と色のテーマを選択してください</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> グループの一部</translation>
 <translation id="1130676589211693127">右のバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
@@ -1510,6 +1511,7 @@
 <translation id="2042279886444479655">有効なプロファイル</translation>
 <translation id="2042427131767688936">デバイスを安全に使用できるようにするため、組織ではオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認することができます。</translation>
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
+<translation id="2044750031738659219">{0,plural, =1{ゲストモードを終了}other{ゲストモードを終了（# 個のウィンドウ）}}</translation>
 <translation id="204497730941176055">Microsoft 証明書テンプレート名</translation>
 <translation id="2045211794962848221">今後このメッセージは表示されなくなります</translation>
 <translation id="2045838962742066664">省略入力</translation>
@@ -7340,6 +7342,7 @@
 <translation id="6214106213498203737">水彩画</translation>
 <translation id="621470880408090483">サイトに Bluetooth デバイスへの接続を許可しない</translation>
 <translation id="6215039389782910006">{1,plural, =1{パスワードの安全性を維持するため、1 分間操作を行わないと、<ph name="BRAND" /> がロックされます}other{パスワードの安全性を維持するため、# 分間操作を行わないと、<ph name="BRAND" /> がロックされます}}</translation>
+<translation id="6216154119179790291">最初のタブまでスクロール</translation>
 <translation id="6216239400972191926">不承認のサイトとアプリ</translation>
 <translation id="6216601812881225442">コンテナのサイズを変更することはできません。Linux に事前に割り当てられている容量を調整するには、バックアップしてから新しいコンテナに復元してください。</translation>
 <translation id="6216696360484424239">自動ログイン</translation>
@@ -7536,6 +7539,7 @@
 <translation id="6357305427698525450">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> または <ph name="APP_NAME_2" /> で開かれます。</translation>
 <translation id="6357750620525943720">その他の不変の識別子（例: ハッシュまたは UUID）</translation>
 <translation id="6358884629796491903">ドラゴン</translation>
+<translation id="6359640073754977254">最後のタブまでスクロール</translation>
 <translation id="6361850914223837199">エラーの詳細:</translation>
 <translation id="6362853299801475928">問題の報告(&amp;R)...</translation>
 <translation id="6363786367719063276">ログを表示</translation>
@@ -10193,6 +10197,7 @@
 <translation id="8258027225380843424">インポートが完了しました。</translation>
 <translation id="8259048637628995340">Android スマートフォンを接続してシームレスに操作</translation>
 <translation id="8260177673299865994">ダウンロード保護を強化する</translation>
+<translation id="8260473380156923937">Chrome アプリはまもなくサポート終了となります。代替機能については、デベロッパーまたは IT サービス担当者にお問い合わせください。</translation>
 <translation id="8260864402787962391">マウス</translation>
 <translation id="8261378640211443080">この拡張機能は <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供されていません。知らないうちに追加された可能性があります。</translation>
 <translation id="8261506727792406068">削除</translation>

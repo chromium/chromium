@@ -4051,11 +4051,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-vpn-apps-on-flex",
-    "owners": [ "jiaozhou@google.com", "chromeos-flex-eng@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "enable-vulkan",
     "owners": [ "vasilyt@chromium.org", "kylechar@chromium.org" ],
     "expiry_milestone": 140
@@ -5110,6 +5105,11 @@
     "name": "identity-disc-account-menu",
     "owners": ["jood@google.com", "treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 139
+  },
+  {
+    "name": "ignore-device-flex-arc-enabled-policy",
+    "owners": [ "tinghaolin@google.com", "chromeos-flex-eng@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "ignore-gpu-blocklist",
@@ -8304,11 +8304,6 @@
     "name": "sync-enable-bookmarks-in-transport-mode",
     "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
     "expiry_milestone": 136
-  },
-  {
-    "name": "sync-enable-contact-info-data-type-in-transport-mode",
-    "owners": [ "droger@chromium.org", "gabolvr@google.com", "uno-desktop@google.com" ],
-    "expiry_milestone": 130
   },
   {
     "name": "sync-point-graph-validation",

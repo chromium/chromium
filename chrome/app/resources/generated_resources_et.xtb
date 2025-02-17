@@ -196,6 +196,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1129348283834595293">Küberpunk</translation>
 <translation id="1129420403709586868">Teie telefoni fotode ja meedia vaatamine</translation>
 <translation id="1129850422003387628">Rakenduste haldamine</translation>
+<translation id="1130430615924359526">{0,plural, =1{Sule inkognito aknad}other{Sule inkognito aknad (# akent)}}</translation>
 <translation id="113050636487300043">Valige nimi ja värviteema, et profiilidel vahet teha</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – osa grupist <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Parempoolse akutase <ph name="PERCENTAGE" />%.</translation>
@@ -1514,6 +1515,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2042279886444479655">Aktiivsed profiilid</translation>
 <translation id="2042427131767688936">Seadme ohutu kasutamise tagamiseks saab teie organisatsioon vaadata teavet operatsioonisüsteemi, brauseri ja seadete ning seadmesse installitud tarkvara kohta.</translation>
 <translation id="2044014337866019681">Seansi avamiseks veenduge, et kinnitaksite konto <ph name="ACCOUNT" />.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Sule külalise aknad}other{Sule külalise aknad (# akent)}}</translation>
 <translation id="204497730941176055">Microsofti sertifikaadi malli nimi</translation>
 <translation id="2045211794962848221">Te ei näe enam seda konkreetset sõnumit</translation>
 <translation id="2045838962742066664">Kiirkirja sisestamine</translation>
@@ -7360,6 +7362,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6214106213498203737">Vesivärvid</translation>
 <translation id="621470880408090483">Ära luba saitidel Bluetooth-seadmetega ühendust luua</translation>
 <translation id="6215039389782910006">{1,plural, =1{Teie paroolide kaitsmiseks lukustub <ph name="BRAND" /> pärast ühte minutit tegevusetust}other{Teie paroolide kaitsmiseks lukustub <ph name="BRAND" /> pärast # minutit tegevusetust}}</translation>
+<translation id="6216154119179790291">Esimese vaheleheni kerimine</translation>
 <translation id="6216239400972191926">Tagasilükatud saidid ja rakendused</translation>
 <translation id="6216601812881225442">Teie konteiner ei toeta suuruse muutmist. Linuxi jaoks varem eraldatud kettaruumi kohandamiseks varundage sisu ja taastage see uues konteineris.</translation>
 <translation id="6216696360484424239">Automaatne sisselogimine</translation>
@@ -7556,6 +7559,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6357305427698525450">Mõned toetatud lingid avanevad endiselt rakenduses <ph name="APP_NAME" /> või <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Muud stabiilsed identifikaatorid (nt räsiväärtused või UUID-d)</translation>
 <translation id="6358884629796491903">Draakon</translation>
+<translation id="6359640073754977254">Viimase vaheleheni kerimine</translation>
 <translation id="6361850914223837199">Vea üksikasjad:</translation>
 <translation id="6362853299801475928">&amp;Probleemidest teavitamine ...</translation>
 <translation id="6363786367719063276">Kuva logid</translation>
@@ -10216,6 +10220,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8258027225380843424">Importimine õnnestus!</translation>
 <translation id="8259048637628995340">Sujuva kasutuskogemuse jaoks ühendage oma Android-telefon</translation>
 <translation id="8260177673299865994">Allalaadimiskaitse täiustamine</translation>
+<translation id="8260473380156923937">Chrome'i rakenduste tugi katkestatakse peagi. Alternatiivsete lahenduste kohta lisateabe saamiseks võtke ühendust arendaja või IT-teenuse kontaktisikuga.</translation>
 <translation id="8260864402787962391">Hiir</translation>
 <translation id="8261378640211443080">Seda laiendust ei leidu veebipoes <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja te ei pruugi selle lisamisest teadlik olla.</translation>
 <translation id="8261506727792406068">Kustuta</translation>

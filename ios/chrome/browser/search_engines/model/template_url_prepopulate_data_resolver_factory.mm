@@ -8,7 +8,7 @@
 
 #import "base/check_deref.h"
 #import "components/search_engines/template_url_prepopulate_data_resolver.h"
-#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/browser_state.h"
 
@@ -22,7 +22,7 @@ TemplateURLPrepopulateDataResolverFactory::
           // should be as available as possible, other services are responsible
           // of forwarding to the parent profile as they see fit.
           ProfileSelection::kOwnInstanceInIncognito) {
-  DependsOn(SearchEngineChoiceServiceFactory::GetInstance());
+  DependsOn(RegionalCapabilitiesServiceFactory::GetInstance());
 }
 
 TemplateURLPrepopulateDataResolverFactory::
@@ -50,7 +50,8 @@ TemplateURLPrepopulateDataResolverFactory::BuildServiceInstanceFor(
 
   return std::make_unique<TemplateURLPrepopulateData::Resolver>(
       CHECK_DEREF(profile->GetPrefs()),
-      CHECK_DEREF(SearchEngineChoiceServiceFactory::GetForProfile(profile)));
+      CHECK_DEREF(
+          ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)));
 }
 
 }  // namespace ios

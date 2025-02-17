@@ -71,7 +71,7 @@ public class SafetyHubUpdateCheckModuleMediator
     }
 
     @Override
-    public void passwordCountsChanged() {
+    public void accountPasswordCountsChanged() {
         // no-op.
     }
 

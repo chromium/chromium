@@ -23,15 +23,6 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthCableExtensionAnywhere);
 
 #if BUILDFLAG(IS_ANDROID)
-// Use the Android 14 Credential Manager API.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
-
-// Use the Android 14 Credential Manager API for credentials stored in Gmscore.
-COMPONENT_EXPORT(DEVICE_FIDO)
-inline constexpr base::FeatureParam<bool> kWebAuthnAndroidGpmInCredMan{
-    &kWebAuthnAndroidCredMan, "gpm_in_cred_man", false};
-
 // Use the passkey cache service parallel to the FIDO2 module to retrieve
 // passkeys from GMSCore. This is for comparison only.
 COMPONENT_EXPORT(DEVICE_FIDO)

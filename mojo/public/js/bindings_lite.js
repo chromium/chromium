@@ -220,7 +220,11 @@ mojo.internal.computeStructDimensions = function(structSpec, value) {
       const fieldDimensions =
           field.type.$.computeDimensions(fieldValue, field.nullable);
       size += mojo.internal.align(fieldDimensions.size, 8);
-      numInterfaceIds += fieldDimensions.numInterfaceIds;
+      // Only update numInterfaceIds if field.type.$.computeDimensions returns a
+      // numInterfaceIds
+      if (fieldDimensions.numInterfaceIds) {
+        numInterfaceIds += fieldDimensions.numInterfaceIds;
+      }
     } else if (field.type.$.hasInterfaceId) {
       numInterfaceIds++;
     }
@@ -260,7 +264,11 @@ mojo.internal.computeUnionDimensions = function(unionSpec, nullable, value) {
       const fieldDimensions =
           field['type'].$.computeDimensions(fieldValue, nullable);
       size += mojo.internal.align(fieldDimensions.size, 8);
-      numInterfaceIds += fieldDimensions.numInterfaceIds;
+      // Only update numInterfaceIds if field['type'].$.computeDimensions
+      // returns a numInterfaceIds
+      if (fieldDimensions.numInterfaceIds) {
+        numInterfaceIds += fieldDimensions.numInterfaceIds;
+      }
     } else if (field['type'].$.hasInterfaceId) {
       numInterfaceIds++;
     }

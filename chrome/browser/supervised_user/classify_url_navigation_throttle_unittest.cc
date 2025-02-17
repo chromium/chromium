@@ -66,7 +66,12 @@ class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
 class ClassifyUrlNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    SupervisedUserServiceFactory::GetForProfile(profile())
+        ->SetURLFilterForTesting(std::make_unique<MockSupervisedUserURLFilter>(
+            *profile()->GetPrefs()));
+  }
 
   std::unique_ptr<content::NavigationThrottle> CreateNavigationThrottle(
       const std::vector<GURL> redirects) {
@@ -82,7 +87,8 @@ class ClassifyUrlNavigationThrottleTest
     // Note: this creates the throttle regardless the supervision status of the
     // user.
     std::unique_ptr<content::NavigationThrottle> throttle =
-        ClassifyUrlNavigationThrottle::MakeUnique(navigation_handle_.get());
+        ClassifyUrlNavigationThrottle::MakeUnique(navigation_handle_.get(),
+                                                  GetSupervisedUserURLFilter());
 
     // Add mock handlers for resume & cancel deferred.
     throttle->set_resume_callback_for_testing(
@@ -114,9 +120,10 @@ class ClassifyUrlNavigationThrottleTest
     navigation_handle_->set_redirect_chain(redirect_chain);
   }
 
-  SupervisedUserURLFilter* GetSupervisedUserURLFilter() {
-    return SupervisedUserServiceFactory::GetForProfile(profile())
-        ->GetURLFilter();
+  MockSupervisedUserURLFilter* GetSupervisedUserURLFilter() {
+    // Cast is safe, see this::SetUp() to see how the object was created.
+    return static_cast<MockSupervisedUserURLFilter*>(
+        SupervisedUserServiceFactory::GetForProfile(profile())->GetURLFilter());
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -240,21 +247,18 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsFasterThanHttp) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   MockSupervisedUserURLFilter::ResultCallback check;
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&check](const GURL& url,
                    MockSupervisedUserURLFilter::ResultCallback callback) {
             check = std::move(callback);
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(GURL(kExampleURL), testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(GURL(kExampleURL), testing::_))
       .Times(1);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       CreateNavigationThrottle(GURL(kExampleURL));
@@ -295,21 +299,18 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsFasterThanHttp) {
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   MockSupervisedUserURLFilter::ResultCallback check;
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&check](const GURL& url,
                    MockSupervisedUserURLFilter::ResultCallback callback) {
             check = std::move(callback);
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(GURL(kExampleURL), testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(GURL(kExampleURL), testing::_))
       .Times(1);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       CreateNavigationThrottle(GURL(kExampleURL));
@@ -356,23 +357,19 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
 // ready for processing.
 TEST_F(ClassifyUrlNavigationThrottleTest,
        ReverseOrderOfResponsesAfterContentIsReady) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
-
   std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
   // Check for the first url that will complete last.
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks](const GURL& url,
                     MockSupervisedUserURLFilter::ResultCallback callback) {
             checks.push_back(std::move(callback));
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(testing::_, testing::_))
       .Times(2);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       CreateNavigationThrottle({GURL(kExampleURL), GURL(kExample1URL)});
@@ -432,10 +429,9 @@ class ClassifyUrlNavigationThrottleParallelizationTest
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        ClassificationIsFasterThanHttp) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks](const GURL& url,
                     MockSupervisedUserURLFilter::ResultCallback callback) {
@@ -443,11 +439,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
             // Asynchronous behavior all the time.
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(testing::_, testing::_))
       .Times(3);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =
@@ -500,10 +494,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        OutOfOrderClassification) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks](const GURL& url,
                     MockSupervisedUserURLFilter::ResultCallback callback) {
@@ -511,11 +504,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
             // Asynchronous behavior all the time.
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(testing::_, testing::_))
       .Times(3);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =
@@ -572,10 +563,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        ClassificationIsSlowerThanHttp) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks](const GURL& url,
                     MockSupervisedUserURLFilter::ResultCallback callback) {
@@ -583,11 +573,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
             // Asynchronous behavior all the time.
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(testing::_, testing::_))
       .Times(3);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =
@@ -650,11 +638,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        ShortCircuitsSynchronousBlock) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
-
   bool first_check = false;
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&first_check](const GURL& url,
                          MockSupervisedUserURLFilter::ResultCallback callback) {
@@ -670,11 +656,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
                                      FilteringBehaviorReason::ASYNC_CHECKER});
             return true;
           });
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(testing::_, testing::_))
       .Times(2);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =
@@ -704,12 +688,10 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        HandlesLateAsynchronousBlock) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
-
   std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
   bool first_check_completed = false;
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault([&checks, &first_check_completed](
                          const GURL& url,
                          MockSupervisedUserURLFilter::ResultCallback callback) {
@@ -725,11 +707,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
         return false;
       });
 
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(testing::_, testing::_))
       .Times(3);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =

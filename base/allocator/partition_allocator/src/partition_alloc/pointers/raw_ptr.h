@@ -1255,6 +1255,7 @@ struct pointer_traits<::raw_ptr<T, Traits>> {
   }
 };
 
+#if PA_BUILDFLAG(ASSERT_CPP_20)
 // Mark `raw_ptr<T>` and `T*` as having a common reference type (the type to
 // which both can be converted or bound) of `T*`. This makes them satisfy
 // `std::equality_comparable`, which allows usage like:
@@ -1267,23 +1268,20 @@ struct pointer_traits<::raw_ptr<T, Traits>> {
 // error about being unable to invoke `std::ranges::equal_to()`.
 template <typename T,
           base::RawPtrTraits Traits,
-          template <typename>
-          typename TQ,
-          template <typename>
-          typename UQ>
+          template <typename> typename TQ,
+          template <typename> typename UQ>
 struct basic_common_reference<raw_ptr<T, Traits>, T*, TQ, UQ> {
   using type = T*;
 };
 
 template <typename T,
           base::RawPtrTraits Traits,
-          template <typename>
-          typename TQ,
-          template <typename>
-          typename UQ>
+          template <typename> typename TQ,
+          template <typename> typename UQ>
 struct basic_common_reference<T*, raw_ptr<T, Traits>, TQ, UQ> {
   using type = T*;
 };
+#endif  // PA_BUILDFLAG(ASSERT_CPP_20)
 
 }  // namespace std
 
