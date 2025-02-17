@@ -1054,16 +1054,6 @@ SharedStorageWorkletGlobalScope::interestGroups(
 SharedStorageWorkletNavigator* SharedStorageWorkletGlobalScope::Navigator(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!add_module_finished_) {
-    CHECK(!navigator_);
-
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "navigator cannot be accessed during addModule().");
-
-    return nullptr;
-  }
-
   if (!navigator_) {
     navigator_ = MakeGarbageCollected<SharedStorageWorkletNavigator>(
         GetExecutionContext());
