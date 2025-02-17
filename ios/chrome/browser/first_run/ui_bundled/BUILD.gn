@@ -9,8 +9,8 @@ source_set("features") {
   ]
   deps = [
     "//base",
-    "//components/search_engines",
-    "//ios/chrome/browser/search_engines/model",
+    "//components/regional_capabilities",
+    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/shared/model/profile",
   ]
 }

@@ -1816,6 +1816,7 @@ static_library("ui") {
       "//components/policy/core/common:common_constants",
       "//components/power_bookmarks/core:features",
       "//components/reading_list/features:flags",
+      "//components/regional_capabilities",
       "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//components/safety_check",
       "//components/saved_tab_groups/delegate",

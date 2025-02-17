@@ -5,9 +5,8 @@
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 
 #import "base/metrics/field_trial_params.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace first_run {
@@ -20,12 +19,10 @@ const char kUpdatedFirstRunSequenceParam[] = "updated-first-run-sequence-param";
 
 UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
     ProfileIOS* profile) {
-  BOOL excluded_country = search_engines::IsEeaChoiceCountry(
-      ios::SearchEngineChoiceServiceFactory::GetForProfile(profile)
-          ->GetCountryId());
-
+  regional_capabilities::RegionalCapabilitiesService* regional_capabilities =
+      ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
   if (!base::FeatureList::IsEnabled(kUpdatedFirstRunSequence) ||
-      excluded_country) {
+      regional_capabilities->IsInEeaCountry()) {
     return UpdatedFRESequenceVariationType::kDisabled;
   }
   return static_cast<UpdatedFRESequenceVariationType>(

@@ -22,7 +22,7 @@
 #include "components/google/core/common/google_switches.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -217,7 +217,7 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
     const size_t kNumberOfSearchEngines =
         prepopulate_data_resolver().GetPrepopulatedEngines().size();
 
-    if (search_engines::IsEeaChoiceCountry(country_id)) {
+    if (regional_capabilities::IsEeaCountry(country_id)) {
       EXPECT_GE(kNumberOfSearchEngines, kMinEea)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
@@ -239,7 +239,7 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
 
 TEST_F(TemplateURLPrepopulateDataTest, EntriesPerCountryConsistency) {
   for (int country_id : kAllCountryIds) {
-    if (!search_engines::IsEeaChoiceCountry(country_id)) {
+    if (!regional_capabilities::IsEeaCountry(country_id)) {
       // "unhandled" countries can cause some issues when inheriting a config
       // from an EEA country. Covering them via
       // TemplateURLPrepopulateDataTest.NumberOfEntriesPerCountryConsistency is
