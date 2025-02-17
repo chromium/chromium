@@ -37,6 +37,9 @@
 // The user tapped on "Add account…".
 - (void)didTapAddAccount;
 
+// The user tapped to open Settings page.
+- (void)didTapSettingsButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MUTATOR_H_

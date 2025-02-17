@@ -56,6 +56,9 @@
 - (void)didTapAddAccountWithCompletion:
     (SigninCoordinatorCompletionCallback)completion;
 
+// The user tapped to open Settings page.
+- (void)didTapSettingsButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_

@@ -431,6 +431,13 @@
   }];
 }
 
+- (void)didTapSettingsButton {
+  if (self.userInteractionsBlocked) {
+    return;
+  }
+  [self.delegate didTapSettingsButton];
+}
+
 #pragma mark - Callbacks
 
 // Callback for didTapAddAccount

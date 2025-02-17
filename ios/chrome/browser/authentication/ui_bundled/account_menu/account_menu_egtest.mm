@@ -485,6 +485,20 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity2];
 }
 
+// Test the open Settings button.
+- (void)testOpenSettings {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [self selectIdentityDisc];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuOpenSettingsButtonId)]
+      performAction:grey_tap()];
+  [self assertAccountMenuIsNotShown];
+  // Check that the Settings page is presented.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
+}
+
 #pragma mark - Test snackbar
 
 // Verifies identity confirmation snackbar shows on startup with multiple
