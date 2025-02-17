@@ -7,10 +7,12 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -122,6 +124,15 @@ inline void UmaHistogramDeletion(BtmCookieMode mode, BtmDeletionAction action) {
       action);
 }
 
+inline void UmaHistogramSiteToClearDomainLength(
+    std::string const& site_to_clear,
+    bool is_canonical_host) {
+  base::UmaHistogramSparse(
+      is_canonical_host ? "Privacy.DIPS.DeletionDomainLength.Serializable"
+                        : "Privacy.DIPS.DeletionDomainLength.NonCanonical",
+      site_to_clear.length());
+}
+
 void OnDeletionFinished(base::OnceClosure finished_callback,
                         base::Time deletion_start) {
   UmaHistogramDeletionLatency(deletion_start);
@@ -134,14 +145,22 @@ net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
   for (const auto& site : sites) {
     for (const auto& [scheme, port] :
          {std::make_pair("http", 80), std::make_pair("https", 443)}) {
+      std::optional<url::Origin> origin =
+          url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
+              scheme, site, port);
+      UmaHistogramSiteToClearDomainLength(site, origin.has_value());
+      // The host may be non-canonical or invalid. In such a case, we ignore it,
+      // since it will cause IPC deserialization issues later on.
+      if (!origin.has_value()) {
+        break;
+      }
       for (auto ancestorChainBit :
            {net::CookiePartitionKey::AncestorChainBit::kSameSite,
             net::CookiePartitionKey::AncestorChainBit::kCrossSite}) {
-        auto key = net::CookiePartitionKey::FromStorageKeyComponents(
-            net::SchemefulSite(
-                url::Origin::CreateFromNormalizedTuple(scheme, site, port)),
-            ancestorChainBit,
-            /*nonce=*/std::nullopt);
+        std::optional<net::CookiePartitionKey> key =
+            net::CookiePartitionKey::FromStorageKeyComponents(
+                net::SchemefulSite(*origin), ancestorChainBit,
+                /*nonce=*/std::nullopt);
         if (key.has_value()) {
           keys.push_back(*key);
         }
