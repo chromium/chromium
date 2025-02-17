@@ -289,6 +289,13 @@ ArcStatus GetArcStatusForProfile(const Profile* profile,
   if (ash::switches::IsRevenBranding()) {
     CHECK(g_is_arcvm_dlc_image_available.has_value());
 
+    if (ash::features::ShouldIgnoreDeviceFlexArcEnabledPolicy()) {
+      VLOG_IF(1, should_report_reason)
+          << "ARC unavailable on reven board due to the VPN app enabling "
+             "policy was ignored.";
+      return ArcStatus::kNotAvailable;
+    }
+
     if (!g_is_arcvm_dlc_image_available.value()) {
       VLOG_IF(1, should_report_reason)
           << "ARC unavailable on reven board due to no arcvm dlc images.";
