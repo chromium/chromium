@@ -20,6 +20,8 @@ source_set("change_profile") {
     "change_profile_settings_continuation.mm",
     "change_profile_signout_continuation.h",
     "change_profile_signout_continuation.mm",
+    "sync_history_continuation.h",
+    "sync_history_continuation.mm",
   ]
 
   deps = [
@@ -31,6 +33,7 @@ source_set("change_profile") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/url_loading/model",
