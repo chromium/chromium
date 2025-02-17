@@ -12939,13 +12939,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Pending navigations must be canceled when a frame becomes pending deletion.
 //
 // 1) Initial state: A(B).
-// 2) Navigation from B to C. The server is slow to respond.
+// 2) Navigation from B to C. Pause when the speculative RFH is created.
 // 3) Deletion of B.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        NavigationCommitInIframePendingDeletionAB) {
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
-  GURL url_c(embedded_test_server()->GetURL("c.com", "/hung"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
 
   // 1) Initial state: A(B).
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -12956,7 +12956,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   rfh_b->DoNotDeleteForTesting();
   EXPECT_TRUE(ExecJs(rfh_b, "onunload=function(){}"));
 
-  // 2) Navigation from B to C. The server is slow to respond.
+  // 2) Navigation from B to C. The navigation will be paused
+  // when the speculative RFH is created.
   TestNavigationManager navigation_observer(web_contents(), url_c);
   EXPECT_TRUE(ExecJs(rfh_b, JsReplace("location.href=$1;", url_c)));
   navigation_observer.WaitForSpeculativeRenderFrameHostCreation();
@@ -12994,13 +12995,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Pending navigations must be canceled when a frame becomes pending deletion.
 //
 // 1) Initial state: A(B(C)).
-// 2) Navigation from C to D. The server is slow to respond.
+// 2) Navigation from C to D. Pause when the speculative RFH is created.
 // 3) Deletion of B.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        NavigationCommitInIframePendingDeletionABC) {
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
-  GURL url_d(embedded_test_server()->GetURL("d.com", "/hung"));
+  GURL url_d(embedded_test_server()->GetURL("d.com", "/title1.html"));
 
   // 1) Initial state: A(B(C)).
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -13011,7 +13012,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Leave rfh_c in pending deletion state.
   LeaveInPendingDeletionState(rfh_c);
 
-  // 2) Navigation from C to D. The server is slow to respond.
+  // 2) Navigation from C to D. The navigation will be paused
+  // when the speculative RFH is created.
   TestNavigationManager navigation_observer(web_contents(), url_d);
   EXPECT_TRUE(ExecJs(rfh_c, JsReplace("location.href=$1;", url_d)));
   navigation_observer.WaitForSpeculativeRenderFrameHostCreation();
