@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -19,6 +20,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.signin.metrics.SigninPromoAction;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -102,6 +104,12 @@ final class SigninPromoMediator
             // Impressions are recorded only once per coordinator lifecycle.
             return;
         }
+        @SigninPromoAction
+        int promoAction =
+                getVisibleAccount() == null
+                        ? SigninPromoAction.NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+                        : SigninPromoAction.WITH_DEFAULT;
+        SigninMetricsUtils.logSigninOffered(promoAction, mDelegate.getAccessPoint());
         recordEventHistogram(Event.SHOWN);
         mDelegate.recordImpression();
         mWasImpressionRecorded = true;
