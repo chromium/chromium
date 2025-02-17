@@ -11,19 +11,18 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
-#include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
+#include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate_impl.h"
 #include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/scanner/scanner_feedback.h"
@@ -48,12 +47,14 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/account_id/account_id.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
