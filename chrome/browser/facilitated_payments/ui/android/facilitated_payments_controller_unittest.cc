@@ -96,16 +96,16 @@ TEST_F(FacilitatedPaymentsControllerTest, Show_UserHasNoPixAccounts) {
 
 // Test onBankAccountSelected method.
 TEST_F(FacilitatedPaymentsControllerTest, onBankAccountSelected) {
-  base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
-      mock_on_user_decision_callback;
+  base::MockCallback<base::OnceCallback<void(int64_t)>>
+      mock_on_payment_account_selected;
 
   // view_ is assigned when the bottom sheet is shown.
-  controller_->Show(bank_accounts_, mock_on_user_decision_callback.Get());
+  controller_->Show(bank_accounts_, mock_on_payment_account_selected.Get());
 
-  // When bank account is selected, call back should be called with true and
-  // instrument id from selected bank account.
-  EXPECT_CALL(mock_on_user_decision_callback,
-              Run(/*is_selected=*/true, /*selected_bank_account_id=*/100L));
+  // When bank account is selected, call back should be called with the
+  // instrument id of the selected bank account.
+  EXPECT_CALL(mock_on_payment_account_selected,
+              Run(/*selected_bank_account_id=*/100L));
 
   controller_->OnBankAccountSelected(nullptr, 100L);
 }
@@ -205,17 +205,17 @@ TEST_F(FacilitatedPaymentsControllerTest,
 
 // Test OnEwalletSelected method.
 TEST_F(FacilitatedPaymentsControllerTest, OnEwalletSelected) {
-  base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
-      mock_on_user_decision_callback;
+  base::MockCallback<base::OnceCallback<void(int64_t)>>
+      mock_on_payment_account_selected;
 
   // view_ is assigned when the bottom sheet is shown.
-  controller_->ShowForEwallet(ewallets_, mock_on_user_decision_callback.Get());
+  controller_->ShowForEwallet(ewallets_,
+                              mock_on_payment_account_selected.Get());
 
-  // When an eWallet is selected, call back should be called with true and
-  // instrument id from selected eWallet.
-  EXPECT_CALL(
-      mock_on_user_decision_callback,
-      Run(/*is_selected=*/true, /*selected_ewallet_instrument_id=*/100L));
+  // When an eWallet is selected, call back should be called with the instrument
+  // id of the selected eWallet.
+  EXPECT_CALL(mock_on_payment_account_selected,
+              Run(/*selected_ewallet_instrument_id=*/100L));
 
   controller_->OnEwalletSelected(nullptr, 100L);
 }

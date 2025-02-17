@@ -34,26 +34,26 @@ bool FacilitatedPaymentsController::IsInLandscapeMode() {
 
 void FacilitatedPaymentsController::Show(
     base::span<const autofill::BankAccount> bank_account_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+    base::OnceCallback<void(int64_t)> on_payment_account_selected) {
   // Abort if there are no bank accounts.
   if (bank_account_suggestions.empty()) {
     return;
   }
 
   view_->RequestShowContent(std::move(bank_account_suggestions));
-  on_user_decision_callback_ = std::move(on_user_decision_callback);
+  on_payment_account_selected_ = std::move(on_payment_account_selected);
 }
 
 void FacilitatedPaymentsController::ShowForEwallet(
     base::span<const autofill::Ewallet> ewallet_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+    base::OnceCallback<void(int64_t)> on_payment_account_selected) {
   // Abort if there are no eWallets.
   if (ewallet_suggestions.empty()) {
     return;
   }
 
   view_->RequestShowContentForEwallet(std::move(ewallet_suggestions));
-  on_user_decision_callback_ = std::move(on_user_decision_callback);
+  on_payment_account_selected_ = std::move(on_payment_account_selected);
 }
 
 void FacilitatedPaymentsController::ShowProgressScreen() {
@@ -98,16 +98,15 @@ void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
 
 void FacilitatedPaymentsController::OnBankAccountSelected(JNIEnv* env,
                                                           jlong instrument_id) {
-  if (on_user_decision_callback_) {
-    std::move(on_user_decision_callback_).Run(true, instrument_id);
+  if (on_payment_account_selected_) {
+    std::move(on_payment_account_selected_).Run(instrument_id);
   }
 }
 
 void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
                                                       jlong instrument_id) {
-  if (on_user_decision_callback_) {
-    std::move(on_user_decision_callback_)
-        .Run(/*is_ewallet_selected=*/true, instrument_id);
+  if (on_payment_account_selected_) {
+    std::move(on_payment_account_selected_).Run(instrument_id);
   }
 }
 

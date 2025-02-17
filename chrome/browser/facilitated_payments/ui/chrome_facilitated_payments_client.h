@@ -68,12 +68,10 @@ class ChromeFacilitatedPaymentsClient
   bool IsInLandscapeMode() override;
   void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
-      override;
+      base::OnceCallback<void(int64_t)> on_payment_account_selected) override;
   void ShowEwalletPaymentPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
-      override;
+      base::OnceCallback<void(int64_t)> on_payment_account_selected) override;
   void ShowProgressScreen() override;
   void ShowErrorScreen() override;
   void DismissPrompt() override;

@@ -102,10 +102,7 @@ class PixManager {
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTest,
       OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown);
-  FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
-                           OnPixPaymentPromptResult_FopSelected);
-  FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
-                           OnPixPaymentPromptResult_FopSelectorDeclined);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerTest, OnPixAccountSelected);
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTest,
       OnPurchaseActionResult_CouldNotInvoke_ErrorScreenShown);
@@ -194,9 +191,8 @@ class PixManager {
   void OnApiAvailabilityReceived(base::TimeTicks start_time,
                                  bool is_api_available);
 
-  // Called after showing the PIX the payment prompt.
-  void OnPixPaymentPromptResult(bool is_prompt_accepted,
-                                int64_t selected_instrument_id);
+  // Called when user selects the Pix bank account to pay with.
+  void OnPixAccountSelected(int64_t selected_instrument_id);
 
   // Invoked when risk data is fetched. The call to fetch the risk data was made
   // at `start_time`.
@@ -236,7 +232,7 @@ class PixManager {
   // Sets the internal state and triggers showing the Pix payment prompt.
   void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_pix_account_selected);
 
   // Sets the internal state and triggers showing the progress screen.
   void ShowProgressScreen();

@@ -16,11 +16,11 @@ FacilitatedPaymentsClient::~FacilitatedPaymentsClient() = default;
 
 void FacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {}
+    base::OnceCallback<void(int64_t)> on_payment_account_selected) {}
 
 void FacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {}
+    base::OnceCallback<void(int64_t)> on_payment_account_selected) {}
 
 void FacilitatedPaymentsClient::ShowProgressScreen() {}
 

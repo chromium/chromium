@@ -37,12 +37,12 @@ class FacilitatedPaymentsController {
   // Shows the PIX FOP selector.
   virtual void Show(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Shows the eWallet FOP selector.
   virtual void ShowForEwallet(
       base::span<const autofill::Ewallet> ewallet_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Asks the `view_` to show the progress screen. Virtual for overriding in
   // tests.
@@ -89,10 +89,8 @@ class FacilitatedPaymentsController {
   // used to delegate user actions from Java to native.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
-  // TODO: crbug.com/375089558 - Make this on_user_selected_ when user decline
-  // can be routed using ui_event_listener_.
-  // Called after showing PIX payment prompt.
-  base::OnceCallback<void(bool, int64_t)> on_user_decision_callback_;
+  // Called when user selects the payment account to pay with.
+  base::OnceCallback<void(int64_t)> on_payment_account_selected_;
 
   // Callback used to communicate view events to the feature.
   base::RepeatingCallback<void(payments::facilitated::UiEvent)>

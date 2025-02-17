@@ -21,18 +21,16 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
   ~MockFacilitatedPaymentsController() override = default;
 
   MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
-  MOCK_METHOD(
-      void,
-      Show,
-      (base::span<const autofill::BankAccount> bank_account_suggestions,
-       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
-      (override));
-  MOCK_METHOD(
-      void,
-      ShowForEwallet,
-      (base::span<const autofill::Ewallet> ewallet_suggestions,
-       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
-      (override));
+  MOCK_METHOD(void,
+              Show,
+              (base::span<const autofill::BankAccount> bank_account_suggestions,
+               base::OnceCallback<void(int64_t)> on_payment_account_selected),
+              (override));
+  MOCK_METHOD(void,
+              ShowForEwallet,
+              (base::span<const autofill::Ewallet> ewallet_suggestions,
+               base::OnceCallback<void(int64_t)> on_payment_account_selected),
+              (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
