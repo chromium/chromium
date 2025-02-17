@@ -363,10 +363,8 @@ void ExtensionRegistrar::DisableExtensionWithSource(
 void ExtensionRegistrar::EnabledReloadableExtensions() {
   std::vector<std::string> extensions_to_enable;
   for (const auto& e : registry_->disabled_extensions()) {
-    DisableReasonSet disable_reasons =
-        extension_prefs_->GetDisableReasons(e->id());
-    if (disable_reasons.size() == 1 &&
-        disable_reasons.contains(disable_reason::DISABLE_RELOAD)) {
+    if (extension_prefs_->HasOnlyDisableReason(
+            e->id(), disable_reason::DISABLE_RELOAD)) {
       extensions_to_enable.push_back(e->id());
     }
   }

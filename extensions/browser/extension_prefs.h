@@ -423,18 +423,18 @@ class ExtensionPrefs : public KeyedService {
   // an extension. In particular, AddDisableReason(s) is only legal when the
   // extension is not enabled.
   DisableReasonSet GetDisableReasons(const ExtensionId& extension_id) const;
+
+  // Returns true if the extension has `disable_reason` in its disable reasons.
   bool HasDisableReason(const ExtensionId& extension_id,
                         disable_reason::DisableReason disable_reason) const;
 
-  // TODO(crbug.com/372186532): Add a HasOnlyDisableReason() method which checks
-  // if the given reason is the only reason in the extension's DisableReasonSet.
-  // A good number of callers need this (see crrev.com/c/6218840).
+  // Returns true if the extension has only `disable_reason` in its disable
+  // reasons.
+  bool HasOnlyDisableReason(const ExtensionId& extension_id,
+                            disable_reason::DisableReason disable_reason) const;
 
   void AddDisableReason(const ExtensionId& extension_id,
                         disable_reason::DisableReason disable_reason);
-
-  // TODO(crbug.com/372186532): Remove this method as its usage is limited (only
-  // used in tests) and all its callers can use ReplaceDisableReasons() instead.
   void AddDisableReasons(const ExtensionId& extension_id,
                          const DisableReasonSet& disable_reasons);
 

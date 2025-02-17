@@ -1516,4 +1516,35 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
   EXPECT_EQ(time, prefs.prefs()->ReadPrefAsTime(extension_id, kTestTimePref));
 }
 
+TEST_F(ExtensionPrefsSimpleTest, HasOnlyDisableReasonTest) {
+  content::BrowserTaskEnvironment task_environment;
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
+  std::string extension_id = prefs.AddExtension("Test Extension")->id();
+  ExtensionPrefs* extension_prefs = prefs.prefs();
+
+  // No disable reasons to begin with.
+  EXPECT_FALSE(extension_prefs->HasOnlyDisableReason(
+      extension_id, disable_reason::DISABLE_USER_ACTION));
+
+  // Add a disable reason.
+  extension_prefs->SetExtensionDisabled(extension_id,
+                                        {disable_reason::DISABLE_USER_ACTION});
+  EXPECT_TRUE(extension_prefs->HasOnlyDisableReason(
+      extension_id, disable_reason::DISABLE_USER_ACTION));
+
+  // Add another disable reason.
+  extension_prefs->AddDisableReason(extension_id,
+                                    disable_reason::DISABLE_EXTERNAL_EXTENSION);
+  EXPECT_FALSE(extension_prefs->HasOnlyDisableReason(
+      extension_id, disable_reason::DISABLE_USER_ACTION));
+  EXPECT_FALSE(extension_prefs->HasOnlyDisableReason(
+      extension_id, disable_reason::DISABLE_EXTERNAL_EXTENSION));
+
+  // Remove the first disable reason.
+  extension_prefs->RemoveDisableReason(extension_id,
+                                       disable_reason::DISABLE_USER_ACTION);
+  EXPECT_TRUE(extension_prefs->HasOnlyDisableReason(
+      extension_id, disable_reason::DISABLE_EXTERNAL_EXTENSION));
+}
+
 }  // namespace extensions
