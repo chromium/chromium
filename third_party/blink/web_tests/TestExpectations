@@ -2679,7 +2679,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac13 ] external/wpt/speech-api/SpeechSynthesis-speak-without-activation-fails.tentative.html [ Timeout ]
+crbug.com/397150490 [ Mac13 ] external/wpt/speech-api/SpeechSynthesis-speak-without-activation-fails.tentative.html [ Timeout ]
 crbug.com/396958489 [ Win10.20h2 ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
 crbug.com/396958489 [ Mac14 ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
 crbug.com/396958489 [ Linux ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
