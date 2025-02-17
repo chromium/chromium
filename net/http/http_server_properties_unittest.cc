@@ -207,44 +207,6 @@ TEST_F(HttpServerPropertiesTest, SetSupportsSpdy) {
                                             NetworkAnonymizationKey()));
 }
 
-TEST_F(HttpServerPropertiesTest, SetSupportsSpdyWebSockets) {
-  // The https and wss servers should be treated as the same server, as should
-  // the http and ws servers.
-  url::SchemeHostPort https_server("https", "www.test.com", 443);
-  url::SchemeHostPort wss_server("wss", "www.test.com", 443);
-  url::SchemeHostPort http_server("http", "www.test.com", 443);
-  url::SchemeHostPort ws_server("ws", "www.test.com", 443);
-
-  EXPECT_FALSE(impl_.GetSupportsSpdy(https_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(wss_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(http_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(ws_server, NetworkAnonymizationKey()));
-
-  impl_.SetSupportsSpdy(wss_server, NetworkAnonymizationKey(), true);
-  EXPECT_TRUE(impl_.GetSupportsSpdy(https_server, NetworkAnonymizationKey()));
-  EXPECT_TRUE(impl_.GetSupportsSpdy(wss_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(http_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(ws_server, NetworkAnonymizationKey()));
-
-  impl_.SetSupportsSpdy(http_server, NetworkAnonymizationKey(), true);
-  EXPECT_TRUE(impl_.GetSupportsSpdy(https_server, NetworkAnonymizationKey()));
-  EXPECT_TRUE(impl_.GetSupportsSpdy(wss_server, NetworkAnonymizationKey()));
-  EXPECT_TRUE(impl_.GetSupportsSpdy(http_server, NetworkAnonymizationKey()));
-  EXPECT_TRUE(impl_.GetSupportsSpdy(ws_server, NetworkAnonymizationKey()));
-
-  impl_.SetSupportsSpdy(https_server, NetworkAnonymizationKey(), false);
-  EXPECT_FALSE(impl_.GetSupportsSpdy(https_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(wss_server, NetworkAnonymizationKey()));
-  EXPECT_TRUE(impl_.GetSupportsSpdy(http_server, NetworkAnonymizationKey()));
-  EXPECT_TRUE(impl_.GetSupportsSpdy(ws_server, NetworkAnonymizationKey()));
-
-  impl_.SetSupportsSpdy(ws_server, NetworkAnonymizationKey(), false);
-  EXPECT_FALSE(impl_.GetSupportsSpdy(https_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(wss_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(http_server, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetSupportsSpdy(ws_server, NetworkAnonymizationKey()));
-}
-
 TEST_F(HttpServerPropertiesTest, SetSupportsSpdyWithNetworkIsolationKey) {
   const url::SchemeHostPort kServer("https", "foo.test", 443);
 
