@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -100,6 +101,18 @@ gfx::Size GetExpandedPopupSize(const gfx::Rect& content_area_bounds,
           (height < popup_preferred_size.height() ? scrollbar_width : 0));
 
   return {width, height};
+}
+
+// Returns whether there is a visible view with `view_id` that overlaps
+// `screen_bounds`.
+bool BoundsOverlapWithView(const gfx::Rect& screen_bounds,
+                           BrowserView* browser_view,
+                           ui::ElementIdentifier view_id) {
+  auto* view_tracker = views::ElementTrackerViews::GetInstance();
+  views::View* view = view_tracker->GetFirstMatchingView(
+      view_id, view_tracker->GetContextForView(browser_view));
+  return view &&
+         view->GetWidget()->GetWindowBoundsInScreen().Intersects(screen_bounds);
 }
 
 }  // namespace
@@ -205,18 +218,10 @@ bool BoundsOverlapWithOpenPermissionsPrompt(
     return false;
   }
 
-  views::View* const permission_bubble_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          PermissionPromptBubbleBaseView::kMainViewId,
-          views::ElementTrackerViews::GetInstance()->GetContextForView(
-              browser_view));
-  if (!permission_bubble_view) {
-    return false;
-  }
-
-  return permission_bubble_view->GetWidget()
-      ->GetWindowBoundsInScreen()
-      .Intersects(screen_bounds);
+  return BoundsOverlapWithView(screen_bounds, browser_view,
+                               PermissionPromptBubbleBaseView::kMainViewId) ||
+         BoundsOverlapWithView(screen_bounds, browser_view,
+                               EmbeddedPermissionPromptBaseView::kMainViewId);
 }
 
 bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds) {
