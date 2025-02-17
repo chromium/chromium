@@ -29,6 +29,9 @@ namespace {
 constexpr char kDeiceRemoteCommandsInvalidatorTypeName[] =
     "DEVICE_REMOTE_COMMAND";
 
+constexpr char kBrowserRemoteCommandsInvalidatorTypeName[] =
+    "BROWSER_REMOTE_COMMAND";
+
 // Right now, consumer user remote commands are only supported on ChromeOS while
 // profile remote commands are only supported on other platforms.
 // If we want support support both commands on the same platform, we need to
@@ -191,8 +194,9 @@ std::string RemoteCommandsInvalidator::GetType() const {
     case PolicyInvalidationScope::kUser:
       return kUserRemoteCommandsInvalidatorTypeName;
     case PolicyInvalidationScope::kDevice:
-    case PolicyInvalidationScope::kCBCM:
       return kDeiceRemoteCommandsInvalidatorTypeName;
+    case PolicyInvalidationScope::kCBCM:
+      return kBrowserRemoteCommandsInvalidatorTypeName;
     case PolicyInvalidationScope::kDeviceLocalAccount:
       NOTREACHED() << "Device local account commands are not supported.";
   }
