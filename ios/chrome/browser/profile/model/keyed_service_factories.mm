@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
 #import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/metrics/model/bookmark_model_metrics_service_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -233,6 +234,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   AcceptLanguagesServiceFactory::GetInstance();
   AuthenticationServiceFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();
+  BookmarkModelMetricsServiceFactory::GetInstance();
   BreadcrumbManagerKeyedServiceFactory::GetInstance();
   BringAndroidTabsToIOSServiceFactory::GetInstance();
   BrowserDownloadServiceFactory::GetInstance();
