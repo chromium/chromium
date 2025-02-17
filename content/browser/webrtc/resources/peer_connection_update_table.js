@@ -195,6 +195,12 @@ export class PeerConnectionUpdateTable {
           const mid = lines
               .filter(line => line.startsWith('a=mid:'))
               .map(line => line.substring(6))[0];
+          // Extract the direction.
+          const direction = lines
+              .map(line => line.substring(2).trim())
+              .find(line => ['sendrecv', 'sendonly',
+                    'recvonly', 'inactive'].includes(line)) || 'sendrecv';
+
           const sectionDetails = document.createElement('details');
           // Fold by default for large SDP.
           sectionDetails.open =
@@ -205,6 +211,7 @@ export class PeerConnectionUpdateTable {
           sectionSummary.textContent =
             lines[0].trim() +
             ' (' + (lines.length - 1) + ' more lines)' +
+            (section.startsWith('m=') ? ' direction=' + direction : '') +
             (mid ? ' mid=' + mid : '');
           sectionDetails.appendChild(sectionSummary);
 
