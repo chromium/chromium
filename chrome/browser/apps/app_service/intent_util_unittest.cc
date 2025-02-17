@@ -309,37 +309,6 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_FileHandlers) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_NoteTaking) {
-  const std::string note_action_handler =
-      extensions::api::app_runtime::ToString(
-          extensions::api::app_runtime::ActionType::kNewNote);
-  // Foo app has a note-taking action handler.
-  extensions::ExtensionBuilder foo_app("Foo");
-  std::string manifest = base::StringPrintf(R"(
-    "manifest_version": 2,
-    "version": "1.0.0",
-    "action_handlers": ["%s"],
-    "app": {"background": {"scripts": ["background.js"]}}
-  )",
-                                            note_action_handler.c_str());
-  foo_app.AddJSON(manifest).BuildManifest();
-  scoped_refptr<const extensions::Extension> foo = foo_app.Build();
-
-  IntentFilters filters = apps_util::CreateIntentFiltersForChromeApp(foo.get());
-
-  ASSERT_EQ(filters.size(), 1u);
-  const IntentFilterPtr& filter = filters[0];
-  ASSERT_EQ(filter->conditions.size(), 1u);
-  const Condition& condition = *filter->conditions[0];
-  EXPECT_EQ(condition.condition_type, ConditionType::kAction);
-  ASSERT_EQ(condition.condition_values.size(), 1u);
-  EXPECT_EQ(condition.condition_values[0]->value,
-            apps_util::kIntentActionCreateNote);
-
-  apps::IntentPtr intent = apps_util::CreateCreateNoteIntent();
-  EXPECT_TRUE(intent->MatchFilter(filter));
-}
-
 TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
   // Foo extension provides file_browser_handlers for html and anything.
   extensions::ExtensionBuilder foo_ext("Foo");

@@ -51,20 +51,6 @@ namespace app.runtime {
     sparky
   };
 
-  // An app can be launched with a specific action in mind, for example, to
-  // create a new note. The type of action the app was launched
-  // with is available inside of the |actionData| field from the LaunchData
-  // instance.
-  enum ActionType {
-    // The user wants to quickly take a new note.
-    new_note
-  };
-
-  // Optional data that includes action-specific launch information.
-  dictionary ActionData {
-    ActionType actionType;
-  };
-
   // Optional data for the launch. Either <code>items</code>, or
   // the pair (<code>url, referrerUrl</code>) can be present for any given
   // launch.
@@ -102,11 +88,6 @@ namespace app.runtime {
 
     // Where the app is launched from.
     LaunchSource? source;
-
-    // Contains data that specifies the <code>ActionType</code> this app was
-    // launched with. This is null if the app was not launched with a specific
-    // action intent.
-    ActionData? actionData;
   };
 
   // This object specifies details and operations to perform on the embedding

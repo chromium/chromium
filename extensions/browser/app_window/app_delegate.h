@@ -97,11 +97,6 @@ class AppDelegate {
   virtual void OnHide() = 0;
   virtual void OnShow() = 0;
 
-  // Called when app web contents finishes focus traversal - gives the delegate
-  // a chance to handle the focus change.
-  // Return whether focus has been handled.
-  virtual bool TakeFocus(content::WebContents* web_contents, bool reverse) = 0;
-
   // Notifies the Picture-in-Picture controller that there is a new player
   // entering Picture-in-Picture.
   // Returns the result of the enter request.

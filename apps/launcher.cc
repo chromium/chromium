@@ -129,15 +129,6 @@ class PlatformAppPathLauncher
   PlatformAppPathLauncher(const PlatformAppPathLauncher&) = delete;
   PlatformAppPathLauncher& operator=(const PlatformAppPathLauncher&) = delete;
 
-  void set_action_data(std::optional<app_runtime::ActionData> action_data) {
-#if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kApiRuntimeActionData)) {
-      action_data_ = std::move(action_data);
-    }
-#endif
-  }
-
   void set_launch_source(extensions::AppLaunchSource launch_source) {
     launch_source_ = launch_source;
   }
@@ -222,13 +213,6 @@ class PlatformAppPathLauncher
 
     app_runtime::LaunchData launch_data;
 
-    // TODO(crbug.com/40235429): This conditional block is being added here
-    // temporarily, and should be removed once the underlying type of
-    // |launch_data.action_data| is wrapped with std::optional<T>.
-    if (action_data_) {
-      launch_data.action_data = std::move(*action_data_);
-      action_data_.reset();
-    }
     if (!handler_id_.empty())
       launch_data.id = handler_id_;
 
@@ -344,8 +328,7 @@ class PlatformAppPathLauncher
     }
 
     AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
-        context_, app, launch_source_, handler_id_, entries_, granted_entries,
-        std::move(action_data_));
+        context_, app, launch_source_, handler_id_, entries_, granted_entries);
   }
 
   const Extension* GetExtension() const {
@@ -361,7 +344,6 @@ class PlatformAppPathLauncher
   const extensions::ExtensionId extension_id;
   extensions::AppLaunchSource launch_source_ =
       extensions::AppLaunchSource::kSourceFileHandler;
-  std::optional<app_runtime::ActionData> action_data_;
   // A list of files and directories to be passed through to the app.
   std::vector<base::FilePath> entry_paths_;
   // A corresponding list with EntryInfo for every base::FilePath in
@@ -452,11 +434,9 @@ void LaunchPlatformAppWithFilePaths(
 }
 
 void LaunchPlatformAppWithAction(content::BrowserContext* context,
-                                 const extensions::Extension* app,
-                                 app_runtime::ActionData action_data) {
+                                 const extensions::Extension* app) {
   scoped_refptr<PlatformAppPathLauncher> launcher =
       new PlatformAppPathLauncher(context, app, base::FilePath());
-  launcher->set_action_data(std::move(action_data));
   launcher->set_launch_source(extensions::AppLaunchSource::kSourceUntracked);
   launcher->Launch();
 }

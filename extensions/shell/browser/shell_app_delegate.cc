@@ -107,11 +107,6 @@ void ShellAppDelegate::SetTerminatingCallback(base::OnceClosure callback) {
   // manually or should it use a browser termination callback like Chrome?
 }
 
-bool ShellAppDelegate::TakeFocus(content::WebContents* web_contents,
-                                 bool reverse) {
-  return false;
-}
-
 content::PictureInPictureResult ShellAppDelegate::EnterPictureInPicture(
     content::WebContents* web_contents) {
   NOTREACHED();

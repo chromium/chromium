@@ -406,12 +406,6 @@ void ChromeAppDelegate::OnShow() {
   }
 }
 
-bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
-                                  bool reverse) {
-  // TODO(crbug.com/376354347): Remove this method.
-  return false;
-}
-
 content::PictureInPictureResult ChromeAppDelegate::EnterPictureInPicture(
     content::WebContents* web_contents) {
   return PictureInPictureWindowManager::GetInstance()
