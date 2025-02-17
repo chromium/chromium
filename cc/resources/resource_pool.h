@@ -135,6 +135,12 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       return resource_->set_backing(std::move(backing));
     }
 
+    // Creates a software SharedImage based on the configuration of this
+    // resource and installs a backing for this resource that is itself backed
+    // by that SI.
+    void InstallSoftwareBacking(scoped_refptr<gpu::SharedImageInterface> sii,
+                                std::string_view debug_label);
+
     size_t memory_usage() const {
       DCHECK(resource_);
       return resource_->memory_usage();

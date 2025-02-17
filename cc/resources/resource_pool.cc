@@ -59,6 +59,19 @@ ResourcePool::Backing::~Backing() {
   }
 }
 
+void ResourcePool::InUsePoolResource::InstallSoftwareBacking(
+    scoped_refptr<gpu::SharedImageInterface> sii,
+    std::string_view debug_label) {
+  CHECK(!backing());
+  auto backing = std::make_unique<ResourcePool::Backing>();
+  backing->shared_image_interface = sii;
+  backing->set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
+      {format(), size(), color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+       debug_label}));
+  CHECK(backing->shared_image());
+  set_backing(std::move(backing));
+}
+
 namespace {
 
 // Process-unique number for each resource pool.
