@@ -377,7 +377,6 @@ StaticBitmapImageTransform::GetWithAlphaDisposition(
     case kDontChangeAlpha:
       return source;
   }
-  const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
