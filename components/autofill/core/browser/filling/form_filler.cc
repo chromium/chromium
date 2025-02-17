@@ -25,10 +25,13 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
+#include "components/autofill/core/browser/filling/entities/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/payments/field_filling_payments_util.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
@@ -250,6 +253,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     const AutofillField& trigger_field,
     base::flat_map<FieldType, size_t>& type_count,
     const std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
+    const base::flat_set<FieldGlobalId>& blocked_fields,
     FillingProduct filling_product,
     bool is_refill) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
@@ -334,6 +338,10 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
                                                         is_trigger_field),
          FieldFillingSkipReason::kValuePrefilled);
 
+  // Do not fill fields that are blocked by another filling product.
+  add_if(blocked_fields.contains(field.global_id()),
+         FieldFillingSkipReason::kBlockedByOtherFillingProduct);
+
   return skip_reasons;
 }
 
@@ -382,8 +390,14 @@ FormFiller::GetFieldFillingSkipReasons(
   base::flat_map<FieldType, size_t> type_count;
   type_count.reserve(form_structure.field_count());
 
+  base::flat_set<FieldGlobalId> blocked_fields;
+  if (EntityDataManager* edm = manager_->client().GetEntityDataManager();
+      edm && filling_product == FillingProduct::kAddress) {
+    blocked_fields = GetFieldsFillableByAutofillAi(form_structure, *edm);
+  }
+
   CHECK_EQ(fields.size(), form_structure.field_count());
-  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
+  auto skip_reasons =
       base::MakeFlatMap<FieldGlobalId, DenseSet<FieldFillingSkipReason>>(
           form_structure, {}, [](const std::unique_ptr<AutofillField>& field) {
             return std::make_pair(field->global_id(),
@@ -394,7 +408,8 @@ FormFiller::GetFieldFillingSkipReasons(
     DenseSet<FieldFillingSkipReason> field_skip_reasons =
         GetFillingSkipReasonsForField(
             fields[i], *form_structure.field(i), trigger_field, type_count,
-            type_groups_originally_filled, filling_product, is_refill);
+            type_groups_originally_filled, blocked_fields, filling_product,
+            is_refill);
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be

@@ -538,7 +538,8 @@ bool WillFillCreditCardNumberOrCvc(
         // to the iframe security policy.
         return FormFiller::GetFillingSkipReasonsForField(
                    *field, autofill_field, trigger_autofill_field, type_count,
-                   std::nullopt, FillingProduct::kCreditCard)
+                   /*type_groups_originally_filled=*/std::nullopt,
+                   /*blocked_fields=*/{}, FillingProduct::kCreditCard)
             .empty();
       };
 

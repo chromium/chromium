@@ -31,7 +31,8 @@ enum class FieldFillingSkipReason : uint8_t {
   kFieldTypeUnrelated = 15,
   kNoValueToFill = 16,
   kAutofilledValueDidNotChange = 17,
-  kMaxValue = kAutofilledValueDidNotChange
+  kBlockedByOtherFillingProduct = 18,
+  kMaxValue = kBlockedByOtherFillingProduct
 };
 
 std::string_view GetSkipFieldFillLogMessage(FieldFillingSkipReason skip_reason);

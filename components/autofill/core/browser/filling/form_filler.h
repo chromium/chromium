@@ -11,13 +11,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
 namespace autofill {
@@ -75,8 +75,10 @@ class FormFiller {
   // for filling. If the field should not be skipped, an empty set is returned
   // (and not {FieldFillingSkipReason::kNotSkipped}).
   // `type_count` tracks the number of times a type of field has been filled.
-  // `type_group_originally_filled` denotes, in case of a refill, what groups
+  // `type_groups_originally_filled` denotes, in case of a refill, what groups
   // where filled in the initial filling.
+  // `blocked_fields` are fields which must not be filled because another
+  // filling product of higher priority claims them.
   // `filling_product` is the type of filling calling this function.
   // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
   // FieldTypeSet.
@@ -86,7 +88,8 @@ class FormFiller {
       const AutofillField& autofill_field,
       const AutofillField& trigger_field,
       base::flat_map<FieldType, size_t>& type_count,
-      std::optional<DenseSet<FieldTypeGroup>> type_group_originally_filled,
+      std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
+      const base::flat_set<FieldGlobalId>& blocked_fields,
       FillingProduct filling_product,
       bool is_refill = false);
 
