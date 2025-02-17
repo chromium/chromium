@@ -34,6 +34,7 @@
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
 #include "components/sync/service/local_data_migration_item_queue.h"
+#include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -54,7 +55,6 @@ class SharedURLLoaderFactory;
 namespace syncer {
 
 class BackendMigrator;
-class SyncAuthManager;
 class SyncFeatureStatusForMigrationsRecorder;
 class SyncPrefsPolicyHandler;
 
@@ -68,6 +68,7 @@ class SyncServiceImpl : public SyncService,
                         public SyncEngineHost,
                         public SyncPrefObserver,
                         public DataTypeManagerObserver,
+                        public SyncAuthManager::Delegate,
                         public SyncServiceCrypto::Delegate,
                         public SyncUserSettingsImpl::Delegate,
                         public signin::IdentityManager::Observer {
@@ -184,6 +185,10 @@ class SyncServiceImpl : public SyncService,
   void OnConfigureDone(const DataTypeManager::ConfigureResult& result) override;
   void OnConfigureStart() override;
 
+  // SyncAuthManager::Delegate implementation.
+  void SyncAuthAccountStateChanged() override;
+  void SyncAuthCredentialsChanged() override;
+
   // SyncServiceCrypto::Delegate implementation.
   void CryptoStateChanged() override;
   void CryptoRequiredUserActionChanged() override;
@@ -298,10 +303,6 @@ class SyncServiceImpl : public SyncService,
       ResetEngineReason reset_reason);
 
   void StopAndClear(ResetEngineReason reset_engine_reason);
-
-  // Callbacks for SyncAuthManager.
-  void AccountStateChanged();
-  void CredentialsChanged();
 
   bool IsEngineAllowedToRun() const;
 

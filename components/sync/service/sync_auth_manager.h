@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -39,21 +38,27 @@ struct SyncAccountInfo {
 // IdentityManager::GetPrimaryAccountInfo() etc).
 class SyncAuthManager : public signin::IdentityManager::Observer {
  public:
-  // Called when the existence of an authenticated account changes. It's
-  // guaranteed that this is only called for going from "no account" to "have
-  // account" or vice versa, or if the existing account's `is_primary` bit
-  // changed. I.e. SyncAuthManager will never directly switch from one account
-  // to a different one. Call GetActiveAccountInfo to get the new state.
-  using AccountStateChangedCallback = base::RepeatingClosure;
-  // Called when the credential state changes, i.e. an access token was
-  // added/changed/removed. Call GetCredentials to get the new state.
-  using CredentialsChangedCallback = base::RepeatingClosure;
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called when the existence of an authenticated account changes. It's
+    // guaranteed that this is only called for going from "no account" to "have
+    // account" or vice versa, or if the existing account's `is_primary` bit
+    // changed. I.e. SyncAuthManager will never directly switch from one account
+    // to a different one. Call GetActiveAccountInfo to get the new state.
+    virtual void SyncAuthAccountStateChanged() = 0;
+
+    // Called when the credential state changes, i.e. an access token was
+    // added/changed/removed. Call GetCredentials to get the new state.
+    virtual void SyncAuthCredentialsChanged() = 0;
+  };
 
   // `identity_manager` may be null (this is the case if local Sync is enabled),
-  // but if non-null, must outlive this object.
+  // but if non-null, must outlive this object. `delegate` must not be null and
+  // must outlive this object.
   SyncAuthManager(signin::IdentityManager* identity_manager,
-                  const AccountStateChangedCallback& account_state_changed,
-                  const CredentialsChangedCallback& credentials_changed);
+                  Delegate* delegate);
 
   SyncAuthManager(const SyncAuthManager&) = delete;
   SyncAuthManager& operator=(const SyncAuthManager&) = delete;
@@ -163,9 +168,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void SetLastAuthError(const GoogleServiceAuthError& error);
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
-
-  const AccountStateChangedCallback account_state_changed_callback_;
-  const CredentialsChangedCallback credentials_changed_callback_;
+  const raw_ptr<Delegate> delegate_;
 
   bool registered_for_auth_notifications_ = false;
 
