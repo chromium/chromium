@@ -174,6 +174,11 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Tests that the user education is shown in the grid only once.
 - (void)testUserEducationInGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey];
 
@@ -214,6 +219,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks opening the Share flow from the Tab Grid and cancelling.
 - (void)testShareGroupButCancel {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -248,6 +257,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using the face pile.
 - (void)testShareGroupAndManageGroupUsingFacePile {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -294,6 +307,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using context menus.
 - (void)testShareGroupAndManageGroupUsingContextMenus {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -343,6 +360,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks that the user with JoinOnly can trigger the Join flow.
 - (void)testJoinGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [TabGroupAppInterface mockSharedEntitiesPreview];
   GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
       data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
@@ -363,6 +384,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks that the IPH is presented when the user foreground the app with a
 // shared tab group active.
 - (void)testForegroundIPH {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Not available on iPad.
     return;
@@ -407,6 +432,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // deleting the shared group as owner.
 - (void)testShareGroupAndDeleteUsingContextMenus {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   AddSharedGroup();
 
   // Long press the group.
@@ -430,6 +459,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks joining a group. Then leaving the shared group as member.
 - (void)testJoinGroupAndLeaveUsingContextMenus {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   AddSharedGroup();
 
   // Long press the group.
@@ -454,6 +487,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // deleting the shared group from the group view as owner.
 - (void)testShareGroupAndDeleteFromGroupViewUsingContextMenus {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   AddSharedGroup();
 
   // Open the group view.
@@ -485,6 +522,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks joining a group. Then leaving the shared group from the group view as
 // member.
 - (void)testJoinGroupAndLeaveFromGroupViewUsingContextMenus {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   AddSharedGroup();
 
   // Open the group view.
@@ -515,6 +556,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Tests that TabGroupAppInterface creates shared tab groups correctly.
 - (void)testPreparedSharedGroupsAtStartup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [TabGroupAppInterface prepareFakeSharedTabGroups:3];
 
   [ChromeEarlGreyUI openTabGrid];
@@ -544,6 +589,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // the last tab, when "Keep Group" is pressed and delete the group when "Delete
 // Group" is pressed.
 - (void)testLastTabClosedOwnerAlert {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   AddSharedGroup();
 
   // Open the group view.
@@ -605,6 +654,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Ensures the last tab close alert as a member is displayed when the group is
 // shared.
 - (void)testLastTabClosedMemberAlert {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   AddSharedGroup();
 
   // Open the group view.
@@ -676,6 +729,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks that the user with JoinOnly rights can't start the Share flow from
 // Tab Grid.
 - (void)testCantShareGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -694,6 +751,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks that the user with JoinOnly can trigger the Join flow.
 - (void)testJoinGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [TabGroupAppInterface mockSharedEntitiesPreview];
   GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
       data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));

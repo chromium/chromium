@@ -238,6 +238,10 @@ void CreateSharedGroupAndOpenMenu() {
 // Tests that the tab group indicator view is visible when the active tab is
 // grouped.
 - (void)testTabGroupIndicatorNotVisibleOnIpad {
+  if (@available(iOS 17, *)) {
+  } else {
+    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 16.");
+  }
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped on iPhone.");
   }
@@ -465,6 +469,10 @@ void CreateSharedGroupAndOpenMenu() {
 // Tests that the Tab Grid button indicator is correctly updated whether a tab
 // is grouped or not.
 - (void)testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
+  }
   // Open a second tab.
   [ChromeEarlGreyUI openNewTab];
 
