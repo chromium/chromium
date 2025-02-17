@@ -355,11 +355,10 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
   if (!source) {
     return nullptr;
   }
-  const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
-  options.premultiply_alpha = info.alphaType() != kUnpremul_SkAlphaType;
+  options.premultiply_alpha = source->GetAlphaType() != kUnpremul_SkAlphaType;
   options.force_copy = true;
   return Apply(flush_reason, source, options);
 }
