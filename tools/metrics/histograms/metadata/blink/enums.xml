@@ -7826,6 +7826,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="279" label="AsyncIterableStreams"/>
   <int value="280" label="ContainerScrollStateQueries"/>
   <int value="281" label="DRAFT_ScopedViewTransitions"/>
+  <int value="282" label="AttributionReporting"/>
+  <int value="283" label="CookieStore"/>
+  <int value="284" label="Fencedframe"/>
+  <int value="285" label="FontVariantEmoji"/>
+  <int value="286" label="Gethtml"/>
+  <int value="287" label="LocalFonts"/>
+  <int value="288" label="MeasureMemory"/>
+  <int value="289" label="MediaPlaybackQuality"/>
+  <int value="290" label="Webgpu"/>
+  <int value="291" label="Zstd"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -337,6 +337,16 @@ enum WebDXFeature {
   kAsyncIterableStreams = 279,
   kContainerScrollStateQueries = 280,
   kDRAFT_ScopedViewTransitions = 281,
+  kAttributionReporting = 282,
+  kCookieStore = 283,
+  kFencedframe = 284,
+  kFontVariantEmoji = 285,
+  kGethtml = 286,
+  kLocalFonts = 287,
+  kMeasureMemory = 288,
+  kMediaPlaybackQuality = 289,
+  kWebgpu = 290,
+  kZstd = 291,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
