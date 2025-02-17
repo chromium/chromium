@@ -1823,7 +1823,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="422722221769396062">Dostava hrane iz restavracije</translation>
 <translation id="4230204356098880324">Lahko zahteva uporabo in premik kamere.</translation>
 <translation id="4231448684371260244">8 x 13 palcev</translation>
-<translation id="4233220688695460165">Chrome v 30 dneh samodejno izbriše teme in spletna mesta, ki predlagajo oglase. Blokirate lahko tudi določene teme in spletna mesta, ki vam niso všeč.</translation>
+<translation id="4233220688695460165">Chrome v 30 dneh samodejno izbriše teme in spletna mesta, ki predlagajo oglase. Lahko tudi blokirate določene teme in spletna mesta, ki vam niso všeč.</translation>
 <translation id="4235360514405112390">Veljavno</translation>
 <translation id="4239799716689808527">Labels</translation>
 <translation id="4241830393007970744">Napadalci vas lahko na spletnem mestu, ki ste ga poskušali obiskati, zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so gesla, telefonske številke ali številke kreditnih kartic.</translation>
@@ -3791,7 +3791,7 @@ Dodatne podrobnosti:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798389633136518089">Prezrto, ker pravilnika ni nastavil vir iz oblaka.</translation>
 <translation id="7800304661137206267">Povezava je šifrirana s <ph name="CIPHER" /> in uporablja <ph name="MAC" /> za preverjanje pristnosti sporočil ter <ph name="KX" /> kot mehanizem za izmenjavo ključev.</translation>
-<translation id="7800977246388195491">Chrome beleži teme zanimanja na podlagi nedavne zgodovine brskanja. Spletna mesta, ki jih obiščete, lahko tudi določijo, kaj vam je všeč. Pozneje lahko spletna mesta zahtevajo te podatke, da vam prikažejo osebno prilagojene oglase. Izberete lahko, katere teme in spletna mesta naj se uporabljajo za prikazovanje oglasov.</translation>
+<translation id="7800977246388195491">Chrome beleži teme, ki vas zanimajo, na podlagi nedavne zgodovine brskanja. Spletna mesta, ki jih obiščete, lahko prav tako ugotovijo, kaj vam je všeč. Pozneje lahko spletna mesta zahtevajo te podatke, da vam prikažejo osebno prilagojene oglase. Izberete lahko, katere teme in spletna mesta naj se uporabljajo za prikazovanje oglasov.</translation>
 <translation id="7802523362929240268">Spletno mesto je legitimno</translation>
 <translation id="7802989406998618639">Vnesite <ph name="NUMBER_OF_DIGITS" />-mestno varnostno kodo na <ph name="SIDE_OF_CARD" />, da bo lahko vaša banka potrdila vašo identiteto.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
