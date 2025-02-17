@@ -109,9 +109,7 @@ void SaveAutofillAiDataControllerImpl::OnBubbleClosed(
   if (!save_prompt_acceptance_callback_.is_null()) {
     std::move(save_prompt_acceptance_callback_)
         .Run(
-            {/*prompt_was_accepted=*/closed_reason ==
-                 AutofillAiBubbleClosedReason::kAccepted,
-             /*did_user_interact=*/
+            {/*did_user_interact=*/
              GetUserInteractionFromAutofillAiBubbleClosedReason(closed_reason),
              /*entity=*/closed_reason == AutofillAiBubbleClosedReason::kAccepted
                  ? std::exchange(autofill_ai_data_, std::nullopt)

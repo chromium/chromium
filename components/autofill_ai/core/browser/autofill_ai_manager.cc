@@ -368,16 +368,14 @@ void AutofillAiManager::MaybeImportForm(
 
 void AutofillAiManager::OnSavePromptAcceptance(
     AutofillAiClient::SavePromptAcceptanceResult result) {
-  if (!result.prompt_was_accepted) {
+  if (!result.entity) {
     return;
   }
-
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
-  CHECK(result.entity);
-  entity_manager->AddOrUpdateEntityInstance(*result.entity);
+  entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
 }
 
 void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,

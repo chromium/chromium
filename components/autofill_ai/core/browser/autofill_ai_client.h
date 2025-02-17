@@ -42,28 +42,21 @@ class AutofillAiManager;
 // in the settings while the client is alive.
 class AutofillAiClient {
  public:
-  // Encapsulates the result of user interaction with the save/update AutofillAi
+  // Contains the result of a user interaction with the save/update AutofillAi
   // prompt.
-
   struct SavePromptAcceptanceResult final {
     SavePromptAcceptanceResult();
-
-    SavePromptAcceptanceResult(bool prompt_was_accepted,
-                               bool did_user_interact,
+    SavePromptAcceptanceResult(bool did_user_interact,
                                std::optional<autofill::EntityInstance> entity);
-    explicit SavePromptAcceptanceResult(bool prompt_was_accepted);
     SavePromptAcceptanceResult(const SavePromptAcceptanceResult&);
     SavePromptAcceptanceResult(SavePromptAcceptanceResult&&);
     SavePromptAcceptanceResult& operator=(const SavePromptAcceptanceResult&);
     SavePromptAcceptanceResult& operator=(SavePromptAcceptanceResult&&);
     ~SavePromptAcceptanceResult();
 
-    bool prompt_was_accepted = false;
     bool did_user_interact = false;
 
-    // Set when `prompt_was_accepted` is true.
-    // TODO(crbug.com/389629676): Remove `prompt_was_accepted` in favour of
-    // simply checking whether `entity` exists.
+    // Non-empty iff the prompt was accepted.
     std::optional<autofill::EntityInstance> entity;
   };
   using SavePromptAcceptanceCallback =
