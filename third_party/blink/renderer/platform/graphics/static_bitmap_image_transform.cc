@@ -327,7 +327,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
                                 ? source_info.colorSpace()
                                 : SkColorSpace::MakeSRGB().get());
   const bool needs_alpha_change =
-      (source->GetSkImageInfo().alphaType() == kUnpremul_SkAlphaType) !=
+      (source->GetAlphaType() == kUnpremul_SkAlphaType) !=
       (!options.premultiply_alpha);
 
   // If we aren't doing anything (and this wasn't a forced copy), just return
