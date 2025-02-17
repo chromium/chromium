@@ -144846,6 +144846,19 @@
         }
        ]
       ],
+      "gradient-single-stop-none-interpolation.html": [
+       "14cd9d763021800a8c4c2898c770bc4015a88f92",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-single-stop-none-interpolation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "legacy-color-gradient.html": [
        "e6af42103b9407221bfeae6e74b5379dc7379441",
        [
@@ -330040,6 +330053,10 @@
        "cc8273c2adc8a53ee46bd3882878cbebe0f39b07",
        []
       ],
+      "color-computed-contrast-color-function-expected.txt": [
+       "f5d0e52de8cb017344cd976e6c7242cebf3cabfa",
+       []
+      ],
       "color-computed-relative-color-expected.txt": [
        "ba54b31e93e6677e63836266ca94b1be00d27125",
        []
@@ -330054,6 +330071,10 @@
       ],
       "color-valid-color-mix-function-expected.txt": [
        "d2c45205b7dada4632c65f4c621fcfc71cfa35c3",
+       []
+      ],
+      "color-valid-contrast-color-function-expected.txt": [
+       "a795a9939ae2e7614a785fa6ef843162a7fa9996",
        []
       ],
       "color-valid-hsl-expected.txt": [
@@ -345454,6 +345475,10 @@
       ],
       "gradient-single-stop-longer-hue-oklch-ref.html": [
        "7a4113ae3567f3cb6487d06d553143ae0c2b68eb",
+       []
+      ],
+      "gradient-single-stop-none-interpolation-ref.html": [
+       "0bc56ce194404786ecd18646cc1d0c1ea03a8b12",
        []
       ],
       "oklab-gradient-ref.html": [
@@ -390495,6 +390520,10 @@
         "c1e7ad95b62d2527fac8afae50d48763869ff52b",
         []
        ],
+       "datatransferitemlist-remove-expected.txt": [
+        "f96014d34c20341848e4039a208789a31f537e06",
+        []
+       ],
        "helper-drop-box-here.xhtml": [
         "d6b9d6fcefd7104aba0e855be4b3ce7454f0c01a",
         []
@@ -413335,10 +413364,6 @@
      ]
     },
     "view-timelines": {
-     "intermediate-transform-expected.txt": [
-      "75cdad88738b6bc254f4db1c6a3cd89756401000",
-      []
-     ],
      "range-boundary-ref.html": [
       "057d0afabcdf579765cc1de8df4c63a6edeea8c4",
       []
@@ -487636,6 +487661,13 @@
         {}
        ]
       ],
+      "color-computed-contrast-color-function.html": [
+       "57537dd929fc2d4e6fe0fe9f544037825df2ee71",
+       [
+        null,
+        {}
+       ]
+      ],
       "color-computed-hex-color.html": [
        "7485b34a1df318a25cfaafdf762f6977594f0d69",
        [
@@ -487708,6 +487740,13 @@
       ],
       "color-invalid-color-mix-function.html": [
        "2f815f814007e6035dd2616e152722ad5343bda3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "color-invalid-contrast-color-function.html": [
+       "0c5741e239737afb7c70e729f4115d4804f04e8c",
        [
         null,
         {}
@@ -487792,6 +487831,13 @@
       ],
       "color-valid-color-mix-function.html": [
        "cf61f731f22f389a32eda1d7a2c92b216cc52fb1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "color-valid-contrast-color-function.html": [
+       "85a133b78e985449ee18a26f72beae9fae23581d",
        [
         null,
         {}
@@ -624618,7 +624664,7 @@
         ]
        ],
        "datatransferitemlist-remove.html": [
-        "19316181c5fc61f6561054fa5d628d9285de1468",
+        "89f8cfd320025540991f2532f47bab5c4700d1f7",
         [
          null,
          {}
@@ -689905,7 +689951,7 @@
       ]
      ],
      "intermediate-transform.html": [
-      "8d332eaf264e67faacbe8a21630b820266308580",
+      "24d1ea5c43fcc52633336872df15815bcc84d7b9",
       [
        null,
        {}
