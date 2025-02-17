@@ -202,8 +202,13 @@ class MojoWebTestCounterImpl : public mojo_bindings_test::mojom::Counter {
   }
 
   // mojo_bindings_test::mojom::Counter:
-  void AddObserver(
+  void AddObserver1(
       mojo::PendingAssociatedRemote<CounterObserver> observer) override {
+    observers_.Add(std::move(observer));
+  }
+
+  void AddObserver2(mojo::PendingAssociatedRemote<CounterObserver> observer,
+                    int unused) override {
     observers_.Add(std::move(observer));
   }
 
@@ -215,7 +220,12 @@ class MojoWebTestCounterImpl : public mojo_bindings_test::mojom::Counter {
 
   void RemoveAllObservers() override { observers_.Clear(); }
 
-  void Clone(mojo::PendingAssociatedReceiver<Counter> receiver) override {
+  void Clone1(mojo::PendingAssociatedReceiver<Counter> receiver) override {
+    additional_receivers_.Add(this, std::move(receiver));
+  }
+
+  void Clone2(mojo::PendingAssociatedReceiver<Counter> receiver,
+              int unused) override {
     additional_receivers_.Add(this, std::move(receiver));
   }
 
