@@ -75,9 +75,9 @@ TEST(CollaborationMessagingUtilTest,
 }
 
 // Checks the summary is provided and correct when there is one removed
-// collaboration message.
+// collaboration message about a group with a last known title.
 TEST(CollaborationMessagingUtilTest,
-     GetRemovedCollaborationsSummary_OneRemovedCollaborationMessage) {
+     GetRemovedCollaborationsSummary_OneRemovedNamedCollaborationMessage) {
   std::vector<PersistentMessage> messages;
   messages.push_back(TabUpdateMessage());
   messages.push_back(TabGroupRemovedMessage("title1"));
@@ -88,10 +88,24 @@ TEST(CollaborationMessagingUtilTest,
                 IDS_COLLABORATION_ONE_GROUP_REMOVED_NOTIFICATION, u"title1"));
 }
 
-// Checks the summary is provided and correct when there are two removed
-// collaboration messages.
+// Checks the summary is provided and correct when there is one removed
+// collaboration message about a group with an empty last known title.
 TEST(CollaborationMessagingUtilTest,
-     GetRemovedCollaborationsSummary_TwoMessages) {
+     GetRemovedCollaborationsSummary_OneRemovedUnnamedCollaborationMessage) {
+  std::vector<PersistentMessage> messages;
+  messages.push_back(TabUpdateMessage());
+  messages.push_back(TabGroupRemovedMessage(""));
+  messages.push_back(TabGroupUpdateMessage());
+  messages.push_back(CollaborationUpdateMessage());
+  EXPECT_EQ(GetRemovedCollaborationsSummary(messages),
+            l10n_util::GetStringUTF8(
+                IDS_COLLABORATION_ONE_UNNAMED_GROUP_REMOVED_NOTIFICATION));
+}
+
+// Checks the summary is provided and correct when there are two removed
+// collaboration messages about groups with last known titles.
+TEST(CollaborationMessagingUtilTest,
+     GetRemovedCollaborationsSummary_TwoMessagesNamedGroups) {
   std::vector<PersistentMessage> messages;
   messages.push_back(TabUpdateMessage());
   messages.push_back(TabGroupRemovedMessage("title1"));
@@ -102,6 +116,38 @@ TEST(CollaborationMessagingUtilTest,
             l10n_util::GetStringFUTF8(
                 IDS_COLLABORATION_TWO_GROUPS_REMOVED_NOTIFICATION, u"title1",
                 u"title2"));
+}
+
+// Checks the summary is provided and correct when there are two removed
+// collaboration messages about groups with one with no last known title.
+TEST(CollaborationMessagingUtilTest,
+     GetRemovedCollaborationsSummary_TwoMessagesOneNamedOneUnnamedGroups) {
+  std::vector<PersistentMessage> messages;
+  messages.push_back(TabUpdateMessage());
+  messages.push_back(TabGroupRemovedMessage("title1"));
+  messages.push_back(TabGroupUpdateMessage());
+  messages.push_back(TabGroupRemovedMessage(""));
+  messages.push_back(CollaborationUpdateMessage());
+  EXPECT_EQ(GetRemovedCollaborationsSummary(messages),
+            l10n_util::GetStringFUTF8(
+                IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION,
+                base::FormatNumber(2)));
+}
+
+// Checks the summary is provided and correct when there are two removed
+// collaboration messages about groups with no last known titles.
+TEST(CollaborationMessagingUtilTest,
+     GetRemovedCollaborationsSummary_TwoMessagesUnnamedGroups) {
+  std::vector<PersistentMessage> messages;
+  messages.push_back(TabUpdateMessage());
+  messages.push_back(TabGroupRemovedMessage(""));
+  messages.push_back(TabGroupUpdateMessage());
+  messages.push_back(TabGroupRemovedMessage(""));
+  messages.push_back(CollaborationUpdateMessage());
+  EXPECT_EQ(GetRemovedCollaborationsSummary(messages),
+            l10n_util::GetStringFUTF8(
+                IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION,
+                base::FormatNumber(2)));
 }
 
 // Checks the summary is provided and correct when there are more than two
@@ -116,12 +162,11 @@ TEST(CollaborationMessagingUtilTest,
   messages.push_back(TabGroupRemovedMessage("title2"));
   messages.push_back(CollaborationUpdateMessage());
   messages.push_back(TabGroupRemovedMessage("title3"));
-  messages.push_back(TabGroupRemovedMessage("title4"));
   messages.push_back(CollaborationUpdateMessage());
   EXPECT_EQ(GetRemovedCollaborationsSummary(messages),
             l10n_util::GetStringFUTF8(
                 IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION,
-                base::FormatNumber(4)));
+                base::FormatNumber(3)));
 }
 
 }  // namespace collaboration::messaging

@@ -17,7 +17,9 @@ namespace collaboration::messaging {
 //
 // -  If there are no removed collaboration, it returns nil.
 // -  If there are one or two removed collaborations, it returns a summary
-//    mentioning the last known titles of the groups.
+//    mentioning the last known titles of the groups, if all titles are set.
+//    Otherwise, it returns a summary mentioning the total count of removed
+//    collaborations.
 // -  If there are more than two removed collaborations, it returns a summary
 //    mentioning the total count of removed collaborations.
 std::optional<std::string> GetRemovedCollaborationsSummary(

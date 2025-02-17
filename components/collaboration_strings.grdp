@@ -25,6 +25,9 @@
   <message name="IDS_COLLABORATION_ONE_GROUP_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when one tab group is no longer shared with the user.">
     "<ph name="GROUP_TITLE">$1<ex>Travel</ex></ph>" tab group no longer available
   </message>
+  <message name="IDS_COLLABORATION_ONE_UNNAMED_GROUP_REMOVED_NOTIFICATION" desc="Notification text appearing when one unnamed tab group is no longer shared with the user.">
+    1 tab group no longer available
+  </message>
   <message name="IDS_COLLABORATION_TWO_GROUPS_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when two tab groups are no longer shared with the user.">
     "<ph name="GROUP_TITLE_1">$1<ex>Travel</ex></ph>" and "<ph name="GROUP_TITLE_2">$2<ex>Vacation</ex></ph>" "tab groups no longer available
   </message>

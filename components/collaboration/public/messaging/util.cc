@@ -33,13 +33,14 @@ std::optional<std::string> GetRemovedCollaborationsSummary(
   std::vector<std::string> titles(2);
   for (const auto& message : messages) {
     if (IsAboutUnavailableTabGroup(message)) {
-      // Store up to the first two titles.
+      // Store only the first two titles.
       if (removed_collabs_count < 2) {
         CHECK(message.attribution.tab_group_metadata.has_value());
         TabGroupMessageMetadata metadata =
             message.attribution.tab_group_metadata.value();
-        CHECK(metadata.last_known_title.has_value());
-        titles[removed_collabs_count] = metadata.last_known_title.value();
+        if (metadata.last_known_title.has_value()) {
+          titles[removed_collabs_count] = metadata.last_known_title.value();
+        }
       }
       // Count all groups.
       removed_collabs_count++;
@@ -51,13 +52,24 @@ std::optional<std::string> GetRemovedCollaborationsSummary(
     case 0:
       return std::nullopt;
     case 1:
-      return l10n_util::GetStringFUTF8(
-          IDS_COLLABORATION_ONE_GROUP_REMOVED_NOTIFICATION,
-          base::UTF8ToUTF16(titles[0]));
+      if (titles[0].length() > 0) {
+        return l10n_util::GetStringFUTF8(
+            IDS_COLLABORATION_ONE_GROUP_REMOVED_NOTIFICATION,
+            base::UTF8ToUTF16(titles[0]));
+      } else {
+        return l10n_util::GetStringUTF8(
+            IDS_COLLABORATION_ONE_UNNAMED_GROUP_REMOVED_NOTIFICATION);
+      }
     case 2:
-      return l10n_util::GetStringFUTF8(
-          IDS_COLLABORATION_TWO_GROUPS_REMOVED_NOTIFICATION,
-          base::UTF8ToUTF16(titles[0]), base::UTF8ToUTF16(titles[1]));
+      if (titles[0].length() > 0 && titles[1].length() > 0) {
+        return l10n_util::GetStringFUTF8(
+            IDS_COLLABORATION_TWO_GROUPS_REMOVED_NOTIFICATION,
+            base::UTF8ToUTF16(titles[0]), base::UTF8ToUTF16(titles[1]));
+      } else {
+        return l10n_util::GetStringFUTF8(
+            IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION,
+            base::FormatNumber(2));
+      }
     default:
       return l10n_util::GetStringFUTF8(
           IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION,
