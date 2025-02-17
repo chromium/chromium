@@ -357,4 +357,8 @@ BASE_FEATURE(kAdAuctionEventRegistration,
              "AdAuctionEventRegistration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUpdateRequestForCorsRedirect,
+             "UpdateRequestForCorsRedirect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features
