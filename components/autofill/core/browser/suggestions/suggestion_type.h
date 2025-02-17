@@ -18,10 +18,9 @@ namespace autofill {
 // enum (not necessarily at the end). Set its value to the current `kMaxValue`
 // and increase `kMaxValue` by 1.
 //
-// Keep this enum up to date with the one in
-// tools/metrics/histograms/metadata/autofill/enums.xml.
-//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+//
+// LINT.IfChange(SuggestionType)
 enum class SuggestionType {
   // Autocomplete suggestions.
   kAutocompleteEntry = 0,
@@ -148,6 +147,7 @@ enum class SuggestionType {
 
   kMaxValue = kManageAutofillAi
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);
 std::string SuggestionTypeToString(SuggestionType type);
