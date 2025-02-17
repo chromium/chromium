@@ -157,6 +157,16 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
       HttpStreamRequest::HTTP_STREAM);
   stream_request_ = stream_request.get();
 
+  if (!IsPortAllowedForScheme(origin_stream_key_.destination().port(),
+                              origin_stream_key_.destination().scheme())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HttpStreamPool::JobController::CallOnStreamFailed,
+                       weak_ptr_factory_.GetWeakPtr(), ERR_UNSAFE_PORT,
+                       NetErrorDetails(), ResolveErrorInfo()));
+    return stream_request;
+  }
+
   std::unique_ptr<HttpStream> quic_http_stream =
       MaybeCreateStreamFromExistingQuicSession();
   if (quic_http_stream) {
