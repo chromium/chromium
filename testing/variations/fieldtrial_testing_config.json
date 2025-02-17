@@ -24203,6 +24203,21 @@
             ]
         }
     ],
+    "UseAvailableMemoryThresholds": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAvailableMemoryThresholds"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseBoringSSLForRandBytes": [
         {
             "platforms": [
