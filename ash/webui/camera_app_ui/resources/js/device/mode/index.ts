@@ -110,7 +110,7 @@ export class Modes {
   /**
    * Mode classname and related functions and attributes.
    */
-  private readonly allModes: {[mode in Mode]: ModeConfig};
+  private readonly allModes: Record<Mode, ModeConfig>;
 
   private handler: CaptureHandler|null = null;
 
