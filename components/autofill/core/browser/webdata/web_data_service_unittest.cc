@@ -368,8 +368,9 @@ TEST_F(WebDataServiceAutofillTest, CreditCardRemove) {
   // Check that it was removed.
   WebDataServiceRequestFuture consumer2;
   wds_->GetCreditCards(consumer2.GetCallback());
-  EXPECT_THAT(consumer.Get<1>(),
-              ValueOfWDResult<std::vector<CreditCard>>(IsEmpty()));
+  EXPECT_THAT(
+      consumer.Get<1>(),
+      ValueOfWDResult<std::vector<std::unique_ptr<CreditCard>>>(IsEmpty()));
 }
 
 TEST_F(WebDataServiceAutofillTest, CreditUpdate) {
