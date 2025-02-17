@@ -80,6 +80,8 @@ class CORE_EXPORT TextIteratorBehavior final {
   static TextIteratorBehavior IgnoresStyleVisibilityBehavior();
   static TextIteratorBehavior DefaultRangeLengthBehavior();
   static TextIteratorBehavior AllVisiblePositionsRangeLengthBehavior();
+  static TextIteratorBehavior
+  AllVisiblePositionsIncludingShadowRootRangeLengthBehavior();
   static TextIteratorBehavior NoTrailingSpaceRangeLengthBehavior();
 
  private:
