@@ -199,6 +199,17 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata(
       metadata->setReceiveTime(
           performance->MonotonicTimeToDOMHighResTimeStamp(*receive_time));
     }
+    if (std::optional<base::TimeTicks> capture_time =
+            delegate_->CaptureTime()) {
+      metadata->setCaptureTime(
+          performance->MonotonicTimeToDOMHighResTimeStamp(*capture_time));
+    }
+    if (std::optional<base::TimeDelta> sender_capture_time_offset =
+            delegate_->SenderCaptureTimeOffset()) {
+      metadata->setSenderCaptureTimeOffset(
+          performance->MonotonicTimeToDOMHighResTimeStamp(
+              base::TimeTicks() + *sender_capture_time_offset));
+    }
   }
   return metadata;
 }
