@@ -122,20 +122,6 @@
     Info you have saved and this page get sent to Google to see if autofill can help fill this form. Data may be seen by human reviewers to improve this feature.
   </message>
 
-  <!-- Feedback -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT" desc="Text displayed on prediction improvements feedback suggestion.">
-    Autofill with AI is an experimental feature and won’t always get it right. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage autofill with AI</ex></ph>.
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_UP_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs up button tooltip.">
-    Thumbs up submits feedback that you like autofill with AI
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_DOWN_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs down button tooltip.">
-    Thumbs down submits feedback that you dislike autofill with AI
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Autofill prediction improvements feedback form.">
-    Send feedback for Autofill with AI.
-  </message>
-
   <!-- Iph -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE" desc="Text displayed in the prediction improvements iph title.">
     Prediction improvements

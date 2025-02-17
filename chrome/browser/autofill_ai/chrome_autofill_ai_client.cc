@@ -14,8 +14,6 @@
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/autofill_ai/autofill_ai_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feedback/public/feedback_source.h"
-#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +23,6 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
@@ -124,26 +121,6 @@ ChromeAutofillAiClient::GetModelExecutor() {
   return filling_engine_.get();
 }
 
-const GURL& ChromeAutofillAiClient::GetLastCommittedURL() {
-  return web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL();
-}
-
-const url::Origin& ChromeAutofillAiClient::GetLastCommittedOrigin() {
-  return web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-}
-
-std::string ChromeAutofillAiClient::GetTitle() {
-  return base::UTF16ToUTF8(web_contents_->GetTitle());
-}
-
-user_annotations::UserAnnotationsService*
-ChromeAutofillAiClient::GetUserAnnotationsService() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  return profile ? UserAnnotationsServiceFactory::GetForProfile(profile)
-                 : nullptr;
-}
-
 autofill::EntityDataManager* ChromeAutofillAiClient::GetEntityDataManager() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -155,41 +132,6 @@ autofill::EntityDataManager* ChromeAutofillAiClient::GetEntityDataManager() {
 bool ChromeAutofillAiClient::IsAutofillAiEnabledPref() const {
   return prefs_->GetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled);
-}
-
-bool ChromeAutofillAiClient::CanShowFeedbackPage() {
-  OptimizationGuideKeyedService* opt_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-  if (!opt_guide_keyed_service ||
-      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
-          optimization_guide::proto::LogAiDataRequest::FeatureCase::
-              kFormsPredictions)) {
-    return false;
-  }
-
-  return true;
-}
-
-void ChromeAutofillAiClient::TryToOpenFeedbackPage(
-    const std::string& feedback_id) {
-  if (!CanShowFeedbackPage()) {
-    return;
-  }
-  base::Value::Dict feedback_metadata;
-  feedback_metadata.Set("log_id", feedback_id);
-
-  chrome::ShowFeedbackPage(
-      web_contents_->GetLastCommittedURL(),
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      feedback::kFeedbackSourceAI,
-      /*description_template=*/std::string(),
-      /*description_placeholder_text=*/
-      l10n_util::GetStringUTF8(
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER),
-      /*category_tag=*/"autofill_with_ai",
-      /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }
 
 void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
@@ -220,33 +162,4 @@ autofill::FormStructure* ChromeAutofillAiClient::GetCachedFormStructure(
     return nullptr;
   }
   return driver->GetAutofillManager().FindCachedFormById(form_id);
-}
-
-std::u16string ChromeAutofillAiClient::GetAutofillNameFillingValue(
-    const std::string& autofill_profile_guid,
-    autofill::FieldType field_type,
-    const autofill::FormFieldData& field) {
-  autofill::PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForBrowserContext(
-          web_contents_->GetBrowserContext());
-  if (!pdm) {
-    return u"";
-  }
-  const autofill::AutofillProfile* autofill_profile =
-      pdm->address_data_manager().GetProfileByGUID(autofill_profile_guid);
-  if (!autofill_profile) {
-    return u"";
-  }
-  if (autofill::GroupTypeOfFieldType(field_type) !=
-      autofill::FieldTypeGroup::kName) {
-    return u"";
-  }
-  // Note that since we are only interested in name values, the address
-  // normalizer is not needed.
-  const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
-      *autofill_profile, g_browser_process->GetApplicationLocale(),
-      autofill::AutofillType(field_type), field,
-      /*address_normalizer=*/nullptr);
-
-  return filling_value;
 }

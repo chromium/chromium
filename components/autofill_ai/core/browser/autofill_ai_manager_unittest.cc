@@ -40,7 +40,7 @@
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/user_annotations/test_user_annotations_service.h"
+#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -108,16 +108,6 @@ class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
       (const override));
 };
 
-const GURL& url() {
-  static GURL url = GURL("https://example.com");
-  return url;
-}
-
-const url::Origin& origin() {
-  static url::Origin origin = url::Origin::Create(url());
-  return origin;
-}
-
 class BaseAutofillAiManagerTest : public testing::Test {
  public:
   BaseAutofillAiManagerTest() {
@@ -151,11 +141,6 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
                       {"send_title_url", "false"}});
     ON_CALL(client(), GetModelExecutor)
         .WillByDefault(Return(&model_executor()));
-    ON_CALL(client(), GetLastCommittedOrigin)
-        .WillByDefault(ReturnRef(origin()));
-    ON_CALL(client(), GetTitle).WillByDefault(Return("title"));
-    ON_CALL(client(), GetUserAnnotationsService)
-        .WillByDefault(Return(&user_annotations_service_));
     ON_CALL(client(), GetEntityDataManager)
         .WillByDefault(Return(&entity_data_manager_));
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
@@ -194,7 +179,6 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
   }
 
  private:
-  user_annotations::TestUserAnnotationsService user_annotations_service_;
   autofill::AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<autofill::EntityTable>()};
   autofill::EntityDataManager entity_data_manager_{
@@ -603,8 +587,6 @@ TEST_F(AutofillAiManagerTest,
 class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
  public:
   IsFormAndFieldEligibleAutofillAiTest() {
-    ON_CALL(client(), GetLastCommittedOrigin)
-        .WillByDefault(ReturnRef(origin()));
     autofill::test::FormDescription form_description = {
         .fields = {{.role = autofill::NAME_FIRST,
                     .heuristic_type = autofill::NAME_FIRST}}};
