@@ -419,8 +419,8 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
 }
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
-// when switch is succesful.
-TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
+// when switch is successful.
+TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   // Given that the method  `signOutFromTargetRect:forSwitch:callback` create a
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
@@ -447,21 +447,15 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   // This variable will contain the callback that should be executed once
   // sign-in ends.
   __block signin_ui::SigninCompletionCallback signinCallback = nil;
-  {
-    base::RunLoop run_loop;
-    base::RepeatingClosure closure = run_loop.QuitClosure();
-    OCMExpect([delegate_mock_
-                  triggerSigninWithSystemIdentity:kSecondaryIdentity
-                                       completion:[OCMArg checkWithBlock:^BOOL(
-                                                              id value) {
-                                         signinCallback = value;
-                                         closure.Run();
-                                         return true;
-                                       }]])
-        .andReturn(authentication_flow_mock_);
-    signoutCallback(true);
-    run_loop.Run();
-  }
+  OCMExpect([delegate_mock_
+                triggerSigninWithSystemIdentity:kSecondaryIdentity
+                                     completion:[OCMArg checkWithBlock:^BOOL(
+                                                            id value) {
+                                       signinCallback = value;
+                                       return true;
+                                     }]])
+      .andReturn(authentication_flow_mock_);
+  signoutCallback(true);
   VerifyMock();
 
   OCMExpect([delegate_mock_
