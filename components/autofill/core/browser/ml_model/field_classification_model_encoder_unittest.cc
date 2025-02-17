@@ -293,6 +293,12 @@ INSTANTIATE_TEST_SUITE_P(
              .remove_chars = "@!",
              .input = u"@Chars are! @removed!",
              .expected = u"Chars are removed",
+         },
+         {
+             // Test that camel case splitting supports non ASCII chars.
+             .split_on_camel_case = true,
+             .input = u"новыйПарольЗБСПароль",
+             .expected = u"новый Пароль ЗБС Пароль",
          }}));
 
 TEST_P(StandardizeStringTest, ReturnsExpectedResult) {
