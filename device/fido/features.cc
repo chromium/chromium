@@ -38,11 +38,6 @@ BASE_FEATURE(kWebAuthCableExtensionAnywhere,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Enabled in M129. Remove in or after M132.
-BASE_FEATURE(kWebAuthnAndroidCredMan,
-             "WebAuthenticationAndroidCredMan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled in M132. Remove in or after M135 or when the comparison histograms
 // are not needed anymore.
 BASE_FEATURE(kWebAuthnAndroidUsePasskeyCache,

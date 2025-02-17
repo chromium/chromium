@@ -10308,7 +10308,6 @@ from previous Chrome versions.
       label="RTCDisallowPlanBOutsideDeprecationTrial:enabled"/>
   <int value="-1508852757" label="CreditCardAutofillTouchBar:disabled"/>
   <int value="-1508837668" label="VCPortraitRelighting:enabled"/>
-  <int value="-1507810873" label="WebAuthenticationAndroidCredMan:enabled"/>
   <int value="-1507722271" label="ImprovedDesksKeyboardShortcuts:enabled"/>
   <int value="-1506880454"
       label="SupervisedUserCommittedInterstitials:disabled"/>
@@ -10850,8 +10849,6 @@ from previous Chrome versions.
   <int value="-1300934428" label="ExternalNavigationDebugLogs:enabled"/>
   <int value="-1300692087" label="SplitTabStrip:enabled"/>
   <int value="-1299599424" label="VcDlcUi:disabled"/>
-  <int value="-1298884037"
-      label="WebAuthenticationAndroidCredManAndGmsCore:disabled"/>
   <int value="-1298273481" label="http2-grease-settings"/>
   <int value="-1298067767" label="CalendarModelDebugMode:disabled"/>
   <int value="-1297664593" label="SafetyHubMagicStack:enabled"/>
@@ -11816,8 +11813,6 @@ from previous Chrome versions.
   <int value="-917218910" label="FirstPartyVietnameseInput:enabled"/>
   <int value="-916780902" label="ExternalPciDevicesAllowed:enabled"/>
   <int value="-916419217" label="LensOverlay:disabled"/>
-  <int value="-916325423"
-      label="WebAuthenticationAndroidCredManAndGmsCore:enabled"/>
   <int value="-915687759" label="CrOSLateBootAudioOffloadCrasDSPToSOF:enabled"/>
   <int value="-915328316" label="CupsIppPrintingBackend:disabled"/>
   <int value="-915035507" label="ArcPrintSpoolerExperiment:enabled"/>
@@ -16840,7 +16835,6 @@ from previous Chrome versions.
       label="SyncOnlySeparateUserDisplayModeForCrOS:enabled"/>
   <int value="1084972292" label="WebXRAnchors:enabled"/>
   <int value="1085130793" label="LongPressBackForHistory:disabled"/>
-  <int value="1085260595" label="WebAuthenticationAndroidCredMan:disabled"/>
   <int value="1085366788"
       label="kFileSystemAccessPersistentPermissions:disabled"/>
   <int value="1085919447"
