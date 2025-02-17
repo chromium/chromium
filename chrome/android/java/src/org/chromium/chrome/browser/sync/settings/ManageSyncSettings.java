@@ -1026,7 +1026,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
                 // Request display of an IPH bubble on the history and tabs row when history sync
                 // was declined by the user.
-                if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
+                if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_OPT_IN_IPH)
                         && shouldDisplayIphIfNeeded
                         && isTypeHistoryOrTabs
                         && enabled
