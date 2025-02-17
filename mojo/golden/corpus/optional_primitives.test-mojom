@@ -1,0 +1,8 @@
+module golden;
+
+struct OptionalPrimitives {
+  int32? int;
+  array<uint32?> uints;
+  array<bool?> boolarray;
+  map<bool, bool?> bitmap;
+};
