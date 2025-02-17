@@ -186,6 +186,12 @@ void CreateSharedGroupAndOpenMenu() {
   [SigninEarlGreyUI signinWithFakeIdentity:identity enableHistorySync:YES];
 }
 
+- (void)tearDownHelper {
+  [super tearDownHelper];
+  // Delete groups.
+  [TabGroupAppInterface cleanup];
+}
+
 // Tests that the tab group indicator view is visible when the active tab is
 // grouped.
 - (void)testTabGroupIndicatorVisibility {
