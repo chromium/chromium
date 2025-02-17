@@ -213,10 +213,10 @@
         This page has been blocked by Chromium
       </message>
       <if expr="is_macosx">
-        <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="Mac OSX instructions for disabling use of a proxy server.">
-          Go to
-          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
-          and deselect any proxies that have been selected.
+        <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="macOS instructions for disabling use of a proxy server.">
+          Go to Applications &gt; System Settings &gt; Network, select the
+          active network, click the Details... button, and deselect any proxies
+          that may have been selected.
         </message>
       </if>
       <!-- The ChromeOS version of this string is defined in //components/error_page_strings.grdp. -->
