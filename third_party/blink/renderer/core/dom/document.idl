@@ -85,7 +85,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
    // https://wicg.github.io/sanitizer-api/#sanitizer-api
     // TODO(356601280): Merge the two setHTMLUnsafe variants into one, once the
     //   different RuntimeEnabled flags are both perma-enabled.
-    [RuntimeEnabled=SanitizerAPI,RaisesException,CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe,CEReactions] static Document parseHTMLUnsafe(HTMLString html, SetHTMLOptions options);
+    [RuntimeEnabled=SanitizerAPI,RaisesException,CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe,CEReactions] static Document parseHTMLUnsafe(HTMLString html, SetHTMLUnsafeOptions options);
     [RuntimeEnabled=SanitizerAPI,RaisesException,CallWith=ExecutionContext,MeasureAs=ParseHTMLSafe,CEReactions] static Document parseHTML(DOMString html, optional SetHTMLOptions options = {});
 
     // resource metadata management

@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizer_sanitizerconfig.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizer_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -15,9 +16,18 @@
 
 namespace blink {
 
+// Note: SanitizerSafeInternal and SanitizerUnsafeInternal are mostly identical.
+//   But because SetHTMLOptions and SetHTMLUnsafeOptions are unrelated types (as
+//   far as C++ is concerned) they cannot easily be merged.
+
 void SanitizerAPI::SanitizeSafeInternal(ContainerNode* element,
                                         SetHTMLOptions* options,
                                         ExceptionState& exception_state) {
+  if (exception_state.HadException()) {
+    element->setTextContent("");
+    return;
+  }
+
   if (element->IsElementNode()) {
     const Element* real_element = To<Element>(element);
     if (real_element->TagQName() == html_names::kScriptTag ||
@@ -40,21 +50,31 @@ void SanitizerAPI::SanitizeSafeInternal(ContainerNode* element,
       sanitizer =
           Sanitizer::Create(options->sanitizer()->GetAsSanitizerConfig(),
                             /*safe*/ true, exception_state);
+    } else if (options->sanitizer()->IsSanitizerPresets()) {
+      // Create a Sanitizer from a "preset" string.
+      sanitizer = Sanitizer::Create(
+          options->sanitizer()->GetAsSanitizerPresets().AsEnum(),
+          exception_state);
     } else {
       // Default case: Dictionary with 'sanitizer' member but no (valid) value.
       sanitizer = Sanitizer::Create(nullptr, /*safe*/ true, exception_state);
     }
   }
 
-  // TODO(vogelheim): Currently, no exceptions are being throws.
+  // TODO(vogelheim): Currently, no exceptions are being thrown.
   CHECK(!exception_state.HadException());
   CHECK(sanitizer);
   sanitizer->SanitizeSafe(element);
 }
 
 void SanitizerAPI::SanitizeUnsafeInternal(ContainerNode* element,
-                                          SetHTMLOptions* options,
+                                          SetHTMLUnsafeOptions* options,
                                           ExceptionState& exception_state) {
+  if (exception_state.HadException()) {
+    element->setTextContent("");
+    return;
+  }
+
   const Sanitizer* sanitizer = nullptr;
   if (!options || !options->hasSanitizer()) {
     // Default case: No dictionary, or dictionary without 'sanitizer' member.
@@ -68,12 +88,19 @@ void SanitizerAPI::SanitizeUnsafeInternal(ContainerNode* element,
       sanitizer =
           Sanitizer::Create(options->sanitizer()->GetAsSanitizerConfig(),
                             /*safe*/ false, exception_state);
+    } else if (options->sanitizer()->IsSanitizerPresets()) {
+      // Create a Sanitizer from a "preset" string.
+      sanitizer = Sanitizer::Create(
+          options->sanitizer()->GetAsSanitizerPresets().AsEnum(),
+          exception_state);
     } else {
       // Default case: Dictionary with 'sanitizer' member but not (valid) value.
       sanitizer = Sanitizer::Create(nullptr, /*safe*/ false, exception_state);
     }
   }
 
+  // TODO(vogelheim): Currently, no exceptions are being thrown.
+  CHECK(!exception_state.HadException());
   CHECK(sanitizer);
   sanitizer->SanitizeUnsafe(element);
 }

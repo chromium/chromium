@@ -121,6 +121,7 @@ class CheckVisibilityOptions;
 class ScrollMarkerPseudoElement;
 class ScrollToOptions;
 class SetHTMLOptions;
+class SetHTMLUnsafeOptions;
 class ShadowRoot;
 class ShadowRootInit;
 class SpaceSplitString;
@@ -260,13 +261,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   enum class ForceHtml {
     kDontForce = 0,
     kForce = 1,
-  };
-  // SanitizeHTML specifies whether the HTML parser should call into the HTML
-  // sanitizer API, and if so whether in safe or unsafe mode.
-  enum class SanitizeHtml {
-    kDont,
-    kSanitizeSafe,
-    kSanitizeUnsafe,
   };
 
   // Animatable implementation.
@@ -1160,7 +1154,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // argument to set Sanitizer parameters.
   // See https://github.com/whatwg/html/pull/9538.
   void setHTMLUnsafe(const String& html, ExceptionState& = ASSERT_NO_EXCEPTION);
-  void setHTMLUnsafe(const String& html, SetHTMLOptions*, ExceptionState&);
+  void setHTMLUnsafe(const String& html,
+                     SetHTMLUnsafeOptions*,
+                     ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
 
   void setPointerCapture(PointerId poinetr_id, ExceptionState&);
@@ -2022,8 +2018,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const String&,
       ParseDeclarativeShadowRoots parse_declarative_shadows,
       ForceHtml force_html_over_xml,
-      SanitizeHtml sanitize_html,
-      SetHTMLOptions* set_html_options,
       ExceptionState&);
 
   ElementRareDataVector* GetElementRareData() const;

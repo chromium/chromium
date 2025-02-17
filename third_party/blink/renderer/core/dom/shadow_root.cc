@@ -157,7 +157,7 @@ void ShadowRoot::setHTMLUnsafe(const String& html,
 }
 
 void ShadowRoot::setHTMLUnsafe(const String& html,
-                               SetHTMLOptions* options,
+                               SetHTMLUnsafeOptions* options,
                                ExceptionState& exception_state) {
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           html, &host(), kAllowScriptingContent,

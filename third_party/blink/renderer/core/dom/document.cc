@@ -9467,8 +9467,6 @@ void Document::ScheduleSelectionchangeEvent() {
 // static
 Document* Document::parseHTMLInternal(ExecutionContext* context,
                                       const String& html,
-                                      SetHTMLOptions* options,
-                                      bool safe,
                                       ExceptionState& exception_state) {
   Document* doc = DocumentInit::Create()
                       .WithTypeFrom(keywords::kTextHtml)
@@ -9478,15 +9476,6 @@ Document* Document::parseHTMLInternal(ExecutionContext* context,
   doc->setAllowDeclarativeShadowRoots(true);
   doc->SetContent(html);
   doc->SetMimeType(keywords::kTextHtml);
-  if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
-    if (safe) {
-      SanitizerAPI::SanitizeSafeInternal(doc->body(), options, exception_state);
-    } else {
-      SanitizerAPI::SanitizeUnsafeInternal(doc->body(), options,
-                                           exception_state);
-    }
-  }
-
   return doc;
 }
 
@@ -9495,19 +9484,19 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     const String& html,
                                     ExceptionState& exception_state) {
   UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
-  return parseHTMLInternal(context, html, /*options=*/nullptr, /*safe=*/false,
-                           exception_state);
+  return parseHTMLInternal(context, html, exception_state);
 }
 
 // static
 Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     const String& html,
-                                    SetHTMLOptions* options,
+                                    SetHTMLUnsafeOptions* options,
                                     ExceptionState& exception_state) {
   UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-  return parseHTMLInternal(context, html, options, /*safe=*/false,
-                           exception_state);
+  Document* doc = parseHTMLInternal(context, html, exception_state);
+  SanitizerAPI::SanitizeUnsafeInternal(doc->body(), options, exception_state);
+  return doc;
 }
 
 // static
@@ -9516,8 +9505,9 @@ Document* Document::parseHTML(ExecutionContext* context,
                               SetHTMLOptions* options,
                               ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-  return parseHTMLInternal(context, html, options, /*safe=*/true,
-                           exception_state);
+  Document* doc = parseHTMLInternal(context, html, exception_state);
+  SanitizerAPI::SanitizeSafeInternal(doc->body(), options, exception_state);
+  return doc;
 }
 
 void Document::SetOverrideSiteForCookiesForCSPMedia(bool value) {
