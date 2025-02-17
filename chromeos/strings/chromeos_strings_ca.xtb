@@ -1469,6 +1469,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7828503206075800057">Una cafeteria <ph name="CAFE_STYLE" /> de tipus <ph name="CAFE_TYPE" /></translation>
 <translation id="7841134249932030522">Activa el mode fosc</translation>
 <translation id="7846634333498149051">Teclat</translation>
+<translation id="7847923465436619066">Selector d'idioma de la transcripció</translation>
 <translation id="7849030488395653706">aurora boreal</translation>
 <translation id="7849737607196682401">punta</translation>
 <translation id="7850320739366109486">No molestis</translation>
@@ -1655,6 +1656,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8749478549112817787">Fons de la càmera</translation>
 <translation id="8755946156089753497">torre</translation>
 <translation id="8760616037557661287">Indicacions anteriors</translation>
+<translation id="876280838467039397">Baixa i selecciona el model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Àlbum de Google Fotos</translation>
 <translation id="8775713578693478175">APN del mòdem</translation>

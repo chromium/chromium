@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">आफ्नो फोनमा भएका एपहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
 <translation id="1610778689852195798">"अन्डू गर"</translation>
 <translation id="1611993646327628135">अन छ</translation>
+<translation id="1612679292338846734">तपाईंले यी सुविधाहरू अन गर्दा इन्पुट टेक्स्ट, डकुमेन्टमा भएको सामग्री र वेबपेजको URL Google AI का सर्भरहरूमा पठाइन सक्छ। यो जानकारी <ph name="LINK_TO_SERVICE_TERMS" />बमोजिम लेखनसम्बन्धी सुझाव दिन, सारांश बनाउन, प्रश्नहरूको जवाफ दिन र उत्पादनको गुणस्तर सुधार गर्न प्रयोग गरिन्छ। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश नगर्नुहोस्।</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1623768535032616219">Google Classroom कोल्याप्स गर्नुहोस्</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> उपलब्ध छैन।</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">जडान थप्नुहोस्</translation>
 <translation id="2947835478872237115">अहिलेको ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />% छ भने फुल चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" /> थिच्नुहोस् र कुनै लिंकमा क्लिक गर्नुहोस्</translation>
+<translation id="2957159466053076448">तपाईं सेटिङमा गई जुनसुकै बेला यी सुविधाहरू अफ गर्न सक्नुहुन्छ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">डिभाइसको अडियो</translation>
 <translation id="2960314608273155470">क्याप्चर मोड, डिफल्ट मोड <ph name="SOURCE" /> <ph name="TYPE" /> हो। किबोर्डमार्फत नेभिगेसन गर्न ट्याब की थिच्नुहोस्।</translation>
 <translation id="2961963223658824723">कुनै समस्या आयो। केही बेरमा फेरि प्रयास गर्नुहोस्।</translation>
@@ -1905,6 +1907,7 @@
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
 <translation id="7360036564632145207">तपाईंले 'सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा' का सेटिङ बदल्नुभयो भने ती यन्त्रहरूले अझ राम्रोसँग काम गर्न सक्छन्</translation>
 <translation id="736045644501761622">वालपेपर र शैली तय गर्नुहोस्</translation>
+<translation id="7368041336688136012">तपाईंको उमेर कम्तीमा १८ वर्ष पुगेको छ भने मात्र तपाईं "मलाई पढ्न मद्दत गर्नुहोस्" र "मलाई लेख्न मद्दत गर्नुहोस्" प्रयोग गर्न तथा AI प्रयोग गरी फोटो सिर्जना गर्न सक्नुहुन्छ।</translation>
 <translation id="7371404428569700291">विन्डोको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="7372069265635026568">कुल <ph name="TOTAL_MEMORY" /> भण्डारणमध्ये <ph name="AVAILABLE_MEMORY" /> भण्डारण उपलब्ध छ</translation>
 <translation id="737315737514430195">यसले माइक्रोफोन प्रयोग गर्ने अनुमति चाहिने सबै एप तथा वेबसाइटहरूलाई माइक्रोफोन प्रयोग गर्ने अनुमति दिन्छ</translation>
@@ -2030,6 +2033,7 @@
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
 <translation id="7751260505918304024">सबै देखाउनुहोस्</translation>
+<translation id="7762664108390426952">Google का सेवाका सर्तहरू र गोपनीयता नीति</translation>
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7769299611924763557">तपाईंको GIF चाँडै नै तयार हुने छ</translation>
 <translation id="7773536009433685931">बरु Wi-Fi अन गर्नुहोस्</translation>

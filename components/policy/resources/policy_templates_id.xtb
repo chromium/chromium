@@ -642,6 +642,35 @@ Jika Anda mengaktifkan atau tidak mengonfigurasi kebijakan ini, scroll halaman w
 Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks tertentu melalui URL akan dinonaktifkan.</translation>
 <translation id="1468702975912409463">Memungkinkan pengguna akses jarak jauh membuka URL sisi host di browser klien lokal mereka</translation>
 <translation id="1474273443907024088">Nonaktifkan TLS False Start</translation>
+<translation id="1475494149102693892">Anda dapat mengaktifkan kebijakan ini untuk membuat kamus ekstensi jenis file beserta daftar domain yang sesuai yang tidak akan muncul di peringatan download berbasis ekstensi jenis file. Kebijakan ini memungkinkan administrator perusahaan memblokir peringatan download berbasis ekstensi jenis file untuk file yang dikaitkan dengan domain yang tercantum. Misalnya, jika ekstensi "jnlp" dikaitkan dengan "website1.com", pengguna tidak akan melihat peringatan saat mendownload file "jnlp" dari "website1.com", tetapi akan melihat peringatan download saat mendownload file "jnlp" dari "website2.com".
+
+File dengan ekstensi jenis file yang ditentukan untuk domain yang diidentifikasi oleh kebijakan ini akan tetap mendapatkan peringatan keamanan berbasis ekstensi non-jenis file seperti peringatan download konten campuran dan peringatan Safe Browsing.
+
+Jika kebijakan ini dinonaktifkan atau tidak dikonfigurasi, jenis file yang memicu peringatan download berbasis ekstensi akan menampilkan peringatan kepada pengguna.
+
+Jika kebijakan ini diaktifkan:
+
+* Pola URL harus diformat sesuai dengan https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+* Ekstensi jenis file yang dimasukkan harus dalam huruf kecil ASCII. Pemisah di awal tidak boleh disertakan saat mencantumkan ekstensi jenis file, sehingga Anda harus mencantumkan "jnlp", bukan ".jnlp".
+
+Contoh:
+
+Contoh nilai berikut akan mencegah peringatan download berbasis ekstensi jenis file pada ekstensi "exe" dan "jnlp" untuk domain *.example.com, dan pada ekstensi "swf" untuk semua domain. Pengguna akan melihat peringatan download berbasis ekstensi jenis file di domain lain untuk file exe dan jnlp, tetapi bukan untuk file swf.
+
+[
+  { "file_extension": "jnlp", "domains": ["example.com"] },
+  { "file_extension": "exe", "domains": ["example.com"] },
+  { "file_extension": "swf", "domains": ["*"] }
+]
+
+Perhatikan bahwa meskipun contoh sebelumnya menunjukkan penekanan pada peringatan download berbasis ekstensi jenis file untuk file "swf" bagi semua domain, sebaiknya Anda tidak menerapkan penekanan pada peringatan tersebut bagi semua domain untuk ekstensi jenis file berbahaya demi alasan keamanan. Contoh ini diberikan hanya untuk mendemonstrasikan bahwa hal tersebut dapat dilakukan.
+
+Jika kebijakan ini diaktifkan bersama <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, pengecualian untuk peringatan berbasis ekstensi jenis file yang ditentukan oleh kebijakan ini akan diprioritaskan daripada setelan <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> yang akan memblokir jenis file berbahaya. Pengecualian yang ditentukan oleh kebijakan ini hanya berlaku untuk perilaku "blokir jenis file berbahaya" yang ditentukan oleh nilai 1 dan 2 dari <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.
+
+Misalnya, jika kebijakan ini menentukan pengecualian untuk download "exe" dari "website1.com", dan <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> disetel untuk memblokir download dan jenis file berbahaya (nilai 1), download "exe" dari "website1.com" akan dikecualikan dari pemblokiran berbasis ekstensi jenis file, tetapi tetap akan diblokir jika berbahaya.
+
+Informasi selengkapnya tentang <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> dapat ditemukan di https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Menyetel kebijakan akan menentukan daftar perangkat USB yang dapat dilepas dari driver kernelnya, agar dapat langsung digunakan melalui chrome.usb API dalam aplikasi web. Entri berupa pasangan ID Vendor USB dan Kode Produk untuk mengidentifikasi hardware tertentu.
 

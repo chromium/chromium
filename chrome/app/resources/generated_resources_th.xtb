@@ -1184,6 +1184,7 @@
 <translation id="1812027881030482584">ดำเนินการต่อโดยใช้ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ใน <ph name="SITE_ETLD_PLUS_ONE" /> ไม่ได้</translation>
 <translation id="1812284620455788548">กำลังแคสต์ <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">บริการ</translation>
+<translation id="1813828404076816564">เลือกปุ่มความคิดเห็นเพื่อส่งความคิดเห็นเกี่ยวกับฟีเจอร์กลุ่มแท็บที่แชร์</translation>
 <translation id="18139523105317219">ชื่อหน่วย EDI</translation>
 <translation id="1815083418640426271">วางเป็นข้อความธรรมดา</translation>
 <translation id="1815097521077272760">คุณได้รับเชิญให้ลองใช้การควบคุมแป้นพิมพ์สำหรับเกมนี้</translation>
@@ -4109,6 +4110,7 @@
 <translation id="3857807444929313943">ยกนิ้วขึ้นแล้วแตะอีกครั้ง</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="385939467708172187">ใช้รหัสผ่านที่รัดกุม</translation>
+<translation id="3859869403161297890">ส่งความคิดเห็นเกี่ยวกับกลุ่มแท็บที่แชร์ได้ที่นี่</translation>
 <translation id="3859987779882450877">แนะนำและสร้างกลุ่มจากแท็บที่เปิดอยู่โดยอัตโนมัติ</translation>
 <translation id="386009056910366930">จัดการกลุ่มแท็บ "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">ใช้ชื่อผู้ใช้ "<ph name="USERNAME" />" ไม่ได้</translation>
@@ -8158,6 +8160,7 @@
 <translation id="6805478749741295868">นี่เป็นฟีเจอร์ AI เวอร์ชันทดลองและอาจไม่ถูกต้องเสมอไป</translation>
 <translation id="6805647936811177813">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อนำเข้าใบรับรองไคลเอ็นต์จาก <ph name="HOST_NAME" /></translation>
 <translation id="680572642341004180">เปิดใช้งานการติดตาม RLZ บน <ph name="SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="6805817411033102703">ความคิดเห็นเกี่ยวกับกลุ่มแท็บที่แชร์</translation>
 <translation id="6806089545527108739">ไม่อนุญาตแต่ถามทีหลัง</translation>
 <translation id="680644983456221885">การปกป้องเชิงรุกแบบเรียลไทม์จากเว็บไซต์ ไฟล์ที่ดาวน์โหลด และส่วนขยายที่เป็นอันตราย ซึ่งอิงตามข้อมูลการท่องเว็บของคุณที่ส่งไปยัง Google</translation>
 <translation id="6806781719264274042">เฉพาะรายชื่อติดต่อที่มีบัญชี Google <ph name="LINK_BEGIN" />ดูรายชื่อติดต่อ<ph name="LINK_END" /></translation>

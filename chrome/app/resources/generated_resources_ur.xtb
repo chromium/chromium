@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">سائبر پنک</translation>
 <translation id="1129420403709586868">اپنے فون کی تصاویر اور میڈیا دیکھیں</translation>
 <translation id="1129850422003387628">ایپس کا نظم کریں</translation>
+<translation id="1130430615924359526">{0,plural, =1{پوشیدگی ونڈو بند کریں}other{پوشیدگی (# ونڈوز) بند کریں}}</translation>
 <translation id="113050636487300043">پروفائلوں کے درمیان امتیاز کرنے کیلئے ایک نام اور رنگ کی تھیم کا انتخاب کریں</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - گروپ کا حصہ <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">بائیں بیٹری کا لیول <ph name="PERCENTAGE" />% ہے۔</translation>
@@ -1513,6 +1514,7 @@
 <translation id="2042279886444479655">فعال پروفائلز</translation>
 <translation id="2042427131767688936">اس بات کو یقینی بنانے کے لیے کہ اس آلہ کو محفوظ طریقے سے استعمال کیا جا سکتا ہے، آپ کی تنظیم کو اس کے آپریٹنگ سسٹم، براؤزر اور ترتیبات اور آلہ پر کون سا سافٹ ویئر انسٹال ہے کے بارے میں معلومات دیکھ سکتی ہے۔</translation>
 <translation id="2044014337866019681">براہ کرم یقینی بنائیں کہ سیشن کو غیر مقفل کرنے کیلئے آپ <ph name="ACCOUNT" /> کی توثیق کر رہے ہیں۔</translation>
+<translation id="2044750031738659219">{0,plural, =1{مہمان ونڈو بند کریں}other{مہمان (# ونڈوز) بند کریں}}</translation>
 <translation id="204497730941176055">‏Microsoft سرٹیفکیٹ تمثیل کا نام</translation>
 <translation id="2045211794962848221">آپ کو یہ مخصوص پیغام دوبارہ نظر نہیں آئے گا</translation>
 <translation id="2045838962742066664">شارٹ ہینڈ ٹائپنگ</translation>
@@ -7353,6 +7355,7 @@
 <translation id="6214106213498203737">پانی کا رنگ</translation>
 <translation id="621470880408090483">سائٹس کو بلوٹوتھ آلات سے منسلک ہونے کی اجازت نہ دیں</translation>
 <translation id="6215039389782910006">{1,plural, =1{آپ کے پاس ورڈز کو محفوظ رکھنے کے لیے، <ph name="BRAND" /> 1 منٹ کی غیر فعالیت کے بعد مقفل ہو جاتا ہے}other{آپ کے پاس ورڈز کو محفوظ رکھنے کے لیے، <ph name="BRAND" /> # منٹ کی غیر فعالیت کے بعد مقفل ہو جاتا ہے}}</translation>
+<translation id="6216154119179790291">پہلے ٹیب پر اسکرول کریں</translation>
 <translation id="6216239400972191926">مسترد کردہ سائٹس اور اپپس</translation>
 <translation id="6216601812881225442">‏آپ کا کنٹینر سائز تبدیل کرنے کو سپورٹ نہیں کرتا ہے۔ Linux کے لیے پہلے سے مختص کی گئی جگہ کی مقدار کو ایڈجسٹ کرنے کے لیے بیک اپ لیں اور اسے نئے کنٹینر میں بحال کریں۔</translation>
 <translation id="6216696360484424239">خود کار طور پر سائن ان کریں</translation>
@@ -7549,6 +7552,7 @@
 <translation id="6357305427698525450">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" /> یا  <ph name="APP_NAME_2" /> میں کھلیں گے۔</translation>
 <translation id="6357750620525943720">‏دیگر مستحکم شناخت کنندگان (جیسے، ہیشیز یا UUIDs)</translation>
 <translation id="6358884629796491903">ڈریگن</translation>
+<translation id="6359640073754977254">آخری ٹیب پر سکرول کریں</translation>
 <translation id="6361850914223837199">خرابی کی تفصیلات</translation>
 <translation id="6362853299801475928">&amp;ایک مسئلہ کی اطلاع دیں…</translation>
 <translation id="6363786367719063276">لاگز دیکھیں</translation>
@@ -10207,6 +10211,7 @@
 <translation id="8258027225380843424">درآمد کامیاب ہو گئی!</translation>
 <translation id="8259048637628995340">‏ایک ہموار تجربہ کے لیے اپنے Android فون کو منسلک کریں</translation>
 <translation id="8260177673299865994">ڈاؤن لوڈ کے تحفظ کو بہتر بنائیں</translation>
+<translation id="8260473380156923937">‏‫Chrome Apps کو جلد ہی فرسودہ کر دیا جائے گا۔ متبادلات کے لیے، ڈویلپر یا اپنے IT سروس رابطہ سے رابطہ کریں۔</translation>
 <translation id="8260864402787962391">ماؤس</translation>
 <translation id="8261378640211443080">یہ ایکسٹینشن <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> میں مندرج نہیں ہے اور ہو سکتا ہے اس کو آپ کے علم کے بغیر شامل کیا گیا ہو۔</translation>
 <translation id="8261506727792406068">حذف کریں</translation>

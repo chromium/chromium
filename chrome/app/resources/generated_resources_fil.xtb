@@ -1194,6 +1194,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1812027881030482584">Hindi makapagpatuloy ang <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Kina-cast ang <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Mga Serbisyo</translation>
+<translation id="1813828404076816564">Piliin ang button ng feedback para magpadala ng feedback tungkol sa feature na mga naka-share na grupo ng tab</translation>
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">I-paste Bilang Plain Text</translation>
 <translation id="1815097521077272760">Naimbita kang sumubok ng pagkontrol gamit ang keyboard para sa larong ito.</translation>
@@ -4125,6 +4126,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3857807444929313943">Iangat, pagkatapos ay pindutin muli</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="385939467708172187">Gumamit ng Malakas na Password</translation>
+<translation id="3859869403161297890">Ipadala ang iyong feedback tungkol sa mga naka-share na grupo ng tab dito</translation>
 <translation id="3859987779882450877">Awtomatikong nagmumungkahi at gumagawa ng mga grupo mula sa iyong mga nakabukas na tab</translation>
 <translation id="386009056910366930">Pamahalaan ang Grupo ng Tab na “<ph name="GROUP_NAME" />”</translation>
 <translation id="3861638017150647085">Hindi available ang username na "<ph name="USERNAME" />"</translation>
@@ -8181,6 +8183,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6805478749741295868">Isa itong pang-eksperimentong feature ng AI at hindi ito palaging tama.</translation>
 <translation id="6805647936811177813">Mangyaring mag-sign in sa <ph name="TOKEN_NAME" /> upang i-import ang certificate ng client mula sa <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Paganahin ang pagsubaybay ng RLZ sa <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Feedback sa mga naka-share na grupo ng tab</translation>
 <translation id="6806089545527108739">Huwag payagan pero magtanong sa ibang pagkakataon</translation>
 <translation id="680644983456221885">Real-time at proactive na proteksyon laban sa mga mapanganib na site, download, at extension na nakabatay sa iyong data mula sa pag-browse na ipinapadala sa Google</translation>
 <translation id="6806781719264274042">Mga contact mo lang na may Google Account. <ph name="LINK_BEGIN" />Tingnan ang mga contact<ph name="LINK_END" /></translation>

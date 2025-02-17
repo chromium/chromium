@@ -471,7 +471,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1791415068765905273">Prikaži sve tabele poređenja</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate informacijama, privatnošću i sigurnošću na Google računu</translation>
-<translation id="1793473605302304726">Obročno plaćanje</translation>
+<translation id="1793473605302304726">Plaćanje na rate</translation>
 <translation id="1793631236004319016">Posljednji put je korišteno prije <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Dostupno je više radnji. Pritisnite Tab da ih prelistate</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3412,7 +3412,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7042616127917168121">Preciziranje rezultata</translation>
 <translation id="7043552168914147882">Papir s jezičkom</translation>
 <translation id="7044081119134178347">Kamera je dozvoljena ovaj put</translation>
-<translation id="704738887031336226">Prikaži opcije <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />obročnog plaćanja<ph name="PAY_OVER_TIME_HELP_LINK_END" /> pri naplati</translation>
+<translation id="704738887031336226">Prikažite opcije <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />plaćanja na rate<ph name="PAY_OVER_TIME_HELP_LINK_END" /> prilikom nastavka na plaćanje</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je server prikazao potvrdu čiji period važenja je predugačak da bi bio vjerodostojan.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Trenutno nije moguće sačuvati ovu karticu}one{Trenutno nije moguće sačuvati ove kartice}few{Trenutno nije moguće sačuvati ove kartice}other{Trenutno nije moguće sačuvati ove kartice}}</translation>

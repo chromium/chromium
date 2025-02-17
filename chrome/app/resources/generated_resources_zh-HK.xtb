@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">數碼龐克</translation>
 <translation id="1129420403709586868">查看手機上的相片和媒體</translation>
 <translation id="1129850422003387628">管理應用程式</translation>
+<translation id="1130430615924359526">{0,plural, =1{關閉無痕式視窗}other{關閉無痕式視窗 (# 個視窗)}}</translation>
 <translation id="113050636487300043">選擇名稱和顏色主題來區分不同設定檔</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 屬於「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="1130676589211693127">右邊電量係 <ph name="PERCENTAGE" />%。</translation>
@@ -1523,6 +1524,7 @@
 <translation id="2042279886444479655">使用中的設定檔</translation>
 <translation id="2042427131767688936">為確保可安全使用此裝置，機構可以查看裝置的作業系統、瀏覽器和設定的相關資料，以及裝置上安裝的軟件。</translation>
 <translation id="2044014337866019681">請確保您驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
+<translation id="2044750031738659219">{0,plural, =1{關閉訪客視窗}other{關閉訪客視窗 (# 個視窗)}}</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
 <translation id="2045211794962848221">您不會再看到此訊息</translation>
 <translation id="2045838962742066664">速記輸入</translation>
@@ -7354,6 +7356,7 @@
 <translation id="6214106213498203737">水彩</translation>
 <translation id="621470880408090483">不允許網站連接藍牙裝置</translation>
 <translation id="6215039389782910006">{1,plural, =1{為保障密碼安全，「<ph name="BRAND" />」會在閒置 1 分鐘後鎖定}other{為保障密碼安全，「<ph name="BRAND" />」會在閒置 # 分鐘後鎖定}}</translation>
+<translation id="6216154119179790291">捲動至第一個分頁</translation>
 <translation id="6216239400972191926">已封鎖的網站和應用程式</translation>
 <translation id="6216601812881225442">無法調整容器大小。如要調整預先分配給 Linux 的空間數量，請先備份容器，然後再復原至新容器。</translation>
 <translation id="6216696360484424239">自動登入</translation>
@@ -7550,6 +7553,7 @@
 <translation id="6357305427698525450">部分支援連結將仍會在 <ph name="APP_NAME" /> 或 <ph name="APP_NAME_2" /> 中開啟。</translation>
 <translation id="6357750620525943720">其他穩定識別碼 (例如：雜湊或 UUID)</translation>
 <translation id="6358884629796491903">龍</translation>
+<translation id="6359640073754977254">捲動至最後一個分頁</translation>
 <translation id="6361850914223837199">錯誤詳情：</translation>
 <translation id="6362853299801475928">報告問題(&amp;R)…</translation>
 <translation id="6363786367719063276">查看記錄</translation>
@@ -10209,6 +10213,7 @@
 <translation id="8258027225380843424">匯入成功！</translation>
 <translation id="8259048637628995340">連結 Android 手機即可享有流暢體驗</translation>
 <translation id="8260177673299865994">改善下載保護功能</translation>
+<translation id="8260473380156923937">Chrome 應用程式即將淘汰。如想瞭解替代方案，請聯絡開發人員或 IT 服務聯絡人。</translation>
 <translation id="8260864402787962391">滑鼠</translation>
 <translation id="8261378640211443080">這個擴充功能未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中，可能是在您不知情的情況下加入瀏覽器。</translation>
 <translation id="8261506727792406068">刪除</translation>

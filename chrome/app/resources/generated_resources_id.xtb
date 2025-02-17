@@ -196,6 +196,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Lihat foto dan media ponsel</translation>
 <translation id="1129850422003387628">Kelola aplikasi</translation>
+<translation id="1130430615924359526">{0,plural, =1{Tutup Jendela Samaran}other{Tutup Jendela Samaran (# jendela)}}</translation>
 <translation id="113050636487300043">Pilih nama dan tema warna untuk membedakan profil</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Bagian dari grup <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Tingkat daya baterai kanan <ph name="PERCENTAGE" />%.</translation>
@@ -1523,6 +1524,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2042279886444479655">Profil aktif</translation>
 <translation id="2042427131767688936">Untuk memastikan perangkat ini dapat digunakan dengan aman, organisasi Anda dapat melihat informasi tentang sistem operasi, browser, dan setelannya, serta software yang diinstal di perangkat.</translation>
 <translation id="2044014337866019681">Pastikan Anda memverifikasi <ph name="ACCOUNT" /> untuk membuka kunci sesi.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Tutup Jendela Tamu}other{Tutup Jendela Tamu (# jendela)}}</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045211794962848221">Anda tidak akan melihat pesan khusus ini lagi</translation>
 <translation id="2045838962742066664">Mengetik singkat</translation>
@@ -7369,6 +7371,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6214106213498203737">Cat Air</translation>
 <translation id="621470880408090483">Jangan izinkan situs terhubung ke perangkat Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Untuk menjaga keamanan sandi Anda, <ph name="BRAND" /> akan terkunci setelah tidak aktif selama 1 menit}other{Untuk menjaga keamanan sandi Anda, <ph name="BRAND" /> akan terkunci setelah tidak aktif selama # menit}}</translation>
+<translation id="6216154119179790291">Scroll ke tab pertama</translation>
 <translation id="6216239400972191926">Situs dan aplikasi yang ditolak</translation>
 <translation id="6216601812881225442">Container Anda tidak mendukung fitur ubah ukuran. Untuk menyesuaikan jumlah ruang yang telah dialokasikan sebelumnya untuk Linux, cadangkan lalu pulihkan ke dalam container baru.</translation>
 <translation id="6216696360484424239">Login secara otomatis</translation>
@@ -7565,6 +7568,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6357305427698525450">Beberapa link yang didukung akan tetap dibuka di <ph name="APP_NAME" /> atau <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">ID Stabil Lainnya (mis., Hash atau UUID)</translation>
 <translation id="6358884629796491903">Naga</translation>
+<translation id="6359640073754977254">Scroll ke tab terakhir</translation>
 <translation id="6361850914223837199">Detail kesalahan:</translation>
 <translation id="6362853299801475928">&amp;Melaporkan masalah...</translation>
 <translation id="6363786367719063276">Lihat log</translation>
@@ -10224,6 +10228,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8258027225380843424">Impor berhasil!</translation>
 <translation id="8259048637628995340">Hubungkan ponsel Android untuk pengalaman yang lancar</translation>
 <translation id="8260177673299865994">Tingkatkan perlindungan download</translation>
+<translation id="8260473380156923937">Aplikasi Chrome tidak akan digunakan lagi. Untuk alternatif, hubungi developer atau kontak layanan IT Anda.</translation>
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Ekstensi ini tidak tercantum dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
 <translation id="8261506727792406068">Hapus</translation>

@@ -196,7 +196,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Pregledajte fotografije i medijski sadržaj telefona</translation>
 <translation id="1129850422003387628">Upravljajte aplikacijama</translation>
-<translation id="1130430615924359526">{0,plural, =1{Zatvori anonimni način}one{Zatvori anonimni način (#prozor)}few{Zatvori anonimni način (#prozora)}other{Zatvori anonimni način (#prozora)}}</translation>
+<translation id="1130430615924359526">{0,plural, =1{Zatvori anonimni način rada}one{Zatvori anonimni način rada (# prozor)}few{Zatvori anonimni način rada (# prozora)}other{Zatvori anonimni način rada (# prozora)}}</translation>
 <translation id="113050636487300043">Odaberite naziv i boju teme da možete razlikovati profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – dio grupe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Nivo napunjenosti desne baterije: <ph name="PERCENTAGE" />%.</translation>
@@ -1523,7 +1523,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2042427131767688936">Da osigura da se uređaj može sigurno koristiti, vaša organizacija može vidjeti informacije o njegovom operativnom sistemu, pregledniku i postavkama te softveru koji je na njemu instaliran.</translation>
 <translation id="2044014337866019681">Provjerite potvrđujete li račun <ph name="ACCOUNT" /> radi otključavanja sesije.</translation>
-<translation id="2044750031738659219">{0,plural, =1{Zatvori prozor u načinu rada za goste}one{Zatvori prozore u načinu rada za goste (# prozor)}few{Zatvori prozore u načinu rada za goste (# prozora)}other{Zatvori prozore u načinu rada za goste (# prozora)}}</translation>
+<translation id="2044750031738659219">{0,plural, =1{Zatvori način rada za gosta}one{Zatvori način rada za gosta (# prozor)}few{Zatvori način rada za gosta (# prozora)}other{Zatvori način rada za gosta (# prozora)}}</translation>
 <translation id="204497730941176055">Naziv šablona za Microsoftovu potvrdu</translation>
 <translation id="2045211794962848221">Ova određena poruka vam se više neće prikazivati</translation>
 <translation id="2045838962742066664">Stenografsko pisanje</translation>
@@ -7370,7 +7370,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6214106213498203737">Akvarel</translation>
 <translation id="621470880408090483">Nemoj dozvoliti web lokacijama povezivanje s Bluetooth uređajima</translation>
 <translation id="6215039389782910006">{1,plural, =1{Radi zaštite sigurnost lozinki, <ph name="BRAND" /> se zaključava nakon 1 minute neaktivnosti}one{Radi zaštite sigurnost lozinki, <ph name="BRAND" /> se zaključava nakon # minute neaktivnosti}few{Radi zaštite sigurnost lozinki, <ph name="BRAND" /> se zaključava nakon # minute neaktivnosti}other{Radi zaštite sigurnost lozinki, <ph name="BRAND" /> se zaključava nakon # minuta neaktivnosti}}</translation>
-<translation id="6216154119179790291">Pomakni se na prvu karticu</translation>
+<translation id="6216154119179790291">Klizanje na prvu karticu</translation>
 <translation id="6216239400972191926">Odbijene web lokacije i aplikacije</translation>
 <translation id="6216601812881225442">Vaš spremnik ne podržava promjenu veličine. Da podesite količinu prostora koja je prethodno dodijeljena Linuxu, napravite sigurnosnu kopiju, a zatim je vratite u novi spremnik.</translation>
 <translation id="6216696360484424239">Automatska prijava</translation>
@@ -7567,7 +7567,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6357305427698525450">Neki podržani linkovi će se i dalje otvarati u aplikaciji <ph name="APP_NAME" /> ili <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Drugi stabilni identifikatori (npr. hashevi ili UUID-ovi)</translation>
 <translation id="6358884629796491903">Zmaj</translation>
-<translation id="6359640073754977254">Pomakni se na posljednju karticu</translation>
+<translation id="6359640073754977254">Klizanje na posljednju karticu</translation>
 <translation id="6361850914223837199">Detalji o grešci</translation>
 <translation id="6362853299801475928">&amp;Prijavi problem...</translation>
 <translation id="6363786367719063276">Pregledajte zapisnike</translation>
@@ -10232,7 +10232,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8258027225380843424">Uvoz je uspio!</translation>
 <translation id="8259048637628995340">Povežite Android telefon za neometano iskustvo</translation>
 <translation id="8260177673299865994">Poboljšajte zaštitu za preuzimanje</translation>
-<translation id="8260473380156923937">Chromeove aplikacije uskoro će se obustaviti. Za alternative se obratite razvojnom programeru ili IT službi.</translation>
+<translation id="8260473380156923937">Chromeove aplikacije će uskoro zastarjeti. Za alternative kontaktirajte programera ili kontakt osobu za IT uslugu.</translation>
 <translation id="8260864402787962391">Miš</translation>
 <translation id="8261378640211443080">Ova ekstenzija nije navedena u <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda je dodana bez vašeg znanja.</translation>
 <translation id="8261506727792406068">Izbriši</translation>

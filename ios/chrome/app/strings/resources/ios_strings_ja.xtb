@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="104491362976654916">オフライン ページ</translation>
+<translation id="1049200476149974839">さんがタブグループに招待しています。リンクを知っているユーザーは誰でも、すべてのタブを編集できます。参加は慎重に行ってください。リンクは 48 時間で期限切れになります。</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1053651653201045802">ログアウトしました。再度ログインすると、アカウントのブックマークやパスワードなどを使用できます。</translation>
 <translation id="1054745118061919935">続行すると、<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />に同意したことになります。</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">管理対象アカウント</translation>
 <translation id="1358214951266274152">コピーしたリンクに移動</translation>
 <translation id="1360432990279830238">ログアウトして同期をオフにしますか？</translation>
+<translation id="1362192716574455663">既存の閲覧データは仕事用アカウントに移動されません。ログアウトするか、個人アカウントを追加すると、引き続きアクセスできます。</translation>
 <translation id="1363028406613469049">トラック</translation>
 <translation id="1364367057792633742">新しいタブ</translation>
 <translation id="1365106417372288489">iPhone が最近復元されたため、デフォルトのブラウザが変更されている可能性があります。</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">グループを閉じる</translation>
 <translation id="178400879184240105">使い回されているパスワードはありません</translation>
 <translation id="17906873777101817">パスワードとパスキーを保存するか確認する</translation>
+<translation id="1794893174442046596">タブグループ</translation>
 <translation id="1807893857950749072">価格の追跡の通知を許可…</translation>
 <translation id="1810976980198522421">キャンセル</translation>
 <translation id="1815941218935345331">パスコード</translation>

@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">اپنے فون کی ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="1610778689852195798">"کالعدم کریں"</translation>
 <translation id="1611993646327628135">آن</translation>
+<translation id="1612679292338846734">‏جب آپ ان خصوصیات کو آن کرتے ہیں تو ان پٹ ٹیکسٹ، دستاویز کا مواد اور ویب صفحہ کا URL ‏Google AI سرورز کو بھیجا جا سکتا ہے۔ اس معلومات کا استعمال لکھنے سے متعلق تجویز تیار کرنے، خلاصے تیار کرنے، سوالات کے جوابات دینے اور پروڈکٹ کو بہتر بنانے کے لیے کیا جاتا ہے، جو کہ <ph name="LINK_TO_SERVICE_TERMS" /> کے ساتھ مشروط ہے۔ کوئی بھی ذاتی، حساس یا رازدارانہ چیز شامل نہ کریں۔</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1623768535032616219">‏‫Google Classroom کو سکیڑیں</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> دستیاب نہیں ہے۔</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">کنکشن شامل کریں</translation>
 <translation id="2947835478872237115">حالیہ بیٹری لیول <ph name="BATTERY_PERCENTAGE" />فیصد، <ph name="TIME" /> فُل ہونے تک</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" /> دبائیں اور کسی لنک پر کلک کریں</translation>
+<translation id="2957159466053076448">آپ ترتیبات میں کسی بھی وقت ان خصوصیات کو آف کر سکتے ہیں۔ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">آلہ کا آڈیو</translation>
 <translation id="2960314608273155470">کیپچر وضع، <ph name="SOURCE" /> <ph name="TYPE" /> ڈیفالٹ موڈ ہے۔ کی بورڈ نیویگیشن کے لیے ٹیب دبائیں۔</translation>
 <translation id="2961963223658824723">کچھ غلط ہو گیا۔ چند سیکنڈ میں دوبارہ کوشش کریں۔</translation>
@@ -1904,6 +1906,7 @@
 <translation id="735745346212279324">‏VPN منقطع ہو گیا</translation>
 <translation id="7360036564632145207">پیریفیرلزکی ترتیب کیلئے آپ کے ڈیٹا تک رسائی کے تحفظ کی تبدیلی کارکردگی کو بہتر بنا سکتی ہے</translation>
 <translation id="736045644501761622">وال پیپر اور اسٹائل سیٹ کریں</translation>
+<translation id="7368041336688136012">‏پڑھنے میں میری مدد کریں، لکھنے میں میری مدد کریں اور AI کے ساتھ تصاویر تخلیق کریں کا استعمال کرنے کے لیے آپ کی عمر کم از کم 18 سال ہونی چاہیے۔</translation>
 <translation id="7371404428569700291">ونڈو ریکارڈ کریں</translation>
 <translation id="7372069265635026568">کل <ph name="TOTAL_MEMORY" /> میں سے <ph name="AVAILABLE_MEMORY" /> میموری دستیاب ہے</translation>
 <translation id="737315737514430195">اس سے مائیکروفون کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے مائیکروفون تک رسائی کی اجازت ملتی ہے</translation>
@@ -2029,6 +2032,7 @@
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">سبھی دکھائیں</translation>
+<translation id="7762664108390426952">‏‫Google کی سروس کی شرائط اور رازداری کی پالیسی</translation>
 <translation id="7768784765476638775">سننے کیلئے منتخب کریں</translation>
 <translation id="7769299611924763557">‏آپ کا GIF جلد ہی تیار ہو جائے گا</translation>
 <translation id="7773536009433685931">‏اس کے بجائے WiFi آن کریں</translation>

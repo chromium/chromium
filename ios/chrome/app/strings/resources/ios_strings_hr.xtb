@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Upozori ako su zaporke ugrožene zbog neovlaštenog pristupa podacima</translation>
 <translation id="1044891598689252897">Web-lokacije će normalno raditi</translation>
 <translation id="104491362976654916">Offline stranica</translation>
+<translation id="1049200476149974839">želi da se pridružite grupi kartica. Svatko s vezom može uređivati sve kartice, pa budite oprezni prilikom pridruživanja. Veza istječe za 48 sati.</translation>
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="1053651653201045802">Odjavljeno. Ponovno se prijavite kako biste vidjeli oznake, zaporke i ostalo na svom računu.</translation>
 <translation id="1054745118061919935">Nastavkom upotrebe prihvaćate <ph name="BEGIN_LINK" />uvjete pružanja usluge<ph name="END_LINK" />.</translation>
@@ -194,6 +195,7 @@
 <translation id="1780152987505130652">Zatvori grupu</translation>
 <translation id="178400879184240105">Vaše su zaporke jedinstvene</translation>
 <translation id="17906873777101817">Ponudi spremanje zaporki i pristupnih ključeva</translation>
+<translation id="1794893174442046596">Grupa kartica</translation>
 <translation id="1807893857950749072">Dopusti obavijesti o praćenju cijena…</translation>
 <translation id="1810976980198522421">Odustani</translation>
 <translation id="1815941218935345331">Šifra</translation>
