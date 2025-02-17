@@ -159,7 +159,7 @@ public class SafetyHubFetchServiceTest {
     public void testTaskRescheduled_whenFetchFails() {
         mPasswordCheckupClientHelper.setError(new Exception());
 
-        new SafetyHubFetchService(mProfile).fetchCredentialsCount(mTaskFinishedCallback);
+        new SafetyHubFetchService(mProfile).fetchAccountCredentialsCount(mTaskFinishedCallback);
 
         verify(mPrefService, never()).setInteger(eq(Pref.BREACHED_CREDENTIALS_COUNT), anyInt());
         verify(mPrefService, never()).setInteger(eq(Pref.WEAK_CREDENTIALS_COUNT), anyInt());
@@ -179,7 +179,7 @@ public class SafetyHubFetchServiceTest {
         mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
         mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
 
-        new SafetyHubFetchService(mProfile).fetchCredentialsCount(mTaskFinishedCallback);
+        new SafetyHubFetchService(mProfile).fetchAccountCredentialsCount(mTaskFinishedCallback);
 
         verify(mPrefService, never()).setInteger(eq(Pref.WEAK_CREDENTIALS_COUNT), anyInt());
         verify(mPrefService, times(1))
@@ -202,7 +202,7 @@ public class SafetyHubFetchServiceTest {
         mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
         mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
 
-        new SafetyHubFetchService(mProfile).fetchCredentialsCount(mTaskFinishedCallback);
+        new SafetyHubFetchService(mProfile).fetchAccountCredentialsCount(mTaskFinishedCallback);
 
         verify(mPrefService, times(1))
                 .setInteger(Pref.BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
