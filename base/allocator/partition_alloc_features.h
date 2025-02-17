@@ -162,15 +162,9 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(MemoryTaggingEnabledProcesses,
 // enabled.
 BASE_EXPORT BASE_DECLARE_FEATURE(kKillPartitionAllocMemoryTagging);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kBackupRefPtrAsanEnableDereferenceCheckParam);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kBackupRefPtrAsanEnableExtractionCheckParam);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kBackupRefPtrAsanEnableInstantiationCheckParam);
+BASE_EXPORT BASE_DECLARE_FEATURE(kAsanBrpDereferenceCheck);
+BASE_EXPORT BASE_DECLARE_FEATURE(kAsanBrpExtractionCheck);
+BASE_EXPORT BASE_DECLARE_FEATURE(kAsanBrpInstantiationCheck);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(BucketDistributionMode,
                                        kPartitionAllocBucketDistributionParam);
 

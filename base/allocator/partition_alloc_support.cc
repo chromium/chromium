@@ -1003,18 +1003,17 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   if (ShouldEnableFeatureOnProcess(
           base::features::kBackupRefPtrEnabledProcessesParam.Get(),
           process_type)) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(
-            base::features::kBackupRefPtrAsanEnableDereferenceCheckParam.Get()),
-        base::EnableExtractionCheck(
-            base::features::kBackupRefPtrAsanEnableExtractionCheckParam.Get()),
-        base::EnableInstantiationCheck(
-            base::features::kBackupRefPtrAsanEnableInstantiationCheckParam
-                .Get()));
+    RawPtrAsanService::GetInstance().Configure(
+        EnableDereferenceCheck(
+            FeatureList::IsEnabled(features::kAsanBrpDereferenceCheck)),
+        EnableExtractionCheck(
+            FeatureList::IsEnabled(features::kAsanBrpExtractionCheck)),
+        EnableInstantiationCheck(
+            FeatureList::IsEnabled(features::kAsanBrpInstantiationCheck)));
   } else {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(false), base::EnableExtractionCheck(false),
-        base::EnableInstantiationCheck(false));
+    RawPtrAsanService::GetInstance().Configure(EnableDereferenceCheck(false),
+                                               EnableExtractionCheck(false),
+                                               EnableInstantiationCheck(false));
   }
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
