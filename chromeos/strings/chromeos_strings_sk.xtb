@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Prepínanie rozloženia</translation>
 <translation id="2244834438220057800">zelenom</translation>
 <translation id="225692081236532131">Stav aktivácie</translation>
-<translation id="2265792117169966196">Vybrať a stiahnuť model prepisov v jazyku <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Pridať snímku obrazovky</translation>
 <translation id="2268044343513325586">Upraviť</translation>
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Zariadenie sa nedá testovať. Ak chcete testovať, prepnite na režim laptopu.</translation>
 <translation id="3916998944874125962">vytvorenie snímky obrazovky</translation>
 <translation id="3923184630988645767">Spotreba dát</translation>
-<translation id="3924445055519423964">Kliknutím zhrnúť webovú stránku alebo súbor PDF</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
 <translation id="3934185438132762746">Nepriradený ovládací prvok (<ph name="CONTROL_TYPE" />)</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="4483498983731992167">Prepis sa nedá vytvoriť</translation>
 <translation id="4486524074141928967">Systém vás odhlási o <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Otvoriť výber jazyka prepisu</translation>
 <translation id="4500722292849917410">Skratka nie je k dispozícii. Stlačte novú skratku použitím klávesa modifikátora (ctrl, alt, shift alebo <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Farba rozhrania</translation>
 <translation id="4503223151711056411">Šípka doľava</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4989542687859782284">Nedostupné</translation>
 <translation id="4999333166442584738">Skryť prehľad</translation>
-<translation id="5005695757087124131">Kliknutím zjednodušiť vybraný text</translation>
 <translation id="500920857929044050">Zastaviť test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Farba motívu</translation>
@@ -1395,7 +1391,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7425832472614771259">Model prepisov <ph name="LANGUAGE_NAME" /> je stiahnutý na <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tento názov prístupového bodu (APN) sa nedá deaktivovať ani odstrániť. Uistite sa, že aktivované názvy prístupových bodov (APN) <ph name="ATTACH" /> sú deaktivované alebo odstránené.</translation>
-<translation id="7453118953486228603">Kliknutím vytvoríte zhrnutie vybraného textu</translation>
 <translation id="7458970041932198923">Ak chcete zobraziť a nastaviť avatary, pripojte sa k sieti a znova načítajte stránku.</translation>
 <translation id="7469648432129124067">Bol rozpoznaný portál</translation>
 <translation id="7481312909269577407">Dopredu</translation>

@@ -1542,7 +1542,6 @@
 <translation id="206308717637808771">Բոլոր պատուհանները փակելիս ջնջել տվյալները։ Տվյալների նկատմամբ կիրառվում են նույն պարամետրերը, ինչ ընտրված է ձեր դիտած կայքի համար։</translation>
 <translation id="2065405795449409761">Chrome դիտարկիչը կառավարվում է ավտոմատացված փորձնական ծրագրակազմի կողմից:</translation>
 <translation id="2066700471214517561">Ուղղված ազդանշանի ձևավորման հնարավորությամբ խոսափողի շնորհիվ՝ Chromebook-ի օգտատիրոջ ձայնն ավելի պարզ է հնչում։</translation>
-<translation id="2067591192939433190">Աղբյուրը՝ «<ph name="VENDOR_NAME" />»</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> հավելվածն ավարտեց տպումը <ph name="PRINTER_NAME" /> տպիչում</translation>
 <translation id="2071393345806050157">Տեղային մատյան-ֆայլ չկա:</translation>
 <translation id="2071692954027939183">Ծանուցումներն ավտոմատ արգելափակվել են, քանի որ դուք դրանք սովորաբար մերժում եք։</translation>
@@ -6511,7 +6510,6 @@
 <translation id="5595307023264033512">Կայքերի կողմից օգտագործվող ընդհանուր տարածքը՝ <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Փոխել հասցեն</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
-<translation id="5599819890022137981">Windows Hello-ից</translation>
 <translation id="5600348067066185292">Տեղադրումը կատարվում է մի քանի պարզ քայլերով։ Դուք փոփոխությունները հաստատելու ևս մեկ հնարավորություն կունենաք, նախքան դրանք ձեր համակարգչում կկիրառվեն։</translation>
 <translation id="5600706100022181951">Թարմացումը ներբեռնելու համար անհրաժեշտ կլինի <ph name="UPDATE_SIZE_MB" /> բջջային ինտերնետ թրաֆիկ։ Շարունակե՞լ։</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8657,6 +8655,7 @@
 <translation id="7160911207516219534">Կողային վահանակներ</translation>
 <translation id="716210145227921528">Մուտքի բանալին ջնջվել է</translation>
 <translation id="7165263843655074092">Այս սարքում միացված է անվտանգության ստանդարտ ռեժիմը</translation>
+<translation id="7166017546802325772">Այս խմբում թարմացումներ չկան</translation>
 <translation id="716640248772308851">«<ph name="EXTENSION" />» ընդլայնումը կարող է նշված պանակներում կարդալ պատկերները, տեսանյութերը և ձայնային ֆայլերը:</translation>
 <translation id="7166815366658507447">Թեժ կետը միացված է</translation>
 <translation id="7167327771183668296">Ավտոմատ սեղմումներ</translation>
@@ -9233,7 +9232,6 @@
 <translation id="7586498138629385861">Chrome-ը կշարունակի աշխատել, երբ հավելվածները բաց են:</translation>
 <translation id="7589461650300748890">Զգո՛ւյշ եղեք:</translation>
 <translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
-<translation id="7591317506733736159">Chrome-ի ձեր պրոֆիլից</translation>
 <translation id="7592060599656252486">Որոշ նշաններ</translation>
 <translation id="7593653750169415785">Ավտոմատ արգելափակվում են, քանի որ դուք դրանք մի քանի անգամ մերժել եք</translation>
 <translation id="7594725637786616550">Powerwash գործառույթը կվերականգնի <ph name="DEVICE_TYPE" /> սարքի գործարանային կարգավորումները։</translation>
@@ -10289,7 +10287,6 @@
 <translation id="831440797644402910">Չհաջողվեց պանակը բացել</translation>
 <translation id="8314835274931377415">Սկսե՞լ Switch Access-ի կարգավորումը</translation>
 <translation id="8315018673856831477">Հիշողության տնտեսման ընտրանքներ</translation>
-<translation id="8315044115695361734">iCloud Keychain-ից</translation>
 <translation id="8315514906653279104">Միանում է…</translation>
 <translation id="8317671367883557781">Ավելացնել ցանցային կապ</translation>
 <translation id="8317965619823678157">պատճենել գաղտնաբառերը</translation>

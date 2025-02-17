@@ -1546,7 +1546,6 @@
 <translation id="206308717637808771">Таныг бүх цонхыг хаахад өгөгдлийг устгана. Өгөгдөлд таны үзэж буй сайтын адилаар хандана</translation>
 <translation id="2065405795449409761">Chrome-г туршилтын автомат программ хангамжаар удирдаж байна.</translation>
 <translation id="2066700471214517561">Чиглэсэн дохио дамжуулдаг микрофон нь Chromebook-г ашиглаж буй хүний дуу хоолойг илүү тод болгодог.</translation>
-<translation id="2067591192939433190">"<ph name="VENDOR_NAME" />"-с</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" />-д хэвлэж дууссан</translation>
 <translation id="2071393345806050157">Суурин бүртгэлийн файл алга байна.</translation>
 <translation id="2071692954027939183">Та мэдэгдлийг ихэвчлэн зөвшөөрдөггүй тул тэдгээрийг автоматаар блоклосон</translation>
@@ -6522,7 +6521,6 @@
 <translation id="5595307023264033512">Сайтуудын хадгалах сангийн ашиглалтын нийт хэмжээ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Хаягийг засах</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
-<translation id="5599819890022137981">Windows Hello-с</translation>
 <translation id="5600348067066185292">Суулгахад цөөн хэдэн хялбар алхам шаардлагатай. Таны компьютерт өөрчлөлт хийхээс өмнө танд баталгаажуулах дахин нэг боломж бий.</translation>
 <translation id="5600706100022181951">Шинэчлэлтийг <ph name="UPDATE_SIZE_MB" /> МБ эсвэл мобайл датагаар татна. Та үргэлжлүүлэх үү?</translation>
 <translation id="5601503069213153581">ПИН</translation>
@@ -8669,6 +8667,7 @@
 <translation id="7160911207516219534">Хажуугийн самбар</translation>
 <translation id="716210145227921528">Нэвтрэх түлхүүрийг устгасан</translation>
 <translation id="7165263843655074092">Та энэ төхөөрөмжид аюулгүй байдлын стандарт хамгаалалтыг авч байна</translation>
+<translation id="7166017546802325772">Энэ бүлэгт ямар ч шинэчлэлт байхгүй</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" нь шалгасан байрлал дахь зураг, видео бичлэг болон дууны файлуудыг уншиж чадна.</translation>
 <translation id="7166815366658507447">Сүлжээний цэгийг идэвхжүүлсэн</translation>
 <translation id="7167327771183668296">Автомат товшилт</translation>
@@ -9245,7 +9244,6 @@
 <translation id="7586498138629385861">Chrome-г хэрэглээний программыг нээсэн байгаа тохиолдолд Chrome нь ачаалласан хэвээр байна.</translation>
 <translation id="7589461650300748890">Харж байгаа биз. Болгоомжтой байгаарай.</translation>
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
-<translation id="7591317506733736159">Таны Chrome-н профайлаас</translation>
 <translation id="7592060599656252486">Зарим</translation>
 <translation id="7593653750169415785">Та хэд хэдэн удаа мэдэгдлээс татгалзсан тул автоматаар хориглосон</translation>
 <translation id="7594725637786616550">Өөрийн <ph name="DEVICE_TYPE" />-г шинэ мэт шинэчлэхийн тулд Powerwash хийгээрэй.</translation>
@@ -10300,7 +10298,6 @@
 <translation id="831440797644402910">Энэ фолдерыг нээх боломжгүй байна</translation>
 <translation id="8314835274931377415">Сэлгүүрийн тохируулгыг эхлүүлэх үү?</translation>
 <translation id="8315018673856831477">Санах ой хэмнэгчийн сонголт</translation>
-<translation id="8315044115695361734">iCloud Keychain-с</translation>
 <translation id="8315514906653279104">Асааж байна...</translation>
 <translation id="8317671367883557781">Сүлжээний холболт нэмэх</translation>
 <translation id="8317965619823678157">нууц үгийг хуулах</translation>

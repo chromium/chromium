@@ -193,6 +193,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1607312127821884567">Lukk konfigurering av visning av apper fra telefonen din</translation>
 <translation id="1610778689852195798">«Angre»</translation>
 <translation id="1611993646327628135">På</translation>
+<translation id="1612679292338846734">Når du slår på disse funksjonene, kan inndatateksten, dokumentinnholdet og nettadressen til nettsiden bli sendt til Googles AI-tjenere. Denne informasjonen brukes til å generere skriveforslag, generere sammendrag, svare på spørsmål og forbedre produktet, i henhold til <ph name="LINK_TO_SERVICE_TERMS" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Skjul Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> er ikke tilgjengelig.</translation>
@@ -565,6 +566,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="2946119680249604491">Legg til forbindelse</translation>
 <translation id="2947835478872237115">Nåværende batterinivå: <ph name="BATTERY_PERCENTAGE" /> %. <ph name="TIME" /> til batteriet er fullt</translation>
 <translation id="2949420361496057765">Trykk på <ph name="MODIFIER" /> og klikk på en link</translation>
+<translation id="2957159466053076448">Du kan når som helst slå av disse funksjonene i innstillingene. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Enhetslyd</translation>
 <translation id="2960314608273155470">Opptaksmodus – standard er <ph name="SOURCE" /> <ph name="TYPE" />. Trykk på Tab for å navigere med tastaturet.</translation>
 <translation id="2961963223658824723">Noe gikk galt. Prøv på nytt om noen sekunder.</translation>
@@ -1905,6 +1907,7 @@ Nylig installert</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
 <translation id="7360036564632145207">Hvis du endrer innstillingen for datatilgangsbeskyttelse for eksterne enheter, kan det optimalisere ytelsen</translation>
 <translation id="736045644501761622">Angi bakgrunn og stil</translation>
+<translation id="7368041336688136012">Du må være minst 18 år for å bruke Hjelp meg å lese og Hjelp meg å skrive samt lage bilder med AI.</translation>
 <translation id="7371404428569700291">Ta opp vinduet</translation>
 <translation id="7372069265635026568">Minne: <ph name="AVAILABLE_MEMORY" /> er ledig av totalt <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Dette gir mikrofontilgang til alle apper og nettsteder som har mikrofontillatelsen</translation>
@@ -2030,6 +2033,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Vis alle</translation>
+<translation id="7762664108390426952">Googles vilkår for bruk og personvernregler</translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7769299611924763557">GIF-en din er snart klar</translation>
 <translation id="7773536009433685931">Slå på wifi i stedet</translation>

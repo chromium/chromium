@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">যেসব পরিবর্তন করা হয়েছে তা গ্রুপের প্রত্যেকে দেখেছেন</translation>
 <translation id="2755595981383829244">আপনি এখন কন্টেন্ট সংক্রান্ত বিজ্ঞপ্তি পাবেন</translation>
 <translation id="2761788987260570878">আপনার সার্চের একটি ফটো তুলুন</translation>
+<translation id="2761898608071930085">অন্য অ্যাকাউন্ট ব্যবহার করুন</translation>
 <translation id="2762000892062317888">এখনই</translation>
 <translation id="2772667768515195373">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। এই ঠিকানাটি আপনার Google অ্যাকাউন্ট <ph name="USER_EMAIL" />-এ সেভ করা আছে।</translation>
 <translation id="2773344962924806829">ইমেল বিজ্ঞপ্তি</translation>
@@ -1725,6 +1726,7 @@
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8428634594422941299">বুঝেছি</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) কোথায় সেভ করবেন বেছে নিন</translation>
+<translation id="8434837876193928924">ট্যাব গ্রুপ সম্পর্কিত বিবরণ</translation>
 <translation id="8438566539970814960">সার্চ এবং ব্রাউজিং অভিজ্ঞতা আরও উন্নত করুন</translation>
 <translation id="8439758443371991593">'পড়ার তালিকায় যোগ করুন' বিকল্পটি লুকান</translation>
 <translation id="8449869326050867919">পাসওয়ার্ড শেয়ার করা হয়েছে</translation>
@@ -1802,6 +1804,7 @@
 <translation id="8722229818691036192">এই ডিভাইসে থাকা অ্যাকাউন্ট</translation>
 <translation id="8722649775263832315">Google Lens-এর সাহায্যে কোনও কিছু খুঁজতে ট্যাপ বা হাইলাইট করুন</translation>
 <translation id="8723088494871522141">"আপনার জন্য প্রোডাক্টের রিভিউ" বিকল্পটি লুকান</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT}টি ট্যাব}one{{COUNT}টি ট্যাব}other{{COUNT}টি ট্যাব}}</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8728922029615312208">সব বন্ধ করুন</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>

@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">分组中的所有人都会看到所做的更改</translation>
 <translation id="2755595981383829244">现在您将收到内容通知</translation>
 <translation id="2761788987260570878">拍摄要搜索的内容</translation>
+<translation id="2761898608071930085">使用另一账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="2773344962924806829">电子邮件通知</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
 <translation id="8430694217306051839">选择保存 <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) 的位置</translation>
+<translation id="8434837876193928924">标签页分组详情</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439758443371991593">隐藏“添加到阅读清单”</translation>
 <translation id="8449869326050867919">已分享密码</translation>
@@ -1801,6 +1803,7 @@
 <translation id="8722229818691036192">此设备上的账号</translation>
 <translation id="8722649775263832315">点按或选中即可使用 Google 智能镜头搜索任何内容</translation>
 <translation id="8723088494871522141">隐藏“为您推荐的商品评价”</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} 个标签页}other{{COUNT} 个标签页}}</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8728922029615312208">全部关闭</translation>
 <translation id="8730621377337864115">完成</translation>

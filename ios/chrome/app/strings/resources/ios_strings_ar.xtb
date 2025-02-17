@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">سيرى جميع أعضاء المجموعة التغييرات التي يتم إجراؤها</translation>
 <translation id="2755595981383829244">ستصلك الآن إشعارات عن المحتوى</translation>
 <translation id="2761788987260570878">التقاط صورة لنتيجة البحث</translation>
+<translation id="2761898608071930085">استخدام حساب آخر</translation>
 <translation id="2762000892062317888">الآن</translation>
 <translation id="2772667768515195373">‏يمكنك استخدام العناوين المحفوظة مع جميع منتجات Google. تم حفظ هذا العنوان في حسابك على Google‏، <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">الإشعارات عبر البريد الإلكتروني</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428634594422941299">حسنًا</translation>
 <translation id="8430694217306051839">يُرجى اختيار مكان لحفظ "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">تفاصيل مجموعة علامات التبويب</translation>
 <translation id="8438566539970814960">تحسين عمليات البحث والتصفُّح</translation>
 <translation id="8439758443371991593">إخفاء خيار "الإضافة إلى قائمة القراءة"</translation>
 <translation id="8449869326050867919">تمت مشاركة كلمة المرور</translation>
@@ -1800,6 +1802,7 @@
 <translation id="8722229818691036192">الحسابات على هذا الجهاز</translation>
 <translation id="8722649775263832315">‏انقر على أي شيء على الشاشة أو ميِّزه للبحث عنه باستخدام "عدسة Google"</translation>
 <translation id="8723088494871522141">إخفاء "مراجعات المنتجات المخصّصة لك"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{علامة تبويب واحدة ({COUNT})}zero{‫{COUNT} علامة تبويب}two{علامتا تبويب ({COUNT})}few{‫{COUNT} علامات تبويب}many{‫{COUNT} علامة تبويب}other{‫{COUNT} علامة تبويب}}</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>
 <translation id="8728922029615312208">إغلاق الكل</translation>
 <translation id="8730621377337864115">تم</translation>

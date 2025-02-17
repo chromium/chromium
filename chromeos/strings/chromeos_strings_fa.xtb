@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">تغییر طرح‌بندی</translation>
 <translation id="2244834438220057800">سبز</translation>
 <translation id="225692081236532131">وضعیت فعال‌سازی</translation>
-<translation id="2265792117169966196">انتخاب و بارگیری مدل ترانویسی <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">افزودن نماگرفت</translation>
 <translation id="2268044343513325586">فیلتر</translation>
 <translation id="2271469253353559191">زمان‌بندی حالت تاریک</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">نمی‌توان دستگاه را آزمایش کرد. برای آزمایش کردن، به حالت رایانه کیفی بروید.</translation>
 <translation id="3916998944874125962">گرفتن نماگرفت</translation>
 <translation id="3923184630988645767">مصرف داده</translation>
-<translation id="3924445055519423964">‏برای خلاصه کردن فایل PDF/ صفحه وب، کلیک کنید</translation>
 <translation id="3932043219784172185">دستگاهی متصل نیست</translation>
 <translation id="3934185438132762746">تخصیص ‫<ph name="CONTROL_TYPE" /> لغو شد</translation>
 <translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
 <translation id="4483498983731992167">ترانویسی ایجاد نشد</translation>
 <translation id="4486524074141928967">در <ph name="TIME" /> از سیستم خارج خواهید شد</translation>
-<translation id="4487890678161807486">باز کردن انتخابگر زبان ترانویسی</translation>
 <translation id="4500722292849917410">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از یکی از کلیدهای توصیف‌گر (مهار، دگرساز، تبدیل، یا <ph name="META_KEY" />) فشار دهید.</translation>
 <translation id="4500966230243561393">رنگ میانا</translation>
 <translation id="4503223151711056411">جهت‌نمای چپ</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="4989542687859782284">دردسترس نیست</translation>
 <translation id="4999333166442584738">پنهان کردن گزارش</translation>
-<translation id="5005695757087124131">برای ساده کردن نوشتار انتخاب‌شده کلیک کنید</translation>
 <translation id="500920857929044050">توقف آزمایش</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">رنگ زمینه</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259">مدل ترانویسی <ph name="LANGUAGE_NAME" /> تا <ph name="PROGRESS_PERCENTAGE" />٪ بارگیری شده است</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏این APN را نمی‌توان غیرفعال یا حذف کرد. مطمئن شوید نقطه‌های APN ‏<ph name="ATTACH" /> فعال را غیرفعال یا حذف کرده‌اید.</translation>
-<translation id="7453118953486228603">برای خلاصه کردن نوشتار انتخاب‌شده، کلیک کنید</translation>
 <translation id="7458970041932198923">لطفاً برای مشاهده و تنظیم چهره‌نماها، به شبکه متصل شوید و صفحه را مجدداً بار کنید.</translation>
 <translation id="7469648432129124067">درگاهی شناسایی شد</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>

@@ -193,6 +193,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1607312127821884567">Telefondagi ilovalarni koʻrishni sozlash oynasini yopish</translation>
 <translation id="1610778689852195798">“Qaytarish”</translation>
 <translation id="1611993646327628135">Yoniq</translation>
+<translation id="1612679292338846734">Bu funksiyalar yoqilsa, kiritilgan matn, hujjat kontenti va veb sahifalarning URL manzili Google AI serverlariga yuboriladi. Bu maʼlumotlar yozish takliflari, xulosalar va savollarga javob yaratish hamda mahsulotni yaxshilash maqsadida ishlatiladi va bunda <ph name="LINK_TO_SERVICE_TERMS" /> amal qiladi. Shaxsiy va maxfiy axborotlarni yubormang.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Google Classroom maʼlumotlarini yopish</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ishlamaydi.</translation>
@@ -565,6 +566,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="2946119680249604491">Ulanish qo‘shish</translation>
 <translation id="2947835478872237115">Joriy batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%, toʻlishiga <ph name="TIME" /> qoldi</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" /> bilan havola ustiga bosing</translation>
+<translation id="2957159466053076448">Bu funksiyalarni istalgan vaqt sozlamalar orqali faolsizlantirish mumkin. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Qurilmadagi audio</translation>
 <translation id="2960314608273155470">Tasvirga olish rejimi, standart: <ph name="SOURCE" /> <ph name="TYPE" />. Klaviaturada harakatlanish uchun tab tugmasini bosing.</translation>
 <translation id="2961963223658824723">Xatolik yuz berdi. Bir necha soniyadan keyin qayta urining.</translation>
@@ -1905,6 +1907,7 @@ yangi oʻrnatilgan</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
 <translation id="7360036564632145207">Samaradorlikni oshirish uchun tashqi qurilmalarga maʼlumotlaringizga kirish huquqlarini oʻzgartiring</translation>
 <translation id="736045644501761622">Fon rasmi va uslubini sozlash</translation>
+<translation id="7368041336688136012">AI yordamida rasmlar yaratish, oʻqishda yordam va matn yordamchisi funksiyalaridan foydalanish uchun 18 yoshga kirgan boʻlishingiz lozim.</translation>
 <translation id="7371404428569700291">Yozib olish oynasi</translation>
 <translation id="7372069265635026568">Xotira: <ph name="AVAILABLE_MEMORY" /> / <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Bunda mikrofonga ruxsat beriladi. Barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>
@@ -2030,6 +2033,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7749443890790263709">Ish stollari maksimal miqdorda.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Hammasi</translation>
+<translation id="7762664108390426952">Google foydalanish shartlari va maxfiylik siyosati</translation>
 <translation id="7768784765476638775">Teginib tinglash</translation>
 <translation id="7769299611924763557">GIF faylingiz tezda tayyor boʻladi</translation>
 <translation id="7773536009433685931">Wi-Fi funksiyasini yoqish</translation>

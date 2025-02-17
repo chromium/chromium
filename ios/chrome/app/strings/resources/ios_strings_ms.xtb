@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">Akaun Terurus</translation>
 <translation id="1358214951266274152">Lawati Pautan yang Disalin</translation>
 <translation id="1360432990279830238">Log keluar dan matikan penyegerakan?</translation>
+<translation id="1362192716574455663">Data semakan imbas sedia ada tidak akan dialihkan kepada akaun kerja anda. Anda masih boleh mengakses data tersebut dengan log keluar dari akaun atau menambahkan akaun peribadi.</translation>
 <translation id="1363028406613469049">Penjejakan</translation>
 <translation id="1364367057792633742">Tab baharu</translation>
 <translation id="1365106417372288489">iPhone anda dipulihkan baru-baru ini dan mungkin telah menukar penyemak imbas lalai anda.</translation>
@@ -427,6 +428,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2755485474385016903">Perubahan yang dibuat dapat dilihat oleh semua orang dalam kumpulan</translation>
 <translation id="2755595981383829244">Anda akan menerima pemberitahuan kandungan</translation>
 <translation id="2761788987260570878">Ambil foto carian anda</translation>
+<translation id="2761898608071930085">Gunakan Akaun Lain</translation>
 <translation id="2762000892062317888">sebentar tadi</translation>
 <translation id="2772667768515195373">Anda boleh menggunakan alamat yang disimpan merentas produk Google. Alamat ini disimpan dalam Google Account anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Pemberitahuan e-mel</translation>
@@ -1724,6 +1726,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8430694217306051839">Pilih lokasi untuk menyimpan <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Butiran kumpulan tab</translation>
 <translation id="8438566539970814960">Mempertingkatkan carian dan penyemakan imbas</translation>
 <translation id="8439758443371991593">Sembunyikan Tambahkan pada Senarai Bacaan</translation>
 <translation id="8449869326050867919">Kata laluan dikongsi</translation>
@@ -1801,6 +1804,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8722229818691036192">Akaun pada peranti ini</translation>
 <translation id="8722649775263832315">Ketik atau serlahkan untuk mencari apa-apa sahaja dengan Google Lens</translation>
 <translation id="8723088494871522141">Sembunyikan "Ulasan Produk untuk Anda"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} tab}other{{COUNT} tab}}</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8728922029615312208">Tutup semua</translation>
 <translation id="8730621377337864115">Selesai</translation>

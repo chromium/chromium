@@ -193,6 +193,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1607312127821884567">Loại bỏ việc thiết lập tính năng xem ứng dụng có trên điện thoại</translation>
 <translation id="1610778689852195798">"Huỷ"</translation>
 <translation id="1611993646327628135">Bật</translation>
+<translation id="1612679292338846734">Khi bạn bật các tính năng này, hệ thống có thể gửi văn bản bạn nhập, nội dung tài liệu và URL trang web đến máy chủ AI của Google. Thông tin này được dùng để tạo ra gợi ý viết, tóm tắt, trả lời câu hỏi và cải thiện sản phẩm theo <ph name="LINK_TO_SERVICE_TERMS" />. Đừng nhập thông tin mang tính cá nhân, nhạy cảm hoặc bí mật.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623768535032616219">Thu gọn Google Lớp học</translation>
 <translation id="163032029566320584">Bạn chưa thể sử dụng <ph name="UNAVAILABLE_DLC" />.</translation>
@@ -565,6 +566,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="2946119680249604491">Thêm đường kết nối</translation>
 <translation id="2947835478872237115">Mức pin hiện tại: <ph name="BATTERY_PERCENTAGE" />%, còn <ph name="TIME" /> nữa là pin đầy</translation>
 <translation id="2949420361496057765">Nhấn phím <ph name="MODIFIER" /> rồi nhấp vào một đường liên kết</translation>
+<translation id="2957159466053076448">Bạn có thể tắt các tính năng này bất cứ lúc nào trong phần Cài đặt. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Âm thanh trên thiết bị</translation>
 <translation id="2960314608273155470">Chế độ chụp, mặc định là <ph name="SOURCE" /> <ph name="TYPE" />. Nhấn phím Tab để di chuyển bằng bàn phím.</translation>
 <translation id="2961963223658824723">Đã xảy ra sự cố. Hãy thử lại sau vài giây.</translation>
@@ -1905,6 +1907,7 @@ Mới cài đặt</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>
 <translation id="7360036564632145207">Để tối ưu hóa hiệu suất, hãy tắt chế độ ngăn thiết bị ngoại vi truy cập vào dữ liệu</translation>
 <translation id="736045644501761622">Cài đặt hình nền và phong cách</translation>
+<translation id="7368041336688136012">Bạn phải từ 18 tuổi trở lên thì mới được dùng tính năng Giúp tôi đọc, Giúp tôi viết và tạo hình ảnh bằng AI.</translation>
 <translation id="7371404428569700291">Ghi hình nội dung của cửa sổ</translation>
 <translation id="7372069265635026568">Còn trống <ph name="AVAILABLE_MEMORY" /> trong tổng <ph name="TOTAL_MEMORY" /> bộ nhớ</translation>
 <translation id="737315737514430195">Điều này cho phép sử dụng micrô đối với tất cả ứng dụng và trang web có quyền truy cập micrô</translation>
@@ -2030,6 +2033,7 @@ Mới cài đặt</translation>
 <translation id="7749443890790263709">Đã đạt đến số lượng không gian làm việc tối đa.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Hiển thị tất cả</translation>
+<translation id="7762664108390426952">Điều khoản dịch vụ và Chính sách quyền riêng tư của Google</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
 <translation id="7769299611924763557">Ảnh GIF của bạn sẽ sớm sẵn sàng</translation>
 <translation id="7773536009433685931">Bật Wi-Fi</translation>

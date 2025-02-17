@@ -1549,7 +1549,6 @@
 <translation id="206308717637808771">तुम्ही सर्व विंडो बंद करता, तेव्हा डेटा हटवा. डेटा हा तुम्ही पाहत असलेल्या साइटप्रमाणेच हाताळला जातो</translation>
 <translation id="2065405795449409761">स्वयंचलित चाचणी सॉफ्टवेअरने Chrome नियंत्रित केले जात आहे.</translation>
 <translation id="2066700471214517561">बीमफॉर्मिंग माइक, जेणेकरून Chromebook वापरणाऱ्या व्यक्तीचा आवाज स्पष्ट ऐकू येईल.</translation>
-<translation id="2067591192939433190">"<ph name="VENDOR_NAME" />" कडील</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ने <ph name="PRINTER_NAME" /> प्रिंट करणे पूर्ण केले आहे</translation>
 <translation id="2071393345806050157">स्थानिक लॉग फाइल नाही.</translation>
 <translation id="2071692954027939183">सूचना आपोआप ब्लॉक केल्या होत्या कारण तुम्ही सहसा त्यांना अनुमती देत नाही</translation>
@@ -6524,7 +6523,6 @@
 <translation id="5595307023264033512">साइटनी वापरलेले एकूण स्टोरेज: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
-<translation id="5599819890022137981">Windows Hello कडील</translation>
 <translation id="5600348067066185292">इंस्टॉलेशनसाठी काही सोप्या पायऱ्या लागतात. तुमच्या काँप्युटरमध्ये बदल केले जाण्यापूर्वी तुमच्याकडे कन्फर्म करण्यासाठी दुसरी संधी असेल.</translation>
 <translation id="5600706100022181951">अपडेट <ph name="UPDATE_SIZE_MB" /> MB मोबाइल डेटा वापरून डाउनलोड केले जाईल. तुम्हाला सुरू ठेवायचे आहे का?</translation>
 <translation id="5601503069213153581">पिन</translation>
@@ -8675,6 +8673,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7160911207516219534">साइड पॅनल</translation>
 <translation id="716210145227921528">हटवलेली पासकी</translation>
 <translation id="7165263843655074092">तुम्हाला या डिव्हाइसवर साधारण सुरक्षा संरक्षण मिळत आहे</translation>
+<translation id="7166017546802325772">या गटासंबंधित कोणतीही अपडेट नाहीत</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" इमेज, व्हिडिओ आणि चेक केलेल्या स्थानांमधील ध्वनी फाइल वाचू शकते.</translation>
 <translation id="7166815366658507447">हॉटस्पॉट सुरू केला</translation>
 <translation id="7167327771183668296">ऑटो क्लिक</translation>
@@ -9251,7 +9250,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7586498138629385861">Chrome Apps उघडे असताना Chrome सुरू रहाणे सुरू ठेवेल.</translation>
 <translation id="7589461650300748890">ओहो, तेथेच. काळजी घ्या.</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
-<translation id="7591317506733736159">तुमच्या Chrome प्रोफाइलवरून</translation>
 <translation id="7592060599656252486">काही</translation>
 <translation id="7593653750169415785">तुम्ही काहीवेळा सूचना नाकारल्यामुळे, आपोआप ब्लॉक केले आहे</translation>
 <translation id="7594725637786616550">तुमचे <ph name="DEVICE_TYPE" /> अगदी नवीन डिव्हाइससारखे रीसेट करण्यासाठी Powerwash.</translation>
@@ -10307,7 +10305,6 @@ I feel - विटांची इमारत</translation>
 <translation id="831440797644402910">हे फोल्डर उघडू शकत नाही</translation>
 <translation id="8314835274931377415">स्विच अ‍ॅक्सेसचा सेटअप सुरू करायचा आहे का?</translation>
 <translation id="8315018673856831477">मेमरी सेव्हर पर्याय</translation>
-<translation id="8315044115695361734">iCloud Keychain कडील</translation>
 <translation id="8315514906653279104">सुरू करत आहे...</translation>
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोडा</translation>
 <translation id="8317965619823678157">पासवर्ड कॉपी करा</translation>

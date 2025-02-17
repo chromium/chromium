@@ -2310,7 +2310,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5087286274860437796">Servera sertifikāts šobrīd nav derīgs.</translation>
 <translation id="5087580092889165836">Pievienot karti</translation>
 <translation id="5088142053160410913">Ziņojums operatoram</translation>
-<translation id="5089791650329866127">Šajā funkcijā tiek izmantota informācija, ko jau esat saglabājis, izmantojot automātisko aizpildi, piemēram, jūsu adrese.</translation>
 <translation id="5090647584136241764">Pievienojiet cilnes ar līdzīgiem produktiem, lai ērti salīdzinātu sev svarīgo informāciju.</translation>
 <translation id="5093232627742069661">Z-veida locījums</translation>
 <translation id="5094747076828555589">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu Chromium sistēmā. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
@@ -3731,7 +3730,6 @@ Papildu informācija:
 <translation id="7581199239021537589">2. puses attēla nobīde uz Y ass</translation>
 <translation id="7582602800368606489">Ātri izveidot jaunu pasākumu Google kalendārā</translation>
 <translation id="7586676035079382730">Paziņojumi nav atļauti</translation>
-<translation id="7588460771338574392">Piekļuves atslēga no ierīces “<ph name="PHONE_NAME" />”</translation>
 <translation id="7588707273764747927">Pārneses papīrs</translation>
 <translation id="7591288787774558753">Vai kopīgot konfidenciālu saturu?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vēlas izmantot sīkfailus un vietnes datus šeit: <ph name="TOP_LEVEL_URL" /></translation>
@@ -4636,7 +4634,6 @@ Papildu informācija:
 <translation id="9211461151375991073">Ierakstiet @, lai meklētu vietnēs <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Izskata pielāgošana</translation>
 <translation id="9215416866750762878">Lietojumprogrammas darbības dēļ pārlūkā Chrome nevar izveidot drošu savienojumu ar šo vietni</translation>
-<translation id="921738974253889319">Šajā funkcijā tiek izmantota informācija, ko jau esat saglabājis, izmantojot automātisko aizpildi, piemēram, jūsu adrese. Šajā lapā varat pārskatīt un pārvaldīt šos datus.</translation>
 <translation id="92178312226016010">Jūs izsekojat šo produktu.</translation>
 <translation id="9218430445555521422">Iestatīt kā noklusējumu</translation>
 <translation id="9219103736887031265">Attēli</translation>

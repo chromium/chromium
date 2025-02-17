@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">変更内容はグループの全員に表示されます</translation>
 <translation id="2755595981383829244">コンテンツに関する通知が届くようになります</translation>
 <translation id="2761788987260570878">検索するものの写真を撮影します</translation>
+<translation id="2761898608071930085">別のアカウントを使用</translation>
 <translation id="2762000892062317888">たった今</translation>
 <translation id="2772667768515195373">この住所は Google アカウント（<ph name="USER_EMAIL" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="2773344962924806829">メール通知</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" />（<ph name="FILE_SIZE" />）の保存先を選択</translation>
+<translation id="8434837876193928924">タブグループの詳細</translation>
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
 <translation id="8439758443371991593">[リーディング リストに追加] を非表示</translation>
 <translation id="8449869326050867919">パスワードを共有しました</translation>
@@ -1801,6 +1803,7 @@
 <translation id="8722229818691036192">このデバイスのアカウント</translation>
 <translation id="8722649775263832315">タップまたはハイライト表示して Google レンズで検索</translation>
 <translation id="8723088494871522141">[おすすめの商品レビュー] を非表示にする</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} 個のタブ}other{{COUNT} 個のタブ}}</translation>
 <translation id="8725066075913043281">もう一度試す</translation>
 <translation id="8728922029615312208">すべて閉じる</translation>
 <translation id="8730621377337864115">完了</translation>

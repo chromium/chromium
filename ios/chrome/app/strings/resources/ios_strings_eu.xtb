@@ -427,6 +427,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2755485474385016903">Egindako aldaketak taldeko guztiek ikusten dituzte</translation>
 <translation id="2755595981383829244">Edukiari buruzko jakinarazpenak jasoko dituzu orain</translation>
 <translation id="2761788987260570878">Atera argazki bat bilaketari</translation>
+<translation id="2761898608071930085">Erabili beste kontu bat</translation>
 <translation id="2762000892062317888">oraintxe</translation>
 <translation id="2772667768515195373">Gordetako helbideak Google-ren produktu guztietan erabil ditzakezu. Helbide hau Google-ko kontuan (<ph name="USER_EMAIL" />) gorde da.</translation>
 <translation id="2773344962924806829">Posta elektroniko bidezko jakinarazpenak</translation>
@@ -1724,6 +1725,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8428634594422941299">Ados</translation>
 <translation id="8430694217306051839">Aukeratu non gorde nahi duzun <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Fitxa taldearen xehetasunak</translation>
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8439758443371991593">Ezkutatu "Gehitu irakurketa-zerrendan"</translation>
 <translation id="8449869326050867919">Partekatu da pasahitza</translation>
@@ -1801,6 +1803,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8722229818691036192">Gailuko kontuak</translation>
 <translation id="8722649775263832315">Zerbait Google Lens bidez bilatzeko, sakatu edo nabarmen ezazu</translation>
 <translation id="8723088494871522141">Ezkutatu "Produktuen iritziak zuretzat"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} fitxa}other{{COUNT} fitxa}}</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8728922029615312208">Itxi guztiak</translation>
 <translation id="8730621377337864115">Eginda</translation>

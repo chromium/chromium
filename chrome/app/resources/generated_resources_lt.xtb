@@ -1555,7 +1555,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="206308717637808771">Ištrinkite duomenis uždarę visus langus. Duomenys apdorojami taip pat kaip ir svetainė, kurią peržiūrite</translation>
 <translation id="2065405795449409761">„Chrome“ valdoma naudojant automatinę bandomąją programinę įrangą.</translation>
 <translation id="2066700471214517561">Signalų srautą formuojantis mikrofonas, kad „Chromebook“ naudojančio asmens balsas būtų aiškus.</translation>
-<translation id="2067591192939433190">Iš „<ph name="VENDOR_NAME" />“</translation>
 <translation id="206960706005837784">„<ph name="APP_NAME" />“ baigė spausdinti spausdintuvu „<ph name="PRINTER_NAME" />“</translation>
 <translation id="2071393345806050157">Nėra vietinio žurnalo failo.</translation>
 <translation id="2071692954027939183">Pranešimai automatiškai užblokuoti, nes įprastai jų neleidžiate</translation>
@@ -6532,7 +6531,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5595307023264033512">Iš viso svetainių naudojamos vietos saugykloje: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Adreso redagavimas</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
-<translation id="5599819890022137981">Iš „Windows Hello“</translation>
 <translation id="5600348067066185292">Diegimas atliekamas keliais lengvais žingsniais. Turėsite dar vieną patvirtinimo galimybę prieš atlikdami pakeitimus savo kompiuteryje.</translation>
 <translation id="5600706100022181951">Naujinys bus atsisiųstas naudojant <ph name="UPDATE_SIZE_MB" /> MB mobiliojo ryšio duomenų. Ar norite tęsti?</translation>
 <translation id="5601503069213153581">PIN kodas</translation>
@@ -8689,6 +8687,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7160911207516219534">Šoniniai skydeliai</translation>
 <translation id="716210145227921528">Prieigos raktas ištrintas</translation>
 <translation id="7165263843655074092">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
+<translation id="7166017546802325772">Nėra šios grupės atnaujinimų</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“ patikrintose vietose gali nuskaityti vaizdus, vaizdo įrašus ir garso failus.</translation>
 <translation id="7166815366658507447">Viešosios interneto prieigos taškas įgalintas</translation>
 <translation id="7167327771183668296">Automatiniai paspaudimai</translation>
@@ -9265,7 +9264,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7586498138629385861">„Chrome“ ir toliau veiks, kol bus atidarytos „Chrome“ programos.</translation>
 <translation id="7589461650300748890">Oi, būkite atsargūs.</translation>
 <translation id="7590883480672980941">Įvesties nustatymai</translation>
-<translation id="7591317506733736159">Iš „Chrome“ profilio</translation>
 <translation id="7592060599656252486">Kai kurie</translation>
 <translation id="7593653750169415785">Automatiškai blokuojama, nes keletą kartų atmetėte pranešimus</translation>
 <translation id="7594725637786616550">Atlikite „Powewash“, kad „<ph name="DEVICE_TYPE" />“ įrenginys būtų nustatytas tarsi naujas.</translation>
@@ -10324,7 +10322,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="831440797644402910">Nepavyksta atidaryti šio aplanko</translation>
 <translation id="8314835274931377415">Pradėti prieigos jungikliu sąranką?</translation>
 <translation id="8315018673856831477">Atminties taupymo priemonės parinktys</translation>
-<translation id="8315044115695361734">Iš „iCloud Keychain“</translation>
 <translation id="8315514906653279104">Įjungiama...</translation>
 <translation id="8317671367883557781">Pridėti tinklo ryšį</translation>
 <translation id="8317965619823678157">kopijuoti slaptažodžius</translation>

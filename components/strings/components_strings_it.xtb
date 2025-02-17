@@ -2309,7 +2309,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5087286274860437796">Il certificato del server non è valido in questa fase.</translation>
 <translation id="5087580092889165836">Aggiungi carta</translation>
 <translation id="5088142053160410913">Messaggio all'operatore</translation>
-<translation id="5089791650329866127">Questa funzionalità utilizza le informazioni che hai già salvato con la compilazione automatica, ad esempio il tuo indirizzo</translation>
 <translation id="5090647584136241764">Aggiungi schede con prodotti simili per confrontare facilmente i dettagli che ti interessano</translation>
 <translation id="5093232627742069661">Piegatura a Z standard</translation>
 <translation id="5094747076828555589">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile da Chromium. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
@@ -3729,7 +3728,6 @@ Ulteriori dettagli:
 <translation id="7581199239021537589">Spostamento Y lato 2 immagine</translation>
 <translation id="7582602800368606489">Crea rapidamente un nuovo evento in Google Calendar</translation>
 <translation id="7586676035079382730">Notifiche non consentite</translation>
-<translation id="7588460771338574392">Passkey di "<ph name="PHONE_NAME" />"</translation>
 <translation id="7588707273764747927">Decalcomania</translation>
 <translation id="7591288787774558753">Vuoi condividere contenuti riservati?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vorrebbe usare cookie e dati del sito su <ph name="TOP_LEVEL_URL" /></translation>
@@ -4634,7 +4632,6 @@ Ulteriori dettagli:
 <translation id="9211461151375991073">Digita @ e cerca <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Personalizza aspetto</translation>
 <translation id="9215416866750762878">Un'applicazione sta impedendo a Chrome di connettersi in sicurezza a questo sito.</translation>
-<translation id="921738974253889319">Questa funzionalità utilizza le informazioni che hai già salvato con la compilazione automatica, ad esempio il tuo indirizzo. Puoi rivedere e gestire i dati in questa pagina.</translation>
 <translation id="92178312226016010">Stai monitorando questo prodotto.</translation>
 <translation id="9218430445555521422">Imposta come predefinito</translation>
 <translation id="9219103736887031265">Immagini</translation>

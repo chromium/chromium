@@ -1541,7 +1541,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="206308717637808771">Supprimer les données lorsque vous fermez toutes les fenêtres. Les données sont traitées de la même manière que le site que vous consultez</translation>
 <translation id="2065405795449409761">Google Chrome est contrôlé par un logiciel de test automatisé.</translation>
 <translation id="2066700471214517561">Micro à formation de faisceaux pour que la personne utilisant le Chromebook ait un son clair.</translation>
-<translation id="2067591192939433190">De « <ph name="VENDOR_NAME" /> »</translation>
 <translation id="206960706005837784">Impression par <ph name="APP_NAME" /> sur <ph name="PRINTER_NAME" /> terminée</translation>
 <translation id="2071393345806050157">Pas de journal local.</translation>
 <translation id="2071692954027939183">Les notifications ont été bloquées automatiquement parce que vous ne les autorisez généralement pas</translation>
@@ -6515,7 +6514,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5595307023264033512">Espace de stockage total utilisé par les sites : <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="5596627076506792578">Autres options</translation>
-<translation id="5599819890022137981">À partir de Windows Hello</translation>
 <translation id="5600348067066185292">L'installation se fait en quelques étapes simples. Vous pourrez encore confirmer l'opération avant que les modifications soient apportées à votre ordinateur.</translation>
 <translation id="5600706100022181951">La mise à jour sera téléchargée en utilisant <ph name="UPDATE_SIZE_MB" /> Mo de données cellulaires. Voulez-vous continuer?</translation>
 <translation id="5601503069213153581">NIP</translation>
@@ -7408,7 +7406,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6247620186971210352">Aucune application trouvée</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">Système : <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">Paramètres de recherche</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6249200942125593849">Gérer l'accessibilité</translation>
 <translation id="6250186368828697007">Les renseignements sont masqués quand vous partagez votre écran</translation>
 <translation id="6251870443722440887">Descripteurs GDI</translation>
@@ -8664,6 +8662,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7160911207516219534">Panneaux latéraux</translation>
 <translation id="716210145227921528">Clé d'accès supprimé</translation>
 <translation id="7165263843655074092">Vous bénéficiez d'une protection de sécurité standard sur cet appareil</translation>
+<translation id="7166017546802325772">Aucun changement pour ce groupe</translation>
 <translation id="716640248772308851">« <ph name="EXTENSION" /> » dispose d'un droit d'accès en lecture aux images, aux vidéos et aux fichiers audio figurant dans les dossiers sélectionnés.</translation>
 <translation id="7166815366658507447">Point d'accès sans fil activé</translation>
 <translation id="7167327771183668296">Clics automatiques</translation>
@@ -9240,7 +9239,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7586498138629385861">Chrome continuera à fonctionner tant que des applications Chrome seront ouvertes.</translation>
 <translation id="7589461650300748890">Attention!</translation>
 <translation id="7590883480672980941">Paramètres d'entrée</translation>
-<translation id="7591317506733736159">À partir de votre profil Chrome</translation>
 <translation id="7592060599656252486">Certains</translation>
 <translation id="7593653750169415785">Automatiquement bloquée parce que vous avez refusé les notifications à quelques reprises</translation>
 <translation id="7594725637786616550">La fonctionnalité Powerwash réinitialise votre <ph name="DEVICE_TYPE" />, qui redevient comme neuf.</translation>
@@ -10297,7 +10295,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="831440797644402910">Impossible d'ouvrir ce dossier</translation>
 <translation id="8314835274931377415">Commencer la configuration de Switch Access?</translation>
 <translation id="8315018673856831477">Options d'Économiseur de mémoire</translation>
-<translation id="8315044115695361734">À partir du trousseau iCloud</translation>
 <translation id="8315514906653279104">Activation en cours…</translation>
 <translation id="8317671367883557781">Ajouter une connexion réseau</translation>
 <translation id="8317965619823678157">copier les mots de passe</translation>

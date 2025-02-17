@@ -2310,7 +2310,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5087286274860437796">Das Serverzertifikat ist zurzeit ungültig.</translation>
 <translation id="5087580092889165836">Karte hinzufügen</translation>
 <translation id="5088142053160410913">Nachricht an den Bediener</translation>
-<translation id="5089791650329866127">Für diese Funktion werden Informationen verwendet, die du bereits mit Autofill gespeichert hast, z. B. deine Adresse.</translation>
 <translation id="5090647584136241764">Füge Tabs mit ähnlichen Produkten hinzu, um die für dich wichtigen Details ganz einfach vergleichen zu können</translation>
 <translation id="5093232627742069661">Z-Faltung</translation>
 <translation id="5094747076828555589">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chromium als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
@@ -3731,7 +3730,6 @@ Weitere Details:
 <translation id="7581199239021537589">Seite 2 – Y-Verschiebung des Bilds</translation>
 <translation id="7582602800368606489">Schnell einen neuen Termin in Google Kalender erstellen</translation>
 <translation id="7586676035079382730">Benachrichtigungen nicht zulässig</translation>
-<translation id="7588460771338574392">Passkey von „<ph name="PHONE_NAME" />“</translation>
 <translation id="7588707273764747927">Transfer</translation>
 <translation id="7591288787774558753">Vertrauliche Inhalte freigeben?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> möchte Cookies und Websitedaten auf <ph name="TOP_LEVEL_URL" /> verwenden</translation>
@@ -4637,7 +4635,6 @@ Weitere Details:
 <translation id="9211461151375991073">@ eingeben, um auf <ph name="FEATURED_SEARCH_LIST" /> zu suchen</translation>
 <translation id="9213433120051936369">Layout anpassen</translation>
 <translation id="9215416866750762878">Eine Anwendung verhindert, dass Chrome eine sichere Internetverbindung zu dieser Website herstellt</translation>
-<translation id="921738974253889319">Für diese Funktion werden Informationen verwendet, die du bereits mit Autofill gespeichert hast, z. B. deine Adresse. Du kannst diese Daten auf dieser Seite überprüfen und verwalten.</translation>
 <translation id="92178312226016010">Du beobachtest dieses Produkt.</translation>
 <translation id="9218430445555521422">Als Standard festlegen</translation>
 <translation id="9219103736887031265">Bilder</translation>

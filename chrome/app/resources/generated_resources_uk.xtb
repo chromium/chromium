@@ -1553,7 +1553,6 @@
 <translation id="206308717637808771">Видаляти дані, коли закриваються всі вікна. До даних застосовуються ті самі параметри, що й для сайту, який ви переглядаєте.</translation>
 <translation id="2065405795449409761">Веб-переглядачем Chrome керує автоматична пробна програма.</translation>
 <translation id="2066700471214517561">Формування спрямованого сигналу мікрофона, завдяки якому голос користувача Chromebook чутно чітко.</translation>
-<translation id="2067591192939433190">Від постачальника "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784">Додаток <ph name="APP_NAME" /> завершив друк на принтері "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2071393345806050157">Немає локального файлу журналу.</translation>
 <translation id="2071692954027939183">Сповіщення автоматично заблоковано, оскільки ви зазвичай не дозволяєте їх</translation>
@@ -6528,7 +6527,6 @@
 <translation id="5595307023264033512">Загальний обсяг пам’яті, який використовують сайти: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Редагувати адресу</translation>
 <translation id="5596627076506792578">Інші опції</translation>
-<translation id="5599819890022137981">З Windows Hello</translation>
 <translation id="5600348067066185292">Щоб установити ОС, виконайте кілька простих кроків. У вас буде ще одна можливість підтвердити зміни, перш ніж вони набудуть чинності на комп’ютері.</translation>
 <translation id="5600706100022181951">Щоб завантажити оновлення, буде використано <ph name="UPDATE_SIZE_MB" /> МБ мобільного Інтернету. Продовжити?</translation>
 <translation id="5601503069213153581">PIN-код</translation>
@@ -8679,6 +8677,7 @@
 <translation id="7160911207516219534">Бічні панелі</translation>
 <translation id="716210145227921528">Ключ доступу видалено</translation>
 <translation id="7165263843655074092">Ви ввімкнули стандартний режим безпеки на цьому пристрої</translation>
+<translation id="7166017546802325772">У цій групі немає оновлень</translation>
 <translation id="716640248772308851">Розширення "<ph name="EXTENSION" />" має доступ до читання зображень, відео та звукових файлів у вибраних розташуваннях.</translation>
 <translation id="7166815366658507447">Точку доступу ввімкнено</translation>
 <translation id="7167327771183668296">Автоматичні кліки</translation>
@@ -9254,7 +9253,6 @@
 <translation id="7586498138629385861">Chrome працюватиме, доки будуть відкриті додатки Chrome.</translation>
 <translation id="7589461650300748890">Обережно!</translation>
 <translation id="7590883480672980941">Налаштування введення</translation>
-<translation id="7591317506733736159">З вашого профілю Chrome</translation>
 <translation id="7592060599656252486">Деякі розділові знаки</translation>
 <translation id="7593653750169415785">Автоматично заблоковано, оскільки ви кілька разів відхилили сповіщення</translation>
 <translation id="7594725637786616550">Виконайте Powerwash, щоб відновити заводські налаштування пристрою <ph name="DEVICE_TYPE" />.</translation>
@@ -10312,7 +10310,6 @@
 <translation id="831440797644402910">Не вдається відкрити цю папку</translation>
 <translation id="8314835274931377415">Почати налаштування кнопкового доступу?</translation>
 <translation id="8315018673856831477">Параметри заощадження пам’яті</translation>
-<translation id="8315044115695361734">Із сервісу В’язка iCloud</translation>
 <translation id="8315514906653279104">Увімкнення…</translation>
 <translation id="8317671367883557781">Додати з’єднання з мережею</translation>
 <translation id="8317965619823678157">копіювати паролі</translation>

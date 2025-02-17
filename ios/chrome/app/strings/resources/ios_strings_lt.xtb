@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Įspėti, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="104491362976654916">Neprisijungus pasiekiamas puslapis</translation>
+<translation id="1049200476149974839">nori, kad prisijungtumėte prie skirtukų grupės. Visi nuorodą turintys žmonės gali redaguoti visus skirtukus, todėl būkite atsargūs. Nuoroda baigia galioti po 48 val.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Atsijungta. Vėl prisijunkite, kad paskyroje naudotumėte žymes, slaptažodžius ir kt.</translation>
 <translation id="1054745118061919935">Tęsdami sutinkate su <ph name="BEGIN_LINK" />paslaugų teikimo sąlygomis<ph name="END_LINK" />.</translation>
@@ -194,6 +195,7 @@
 <translation id="1780152987505130652">Uždaryti grupę</translation>
 <translation id="178400879184240105">Slaptažodžiai unikalūs</translation>
 <translation id="17906873777101817">Siūlyti išsaugoti slaptažodžius ir prieigos raktus</translation>
+<translation id="1794893174442046596">Skirtukų grupė</translation>
 <translation id="1807893857950749072">Leisti kainų stebėjimo pranešimus…</translation>
 <translation id="1810976980198522421">Atšaukti</translation>
 <translation id="1815941218935345331">Slaptažodis</translation>
@@ -428,6 +430,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2755485474385016903">Atliktus pakeitimus mato visi grupės nariai</translation>
 <translation id="2755595981383829244">Dabar gausite pranešimus apie turinį</translation>
 <translation id="2761788987260570878">Nufotografuokite paiešką</translation>
+<translation id="2761898608071930085">Naudoti kitą paskyrą</translation>
 <translation id="2762000892062317888">ką tik</translation>
 <translation id="2772667768515195373">Išsaugotus adresus galite naudoti „Google“ produktuose. Šis adresas išsaugomas jūsų „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">El. pašto pranešimai</translation>
@@ -1725,6 +1728,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8428634594422941299">Supratau</translation>
 <translation id="8430694217306051839">Pasirinkite, kur išsaugoti „<ph name="FILENAME" />“ (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Išsami skirtukų grupės informacija</translation>
 <translation id="8438566539970814960">Tobulinti paieškas ir naršymą</translation>
 <translation id="8439758443371991593">Slėpti parinktį „Pridėti prie skaitymo sąrašo“</translation>
 <translation id="8449869326050867919">Slaptažodis bendrinamas</translation>
@@ -1802,6 +1806,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8722229818691036192">Šiame įrenginyje naudojamos paskyros</translation>
 <translation id="8722649775263832315">Palieskite arba pasirinkite, jei norite ieškoti naudodami „Google Lens“</translation>
 <translation id="8723088494871522141">Slėpti parinktį „Atsiliepimai apie produktus jums“</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} skirtukas}one{{COUNT} skirtukas}few{{COUNT} skirtukai}many{{COUNT} skirtuko}other{{COUNT} skirtukų}}</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8728922029615312208">Uždaryti viską</translation>
 <translation id="8730621377337864115">Atlikta</translation>

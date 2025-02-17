@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">کی گئی تبدیلیاں گروپ میں موجود ہر شخص دیکھتا ہے</translation>
 <translation id="2755595981383829244">اب آپ کو مواد کی اطلاعات موصول ہوں گی</translation>
 <translation id="2761788987260570878">اپنی تلاش کی ایک تصویر لیں</translation>
+<translation id="2761898608071930085">کوئی دوسرا اکاؤنٹ استعمال کریں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="2772667768515195373">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ یہ پتہ آپ کے Google اکاؤنٹ میں محفوظ ہے، <ph name="USER_EMAIL" />۔</translation>
 <translation id="2773344962924806829">ای میل اطلاعات</translation>
@@ -1724,6 +1725,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8428634594422941299">سمجھ آ گئی</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) محفوظ کرنے کی جگہ کا انتخاب کریں</translation>
+<translation id="8434837876193928924">ٹیب گروپ کی تفصیلات</translation>
 <translation id="8438566539970814960">تلاشوں اور براؤزنگ کو بہتر بنائیں</translation>
 <translation id="8439758443371991593">'پڑھنے کی فہرست میں شامل کریں' کو چھپائیں</translation>
 <translation id="8449869326050867919">پاس ورڈ کا اشتراک کر دیا گیا</translation>
@@ -1801,6 +1803,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8722229818691036192">اس آلے پر موجود اکاؤنٹس</translation>
 <translation id="8722649775263832315">‏‫Google لینز کے ساتھ کچھ بھی تلاش کرنے کے لیے تھپتھپائیں یا نمایاں کریں</translation>
 <translation id="8723088494871522141">"آپ کیلئے پروڈکٹ کے تجزیے" کو چھپائیں</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{‫{COUNT} ٹیب}other{‫{COUNT} ٹیبز}}</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8728922029615312208">تمام بند کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>

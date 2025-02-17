@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">레이아웃 전환</translation>
 <translation id="2244834438220057800">녹색</translation>
 <translation id="225692081236532131">활성화 상태</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> 스크립트 작성 모델 선택 및 다운로드</translation>
 <translation id="2267285889943769271">스크린샷 추가</translation>
 <translation id="2268044343513325586">상세검색</translation>
 <translation id="2271469253353559191">어두운 모드 예약</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">기기를 테스트할 수 없습니다. 테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="3916998944874125962">스크린샷을 찍습니다</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
-<translation id="3924445055519423964">클릭하여 웹페이지/PDF 파일을 요약하세요.</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
 <translation id="3934185438132762746">할당되지 않은 <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="4483498983731992167">스크립트를 작성할 수 없음</translation>
 <translation id="4486524074141928967"><ph name="TIME" />에 로그아웃됩니다</translation>
-<translation id="4487890678161807486">스크립트 언어 선택 도구 열기</translation>
 <translation id="4500722292849917410">단축키를 사용할 수 없습니다. 특수키(Ctrl, Alt, Shift 또는 <ph name="META_KEY" />)를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="4500966230243561393">인터페이스 색상</translation>
 <translation id="4503223151711056411">왼쪽 화살표</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">페이지</translation>
 <translation id="4989542687859782284">사용할 수 없음</translation>
 <translation id="4999333166442584738">보고서 숨기기</translation>
-<translation id="5005695757087124131">클릭하여 선택한 텍스트를 간결하게 바꾸세요.</translation>
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">테마 색상</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> 스크립트 작성 모델 <ph name="PROGRESS_PERCENTAGE" />% 다운로드됨</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정된 <ph name="ATTACH" /> APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
-<translation id="7453118953486228603">클릭하여 선택한 텍스트를 요약하세요.</translation>
 <translation id="7458970041932198923">아바타를 보고 설정하려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
 <translation id="7481312909269577407">앞으로</translation>

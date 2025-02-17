@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Indelingsschakelaar</translation>
 <translation id="2244834438220057800">groen</translation>
 <translation id="225692081236532131">Activeringsstatus</translation>
-<translation id="2265792117169966196">Transcriptiemodel voor <ph name="LANGUAGE_NAME" /> selecteren en downloaden</translation>
 <translation id="2267285889943769271">Screenshot toevoegen</translation>
 <translation id="2268044343513325586">Verfijnen</translation>
 <translation id="2271469253353559191">Planning voor donkere modus</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Kan apparaat niet testen. Schakel over naar de laptopmodus om te testen.</translation>
 <translation id="3916998944874125962">screenshot maken</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
-<translation id="3924445055519423964">Klik om de webpagina/het pdf-bestand samen te vatten</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3934185438132762746">Niet-toegewezen <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
 <translation id="4483498983731992167">Kan transcript niet maken</translation>
 <translation id="4486524074141928967">Je wordt uitgelogd om <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Taalkiezer voor transcriptie openen</translation>
 <translation id="4500722292849917410">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met een functietoets (Ctrl, Alt, Shift of <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interfacekleur</translation>
 <translation id="4503223151711056411">Pijl-links</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Pagina's</translation>
 <translation id="4989542687859782284">Niet beschikbaar</translation>
 <translation id="4999333166442584738">Rapport verbergen</translation>
-<translation id="5005695757087124131">Klik om de geselecteerde tekst te vereenvoudigen</translation>
 <translation id="500920857929044050">Test stoppen</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Themakleur</translation>
@@ -1395,7 +1391,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7425832472614771259">Transcriptiemodel voor <ph name="LANGUAGE_NAME" /> <ph name="PROGRESS_PERCENTAGE" />% gedownload</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette APN's van het type <ph name="ATTACH" /> uitstaan of zijn verwijderd.</translation>
-<translation id="7453118953486228603">Klik om de geselecteerde tekst samen te vatten</translation>
 <translation id="7458970041932198923">Maak verbinding met een netwerk en laad de pagina opnieuw om avatars te bekijken en in te stellen.</translation>
 <translation id="7469648432129124067">Portal waargenomen</translation>
 <translation id="7481312909269577407">Vooruit</translation>

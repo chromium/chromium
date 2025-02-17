@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">Показать все сравнительные таблицы</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Tab, а затем Ввод.</translation>
+<translation id="1793473605302304726">Рассрочка</translation>
 <translation id="1793631236004319016">Разрешение использовалось <ph name="NUM_HOURS_MINUTES_SECONDS" /> назад</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Возможны разные действия. Нажимайте Tab для переключения между ними.</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -2311,7 +2312,6 @@
 <translation id="5087286274860437796">Сертификат сервера не действителен в настоящее время.</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
 <translation id="5088142053160410913">Сообщение оператору</translation>
-<translation id="5089791650329866127">Эта функция использует данные, которые вы сохранили для автозаполнения, например адрес</translation>
 <translation id="5090647584136241764">Добавьте вкладки с похожими товарами, чтобы сравнить важные характеристики.</translation>
 <translation id="5093232627742069661">Фальцовка гармошкой в два сгиба</translation>
 <translation id="5094747076828555589">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Chromium не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
@@ -3411,6 +3411,7 @@
 <translation id="7042616127917168121">Уточнить запрос</translation>
 <translation id="7043552168914147882">Разделитель</translation>
 <translation id="7044081119134178347">Дано разовое разрешение на доступ к камере</translation>
+<translation id="704738887031336226">Показывать варианты <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />рассрочки<ph name="PAY_OVER_TIME_HELP_LINK_END" /> при оформлении покупки</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Вы попытались перейти на сайт <ph name="DOMAIN" />, но сервер предоставил не заслуживающий доверия сертификат со слишком долгим сроком действия.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Сейчас сохранить эту карту нельзя.}one{Сейчас сохранить эти карты нельзя.}few{Сейчас сохранить эти карты нельзя.}many{Сейчас сохранить эти карты нельзя.}other{Сейчас сохранить эти карты нельзя.}}</translation>
@@ -3732,7 +3733,6 @@
 <translation id="7581199239021537589">Смещение изображений на оборотной стороне по оси Y</translation>
 <translation id="7582602800368606489">Быстро создать мероприятие в Google Календаре</translation>
 <translation id="7586676035079382730">Доступ к уведомлениям запрещен</translation>
-<translation id="7588460771338574392">Ключ доступа на телефоне <ph name="PHONE_NAME" /></translation>
 <translation id="7588707273764747927">Трансферная бумага</translation>
 <translation id="7591288787774558753">Поделиться конфиденциальным контентом?</translation>
 <translation id="7591636454931265313">Сайт <ph name="EMBEDDED_URL" /> запрашивает разрешение на использование файлов cookie и данных сайта <ph name="TOP_LEVEL_URL" /></translation>
@@ -4637,7 +4637,6 @@
 <translation id="9211461151375991073">Введите @, чтобы выполнить поиск по сайтам <ph name="FEATURED_SEARCH_LIST" />.</translation>
 <translation id="9213433120051936369">Настроить вид</translation>
 <translation id="9215416866750762878">Приложение не позволяет Chrome безопасно подключиться к этому сайту</translation>
-<translation id="921738974253889319">Эта функция использует данные, которые вы сохранили для автозаполнения, например адрес. На текущей странице можно управлять этими данными и изменять их.</translation>
 <translation id="92178312226016010">Вы следите за ценой на этот товар.</translation>
 <translation id="9218430445555521422">Использовать по умолчанию</translation>
 <translation id="9219103736887031265">Картинки</translation>

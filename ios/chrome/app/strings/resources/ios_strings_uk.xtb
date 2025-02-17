@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">Внесені зміни бачитимуть усі учасники групи</translation>
 <translation id="2755595981383829244">Тепер ви отримуватимете сповіщення про контент</translation>
 <translation id="2761788987260570878">Сфотографуйте свій пошуковий запит</translation>
+<translation id="2761898608071930085">Інший обліковий запис</translation>
 <translation id="2762000892062317888">щойно</translation>
 <translation id="2772667768515195373">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу збережено у вашому обліковому записі Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Сповіщення електронною поштою</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8428634594422941299">Зрозуміло</translation>
 <translation id="8430694217306051839">Виберіть, де зберегти <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Відомості про групу вкладок</translation>
 <translation id="8438566539970814960">Покращувати пошук і вебперегляд</translation>
 <translation id="8439758443371991593">Сховати опцію "Додати в список читання"</translation>
 <translation id="8449869326050867919">Пароль надіслано</translation>
@@ -1801,6 +1803,7 @@
 <translation id="8722229818691036192">Облікові записи на цьому пристрої</translation>
 <translation id="8722649775263832315">Натисніть або виділіть об’єкт, щоб виконати пошук за допомогою Google Об’єктива</translation>
 <translation id="8723088494871522141">Сховати розділ "Вибрані відгуки про товари"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} вкладка}one{{COUNT} вкладка}few{{COUNT} вкладки}many{{COUNT} вкладок}other{{COUNT} вкладки}}</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8728922029615312208">Закрити всі</translation>
 <translation id="8730621377337864115">Готово</translation>

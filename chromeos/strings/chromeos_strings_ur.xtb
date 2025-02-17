@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">لے آؤٹ کو سوئچ کرنے کی کلید</translation>
 <translation id="2244834438220057800">سبز</translation>
 <translation id="225692081236532131">فعالیت کی صورتحال</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> کا ٹرانسکرپشن ماڈل منتخب اور ڈاؤن لوڈ کریں</translation>
 <translation id="2267285889943769271">اسکرین شاٹ شامل کریں</translation>
 <translation id="2268044343513325586">بہتر بنائیں</translation>
 <translation id="2271469253353559191">تاریک وضع شیڈول</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">آلہ کو ٹیسٹ نہیں کیا جا سکتا۔ ٹیسٹ کرنے کے لیے لیپ ٹیب موڈ پر سوئچ کریں۔</translation>
 <translation id="3916998944874125962">اسکرین شاٹ لیں</translation>
 <translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
-<translation id="3924445055519423964">‏ویب صفحہ/PDF فائل کا خلاصہ کرنے کے لیے کلک کریں</translation>
 <translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="3934185438132762746">غیر تفویض کردہ <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">میزبان کو حل کرنے میں ناکام</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="4483498983731992167">ٹرانسکرپٹ تخلیق نہیں ہو سکتا</translation>
 <translation id="4486524074141928967">آپ <ph name="TIME" /> پر سائن آؤٹ ہو جائیں گے</translation>
-<translation id="4487890678161807486">ٹرانسکرپشن کا زبان منتخب کنندہ کھولیں</translation>
 <translation id="4500722292849917410">‏شارٹ کٹ دستیاب نہیں ہے۔ موڈیفائر کلید (ctrl, alt, shift, یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4500966230243561393">انٹرفیس کا رنگ</translation>
 <translation id="4503223151711056411">بائیں تیر کا نشان</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="4989542687859782284">غیر دستیاب</translation>
 <translation id="4999333166442584738">رپورٹ چھپائیں</translation>
-<translation id="5005695757087124131">منتخب کردہ ٹیکسٹ کو آسان بنانے کے لیے کلک کریں</translation>
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
 <translation id="5035083460461104704">تھیم کا رنگ</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259">‏<ph name="LANGUAGE_NAME" /> کا ٹرانسکرپشن ماڈل ‎<ph name="PROGRESS_PERCENTAGE" />%‎ ڈاؤن لوڈ ہو گیا</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏اس APN کو غیر فعال یا ہٹا نہیں سکتے۔ یقینی بنائیں کہ فعال کردہ <ph name="ATTACH" /> APNs کو غیر فعال یا ہٹا دیا گیا ہے۔</translation>
-<translation id="7453118953486228603">منتخب کردہ ٹیکسٹ کا خلاصہ کرنے کے لیے کلک کریں</translation>
 <translation id="7458970041932198923">براہ کرم کسی نیٹ ورک سے منسلک ہوں اور اوتار دیکھنے اور سیٹ کرنے کے لیے صفحہ کو دوبارہ لوڈ کریں۔</translation>
 <translation id="7469648432129124067">پورٹل کا پتہ چلا</translation>
 <translation id="7481312909269577407">فارورڈ کریں</translation>

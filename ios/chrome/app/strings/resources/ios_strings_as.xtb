@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">ডেটা উলংঘনৰ ফলত পাছৱৰ্ড ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="1044891598689252897">ছাইটসমূহে স্বাভাৱিকভাৱে কাম কৰিব</translation>
 <translation id="104491362976654916">অফলাইন পৃষ্ঠা</translation>
+<translation id="1049200476149974839">এ আপুনি এটা টেবৰ গোটত যোগদান কৰাটো বিচাৰে। লিংকটো থকা সকলোৱে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে, গতিকে সাৱধানে যোগদান কৰক। লিংকটোৰ ম্যাদ ৪৮ ঘণ্টাত উকলিব।</translation>
 <translation id="1049743911850919806">ইনক’গনিট’</translation>
 <translation id="1053651653201045802">ছাইন আউট কৰা আছে। আপোনাৰ একাউণ্টত বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক ব্যৱহাৰ কৰিবলৈ পুনৰ ছাইন ইন কৰক।</translation>
 <translation id="1054745118061919935">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK" />ত সন্মতি দিছে।</translation>
@@ -193,6 +194,7 @@
 <translation id="1780152987505130652">গোটটো বন্ধ কৰক</translation>
 <translation id="178400879184240105">আপোনাৰ পাছৱৰ্ডসমূহ অদ্বিতীয়</translation>
 <translation id="17906873777101817">পাছৱৰ্ড আৰু পাছকীসমূহ ছেভ কৰিবলৈ দিয়া</translation>
+<translation id="1794893174442046596">টেবৰ গোট</translation>
 <translation id="1807893857950749072">মূল্য ট্ৰেকিং সম্পৰ্কীয় জাননীৰ অনুমতি দিয়ক…</translation>
 <translation id="1810976980198522421">বাতিল কৰক</translation>
 <translation id="1815941218935345331">পাছক’ড</translation>
@@ -427,6 +429,7 @@
 <translation id="2755485474385016903">এই গোটটোত থকা সকলোৱে সম্পন্ন কৰা সালসলনিসমূহ দেখা পায়</translation>
 <translation id="2755595981383829244">আপুনি এতিয়া সমলৰ জাননী লাভ কৰিব</translation>
 <translation id="2761788987260570878">আপোনাৰ সন্ধানৰ এখন ফট’ তোলক</translation>
+<translation id="2761898608071930085">অন্য একাউণ্ট ব্যৱহাৰ কৰক</translation>
 <translation id="2762000892062317888">এইমাত্ৰ</translation>
 <translation id="2772667768515195373">ছেভ হৈ থকা ঠিকনাসমূহ আপুনি সমগ্ৰ Google প্ৰ’ডাক্টত ব্যৱহাৰ কৰিব পাৰে। এই ঠিকনাটো আপোনাৰ Google একাউণ্ট, <ph name="USER_EMAIL" />ত ছেভ কৰা হৈছে।</translation>
 <translation id="2773344962924806829">ইমেইল জাননী</translation>
@@ -1724,6 +1727,7 @@
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8428634594422941299">বুজি পালোঁ</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) ক’ত ছেভ কৰিব লাগে বাছনি কৰক</translation>
+<translation id="8434837876193928924">টেবৰ গোটৰ সবিশেষ</translation>
 <translation id="8438566539970814960">সন্ধান আৰু ব্ৰাউজিং উন্নত কৰক</translation>
 <translation id="8439758443371991593">পঢ়াৰ সূচীত যোগ দিয়াৰ সুবিধাটো লুকুৱাওক</translation>
 <translation id="8449869326050867919">পাছৱৰ্ড শ্বেয়াৰ কৰা হ'ল</translation>
@@ -1801,6 +1805,7 @@
 <translation id="8722229818691036192">এই ডিভাইচটোত থকা একাউণ্টসমূহ</translation>
 <translation id="8722649775263832315">Google Lensৰ জৰিয়তে যিকোনো বস্তু সন্ধান কৰিবলৈ টিপক বা হাইলাইট কৰক</translation>
 <translation id="8723088494871522141">"আপোনাৰ বাবে প্ৰ’ডাক্টৰ পৰ্যালোচনা" লুকুৱাওক</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} টা টেব}one{{COUNT} টা টেব}other{{COUNT} টা টেব}}</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
 <translation id="8728922029615312208">আটাইবোৰ বন্ধ কৰক</translation>
 <translation id="8730621377337864115">হ’ল</translation>

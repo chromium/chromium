@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Asettelun valitsin</translation>
 <translation id="2244834438220057800">vihreä</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
-<translation id="2265792117169966196">Valitse ja lataa transkriptiomalli, jonka kieli on <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Lisää kuvakaappaus</translation>
 <translation id="2268044343513325586">Tarkenna</translation>
 <translation id="2271469253353559191">Tumman tilan aikataulu</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Laitetta ei voi testata. Vaihda tietokonetilaan testaamista varten.</translation>
 <translation id="3916998944874125962">ota kuvakaappaus</translation>
 <translation id="3923184630988645767">Datan käyttö</translation>
-<translation id="3924445055519423964">Tee yhteenveto verkkosivusta tai PDF-tiedostosta klikkaamalla</translation>
 <translation id="3932043219784172185">Ei yhdistettyjä laitteita</translation>
 <translation id="3934185438132762746">Määrittämätön <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="4483498983731992167">Transkriptiota ei voi luoda</translation>
 <translation id="4486524074141928967">Sinut kirjataan ulos klo <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Avaa transkription kielivalitsin</translation>
 <translation id="4500722292849917410">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä muokkausnäppäimen avulla (ctrl, alt, vaihto, tai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Käyttöliittymän väri</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Sivut</translation>
 <translation id="4989542687859782284">Ei käytettävissä</translation>
 <translation id="4999333166442584738">Piilota raportti</translation>
-<translation id="5005695757087124131">Yksinkertaista valittu teksti klikkaamalla</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Teeman väri</translation>
@@ -1395,7 +1391,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />: transkriptiomallista <ph name="PROGRESS_PERCENTAGE" /> % ladattu</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">APN:ää ei voi poistaa käytöstä tai kokonaan. Varmista, että käyttöön otetut APN:t, jotka on <ph name="ATTACH" />, on poistettu käytöstä tai kokonaan.</translation>
-<translation id="7453118953486228603">Tee valitusta tekstistä yhteenveto klikkaamalla</translation>
 <translation id="7458970041932198923">Muodosta verkkoyhteys ja päivitä sivu nähdäksesi ja käyttääksesi avatareja.</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7481312909269577407">Seuraava</translation>

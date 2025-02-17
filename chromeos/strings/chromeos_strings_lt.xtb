@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Išdėstymo jungiklis</translation>
 <translation id="2244834438220057800">žalios spalvos</translation>
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
-<translation id="2265792117169966196">Pasirinkite ir atsisiųskite <ph name="LANGUAGE_NAME" /> k. transkribavimo modelį</translation>
 <translation id="2267285889943769271">Pridėti ekrano kopiją</translation>
 <translation id="2268044343513325586">Patikslinti</translation>
 <translation id="2271469253353559191">Tamsaus režimo planavimas</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Nepavyko išbandyti įrenginio. Perjunkite į nešiojamojo kompiuterio režimą, kad išbandytumėte.</translation>
 <translation id="3916998944874125962">padaryti ekrano kopiją</translation>
 <translation id="3923184630988645767">Duomenų naudojimas</translation>
-<translation id="3924445055519423964">Spustelėkite, kad apibendrintumėte tinklalapį ir (arba) PDF failą</translation>
 <translation id="3932043219784172185">Nėra susieto įrenginio</translation>
 <translation id="3934185438132762746">Nepriskirta: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Nepavyko nustatyti prieglobos pavadinimo</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
 <translation id="4483498983731992167">Nepavyko sukurti transkribuoto teksto</translation>
 <translation id="4486524074141928967">Būsite atjungti <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Atidaryti transkribavimo kalbos rinkiklį</translation>
 <translation id="4500722292849917410">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami modifikavimo klavišą („Ctrl“, „Alt“, „Shift“ arba „<ph name="META_KEY" />“).</translation>
 <translation id="4500966230243561393">Sąsajos spalva</translation>
 <translation id="4503223151711056411">Rodyklė kairėn</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Psl.</translation>
 <translation id="4989542687859782284">Nepasiekiama</translation>
 <translation id="4999333166442584738">Slėpti ataskaitą</translation>
-<translation id="5005695757087124131">Spustelėkite, kad supaprastintumėte pasirinktą tekstą</translation>
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temos spalva</translation>
@@ -1395,7 +1391,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7425832472614771259">Atsisiųsta <ph name="PROGRESS_PERCENTAGE" /> % <ph name="LANGUAGE_NAME" /> k. transkribavimo modelio</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Šio APN negalima išjungti arba pašalinti. Įsitikinkite, kad įgalinti <ph name="ATTACH" /> APN yra išjungti arba pašalinti.</translation>
-<translation id="7453118953486228603">Spustelėkite, kad apibendrintumėte pasirinktą tekstą</translation>
 <translation id="7458970041932198923">Jei norite peržiūrėti ir nustatyti pseudoportretus, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="7469648432129124067">Aptiktas portalas</translation>
 <translation id="7481312909269577407">Persiųsti</translation>

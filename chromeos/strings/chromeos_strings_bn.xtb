@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">লেআউট সুইচ করার বোতাম</translation>
 <translation id="2244834438220057800">সবুজ</translation>
 <translation id="225692081236532131">সক্রিয়করণ স্থিতি</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল বেছে নিন এবং ডাউনলোড করুন</translation>
 <translation id="2267285889943769271">স্ক্রিনশট যোগ করুন</translation>
 <translation id="2268044343513325586">রিফাইন করুন</translation>
 <translation id="2271469253353559191">'ডার্ক মোড'-এর শিডিউল</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">ডিভাইসটি পরীক্ষা করা সম্ভব হচ্ছে না। পরীক্ষার জন্য ল্যাপটপ মোড চালু করুন।</translation>
 <translation id="3916998944874125962">স্ক্রিনশট নিন</translation>
 <translation id="3923184630988645767">ডেটা ব্যবহার</translation>
-<translation id="3924445055519423964">ওয়েবপেজ/পিডিএফ ফাইলের সারাংশ তৈরি করতে ক্লিক করুন</translation>
 <translation id="3932043219784172185">কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> অ্যাসাইন করা নেই</translation>
 <translation id="3941014780699102620">হোস্ট নেম যাচাই করা যায়নি</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="4483498983731992167">ট্রানস্ক্রিপ্ট তৈরি করা যাচ্ছে না</translation>
 <translation id="4486524074141928967">আপনি <ph name="TIME" />-এ সাইন-আউট হয়ে যাবেন</translation>
-<translation id="4487890678161807486">ট্রান্সক্রিপশনের ভাষা বাছাইকারী খুলুন</translation>
 <translation id="4500722292849917410">শর্টকাট উপলভ্য নেই। 'পরিবর্তক কী' (ctrl, alt, shift অথবা <ph name="META_KEY" />) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="4500966230243561393">ইন্টারফেসের রঙ</translation>
 <translation id="4503223151711056411">বাঁদিকে তীরচিহ্ন</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
 <translation id="4989542687859782284">উপলভ্য নেই</translation>
 <translation id="4999333166442584738">রিপোর্ট লুকান</translation>
-<translation id="5005695757087124131">বেছে নেওয়া টেক্সট সহজে বোঝার জন্য ক্লিক করুন</translation>
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">থিমের রঙ</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল <ph name="PROGRESS_PERCENTAGE" />% ডাউনলোড হয়েছে</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">এই APN বন্ধ করা বা সরানো যাচ্ছে না। নিশ্চিত করুন যে চালু করা <ph name="ATTACH" /> APN বন্ধ করা আছে বা সরানো হয়েছে।</translation>
-<translation id="7453118953486228603">বেছে নেওয়া টেক্সটের সারসংক্ষেপ করতে ক্লিক করুন</translation>
 <translation id="7458970041932198923">অবতার দেখার ও সেট করার জন্য ডিভাইসটি নেটওয়ার্কের সঙ্গে কানেক্ট করে পেজটি আবার লোড করুন।</translation>
 <translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>

@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Izkārtojuma slēdzis</translation>
 <translation id="2244834438220057800">zaļa</translation>
 <translation id="225692081236532131">Aktivizācijas statuss</translation>
-<translation id="2265792117169966196">Atlasīt un lejupielādēt <ph name="LANGUAGE_NAME" /> valodas transkribēšanas modeli</translation>
 <translation id="2267285889943769271">Pievienot ekrānuzņēmumu</translation>
 <translation id="2268044343513325586">Uzlabot</translation>
 <translation id="2271469253353559191">Tumšā režīma grafiks</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Nevar pārbaudīt ierīci. Lai pārbaudītu, pārejiet klēpjdatora režīmā.</translation>
 <translation id="3916998944874125962">izveidot ekrānuzņēmumu</translation>
 <translation id="3923184630988645767">Datu lietojums</translation>
-<translation id="3924445055519423964">Lai izveidotu tīmekļa lapas vai PDF faila kopsavilkumu, noklikšķiniet šeit.</translation>
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
 <translation id="3934185438132762746">Nav piešķirta vadīkla: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
 <translation id="4483498983731992167">Nevar izveidot transkripciju</translation>
 <translation id="4486524074141928967">Jūs tiksiet izrakstīts plkst. <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Atvērt transkripcijas valodas atlasītāju</translation>
 <translation id="4500722292849917410">Šie īsinājumtaustiņi nav pieejami. Nospiediet jaunus īsinājumtaustiņus, izmantojot modificētājtaustiņu (Ctrl, Alt, Shift vai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Saskarnes krāsa</translation>
 <translation id="4503223151711056411">Kreisais bulttaustiņš</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Lapas</translation>
 <translation id="4989542687859782284">Nav pieejami</translation>
 <translation id="4999333166442584738">Paslēpt pārskatu</translation>
-<translation id="5005695757087124131">Lai vienkāršotu atlasīto tekstu, noklikšķiniet šeit.</translation>
 <translation id="500920857929044050">Apturēt pārbaudi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Motīva krāsa</translation>
@@ -1395,7 +1391,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7425832472614771259">Lejupielādētais <ph name="LANGUAGE_NAME" /> valodas transkribēšanas modeļa apjoms ir <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Nevar atspējot vai noņemt šo APN. Iespējotie APN (“<ph name="ATTACH" />”) ir jāatspējo vai jānoņem.</translation>
-<translation id="7453118953486228603">Lai apkopotu atlasīto tekstu, noklikšķiniet šeit.</translation>
 <translation id="7458970041932198923">Lai skatītu un iestatītu iemiesojumus, izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu.</translation>
 <translation id="7469648432129124067">Konstatēts portāls</translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>

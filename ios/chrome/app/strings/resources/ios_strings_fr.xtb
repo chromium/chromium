@@ -427,6 +427,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2755485474385016903">Les modifications apportées sont visibles par tous les membres du groupe</translation>
 <translation id="2755595981383829244">Vous allez désormais recevoir des notifications de contenu</translation>
 <translation id="2761788987260570878">Prenez une photo de votre recherche</translation>
+<translation id="2761898608071930085">Utiliser un autre compte</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées dans l'ensemble des produits Google. Celle-ci est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Notifications par e-mail</translation>
@@ -1724,6 +1725,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8430694217306051839">Choisissez où enregistrer <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Détails du groupe d'onglets</translation>
 <translation id="8438566539970814960">Améliorer les recherches et la navigation</translation>
 <translation id="8439758443371991593">Masquer "Ajouter à la liste de lecture"</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
@@ -1801,6 +1803,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8722229818691036192">Comptes sur cet appareil</translation>
 <translation id="8722649775263832315">Appuyez sur n'importe quel élément ou surlignez-le pour le rechercher avec Google Lens</translation>
 <translation id="8723088494871522141">Masquer "Avis sur les produits pour vous"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} onglet}one{{COUNT} onglet}other{{COUNT} onglets}}</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8728922029615312208">Tout fermer</translation>
 <translation id="8730621377337864115">OK</translation>

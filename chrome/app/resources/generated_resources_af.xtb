@@ -1550,7 +1550,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="206308717637808771">Vee data uit wanneer jy alle vensters toemaak. Data word dieselfde hanteer as die werf wat jy tans bekyk</translation>
 <translation id="2065405795449409761">Chrome word deur geoutomatiseerde toetssagteware beheer.</translation>
 <translation id="2066700471214517561">Straalvorm tans die mikrofoon sodat die persoon wat die Chromebook gebruik duidelik klink.</translation>
-<translation id="2067591192939433190">Van “<ph name="VENDOR_NAME" />”</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> is klaar na <ph name="PRINTER_NAME" /> gedruk</translation>
 <translation id="2071393345806050157">Geen plaaslike loglêer nie.</translation>
 <translation id="2071692954027939183">Kennisgewings is outomaties geblokkeer omdat jy hulle gewoonlik nie toelaat nie</translation>
@@ -6527,7 +6526,6 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5595307023264033512">Totale berginggebruik deur werwe: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Wysig adres</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
-<translation id="5599819890022137981">Van Windows Hello</translation>
 <translation id="5600348067066185292">Dit neem 'n paar maklike stappe om te installeer Jy sal nog 'n kans kry om te bevestig voordat veranderinge aan jou rekenaar gemaak word.</translation>
 <translation id="5600706100022181951"><ph name="UPDATE_SIZE_MB" /> MB se mobiele data sal gebruik word om opdatering af te laai. Wil jy voortgaan?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8675,6 +8673,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7160911207516219534">Kantpanele</translation>
 <translation id="716210145227921528">Uitgeveede toegangsleutel</translation>
 <translation id="7165263843655074092">Jy kry tans standaardsekuriteitbeskerming op hierdie toestel</translation>
+<translation id="7166017546802325772">Geen opdaterings vir hierdie groep nie</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" kan prente, video en klanklêers in die gemerkte liggings lees.</translation>
 <translation id="7166815366658507447">Warmkol is geaktiveer</translation>
 <translation id="7167327771183668296">Klik outomaties</translation>
@@ -9251,7 +9250,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7586498138629385861">Chrome sal aanhou werk terwyl Chrome-programme oop is.</translation>
 <translation id="7589461650300748890">Hokaai daar. Wees versigtig.</translation>
 <translation id="7590883480672980941">Invoerinstellings</translation>
-<translation id="7591317506733736159">Van jou Chrome-profiel</translation>
 <translation id="7592060599656252486">Sommige</translation>
 <translation id="7593653750169415785">Word outomaties geblokkeer omdat jy kennisgewings 'n paar keer afgewys het</translation>
 <translation id="7594725637786616550">Powerwash sal jou <ph name="DEVICE_TYPE" /> terugstel om soos nuut te wees.</translation>
@@ -10308,7 +10306,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="831440797644402910">Kan nie hierdie vouer oopmaak nie</translation>
 <translation id="8314835274931377415">Begin skakelaartoegangopstelling?</translation>
 <translation id="8315018673856831477">Geheuebespaarderopsies</translation>
-<translation id="8315044115695361734">Van iCloud Keychain</translation>
 <translation id="8315514906653279104">Skakel tans aan …</translation>
 <translation id="8317671367883557781">Voeg netwerkverbinding by</translation>
 <translation id="8317965619823678157">kopieer wagwoorde</translation>

@@ -427,6 +427,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2755485474385016903">Modificările făcute sunt văzute de toți membrii grupului</translation>
 <translation id="2755595981383829244">Acum vei primi notificări despre conținut</translation>
 <translation id="2761788987260570878">Fotografiază ceea ce vrei să cauți</translation>
+<translation id="2761898608071930085">Folosește alt cont</translation>
 <translation id="2762000892062317888">adineauri</translation>
 <translation id="2772667768515195373">Poți folosi adresele salvate în toate produsele Google. Această adresă se salvează în Contul tău Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Notificări prin e-mail</translation>
@@ -1724,6 +1725,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8428634594422941299">Am înțeles</translation>
 <translation id="8430694217306051839">Alege unde vrei să salvezi <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Detaliile grupului de file</translation>
 <translation id="8438566539970814960">Îmbunătățește căutările și navigarea</translation>
 <translation id="8439758443371991593">Ascunde opțiunea Adaugă în lista de lecturi</translation>
 <translation id="8449869326050867919">S-a permis accesul la parolă</translation>
@@ -1801,6 +1803,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8722229818691036192">Conturi de pe acest dispozitiv</translation>
 <translation id="8722649775263832315">Atinge sau evidențiază pentru a căuta orice cu Google Lens</translation>
 <translation id="8723088494871522141">Ascunde Recenziile produselor pentru tine</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} filă}few{{COUNT} file}other{{COUNT} de file}}</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8728922029615312208">Închide-le pe toate</translation>
 <translation id="8730621377337864115">Terminat</translation>

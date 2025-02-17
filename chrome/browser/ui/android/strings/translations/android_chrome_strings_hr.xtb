@@ -71,7 +71,6 @@
 <translation id="1269129608791067105">Ovdje ćete pronaći svoju povijest</translation>
 <translation id="1273937721055267968">Blokiraj <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Dodirnite za proširivanje</translation>
-<translation id="1289059016768036948">Od vas će se tražiti da se prijavite na Google račun.</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1298077576058087471">Uštedite do 60% podataka, pročitajte današnje vijesti</translation>
 <translation id="1303339473099049190">Ta zaporka nije pronađena. Provjerite jeste li je točno napisali pa pokušajte ponovno.</translation>
@@ -143,7 +142,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1568636008098739136">Poslušajte ovu stranicu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="1571041387761170095">Nema slabih ili višestruko korištenih zaporki</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
-<translation id="1584648915421894279">Zaporke spremljene na ovom uređaju trenutačno se ne mogu upotrebljavati na Chromeovim kanalima. Nakon Chromea 125 zaporke spremljene na vašem uređaju za Chrome i <ph name="CHROME_CHANNEL" /> spojit će se i moći će se upotrebljavati u obje aplikacije.</translation>
 <translation id="1594635596540195766">Predložene stavke na popisu u nastavku: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="1598163867407640634">Upotrebljavajte web-lokaciju <ph name="SITE_ETLD_PLUS_ONE" /> s davateljem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Kad je uključeno, upotrijebite i spremite podatke na svoj Google račun. Kad je ta postavka isključena, podaci se spremaju samo na ovaj uređaj.</translation>
@@ -358,7 +356,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2647434099613338025">Dodavanje jezika</translation>
 <translation id="2650077116157640844">Više o sinkroniziranim uređajima</translation>
 <translation id="2650348088770008516">Objašnjenje vodiča za privatnost zatvoreno</translation>
-<translation id="2650408372219180431">Izvoz i brisanje zaporki spremljenih na ovaj uređaj</translation>
 <translation id="2650751991977523696">Želite li ponovo preuzeti datoteku?</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
 <translation id="2653659639078652383">Pošalji</translation>
@@ -492,6 +489,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3250563604907490871">Opisi slika nastavit će se kada se povežete s Wi-Fijem</translation>
 <translation id="3254409185687681395">Označi ovu stranicu</translation>
 <translation id="3259831549858767975">Smanjivanje svega na stranici</translation>
+<translation id="3262666254864194397">Adresna traka  <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="3265093782546847662">Sve stranice domene <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Učitaj sliku</translation>
 <translation id="327204079441056603">Promijenili smo način spremanja zaporki na ovom uređaju</translation>
@@ -1130,12 +1128,10 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="6232535412751077445">Omogućivanje opcije "Nemoj pratiti" znači da će se u promet pregledavanja uključiti zahtjev. Učinak ovisi o tome odgovara li web-lokacija na taj zahtjev i kako se zahtjev tumači.
 
 Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikažu oglase koji se ne temelje na drugim web-lokacijama koje ste posjetili. Mnoge web-lokacije i dalje će prikupljati i upotrebljavati vaše podatke o pregledavanju, primjerice, za poboljšanje sigurnosti, pružanje sadržaja, oglasa i preporuka, kao i za generiranje statističkih izvješća.</translation>
-<translation id="6233974827872475843">Uključivanjem sinkronizacije spremite zaporke na ovom uređaju na svojem Google računu</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
 <translation id="6251449557817521191">Ovdje možete pregledati svoju Chromeovu povijest</translation>
 <translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 stavka sprema se samo na ovaj uređaj. Ako je želite upotrebljavati na svojim drugim uređajima, spremite je na svoj Google račun, <ph name="ACCOUNT_EMAIL" />.}one{# stavka sprema se samo na ovaj uređaj. Ako ih želite upotrebljavati na svojim drugim uređajima, spremite ih na svoj Google račun, <ph name="ACCOUNT_EMAIL" />.}few{# stavke spremaju se samo na ovaj uređaj. Ako ih želite upotrebljavati na svojim drugim uređajima, spremite ih na svoj Google račun, <ph name="ACCOUNT_EMAIL" />.}other{# stavaka sprema se samo na ovaj uređaj. Ako ih želite upotrebljavati na svojim drugim uređajima, spremite ih na svoj Google račun, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Pregledavate PDF datoteku</translation>
-<translation id="6255794742848779505">Mijenjamo način spremanja zaporki na ovom uređaju</translation>
 <translation id="6255809143828972562">Uz Chromeove alate možete sigurno pregledavati i zadržati kontrolu</translation>
 <translation id="6264376385120300461">Svejedno preuzmi</translation>
 <translation id="6277522088822131679">Pojavio se problem prilikom ispisivanja stranice. Pokušajte ponovo.</translation>
@@ -1338,7 +1334,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7022756207310403729">Otvori u pregledniku</translation>
 <translation id="7025769836128625875">Ovo je eksperimentalna AI značajka i neće uvijek biti bez pogrešaka. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Zaporke</translation>
-<translation id="7035701931849773472">Ostale opcije</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054588988317389591">Primati opise slike?</translation>
 <translation id="7057969023583258980">Otvori cijelu povijest na Chromeu</translation>
@@ -1840,7 +1835,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="927968626442779827">Koristite Jednostavni način na Google Chromeu</translation>
 <translation id="928550791203542716">Praćenje web-lokacije <ph name="SITE_NAME" /></translation>
 <translation id="930124987204876019">Izbriši povijest, kolačiće, podatke web-lokacije, predmemoriju…</translation>
-<translation id="93533588269984624">Sve zaporke preuzet će se na vašem uređaju i ukloniti iz: <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Pogreška: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Unesite zaporku</translation>
 <translation id="95817756606698420">Chrome za pretraživanje u Kini može upotrebljavati <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. To možete promijeniti u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" />.</translation>

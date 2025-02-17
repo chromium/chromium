@@ -196,6 +196,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Wyświetlaj zdjęcia i pliki multimedialne z telefonu</translation>
 <translation id="1129850422003387628">Zarządzaj aplikacjami</translation>
+<translation id="1130430615924359526">{0,plural, =1{Zamknij tryb incognito}few{Zamknij tryb incognito (# okna)}many{Zamknij tryb incognito (# okien)}other{Zamknij tryb incognito (# okna)}}</translation>
 <translation id="113050636487300043">Wybierz nazwę i motyw kolorystyczny, aby rozróżniać profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – należy do grupy <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Poziom naładowania prawej baterii to <ph name="PERCENTAGE" />%.</translation>
@@ -1514,6 +1515,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2042279886444479655">Aktywne profile</translation>
 <translation id="2042427131767688936">Aby korzystanie z tego urządzenia było bezpieczne, Twoja organizacja może sprawdzać informacje o systemie operacyjnym, przeglądarce i ustawieniach, a także o zainstalowanym na nim oprogramowaniu.</translation>
 <translation id="2044014337866019681">Aby odblokować sesję, upewnij się, że potwierdzasz własność konta <ph name="ACCOUNT" />.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Zamknij okno gościa}few{Zamknij okna gościa (# okna)}many{Zamknij okna gościa (# okien)}other{Zamknij okna gościa (# okna)}}</translation>
 <translation id="204497730941176055">Nazwa szablonu certyfikatu firmy Microsoft</translation>
 <translation id="2045211794962848221">Nie zobaczysz więcej tego komunikatu</translation>
 <translation id="2045838962742066664">Pisanie skrótowe</translation>
@@ -1541,7 +1543,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="206308717637808771">Usuń dane w momencie zamknięcia wszystkich okien. Dane są traktowane tak samo jak strona, którą przeglądasz.</translation>
 <translation id="2065405795449409761">Przeglądarką Chrome steruje zautomatyzowane oprogramowanie testowe.</translation>
 <translation id="2066700471214517561">Mikrofon kształtujący wiązkę sprawia, że osoba korzystająca z Chromebooka jest wyraźnie słyszana.</translation>
-<translation id="2067591192939433190">Od: „<ph name="VENDOR_NAME" />”</translation>
 <translation id="206960706005837784">Aplikacja <ph name="APP_NAME" /> zakończyła drukowanie na drukarce <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Nie ma lokalnego pliku dziennika.</translation>
 <translation id="2071692954027939183">Powiadomienia zostały automatycznie zablokowane, bo zazwyczaj na nie nie zezwalasz</translation>
@@ -6493,7 +6494,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5595307023264033512">Całkowita pamięć używana przez strony: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Edytuj adres</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
-<translation id="5599819890022137981">Z Windows Hello</translation>
 <translation id="5600348067066185292">Zainstaluj system operacyjny w kilku prostych krokach. Zanim zmiany zostaną zapisane na Twoim komputerze, jeszcze raz poprosimy Cię o potwierdzenie.</translation>
 <translation id="5600706100022181951">Pobranie aktualizacji wykorzysta <ph name="UPDATE_SIZE_MB" /> MB mobilnej transmisji danych. Czy chcesz kontynuować?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -7337,6 +7337,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6214106213498203737">Akwarela</translation>
 <translation id="621470880408090483">Nie zezwalaj witrynom na łączenie się z urządzeniami Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Aby chronić Twoje hasła, <ph name="BRAND" /> blokuje się po minucie bezczynności}few{Aby chronić Twoje hasła, aplikacja <ph name="BRAND" /> blokuje się po # minutach bezczynności}many{Aby chronić Twoje hasła, aplikacja <ph name="BRAND" /> blokuje się po # minutach bezczynności}other{Aby chronić Twoje hasła, aplikacja <ph name="BRAND" /> blokuje się po # minuty bezczynności}}</translation>
+<translation id="6216154119179790291">Przewiń do pierwszej karty</translation>
 <translation id="6216239400972191926">Odrzucone strony i aplikacje</translation>
 <translation id="6216601812881225442">Kontener nie obsługuje zmiany rozmiaru. Aby zmienić ilość miejsca wstępnie przydzielonego dla Linuksa, utwórz kopię zapasową i przywróć ją w nowym kontenerze.</translation>
 <translation id="6216696360484424239">Logowanie automatyczne</translation>
@@ -7533,6 +7534,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6357305427698525450">Niektóre obsługiwane linki nadal będą się otwierać w aplikacjach <ph name="APP_NAME" /> lub <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Inne stałe identyfikatory (np. hasze lub identyfikatory UUID)</translation>
 <translation id="6358884629796491903">Smok</translation>
+<translation id="6359640073754977254">Przewiń do ostatniej karty</translation>
 <translation id="6361850914223837199">Szczegóły błędu:</translation>
 <translation id="6362853299801475928">&amp;Zgłoś problem</translation>
 <translation id="6363786367719063276">Wyświetl logi</translation>
@@ -8643,6 +8645,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7160911207516219534">Panele boczne</translation>
 <translation id="716210145227921528">Klucz dostępu został usunięty</translation>
 <translation id="7165263843655074092">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
+<translation id="7166017546802325772">Brak zmian w tej grupie</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />” może odczytywać pliki graficzne, wideo i dźwiękowe ze sprawdzonych lokalizacji.</translation>
 <translation id="7166815366658507447">Hotspot włączony</translation>
 <translation id="7167327771183668296">Automatyczne kliknięcia</translation>
@@ -9218,7 +9221,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7586498138629385861">Przeglądarka będzie działać, dopóki są uruchomione aplikacje Chrome.</translation>
 <translation id="7589461650300748890">Nie tak szybko. Zachowaj ostrożność.</translation>
 <translation id="7590883480672980941">Ustawienia wprowadzania</translation>
-<translation id="7591317506733736159">Z Twojego profilu Chrome</translation>
 <translation id="7592060599656252486">Niektórych</translation>
 <translation id="7593653750169415785">Automatycznie zablokowane z powodu kilkukrotnego odrzucenia przez Ciebie powiadomień</translation>
 <translation id="7594725637786616550">Wykonaj Powerwash, by zresetować urządzenie <ph name="DEVICE_TYPE" /> do ustawień fabrycznych.</translation>
@@ -10194,6 +10196,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8258027225380843424">Ukończono importowanie</translation>
 <translation id="8259048637628995340">Połącz telefon z Androidem, aby wygodnie korzystać z urządzenia</translation>
 <translation id="8260177673299865994">Wzmocnij ochronę pobierania</translation>
+<translation id="8260473380156923937">Aplikacje Chrome zostaną wkrótce wycofane. Aby poznać rozwiązania alternatywne, skontaktuj się z deweloperem lub osobą z działu IT.</translation>
 <translation id="8260864402787962391">Mysz</translation>
 <translation id="8261378640211443080">To rozszerzenie nie jest oferowane w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="8261506727792406068">Usuń</translation>
@@ -10276,7 +10279,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="831440797644402910">Nie można otworzyć tego folderu</translation>
 <translation id="8314835274931377415">Rozpocząć konfigurowanie funkcji Switch Access?</translation>
 <translation id="8315018673856831477">Opcje Oszczędzania pamięci</translation>
-<translation id="8315044115695361734">Z pęku kluczy iCloud</translation>
 <translation id="8315514906653279104">Włączam…</translation>
 <translation id="8317671367883557781">Dodaj połączenie sieciowe</translation>
 <translation id="8317965619823678157">skopiować hasła</translation>

@@ -1539,7 +1539,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="206308717637808771">Eliminar os datos cando peches todas as ventás. Os datos trátanse igual ca no sitio web que estás vendo</translation>
 <translation id="2065405795449409761">Un software de probas automatizadas está controlando Chrome.</translation>
 <translation id="2066700471214517561">Micrófono con conformación de feixes para que se escoite con claridade a persoa que use o Chromebook</translation>
-<translation id="2067591192939433190">De <ph name="VENDOR_NAME" /></translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> rematou de imprimir con: <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Non hai ningún ficheiro de rexistro local.</translation>
 <translation id="2071692954027939183">As notificacións bloqueáronse automaticamente porque non adoitas permitilas</translation>
@@ -6516,7 +6515,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5595307023264033512">Almacenamento total usado polos sitios: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
-<translation id="5599819890022137981">De Windows Hello</translation>
 <translation id="5600348067066185292">Para levar a cabo a instalación, deberás seguir uns poucos pasos sinxelos. Terás outra oportunidade de confirmar a operación antes de que se fagan cambios no teu ordenador.</translation>
 <translation id="5600706100022181951">Para descargar a actualización utilizaranse <ph name="UPDATE_SIZE_MB" /> MB de datos móbiles. Queres continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8660,6 +8658,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7160911207516219534">Paneis laterais</translation>
 <translation id="716210145227921528">Clave de acceso eliminada</translation>
 <translation id="7165263843655074092">Contas con protección de seguranza estándar neste dispositivo</translation>
+<translation id="7166017546802325772">Non hai ningunha novidade neste grupo</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" pode ler ficheiros de imaxes, vídeo e son nas localizacións marcadas.</translation>
 <translation id="7166815366658507447">A zona wifi está activada</translation>
 <translation id="7167327771183668296">Clics automáticos</translation>
@@ -9236,7 +9235,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7586498138629385861">Chrome continuará funcionando mentres as aplicacións de Chrome estean abertas.</translation>
 <translation id="7589461650300748890">Ten coidado.</translation>
 <translation id="7590883480672980941">Configuración da introdución de texto</translation>
-<translation id="7591317506733736159">Do teu perfil de Chrome</translation>
 <translation id="7592060599656252486">Algúns signos de puntuación</translation>
 <translation id="7593653750169415785">Bloqueouse automaticamente porque rexeitaches notificacións varias veces</translation>
 <translation id="7594725637786616550">Fai un Powerwash e restablece o teu dispositivo (<ph name="DEVICE_TYPE" />) para que quede como novo.</translation>
@@ -10293,7 +10291,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="831440797644402910">Non se pode abrir este cartafol</translation>
 <translation id="8314835274931377415">Queres iniciar a configuración de Acceso con interruptores?</translation>
 <translation id="8315018673856831477">Opcións de aforro de memoria</translation>
-<translation id="8315044115695361734">Do Chaveiro de iCloud</translation>
 <translation id="8315514906653279104">Activando...</translation>
 <translation id="8317671367883557781">Engadir conexión de rede</translation>
 <translation id="8317965619823678157">copiar os contrasinais</translation>

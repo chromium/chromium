@@ -71,7 +71,6 @@
 <translation id="1269129608791067105">Du hittar historiken här</translation>
 <translation id="1273937721055267968">Blockera <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tryck och utöka</translation>
-<translation id="1289059016768036948">Du blir ombedd att logga in på Google-kontot</translation>
 <translation id="129553762522093515">Nyligen stängda</translation>
 <translation id="1298077576058087471">Spara upp till 60 % data och läs dagens nyheter</translation>
 <translation id="1303339473099049190">Det gick inte att hitta lösenordet. Kontrollera stavningen och försök igen.</translation>
@@ -143,7 +142,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1568636008098739136">Lyssna på sidan. Tryck länge om du vill ändra det här kortkommandot.</translation>
 <translation id="1571041387761170095">Inga svaga eller återanvända lösenord</translation>
 <translation id="1571304935088121812">Kopiera användarnamn</translation>
-<translation id="1584648915421894279">Lösenord som är sparade på den här enheten går för närvarande inte att använda i Chrome-kanaler. Efter Chrome 125 sammanfogas lösenord som är sparade på enheten för Chrome och <ph name="CHROME_CHANNEL" /> och kan användas i båda apparna.</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> föreslagna objekt i listan nedan.</translation>
 <translation id="1598163867407640634">Använd <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Använd och spara data i Google-kontot när inställningen är aktiverad. När inställningen är inaktiverad sparas data endast på den här enheten.</translation>
@@ -358,7 +356,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2647434099613338025">Lägg till språk</translation>
 <translation id="2650077116157640844">Fler på synkroniserade enheter</translation>
 <translation id="2650348088770008516">Förklaringen till integritetsguiden har stängts</translation>
-<translation id="2650408372219180431">Exportera och radera lösenord som har sparats på den här enheten</translation>
 <translation id="2650751991977523696">Vill du ladda ned filen igen?</translation>
 <translation id="265156376773362237">Standardförinläsning</translation>
 <translation id="2653659639078652383">Skicka</translation>
@@ -492,6 +489,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3250563604907490871">Hämtningen av bildbeskrivningar fortsätter när enheten är ansluten till wifi</translation>
 <translation id="3254409185687681395">Bokmärk sidan</translation>
 <translation id="3259831549858767975">Gör allt på sidan mindre</translation>
+<translation id="3262666254864194397">Adressfält  <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="3265093782546847662">Alla sidor på <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Läs in bild</translation>
 <translation id="327204079441056603">Vi har ändrat hur lösenord på den här enheten sparas</translation>
@@ -1131,12 +1129,10 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6232535412751077445">Om du aktiverar Do Not Track inkluderas en begäran i din surftrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas.
 
 Vissa webbplatser kan till exempel svara på begäran genom att visa annonser som inte baseras på andra webbplatser du har besökt. Många webbplatser samlar ändå in och använder din webbinformation – till exempel för att förbättra säkerheten, tillhandahålla innehåll, annonser och rekommendationer samt generera rapportstatistik.</translation>
-<translation id="6233974827872475843">Spara lösenorden på den här enheten i ditt Google-konto genom att aktivera synkronisering</translation>
 <translation id="6247557882553405851">Google Lösenordshantering</translation>
 <translation id="6251449557817521191">Visa Chrome-historiken här</translation>
 <translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 objekt sparas endast på den här enheten. Om du vill använda det på dina andra enheter kan du spara det i Google-kontot <ph name="ACCOUNT_EMAIL" />.}other{# objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Du ser en PDF-fil</translation>
-<translation id="6255794742848779505">Vi ändrar hur lösenord sparas på den här enheten</translation>
 <translation id="6255809143828972562">Med verktyg från Chrome kan du surfa säkert och behålla kontrollen</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
@@ -1339,7 +1335,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7022756207310403729">Öppna i webbläsaren</translation>
 <translation id="7025769836128625875">Det här är en experimentell AI-funktion som inte alltid fungerar som den ska. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Lösenord</translation>
-<translation id="7035701931849773472">Andra alternativ</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7057969023583258980">Öppna hela Chrome-historiken</translation>
@@ -1841,7 +1836,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="927968626442779827">Använd begränsat läge i Google Chrome</translation>
 <translation id="928550791203542716">Följer <ph name="SITE_NAME" /></translation>
 <translation id="930124987204876019">Radera historik, cookies, webbplatsdata, cacheminne …</translation>
-<translation id="93533588269984624">Alla lösenord laddas ned på enheten och tas bort från <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Fel: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="95817756606698420">Chrome kan använda <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> som sökmotor i Kina. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>

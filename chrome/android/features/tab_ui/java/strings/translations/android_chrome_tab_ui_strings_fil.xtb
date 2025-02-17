@@ -63,6 +63,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3547352561153509682">Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">I-hide ang dialog ng mga hindi aktibong tab</translation>
+<translation id="3619255692378312441">Pamahalaan ang access</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Thumbnail ng share sheet.</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>

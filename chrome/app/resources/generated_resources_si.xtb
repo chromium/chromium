@@ -1539,7 +1539,6 @@
 <translation id="206308717637808771">ඔබ සියලු කවුළු වසා දැමූ විට දත්ත මකන්න. දත්තවලට ඔබ බලන අඩවියට සමානව සලකයි</translation>
 <translation id="2065405795449409761">Chrome ස්වයංකෘත පරීක්ෂණ මෘදුකාංගයකින් පාලනය කරමින් පවතී.</translation>
 <translation id="2066700471214517561">Chromebook භාවිත කරන පුද්ගලයා පැහැදිලිව ශබ්ද කරන නිසා මයික්‍රෆෝනය බීම්ෆෝමිං කරයි.</translation>
-<translation id="2067591192939433190">"<ph name="VENDOR_NAME" />" වෙතින්</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> වෙත මුද්‍රණය කර අවසන් කර ඇත</translation>
 <translation id="2071393345806050157">ප්‍රාදේශීය ලොග ගොනුව.</translation>
 <translation id="2071692954027939183">ඔබ සාමාන්‍යයෙන් ඒවාට ඉඩ නොදෙන නිසා දැනුම්දීම් ස්වයංක්‍රියව අවහිර කරන ලදි</translation>
@@ -6514,7 +6513,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5595307023264033512">අඩවිවලින් මුළු ගබඩා භාවිතය: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">ලිපිනය සංස්කරණය</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
-<translation id="5599819890022137981">Windows Hello වෙතින්</translation>
 <translation id="5600348067066185292">ස්ථාපනය පහසු පියවර කිහිපයක් ගනී. ඔබගේ පරිගණකයට වෙනස් කිරීම් සිදු කිරීමට පෙර තහවුරු කිරීමට ඔබට තවත් අවස්ථාවක් ලැබෙනු ඇත.</translation>
 <translation id="5600706100022181951">යාවත්කාලීනය <ph name="UPDATE_SIZE_MB" /> MB ජංගම දත්ත භාවිත කර බාගනු ඇත. ඔබ දිගටම කරගෙන යාමට කැමතිද?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8662,6 +8660,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7160911207516219534">පැති පැනල</translation>
 <translation id="716210145227921528">මකා දැමූ මුරයතුර</translation>
 <translation id="7165263843655074092">ඔබ මෙම උපාංගය මත සම්මත ආරක්ෂක රැකවරණය ලබා ගනී</translation>
+<translation id="7166017546802325772">මෙම සමූහයට යාවත්කාලීන නැත</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" ට ලකුණු කළ ස්ථාන තුළ ඇති රූප, වීඩියෝ සහ ශබ්ද ගොනු කියවීමට හැකිය</translation>
 <translation id="7166815366658507447">හොට්ස්පොට් සබල කර ඇත</translation>
 <translation id="7167327771183668296">ස්වයං ක්ලික් කිරීම්</translation>
@@ -9238,7 +9237,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7586498138629385861">Chrome යෙදුම් විවෘත අතරතුර Chrome දිගටම ධාවනය වනු ඇත.</translation>
 <translation id="7589461650300748890">නවතිනු, ඔතැනම. පරිස්සම් වෙන්න.</translation>
 <translation id="7590883480672980941">ආදාන සැකසීම්</translation>
-<translation id="7591317506733736159">ඔබේ Chrome පැතිකඩෙන්</translation>
 <translation id="7592060599656252486">සමහර</translation>
 <translation id="7593653750169415785">ඔබ කිහිප වරක් දැනුම්දීම් ප්‍රතික්‍ෂේප කළ බැවින් ස්වයංක්‍රීයව අවහිර කළා</translation>
 <translation id="7594725637786616550">හුදෙක් අලුත් එකක් ලෙස <ph name="DEVICE_TYPE" /> යළි සැකසීමට Powerwash කරන්න.</translation>
@@ -10294,7 +10292,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="831440797644402910">මෙම ෆෝල්ඩරය විවෘත කළ නොහැක</translation>
 <translation id="8314835274931377415">ස්විච ප්‍රවේශය පිහිටුවීම ආරම්භ කරන්නද?</translation>
 <translation id="8315018673856831477">මතක සුරැකීමේ විකල්ප</translation>
-<translation id="8315044115695361734">iCloud යතුරු දාමය වෙතින්</translation>
 <translation id="8315514906653279104">ක්‍රියාත්මක කරමින්…</translation>
 <translation id="8317671367883557781">ජාල සම්බන්ධතාවය එක් කරන්න</translation>
 <translation id="8317965619823678157">මුරපද පිටපත් කරන්න</translation>

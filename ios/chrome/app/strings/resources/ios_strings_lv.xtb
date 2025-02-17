@@ -427,6 +427,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2755485474385016903">Veiktās izmaiņas ir redzamas visiem grupas dalībniekiem</translation>
 <translation id="2755595981383829244">Tagad saņemsiet paziņojumus par saturu</translation>
 <translation id="2761788987260570878">Meklējiet, uzņemot fotoattēlu.</translation>
+<translation id="2761898608071930085">Izmantot citu kontu</translation>
 <translation id="2762000892062317888">tikko</translation>
 <translation id="2772667768515195373">Saglabātās adreses varat izmantot dažādos Google produktos. Šī adrese ir saglabāta jūsu Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">E-pasta paziņojumi</translation>
@@ -1724,6 +1725,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8428634594422941299">Labi</translation>
 <translation id="8430694217306051839">Izvēlieties faila <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) saglabāšanas vietu</translation>
+<translation id="8434837876193928924">Informācija par ciļņu grupu</translation>
 <translation id="8438566539970814960">Uzlabot meklēšanu un pārlūkošanu</translation>
 <translation id="8439758443371991593">Paslēpt vienumu “Pievienot lasīšanas sarakstam”</translation>
 <translation id="8449869326050867919">Parole ir kopīgota</translation>
@@ -1801,6 +1803,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8722229818691036192">Konti šajā ierīcē</translation>
 <translation id="8722649775263832315">Pieskarieties vai atzīmējiet, lai meklētu jebko, izmantojot Google Lens</translation>
 <translation id="8723088494871522141">Paslēpt sadaļu “Jums ieteiktās produktu atsauksmes”</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} cilne}zero{{COUNT} cilņu}one{{COUNT} cilne}other{{COUNT} cilnes}}</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
 <translation id="8728922029615312208">Aizvērt visu</translation>
 <translation id="8730621377337864115">Gatavs</translation>

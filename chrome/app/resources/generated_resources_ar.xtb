@@ -1545,7 +1545,6 @@
 <translation id="206308717637808771">يتم حذف البيانات عند إغلاق جميع النوافذ، كما تتطابق طريقة معالجة البيانات مع طريقة معالجة الموقع الإلكتروني الذي تزوره.</translation>
 <translation id="2065405795449409761">‏يتم التحكم في Chrome من خلال برامج اختبار مبرمجة.</translation>
 <translation id="2066700471214517561">‏ميكروفون متوافق مع تقنية تشكيل الحزم لتحسين جودة صوت الشخص المستخدِم لجهاز Chromebook</translation>
-<translation id="2067591192939433190">من "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784">أكمَل "<ph name="APP_NAME" />" مَهمة الطباعة باستخدام "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2071393345806050157">ليس هناك ملف سجل محلي.</translation>
 <translation id="2071692954027939183">تم حظر الإشعارات تلقائيًا لأنّك عادةً لا تسمح بظهورها.</translation>
@@ -6517,7 +6516,6 @@
 <translation id="5595307023264033512">إجمالي مساحة التخزين التي تستخدمها المواقع الإلكترونية: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">تعديل العنوان</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
-<translation id="5599819890022137981">‏من Windows Hello</translation>
 <translation id="5600348067066185292">تتطلب عملية التثبيت اتخاذ بضع خطوات سهلة. وستُتاح لك فرصة أخرى للتأكيد قبل تطبيق التغييرات على الكمبيوتر.</translation>
 <translation id="5600706100022181951">سيستهلك تنزيل التحديث <ph name="UPDATE_SIZE_MB" /> ميغابايت من بيانات الجوّال. هل ترغب في المتابعة؟</translation>
 <translation id="5601503069213153581">رقم التعريف الشخصي</translation>
@@ -8674,6 +8672,7 @@
 <translation id="7160911207516219534">اللوحات الجانبية</translation>
 <translation id="716210145227921528">تم حذف مفتاح المرور</translation>
 <translation id="7165263843655074092">يتم توفير حماية أمنية عادية على هذا الجهاز.</translation>
+<translation id="7166017546802325772">ما مِن تعديلات على هذه المجموعة</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" يمكنها قراءة ملفات الصور والفيديو والصوت في المواقع المحددة.</translation>
 <translation id="7166815366658507447">نقطة الاتصال مفعَّلة.</translation>
 <translation id="7167327771183668296">النقر التلقائي</translation>
@@ -9249,7 +9248,6 @@
 <translation id="7586498138629385861">‏سيستمر Chrome في العمل أثناء فتح تطبيقات Chrome.</translation>
 <translation id="7589461650300748890">توقف، وكن حذرًا.</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
-<translation id="7591317506733736159">‏من ملفك الشخصي على Chrome</translation>
 <translation id="7592060599656252486">بعض</translation>
 <translation id="7593653750169415785">تم حظر الإشعارات تلقائيًا لأنك رفضتها بضع مرات.</translation>
 <translation id="7594725637786616550">‏يمكنك إجراء Powerwash لإعادة ضبط الجهاز <ph name="DEVICE_TYPE" /> ليصبح كما لو كان جديدًا.</translation>
@@ -10308,7 +10306,6 @@
 <translation id="831440797644402910">يتعذّر فتح هذا المجلد</translation>
 <translation id="8314835274931377415">هل تريد بدء عملية إعداد ميزة "الوصول عبر مفتاح تحكّم"؟</translation>
 <translation id="8315018673856831477">خيارات ميزة "توفير الذاكرة"</translation>
-<translation id="8315044115695361734">‏من سلسلة مفاتيح iCloud</translation>
 <translation id="8315514906653279104">جارٍ تفعيل نقطة الاتصال…</translation>
 <translation id="8317671367883557781">إضافة اتصال شبكة</translation>
 <translation id="8317965619823678157">نسخ كلمات المرور</translation>

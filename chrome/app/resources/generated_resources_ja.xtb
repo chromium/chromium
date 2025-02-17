@@ -1537,7 +1537,6 @@
 <translation id="206308717637808771">すべてのウィンドウを閉じるときにデータを削除します。データは表示しているサイトと同じように扱われます</translation>
 <translation id="2065405795449409761">Chrome は自動テスト ソフトウェアによって制御されています。</translation>
 <translation id="2066700471214517561">Chromebook を使用しているユーザーの声がはっきりと聞こえるようにマイクのビームフォーミングを行います。</translation>
-<translation id="2067591192939433190">「<ph name="VENDOR_NAME" />」から</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> は <ph name="PRINTER_NAME" /> での印刷を終了しました</translation>
 <translation id="2071393345806050157">ローカルのログ ファイルがありません。</translation>
 <translation id="2071692954027939183">普段は通知を許可されないようですので、通知を自動的にブロックしました</translation>
@@ -6498,7 +6497,6 @@
 <translation id="5595307023264033512">サイトの合計ストレージ使用状況: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
-<translation id="5599819890022137981">Windows Hello から</translation>
 <translation id="5600348067066185292">インストールの手順は簡単です。パソコンに変更を加える前に、インストールを確認するメッセージがもう一度表示されます。</translation>
 <translation id="5600706100022181951">アップデートをダウンロードすると、<ph name="UPDATE_SIZE_MB" /> MB のモバイルデータを使用することになります。続行してもよろしいですか？</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -9221,7 +9219,6 @@
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
 <translation id="7589461650300748890">データが失われる危険があります。</translation>
 <translation id="7590883480672980941">入力設定</translation>
-<translation id="7591317506733736159">Chrome プロフィールから</translation>
 <translation id="7592060599656252486">一部</translation>
 <translation id="7593653750169415785">通知を数回拒否したため、自動的にブロックしました</translation>
 <translation id="7594725637786616550">お使いの <ph name="DEVICE_TYPE" /> を出荷時の状態にリセットするために、Powerwash を実行します。</translation>
@@ -10278,7 +10275,6 @@
 <translation id="831440797644402910">このフォルダを開けません</translation>
 <translation id="8314835274931377415">スイッチ アクセスの設定を開始しますか？</translation>
 <translation id="8315018673856831477">メモリセーバー オプション</translation>
-<translation id="8315044115695361734">iCloud キーチェーンから</translation>
 <translation id="8315514906653279104">オンにしています...</translation>
 <translation id="8317671367883557781">ネットワーク接続を追加</translation>
 <translation id="8317965619823678157">パスワードをコピー</translation>

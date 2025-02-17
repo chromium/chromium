@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Cambio di layout</translation>
 <translation id="2244834438220057800">verde</translation>
 <translation id="225692081236532131">Stato attivazione</translation>
-<translation id="2265792117169966196">Seleziona e scarica il modello di trascrizione <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Aggiungi screenshot</translation>
 <translation id="2268044343513325586">Perfeziona</translation>
 <translation id="2271469253353559191">Programmazione modalità Buio</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Impossibile testare il dispositivo. Passa alla modalità laptop per testarlo.</translation>
 <translation id="3916998944874125962">acquisisci screenshot</translation>
 <translation id="3923184630988645767">Utilizzo dei dati</translation>
-<translation id="3924445055519423964">Fai clic per riepilogare la pagina web/il file PDF</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non assegnato</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">impossibile eseguire il ping del gateway di rete non predefinito</translation>
 <translation id="4483498983731992167">Impossibile creare la trascrizione</translation>
 <translation id="4486524074141928967">Il tuo account verrà disconnesso alle ore <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Apri il selettore lingua della trascrizione</translation>
 <translation id="4500722292849917410">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando un tasto di modifica (Ctrl, Alt, Maiusc o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Colore interfaccia</translation>
 <translation id="4503223151711056411">Freccia sinistra</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Pagine</translation>
 <translation id="4989542687859782284">Non disponibili</translation>
 <translation id="4999333166442584738">Nascondi rapporto</translation>
-<translation id="5005695757087124131">Fai clic per semplificare il testo selezionato</translation>
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Colore tema</translation>
@@ -1395,7 +1391,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7425832472614771259">Avanzamento download modello di trascrizione <ph name="LANGUAGE_NAME" />: <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN <ph name="ATTACH" /> abilitati siano disattivati o rimossi.</translation>
-<translation id="7453118953486228603">Fai clic per riassumere il testo selezionato</translation>
 <translation id="7458970041932198923">Connettiti a una rete e ricarica la pagina per visualizzare e impostare gli avatar.</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7481312909269577407">Avanti</translation>

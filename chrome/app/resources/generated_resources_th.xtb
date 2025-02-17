@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">ไซเบอร์พังก์</translation>
 <translation id="1129420403709586868">ดูรูปภาพและสื่อของโทรศัพท์</translation>
 <translation id="1129850422003387628">จัดการแอป</translation>
+<translation id="1130430615924359526">{0,plural, =1{ปิดหน้าต่างที่ไม่ระบุตัวตน}other{ปิดหน้าต่างที่ไม่ระบุตัวตน (# หน้าต่าง)}}</translation>
 <translation id="113050636487300043">เลือกชื่อและธีมสีเพื่อให้แตกต่างจากโปรไฟล์อื่น</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - ส่วนหนึ่งของกลุ่ม <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">ระดับแบตเตอรี่ทางขวา <ph name="PERCENTAGE" />%</translation>
@@ -1513,6 +1514,7 @@
 <translation id="2042279886444479655">โปรไฟล์ที่ใช้งานอยู่</translation>
 <translation id="2042427131767688936">องค์กรของคุณสามารถดูข้อมูลเกี่ยวกับระบบปฏิบัติการ เบราว์เซอร์ การตั้งค่า รวมทั้งซอฟต์แวร์ที่ติดตั้งในอุปกรณ์เพื่อให้ใช้อุปกรณ์นี้ได้อย่างปลอดภัย</translation>
 <translation id="2044014337866019681">โปรดยืนยันบัญชี <ph name="ACCOUNT" /> เพื่อปลดล็อกเซสชัน</translation>
+<translation id="2044750031738659219">{0,plural, =1{ปิดหน้าต่างสำหรับผู้มาเยือน}other{ปิดหน้าต่างสำหรับผู้มาเยือน (# หน้าต่าง)}}</translation>
 <translation id="204497730941176055">ชื่อแม่แบบใบรับรองของ Microsoft</translation>
 <translation id="2045211794962848221">คุณจะไม่เห็นข้อความที่เจาะจงแบบนี้อีก</translation>
 <translation id="2045838962742066664">การพิมพ์ด้วยชวเลข</translation>
@@ -1540,7 +1542,6 @@
 <translation id="206308717637808771">ลบข้อมูลเมื่อคุณปิดหน้าต่างทั้งหมด ระบบจะดำเนินการกับข้อมูลเช่นเดียวกับเว็บไซต์ที่คุณกําลังดู</translation>
 <translation id="2065405795449409761">ซอฟต์แวร์ทดสอบอัตโนมัติกำลังควบคุม Chrome อยู่</translation>
 <translation id="2066700471214517561">ไมโครโฟนแบบ Beamforming เพื่อให้เสียงของบุคคลที่ใช้ Chromebook ชัดเจน</translation>
-<translation id="2067591192939433190">จาก "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> เสร็จสิ้นการพิมพ์จาก <ph name="PRINTER_NAME" /> แล้ว</translation>
 <translation id="2071393345806050157">ไม่มีไฟล์บันทึกในเครื่อง</translation>
 <translation id="2071692954027939183">การแจ้งเตือนถูกบล็อกโดยอัตโนมัติเนื่องจากคุณมักไม่อนุญาตให้แสดง</translation>
@@ -6510,7 +6511,6 @@
 <translation id="5595307023264033512">พื้นที่เก็บข้อมูลทั้งหมดที่เว็บไซต์ต่างๆ ใช้: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">แก้ไขที่อยู่</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
-<translation id="5599819890022137981">จาก Windows Hello</translation>
 <translation id="5600348067066185292">ติดตั้งได้ง่ายๆ ในไม่กี่ขั้นตอน คุณจะมีโอกาสยืนยันอีกครั้งก่อนที่ระบบจะทำการเปลี่ยนแปลงในคอมพิวเตอร์</translation>
 <translation id="5600706100022181951">ระบบจะดาวน์โหลดอัปเดตโดยใช้อินเทอร์เน็ตมือถือ <ph name="UPDATE_SIZE_MB" /> MB คุณต้องการดำเนินการต่อไหม</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -7351,6 +7351,7 @@
 <translation id="6214106213498203737">ภาพสีน้ำ</translation>
 <translation id="621470880408090483">ไม่อนุญาตให้เว็บไซต์เชื่อมต่ออุปกรณ์บลูทูธ</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" /> จะล็อกหลังจากที่ไม่มีการใช้งานเป็นเวลา 1 นาทีเพื่อรักษารหัสผ่านของคุณให้ปลอดภัย}other{<ph name="BRAND" /> จะล็อกหลังจากที่ไม่มีการใช้งานเป็นเวลา # นาทีเพื่อรักษารหัสผ่านของคุณให้ปลอดภัย}}</translation>
+<translation id="6216154119179790291">เลื่อนไปที่แท็บแรก</translation>
 <translation id="6216239400972191926">เว็บไซต์และแอปที่ถูกปฏิเสธ</translation>
 <translation id="6216601812881225442">คอนเทนเนอร์ไม่รองรับการปรับขนาด หากต้องการปรับพื้นที่ว่างที่จัดสรรล่วงหน้าสำหรับ Linux ให้สำรองข้อมูลแล้วคืนค่าในคอนเทนเนอร์ใหม่</translation>
 <translation id="6216696360484424239">ลงชื่อเข้าใช้โดยอัตโนมัติ</translation>
@@ -7547,6 +7548,7 @@
 <translation id="6357305427698525450">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" /> หรือ <ph name="APP_NAME_2" /></translation>
 <translation id="6357750620525943720">ตัวระบุแบบคงที่อื่นๆ (เช่น แฮชหรือ UUID)</translation>
 <translation id="6358884629796491903">มังกร</translation>
+<translation id="6359640073754977254">เลื่อนไปที่แท็บสุดท้าย</translation>
 <translation id="6361850914223837199">รายละเอียดข้อผิดพลาด:</translation>
 <translation id="6362853299801475928">&amp;รายงานปัญหา...</translation>
 <translation id="6363786367719063276">ดูบันทึก</translation>
@@ -8655,6 +8657,7 @@
 <translation id="7160911207516219534">แผงด้านข้าง</translation>
 <translation id="716210145227921528">ลบพาสคีย์แล้ว</translation>
 <translation id="7165263843655074092">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานในอุปกรณ์นี้</translation>
+<translation id="7166017546802325772">ไม่มีการอัปเดตสำหรับกลุ่มนี้</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" สามารถอ่านรูปภาพ วิดีโอ และไฟล์เสียงในตำแหน่งที่เลือก</translation>
 <translation id="7166815366658507447">เปิดใช้ฮอตสปอตแล้ว</translation>
 <translation id="7167327771183668296">การคลิกอัตโนมัติ</translation>
@@ -9230,7 +9233,6 @@
 <translation id="7586498138629385861">Chrome จะยังคงทำงานต่อไปขณะที่แอปของ Chrome เปิดอยู่</translation>
 <translation id="7589461650300748890">อ๊ะ โปรดระวัง</translation>
 <translation id="7590883480672980941">การตั้งค่าการป้อนข้อมูล</translation>
-<translation id="7591317506733736159">จากโปรไฟล์ Chrome ของคุณ</translation>
 <translation id="7592060599656252486">บางอย่าง</translation>
 <translation id="7593653750169415785">บล็อกแล้วโดยอัตโนมัติเพราะคุณปฏิเสธการแจ้งเตือนหลายครั้ง</translation>
 <translation id="7594725637786616550">Powerwash เพื่อรีเซ็ต <ph name="DEVICE_TYPE" /> ให้เหมือนใหม่</translation>
@@ -10206,6 +10208,7 @@
 <translation id="8258027225380843424">นำเข้าเสร็จเรียบร้อย</translation>
 <translation id="8259048637628995340">เชื่อมต่อโทรศัพท์ Android เพื่อประสบการณ์การใช้งานที่ราบรื่น</translation>
 <translation id="8260177673299865994">ปรับปรุงการป้องกันการดาวน์โหลด</translation>
+<translation id="8260473380156923937">แอป Chrome จะเลิกใช้งานในไม่ช้า หากต้องการทางเลือกอื่นๆ โปรดติดต่อนักพัฒนาแอปหรือผู้ติดต่อบริการไอที</translation>
 <translation id="8260864402787962391">เมาส์</translation>
 <translation id="8261378640211443080">ส่วนขยายนี้ไม่ได้ระบุไว้ใน <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> และอาจถูกเพิ่มเข้ามาโดยที่คุณไม่รู้ตัว</translation>
 <translation id="8261506727792406068">ลบ</translation>
@@ -10288,7 +10291,6 @@
 <translation id="831440797644402910">เปิดโฟลเดอร์นี้ไม่ได้</translation>
 <translation id="8314835274931377415">เริ่มตั้งค่าการเข้าถึงด้วยสวิตช์ไหม</translation>
 <translation id="8315018673856831477">ตัวเลือกการประหยัดหน่วยความจำ</translation>
-<translation id="8315044115695361734">จากพวงกุญแจ iCloud</translation>
 <translation id="8315514906653279104">กำลังเปิด...</translation>
 <translation id="8317671367883557781">เพิ่มการเชื่อมต่อเครือข่าย</translation>
 <translation id="8317965619823678157">คัดลอกรหัสผ่าน</translation>

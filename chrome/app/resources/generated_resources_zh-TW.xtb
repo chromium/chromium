@@ -1540,7 +1540,6 @@
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與目前瀏覽的網站相同</translation>
 <translation id="2065405795449409761">Chrome 目前受到自動測試軟體控制。</translation>
 <translation id="2066700471214517561">使用波束成形麥克風，讓 Chromebook 使用者的聲音清晰可辨。</translation>
-<translation id="2067591192939433190">來自「<ph name="VENDOR_NAME" />」</translation>
 <translation id="206960706005837784">「<ph name="APP_NAME" />」已在「<ph name="PRINTER_NAME" />」完成列印</translation>
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
 <translation id="2071692954027939183">系統已按照你的習慣自動封鎖通知</translation>
@@ -6508,7 +6507,6 @@
 <translation id="5595307023264033512">網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5596627076506792578">更多選項</translation>
-<translation id="5599819890022137981">Windows Hello</translation>
 <translation id="5600348067066185292">只要簡單幾個步驟即可完成安裝。請放心，系統會先讓你再次確認，才對你的電腦做出變更。</translation>
 <translation id="5600706100022181951">下載更新將使用 <ph name="UPDATE_SIZE_MB" /> MB 的行動數據。要繼續嗎？</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8652,6 +8650,7 @@
 <translation id="7160911207516219534">側邊面板</translation>
 <translation id="716210145227921528">密碼金鑰已刪除</translation>
 <translation id="7165263843655074092">這部裝置即將啟用標準安全防護機制</translation>
+<translation id="7166017546802325772">這個群組沒有任何更新</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和聲音檔具有讀取權限。</translation>
 <translation id="7166815366658507447">已啟用無線基地台</translation>
 <translation id="7167327771183668296">自動點選</translation>
@@ -9227,7 +9226,6 @@
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
 <translation id="7589461650300748890">哎唷，請注意！</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
-<translation id="7591317506733736159">來自 Chrome 設定檔</translation>
 <translation id="7592060599656252486">部分</translation>
 <translation id="7593653750169415785">由於你拒絕通知數次而自動遭到封鎖的網站</translation>
 <translation id="7594725637786616550">執行 Powerwash 以將 <ph name="DEVICE_TYPE" /> 恢復原廠設定。</translation>
@@ -10285,7 +10283,6 @@
 <translation id="831440797644402910">無法開啟這個資料夾</translation>
 <translation id="8314835274931377415">要開始設定切換控制功能嗎？</translation>
 <translation id="8315018673856831477">記憶體節省模式選項</translation>
-<translation id="8315044115695361734">來自 iCloud 鑰匙圈</translation>
 <translation id="8315514906653279104">啟用中...</translation>
 <translation id="8317671367883557781">新增網路連線</translation>
 <translation id="8317965619823678157">複製密碼</translation>

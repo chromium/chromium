@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">Уліковы запіс пад кіраваннем</translation>
 <translation id="1358214951266274152">Перайсці па скапіраванай спасылцы</translation>
 <translation id="1360432990279830238">Выйсці і выключыць сінхранізацыю?</translation>
+<translation id="1362192716574455663">Існуючыя даныя пра работу ў браўзеры не будуць перамешчаны ў ваш працоўны ўліковы запіс. Каб атрымаць доступ да іх, вам трэба выйсці з уліковага запісу ці дадаць асабісты ўліковы запіс.</translation>
 <translation id="1363028406613469049">Трэк</translation>
 <translation id="1364367057792633742">Новая ўкладка</translation>
 <translation id="1365106417372288489">Ваш тэлефон iPhone быў нядаўна адноўлены, таму стандартным мог стаць іншы браўзер.</translation>
@@ -427,6 +428,7 @@
 <translation id="2755485474385016903">Унесеныя змяненні бачаць усе ўдзельнікі групы</translation>
 <translation id="2755595981383829244">Цяпер вы будзеце атрымліваць апавяшчэнні пра змесціва</translation>
 <translation id="2761788987260570878">Сфатаграфуйце тое, што шукаеце</translation>
+<translation id="2761898608071930085">Выкарыстаць іншы ўліковы запіс</translation>
 <translation id="2762000892062317888">толькі што</translation>
 <translation id="2772667768515195373">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас захоўваецца ў вашым Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Апавяшчэнні па электроннай пошце</translation>
@@ -1724,6 +1726,7 @@
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8428634594422941299">Зразумела</translation>
 <translation id="8430694217306051839">Выберыце, куды захаваць файл "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Падрабязныя звесткі пра групу ўкладак</translation>
 <translation id="8438566539970814960">Палепшыць пошук і прагляд</translation>
 <translation id="8439758443371991593">Схаваць пункт "Дадаць у спіс на прагляд"</translation>
 <translation id="8449869326050867919">Пароль абагулены</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8722229818691036192">Уліковыя запісы на гэтай прыладзе</translation>
 <translation id="8722649775263832315">Націсніце або вылучыце любое змесціва, каб шукаць яго з дапамогай Google Аб’ектыва</translation>
 <translation id="8723088494871522141">Схаваць "Водгукі пра тавар для вас"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} укладка}one{{COUNT} укладка}few{{COUNT} укладкі}many{{COUNT} укладак}other{{COUNT} укладкі}}</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8728922029615312208">Закрыць усе</translation>
 <translation id="8730621377337864115">Гатова</translation>

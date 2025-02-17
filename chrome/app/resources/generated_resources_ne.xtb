@@ -1124,7 +1124,7 @@
 <translation id="1773329206876345543">अन्य डिभाइसहरूमा इन्टरनेट उपलब्ध गराउन आफ्नो <ph name="DEVICE_TYPE" /> को मोबाइल डेटा प्रयोग गरेर Wi-Fi हटस्पट बनाउनुहोस्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">होस्ट गरिएको एप लगत</translation>
 <translation id="177529472352014190">OneDrive मा कनेक्ट गर्नुहोस्</translation>
-<translation id="1776712937009046120">प्रयोगकर्ता कनेक्ट गर्नुहोस्</translation>
+<translation id="1776712937009046120">प्रयोगकर्ता थप्नुहोस्</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="177814385589420211">सर्च की थिचिराख्दा फङ्सन की र माथिल्लो लहरका सिस्टम कीका बिचमा अदलबदल हुने पारियोस्</translation>
 <translation id="1778457539567749232">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
@@ -1537,7 +1537,6 @@
 <translation id="206308717637808771">मैले सबै विन्डो बन्द गरेपछि डेटा मेटाउनुहोस्। यो डेटामा पनि तपाईंले हेर्दै गरेको साइटमा लागू गरिएकै सेटिङ लागू गरिन्छ</translation>
 <translation id="2065405795449409761">Chrome लाई स्वचालित परीक्षण सफ्टवेयरद्वारा नियन्त्रण गरिँदै छ।</translation>
 <translation id="2066700471214517561">Chromebook प्रयोगकर्ताको आवाज स्पष्ट सुनियोस् भन्नाका लागि बिमफर्मिङ माइक प्रयोग गरिन्छ।</translation>
-<translation id="2067591192939433190">"<ph name="VENDOR_NAME" />" ले प्रदान गरेको</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ले <ph name="PRINTER_NAME" /> मार्फत प्रिन्ट गर्ने प्रक्रिया पूरा गरेको छ</translation>
 <translation id="2071393345806050157">कुनैपनि स्थानीय लग फाइल छैन।</translation>
 <translation id="2071692954027939183">तपाईं सामान्यतया सूचनाहरू देखाउने अनुमति दिनुहुन्न। त्यसैले सूचनाहरू स्वतः ब्लक गरिएका छन्</translation>
@@ -6509,7 +6508,6 @@
 <translation id="5595307023264033512">साइटहरूले प्रयोग गरेको कुल भण्डारण: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">ठेगाना बदल्नुहोस्</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
-<translation id="5599819890022137981">Windows Hello मा भएको</translation>
 <translation id="5600348067066185292">इन्स्टल गर्न केही चरणहरू पूरा गर्नु पर्ने हुन्छ। तपाईंको कम्प्युटरमा परिवर्तनहरू गर्नुअघि तपाईंलाई पुष्टि गर्ने थप एउटा मौका दिइने छ।</translation>
 <translation id="5600706100022181951"><ph name="UPDATE_SIZE_MB" /> एम. बि. मोबाइल डेटा प्रयोग गरेर अद्यावधिक डाउनलोड गरिने छ। तपाईं जारी राख्न चाहनुहुन्छ?</translation>
 <translation id="5601503069213153581">पिन</translation>
@@ -8655,6 +8653,7 @@
 <translation id="7160911207516219534">साइड प्यानलहरू</translation>
 <translation id="716210145227921528">पासकी मेटाइएको छ</translation>
 <translation id="7165263843655074092">तपाईं यो डिभाइसमा सामान्य सुरक्षा प्राप्त गरिरहनुभएको छ</translation>
+<translation id="7166017546802325772">यो समूहमा कुनै पनि परिवर्तन गरिएको छैन</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" ले चेक गरिएको स्थानहरूमा फोटो, भिडियो, र आवाज पढ्न सक्छ।</translation>
 <translation id="7166815366658507447">हटस्पट अन गरिएको छ</translation>
 <translation id="7167327771183668296">स्वतः क्लिक गर्ने सुविधा</translation>
@@ -9231,7 +9230,6 @@
 <translation id="7586498138629385861">Chrome एपहरू खुल्ला हुँदा Chrome चालू भइरहन्छ।</translation>
 <translation id="7589461650300748890">ओहो। ध्यान दिनुहोस्।</translation>
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
-<translation id="7591317506733736159">तपाईंको Chrome प्रोफाइलबाट</translation>
 <translation id="7592060599656252486">केही</translation>
 <translation id="7593653750169415785">तपाईंले पटक पटक सूचनाहरू प्राप्त गर्न इन्कार गर्नुभएको हुँदा स्वतः रोक लगाइयो</translation>
 <translation id="7594725637786616550">तपाईंको <ph name="DEVICE_TYPE" /> नयाँ जस्तै हुने गरी रिसेट गर्न पावरवास गर्नुहोस्।</translation>
@@ -10288,7 +10286,6 @@
 <translation id="831440797644402910">यो फोल्डर खोल्न सकिएन</translation>
 <translation id="8314835274931377415">"स्विच एक्सेस" सेटअप गर्न थाल्ने हो?</translation>
 <translation id="8315018673856831477">मेमोरी सेभरका विकल्पहरू</translation>
-<translation id="8315044115695361734">iCloud Keychain मा भएको</translation>
 <translation id="8315514906653279104">अन हुँदै छ…</translation>
 <translation id="8317671367883557781">नेटवर्क जडान थप्नुहोस्</translation>
 <translation id="8317965619823678157">पासवर्डहरू कपी गर्नुहोस्</translation>
@@ -11387,7 +11384,7 @@
 <translation id="9085256200913095638">चयन गरिएको ट्याबको प्रतिलिपि बनाउनुहोस्</translation>
 <translation id="9085446486797400519">क्यामेरा एक्सेस</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> चयन गरिएको छैन। भाषा चयन गर्न 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
-<translation id="9087949559523851360">प्रतिबन्धित प्रयोगकर्ता कनेक्ट गर्नुहोस्</translation>
+<translation id="9087949559523851360">प्रतिबन्धित प्रयोगकर्ता थप्नुहोस्</translation>
 <translation id="9088234649737575428">इन्टरप्राइजको नीतिले <ph name="PLUGIN_NAME" /> माथि अवरोध लगाएको छ</translation>
 <translation id="9088446193279799727">Linux कन्फिगर गर्न सकिएन। इन्टरनेट जोड्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>

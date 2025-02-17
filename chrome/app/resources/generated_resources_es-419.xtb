@@ -1537,7 +1537,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="206308717637808771">Borrar los datos cuando cierras todas las ventanas; los parámetros de configuración del sitio que estás viendo se aplican a los datos</translation>
 <translation id="2065405795449409761">Un software de prueba automatizado está controlando Chrome.</translation>
 <translation id="2066700471214517561">Micrófono con conformación de haces para que la persona que usa la Chromebook se escuche con claridad.</translation>
-<translation id="2067591192939433190">De "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> terminó de imprimirse en <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
 <translation id="2071692954027939183">Se bloquearon las notificaciones de forma automática porque no sueles permitirlas.</translation>
@@ -4965,7 +4964,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4477015793815781985">Incluye Ctrl, Alt o ⌘</translation>
 <translation id="4478161224666880173">Puedes usar tu cuenta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> en este sitio. Para continuar, accede a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4478664379124702289">Guardar vín&amp;culo como...</translation>
-<translation id="4479424953165245642">Administrar las aplicaciones del kiosco</translation>
+<translation id="4479424953165245642">Administrar apps de kiosco</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">Se está configurando la máquina virtual. Es posible que este proceso demore unos minutos.</translation>
 <translation id="4481448477173043917">Se reinició tu <ph name="DEVICE_TYPE" /> de forma inesperada</translation>
@@ -6511,7 +6510,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5595307023264033512">Almacenamiento total que usan los sitios: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="5596627076506792578">Más opciones</translation>
-<translation id="5599819890022137981">De Windows Hello</translation>
 <translation id="5600348067066185292">La instalación se lleva a cabo con unos pocos pasos sencillos. Tendrás otra oportunidad para confirmar esta acción antes de que se apliquen los cambios en tu computadora.</translation>
 <translation id="5600706100022181951">Para descargar la actualización, se usarán <ph name="UPDATE_SIZE_MB" /> MB de datos móviles. ¿Deseas continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8659,6 +8657,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7160911207516219534">Paneles laterales</translation>
 <translation id="716210145227921528">Se borró la llave de acceso</translation>
 <translation id="7165263843655074092">Recibes protección de seguridad estándar en este dispositivo</translation>
+<translation id="7166017546802325772">No hay actualizaciones en este grupo</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" puede leer archivos de video, sonido e imágenes en las ubicaciones seleccionadas.</translation>
 <translation id="7166815366658507447">Hotspot habilitado</translation>
 <translation id="7167327771183668296">Clics automáticos</translation>
@@ -9235,7 +9234,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7586498138629385861">Chrome se seguirá ejecutando mientras haya aplicaciones de Chrome abiertas.</translation>
 <translation id="7589461650300748890">¡Espera! Ten cuidado.</translation>
 <translation id="7590883480672980941">Configuración de entradas</translation>
-<translation id="7591317506733736159">De tu perfil de Chrome</translation>
 <translation id="7592060599656252486">Algunos</translation>
 <translation id="7593653750169415785">Se bloqueó automáticamente porque rechazaste las notificaciones varias veces</translation>
 <translation id="7594725637786616550">Usa la función Powerwash para restablecer el dispositivo <ph name="DEVICE_TYPE" /> y que quede como nuevo.</translation>
@@ -10293,7 +10291,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="831440797644402910">No se puede abrir esta carpeta</translation>
 <translation id="8314835274931377415">¿Deseas iniciar la configuración de Accesibilidad con interruptores?</translation>
 <translation id="8315018673856831477">Opciones de Ahorro de memoria</translation>
-<translation id="8315044115695361734">Del llavero de iCloud</translation>
 <translation id="8315514906653279104">Activando…</translation>
 <translation id="8317671367883557781">Agregar conexión de red</translation>
 <translation id="8317965619823678157">copiar contraseñas</translation>

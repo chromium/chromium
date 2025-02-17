@@ -1542,7 +1542,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="206308717637808771">Po zavření všech oken vymazat data. S daty se nakládá stejně jako s webem, který si prohlížíte</translation>
 <translation id="2065405795449409761">Chrome je právě kontrolován pomocí automatického testovacího softwaru.</translation>
 <translation id="2066700471214517561">Mikrofon s podporou tvarování paprsku, aby osoba používající Chromebook zněla jasně.</translation>
-<translation id="2067591192939433190">Od poskytovatele <ph name="VENDOR_NAME" /></translation>
 <translation id="206960706005837784">Aplikace <ph name="APP_NAME" /> dokončila tisk na tiskárně <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Žádný místní soubor protokolu není k dispozici.</translation>
 <translation id="2071692954027939183">Oznámení byla automaticky zablokována, protože je obvykle nepovolujete</translation>
@@ -6511,7 +6510,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5595307023264033512">Celkové úložiště využité weby: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Upravit adresu</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
-<translation id="5599819890022137981">Z Windows Hello</translation>
 <translation id="5600348067066185292">K instalaci je potřeba jen několik snadných kroků. Než v počítači budou provedeny změny, budete mít ještě možnost je potvrdit.</translation>
 <translation id="5600706100022181951">Ke stažení aktualizace bude použito <ph name="UPDATE_SIZE_MB" /> MB mobilních dat. Chcete pokračovat?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8660,6 +8658,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7160911207516219534">Boční panely</translation>
 <translation id="716210145227921528">Přístupový klíč byl smazán</translation>
 <translation id="7165263843655074092">Na tomto zařízení máte standardní bezpečnostní ochranu</translation>
+<translation id="7166017546802325772">V této skupině nebyly provedeny žádné aktualizace</translation>
 <translation id="716640248772308851">Rozšíření <ph name="EXTENSION" /> může číst obrázky, video a zvukové soubory v povolených umístěních.</translation>
 <translation id="7166815366658507447">Hotspot je zapnutý</translation>
 <translation id="7167327771183668296">Automatická kliknutí</translation>
@@ -9235,7 +9234,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7586498138629385861">Pokud jsou otevřeny aplikace Chrome, zůstane Chrome spuštěný.</translation>
 <translation id="7589461650300748890">Pozor, buďte opatrní!</translation>
 <translation id="7590883480672980941">Nastavení zadávání</translation>
-<translation id="7591317506733736159">Z vašeho profilu Chrome</translation>
 <translation id="7592060599656252486">Některé</translation>
 <translation id="7593653750169415785">Automaticky zablokováno, protože jste oznámení několikrát zamítli</translation>
 <translation id="7594725637786616550">Tato akce resetuje zařízení <ph name="DEVICE_TYPE" /> pomocí funkce Powerwash do továrního nastavení.</translation>
@@ -10293,7 +10291,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="831440797644402910">Tuto složku nelze otevřít</translation>
 <translation id="8314835274931377415">Spustit nastavení přístupu pomocí přepínačů?</translation>
 <translation id="8315018673856831477">Možnosti spořiče paměti</translation>
-<translation id="8315044115695361734">Z klíčenky na iCloudu</translation>
 <translation id="8315514906653279104">Zapínání…</translation>
 <translation id="8317671367883557781">Přidat připojení k síti</translation>
 <translation id="8317965619823678157">kopírovat hesla</translation>

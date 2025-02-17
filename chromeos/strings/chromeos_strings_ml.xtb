@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">ലേഔട്ട് സ്വിച്ച്</translation>
 <translation id="2244834438220057800">പച്ച</translation>
 <translation id="225692081236532131">സജീവമാക്കല്‍ സ്റ്റാറ്റസ്</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ തിരഞ്ഞെടുത്ത് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="2267285889943769271">സ്ക്രീൻഷോട്ട് ചേർക്കുക</translation>
 <translation id="2268044343513325586">പരിഷ്‌ക്കരിക്കുക</translation>
 <translation id="2271469253353559191">ഡാർക്ക് മോഡ് ഷെഡ്യൂൾ ചെയ്യൽ</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലാപ്‌ടോപ്പ് മോഡിലേക്ക് മാറുക.</translation>
 <translation id="3916998944874125962">സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="3923184630988645767">ഡാറ്റ ഉപയോഗം</translation>
-<translation id="3924445055519423964">വെബ്‌പേജ്/PDF ഫയൽ സംഗ്രഹിക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="3932043219784172185">ഉപകരണമൊന്നും കണക്റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> അസൈൻ ചെയ്തിട്ടില്ല</translation>
 <translation id="3941014780699102620">ഹോസ്‌റ്റ് പരിഹരിക്കാനായില്ല</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
 <translation id="4483498983731992167">ട്രാൻസ്‌ക്രിപ്റ്റ് സൃഷ്ടിക്കാനാകില്ല</translation>
 <translation id="4486524074141928967"><ph name="TIME" />-ന് നിങ്ങൾ സൈൻ ഔട്ട് ആകും</translation>
-<translation id="4487890678161807486">ട്രാൻസ്‌ക്രിപ്ഷൻ ഭാഷാ പിക്കർ തുറക്കുക</translation>
 <translation id="4500722292849917410">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4500966230243561393">ഇന്റര്‍ഫേസ് നിറം</translation>
 <translation id="4503223151711056411">ഇടത്തേയ്‌ക്കുള്ള അമ്പടയാളം</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">പേജുകള്‍</translation>
 <translation id="4989542687859782284">ലഭ്യമല്ല</translation>
 <translation id="4999333166442584738">റിപ്പോർട്ട് മറയ്‌ക്കുക</translation>
-<translation id="5005695757087124131">തിരഞ്ഞെടുത്ത ടെക്സ്റ്റ് ലളിതമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="500920857929044050">ടെസ്‌റ്റ് നിർത്തുക</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">തീമിന്റെ നിറം</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ <ph name="PROGRESS_PERCENTAGE" />% ഡൗൺലോഡ് ചെയ്തു</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ഈ APN പ്രവർത്തനരഹിതമാക്കാനോ നീക്കം ചെയ്യാനോ കഴിയില്ല. പ്രവർത്തനക്ഷമമാക്കിയ <ph name="ATTACH" /> APN-കൾ പ്രവർത്തനരഹിതമാക്കുകയോ നീക്കം ചെയ്യുകയോ ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
-<translation id="7453118953486228603">തിരഞ്ഞെടുത്ത ടെക്‌സ്‌റ്റ് സംഗ്രഹിക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="7458970041932198923">അവതാറുകൾ കാണാനും സജ്ജീകരിക്കാനും ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റുചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="7469648432129124067">പോര്‍ട്ടല്‍ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="7481312909269577407">മുന്നോട്ട്</translation>

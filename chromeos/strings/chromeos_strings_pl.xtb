@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Przełącznik układu</translation>
 <translation id="2244834438220057800">zielony</translation>
 <translation id="225692081236532131">Stan aktywacji</translation>
-<translation id="2265792117169966196">Wybierz i pobierz model transkrypcji w języku: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Dodaj zrzut ekranu</translation>
 <translation id="2268044343513325586">Zawęź</translation>
 <translation id="2271469253353559191">Harmonogram trybu ciemnego</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Nie udało się przetestować urządzenia. Aby uruchomić test, włącz tryb laptopa.</translation>
 <translation id="3916998944874125962">zapisz zrzut ekranu</translation>
 <translation id="3923184630988645767">Transmisja danych</translation>
-<translation id="3924445055519423964">Kliknij, aby podsumować stronę internetową lub plik PDF</translation>
 <translation id="3932043219784172185">Brak podłączonych urządzeń</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> nieprzypisany</translation>
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
 <translation id="4483498983731992167">Nie udało się utworzyć transkrypcji</translation>
 <translation id="4486524074141928967">O <ph name="TIME" /> nastąpi wylogowanie</translation>
-<translation id="4487890678161807486">Otwórz selektor języka transkrypcji</translation>
 <translation id="4500722292849917410">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza modyfikującego (Ctrl, Alt, Shift lub <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Kolor interfejsu</translation>
 <translation id="4503223151711056411">Strzałka w lewo</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Strony</translation>
 <translation id="4989542687859782284">Niedostępne</translation>
 <translation id="4999333166442584738">Ukryj raport</translation>
-<translation id="5005695757087124131">Kliknij, aby uprościć zaznaczony tekst</translation>
 <translation id="500920857929044050">Zatrzymaj test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Kolor motywu</translation>
@@ -1393,7 +1389,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7425832472614771259">Pobrano <ph name="PROGRESS_PERCENTAGE" />% modelu transkrypcji w języku: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tego punktu APN nie można wyłączyć ani usunąć. Upewnij się, że włączone punkty APN typu <ph name="ATTACH" /> zostały wyłączone lub usunięte.</translation>
-<translation id="7453118953486228603">Kliknij, aby podsumować zaznaczony tekst</translation>
 <translation id="7458970041932198923">Aby wyświetlić i ustawić awatary, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="7469648432129124067">Wykryto portal</translation>
 <translation id="7481312909269577407">Dalej</translation>

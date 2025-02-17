@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Uitlegomskakelaar</translation>
 <translation id="2244834438220057800">groen</translation>
 <translation id="225692081236532131">Aktiveringstatus</translation>
-<translation id="2265792117169966196">Kies <ph name="LANGUAGE_NAME" /> transkripsiemodel en laai dit af</translation>
 <translation id="2267285889943769271">Voeg skermskoot by</translation>
 <translation id="2268044343513325586">Verfyn</translation>
 <translation id="2271469253353559191">Donkermodus-skedule</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Kan nie toestel toets nie. Skakel oor na skootrekenaarmodus om te toets.</translation>
 <translation id="3916998944874125962">neem skermskoot</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
-<translation id="3924445055519423964">Klik om die webbladsy/PDF-lêer op te som</translation>
 <translation id="3932043219784172185">Geen toestel is gekoppel nie</translation>
 <translation id="3934185438132762746">Ontoegewysde <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Kon nie gasheer bepaal nie</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
 <translation id="4483498983731992167">Kan nie transkripsie skep nie</translation>
 <translation id="4486524074141928967">Jy sal om <ph name="TIME" /> afgemeld word</translation>
-<translation id="4487890678161807486">Maak transkripsietaalkieser oop</translation>
 <translation id="4500722292849917410">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad deur gebruik te maak van ’n wysigersleutel (ctrl, alt, shift, of <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Koppelvlakkleur</translation>
 <translation id="4503223151711056411">Linkspyl</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Bladsye</translation>
 <translation id="4989542687859782284">Onbeskikbaar</translation>
 <translation id="4999333166442584738">Versteek verslag</translation>
-<translation id="5005695757087124131">Klik om die gekose teks te vereenvoudig</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temakleur</translation>
@@ -1395,7 +1391,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> transkripsiemodel is <ph name="PROGRESS_PERCENTAGE" />% afgelaai</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan nie hierdie APN deaktiveer of verwyder nie. Maak seker dat geaktiveerde APN’e <ph name="ATTACH" /> gedeaktiveer of verwyder word.</translation>
-<translation id="7453118953486228603">Klik om die geselekteerde teks op te som</translation>
 <translation id="7458970041932198923">Koppel asseblief aan ’n netwerk en herlaai die bladsy om avatars te bekyk en te stel.</translation>
 <translation id="7469648432129124067">Portaal is bespeur</translation>
 <translation id="7481312909269577407">Vorentoe</translation>

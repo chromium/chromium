@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Přepnout rozvržení</translation>
 <translation id="2244834438220057800">zelená</translation>
 <translation id="225692081236532131">Stav aktivace</translation>
-<translation id="2265792117169966196">Vybrat a stáhnout model přepisu jazyka <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Přidat snímek obrazovky</translation>
 <translation id="2268044343513325586">Upřesnit</translation>
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Zařízení nelze otestovat. Přepněte na režim notebooku.</translation>
 <translation id="3916998944874125962">pořídit snímek obrazovky</translation>
 <translation id="3923184630988645767">Využití dat</translation>
-<translation id="3924445055519423964">Kliknutím získáte souhrn webové stránky / souboru PDF</translation>
 <translation id="3932043219784172185">Není připojeno žádné zařízení</translation>
 <translation id="3934185438132762746">Nepřiřazeno <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Hostitele se nepodařilo vyřešit</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
 <translation id="4483498983731992167">Nelze vytvořit přepis</translation>
 <translation id="4486524074141928967">V <ph name="TIME" /> budete odhlášeni</translation>
-<translation id="4487890678161807486">Otevřít výběr jazyka přepisu</translation>
 <translation id="4500722292849917410">Zkratka není k dispozici. Stiskněte novou zkratku s modifikační klávesou (ctrl, alt, shift nebo <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Barva rozhraní</translation>
 <translation id="4503223151711056411">Šipka vlevo</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4989542687859782284">Nedostupné</translation>
 <translation id="4999333166442584738">Skrýt přehled</translation>
-<translation id="5005695757087124131">Kliknutím zjednodušíte vybraný text</translation>
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Barva motivu</translation>
@@ -1395,7 +1391,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7425832472614771259">Model přepisu jazyka <ph name="LANGUAGE_NAME" /> je stažen z <ph name="PROGRESS_PERCENTAGE" /> %.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tento APN nelze deaktivovat ani odstranit. Je třeba deaktivovat nebo odstranit aktivované APN typu <ph name="ATTACH" />.</translation>
-<translation id="7453118953486228603">Kliknutím shrnete vybraný text</translation>
 <translation id="7458970041932198923">Pokud chcete zobrazit a nastavit avatary, připojte se k síti a znovu načtěte stránku.</translation>
 <translation id="7469648432129124067">Byl zjištěn portál</translation>
 <translation id="7481312909269577407">Vpřed</translation>

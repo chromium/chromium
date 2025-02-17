@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">താരതമ്യപ്പെടുത്തുന്നതിനുള്ള എല്ലാ പട്ടികകളും കാണിക്കുക</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google അക്കൗണ്ടിലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="1793473605302304726">കാലക്രമേണ പേ ചെയ്യുക</translation>
 <translation id="1793631236004319016">അവസാനം ഉപയോഗിച്ചത് <ph name="NUM_HOURS_MINUTES_SECONDS" /> മുമ്പ്</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ഒന്നിലധികം പ്രവർത്തനങ്ങൾ ലഭ്യമാണ്, ഒന്നിൽ നിന്ന് മറ്റൊന്നിലേക്ക് മാറാൻ 'Tab' അമർത്തുക</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -2311,7 +2312,6 @@
 <translation id="5087286274860437796">സെർവറിന്റെ സർട്ടിഫിക്കറ്റിന് ഇപ്പോൾ സാധുതയില്ല.</translation>
 <translation id="5087580092889165836">കാർഡ് ചേർക്കുക</translation>
 <translation id="5088142053160410913">ഓപ്പറേറ്റർക്കുള്ള സന്ദേശം</translation>
-<translation id="5089791650329866127">വിലാസം പോലെ, സ്വയമേവ പൂരിപ്പിക്കൽ ഉപയോഗിച്ച് നിങ്ങൾ ഇതിനകം സംരക്ഷിച്ച വിവരങ്ങൾ ഈ ഫീച്ചർ ഉപയോഗിക്കുന്നു</translation>
 <translation id="5090647584136241764">നിങ്ങൾക്ക് ആവശ്യമായ വിശദാംശങ്ങൾ എളുപ്പത്തിൽ താരതമ്യം ചെയ്യാൻ സമാന ഉൽപ്പന്നങ്ങളുള്ള ടാബുകൾ ചേർക്കുക</translation>
 <translation id="5093232627742069661">Z-മടക്ക്</translation>
 <translation id="5094747076828555589">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിനെ Chromium-ത്തിന്ന് പരിചയമില്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
@@ -3411,6 +3411,7 @@
 <translation id="7042616127917168121">ഫലങ്ങൾ പരിഷ്‌കരിക്കുക</translation>
 <translation id="7043552168914147882">ടാബ് സ്റ്റോക്ക്</translation>
 <translation id="7044081119134178347">ഇപ്പോൾ മാത്രം ക്യാമറ അനുവദിച്ചിരിക്കുന്നു</translation>
+<translation id="704738887031336226">ചെക്ക്ഔട്ടിൽ <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />കാലക്രമേണ പേ ചെയ്യുക<ph name="PAY_OVER_TIME_HELP_LINK_END" /> ഓപ്ഷനുകൾ കാണിക്കുക</translation>
 <translation id="7048095965575426564">യൂറോപ്യൻ ഫാൻഫോൾഡ്</translation>
 <translation id="7050187094878475250">നിങ്ങൾ <ph name="DOMAIN" /> എന്നതിലെത്താൻ ശ്രമിച്ചു, എന്നാൽ തീരെ വിശ്വാസയോഗ്യമല്ലാത്ത ഒരു കാലാവധിയുള്ള സർട്ടിഫിക്കറ്റാണ് സെർവർ കാണിക്കുന്നത്.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ഈ കാർഡ് ഇപ്പോൾ സംരക്ഷിക്കാനാവില്ല}other{ഈ കാർഡുകൾ ഇപ്പോൾ സംരക്ഷിക്കാനാവില്ല}}</translation>
@@ -3730,7 +3731,6 @@
 <translation id="7581199239021537589">സൈഡ് 2 ചിത്രം Y ഷിഫ്റ്റ്</translation>
 <translation id="7582602800368606489">Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="7586676035079382730">അറിയിപ്പുകൾ ആക്സസ് അനുവദിച്ചില്ല</translation>
-<translation id="7588460771338574392">"<ph name="PHONE_NAME" />" എന്നതിൽ നിന്നുള്ള പാസ്‌കീ</translation>
 <translation id="7588707273764747927">ട്രാൻസ്‌ഫർ</translation>
 <translation id="7591288787774558753">രഹസ്യാത്മക ഉള്ളടക്കം പങ്കിടണോ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" /> എന്നതിൽ കുക്കികളും സൈറ്റ് ഡാറ്റയും ഉപയോഗിക്കാൻ <ph name="EMBEDDED_URL" /> ആഗ്രഹിക്കുന്നു</translation>
@@ -4635,7 +4635,6 @@
 <translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> തിരയാൻ @ ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="9213433120051936369">ദൃശ്യമാകുന്ന രീതി ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="9215416866750762878">ഈ സൈറ്റിലേക്ക് സുരക്ഷിതമായി കണക്റ്റ് ചെയ്യുന്നതിൽ നിന്ന് Chrome-നെ ഒരു ആപ്പ് തടയുന്നു</translation>
-<translation id="921738974253889319">വിലാസം പോലെ, സ്വയമേവ പൂരിപ്പിക്കൽ ഉപയോഗിച്ച് നിങ്ങൾ ഇതിനകം സംരക്ഷിച്ച വിവരങ്ങൾ ഈ ഫീച്ചർ ഉപയോഗിക്കുന്നു. ഈ പേജിൽ നിങ്ങൾക്ക് ഈ ഡാറ്റ അവലോകനം ചെയ്ത് മാനേജ് ചെയ്യാം.</translation>
 <translation id="92178312226016010">നിങ്ങൾ ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നു.</translation>
 <translation id="9218430445555521422">ഡിഫോൾട്ടായി സജ്ജീകരിക്കുക</translation>
 <translation id="9219103736887031265">Images</translation>

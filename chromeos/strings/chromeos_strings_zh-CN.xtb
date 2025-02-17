@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">布局切换</translation>
 <translation id="2244834438220057800">绿色</translation>
 <translation id="225692081236532131">激活状态</translation>
-<translation id="2265792117169966196">选择并下载<ph name="LANGUAGE_NAME" />转写模型</translation>
 <translation id="2267285889943769271">添加屏幕截图</translation>
 <translation id="2268044343513325586">优化</translation>
 <translation id="2271469253353559191">深色模式时间表</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">无法测试设备。切换到笔记本电脑模式即可进行测试。</translation>
 <translation id="3916998944874125962">截取屏幕截图</translation>
 <translation id="3923184630988645767">流量使用</translation>
-<translation id="3924445055519423964">点击即可总结网页/PDF 文件</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
 <translation id="3934185438132762746">未分配的<ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">未能解析主机</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
 <translation id="4483498983731992167">无法创建转写内容</translation>
 <translation id="4486524074141928967">您将于<ph name="TIME" /> 退出账号</translation>
-<translation id="4487890678161807486">打开转写语言选择器</translation>
 <translation id="4500722292849917410">此快捷键不可用。按新的快捷键时，请使用辅助键（ctrl、alt、shift 或<ph name="META_KEY" />键）。</translation>
 <translation id="4500966230243561393">界面颜色</translation>
 <translation id="4503223151711056411">向左</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">页面</translation>
 <translation id="4989542687859782284">不受支持的实验</translation>
 <translation id="4999333166442584738">隐藏报告</translation>
-<translation id="5005695757087124131">点击即可简化所选文字</translation>
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">主题颜色</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />转写模型已下载 <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">无法停用或移除此 APN。请务必先停用或移除已启用的<ph name="ATTACH" /> APN。</translation>
-<translation id="7453118953486228603">点击即可总结所选文字</translation>
 <translation id="7458970041932198923">若要查看和设置头像，请连接到网络并重新加载此页面。</translation>
 <translation id="7469648432129124067">检测到门户</translation>
 <translation id="7481312909269577407">前进</translation>

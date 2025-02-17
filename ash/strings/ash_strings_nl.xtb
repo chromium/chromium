@@ -193,6 +193,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1607312127821884567">Instellen van de weergave van apps van je telefoon sluiten</translation>
 <translation id="1610778689852195798">'Ongedaan maken'</translation>
 <translation id="1611993646327628135">Aan</translation>
+<translation id="1612679292338846734">Als je deze functies aanzet, kunnen de ingevoerde tekst, de documentcontent en de URL van de webpagina naar de servers van AI van Google worden gestuurd. Deze informatie wordt gebruikt om schrijfsuggesties te genereren, samenvattingen te genereren, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623768535032616219">Google Classroom samenvouwen</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> is niet beschikbaar.</translation>
@@ -565,6 +566,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2946119680249604491">Verbinding toevoegen</translation>
 <translation id="2947835478872237115">Huidig batterijniveau <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="2949420361496057765">Druk op <ph name="MODIFIER" /> en klik op een link</translation>
+<translation id="2957159466053076448">Je kunt deze functies altijd uitzetten in Instellingen. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio van apparaat</translation>
 <translation id="2960314608273155470">Opnamemodus, standaard is <ph name="SOURCE" /> <ph name="TYPE" />. Druk op Tab voor toetsenbordnavigatie.</translation>
 <translation id="2961963223658824723">Er is iets misgegaan. Probeer het over een paar seconden opnieuw.</translation>
@@ -1905,6 +1907,7 @@ Nieuwe installatie</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
 <translation id="736045644501761622">Achtergrond en stijl instellen</translation>
+<translation id="7368041336688136012">Je moet 18 jaar of ouder zijn om Help me met lezen en Help me met schrijven te gebruiken en afbeeldingen te maken met AI.</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> geheugen van in totaal <ph name="TOTAL_MEMORY" /> beschikbaar</translation>
 <translation id="737315737514430195">Hierdoor wordt microfoontoegang toegestaan voor alle apps en websites met microfoonrechten</translation>
@@ -2030,6 +2033,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Alles bekijken</translation>
+<translation id="7762664108390426952">de Servicevoorwaarden en het Privacybeleid van Google</translation>
 <translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769299611924763557">Je gif is bijna klaar</translation>
 <translation id="7773536009433685931">Wifi aanzetten</translation>

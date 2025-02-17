@@ -1548,7 +1548,6 @@
 <translation id="206308717637808771">ဝင်းဒိုးအားလုံး ပိတ်သောအခါ ဒေတာဖျက်သည်။ သင်ကြည့်နေသည့်ဝဘ်ဆိုက်အတိုင်း ဒေတာကို သတ်မှတ်သည်</translation>
 <translation id="2065405795449409761">အလိုအလျောက် ပြုလုပ်ထားသည့် စမ်းသပ်မှုဆော့ဖ်ဝဲက Chrome ကို ထိန်းချုပ်ထားပါသည်။</translation>
 <translation id="2066700471214517561">Chromebook အသုံးပြုသူ၏ အသံ ရှင်းလင်းစေရန်အတွက် မိုက်ကို beamforming နည်းသုံးသည်။</translation>
-<translation id="2067591192939433190">“<ph name="VENDOR_NAME" />” ထံမှ</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> သည် <ph name="PRINTER_NAME" /> တွင် ပုံနှိပ်ထုတ်ယူပြီးပါပြီ</translation>
 <translation id="2071393345806050157">ဒေသန္တရ လော့ဂ် ဖိုင် မရှိပါ။</translation>
 <translation id="2071692954027939183">အကြောင်းကြားချက်များကို သင်က ခွင့်ပြုလေ့မရှိသဖြင့် ၎င်းတို့ကို အလိုအလျောက် ပိတ်ထားသည်</translation>
@@ -6525,7 +6524,6 @@
 <translation id="5595307023264033512">ဝဘ်ဆိုက်များက အသုံးပြုထားသည့် စုစုပေါင်းသိုလှောင်ခန်း- <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">လိပ်စာ တည်းဖြတ်ရန်</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
-<translation id="5599819890022137981">Windows Hello မှ</translation>
 <translation id="5600348067066185292">ထည့်သွင်းရန် လွယ်ကူသောအဆင့်အနည်းငယ် ပြုလုပ်ရမည်။ သင့်ကွန်ပျူတာကို ပြောင်းလဲမှုမပြုလုပ်မီ အတည်ပြုရန် နောက်တစ်ကြိမ် တောင်းဆိုပါမည်။</translation>
 <translation id="5600706100022181951">အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်ရန် မိုဘိုင်းဒေတာ <ph name="UPDATE_SIZE_MB" /> MB ကို သုံးပါမည်။ ရှေ့ဆက်လိုပါသလား။</translation>
 <translation id="5601503069213153581">ပင်နံပါတ်</translation>
@@ -8670,6 +8668,7 @@
 <translation id="7160911207516219534">ဘေးအကန့်</translation>
 <translation id="716210145227921528">လျှို့ဝှက်ကီး ဖျက်လိုက်ပြီ</translation>
 <translation id="7165263843655074092">ဤစက်တွင် ပုံမှန် လုံခြုံရေးအကာအကွယ်ကို ရရှိပါမည်</translation>
+<translation id="7166017546802325772">ဤအုပ်စုတွင် အပ်ဒိတ်မရှိပါ</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" သည် ပုံများ၊ ဗီဒီယို၊ နှင့်အသံဖိုင်များကို အမှန်ခြစ်ထားသည့် တည်နေရာများတွင် ဖတ်နိုင်သည်။</translation>
 <translation id="7166815366658507447">ဟော့စပေါ့ ဖွင့်ထားသည်</translation>
 <translation id="7167327771183668296">အလိုအလျောက် နှိပ်ခြင်းများ</translation>
@@ -9246,7 +9245,6 @@
 <translation id="7586498138629385861">Chrome Apps များဖွင့်ထားစဉ် Chrome ဆက်အလုပ်လုပ်နေမည်။</translation>
 <translation id="7589461650300748890">ဝါဝို၊ ဟောဟိုမှာ၊ သတိထား။</translation>
 <translation id="7590883480672980941">ထည့်သွင်းမှု ဆက်တင်များ</translation>
-<translation id="7591317506733736159">သင်၏ Chrome ပရိုဖိုင်မှ</translation>
 <translation id="7592060599656252486">အချို့</translation>
 <translation id="7593653750169415785">အကြောင်းကြားချက်များကို အကြိမ်အနည်းငယ် ငြင်းဆိုထားသဖြင့် အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="7594725637786616550">သင့် <ph name="DEVICE_TYPE" /> ကို အသစ်အတိုင်း ပြင်ဆင်သတ်မှတ်ရန် powerwash လုပ်ပါ။</translation>
@@ -10303,7 +10301,6 @@
 <translation id="831440797644402910">ဤဖိုင်တွဲကို ဖွင့်၍မရပါ</translation>
 <translation id="8314835274931377415">‘ခလုတ်သုံးခြင်း’ စနစ်ထည့်သွင်းမှု စတင်မလား။</translation>
 <translation id="8315018673856831477">မှတ်ဉာဏ်ချွေတာစနစ် ရွေးစရာများ</translation>
-<translation id="8315044115695361734">iCloud Keychain မှ</translation>
 <translation id="8315514906653279104">ဖွင့်နေသည်...</translation>
 <translation id="8317671367883557781">ကွန်ရက်ချိတ်ဆက်မှု ထည့်ပါ</translation>
 <translation id="8317965619823678157">စကားဝှက်များ ကူးရန်</translation>

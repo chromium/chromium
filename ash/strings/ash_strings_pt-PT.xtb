@@ -193,6 +193,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1607312127821884567">Ignorar configuração da visualização das apps do telemóvel</translation>
 <translation id="1610778689852195798">"Anular"</translation>
 <translation id="1611993646327628135">Ativado</translation>
+<translation id="1612679292338846734">Quando ativa estas funcionalidades, o texto introduzido, o conteúdo do documento e o URL da página Web podem ser enviados para os servidores de IA da Google. Estas informações são usadas para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1623768535032616219">Reduzir Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> não está disponível.</translation>
@@ -565,6 +566,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2946119680249604491">Adicionar ligação</translation>
 <translation id="2947835478872237115">Nível atual da bateria: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> até à carga completa</translation>
 <translation id="2949420361496057765">Prima <ph name="MODIFIER" /> e clique num link</translation>
+<translation id="2957159466053076448">Pode desativar estas funcionalidades em qualquer altura nas Definições. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Áudio do dispositivo</translation>
 <translation id="2960314608273155470">Modo de captura, a predefinição é <ph name="SOURCE" /> <ph name="TYPE" />. Prima Tab para a navegação do teclado.</translation>
 <translation id="2961963223658824723">Ocorreu um erro. Tente novamente dentro de alguns segundos.</translation>
@@ -1905,6 +1907,7 @@ Nova instalação</translation>
 <translation id="735745346212279324">VPN desligado</translation>
 <translation id="7360036564632145207">A alteração da proteção do acesso aos dados para a definição dos periféricos pode otimizar o desempenho.</translation>
 <translation id="736045644501761622">Definir imagem de fundo e estilo</translation>
+<translation id="7368041336688136012">Tem de ter, pelo menos, 18 anos para usar as funcionalidades Ajuda-me a ler, Ajuda-me a escrever e criar imagens com IA.</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de memória disponível de <ph name="TOTAL_MEMORY" /> no total</translation>
 <translation id="737315737514430195">Isto permite o acesso ao microfone para todas as apps e Websites com a autorização do microfone</translation>
@@ -2030,6 +2033,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Mostrar tudo</translation>
+<translation id="7762664108390426952">Termos de Utilização e à Política de Privacidade da Google</translation>
 <translation id="7768784765476638775">Selecionar para ativar voz</translation>
 <translation id="7769299611924763557">O seu GIF vai estar pronto em breve</translation>
 <translation id="7773536009433685931">Ativar Wi-Fi em alternativa</translation>

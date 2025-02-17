@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Canvi de disseny</translation>
 <translation id="2244834438220057800">verd</translation>
 <translation id="225692081236532131">Estat d'activació</translation>
-<translation id="2265792117169966196">Selecciona i baixa el model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Afegeix una captura de pantalla</translation>
 <translation id="2268044343513325586">Refina</translation>
 <translation id="2271469253353559191">Programació del mode fosc</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">No es pot provar el dispositiu. Canvia al mode de portàtil per fer la prova.</translation>
 <translation id="3916998944874125962">fes una captura de pantalla</translation>
 <translation id="3923184630988645767">Ús de dades</translation>
-<translation id="3924445055519423964">Fes clic per resumir la pàgina web o el fitxer PDF</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sense assignar</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
 <translation id="4483498983731992167">No es pot crear la transcripció</translation>
 <translation id="4486524074141928967">La teva sessió es tancarà a les <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Obre el selector d'idioma de transcripció</translation>
 <translation id="4500722292849917410">La drecera no està disponible. Prem una drecera nova amb una tecla modificadora (Ctrl, Alt, Maj o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfície</translation>
 <translation id="4503223151711056411">Fletxa esquerra</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Pàgines</translation>
 <translation id="4989542687859782284">No disponibles</translation>
 <translation id="4999333166442584738">Amaga l'informe</translation>
-<translation id="5005695757087124131">Fes clic per simplificar el text seleccionat</translation>
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Color del tema</translation>
@@ -1395,7 +1391,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7425832472614771259">S'ha baixat un <ph name="PROGRESS_PERCENTAGE" /> % del model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN <ph name="ATTACH" /> que estiguin activats.</translation>
-<translation id="7453118953486228603">Fes clic per resumir el text seleccionat</translation>
 <translation id="7458970041932198923">Connecta't a una xarxa i torna a carregar la pàgina per veure i definir avatars.</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7481312909269577407">Endavant</translation>

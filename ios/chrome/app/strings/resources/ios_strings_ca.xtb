@@ -427,6 +427,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2755485474385016903">Tothom del grup podrà veure els canvis que es facin</translation>
 <translation id="2755595981383829244">Ara rebràs notificacions de contingut</translation>
 <translation id="2761788987260570878">Fes una foto de la cerca</translation>
+<translation id="2761898608071930085">Utilitza un altre compte</translation>
 <translation id="2762000892062317888">ara mateix</translation>
 <translation id="2772667768515195373">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça s'ha desat al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notificacions per correu electrònic</translation>
@@ -1724,6 +1725,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8428634594422941299">D'acord</translation>
 <translation id="8430694217306051839">Tria on vols desar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Detalls del grup de pestanyes</translation>
 <translation id="8438566539970814960">Millora les cerques i la navegació</translation>
 <translation id="8439758443371991593">Amaga l'opció Afegeix a la llista de lectura</translation>
 <translation id="8449869326050867919">S'ha compartit la contrasenya</translation>
@@ -1801,6 +1803,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8722229818691036192">Comptes d'aquest dispositiu</translation>
 <translation id="8722649775263832315">Toca o marca per cercar qualsevol cosa amb Google Lens</translation>
 <translation id="8723088494871522141">Amaga l'opció Ressenyes de productes per a tu</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} pestanya}other{{COUNT} pestanyes}}</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8728922029615312208">Tanca-ho tot</translation>
 <translation id="8730621377337864115">Fet</translation>

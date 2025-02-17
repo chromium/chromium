@@ -193,6 +193,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1607312127821884567">Zamknij konfigurację wyświetlania aplikacji z telefonu</translation>
 <translation id="1610778689852195798">„Cofnij”</translation>
 <translation id="1611993646327628135">Włączono</translation>
+<translation id="1612679292338846734">Gdy włączysz te funkcje, wpisany tekst, zawartość dokumentu i adres URL strony internetowej mogą być wysyłane na serwery AI od Google. Te informacje są używane do generowania propozycji tekstu, tworzenia podsumowań, odpowiadania na pytania i ulepszania usługi zgodnie z <ph name="LINK_TO_SERVICE_TERMS" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Zwiń Google Classroom</translation>
 <translation id="163032029566320584">Funkcja <ph name="UNAVAILABLE_DLC" /> jest niedostępna.</translation>
@@ -565,6 +566,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="2946119680249604491">Dodaj połączenie</translation>
 <translation id="2947835478872237115">Aktualny poziom baterii: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> do pełnego naładowania</translation>
 <translation id="2949420361496057765">Naciśnij <ph name="MODIFIER" /> i kliknij link</translation>
+<translation id="2957159466053076448">W każdej chwili możesz wyłączyć te funkcje w Ustawieniach. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Dźwięki z urządzenia</translation>
 <translation id="2960314608273155470">Tryb przechwytywania, domyślny to <ph name="SOURCE" /> <ph name="TYPE" />. Aby poruszać się za pomocą klawiatury, naciśnij Tab.</translation>
 <translation id="2961963223658824723">Coś poszło nie tak. Spróbuj ponownie za kilka sekund.</translation>
@@ -1904,6 +1906,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="735745346212279324">VPN odłączona</translation>
 <translation id="7360036564632145207">Wydajność może się poprawić, jeśli zmienisz ustawienie Zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
 <translation id="736045644501761622">Ustaw tapetę i styl</translation>
+<translation id="7368041336688136012">Aby korzystać z funkcji Pomóż mi czytać i Pomóż mi pisać oraz tworzyć obrazy za pomocą AI, musisz mieć ukończone 18 lat.</translation>
 <translation id="7371404428569700291">Nagraj okno</translation>
 <translation id="7372069265635026568">Dostępna pamięć: <ph name="AVAILABLE_MEMORY" /> z <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Zezwala to na dostęp do mikrofonu w przypadku wszystkich aplikacji i stron internetowych, które mają uprawnienia do korzystania z niego</translation>
@@ -2029,6 +2032,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Pokaż wszystko</translation>
+<translation id="7762664108390426952">Warunkami usługi i Polityką prywatności Google</translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
 <translation id="7769299611924763557">Twój GIF będzie wkrótce gotowy</translation>
 <translation id="7773536009433685931">W zamian włącz Wi-Fi</translation>

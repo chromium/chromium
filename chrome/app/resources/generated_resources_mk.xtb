@@ -1551,7 +1551,6 @@
 <translation id="206308717637808771">Податоците се бришат при затворање на сите прозорци. Податоците се третираат исто како сајтот што го прегледувате</translation>
 <translation id="2065405795449409761">Автоматизиран софтвер за тестирање го контролира Chrome.</translation>
 <translation id="2066700471214517561">Микрофон што формира сигнален сноп за да звучи јасно лицето што користи Chromebook.</translation>
-<translation id="2067591192939433190">Од „<ph name="VENDOR_NAME" />“</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> заврши со печатење на <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Нема локална датотека со евиденција.</translation>
 <translation id="2071692954027939183">Известувањата беа блокирани автоматски бидејќи обично не ги дозволувате</translation>
@@ -6528,7 +6527,6 @@
 <translation id="5595307023264033512">Вкупен капацитет искористен од сајтовите: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Измени адреса</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
-<translation id="5599819890022137981">Од Windows Hello</translation>
 <translation id="5600348067066185292">За инсталација се потребни неколку лесни чекори. Ќе имате уште една шанса да ги потврдите измените пред да се извршат на вашиот компјутер.</translation>
 <translation id="5600706100022181951">Ажурирањето ќе се преземе со користење <ph name="UPDATE_SIZE_MB" /> MB мобилен интернет. Дали сакате да продолжите?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8677,6 +8675,7 @@
 <translation id="7160911207516219534">Странични табли</translation>
 <translation id="716210145227921528">Криптографскиот клуч е избришан</translation>
 <translation id="7165263843655074092">Добивате стандардна безбедносна заштита на уредов</translation>
+<translation id="7166017546802325772">Нема новости во групава</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“ може да чита слики, видео и аудио датотеки на означените локации.</translation>
 <translation id="7166815366658507447">Точката на пристап е овозможена</translation>
 <translation id="7167327771183668296">Автоматски кликнувања</translation>
@@ -9253,7 +9252,6 @@
 <translation id="7586498138629385861">Chrome ќе продолжи да работи додека се отворени Chrome Apps.</translation>
 <translation id="7589461650300748890">Полека. Внимателно.</translation>
 <translation id="7590883480672980941">Поставки за внесување</translation>
-<translation id="7591317506733736159">Од профилот на Chrome</translation>
 <translation id="7592060599656252486">Некои</translation>
 <translation id="7593653750169415785">Поставкава е автоматски блокирана бидејќи неколкупати ги одбивте известувањата</translation>
 <translation id="7594725637786616550">Ресетирајте го вашиот <ph name="DEVICE_TYPE" /> со „Фабричко ресетирање“ за да биде како нов.</translation>
@@ -10313,7 +10311,6 @@
 <translation id="831440797644402910">Папкава не може да се отвори</translation>
 <translation id="8314835274931377415">Да се стартува поставувањето на „Пристап со прекинувачи“?</translation>
 <translation id="8315018673856831477">Опции за „Штедач на меморија“</translation>
-<translation id="8315044115695361734">Од iCloud Keychain</translation>
 <translation id="8315514906653279104">Се вклучува…</translation>
 <translation id="8317671367883557781">Додај мрежна врска</translation>
 <translation id="8317965619823678157">ги копира лозинките</translation>

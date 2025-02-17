@@ -1541,7 +1541,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="206308717637808771">Andmed kustutatakse, kui kõik aknad sulgete. Andmeid töödeldakse samuti nagu saiti, mida vaatate.</translation>
 <translation id="2065405795449409761">Chrome'i juhib automatiseeritud testtarkvara.</translation>
 <translation id="2066700471214517561">Ruumfiltreeriv mikrofon, et Chromebooki kasutava inimese hääl kõlaks selgelt.</translation>
-<translation id="2067591192939433190">Teenusepakkujalt <ph name="VENDOR_NAME" /></translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> lõpetas printimise printerisse <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Kohalikku logifaili pole.</translation>
 <translation id="2071692954027939183">Märguanded blokeeriti automaatselt, kuna tavaliselt ei luba te neid kuvada</translation>
@@ -6518,7 +6517,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5595307023264033512">Saitide kasutatav salvestusruum kokku: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Muuda aadressi</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
-<translation id="5599819890022137981">Windows Hellost</translation>
 <translation id="5600348067066185292">Installimiseks on vaja teha paar lihtsat toimingut. Enne kui teie arvutis muudatusi tehakse, on teil veel üks võimalus oma otsust kinnitada.</translation>
 <translation id="5600706100022181951">Värskenduse allalaadimiseks kulub <ph name="UPDATE_SIZE_MB" /> MB mobiilset andmesidet. Kas soovite jätkata?</translation>
 <translation id="5601503069213153581">PIN-kood</translation>
@@ -8666,6 +8664,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7160911207516219534">Külgpaneelid</translation>
 <translation id="716210145227921528">Pääsuvõti kustutati</translation>
 <translation id="7165263843655074092">Saate selles seadmes standardse turvakaitse</translation>
+<translation id="7166017546802325772">Selles grupis pole värskendusi</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />” saab loa märgitud asukohtade pildi-, video- ja helifaile lugeda.</translation>
 <translation id="7166815366658507447">Kuumkoht on lubatud</translation>
 <translation id="7167327771183668296">Automaatne klõpsamine</translation>
@@ -9242,7 +9241,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7586498138629385861">Chrome'i käitatakse edasi seni, kuni Chrome'i rakendused on avatud.</translation>
 <translation id="7589461650300748890">Hei! Olge ettevaatlik.</translation>
 <translation id="7590883480672980941">Sisendi seaded</translation>
-<translation id="7591317506733736159">Teie Chrome'i profiililt</translation>
 <translation id="7592060599656252486">Mõni</translation>
 <translation id="7593653750169415785">Automaatselt blokeeritud, kuna keeldusite mitmel korral märguannetest</translation>
 <translation id="7594725637786616550">Pärast Powerwashiga lähtestamist on teie seade <ph name="DEVICE_TYPE" /> just nagu uus.</translation>
@@ -10300,7 +10298,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="831440797644402910">Seda kausta ei saa avada</translation>
 <translation id="8314835274931377415">Kas alustada lülitiga juurdepääsu seadistamist?</translation>
 <translation id="8315018673856831477">Mälusäästja valikud</translation>
-<translation id="8315044115695361734">iCloud Keychainist</translation>
 <translation id="8315514906653279104">Sisselülitamine …</translation>
 <translation id="8317671367883557781">Lisa võrguühendus</translation>
 <translation id="8317965619823678157">kopeerida paroole</translation>

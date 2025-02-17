@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">Akaunti Inayosimamiwa</translation>
 <translation id="1358214951266274152">Fungua Kiungo Ulichonakili</translation>
 <translation id="1360432990279830238">Utaondoka na uzime usawazishaji?</translation>
+<translation id="1362192716574455663">Data ya kuvinjari iliyopo haitahamishiwa kwenye akaunti yako ya kazini. Bado unaweza kuifikia kwa kuondoka kwenye akaunti au kwa kuweka akaunti binafsi.</translation>
 <translation id="1363028406613469049">Wimbo</translation>
 <translation id="1364367057792633742">Kichupo kipya</translation>
 <translation id="1365106417372288489">iPhone yako ilirejeshwa katika hali yake ya awali hivi karibuni, hatua ambayo huenda imebadilisha kivinjari chako chaguomsingi.</translation>
@@ -427,6 +428,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2755485474385016903">Mabadiliko yaliyofanywa yanaonekana kwa kila mtu kwenye kikundi</translation>
 <translation id="2755595981383829244">Sasa utapokea arifa za maudhui</translation>
 <translation id="2761788987260570878">Piga picha ya utafutaji wako</translation>
+<translation id="2761898608071930085">Tumia Akaunti Nyingine</translation>
 <translation id="2762000892062317888">sasa hivi tu</translation>
 <translation id="2772667768515195373">Unaweza kutumia anwani zilizohifadhiwa kwenye bidhaa zote za Google. Anwani hii imehifadhiwa kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Arifa za barua pepe</translation>
@@ -1724,6 +1726,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8428634594422941299">Nimeelewa</translation>
 <translation id="8430694217306051839">Chagua utakapohifadhi <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Maelezo ya kikundi cha vichupo</translation>
 <translation id="8438566539970814960">Boresha utafutaji na kuvinjari</translation>
 <translation id="8439758443371991593">Ficha Chaguo la Weka kwenye Orodha ya Kusoma</translation>
 <translation id="8449869326050867919">Nenosiri limeshirikiwa</translation>
@@ -1801,6 +1804,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8722229818691036192">Akaunti zilizo katika kifaa hiki</translation>
 <translation id="8722649775263832315">Gusa au uangazie ili utafute chochote ukitumia Lenzi ya Google</translation>
 <translation id="8723088494871522141">Ficha "Maoni Yanayokufaa kuhusu Bidhaa"</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{Kichupo {COUNT}}other{Vichupo {COUNT}}}</translation>
 <translation id="8725066075913043281">Jaribu tena</translation>
 <translation id="8728922029615312208">Funga vyote</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>

@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">Switch ng layout</translation>
 <translation id="2244834438220057800">berde</translation>
 <translation id="225692081236532131">Status ng pag-activate</translation>
-<translation id="2265792117169966196">Piliin at i-download ang modelo ng transcription sa <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Magdagdag ng screenshot</translation>
 <translation id="2268044343513325586">Pinuhin</translation>
 <translation id="2271469253353559191">Iskedyul ng dark mode</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">Hindi masuri ang device. Lumipat sa laptop mode para suriin.</translation>
 <translation id="3916998944874125962">kumuha ng screenshot</translation>
 <translation id="3923184630988645767">Paggamit ng data</translation>
-<translation id="3924445055519423964">I-click para ibuod ang webpage/PDF file</translation>
 <translation id="3932043219784172185">Walang nakakonektang device</translation>
 <translation id="3934185438132762746">Hindi nakatalagang <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
 <translation id="4483498983731992167">Hindi makagawa ng transcript</translation>
 <translation id="4486524074141928967">Isa-sign out ka nang <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Buksan ang picker ng wika ng transcription</translation>
 <translation id="4500722292849917410">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang modifier key (ctrl, alt, shift, o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Kulay ng interface</translation>
 <translation id="4503223151711056411">Kaliwang arrow</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">Mga Page</translation>
 <translation id="4989542687859782284">Hindi Available</translation>
 <translation id="4999333166442584738">Itago ang ulat</translation>
-<translation id="5005695757087124131">I-click para pasimplehin ang napiling text</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Kulay ng tema</translation>
@@ -1395,7 +1391,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7425832472614771259">Modelo ng transcription sa <ph name="LANGUAGE_NAME" /> <ph name="PROGRESS_PERCENTAGE" />% na ang na-download</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Hindi ma-disable o maalis ang APN na ito. Tiyaking naka-disable o inalis ang mga naka-enable na <ph name="ATTACH" /> na APN.</translation>
-<translation id="7453118953486228603">I-click para ibuod ang napiling text</translation>
 <translation id="7458970041932198923">Kumonekta sa isang network at i-reload ang page para tumingin at magtakda ng mga avatar.</translation>
 <translation id="7469648432129124067">May na-detect na portal</translation>
 <translation id="7481312909269577407">Sumulong</translation>

@@ -427,6 +427,7 @@
 <translation id="2755485474385016903">የተደረጉ ለውጦች በቡድኑ ውስጥ ባሉ ሁሉም ሰዎች ይታያሉ</translation>
 <translation id="2755595981383829244">አሁን የይዘት ማሳወቂያዎችን ይቀበላሉ</translation>
 <translation id="2761788987260570878">ፍለጋዎን ፎቶ ያንሱ</translation>
+<translation id="2761898608071930085">ሌላ መለያ ተጠቀም</translation>
 <translation id="2762000892062317888">አሁን</translation>
 <translation id="2772667768515195373">በመላው Google ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ አድራሻ በእርስዎ Google መለያ፣ <ph name="USER_EMAIL" /> ውስጥ ተቀምጧል።</translation>
 <translation id="2773344962924806829">የኢሜይል ማሳወቂያዎች</translation>
@@ -1724,6 +1725,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8428634594422941299">ገባኝ</translation>
 <translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) የት እንደሚያስቀምጡ ይምረጡ</translation>
+<translation id="8434837876193928924">የትር ቡድን ዝርዝሮች</translation>
 <translation id="8438566539970814960">ፍለጋዎችን እና አሰሳን የተሻለ አድርግ</translation>
 <translation id="8439758443371991593">ወደ የንባብ ዝርዝር አክልን ደብቅ</translation>
 <translation id="8449869326050867919">የይለፍ ቃል ተጋርቷል</translation>
@@ -1801,6 +1803,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8722229818691036192">በዚህ መሣሪያ ላይ ያሉ መለያዎች</translation>
 <translation id="8722649775263832315">ማንኛውንም ነገር በGoogle ሌንስ ለመፈለግ መታ ያድርጉ ወይም ያድምቂ</translation>
 <translation id="8723088494871522141">«ለእርስዎ የምርት ግምገማዎችን» ደብቅ</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} ትር}one{{COUNT} ትር}other{{COUNT} ትሮች}}</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>
 <translation id="8728922029615312208">ሁሉንም ዝጋ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>

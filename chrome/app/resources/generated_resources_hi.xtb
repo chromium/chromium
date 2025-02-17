@@ -1551,7 +1551,6 @@
 <translation id="206308717637808771">सभी विंडो बंद करने पर डेटा मिटाएं. देखी जा रही साइट के लिए, स्टोरेज ऐक्सेस की जो सेटिंग चुनी गई है वही डेटा के लिए भी लागू होती है</translation>
 <translation id="2065405795449409761">Chrome को स्वचालित परीक्षण सॉफ़्टवेयर नियंत्रित करता है.</translation>
 <translation id="2066700471214517561">बीमफ़ॉर्मिंग माइक के ज़रिए, Chromebook इस्तेमाल करने वाले व्यक्ति की आवाज़ साफ़ सुनाई देती है.</translation>
-<translation id="2067591192939433190">"<ph name="VENDOR_NAME" />" से</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ने <ph name="PRINTER_NAME" /> की मदद से प्रिंट कर दिया है</translation>
 <translation id="2071393345806050157">कोई स्थानीय लॉग फ़ाइल नहीं है.</translation>
 <translation id="2071692954027939183">सूचनाओं को अपने-आप ब्लॉक कर दिया गया, क्योंकि आम तौर पर आप उन्हें अनुमति नहीं देते हैं</translation>
@@ -6525,7 +6524,6 @@
 <translation id="5595307023264033512">साइटों ने कुल इतना स्टोरेज इस्तेमाल किया है: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
-<translation id="5599819890022137981">Windows Hello से</translation>
 <translation id="5600348067066185292">कुछ आसान तरीकों से इंस्टॉल करें. आपके कंप्यूटर में बदलाव किए जाने से पहले, आपको पुष्टि करने का एक मौका और मिलेगा.</translation>
 <translation id="5600706100022181951">अपडेट को डाउनलोड करने में <ph name="UPDATE_SIZE_MB" /> एमबी मोबाइल डेटा का इस्तेमाल होगा. क्या आप जारी रखना चाहते हैं?</translation>
 <translation id="5601503069213153581">पिन</translation>
@@ -9251,7 +9249,6 @@
 <translation id="7586498138629385861">Chrome Apps के खुले होने पर Chrome चलता रहेगा.</translation>
 <translation id="7589461650300748890">अरे, सुनिए. सतर्क रहें.</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग</translation>
-<translation id="7591317506733736159">आपकी Chrome प्रोफ़ाइल से</translation>
 <translation id="7592060599656252486">कुछ</translation>
 <translation id="7593653750169415785">आपने कुछ सूचनाओं को अस्वीकार कर दिया, इसलिए यह अपने आप ब्लॉक हो गया है</translation>
 <translation id="7594725637786616550">पावरवॉश आपके <ph name="DEVICE_TYPE" /> को बिलकुल नए जैसा रीसेट कर देगा.</translation>
@@ -10308,7 +10305,6 @@
 <translation id="831440797644402910">इस फ़ोल्डर को खोला नहीं जा सकता</translation>
 <translation id="8314835274931377415">क्या आप ऐक्सेस का तरीका बदलने वाले स्विच का सेट अप शुरू करना चाहते हैं?</translation>
 <translation id="8315018673856831477">मेमोरी सेवर के विकल्प</translation>
-<translation id="8315044115695361734">iCloud Keychain से</translation>
 <translation id="8315514906653279104">चालू किया जा रहा है...</translation>
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोड़ें</translation>
 <translation id="8317965619823678157">पासवर्ड कॉपी करना</translation>

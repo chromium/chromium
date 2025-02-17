@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">Administrert konto</translation>
 <translation id="1358214951266274152">Besøk linken du kopierte</translation>
 <translation id="1360432990279830238">Vil du logge av og slå av synkronisering?</translation>
+<translation id="1362192716574455663">Eksisterende nettlesingsdata blir ikke flyttet til arbeidskontoen din. Du kan fortsatt få tilgang til dem ved å logge av eller legge til en personlig konto.</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1364367057792633742">Ny fane</translation>
 <translation id="1365106417372288489">iPhonen din ble nylig gjenopprettet, noe som kan ha medført at standardnettleseren ble endret.</translation>
@@ -427,6 +428,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2755485474385016903">Alle i gruppen ser endringene du gjør</translation>
 <translation id="2755595981383829244">Nå får du varsler om innhold</translation>
 <translation id="2761788987260570878">Ta et bilde av søket</translation>
+<translation id="2761898608071930085">Bruk en annen konto</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
 <translation id="2772667768515195373">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen er lagret i Google-kontoen din <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E-postvarsler</translation>
@@ -1724,6 +1726,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8428634594422941299">Greit</translation>
 <translation id="8430694217306051839">Velg hvor du vil lagre <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Detaljer om fanegruppen</translation>
 <translation id="8438566539970814960">Gjør søking og surfing bedre</translation>
 <translation id="8439758443371991593">Skjul Legg til på leselisten</translation>
 <translation id="8449869326050867919">Passordet er delt</translation>
@@ -1801,6 +1804,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8722229818691036192">Kontoer på denne enheten</translation>
 <translation id="8722649775263832315">Trykk eller marker for å søke på hva som helst med Google Lens</translation>
 <translation id="8723088494871522141">Skjul «Produktanmeldelser for deg»</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} fane}other{{COUNT} faner}}</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8728922029615312208">Lukk alle</translation>
 <translation id="8730621377337864115">Ferdig</translation>

@@ -303,7 +303,6 @@
 <translation id="2240366984605217732">लेआउट बदल्ने की</translation>
 <translation id="2244834438220057800">हरियो</translation>
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
-<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> भाषाको ट्रान्स्क्रिप्सन मोडेल चयन गर्नुहोस् र डाउनलोड गर्नुहोस्</translation>
 <translation id="2267285889943769271">स्क्रिनसट हाल्नुहोस्</translation>
 <translation id="2268044343513325586">परिशुद्ध</translation>
 <translation id="2271469253353559191">अँध्यारो मोडको समयतालिका</translation>
@@ -610,7 +609,6 @@
 <translation id="391412459402535266">डिभाइसको परीक्षण गर्न सकिँदैन। परीक्षण गर्न ल्यापटप मोड प्रयोग गर्नुहोस्।</translation>
 <translation id="3916998944874125962">"स्क्रिनसट लिनुहोस्" जनाउने आइकन</translation>
 <translation id="3923184630988645767">डेटा प्रयोग</translation>
-<translation id="3924445055519423964">वेबपेज/PDF फाइलको सारांश निकाल्न क्लिक गर्नुहोस्</translation>
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="3934185438132762746">असाइन नगरिएको <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
@@ -734,7 +732,6 @@
 <translation id="4483049906298469269">नेटवर्कको डिफल्ट गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
 <translation id="4483498983731992167">ट्रान्स्क्रिप्ट बनाउन सकिएन</translation>
 <translation id="4486524074141928967">तपाईंलाई <ph name="TIME" /> मा साइन आउट गरिने छ</translation>
-<translation id="4487890678161807486">ट्रान्स्क्रिप्सन ल्याङ्वेज पिकर खोल्नुहोस्</translation>
 <translation id="4500722292849917410">यो सर्टकट उपलब्ध छैन। मोडिफायर की (ctrl, alt, सिफ्ट, सर्च वा <ph name="META_KEY" />) प्रयोग गरी नयाँ सर्टकट थिच्नुहोस्।</translation>
 <translation id="4500966230243561393">इन्टरफेसको रङ</translation>
 <translation id="4503223151711056411">लेफ्ट एरो</translation>
@@ -848,7 +845,6 @@
 <translation id="4988526792673242964">पृष्ठहरू</translation>
 <translation id="4989542687859782284">उपलब्ध छैन</translation>
 <translation id="4999333166442584738">रिपोर्ट लुकाउनुहोस्</translation>
-<translation id="5005695757087124131">चयन गरिएको टेक्स्ट सरल बनाउन क्लिक गर्नुहोस्</translation>
 <translation id="500920857929044050">परीक्षण रोक्नुहोस्</translation>
 <translation id="5017508259293544172">छलाङ</translation>
 <translation id="5035083460461104704">थिमको रङ</translation>
@@ -1395,7 +1391,6 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> भाषाको ट्रान्स्क्रिप्सन मोडेल <ph name="PROGRESS_PERCENTAGE" />% डाउनलोड भयो</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">यो APN अफ गर्न वा हटाउन मिल्दैन। अन गरिएका <ph name="ATTACH" /> APN हरू अफ गरिएका वा हटाइएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
-<translation id="7453118953486228603">चयन गरिएको टेक्स्टको सारांश बनाउन क्लिक गर्नुहोस्</translation>
 <translation id="7458970041932198923">अवतारहरू हेर्न र सेट गर्न इन्टरनेटमा कनेक्ट गर्नुहोस् र यो पेज रिलोड गर्नुहोस्।</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7481312909269577407">अगाडि</translation>

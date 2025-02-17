@@ -1533,7 +1533,6 @@
 <translation id="206308717637808771">关闭所有窗口时删除数据。在数据处理方面，与您正在查看的网站相同</translation>
 <translation id="2065405795449409761">Chrome 正受到自动测试软件的控制。</translation>
 <translation id="2066700471214517561">波束成形麦克风，让 Chromebook 使用者的声音更清晰。</translation>
-<translation id="2067591192939433190">来自“<ph name="VENDOR_NAME" />”</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />已通过<ph name="PRINTER_NAME" />打印完毕</translation>
 <translation id="2071393345806050157">没有本地日志文件。</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
@@ -6501,7 +6500,6 @@
 <translation id="5595307023264033512">网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="5596627076506792578">更多选项</translation>
-<translation id="5599819890022137981">来自 Windows Hello</translation>
 <translation id="5600348067066185292">只需执行几个简单的步骤即可完成安装。在更改计算机之前，您还有一次机会进行确认。</translation>
 <translation id="5600706100022181951">下载更新需要使用 <ph name="UPDATE_SIZE_MB" /> MB 的移动数据流量。要继续吗？</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8646,6 +8644,7 @@
 <translation id="7160911207516219534">侧边栏</translation>
 <translation id="716210145227921528">已删除通行密钥</translation>
 <translation id="7165263843655074092">此设备正在为您提供标准安全保护</translation>
+<translation id="7166017546802325772">此分组没有更新</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />”对于选中位置中的图片、视频及声音文件具有读取权限。</translation>
 <translation id="7166815366658507447">已启用热点</translation>
 <translation id="7167327771183668296">自动点击</translation>
@@ -9222,7 +9221,6 @@
 <translation id="7586498138629385861">Chrome应用处于打开状态时，Chrome将持续运行。</translation>
 <translation id="7589461650300748890">注意！</translation>
 <translation id="7590883480672980941">输入设置</translation>
-<translation id="7591317506733736159">来自您的 Chrome 个人资料</translation>
 <translation id="7592060599656252486">部分</translation>
 <translation id="7593653750169415785">已自动阻止显示通知，因为您已多次拒绝接收通知</translation>
 <translation id="7594725637786616550">Powerwash 会将您的 <ph name="DEVICE_TYPE" /> 重置为初始状态。</translation>
@@ -10280,7 +10278,6 @@
 <translation id="831440797644402910">无法打开此文件夹</translation>
 <translation id="8314835274931377415">开始进行开关控制设置？</translation>
 <translation id="8315018673856831477">省内存模式选项</translation>
-<translation id="8315044115695361734">来自 iCloud 钥匙串</translation>
 <translation id="8315514906653279104">正在开启…</translation>
 <translation id="8317671367883557781">添加网络连接</translation>
 <translation id="8317965619823678157">复制密码</translation>

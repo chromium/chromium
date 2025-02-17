@@ -1540,7 +1540,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="206308717637808771">Elimina i dati alla chiusura di tutte le finestre. I dati vengono trattati allo stesso modo del sito che stai visualizzando</translation>
 <translation id="2065405795449409761">Chrome è controllato da software di test automatizzato.</translation>
 <translation id="2066700471214517561">Microfono beamforming per un audio nitido della persona che utilizza Chromebook.</translation>
-<translation id="2067591192939433190">Di "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha terminato la stampa su <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Nessun file di log locale.</translation>
 <translation id="2071692954027939183">Le notifiche sono state automaticamente bloccate perché solitamente non le consenti</translation>
@@ -6513,7 +6512,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5595307023264033512">Spazio di archiviazione totale usato dai siti: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
-<translation id="5599819890022137981">Di Windows Hello</translation>
 <translation id="5600348067066185292">L'installazione richiede pochi semplici passaggi. Avrai un'altra possibilità di confermare prima dell'applicazione delle modifiche al computer.</translation>
 <translation id="5600706100022181951">Il download dell'aggiornamento richiederà <ph name="UPDATE_SIZE_MB" /> MB di dati mobili. Vuoi continuare?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -8658,6 +8656,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7160911207516219534">Riquadri laterali</translation>
 <translation id="716210145227921528">Passkey eliminata</translation>
 <translation id="7165263843655074092">Stai utilizzando la protezione di sicurezza standard su questo dispositivo</translation>
+<translation id="7166017546802325772">Nessun aggiornamento per questo gruppo</translation>
 <translation id="716640248772308851">L'estensione "<ph name="EXTENSION" />" può leggere file di immagini, video e audio nelle posizioni selezionate.</translation>
 <translation id="7166815366658507447">Hotspot attivato</translation>
 <translation id="7167327771183668296">Clic automatici</translation>
@@ -9234,7 +9233,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7586498138629385861">Chrome rimane in esecuzione se ci sono app di Chrome aperte.</translation>
 <translation id="7589461650300748890">Attenzione.</translation>
 <translation id="7590883480672980941">Impostazioni di immissione</translation>
-<translation id="7591317506733736159">Del tuo profilo Chrome</translation>
 <translation id="7592060599656252486">Qualche segno di punteggiatura</translation>
 <translation id="7593653750169415785">Blocco automatico in risposta a ripetuti rifiuti delle notifiche</translation>
 <translation id="7594725637786616550">Esegui il Powerwash per reimpostare il tuo dispositivo <ph name="DEVICE_TYPE" /> e farlo tornare come nuovo.</translation>
@@ -10292,7 +10290,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="831440797644402910">Impossibile aprire questa cartella</translation>
 <translation id="8314835274931377415">Vuoi avviare la configurazione di Switch Access?</translation>
 <translation id="8315018673856831477">Opzioni per il Risparmio memoria</translation>
-<translation id="8315044115695361734">Del portachiavi iCloud</translation>
 <translation id="8315514906653279104">Attivazione in corso…</translation>
 <translation id="8317671367883557781">Aggiungi connesione di rete</translation>
 <translation id="8317965619823678157">copiare le password</translation>
