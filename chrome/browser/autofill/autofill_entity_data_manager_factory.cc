@@ -58,4 +58,9 @@ AutofillEntityDataManagerFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<EntityDataManager>(std::move(local_storage));
 }
 
+bool AutofillEntityDataManagerFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
+}
+
 }  // namespace autofill
