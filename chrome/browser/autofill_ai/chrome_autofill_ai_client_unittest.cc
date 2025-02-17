@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -17,14 +16,11 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
-#include "components/autofill/core/browser/webdata/entities/entity_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -62,12 +58,6 @@ std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
   return std::make_unique<autofill::TestPersonalDataManager>();
 }
 
-std::unique_ptr<KeyedService> CreateTestEntityDataManager(
-    scoped_refptr<autofill::AutofillWebDataService> awds,
-    content::BrowserContext* context) {
-  return std::make_unique<autofill::EntityDataManager>(std::move(awds));
-}
-
 class ChromeAutofillAiClientTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -94,19 +84,13 @@ class ChromeAutofillAiClientTest : public ChromeRenderViewHostTestHarness {
                 base::BindRepeating(&CreateUserAnnotationsServiceFactory)},
             TestingProfile::TestingFactory{
                 autofill::PersonalDataManagerFactory::GetInstance(),
-                base::BindRepeating(&CreateTestPersonalDataManager)},
-            TestingProfile::TestingFactory{
-                autofill::AutofillEntityDataManagerFactory::GetInstance(),
-                base::BindRepeating(&CreateTestEntityDataManager,
-                                    awds_helper_.autofill_webdata_service())}};
+                base::BindRepeating(&CreateTestPersonalDataManager)}};
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       autofill::features::kAutofillAiWithDataSchema};
   std::unique_ptr<ChromeAutofillAiClient> client_;
-  autofill::AutofillWebDataServiceTestHelper awds_helper_{
-      std::make_unique<autofill::EntityTable>()};
 };
 
 TEST_F(ChromeAutofillAiClientTest, GetAXTree) {
