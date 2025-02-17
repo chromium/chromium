@@ -31,8 +31,8 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
         private @StringRes int mSigninSubtitleId = R.string.signin_fre_subtitle;
         private @StringRes int mSigninDismissTextId = R.string.signin_fre_dismiss_button;
         private @DrawableRes int mSigninLogoId;
-        private @StringRes int mHistorySyncTitleId = R.string.history_sync_title;
-        private @StringRes int mHistorySyncSubtitleId = R.string.history_sync_subtitle;
+        private @StringRes int mHistorySyncTitleId;
+        private @StringRes int mHistorySyncSubtitleId;
         private @HistorySyncConfig.OptInMode int mHistoryOptInMode =
                 HistorySyncConfig.OptInMode.OPTIONAL;
 

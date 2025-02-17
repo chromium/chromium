@@ -589,8 +589,8 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @LargeTest
-    public void testFullscreenSigninCustomisation() {
-        // Create a config which only uses non-default resource values to test customisation.
+    public void testFullscreenSigninCustomization() {
+        // Create a config which only uses non-default resource values to test customization.
         // For instance, the default sign-in strings are used for history sync and vice versa.
         FullscreenSigninAndHistorySyncConfig config =
                 new FullscreenSigninAndHistorySyncConfig.Builder()

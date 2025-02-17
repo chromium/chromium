@@ -706,6 +706,47 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         addAccountStateWatcher.assertExpected();
     }
 
+    @Test
+    @MediumTest
+    public void testHistorySyncStringsCustomization() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .build();
+        // Create a config using sign-in strings for the history sync screen to test customization.
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.ADD_ACCOUNT,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.REQUIRED)
+                        .historySyncTitleId(R.string.signin_fre_title)
+                        .historySyncSubtitleId(R.string.signin_fre_subtitle)
+                        .build();
+        Intent intent =
+                SigninAndHistorySyncActivity.createIntent(
+                        ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
+        mActivityTestRule.launchActivity(intent);
+        mActivity = mActivityTestRule.getActivity();
+
+        // Start sign-in from the collapsed bottom-sheet.
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+
+        // Wait for the history opt-in dialog and verify the custom strings.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.history_sync_title), withText(R.string.signin_fre_title)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.history_sync_subtitle), withText(R.string.signin_fre_subtitle)))
+                .check(matches(isDisplayed()));
+    }
+
     private void launchActivity(
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
