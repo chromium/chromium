@@ -836,6 +836,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="179" label="AI Assistance - Side effect confirmed"/>
   <int value="180" label="AI Assistance - Side effect rejected"/>
   <int value="181" label="AI Assistance - Error"/>
+  <int value="182"
+      label="Performance Insight agent opened from Insights sidebar"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
