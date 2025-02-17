@@ -1064,7 +1064,7 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
     }
   }
   finished_load_time = base::TimeTicks::Now();
-  bool wait_again = false;
+  bool frame_changed = false;
   while (true) {
     // Now, rely on the render frame count to be the indicator of page activity.
     // Once all the frames are drawn, we're free to continue.
@@ -1082,8 +1082,7 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
     heart_beat.Run();
     if (frame_observer.changed()) {
       VLOG(1) << "The render frame has changed.";
-      // Start waiting on the new frame.
-      wait_again = true;
+      frame_changed = true;
       break;
     } else if (frame_submission_observer.render_frame_count() == 0) {
       // If the renderer has stopped submitting frames
@@ -1103,7 +1102,8 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
       break;
     }
   }
-  if (wait_again) {
+  // Start waiting on the new frame.
+  if (frame_changed) {
     WaitTillPageIsIdle(continuous_paint_timeout);
   }
 }
