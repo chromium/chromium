@@ -679,19 +679,7 @@ TEST_F(SimpleIndexTest, EvictBySize2) {
   ASSERT_EQ(2u, last_doom_entry_hashes().size());
 }
 
-class SimpleIndexPrioritizedCachingTest : public SimpleIndexTest {
- public:
-  SimpleIndexPrioritizedCachingTest() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kSimpleCachePrioritizedCaching);
-  }
-  ~SimpleIndexPrioritizedCachingTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(SimpleIndexPrioritizedCachingTest, EvictPrioritization) {
+TEST_F(SimpleIndexTest, EvictPrioritization) {
   const auto caching_prioritization_period =
       net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
   auto now = base::Time::Now();
@@ -723,7 +711,7 @@ TEST_F(SimpleIndexPrioritizedCachingTest, EvictPrioritization) {
   ASSERT_EQ(1u, last_doom_entry_hashes().size());
 }
 
-TEST_F(SimpleIndexPrioritizedCachingTest, EvictPrioritizationOutOfPeriod) {
+TEST_F(SimpleIndexTest, EvictPrioritizationOutOfPeriod) {
   const auto caching_prioritization_period =
       net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
   auto now = base::Time::Now();
@@ -755,7 +743,20 @@ TEST_F(SimpleIndexPrioritizedCachingTest, EvictPrioritizationOutOfPeriod) {
   ASSERT_EQ(1u, last_doom_entry_hashes().size());
 }
 
-TEST_F(SimpleIndexTest, EvictPrioritizationFeatureDefaultDisabled) {
+class SimpleIndexPrioritizedCachingDisabledTest : public SimpleIndexTest {
+ public:
+  SimpleIndexPrioritizedCachingDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        net::features::kSimpleCachePrioritizedCaching);
+  }
+  ~SimpleIndexPrioritizedCachingDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SimpleIndexPrioritizedCachingDisabledTest,
+       EvictPrioritizationFeatureDisabled) {
   const auto caching_prioritization_period =
       net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
   auto now = base::Time::Now();
