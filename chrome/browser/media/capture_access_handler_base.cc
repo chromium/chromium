@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_thread.h"

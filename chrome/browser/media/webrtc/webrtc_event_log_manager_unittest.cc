@@ -41,7 +41,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

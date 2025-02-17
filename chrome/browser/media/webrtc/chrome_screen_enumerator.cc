@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/task/bind_post_task.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"

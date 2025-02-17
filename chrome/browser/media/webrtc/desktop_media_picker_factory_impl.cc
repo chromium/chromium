@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/current_tab_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_capturer_wrapper.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"

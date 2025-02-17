@@ -14,7 +14,6 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"

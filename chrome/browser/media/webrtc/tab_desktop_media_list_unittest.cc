@@ -23,7 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list_mock_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"

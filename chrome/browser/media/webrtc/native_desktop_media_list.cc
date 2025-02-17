@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"

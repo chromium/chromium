@@ -23,7 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_service.h"

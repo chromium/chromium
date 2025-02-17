@@ -15,7 +15,6 @@
 #include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"

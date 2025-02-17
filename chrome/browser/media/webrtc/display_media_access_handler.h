@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"

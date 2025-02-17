@@ -7,7 +7,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/cdm_storage_id_key.h"
 #include "chrome/browser/media/media_storage_id_salt.h"
 #include "crypto/secure_hash.h"
