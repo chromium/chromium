@@ -78,12 +78,12 @@ ImageOrientation GetSourceOrientation(
 // Return the oriented size of `source`.
 gfx::Size GetSourceSize(scoped_refptr<StaticBitmapImage> source,
                         const StaticBitmapImageTransform::Params& params) {
-  const auto source_info = source->GetSkImageInfo();
+  gfx::Size source_size = source->GetSize();
   const auto source_orientation = GetSourceOrientation(source, params);
 
   return source_orientation.UsesWidthAsHeight()
-             ? gfx::Size(source_info.height(), source_info.width())
-             : gfx::Size(source_info.width(), source_info.height());
+             ? gfx::TransposeSize(source_size)
+             : source_size;
 }
 
 void ComputeSubsetParameters(scoped_refptr<StaticBitmapImage> source,
