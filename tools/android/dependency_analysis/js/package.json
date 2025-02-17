@@ -16,7 +16,7 @@
     "vue-material": "^1.0.0-beta-15"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^6.0.3",
+    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^3.6.0",
     "eslint": "^7.2.0",
     "eslint-config-google": "^0.14.0",
