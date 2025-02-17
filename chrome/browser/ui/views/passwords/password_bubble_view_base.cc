@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -104,6 +105,8 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   views::BubbleDialogDelegateView::CreateBubble(g_manage_passwords_bubble_);
 
   g_manage_passwords_bubble_->ShowForReason(reason);
+  g_manage_passwords_bubble_->RegisterWindowClosingCallback(
+      base::BindOnce([]() { g_manage_passwords_bubble_ = nullptr; }));
 
   if (features::IsToolbarPinningEnabled()) {
     auto* passwords_action_item = actions::ActionManager::Get().FindAction(
@@ -253,9 +256,7 @@ PasswordBubbleViewBase::PasswordBubbleViewBase(
 }
 
 PasswordBubbleViewBase::~PasswordBubbleViewBase() {
-  if (g_manage_passwords_bubble_ == this) {
-    g_manage_passwords_bubble_ = nullptr;
-  }
+  CHECK(this != g_manage_passwords_bubble_);
   // It is possible in tests for |browser_| not to exist.
   if (features::IsToolbarPinningEnabled() && browser_) {
     auto* passwords_action_item = actions::ActionManager::Get().FindAction(
