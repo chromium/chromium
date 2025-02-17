@@ -1420,7 +1420,8 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
     } else if (token.FunctionId() == CSSValueID::kIf &&
                RuntimeEnabledFeatures::CSSInlineIfForStyleQueriesEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
-      success &= ResolveIfInto(stream, resolver, context, out);
+      success &=
+          ResolveIfInto(stream, resolver, context, function_context, out);
     } else if (token.GetType() == kFunctionToken &&
                CSSVariableParser::IsValidVariableName(token.Value()) &&
                RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
@@ -2083,6 +2084,7 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
     const MediaQueryFeatureExpNode& feature,
     CascadeResolver& resolver,
     const CSSParserContext& context,
+    FunctionContext* function_context,
     bool& is_attr_tainted) {
   const MediaQueryExpBounds& bounds = feature.Bounds();
 
@@ -2090,35 +2092,42 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
   DCHECK(!bounds.IsRange());
   DCHECK(bounds.right.op == MediaQueryOperator::kNone);
 
-  // TODO(crbug.com/325504770): Take function context into account.
   AtomicString property_name(feature.Name());
   CustomProperty property(property_name, GetDocument());
 
-  // Check for a cycle with custom property in the style condition.
-  if (resolver.DetectCycle(property)) {
+  CSSVariableData* computed_data = nullptr;
+  CSSParserTokenStream property_name_stream(property_name);
+  TokenSequence computed_data_sequence;
+  // To avoid duplicating lookup logic, we pretend that we're resolving
+  // a var() with `property_name`. This will resolve to the appropriate
+  // custom property, local variable, or function argument. We also get
+  // cycle handling for free.
+  if (ResolveVarInto(property_name_stream, resolver, context, function_context,
+                     computed_data_sequence)) {
+    computed_data = computed_data_sequence.BuildVariableData();
+  }
+
+  if (resolver.InCycle()) {
     return KleeneValue::kFalse;
   }
 
-  LookupAndApply(property, resolver);
-  CSSVariableData* computed = GetVariableData(property);
-
-  if (computed && computed->IsAttrTainted()) {
+  if (computed_data && computed_data->IsAttrTainted()) {
     is_attr_tainted = true;
   }
 
   if (!bounds.right.value.IsValid()) {
-    return computed ? KleeneValue::kTrue : KleeneValue::kFalse;
+    return computed_data ? KleeneValue::kTrue : KleeneValue::kFalse;
   }
 
   const CSSValue& query_specified = bounds.right.value.GetCSSValue();
 
   if (query_specified.IsCSSWideKeyword()) {
-    return EvalIfKeyword(query_specified, computed, property)
+    return EvalIfKeyword(query_specified, computed_data, property)
                ? KleeneValue::kTrue
                : KleeneValue::kFalse;
   }
 
-  if (!computed) {
+  if (!computed_data) {
     return KleeneValue::kFalse;
   }
 
@@ -2127,9 +2136,7 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
   CSSParserTokenStream decl_value_stream(
       decl_value.VariableDataValue()->OriginalText());
   TokenSequence substituted_token_sequence;
-  // TODO(crbug.com/325504770): Take function context into account.
-  if (!ResolveTokensInto(decl_value_stream, resolver, context,
-                         /* function_context */ nullptr,
+  if (!ResolveTokensInto(decl_value_stream, resolver, context, function_context,
                          /* stop_type */ kEOFToken,
                          substituted_token_sequence)) {
     return KleeneValue::kFalse;
@@ -2158,7 +2165,7 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
     is_attr_tainted = true;
   }
 
-  if (computed->EqualsIgnoringAttrTainting(*computed_query_data)) {
+  if (computed_data->EqualsIgnoringAttrTainting(*computed_query_data)) {
     return KleeneValue::kTrue;
   }
 
@@ -2168,6 +2175,7 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
 bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
                                    CascadeResolver& resolver,
                                    const CSSParserContext& context,
+                                   FunctionContext* function_context,
                                    bool& is_attr_tainted) {
   if (stream.Peek().Id() == CSSValueID::kElse) {
     stream.ConsumeIncludingWhitespace();
@@ -2185,21 +2193,23 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
   DCHECK_EQ(stream.Peek().GetType(), kColonToken);
   stream.ConsumeIncludingWhitespace();
 
-  return MediaEval(*exp_node, [this, &resolver, &context, &is_attr_tainted](
+  return MediaEval(*exp_node, [this, &resolver, &context, &function_context,
+                               &is_attr_tainted](
                                   const MediaQueryFeatureExpNode& feature) {
            return EvalIfStyleFeature(feature, resolver, context,
-                                     is_attr_tainted);
+                                     function_context, is_attr_tainted);
          }) == KleeneValue::kTrue;
 }
 
 bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
                                  CascadeResolver& resolver,
                                  const CSSParserContext& context,
+                                 FunctionContext* function_context,
                                  TokenSequence& out) {
   stream.ConsumeWhitespace();
   bool is_attr_tainted = false;
-  bool eval_result =
-      EvalIfCondition(stream, resolver, context, is_attr_tainted);
+  bool eval_result = EvalIfCondition(stream, resolver, context,
+                                     function_context, is_attr_tainted);
   while (!eval_result) {
     stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
     if (stream.AtEnd()) {
@@ -2211,11 +2221,11 @@ bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
       // None of the conditions matched, so should be IACVT.
       return false;
     }
-    eval_result = EvalIfCondition(stream, resolver, context, is_attr_tainted);
+    eval_result = EvalIfCondition(stream, resolver, context, function_context,
+                                  is_attr_tainted);
   }
   TokenSequence if_result;
-  if (!ResolveTokensInto(stream, resolver, context,
-                         /* function_context */ nullptr,
+  if (!ResolveTokensInto(stream, resolver, context, function_context,
                          /* stop_type */ kSemicolonToken, if_result)) {
     return false;
   }
