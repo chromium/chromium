@@ -224,6 +224,10 @@ void AddWindowClient(
   auto* rfh =
       RenderFrameHostImpl::FromID(service_worker_client.GetRenderFrameHostId());
   if (!controller_origin.IsSameOriginWith(rfh->GetLastCommittedOrigin())) {
+    SCOPED_CRASH_KEY_STRING256("AddWindowClient", "ctrler_origin",
+                               controller_origin.GetURL().spec());
+    SCOPED_CRASH_KEY_STRING256("AddWindowClient", "rfh_origin",
+                               rfh->GetLastCommittedOrigin().GetURL().spec());
     DUMP_WILL_BE_NOTREACHED();
     return;
   }
