@@ -448,10 +448,10 @@ Download the transcription model (up to 100MB) to get these transcriptions.
     Turn on transcription?
   </message>
   <message desc="Description when transcription is off in the transcription view while recording. The [3dot] will be replaced by an icon of the 3 dots menu." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_DESCRIPTION">
-    You can turn this on in Settings or the <ph name="THREE_DOTS_MENU_ICON">[3dot]</ph> menu
+    Transcription is off. Turn on in Settings or in the <ph name="THREE_DOTS_MENU_ICON">[3dot]</ph> menu.
   </message>
   <message desc="Header when transcription is off in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_HEADER">
-    Transcript is off
+    No transcript will be created
   </message>
   <message desc="Description when the selected transcription language failed to install in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_ERROR_DESCRIPTION">
     Can’t download transcription model. Try again or restart your Chromebook.
