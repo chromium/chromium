@@ -8441,6 +8441,7 @@ static_library("browser_generated_files") {
     "//chrome/browser/page_info:page_info_buildflags",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/push_messaging:budget_proto",
+    "//chrome/browser/regional_capabilities",
     "//chrome/browser/request_header_integrity:buildflags",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/sharing:buildflags",

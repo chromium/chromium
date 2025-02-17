@@ -143,6 +143,7 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
                 return std::make_unique<SearchEngineChoiceService>(
                     environment.pref_service(), &environment.local_state(),
                     environment.regional_capabilities_service(),
+                    environment.prepopulate_data_resolver(),
                     args.is_profile_eligible_for_dse_guest_propagation,
                     args.variation_country_id);
               });
@@ -1471,15 +1472,7 @@ INSTANTIATE_TEST_SUITE_P(,
 #if !BUILDFLAG(IS_ANDROID)
 
 class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
- public:
-  PrefService* pref_service() {
-    return &search_engine_test_environment_.pref_service();
-  }
-  search_engines::SearchEngineChoiceService& search_engine_choice_service() {
-    return search_engine_test_environment_.search_engine_choice_service();
-  }
-
- private:
+ protected:
   SearchEnginesTestEnvironment search_engine_test_environment_;
 };
 
@@ -1491,10 +1484,11 @@ TEST_F(SearchEngineChoiceUtilsResourceIdsTest, GetIconResourceId) {
       switches::kSearchEngineChoiceCountry));
 
   for (int country_id : regional_capabilities::kEeaChoiceCountriesIds) {
-    pref_service()->SetInteger(country_codes::kCountryIDAtInstall, country_id);
+    search_engine_test_environment_.pref_service().SetInteger(
+        country_codes::kCountryIDAtInstall, country_id);
     std::vector<std::unique_ptr<TemplateURLData>> urls =
-        TemplateURLPrepopulateData::GetPrepopulatedEngines(
-            pref_service(), &search_engine_choice_service());
+        search_engine_test_environment_.prepopulate_data_resolver()
+            .GetPrepopulatedEngines();
     for (const std::unique_ptr<TemplateURLData>& url : urls) {
       EXPECT_GE(search_engines::GetIconResourceId(url->keyword()), 0)
           << "Missing icon for " << url->keyword() << ". Try re-running "

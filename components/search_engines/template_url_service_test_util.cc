@@ -83,17 +83,18 @@ void TemplateURLServiceUnitTestBase::SetUp() {
   regional_capabilities_service_ =
       regional_capabilities::CreateServiceWithFakeClient(pref_service_);
 
+  prepopulate_data_resolver_ =
+      std::make_unique<TemplateURLPrepopulateData::Resolver>(
+          pref_service_, *regional_capabilities_service_.get());
+
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
           pref_service_, &local_state_, *regional_capabilities_service_,
+          *prepopulate_data_resolver_,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
           /*is_profile_eligible_for_dse_guest_propagation=*/false,
 #endif
           country_codes::kCountryIDUnknown);
-
-  prepopulate_data_resolver_ =
-      std::make_unique<TemplateURLPrepopulateData::Resolver>(
-          pref_service_, *search_engine_choice_service_.get());
 
   template_url_service_ = CreateService();
 }

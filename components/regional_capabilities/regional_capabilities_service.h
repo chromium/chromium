@@ -31,6 +31,10 @@ int GetCountryId(::regional_capabilities::RegionalCapabilitiesService&);
 
 class PrefService;
 
+namespace TemplateURLPrepopulateData {
+class Resolver;
+}
+
 namespace regional_capabilities {
 // Service for managing the state related to Search Engine Choice (mostly
 // for the country information).
@@ -90,11 +94,22 @@ class RegionalCapabilitiesService : public KeyedService {
 #endif
 
  private:
+  // -- Private access allow-list begin ---------------------------------------
+
+  // TemplateURLPrepopulateData::Resolver needs to know the exact country to
+  // provide the right search engine data.
+  // See https://crbug.com/328040066
+  friend class TemplateURLPrepopulateData::Resolver;
+
+  // Test-only. See https://crbug.com/328040066
+  friend int ::testing::regional_capabilities::GetCountryId(
+      ::regional_capabilities::RegionalCapabilitiesService&);
+
   // TODO(b:328040066): Investigate friend-ing methods instead whole classes
   // to tighten private access further.
   friend class search_engines::SearchEngineChoiceService;
-  friend int ::testing::regional_capabilities::GetCountryId(
-      ::regional_capabilities::RegionalCapabilitiesService&);
+
+  // -- Private access allow-list end -----------------------------------------
 
   // Returns the country ID to use in the context of regional checks.
   // Can be overridden using `switches::kSearchEngineChoiceCountry`.

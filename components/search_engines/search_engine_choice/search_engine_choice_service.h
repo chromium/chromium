@@ -26,6 +26,9 @@ class VariationsService;
 namespace regional_capabilities {
 class RegionalCapabilitiesService;
 }
+namespace TemplateURLPrepopulateData {
+class Resolver;
+}
 
 class PrefRegistrySimple;
 class PrefService;
@@ -47,12 +50,14 @@ class SearchEngineChoiceService : public KeyedService {
       PrefService& profile_prefs,
       PrefService* local_state,
       regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       bool is_profile_eligible_for_dse_guest_propagation,
       int variations_country_id = country_codes::kCountryIDUnknown);
   SearchEngineChoiceService(
       PrefService& profile_prefs,
       PrefService* local_state,
       regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       bool is_profile_eligible_for_dse_guest_propagation,
       variations::VariationsService* variations_service);
   ~SearchEngineChoiceService() override;
@@ -148,6 +153,8 @@ class SearchEngineChoiceService : public KeyedService {
   const raw_ptr<PrefService> local_state_;
   const raw_ref<regional_capabilities::RegionalCapabilitiesService>
       regional_capabilities_service_;
+  const raw_ref<TemplateURLPrepopulateData::Resolver>
+      prepopulate_data_resolver_;
   bool is_profile_eligible_for_dse_guest_propagation_ = false;
   base::ObserverList<Observer> observers_;
   const int variations_country_id_;

@@ -66,6 +66,11 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
 
   PrefService& pref_service() { return pref_service_; }
 
+  regional_capabilities::RegionalCapabilitiesService&
+  regional_capabilities_service() {
+    return *regional_capabilities_service_.get();
+  }
+
   TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver() {
     return *prepopulate_data_resolver_.get();
   }
@@ -86,10 +91,10 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
       regional_capabilities_service_;
-  std::unique_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
   std::unique_ptr<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
+  std::unique_ptr<search_engines::SearchEngineChoiceService>
+      search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
