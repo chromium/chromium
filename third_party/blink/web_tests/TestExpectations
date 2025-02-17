@@ -2679,12 +2679,12 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win10.20h2 ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
-[ Mac14 ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
-[ Linux ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
-virtual/threaded/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
-virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
-virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
+crbug.com/396958489 [ Win10.20h2 ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
+crbug.com/396958489 [ Mac14 ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
+crbug.com/396958489 [ Linux ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
+crbug.com/396813145 virtual/threaded/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
+crbug.com/396813145 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
+crbug.com/396813145 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
 crbug.com/396460424 [ Mac14 ] external/wpt/html/semantics/the-button-element/command-and-commandfor/button-event-dispatch.tentative.html [ Crash Failure ]
 crbug.com/395921918 [ Mac12 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-focus.html [ Crash Failure ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/context_created/context_created.py [ Timeout ]
