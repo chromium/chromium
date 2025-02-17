@@ -1108,6 +1108,11 @@ inline constexpr char kUserMicrophoneCaptionLanguageCode[] =
     "accessibility.captions.user_microphone_language_code";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 02/2025.
+constexpr char kScannerFeedbackEnabled[] = "ash.scanner.feedback_enabled";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1548,6 +1553,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 02/2025.
   registry->RegisterBooleanPref(kLiveCaptionUserMicrophoneEnabled, false);
   registry->RegisterStringPref(kUserMicrophoneCaptionLanguageCode, "");
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 02/2025.
+  registry->RegisterBooleanPref(kScannerFeedbackEnabled, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -2843,6 +2853,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Deprecated 02/2025.
   profile_prefs->ClearPref(kLiveCaptionUserMicrophoneEnabled);
   profile_prefs->ClearPref(kUserMicrophoneCaptionLanguageCode);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 02/2025.
+  profile_prefs->ClearPref(kScannerFeedbackEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

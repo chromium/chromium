@@ -338,7 +338,6 @@ void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kScannerEnterprisePolicyAllowed,
       static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
-  registry->RegisterBooleanPref(prefs::kScannerFeedbackEnabled, true);
 }
 
 void ScannerController::OnActiveUserSessionChanged(
