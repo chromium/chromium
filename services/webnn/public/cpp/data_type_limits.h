@@ -85,7 +85,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors average_pool2d_input,
                  SupportedTensors l2_pool2d_input,
                  SupportedTensors max_pool2d_input,
-                 SupportedDataTypes prelu_input,
+                 SupportedTensors prelu_input,
                  SupportedTensors quantize_linear_input,
                  SupportedTensors quantize_linear_zero_point,
                  SupportedTensors reduce_l1_input,
@@ -201,7 +201,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors average_pool2d_input;
   SupportedTensors l2_pool2d_input;
   SupportedTensors max_pool2d_input;
-  SupportedDataTypes prelu_input;
+  SupportedTensors prelu_input;
   SupportedTensors quantize_linear_input;
   SupportedTensors quantize_linear_zero_point;
   SupportedTensors reduce_l1_input;

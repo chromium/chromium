@@ -328,7 +328,7 @@ ContextProperties ContextImplDml::GetProperties(
        /*max_pool2d_input=*/{kFloat16To32Ints8, {4, 5}},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_parameterized_relu_operator_desc#tensor-support
-       /*prelu_input=*/DataTypeConstraint::kFloat16To32,
+       /*prelu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_quantize_linear_operator_desc#tensor-support
        /*quantize_linear_input=*/{DataTypeConstraint::kFloat32, kMaxRank},
@@ -514,7 +514,7 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.mul_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.div_input.data_types = kFloat16To32Ints8To32;
-    properties.data_type_limits.prelu_input =
+    properties.data_type_limits.prelu_input.data_types =
         DataTypeConstraint::kFloat16To32Int8To32;
     properties.data_type_limits.relu_input.data_types =
         DataTypeConstraint::kFloat16To32Int8To32;

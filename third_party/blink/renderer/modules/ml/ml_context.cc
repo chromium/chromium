@@ -758,11 +758,11 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLPreluSupportLimits* prelu = MLPreluSupportLimits::Create();
   prelu->setInput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.prelu_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.prelu_input));
   prelu->setSlope(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.prelu_input));
-  prelu->setOutput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.prelu_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.prelu_input));
+  prelu->setOutput(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.prelu_input.data_types));
   op_support_limits->setPrelu(prelu);
 
   MLQuantizeDequantizeLinearSupportLimits* quantize_linear =

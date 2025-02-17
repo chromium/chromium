@@ -126,8 +126,8 @@ dictionary MLNormalizationSupportLimits {
 };
 
 dictionary MLPreluSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits slope;
+  MLTensorLimits input;
+  MLTensorLimits slope;
   MLDataTypeLimits output;
 };
 

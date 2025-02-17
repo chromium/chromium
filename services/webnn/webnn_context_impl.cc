@@ -245,7 +245,7 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)});
   backend_context_properties.data_type_limits.max_pool2d_input.IntersectWith(
       {SupportedDataTypes::All(), SupportedRanks::Exactly(4)});
-  backend_context_properties.data_type_limits.prelu_input.RetainAll(
+  backend_context_properties.data_type_limits.prelu_input.data_types.RetainAll(
       DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.quantize_linear_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);

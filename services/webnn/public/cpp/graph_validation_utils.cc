@@ -35,6 +35,7 @@ static constexpr char kConditionParam[] = "condition";
 static constexpr char kFalseValueParam[] = "falseValue";
 static constexpr char kIndicesParam[] = "indices";
 static constexpr char kScaleParam[] = "scale";
+static constexpr char kSlopeParam[] = "slope";
 static constexpr char kTrueValueParam[] = "trueValue";
 static constexpr char kUpdatesParam[] = "updates";
 static constexpr char kZeroPointParam[] = "zeroPoint";
@@ -2253,12 +2254,19 @@ base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
     const OperandDescriptor& input,
     const OperandDescriptor& slope,
     std::string_view label) {
-  if (!context_properties.data_type_limits.prelu_input.Has(input.data_type())) {
+  if (!context_properties.data_type_limits.prelu_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.prelu_input)));
+  }
+
+  if (!context_properties.data_type_limits.prelu_input.Supports(slope)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kSlopeParam, slope,
                    context_properties.data_type_limits.prelu_input)));
   }
+
   if (input.data_type() != slope.data_type()) {
     return base::unexpected(ErrorWithLabel(
         label, "The data type of slope doesn't match the data type of input."));

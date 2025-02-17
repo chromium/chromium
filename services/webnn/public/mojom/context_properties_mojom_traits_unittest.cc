@@ -157,7 +157,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {{webnn::OperandDataType::kUint8}, kMaxRank},
        /*max_pool2d_input=*/
        {webnn::SupportedDataTypes::All(), kMaxRank},
-       /*prelu_input=*/webnn::SupportedDataTypes::All(),
+       /*prelu_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*quantize_linear_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*quantize_linear_zero_point=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},

@@ -2717,7 +2717,7 @@ void CreateOperatorNodeForPrelu(const ContextProperties context_properties,
       GetNodeOutputForOperand(id_to_node_output_map, prelu->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
 
-  CHECK(context_properties.data_type_limits.prelu_input.Has(
+  CHECK(context_properties.data_type_limits.prelu_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const NodeOutput* slope =

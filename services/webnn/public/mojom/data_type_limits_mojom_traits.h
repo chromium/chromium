@@ -298,7 +298,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.max_pool2d_input;
   }
-  static webnn::SupportedDataTypes prelu_input(
+  static webnn::SupportedTensors prelu_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.prelu_input;
   }

@@ -144,7 +144,7 @@ struct DataTypeLimits {
   SupportedTensors l2_pool2d_input;
   SupportedTensors max_pool2d_input;
 
-  SupportedDataTypes prelu_input;
+  SupportedTensors prelu_input;
 
   // QuantizeLinear.
   SupportedTensors quantize_linear_input;

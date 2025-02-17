@@ -567,7 +567,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*l2_pool2d_input=*/{},
        /*max_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
-       /*prelu_input=*/DataTypeConstraint::kFloat16To32,
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/prelu.h
+       /*prelu_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(4)},
        // TODO(crbug.com/376722724): Support float16 input.
        // QuantizeLinear may be emulated by div and add ops that only support
        // max rank up to 5.
@@ -4715,8 +4717,8 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
 
 auto GraphBuilderTflite::SerializePrelu(const mojom::Prelu& prelu)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.prelu_input.Has(
-      GetOperand(prelu.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.prelu_input.Supports(
+      GetOperand(prelu.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(prelu.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& slope_tensor_info,

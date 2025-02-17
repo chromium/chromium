@@ -657,7 +657,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*l2_pool2d_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*max_pool2d_input=*/
        {SupportedDataTypes::All(), kMaxRank},
-       /*prelu_input=*/SupportedDataTypes::All(),
+       /*prelu_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*quantize_linear_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*quantize_linear_zero_point=*/{SupportedDataTypes::All(), kMaxRank},
        /*reduce_l1_input=*/{SupportedDataTypes::All(), kMaxRank},
