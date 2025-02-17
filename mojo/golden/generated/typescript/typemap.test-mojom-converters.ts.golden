@@ -19,24 +19,14 @@ export class TypemappedDataView {
     this.version_ = version;
     this.fieldSpecs_ = fieldSpecs;
   }
-
   get field(): number {
     const field = this.fieldSpecs_[0];
     return mojo.internal.decodeStructField(this.decoder_, field!, this.version_);
   }
 
-  get optional_$flag(): boolean {
-    const field = this.fieldSpecs_[1];
-
-
-    throw new Error("unsupported");
-  }
-
-  get optional_$value(): number {
-    const field = this.fieldSpecs_[2];
-
-
-    throw new Error("unsupported");
+  get optional(): (number | null) {
+    const flagField = this.fieldSpecs_[1];
+    return mojo.internal.decodeStructNullableValueField(this.decoder_, flagField!, this.fieldSpecs_, this.version_);
   }
 
   get optionalContainer(): Array<(boolean | null)> {
@@ -48,8 +38,7 @@ export class TypemappedDataView {
 export interface TypemappedTypeMapper<T> {
   // Encoding:
   field(mappedTyped: T): number;
-  optional_$flag(mappedTyped: T): boolean;
-  optional_$value(mappedTyped: T): number;
+  optional(mappedTyped: T): (number | null);
   optionalContainer(mappedTyped: T): Array<(boolean | null)>;
 
   // Decoding:

@@ -119,6 +119,11 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
     std::move(cb).Run(time);
   }
 
+  void EchoOptionalTypemaps(mojom::OptionalTypemapPtr container,
+                            EchoOptionalTypemapsCallback cb) override {
+    std::move(cb).Run(container->Clone());
+  }
+
   void AddStringWrapper(
       mojo::PendingRemote<mojom::StringWrapper> string_wrapper) override {
     string_wrapper_list_.push_back(

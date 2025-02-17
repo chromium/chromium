@@ -308,5 +308,8 @@ export namespace mojo {
     function decodeStructField(
         decoder: Decoder, fieldSpec: StructFieldSpec<any, any>,
         version: number): any;
+    function decodeStructNullableValueField(
+        decoder: Decoder, flagFieldSpec: StructFieldSpec<any, any>,
+        fieldSpecs: Array<StructFieldSpec<any, any>>, version: number): any;
   }
 }

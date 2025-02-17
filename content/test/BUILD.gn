@@ -1191,6 +1191,12 @@ mojom("web_ui_ts_test_mojo_bindings") {
           ts_import = "./web_ui_mojo_ts_test_mapped_types.js"
           converter = "StringDictConverter"
         },
+        {
+          mojom = "content.mojom.OptionalTypemap"
+          ts = "MappedOptionalContainer"
+          ts_import = "./web_ui_mojo_ts_test_mapped_types.js"
+          converter = "OptionalTypemapConverter"
+        },
       ]
     },
   ]

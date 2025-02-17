@@ -209,7 +209,7 @@ mojo.internal.TypemappedStruct<number, TypemappedMojoType> (
           linkedValueFieldName: "optional_$value",
           originalFieldName: "optional",
         },
-        ((value: number) => converterForTypemapped.optional_$flag(value)),
+        ((value: number) => converterForTypemapped.optional(value) !== null),
     ),
       mojo.internal.StructField<number, number>(
         'optional_$value', 4,
@@ -222,7 +222,8 @@ mojo.internal.TypemappedStruct<number, TypemappedMojoType> (
           isPrimary: false,
           originalFieldName: "optional",
         },
-        ((value: number) => converterForTypemapped.optional_$value(value)),
+
+        ((value: number) => converterForTypemapped.optional(value)),
     ),
       mojo.internal.StructField<number, Array<(boolean | null)>>(
         'optionalContainer', 8,

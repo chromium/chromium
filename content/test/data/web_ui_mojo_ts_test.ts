@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
+import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
 import {OptionalNumericsStruct, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
 import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
@@ -253,6 +253,39 @@ async function doTest(): Promise<boolean> {
         `unexpected date received ${result.time.getTime()}`);
   }
 
+  const assertTypemapContainerEquals =
+      (expected: MappedOptionalContainer, result: MappedOptionalContainer,
+       msg: string) => {
+        assert(expected.optionalInt === result.optionalInt, msg);
+        assertArrayEquals(expected.bools, result.bools, msg);
+        assertObjectEquals(expected.optionalMap, result.optionalMap, msg);
+      };
+
+  {
+    const withNulls = {
+      optionalInt: null,
+      bools: [null, null, null],
+      optionalMap: {'foo': null}
+    };
+    const result = await cache.echoOptionalTypemaps(withNulls);
+    assertTypemapContainerEquals(
+        withNulls, result.result,
+        `unexpected object ${JSON.stringify(result)}, expected: ${
+            JSON.stringify(withNulls)}`);
+  }
+
+  {
+    const withValues = {
+      optionalInt: 6,
+      bools: [null, false, null, true, null],
+      optionalMap: {'foo': null, 'bear': true}
+    };
+    const result = await cache.echoOptionalTypemaps(withValues);
+    assertTypemapContainerEquals(
+        withValues, result.result,
+        `unexpected object ${JSON.stringify(result.result)}, expected: ${
+            JSON.stringify(withValues)}`);
+  }
   return true;
 }
 

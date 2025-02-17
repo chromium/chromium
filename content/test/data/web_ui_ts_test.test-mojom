@@ -24,6 +24,12 @@ struct SimpleMappedType {
   string value;
 };
 
+struct OptionalTypemap {
+  int32? optional_int;
+  array<bool?> bools;
+  map<string, bool?> optional_map;
+};
+
 struct NestedMappedType {
   NestedMappedType? nested;
 };
@@ -68,6 +74,8 @@ interface WebUITsMojoTestCache {
   EchoTypemaps(
     mojo_base.mojom.JSTime time
   ) => (mojo_base.mojom.JSTime time);
+
+  EchoOptionalTypemaps(OptionalTypemap container) => (OptionalTypemap result);
 
   AddStringWrapper(pending_remote<StringWrapper> string_wrapper);
   GetStringWrapperList() => (array<pending_remote<StringWrapper>> string_wrapper_list);
