@@ -88,6 +88,7 @@ class PredictionBasedPermissionUiSelector
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request);
   void LookupResponseReceived(
+      base::TimeTicks model_inquire_start_time,
       bool is_on_device,
       permissions::RequestType request_type,
       bool lookup_successful,

@@ -104,6 +104,12 @@ chromium-metrics-reviews@google.com.
   <variant name="WindowPlacement"/>
 </variants>
 
+<variants name="PredictionModels">
+  <variant name="AIv1"/>
+  <variant name="OnDevicePredictionService"/>
+  <variant name="PredictionService"/>
+</variants>
+
 <variants name="PromptDisposition">
   <variant name="AnchoredBubble"/>
   <variant name="CustomModalDialog"/>
@@ -290,7 +296,7 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records whether the on-device genAI model is available when needed for
+    Records whether the on-device AIv1 model is available when needed for
     permission request evaluation.
   </summary>
 </histogram>
@@ -300,8 +306,17 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records whether the on-device genAI model was downlaoded successfully or
-    not.
+    Records whether the on-device AIv1 model was downloaded successfully or not.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.DownloadTime" units="ms"
+    expires_after="2025-11-25">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the duration it took to download the on-device AIv1 model before
+    first use. This is only logged if the model was downloaded successfully.
   </summary>
 </histogram>
 
@@ -311,7 +326,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records the duration it took to execute the on-device model. This happens if
-    the on-device genAI model was downloaded successfully and the session is
+    the on-device AIv1 model was downloaded successfully and the session is
     available.
   </summary>
 </histogram>
@@ -321,17 +336,18 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records whether the genAI on-device model execution is successful or not.
+    Records whether the on-device AIv1 model execution is successful or not.
   </summary>
 </histogram>
 
-<histogram name="Permissions.AIv1.FetchTime" units="ms"
-    expires_after="2025-11-25">
+<histogram name="Permissions.AIv1.PreviousSessionFinishedInTime"
+    enum="BooleanSuccess" expires_after="2026-01-11">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records the duration it took to fetch the genAI on-device model after
-    subscription. This is only logged if the update is successful.
+    Records whether an inquiry to the on-device AIv1 model finishes in time to
+    not hinder the next inquiries execution. Will get logged when an inquiry is
+    requested and evaluates to false if the previous session is still running.
   </summary>
 </histogram>
 
@@ -340,9 +356,9 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records whether the on-device genAI model execution result's response
-    parsing is successful or not. This is only logged when the model execution
-    is successful.
+    Records whether the on-device AIv1 model execution result's response parsing
+    is successful or not. This is only logged when the model execution is
+    successful.
   </summary>
 </histogram>
 
@@ -351,7 +367,7 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records whether a session was created successfully for the on-device genAI
+    Records whether a session was created successfully for the on-device AIv1
     model.
   </summary>
 </histogram>
@@ -361,8 +377,8 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records the duration it took to create an on-device genAI model session.
-    This happens when the on-device model was downloaded successfully and is
+    Records the duration it took to create an on-device AIv1 model session. This
+    happens when the on-device model was downloaded successfully and is
     available.
   </summary>
 </histogram>
@@ -1544,6 +1560,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the reason why the WebHID device chooser was closed.
   </summary>
+</histogram>
+
+<histogram name="Permissions.{PredictionModel}.InquiryDuration" units="ms"
+    expires_after="2026-01-11">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time it took for the permissions prediction service to inquire
+    the {PredictionModel} and await its response for a permission request.
+  </summary>
+  <token key="PredictionModel" variants="PredictionModels"/>
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementScore" units="units"

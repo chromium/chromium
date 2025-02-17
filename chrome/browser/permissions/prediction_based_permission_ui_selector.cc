@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -99,6 +100,20 @@ bool ShouldPredictionTriggerQuietUi(
   return likelihood == VeryUnlikely;
 }
 
+void LogModelInquireTime(base::TimeTicks model_inquire_start_time,
+                         bool is_on_device) {
+  using permissions::PredictionModelType;
+
+  std::string histogram_name =
+      base::StrCat({"Permissions.",
+                    permissions::PermissionUmaUtil::GetPredictionModelString(
+                        is_on_device ? PredictionModelType::kTfLiteOnDevice
+                                     : PredictionModelType::kServerSide),
+                    ".InquiryDuration"});
+  base::UmaHistogramMediumTimes(
+      histogram_name, base::TimeTicks::Now() - model_inquire_start_time);
+}
+
 }  // namespace
 
 PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
@@ -133,10 +148,12 @@ void PredictionBasedPermissionUiSelector::InquireServerModel(
   }
 
   request_ = std::make_unique<PredictionServiceRequest>(
-      service, std::move(features),
+      service, features,
       base::BindOnce(
           &PredictionBasedPermissionUiSelector::LookupResponseReceived,
-          base::Unretained(this), /*is_on_device=*/false, request_type));
+          base::Unretained(this),
+          /*model_inquire_start_time=*/base::TimeTicks::Now(),
+          /*is_on_device=*/false, request_type));
 }
 
 void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
@@ -163,7 +180,9 @@ void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
     prediction_model_handler->ExecuteModelWithMetadata(
         base::BindOnce(
             &PredictionBasedPermissionUiSelector::LookupResponseReceived,
-            weak_ptr_factory_.GetWeakPtr(), /*is_on_device=*/true, request_type,
+            weak_ptr_factory_.GetWeakPtr(),
+            /*model_inquire_start_time=*/base::TimeTicks::Now(),
+            /*is_on_device=*/true, request_type,
             /*lookup_succesful=*/true, /*response_from_cache=*/false),
         std::move(proto_request));
     return;
@@ -387,11 +406,14 @@ void PredictionBasedPermissionUiSelector::GenAIModelExecutionCallback(
 }
 
 void PredictionBasedPermissionUiSelector::LookupResponseReceived(
+    base::TimeTicks model_inquire_start_time,
     bool is_on_device,
     permissions::RequestType request_type,
     bool lookup_successful,
     bool response_from_cache,
     const std::optional<permissions::GeneratePredictionsResponse>& response) {
+  LogModelInquireTime(model_inquire_start_time, is_on_device);
+
   request_.reset();
   if (!callback_) {
     VLOG(1) << "[CPSS] Prediction service response ignored as the request is "
