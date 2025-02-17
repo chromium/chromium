@@ -75,12 +75,14 @@ void OneTimePermissionsTrackerHelper::DidStartNavigation(
 }
 
 void OneTimePermissionsTrackerHelper::WasDiscarded() {
-  if (last_committed_origin_) {
+  // A discard operation may not succeed if attempted on a pending navigation,
+  // emit only following a successful operation.
+  was_discarded_ = web_contents()->WasDiscarded();
+  if (last_committed_origin_ && was_discarded_) {
     auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
         web_contents()->GetBrowserContext());
     tracker->WebContentsUnloadedOrigin(*last_committed_origin_);
   }
-  was_discarded_ = true;
 }
 
 void OneTimePermissionsTrackerHelper::OnIsCapturingVideoChanged(
