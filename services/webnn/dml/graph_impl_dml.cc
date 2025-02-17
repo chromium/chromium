@@ -2202,15 +2202,21 @@ CreateOperatorNodeForDequantizeOrQuantizeLinear(
 
   if constexpr (std::is_same_v<DequantizeOrQuantizeLinearPtr,
                                mojom::DequantizeLinearPtr>) {
-    CHECK(context_properties.data_type_limits.dequantize_linear_input.Has(
-        DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
-    CHECK(context_properties.data_type_limits.dequantize_linear_scale.Has(
-        DmlDataTypeToOperand(scale_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.dequantize_linear_input.data_types
+              .Has(DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.dequantize_linear_scale.data_types
+              .Has(DmlDataTypeToOperand(scale_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.dequantize_linear_zero_point
+              .data_types.Has(
+                  DmlDataTypeToOperand(zero_point_tensor_desc.GetDataType())));
   } else /* `DequantizeOrQuantizeLinearPtr` is `mojom::QuantizeLinearPtr` */ {
-    CHECK(context_properties.data_type_limits.quantize_linear_input.Has(
-        DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
-    CHECK(context_properties.data_type_limits.quantize_linear_zero_point.Has(
-        DmlDataTypeToOperand(zero_point_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.quantize_linear_input.data_types
+              .Has(DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.quantize_linear_input.data_types
+              .Has(DmlDataTypeToOperand(scale_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.quantize_linear_zero_point
+              .data_types.Has(
+                  DmlDataTypeToOperand(zero_point_tensor_desc.GetDataType())));
   }
 
   DML_OPERATOR_DESC operator_desc;

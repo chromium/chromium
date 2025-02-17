@@ -312,14 +312,14 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLQuantizeDequantizeLinearSupportLimits* dequantize_linear =
       MLQuantizeDequantizeLinearSupportLimits::Create();
-  dequantize_linear->setInput(SupportedDataTypesToDataTypeLimits(
+  dequantize_linear->setInput(SupportedTensorLimitsToTensorLimits(
       data_type_limits.dequantize_linear_input));
-  dequantize_linear->setScale(SupportedDataTypesToDataTypeLimits(
+  dequantize_linear->setScale(SupportedTensorLimitsToTensorLimits(
       data_type_limits.dequantize_linear_scale));
-  dequantize_linear->setZeroPoint(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.dequantize_linear_input));
+  dequantize_linear->setZeroPoint(SupportedTensorLimitsToTensorLimits(
+      data_type_limits.dequantize_linear_zero_point));
   dequantize_linear->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.dequantize_linear_scale));
+      data_type_limits.dequantize_linear_scale.data_types));
   op_support_limits->setDequantizeLinear(dequantize_linear);
 
   // Element-wise binary ops.
@@ -767,14 +767,14 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLQuantizeDequantizeLinearSupportLimits* quantize_linear =
       MLQuantizeDequantizeLinearSupportLimits::Create();
-  quantize_linear->setInput(SupportedDataTypesToDataTypeLimits(
+  quantize_linear->setInput(SupportedTensorLimitsToTensorLimits(
       data_type_limits.quantize_linear_input));
-  quantize_linear->setScale(SupportedDataTypesToDataTypeLimits(
+  quantize_linear->setScale(SupportedTensorLimitsToTensorLimits(
       data_type_limits.quantize_linear_input));
-  quantize_linear->setZeroPoint(SupportedDataTypesToDataTypeLimits(
+  quantize_linear->setZeroPoint(SupportedTensorLimitsToTensorLimits(
       data_type_limits.quantize_linear_zero_point));
   quantize_linear->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.quantize_linear_zero_point));
+      data_type_limits.quantize_linear_zero_point.data_types));
   op_support_limits->setQuantizeLinear(quantize_linear);
 
   // Reduction ops.

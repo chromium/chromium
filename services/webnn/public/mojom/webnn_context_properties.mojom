@@ -67,8 +67,9 @@ struct DataTypeLimits {
   SupportedTensors cumulative_sum_input;
 
   // DequantizeLinear.
-  SupportedDataTypes dequantize_linear_input;
-  SupportedDataTypes dequantize_linear_scale;
+  SupportedTensors dequantize_linear_input;
+  SupportedTensors dequantize_linear_scale;
+  SupportedTensors dequantize_linear_zero_point;
 
   // Element-wise binary ops.
   SupportedTensors add_input;
@@ -146,8 +147,8 @@ struct DataTypeLimits {
   SupportedDataTypes prelu_input;
 
   // QuantizeLinear.
-  SupportedDataTypes quantize_linear_input;
-  SupportedDataTypes quantize_linear_zero_point;
+  SupportedTensors quantize_linear_input;
+  SupportedTensors quantize_linear_zero_point;
 
   // Reduction ops.
   SupportedTensors reduce_l1_input;

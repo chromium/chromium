@@ -25,8 +25,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes conv2d_input,
                  SupportedDataTypes conv_transpose2d_input,
                  SupportedTensors cumulative_sum_input,
-                 SupportedDataTypes dequantize_linear_input,
-                 SupportedDataTypes dequantize_linear_scale,
+                 SupportedTensors dequantize_linear_input,
+                 SupportedTensors dequantize_linear_scale,
+                 SupportedTensors dequantize_linear_zero_point,
                  SupportedTensors add_input,
                  SupportedTensors sub_input,
                  SupportedTensors mul_input,
@@ -85,8 +86,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors l2_pool2d_input,
                  SupportedTensors max_pool2d_input,
                  SupportedDataTypes prelu_input,
-                 SupportedDataTypes quantize_linear_input,
-                 SupportedDataTypes quantize_linear_zero_point,
+                 SupportedTensors quantize_linear_input,
+                 SupportedTensors quantize_linear_zero_point,
                  SupportedTensors reduce_l1_input,
                  SupportedTensors reduce_l2_input,
                  SupportedTensors reduce_log_sum_input,
@@ -140,8 +141,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes conv2d_input;
   SupportedDataTypes conv_transpose2d_input;
   SupportedTensors cumulative_sum_input;
-  SupportedDataTypes dequantize_linear_input;
-  SupportedDataTypes dequantize_linear_scale;
+  SupportedTensors dequantize_linear_input;
+  SupportedTensors dequantize_linear_scale;
+  SupportedTensors dequantize_linear_zero_point;
   SupportedTensors add_input;
   SupportedTensors sub_input;
   SupportedTensors mul_input;
@@ -200,8 +202,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors l2_pool2d_input;
   SupportedTensors max_pool2d_input;
   SupportedDataTypes prelu_input;
-  SupportedDataTypes quantize_linear_input;
-  SupportedDataTypes quantize_linear_zero_point;
+  SupportedTensors quantize_linear_input;
+  SupportedTensors quantize_linear_zero_point;
   SupportedTensors reduce_l1_input;
   SupportedTensors reduce_l2_input;
   SupportedTensors reduce_log_sum_input;
@@ -250,6 +252,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.cumulative_sum_input == rhs.cumulative_sum_input &&
          lhs.dequantize_linear_input == rhs.dequantize_linear_input &&
          lhs.dequantize_linear_scale == rhs.dequantize_linear_scale &&
+         lhs.dequantize_linear_zero_point == rhs.dequantize_linear_zero_point &&
          lhs.add_input == rhs.add_input &&
          lhs.sub_input == rhs.sub_input &&
          lhs.mul_input == rhs.mul_input &&

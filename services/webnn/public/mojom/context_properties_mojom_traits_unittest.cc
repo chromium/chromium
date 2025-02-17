@@ -42,9 +42,14 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*cumulative_sum_input=*/
        {webnn::SupportedDataTypes::All(), kMaxRank},
        /*dequantize_linear_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*dequantize_linear_scale=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
+       /*dequantize_linear_zero_point=*/
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*add_input=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
         kMaxRank},
@@ -153,9 +158,10 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*max_pool2d_input=*/
        {webnn::SupportedDataTypes::All(), kMaxRank},
        /*prelu_input=*/webnn::SupportedDataTypes::All(),
-       /*quantize_linear_input=*/{webnn::OperandDataType::kFloat32},
+       /*quantize_linear_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*quantize_linear_zero_point=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+        kMaxRank},
        /*reduce_l1_input=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
         kMaxRank},
@@ -236,7 +242,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

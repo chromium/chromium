@@ -569,8 +569,12 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*conv_transpose2d_input=*/webnn::SupportedDataTypes::All(),
          /*cumulative_sum_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
-         /*dequantize_linear_input=*/webnn::SupportedDataTypes::All(),
-         /*dequantize_linear_scale=*/webnn::SupportedDataTypes::All(),
+         /*dequantize_linear_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*dequantize_linear_scale=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*dequantize_linear_zero_point=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
          /*add_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*sub_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*mul_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
@@ -657,8 +661,9 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*max_pool2d_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*prelu_input=*/webnn::SupportedDataTypes::All(),
-         /*quantize_linear_input=*/webnn::SupportedDataTypes::All(),
-         /*quantize_linear_zero_point=*/webnn::SupportedDataTypes::All(),
+         /*quantize_linear_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*quantize_linear_zero_point=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
          /*reduce_l1_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*reduce_l2_input=*/

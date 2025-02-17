@@ -135,8 +135,9 @@ ContextProperties ContextImplDml::GetProperties(
        /*cumulative_sum_input=*/{kFloat16To32Ints32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_dequantize_linear_operator_desc#tensor-support
-       /*dequantize_linear_input=*/kInts8To32,
-       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,
+       /*dequantize_linear_input=*/{kInts8To32, kMaxRank},
+       /*dequantize_linear_scale=*/{DataTypeConstraint::kFloat32, kMaxRank},
+       /*dequantize_linear_zero_point=*/{kInts8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add_operator_desc#tensor-support
        /*add_input=*/{kFloat16To32Ints32, kMaxRank},
@@ -330,8 +331,8 @@ ContextProperties ContextImplDml::GetProperties(
        /*prelu_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_quantize_linear_operator_desc#tensor-support
-       /*quantize_linear_input=*/DataTypeConstraint::kFloat32,
-       /*quantize_linear_zero_point=*/DataTypeConstraint::kInts8,
+       /*quantize_linear_input=*/{DataTypeConstraint::kFloat32, kMaxRank},
+       /*quantize_linear_zero_point=*/{DataTypeConstraint::kInts8, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_reduce_operator_desc#tensor-support-according-to-function
        /*reduce_l1_input=*/
@@ -526,9 +527,9 @@ ContextProperties ContextImplDml::GetProperties(
   if (feature_level >= DML_FEATURE_LEVEL_6_0) {
     properties.data_type_limits.div_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.dequantize_linear_scale =
+    properties.data_type_limits.dequantize_linear_scale.data_types =
         DataTypeConstraint::kFloat16To32;
-    properties.data_type_limits.quantize_linear_input =
+    properties.data_type_limits.quantize_linear_input.data_types =
         DataTypeConstraint::kFloat16To32;
   }
 
@@ -539,8 +540,10 @@ ContextProperties ContextImplDml::GetProperties(
   if (feature_level >= DML_FEATURE_LEVEL_6_3) {
     properties.data_type_limits.input = SupportedDataTypes::All();
     properties.data_type_limits.constant = SupportedDataTypes::All();
-    properties.data_type_limits.dequantize_linear_input = kInts4To32;
-    properties.data_type_limits.quantize_linear_zero_point =
+    properties.data_type_limits.dequantize_linear_input.data_types = kInts4To32;
+    properties.data_type_limits.dequantize_linear_zero_point.data_types =
+        kInts4To32;
+    properties.data_type_limits.quantize_linear_zero_point.data_types =
         DataTypeConstraint::kInts4ToInts8;
   }
 

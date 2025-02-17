@@ -590,8 +590,9 @@ ContextProperties GetContextPropertiesForTesting() {
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        /*cumulative_sum_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*dequantize_linear_input=*/SupportedDataTypes::All(),
-       /*dequantize_linear_scale=*/SupportedDataTypes::All(),
+       /*dequantize_linear_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*dequantize_linear_scale=*/{SupportedDataTypes::All(), kMaxRank},
+       /*dequantize_linear_zero_point=*/{SupportedDataTypes::All(), kMaxRank},
        /*add_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*sub_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*mul_input=*/{SupportedDataTypes::All(), kMaxRank},
@@ -657,8 +658,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*max_pool2d_input=*/
        {SupportedDataTypes::All(), kMaxRank},
        /*prelu_input=*/SupportedDataTypes::All(),
-       /*quantize_linear_input=*/SupportedDataTypes::All(),
-       /*quantize_linear_zero_point=*/SupportedDataTypes::All(),
+       /*quantize_linear_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*quantize_linear_zero_point=*/{SupportedDataTypes::All(), kMaxRank},
        /*reduce_l1_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*reduce_l2_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*reduce_log_sum_input=*/

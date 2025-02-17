@@ -132,9 +132,9 @@ dictionary MLPreluSupportLimits {
 };
 
 dictionary MLQuantizeDequantizeLinearSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits scale;
-  MLDataTypeLimits zeroPoint;
+  MLTensorLimits input;
+  MLTensorLimits scale;
+  MLTensorLimits zeroPoint;
   MLDataTypeLimits output;
 };
 

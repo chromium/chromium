@@ -441,9 +441,14 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        /*cumulative_sum_input=*/
        {kFloat16To32AndInt32To64, SupportedRanks::NonScalarUpTo(8)},
-       /*dequantize_linear_input=*/kInt4AndInts8,
+       // DequantizeLinear may be emulated by sub and mul ops that only support
+       // max rank up to 6.
+       /*dequantize_linear_input=*/{kInt4AndInts8, SupportedRanks::UpTo(6)},
        // TODO(crbug.com/376722724): Support float16 scale.
-       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,
+       /*dequantize_linear_scale=*/
+       {DataTypeConstraint::kFloat32, SupportedRanks::UpTo(6)},
+       /*dequantize_linear_zero_point=*/
+       {kInt4AndInts8, SupportedRanks::UpTo(6)},
        // Limited to 6D when broadcasting is required:
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/add.cc
        /*add_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(6)},
@@ -564,10 +569,14 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*prelu_input=*/DataTypeConstraint::kFloat16To32,
        // TODO(crbug.com/376722724): Support float16 input.
-       /*quantize_linear_input=*/DataTypeConstraint::kFloat32,
+       // QuantizeLinear may be emulated by div and add ops that only support
+       // max rank up to 5.
+       /*quantize_linear_input=*/
+       {DataTypeConstraint::kFloat32, SupportedRanks::UpTo(5)},
        // TFLite doesn't support int4 quantization that is tracked in
        // https://github.com/tensorflow/tensorflow/issues/80335
-       /*quantize_linear_zero_point=*/DataTypeConstraint::kInts8,
+       /*quantize_linear_zero_point=*/
+       {DataTypeConstraint::kInts8, SupportedRanks::UpTo(5)},
        // ReduceL1 is emulated by abs and reduceSum.
        /*reduce_l1_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
        // ReduceL2 is emulated by reduceSumSquare followed by sqrt.
@@ -4517,18 +4526,19 @@ auto GraphBuilderTflite::SerializeQuantizeLinear(
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand =
       GetOperand(quantize_linear.input_operand_id);
-  CHECK(context_properties_.data_type_limits.quantize_linear_input.Has(
-      input_operand.descriptor.data_type()));
-  CHECK(context_properties_.data_type_limits.quantize_linear_zero_point.Has(
-      GetOperand(quantize_linear.zero_point_operand_id)
-          .descriptor.data_type()));
+  const mojom::Operand& scale_operand =
+      GetOperand(quantize_linear.scale_operand_id);
+  CHECK(context_properties_.data_type_limits.quantize_linear_input.SupportsAll(
+      {input_operand.descriptor, scale_operand.descriptor}));
+  CHECK(
+      context_properties_.data_type_limits.quantize_linear_zero_point.Supports(
+          GetOperand(quantize_linear.zero_point_operand_id).descriptor));
 
   // TODO(crbug.com/377172670): Add emulation support for block-wise
   // quantizeLinear.
-  if (!BroadcastShapes(
-          GetOperand(quantize_linear.scale_operand_id).descriptor.shape(),
-          input_operand.descriptor.shape(),
-          /*bidirectional=*/false)) {
+  if (!BroadcastShapes(scale_operand.descriptor.shape(),
+                       input_operand.descriptor.shape(),
+                       /*bidirectional=*/false)) {
     return base::unexpected("QuantizeLinear can't support block-wise.");
   }
 
@@ -4619,12 +4629,16 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand =
       GetOperand(dequantize_linear.input_operand_id);
-  CHECK(context_properties_.data_type_limits.dequantize_linear_input.Has(
-      input_operand.descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.dequantize_linear_input.Supports(
+      input_operand.descriptor));
   const mojom::Operand& scale_operand =
       GetOperand(dequantize_linear.scale_operand_id);
-  CHECK(context_properties_.data_type_limits.dequantize_linear_scale.Has(
-      scale_operand.descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.dequantize_linear_scale.Supports(
+      scale_operand.descriptor));
+  const mojom::Operand& zero_point_operand =
+      GetOperand(dequantize_linear.zero_point_operand_id);
+  CHECK(context_properties_.data_type_limits.dequantize_linear_zero_point
+            .Supports(zero_point_operand.descriptor));
 
   // TODO(crbug.com/377172670): Add emulation support for block-wise
   // dequantizeLinear.
