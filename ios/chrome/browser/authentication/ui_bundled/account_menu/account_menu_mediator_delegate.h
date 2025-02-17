@@ -40,10 +40,6 @@
                     forSwitch:(BOOL)forSwith
                    completion:(void (^)(BOOL))completion;
 
-// Requests a switch to the profile with the given `profileName`.
-- (void)triggerProfileSwitchToProfileNamed:(std::string_view)profileName
-               andSigninWithSystemIdentity:(id<SystemIdentity>)identity;
-
 // Shows https://myaccount.google.com/ for the account currently signed-in
 // to Chrome. The content is displayed in a new view in the stack, i.e.
 // it doesn't close the current view.
