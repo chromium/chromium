@@ -19,7 +19,6 @@
 #include "components/enterprise/client_certificates/core/context_delegate.h"
 #include "components/enterprise/client_certificates/core/key_upload_client.h"
 #include "components/enterprise/client_certificates/core/metrics_util.h"
-#include "components/enterprise/client_certificates/core/prefs.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/store_error.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -57,7 +56,7 @@ class CertificateProvisioningServiceImpl
     : public CertificateProvisioningService {
  public:
   CertificateProvisioningServiceImpl(
-      PrefService* profile_prefs,
+      PrefService* pref_service,
       CertificateStore* certificate_store,
       std::unique_ptr<ContextDelegate> context_delegate,
       std::unique_ptr<KeyUploadClient> upload_client);
@@ -109,8 +108,12 @@ class CertificateProvisioningServiceImpl
     return context_delegate_->GetTemporaryIdentityName();
   }
 
+  const std::string policy_pref() const {
+    return context_delegate_->GetPolicyPref();
+  }
+
   PrefChangeRegistrar pref_observer_;
-  raw_ptr<PrefService> profile_prefs_;
+  raw_ptr<PrefService> pref_service_;
   raw_ptr<CertificateStore> certificate_store_;
   std::unique_ptr<ContextDelegate> context_delegate_;
   std::unique_ptr<KeyUploadClient> upload_client_;
@@ -129,32 +132,32 @@ class CertificateProvisioningServiceImpl
 // static
 std::unique_ptr<CertificateProvisioningService>
 CertificateProvisioningService::Create(
-    PrefService* profile_prefs,
+    PrefService* pref_service,
     CertificateStore* certificate_store,
     std::unique_ptr<ContextDelegate> context_delegate,
     std::unique_ptr<KeyUploadClient> upload_client) {
   return std::make_unique<CertificateProvisioningServiceImpl>(
-      profile_prefs, certificate_store, std::move(context_delegate),
+      pref_service, certificate_store, std::move(context_delegate),
       std::move(upload_client));
 }
 
 CertificateProvisioningServiceImpl::CertificateProvisioningServiceImpl(
-    PrefService* profile_prefs,
+    PrefService* pref_service,
     CertificateStore* certificate_store,
     std::unique_ptr<ContextDelegate> context_delegate,
     std::unique_ptr<KeyUploadClient> upload_client)
-    : profile_prefs_(profile_prefs),
+    : pref_service_(pref_service),
       certificate_store_(certificate_store),
       context_delegate_(std::move(context_delegate)),
       upload_client_(std::move(upload_client)) {
-  CHECK(profile_prefs_);
+  CHECK(pref_service_);
   CHECK(certificate_store_);
   CHECK(context_delegate_);
   CHECK(upload_client_);
 
-  pref_observer_.Init(profile_prefs_);
+  pref_observer_.Init(pref_service_);
   pref_observer_.Add(
-      prefs::kProvisionManagedClientCertificateForUserPrefs,
+      policy_pref(),
       base::BindRepeating(&CertificateProvisioningServiceImpl::OnPolicyUpdated,
                           weak_factory_.GetWeakPtr()));
 
@@ -197,10 +200,8 @@ CertificateProvisioningServiceImpl::GetCurrentStatus() const {
 }
 
 bool CertificateProvisioningServiceImpl::IsPolicyEnabled() const {
-  return profile_prefs_->IsManagedPreference(
-             prefs::kProvisionManagedClientCertificateForUserPrefs) &&
-         profile_prefs_->GetInteger(
-             prefs::kProvisionManagedClientCertificateForUserPrefs) == 1;
+  return pref_service_->IsManagedPreference(policy_pref()) &&
+         pref_service_->GetInteger(policy_pref()) == 1;
 }
 
 bool CertificateProvisioningServiceImpl::IsProvisioning() const {

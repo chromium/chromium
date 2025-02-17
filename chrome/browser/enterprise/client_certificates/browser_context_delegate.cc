@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/prefs.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -40,6 +41,10 @@ std::string BrowserContextDelegate::GetIdentityName() {
 
 std::string BrowserContextDelegate::GetTemporaryIdentityName() {
   return kTemporaryManagedBrowserIdentityName;
+}
+
+std::string BrowserContextDelegate::GetPolicyPref() {
+  return prefs::kProvisionManagedClientCertificateForBrowserPrefs;
 }
 
 }  // namespace client_certificates
