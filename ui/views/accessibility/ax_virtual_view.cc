@@ -246,7 +246,7 @@ void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
   ax_platform_node_->NotifyAccessibilityEvent(event_type);
 
   // This is used on platforms that don't have a native accessibility API.
-  AXEventManager::Get()->NotifyVirtualViewEvent(this, event_type);
+  AXUpdateNotifier::Get()->NotifyVirtualViewEvent(this, event_type);
 }
 
 // ui::AXPlatformNodeDelegate

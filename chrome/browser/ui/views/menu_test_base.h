@@ -35,7 +35,7 @@ class MenuRunner;
 // MenuItemView prevents repeated activation of a menu by clicks too
 // close in time.
 class MenuTestBase : public ViewEventTestBase,
-                     public views::AXEventObserver,
+                     public views::AXUpdateObserver,
                      public views::MenuDelegate {
  public:
   MenuTestBase();
@@ -45,7 +45,7 @@ class MenuTestBase : public ViewEventTestBase,
 
   ~MenuTestBase() override;
 
-  // AXEventObserver overrides.
+  // AXUpdateObserver overrides.
   void OnViewEvent(views::View*, ax::mojom::Event event_type) override;
 
   // Generate a mouse click and run |next| once the event has been processed.

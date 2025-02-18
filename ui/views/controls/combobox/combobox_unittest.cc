@@ -1017,7 +1017,7 @@ TEST_F(ComboboxTest, MenuModel) {
 
 // Verifies SetTooltipTextAndAccessibleName will call NotifyAccessibilityEvent.
 TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
-  test::AXEventCounter counter(AXEventManager::Get());
+  test::AXEventCounter counter(AXUpdateNotifier::Get());
   InitCombobox(nullptr);
   std::u16string test_tooltip_text = u"Test Tooltip Text";
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));

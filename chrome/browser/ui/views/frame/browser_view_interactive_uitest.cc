@@ -46,7 +46,7 @@ namespace {
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
-  BrowserViewTest() : ax_observer_(views::AXEventManager::Get()) {}
+  BrowserViewTest() : ax_observer_(views::AXUpdateNotifier::Get()) {}
   ~BrowserViewTest() override = default;
   BrowserViewTest(const BrowserViewTest&) = delete;
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;

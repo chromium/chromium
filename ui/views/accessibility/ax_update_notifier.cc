@@ -10,32 +10,33 @@
 
 namespace views {
 
-AXEventManager::AXEventManager() = default;
+AXUpdateNotifier::AXUpdateNotifier() = default;
 
-AXEventManager::~AXEventManager() = default;
+AXUpdateNotifier::~AXUpdateNotifier() = default;
 
 // static
-AXEventManager* AXEventManager::Get() {
-  static base::NoDestructor<AXEventManager> instance;
+AXUpdateNotifier* AXUpdateNotifier::Get() {
+  static base::NoDestructor<AXUpdateNotifier> instance;
   return instance.get();
 }
 
-void AXEventManager::AddObserver(AXEventObserver* observer) {
+void AXUpdateNotifier::AddObserver(AXUpdateObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void AXEventManager::RemoveObserver(AXEventObserver* observer) {
+void AXUpdateNotifier::RemoveObserver(AXUpdateObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AXEventManager::NotifyViewEvent(views::View* view,
-                                     ax::mojom::Event event_type) {
-  observers_.Notify(&AXEventObserver::OnViewEvent, view, event_type);
+void AXUpdateNotifier::NotifyViewEvent(views::View* view,
+                                       ax::mojom::Event event_type) {
+  observers_.Notify(&AXUpdateObserver::OnViewEvent, view, event_type);
 }
 
-void AXEventManager::NotifyVirtualViewEvent(views::AXVirtualView* virtual_view,
-                                            ax::mojom::Event event_type) {
-  observers_.Notify(&AXEventObserver::OnVirtualViewEvent, virtual_view,
+void AXUpdateNotifier::NotifyVirtualViewEvent(
+    views::AXVirtualView* virtual_view,
+    ax::mojom::Event event_type) {
+  observers_.Notify(&AXUpdateObserver::OnVirtualViewEvent, virtual_view,
                     event_type);
 }
 

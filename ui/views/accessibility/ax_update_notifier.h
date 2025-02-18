@@ -11,23 +11,23 @@
 
 namespace views {
 
-class AXEventObserver;
+class AXUpdateObserver;
 class AXVirtualView;
 class View;
 
-// AXEventManager allows observation of accessibility events for all views.
-class VIEWS_EXPORT AXEventManager {
+// AXUpdateNotifier allows observation of accessibility events for all views.
+class VIEWS_EXPORT AXUpdateNotifier {
  public:
-  AXEventManager();
-  AXEventManager(const AXEventManager&) = delete;
-  AXEventManager& operator=(const AXEventManager&) = delete;
-  ~AXEventManager();
+  AXUpdateNotifier();
+  AXUpdateNotifier(const AXUpdateNotifier&) = delete;
+  AXUpdateNotifier& operator=(const AXUpdateNotifier&) = delete;
+  ~AXUpdateNotifier();
 
   // Returns the singleton instance.
-  static AXEventManager* Get();
+  static AXUpdateNotifier* Get();
 
-  void AddObserver(AXEventObserver* observer);
-  void RemoveObserver(AXEventObserver* observer);
+  void AddObserver(AXUpdateObserver* observer);
+  void RemoveObserver(AXUpdateObserver* observer);
 
   // Notifies observers of an accessibility event. |view| must not be null.
   void NotifyViewEvent(views::View* view, ax::mojom::Event event_type);
@@ -35,7 +35,7 @@ class VIEWS_EXPORT AXEventManager {
                               ax::mojom::Event event_type);
 
  private:
-  base::ObserverList<AXEventObserver> observers_;
+  base::ObserverList<AXUpdateObserver> observers_;
 };
 
 }  // namespace views

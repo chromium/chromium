@@ -41,7 +41,7 @@ class MagnificationManager
       public user_manager::UserManager::UserSessionStateObserver,
       public ProfileObserver,
       public ui::EventHandler,
-      public views::AXEventObserver {
+      public views::AXUpdateObserver {
  public:
   MagnificationManager(const MagnificationManager&) = delete;
   MagnificationManager& operator=(const MagnificationManager&) = delete;
@@ -85,7 +85,7 @@ class MagnificationManager
   // ui::EventHandler overrides:
   void OnMouseEvent(ui::MouseEvent* event) override;
 
-  // views::AXEventObserver:
+  // views::AXUpdateObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
 
   void SetProfileForTest(Profile* profile);

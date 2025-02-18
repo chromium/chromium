@@ -321,7 +321,7 @@ void ViewsAXManager::DispatchAccessibilityEvents(
 
 ViewsAXManager::ViewsAXManager()
     : cache_(std::make_unique<views::AXAuraObjCache>()) {
-  views::AXEventManager::Get()->AddObserver(this);
+  views::AXUpdateNotifier::Get()->AddObserver(this);
 }
 
 // Never runs because object is leaked.

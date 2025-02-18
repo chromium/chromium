@@ -18,27 +18,27 @@
 namespace views::test {
 
 // AXEventCounter provides a convenient way to count events registered by the
-// AXEventManager by their event type, and wait for events of a specific type.
-class AXEventCounter : public views::AXEventObserver {
+// AXUpdateNotifier by their event type, and wait for events of a specific type.
+class AXEventCounter : public views::AXUpdateObserver {
  public:
-  explicit AXEventCounter(views::AXEventManager* event_manager);
+  explicit AXEventCounter(views::AXUpdateNotifier* event_manager);
   ~AXEventCounter() override;
 
   AXEventCounter(const AXEventCounter&) = delete;
   AXEventCounter& operator=(const AXEventCounter&) = delete;
 
   // Returns the number of events of a certain type registered since the
-  // creation of this AXEventManager object and prior to the count being
+  // creation of this AXUpdateNotifier object and prior to the count being
   // manually reset.
   int GetCount(ax::mojom::Event event_type) const;
 
   // Returns the number of events of a certain type on a certain role registered
-  // since the creation of this AXEventManager object and prior to the count
+  // since the creation of this AXUpdateNotifier object and prior to the count
   // being manually reset.
   int GetCount(ax::mojom::Event event_type, ax::mojom::Role role) const;
 
   // Returns the number of events of a certain type on a specific view since the
-  // creation of this AXEventManager object and prior to the count being
+  // creation of this AXUpdateNotifier object and prior to the count being
   // manually reset.
   int GetCount(ax::mojom::Event event_type, views::View* view) const;
 
@@ -48,7 +48,7 @@ class AXEventCounter : public views::AXEventObserver {
   // Blocks until an event of the specified type is received.
   void WaitForEvent(ax::mojom::Event event_type);
 
-  // views::AXEventObserver
+  // views::AXUpdateObserver
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
 
  private:
@@ -59,7 +59,7 @@ class AXEventCounter : public views::AXEventObserver {
       event_counts_for_view_;
   ax::mojom::Event wait_for_event_type_ = ax::mojom::Event::kNone;
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
-  base::ScopedObservation<views::AXEventManager, views::AXEventObserver>
+  base::ScopedObservation<views::AXUpdateNotifier, views::AXUpdateObserver>
       tree_observation_{this};
 };
 

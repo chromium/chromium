@@ -47,7 +47,7 @@ using AuraAXTreeSerializer = ui::AXTreeSerializer<
 // modified to work with Views on macOS as well.
 class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
                                     public views::AXAuraObjCache::Delegate,
-                                    public views::AXEventObserver {
+                                    public views::AXUpdateObserver {
  public:
   ViewsAXManager(const ViewsAXManager&) = delete;
   ViewsAXManager& operator=(const ViewsAXManager&) = delete;
@@ -75,7 +75,7 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
   void OnEvent(views::AXAuraObjWrapper* aura_obj,
                ax::mojom::Event event_type) override;
 
-  // views::AXEventObserver:
+  // views::AXUpdateObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
   void OnVirtualViewEvent(views::AXVirtualView* virtual_view,
                           ax::mojom::Event event_type) override;

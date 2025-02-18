@@ -314,10 +314,10 @@ class TestingWidgetDelegateView : public WidgetDelegateView {
   raw_ptr<base::RunLoop> run_loop_;
 };
 
-class TestingAXEventObserver : public AXEventObserver {
+class TestingAXEventObserver : public AXUpdateObserver {
  public:
   explicit TestingAXEventObserver(AXAuraObjCache* cache) : cache_(cache) {
-    observation_.Observe(AXEventManager::Get());
+    observation_.Observe(AXUpdateNotifier::Get());
   }
   ~TestingAXEventObserver() override = default;
   TestingAXEventObserver(const TestingAXEventObserver&) = delete;
@@ -332,7 +332,8 @@ class TestingAXEventObserver : public AXEventObserver {
   }
 
   raw_ptr<AXAuraObjCache> cache_;
-  base::ScopedObservation<AXEventManager, AXEventObserver> observation_{this};
+  base::ScopedObservation<AXUpdateNotifier, AXUpdateObserver> observation_{
+      this};
 };
 
 TEST_F(AXAuraObjCacheTest, DoNotCreateWidgetWrapperOnDestroyed) {

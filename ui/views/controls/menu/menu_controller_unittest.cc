@@ -3181,7 +3181,7 @@ TEST_F(MenuControllerTest, AccessibilityDoDefaultCallsAccept) {
 // Test that the kSelectedChildrenChanged event is emitted on
 // the root menu item when the selected menu item changes.
 TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
-  const test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  const test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
                          MenuAnchorPosition::kTopLeft);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged), 0);
@@ -3195,7 +3195,7 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
 }
 
 TEST_F(MenuControllerTest, AccessibilityEmitsMenuOpenedClosedEvents) {
-  const test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  const test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuStart));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuEnd));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart));

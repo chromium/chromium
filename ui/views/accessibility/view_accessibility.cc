@@ -217,7 +217,7 @@ void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
     return;
   }
 
-  AXEventManager::Get()->NotifyViewEvent(view_, event_type);
+  AXUpdateNotifier::Get()->NotifyViewEvent(view_, event_type);
 
   if (send_native_event && widget) {
     FireNativeEvent(event_type);

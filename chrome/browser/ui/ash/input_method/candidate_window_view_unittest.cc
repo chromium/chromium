@@ -150,7 +150,7 @@ TEST_F(CandidateWindowViewTest, UpdateCandidatesTest_CursorVisibility) {
 }
 
 TEST_F(CandidateWindowViewTest, UpdateCandidatesSendsA11yEvents) {
-  views::test::AXEventCounter event_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter event_counter(views::AXUpdateNotifier::Get());
 
   // User is not selecting. (Simulates a state showing suggestions)
   ui::CandidateWindow candidate_window;

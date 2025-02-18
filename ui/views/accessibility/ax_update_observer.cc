@@ -6,8 +6,8 @@
 
 namespace views {
 
-AXEventObserver::AXEventObserver() = default;
+AXUpdateObserver::AXUpdateObserver() = default;
 
-AXEventObserver::~AXEventObserver() = default;
+AXUpdateObserver::~AXUpdateObserver() = default;
 
 }  // namespace views

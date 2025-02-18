@@ -88,18 +88,18 @@ class ClickTrackingOverlayView : public views::View {
 BEGIN_METADATA(ClickTrackingOverlayView)
 END_METADATA
 
-class TestAXEventObserver : public views::AXEventObserver {
+class TestAXEventObserver : public views::AXUpdateObserver {
  public:
-  TestAXEventObserver() { views::AXEventManager::Get()->AddObserver(this); }
+  TestAXEventObserver() { views::AXUpdateNotifier::Get()->AddObserver(this); }
 
   TestAXEventObserver(const TestAXEventObserver&) = delete;
   TestAXEventObserver& operator=(const TestAXEventObserver&) = delete;
 
   ~TestAXEventObserver() override {
-    views::AXEventManager::Get()->RemoveObserver(this);
+    views::AXUpdateNotifier::Get()->RemoveObserver(this);
   }
 
-  // views::AXEventObserver:
+  // views::AXUpdateObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override {
     if (!view->GetWidget()) {
       return;

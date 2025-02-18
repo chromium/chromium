@@ -20,11 +20,11 @@
 
 MenuTestBase::MenuTestBase() : last_command_(0) {
   ax_event_counts_.fill(0);
-  views::AXEventManager::Get()->AddObserver(this);
+  views::AXUpdateNotifier::Get()->AddObserver(this);
 }
 
 MenuTestBase::~MenuTestBase() {
-  views::AXEventManager::Get()->RemoveObserver(this);
+  views::AXUpdateNotifier::Get()->RemoveObserver(this);
 }
 
 void MenuTestBase::OnViewEvent(views::View*, ax::mojom::Event event_type) {

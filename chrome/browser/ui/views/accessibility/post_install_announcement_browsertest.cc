@@ -10,7 +10,7 @@
 
 class PostInstallAnnouncementTestBase : public InProcessBrowserTest {
  protected:
-  views::test::AXEventCounter event_counter_{views::AXEventManager::Get()};
+  views::test::AXEventCounter event_counter_{views::AXUpdateNotifier::Get()};
 };
 
 IN_PROC_BROWSER_TEST_F(PostInstallAnnouncementTestBase, NormalLaunch) {

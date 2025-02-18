@@ -804,7 +804,7 @@ TEST_F(LabelTest, Accessibility) {
 }
 
 TEST_F(LabelTest, SetTextNotifiesAccessibilityEvent) {
-  test::AXEventCounter counter(views::AXEventManager::Get());
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   // Changing the text affects the accessible name, so it should notify.
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));

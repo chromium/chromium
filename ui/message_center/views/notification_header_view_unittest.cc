@@ -280,7 +280,7 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   notification_header_view_->SetExpandButtonEnabled(true);
   notification_header_view_->SetExpanded(false);
 
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   ui::AXNodeData data;
 
   // Initially the view is collapsed and there are no expanded-changed events.

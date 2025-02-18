@@ -198,7 +198,7 @@ class TabAppKeyboardNavigationTest : public TabAppSelectionViewTest {
     selector_view_ =
         views::AsViewClass<TabAppSelectionView>(menu->GetContentsView());
     ax_counter_ = std::make_unique<views::test::AXEventCounter>(
-        views::AXEventManager::Get());
+        views::AXUpdateNotifier::Get());
     ax_counter_->ResetAllCounts();
   }
 

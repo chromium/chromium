@@ -729,7 +729,7 @@ TEST_F(QuickInsertClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   client.Announce(u"hello");
 

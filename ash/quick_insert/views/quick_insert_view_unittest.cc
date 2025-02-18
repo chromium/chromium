@@ -1400,7 +1400,7 @@ TEST_F(QuickInsertViewTest, NoMainResultsAndNoEmojisIsAnnounced) {
   widget->Show();
   QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   future.Take().Run({});
 
@@ -1427,7 +1427,7 @@ TEST_P(QuickInsertViewEmojiTest, NoMainResultsAndSomeEmojisIsAnnounced) {
   widget->Show();
   QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   future.Take().Run({});
 
@@ -2950,7 +2950,7 @@ TEST_F(
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
 
@@ -2971,7 +2971,7 @@ TEST_F(
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
   task_environment()->FastForwardBy(

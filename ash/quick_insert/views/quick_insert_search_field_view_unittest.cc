@@ -444,7 +444,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   view->RequestFocus();
   views::View descendant;
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->SetTextfieldActiveDescendant(&descendant);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
@@ -470,7 +470,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   views::View descendant;
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->SetTextfieldActiveDescendant(&descendant);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
@@ -491,7 +491,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   views::View descendant;
   view->SetTextfieldActiveDescendant(&descendant);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->RequestFocus();
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
@@ -518,7 +518,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   view->SetPlaceholderText(u"placeholder");
   views::View descendant;
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->RequestFocus();
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
@@ -545,7 +545,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   views::View descendant1, descendant2;
   view->SetTextfieldActiveDescendant(&descendant1);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->RequestFocus();
   view->SetTextfieldActiveDescendant(&descendant2);
   task_environment()->FastForwardBy(
