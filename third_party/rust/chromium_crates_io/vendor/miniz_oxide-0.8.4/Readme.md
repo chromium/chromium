@@ -25,7 +25,7 @@ Simple compression/decompression:
 ```rust
 
 use miniz_oxide::deflate::compress_to_vec;
-use miniz_oxide::inflate::decompress_to_vec;
+use miniz_oxide::inflate::decompress_to_vec_with_limit;
 
 fn roundtrip(data: &[u8]) {
     // Compress the input

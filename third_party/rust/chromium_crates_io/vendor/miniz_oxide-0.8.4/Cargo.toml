@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "miniz_oxide"
-version = "0.8.3"
+version = "0.8.4"
 authors = [
     "Frommi <daniil.liferenko@gmail.com>",
     "oyvindln <oyvindln@users.noreply.github.com>",
@@ -70,7 +70,8 @@ version = "0.3.3"
 optional = true
 default-features = false
 
-[dev-dependencies]
+[dev-dependencies.criterion]
+version = "0.5"
 
 [features]
 default = ["with-alloc"]

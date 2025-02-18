@@ -1000,6 +1000,9 @@ fn apply_match(
         transfer(out_slice, source_pos, out_pos, match_len, out_buf_size_mask);
     } else if match_len <= dist && source_pos + match_len < out_slice.len() {
         // Destination and source segments does not intersect and source does not wrap.
+        // TODO: An invalid before start of data wrapping match reached here before
+        // it was fixed (it wrapped around and ended overlapping again)- need
+        // to check that we are not wrapping here.
         if source_pos < out_pos {
             let (from_slice, to_slice) = out_slice.split_at_mut(out_pos);
             to_slice[..match_len].copy_from_slice(&from_slice[source_pos..source_pos + match_len]);
@@ -1140,8 +1143,9 @@ fn decompress_fast(
             }
 
             let position = out_buf.position();
-            if l.dist as usize > out_buf.position()
-                && (flags & TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF != 0)
+            if (l.dist as usize > out_buf.position()
+                && (flags & TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF != 0))
+                || (l.dist as usize > out_buf.get_ref().len())
             {
                 // We encountered a distance that refers a position before
                 // the start of the decoded data, so we can't continue.
@@ -1665,8 +1669,8 @@ pub fn decompress(
             }),
 
             HuffDecodeOuterLoop2 => generate_state!(state, 'state_machine, {
-                if l.dist as usize > out_buf.position() &&
-                    (flags & TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF != 0)
+                if (l.dist as usize > out_buf.position() &&
+                    (flags & TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF != 0)) || (l.dist as usize > out_buf.get_ref().len())
                 {
                     // We encountered a distance that refers a position before
                     // the start of the decoded data, so we can't continue.

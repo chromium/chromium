@@ -1134,12 +1134,13 @@ pub(crate) struct DictOxide {
     pub max_probes: [u32; 2],
     /// Buffer of input data.
     /// Padded with 1 byte to simplify matching code in `compress_fast`.
-    pub b: Box<HashBuffers>,
+    pub b: HashBuffers,
 
     pub code_buf_dict_pos: usize,
     pub lookahead_size: usize,
     pub lookahead_pos: usize,
     pub size: usize,
+    loop_len: u8,
 }
 
 const fn probes_from_flags(flags: u32) -> [u32; 2] {
@@ -1153,11 +1154,12 @@ impl DictOxide {
     fn new(flags: u32) -> Self {
         DictOxide {
             max_probes: probes_from_flags(flags),
-            b: Box::default(),
+            b: HashBuffers::default(),
             code_buf_dict_pos: 0,
             lookahead_size: 0,
             lookahead_pos: 0,
             size: 0,
+            loop_len: 32,
         }
     }
 
@@ -1203,7 +1205,7 @@ impl DictOxide {
 
     /// Do an unaligned read of the data at `pos` in the dictionary and treat it as if it was of
     /// type T.
-    #[inline]
+    #[inline(always)]
     fn read_as_u16(&self, pos: usize) -> u16 {
         read_u16_le(&self.b.dict[..], pos)
     }
@@ -1228,15 +1230,15 @@ impl DictOxide {
         let max_match_len = cmp::min(MAX_MATCH_LEN as u32, max_match_len);
         match_len = cmp::max(match_len, 1);
 
-        let pos = lookahead_pos & LZ_DICT_SIZE_MASK;
-        let mut probe_pos = pos;
-        // Number of probes into the hash chains.
-        let mut num_probes_left = self.max_probes[(match_len >= 32) as usize];
-
         // If we already have a match of the full length don't bother searching for another one.
         if max_match_len <= match_len {
             return (match_dist, match_len);
         }
+
+        let pos = lookahead_pos & LZ_DICT_SIZE_MASK;
+        let mut probe_pos = pos;
+        // Number of probes into the hash chains.
+        let mut num_probes_left = self.max_probes[(match_len >= 32) as usize];
 
         // Read the last byte of the current match, and the next one, used to compare matches.
         let mut c01: u16 = self.read_as_u16(pos + match_len as usize - 1);
@@ -1289,7 +1291,10 @@ impl DictOxide {
             let mut p = pos + 2;
             let mut q = probe_pos + 2;
             // The first two bytes matched, so check the full length of the match.
-            for _ in 0..32 {
+            // TODO: This is a workaround for an upstream issue introduced after a LLVM upgrade in rust 1.82.
+            // the compiler is too smart and ends up unrolling the loop which causes the performance to get worse
+            // Using a variable instead of a constant here to prevent it seems to at least get back some of the performance loss.
+            for _ in 0..self.loop_len as i32 {
                 let p_data: u64 = self.read_unaligned_u64(p);
                 let q_data: u64 = self.read_unaligned_u64(q);
                 // Compare of 8 bytes at a time by using unaligned loads of 64-bit integers.
@@ -1312,7 +1317,7 @@ impl DictOxide {
                         }
                         // We found a better match, so save the last two bytes for further match
                         // comparisons.
-                        c01 = self.read_as_u16(pos + match_len as usize - 1)
+                        c01 = read_u16_le(&self.b.dict[..], pos + match_len as usize - 1);
                     }
                     continue 'outer;
                 }
