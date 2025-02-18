@@ -135,8 +135,9 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*gather_indices=*/DataTypeConstraint::kInt32To64,
        /*gather_elements_input=*/{},
        /*gather_elements_indices=*/{},
-       /*gather_nd_input=*/{},
-       /*gather_nd_indices=*/{},
+       /*gather_nd_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*gather_nd_indices=*/
+       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
        /*gelu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*gemm_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
        /*gru_input=*/{},

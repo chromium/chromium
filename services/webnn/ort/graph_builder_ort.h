@@ -190,6 +190,7 @@ class GraphBuilderOrt {
   AddDequantizeLinearOperation(
       const mojom::DequantizeLinear& dequantize_linear);
   void AddGatherOperation(const mojom::Gather& gather);
+  void AddGatherNDOperation(const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddInstanceNormalizationOperation(
