@@ -35,7 +35,6 @@ namespace reporting {
 class StorageSelector {
  public:
   static bool is_use_missive();
-  static bool is_uploader_required();
 
 #if BUILDFLAG(IS_CHROMEOS)
   static void CreateMissiveStorageModule(

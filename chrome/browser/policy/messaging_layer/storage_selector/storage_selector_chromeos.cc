@@ -19,11 +19,6 @@
 namespace reporting {
 
 // static
-bool StorageSelector::is_uploader_required() {
-  return BUILDFLAG(IS_CHROMEOS);
-}
-
-// static
 bool StorageSelector::is_use_missive() {
   return true;  // Use missived storage.
 }
