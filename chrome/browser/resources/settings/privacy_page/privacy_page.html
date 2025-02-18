@@ -712,11 +712,18 @@
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
-     </template>
+      </template>
       <template is="dom-if" route-path="/content/notifications" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryNotifications}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
+          <template is="dom-if"
+              if="[[enablePermissionSiteSettingsRadioButton_]]">
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsNotificationsDescription}
+            </div>
+          </template>
+
           <div id="notificationRadioGroup" class="radio-group">
             <template is="dom-if" if="[[showNotificationPermissionsReview_]]">
               <template is="dom-if" if="[[shouldShowSafetyHub_]]">
@@ -733,10 +740,22 @@
               </template>
             </template>
             <h2>$i18n{siteSettingsDefaultBehavior}</h2>
-            <div id="notificationSubHeading"
-              class="secondary radio-sub-heading">
-              $i18n{siteSettingsNotificationsDefaultBehaviorDescription}
-            </div>
+
+            <template is="dom-if"
+                if="[[enablePermissionSiteSettingsRadioButton_]]">
+              <div id="notificationSubHeading"
+                  class="secondary radio-sub-heading">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+            </template>
+
+            <template is="dom-if"
+                if="[[!enablePermissionSiteSettingsRadioButton_]]">
+              <div id="notificationSubHeading"
+                  class="secondary radio-sub-heading">
+                $i18n{siteSettingsNotificationsDefaultBehaviorDescription}
+              </div>
+            </template>
 
             <cr-radio-group
                 on-selected-changed="onNotificationTopLevelRadioChanged_">
