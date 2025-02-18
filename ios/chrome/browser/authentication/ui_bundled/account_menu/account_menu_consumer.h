@@ -15,7 +15,7 @@
 - (void)updateErrorSection:(AccountErrorUIInfo*)error;
 
 // Updates the list of accounts.
-- (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
+- (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)gaiaIDsToAdd
                           gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove
                             gaiaIDsToKeep:(NSArray<NSString*>*)gaiaIDsToKeep;
 

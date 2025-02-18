@@ -636,14 +636,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [self resize];
 }
 
-- (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
+- (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)gaiaIDsToAdd
                           gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove
                             gaiaIDsToKeep:(NSArray<NSString*>*)gaiaIDsToKeep {
   CHECK(!_selectedIndexPath, base::NotFatalUntil::M135);
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
 
   NSMutableArray* accountsIdentifiersToAdd = [[NSMutableArray alloc] init];
-  for (NSString* gaiaID in indicesToAdd) {
+  for (NSString* gaiaID in gaiaIDsToAdd) {
     [accountsIdentifiersToAdd addObject:gaiaID];
   }
   [snapshot insertItemsWithIdentifiers:accountsIdentifiersToAdd
