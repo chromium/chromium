@@ -13,18 +13,12 @@ namespace storage {
 
 blink::mojom::StorageType FileSystemTypeToQuotaStorageType(
     FileSystemType type) {
-  if (base::FeatureList::IsEnabled(storage::features::kDisableSyncableQuota) &&
-      (type == kFileSystemTypeSyncable ||
-       type == kFileSystemTypeSyncableForInternalSync)) {
-    return blink::mojom::StorageType::kTemporary;
-  }
   switch (type) {
     case kFileSystemTypeTemporary:
     case kFileSystemTypePersistent:
-      return blink::mojom::StorageType::kTemporary;
     case kFileSystemTypeSyncable:
     case kFileSystemTypeSyncableForInternalSync:
-      return blink::mojom::StorageType::kSyncable;
+      return blink::mojom::StorageType::kTemporary;
     default:
       return blink::mojom::StorageType::kUnknown;
   }
