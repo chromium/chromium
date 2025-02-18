@@ -4,7 +4,5 @@
 <dict>
 	<key>com.apple.developer.web-browser-engine.rendering</key>
 	<true/>
-	<key>com.apple.security.get-task-allow</key>
-	<true/>
 </dict>
 </plist>
