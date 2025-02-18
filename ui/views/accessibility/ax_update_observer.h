@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_ACCESSIBILITY_AX_EVENT_OBSERVER_H_
-#define UI_VIEWS_ACCESSIBILITY_AX_EVENT_OBSERVER_H_
+#ifndef UI_VIEWS_ACCESSIBILITY_AX_UPDATE_OBSERVER_H_
+#define UI_VIEWS_ACCESSIBILITY_AX_UPDATE_OBSERVER_H_
 
 #include "base/observer_list_types.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -28,4 +28,4 @@ class VIEWS_EXPORT AXEventObserver : public base::CheckedObserver {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_ACCESSIBILITY_AX_EVENT_OBSERVER_H_
+#endif  // UI_VIEWS_ACCESSIBILITY_AX_UPDATE_OBSERVER_H_

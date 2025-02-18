@@ -12,8 +12,8 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/views/accessibility/ax_event_manager.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 
 namespace views::test {
 

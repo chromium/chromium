@@ -55,7 +55,7 @@
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/test/ax_event_counter.h"
 
 namespace {

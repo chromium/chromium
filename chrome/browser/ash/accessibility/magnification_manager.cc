@@ -24,7 +24,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {

@@ -19,7 +19,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "cookie_controls_bubble_coordinator.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/test/ax_event_counter.h"
 
 namespace {

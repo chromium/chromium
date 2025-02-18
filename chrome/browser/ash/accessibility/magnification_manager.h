@@ -16,7 +16,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/events/event_handler.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 
 class PrefChangeRegistrar;
 

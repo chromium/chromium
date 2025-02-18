@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_ACCESSIBILITY_AX_EVENT_MANAGER_H_
-#define UI_VIEWS_ACCESSIBILITY_AX_EVENT_MANAGER_H_
+#ifndef UI_VIEWS_ACCESSIBILITY_AX_UPDATE_NOTIFIER_H_
+#define UI_VIEWS_ACCESSIBILITY_AX_UPDATE_NOTIFIER_H_
 
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -40,4 +40,4 @@ class VIEWS_EXPORT AXEventManager {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_ACCESSIBILITY_AX_EVENT_MANAGER_H_
+#endif  // UI_VIEWS_ACCESSIBILITY_AX_UPDATE_NOTIFIER_H_

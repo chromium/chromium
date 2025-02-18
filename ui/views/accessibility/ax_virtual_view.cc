@@ -22,7 +22,7 @@
 #include "ui/base/layout.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/view.h"

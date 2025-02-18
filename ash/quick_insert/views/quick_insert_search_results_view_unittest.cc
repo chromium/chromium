@@ -39,7 +39,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"

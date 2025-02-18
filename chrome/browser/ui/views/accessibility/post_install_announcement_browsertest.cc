@@ -5,7 +5,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/test/ax_event_counter.h"
 
 class PostInstallAnnouncementTestBase : public InProcessBrowserTest {

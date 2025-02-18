@@ -18,7 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/input_method/candidate_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"

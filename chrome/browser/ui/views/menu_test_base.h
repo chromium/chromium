@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 namespace views {

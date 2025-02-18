@@ -17,8 +17,8 @@
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
-#include "ui/views/accessibility/ax_event_observer.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 
 namespace aura {
 class Window;
