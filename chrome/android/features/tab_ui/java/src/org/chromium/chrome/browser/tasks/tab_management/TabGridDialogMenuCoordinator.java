@@ -38,7 +38,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @param collaborationService Used for checking the user is the owner of a group.
      */
     public TabGridDialogMenuCoordinator(
-            OnItemClickedCallback onItemClicked,
+            OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             Supplier<Token> tabGroupIdSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,

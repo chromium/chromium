@@ -1914,7 +1914,7 @@ public class StripLayoutHelperTest {
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab group context menu is showing.
         verify(mTabGroupContextMenuCoordinator)
-                .showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+                .showMenu(rectProviderArgumentCaptor.capture(), any());
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertTrue(view instanceof StripLayoutGroupTitle);
@@ -1971,7 +1971,7 @@ public class StripLayoutHelperTest {
         // Long press on group title and verify drag with context menu does not start a scroll.
         // Long press on group title.
         mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
-        verify(mTabGroupContextMenuCoordinator).showMenu(any(), anyInt());
+        verify(mTabGroupContextMenuCoordinator).showMenu(any(), any());
         when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
         mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 60f, /* y= */ 10f, /* deltaX= */ 50f);
         verify(mTabGroupContextMenuCoordinator).dismiss();
