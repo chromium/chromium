@@ -45,17 +45,25 @@ std::string GetSite(const GURL& url) {
   return site.empty() ? url.host() : site;
 }
 
+const base::Clock* g_default_clock = nullptr;
+
 }  // namespace
 
-BtmShortVisitObserver::BtmShortVisitObserver(WebContents* web_contents,
-                                             const base::Clock* clock)
+BtmShortVisitObserver::BtmShortVisitObserver(WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      clock_(clock ? *clock : *base::DefaultClock::GetInstance()),
+      clock_(g_default_clock ? *g_default_clock
+                             : *base::DefaultClock::GetInstance()),
       last_committed_at_(clock_->Now()),
       page_source_id_(
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {}
 
 BtmShortVisitObserver::~BtmShortVisitObserver() = default;
+
+/* static */
+const base::Clock* BtmShortVisitObserver::SetDefaultClockForTesting(
+    const base::Clock* clock) {
+  return std::exchange(g_default_clock, clock);
+}
 
 void BtmShortVisitObserver::DidStartNavigation(
     NavigationHandle* navigation_handle) {
@@ -81,31 +89,32 @@ void BtmShortVisitObserver::DidFinishNavigation(
   const GURL& visit_url = navigation_handle->GetPreviousPrimaryMainFrameURL();
   const std::string visit_site = GetSite(visit_url);
 
-  if (NavigationState* nav_state =
-          NavigationState::GetForNavigationHandle(*navigation_handle)) {
-    const base::TimeDelta visit_duration =
-        nav_state->started_at() - last_committed_at_;
-    // Only emit metrics for visits up to 10 seconds long.
-    if (visit_duration <= base::Seconds(10)) {
-      // Round the duration to the nearest second.
-      const int64_t visit_seconds =
-          (visit_duration.InMilliseconds() + 500) / 1000;
-      const std::string next_site =
-          GetSite(web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  if (prev_site_.has_value()) {
+    if (NavigationState* nav_state =
+            NavigationState::GetForNavigationHandle(*navigation_handle)) {
+      const base::TimeDelta visit_duration =
+          nav_state->started_at() - last_committed_at_;
+      // Only emit metrics for visits up to 10 seconds long.
+      if (visit_duration <= base::Seconds(10)) {
+        // Round the duration to the nearest second.
+        const int64_t visit_seconds =
+            (visit_duration.InMilliseconds() + 500) / 1000;
+        const std::string next_site = GetSite(
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
-      ukm::builders::BTM_ShortVisit(page_source_id_)
-          .SetVisitDuration(visit_seconds)
-          .SetExitWasRendererInitiated(navigation_handle->IsRendererInitiated())
-          .SetExitHadUserGesture(navigation_handle->HasUserGesture())
-          .SetExitPageTransition(navigation_handle->GetPageTransition())
-          // TODO: .SetSiteEngagement()
-          // TODO: .SetTimeSinceLastInteraction()
-          .SetPreviousSiteSame(prev_site_.has_value() ? prev_site_ == visit_site
-                                                      : -1)
-          .SetNextSiteSame(visit_site == next_site)
-          .SetPreviousAndNextSiteSame(
-              prev_site_.has_value() ? prev_site_ == next_site : -1)
-          .Record(ukm::UkmRecorder::Get());
+        ukm::builders::BTM_ShortVisit(page_source_id_)
+            .SetVisitDuration(visit_seconds)
+            .SetExitWasRendererInitiated(
+                navigation_handle->IsRendererInitiated())
+            .SetExitHadUserGesture(navigation_handle->HasUserGesture())
+            .SetExitPageTransition(navigation_handle->GetPageTransition())
+            // TODO: .SetSiteEngagement()
+            // TODO: .SetTimeSinceLastInteraction()
+            .SetPreviousSiteSame(prev_site_ == visit_site)
+            .SetNextSiteSame(visit_site == next_site)
+            .SetPreviousAndNextSiteSame(prev_site_ == next_site)
+            .Record(ukm::UkmRecorder::Get());
+      }
     }
   }
 

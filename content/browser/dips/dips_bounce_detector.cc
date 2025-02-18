@@ -131,6 +131,7 @@ BtmWebContentsObserver::~BtmWebContentsObserver() = default;
 RedirectChainDetector::RedirectChainDetector(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       WebContentsUserData<RedirectChainDetector>(*web_contents),
+      short_visit_observer_(web_contents),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
                 base::DefaultClock::GetInstance()),

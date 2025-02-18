@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
+#include "content/browser/dips/btm_short_visit_observer.h"
 #include "content/browser/dips/cookie_access_filter.h"
 #include "content/browser/dips/dips_service_impl.h"
 #include "content/browser/dips/dips_utils.h"
@@ -454,6 +455,7 @@ class CONTENT_EXPORT RedirectChainDetector
   void NotifyOnRedirectChainEnded(std::vector<BtmRedirectInfoPtr> redirects,
                                   BtmRedirectChainInfoPtr chain);
 
+  BtmShortVisitObserver short_visit_observer_;
   BtmBounceDetector detector_;
   DelayedChainHandler delayed_handler_;
   base::ObserverList<Observer> observers_;
