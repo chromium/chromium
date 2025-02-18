@@ -205,11 +205,14 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       "mostRelevantTabResumptionDeviceIconEnabled",
       base::FeatureList::IsEnabled(
           ntp_features::kNtpMostRelevantTabResumptionModuleDeviceIcon));
-
   source->AddBoolean(
       "mostRelevantTabResumptionUseIsKnownToSync",
       base::FeatureList::IsEnabled(
           ntp_features::kNtpMostRelevantTabResumptionUseIsKnownToSync));
+  source->AddBoolean(
+      "mostRelevantTabResumptionModuleFallbackToHost",
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpMostRelevantTabResumptionModuleFallbackToHost));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"doneButton", IDS_DONE},

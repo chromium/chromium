@@ -57,6 +57,12 @@ export class ModuleElement extends I18nMixinLit
       urlVisits: {type: Object},
 
       /**
+       * To determine whether the favicon service should use the host if
+       * the url does not produce a match.
+       */
+      fallbackToHost_: {type: Boolean},
+
+      /**
        * To determine whether to show the module with the device icon.
        */
       shouldShowDeviceIcon_: {
@@ -66,14 +72,14 @@ export class ModuleElement extends I18nMixinLit
 
       showInfoDialog_: {type: Boolean},
 
-      useIsKnownToSync_: {
-        type: Boolean,
-      },
+      useIsKnownToSync_: {type: Boolean},
     };
   }
 
   format: string = 'wide';
   urlVisits: URLVisit[] = [];
+  protected fallbackToHost_: boolean =
+      loadTimeData.getBoolean('mostRelevantTabResumptionModuleFallbackToHost');
   protected shouldShowDeviceIcon_: boolean =
     loadTimeData.getBoolean('mostRelevantTabResumptionDeviceIconEnabled');
   protected showInfoDialog_: boolean = false;

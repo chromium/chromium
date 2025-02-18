@@ -241,6 +241,12 @@ BASE_FEATURE(kNtpMostRelevantTabResumptionUseIsKnownToSync,
              "NtpMostRelevantTabResumptionUseIsKnownToSync",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the Tab Resumption module will fallback to host url to find a
+// favicon if there are none locally available.
+BASE_FEATURE(kNtpMostRelevantTabResumptionModuleFallbackToHost,
+             "NtpMostRelevantTabResumptionModuleFallbackToHost",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNtpTabResumptionModuleCategories,
              "NtpTabResumptionModuleCategories",
              base::FEATURE_DISABLED_BY_DEFAULT);
