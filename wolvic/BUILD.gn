@@ -438,6 +438,7 @@ dist_aar("content_aar") {
     "org/chromium/components/url_formatter/*.class",
     "org/chromium/components/variations/*.class",
     "org/chromium/components/viz/service/frame_sinks/*.class",
+    "org/chromium/components/webauthn/*.class",
     "org/chromium/components/webauthn/cred_man/*.class",
     "org/chromium/components/webapk/lib/client/*.class",
     "org/chromium/content_public/*.class",
