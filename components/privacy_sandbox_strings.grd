@@ -816,6 +816,15 @@
     <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
       When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;link&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
+
+    <!-- RWS - PageInfo -->
+    <!-- TODO(b:396463421): Mark strings translateable when content is finalized -->
+    <message name="IDS_PAGE_INFO_RWS_ENHANCED_BUTTON_TITLE" desc="" translateable="false">
+      Manage related sites data
+    </message>
+    <message name="IDS_PAGE_INFO_RWS_ENHANCED_BUTTON_SUBTITLE" desc="" translateable="false">
+      This site belongs to a group of sites, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>, that can share your activity across the group to help sites work as expected.
+    </message>
     </messages>
   </release>
 </grit>

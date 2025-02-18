@@ -72,6 +72,7 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1425,7 +1426,9 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
  public:
   PageInfoBubbleViewBrowserTestCookiesSubpage() {
     std::vector<base::test::FeatureRef>
-        enabled_features = {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+        enabled_features =
+            {privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
+             privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi},
         disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
@@ -1549,8 +1552,14 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
   EXPECT_TRUE(GetView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
-  auto* rws_button = GetView(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
+  auto* rws_button = static_cast<RichHoverButton*>(GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS));
+
+  EXPECT_EQ(rws_button->GetTitleText(),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_ENHANCED_BUTTON_TITLE));
+  EXPECT_EQ(rws_button->GetSubtitleText(),
+            l10n_util::GetStringFUTF16(
+                IDS_PAGE_INFO_RWS_ENHANCED_BUTTON_SUBTITLE, rws_owner));
 
   // Checking if rws button opens correct page and records correctly user
   // actions.
