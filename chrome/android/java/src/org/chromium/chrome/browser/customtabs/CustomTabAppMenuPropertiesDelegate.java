@@ -201,7 +201,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 tryAddingReadAloud = false;
             } else if (mUiType == CustomTabsUiType.NETWORK_BOUND_TAB) {
                 openInChromeItemVisible = false;
-                addToHomeScreenVisible = true;
+                addToHomeScreenVisible = false;
                 requestDesktopSiteVisible = true;
             }
 
