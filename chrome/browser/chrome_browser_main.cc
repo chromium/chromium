@@ -4,71 +4,38 @@
 
 #include "chrome/browser/chrome_browser_main.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <memory>
-#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
-#include <vector>
 
 #include "base/at_exit.h"
 #include "base/base_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/debugger.h"
-#include "base/debug/leak_annotations.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/hang_watcher.h"
-#include "base/threading/platform_thread.h"
-#include "base/time/default_tick_clock.h"
-#include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "cc/base/switches.h"
-#include "chrome/browser/about_flags.h"
 #include "chrome/browser/active_use_util.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/buildflags.h"
-#include "chrome/browser/chrome_browser_field_trials.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/registration.h"
-#include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -77,15 +44,9 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/expired_histograms_array.h"
 #include "chrome/browser/metrics/shutdown_watcher_helper.h"
-#include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
-#include "chrome/browser/prefs/chrome_command_line_pref_store.h"
-#include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -99,20 +60,14 @@
 #include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
-#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
-#include "chrome/common/buildflags.h"
-#include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
-#include "chrome/common/env_vars.h"
-#include "chrome/common/logging_chrome.h"
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/pref_names.h"
@@ -125,135 +80,102 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
-#include "components/embedder_support/switches.h"
-#include "components/google/core/common/google_util.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/content/browser/geo_language_provider.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
-#include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/expired_histogram_util.h"
-#include "components/metrics/metrics_reporting_default_state.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_shutdown.h"
-#include "components/metrics/persistent_histograms.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/policy/core/browser/policy_data_utils.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/management/management_service.h"
-#include "components/prefs/json_pref_store.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/pref_value_store.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
+#include "components/sessions/content/content_serialized_navigation_driver.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/tracing/common/background_tracing_utils.h"
-#include "components/tracing/common/tracing_switches.h"
-#include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
-#include "components/variations/field_trial_config/field_trial_util.h"
-#include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
-#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
-#include "components/variations/variations_associated_data.h"
-#include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_ids_provider.h"
-#include "components/variations/variations_switches.h"
-#include "components/version_info/version_info.h"
-#include "components/webui/flags/pref_service_flags_storage.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/first_party_sets_handler.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/synthetic_trial_syncer.h"
-#include "content/public/common/content_client.h"
+#include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/main_function_params.h"
-#include "content/public/common/profiling.h"
-#include "extensions/buildflags/buildflags.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/localized_strings.h"
-#include "media/media_buildflags.h"
 #include "net/base/data_url.h"
 #include "net/base/net_module.h"
-#include "net/cookies/cookie_monster.h"
-#include "net/http/http_network_layer.h"
-#include "net/http/http_stream_factory.h"
 #include "pdf/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
-#include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
 
 // Per-platform #include blocks, in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/notreached.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/share/share_history.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_client.h"
-#include "ui/base/resource/resource_bundle_android.h"
+#include "components/page_info/android/page_info_client.h"
 #else
+#include <vector>
+
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resources_integrity.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/usb/web_usb_detector.h"
+#include "chrome/browser/win/browser_util.h"
 #include "components/soda/soda_installer.h"
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/first_run/upgrade_util.h"
 #endif
-#endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_RLZ)
+#include "base/time/time.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "sql/database.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+#include "base/check_op.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/extensions/component_loader.h"
+#endif
 #else
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#include "components/crash/core/app/crashpad.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
-#include "base/nix/xdg_util.h"
 #include "chrome/browser/first_run/upgrade_util_linux.h"
 #endif
 
@@ -268,28 +190,33 @@
 #include "ui/gfx/switches.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/first_run/upgrade_util.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
+
+#include "chrome/browser/ui/ui_features.h"
 
 #if defined(ARCH_CPU_X86_64)
 #include "base/mac/mac_util.h"
 #include "base/threading/platform_thread.h"
 #endif
-
-#include "chrome/browser/app_controller_mac.h"
-#include "chrome/browser/ui/ui_features.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+#include "base/logging.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
-#include "base/win/win_util.h"
 #include "chrome/browser/chrome_browser_main_win.h"
 #include "chrome/browser/first_run/upgrade_util_win.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/browser/ui/network_profile_bubble.h"
-#include "chrome/browser/win/browser_util.h"
 #include "chrome/browser/win/chrome_select_file_dialog_factory.h"
 #include "chrome/browser/win/parental_controls.h"
-#include "chrome/install_static/install_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -306,12 +233,12 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_protocols.h"
-#include "extensions/common/features/feature_provider.h"
 #include "extensions/components/javascript_dialog_extensions_client/javascript_dialog_extension_client_impl.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
+#include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
+#include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/browser/nacl_process_host.h"
 #endif
 
@@ -319,23 +246,19 @@
 #include "chrome/browser/offline_pages/offline_page_info_handler.h"
 #endif
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-#include "chrome/browser/printing/oop_features.h"
-#include "chrome/browser/printing/printing_init.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "pdf/pdf_features.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/plugin_prefs.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/common/printing/printing_init.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/oop_features.h"
+#include "chrome/browser/printing/printing_init.h"
 #endif
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
 #include "printing/printed_document.h"
@@ -343,10 +266,17 @@
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 #include "chrome/browser/chrome_process_singleton.h"
-#include "chrome/browser/process_singleton.h"
-#endif
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 
-#if BUILDFLAG(ENABLE_RLZ)
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#endif
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+
+#if BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS)
+#include <cmath>
+
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
@@ -1924,7 +1854,6 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
   // not finish.
   NOTREACHED();
 #else
-
   for (auto& chrome_extra_part : chrome_extra_parts_) {
     chrome_extra_part->PostDestroyThreads();
   }
