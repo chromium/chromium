@@ -10,6 +10,7 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/lobster/lobster_announcer.h"
 #include "chrome/browser/ash/lobster/lobster_bubble_coordinator.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_resizer.h"
@@ -63,6 +64,8 @@ class LobsterService : public KeyedService, public LobsterEventSink {
 
   const AccountId& GetAccountId() const { return account_id_; }
 
+  void Announce(const std::u16string& message);
+
   // Relevant input events
   void OnFocus(int context_id) override;
 
@@ -88,6 +91,8 @@ class LobsterService : public KeyedService, public LobsterEventSink {
   std::unique_ptr<LobsterInsertion> queued_insertion_;
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  LobsterLiveRegionAnnouncer announcer_;
 };
 
 #endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_
