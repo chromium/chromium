@@ -8,6 +8,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 
 class Profile;
 
@@ -69,29 +70,38 @@ class LensOverlayGen204Controller {
                         Profile* profile,
                         uint64_t gen204_id);
 
-  // Sends a Lens objects request latency gen204 request.
+  // Sends a Lens latency gen204 request. The request id is optional because not
+  // all latency events have an associated request id, such as the cluster info
+  // fetch.
+  // TODO(crbug.com/394645019): Remove the encoded analytics id parameter when
+  // the analytics id param is no longer used on the server.
   void SendLatencyGen204IfEnabled(
       LatencyType latency_type,
       base::TimeDelta latency_duration,
       std::string vit_query_param_value,
       std::optional<base::TimeDelta> cluster_info_latency,
-      std::optional<std::string> encoded_analytics_id);
+      std::optional<std::string> encoded_analytics_id,
+      std::optional<lens::LensOverlayRequestId> request_id);
 
   // Sends a task completion gen204 request. The analytics id is the
   // latest Lens request analytics id from the query controller.
   // The user action is the action that triggered the task completion
   // event.
+  // TODO(crbug.com/394645019): Remove the encoded analytics id parameter when
+  // the analytics id param is no longer used on the server.
   void SendTaskCompletionGen204IfEnabled(std::string encoded_analytics_id,
-                                         lens::mojom::UserAction user_action);
+                                         lens::mojom::UserAction user_action,
+                                         lens::LensOverlayRequestId request_id);
 
-  // Sends a semantic event gen204 request.
-  void SendSemanticEventGen204IfEnabled(lens::mojom::SemanticEvent event);
+  // Sends a semantic event gen204 request. Some semantic events do not
+  // have an associated request id (e.g. text gleam view end).
+  void SendSemanticEventGen204IfEnabled(
+      lens::mojom::SemanticEvent event,
+      std::optional<lens::LensOverlayRequestId> request_id);
 
   // Sends any final gen204 requests and marks the end of the query flow.
   // Called when the Lens Overlay is closed.
-  // The analytics id is the latest Lens request analytics id from the
-  // query controller.
-  void OnQueryFlowEnd(std::string encoded_analytics_id);
+  void OnQueryFlowEnd();
 
   // Issues the gen204 network request and adds a loader to gen204_loaders_.
   // Checks that the user is opted into metrics logging.

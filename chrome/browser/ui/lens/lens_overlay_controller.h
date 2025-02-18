@@ -450,9 +450,12 @@ class LensOverlayController : public LensSearchboxClient,
                                            int selection_end_index,
                                            bool is_translate = false);
 
-  // Testing function to issue a text request.
+  // Testing function to issue a task completion event for a user action.
   void RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
       lens::mojom::UserAction user_action);
+
+  // Testing function to issue a semantic event.
+  void RecordSemanticEventForTesting(lens::mojom::SemanticEvent event);
 
   // Testing function to issue a translate request.
   void IssueTranslateSelectionRequestForTesting(
