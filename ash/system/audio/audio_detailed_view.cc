@@ -918,6 +918,11 @@ void AudioDetailedView::OnNumStreamIgnoreUiGainsChanged(int32_t num) {
   UpdateAgcInfoRow();
 }
 
+void AudioDetailedView::OnVoiceIsolationUIAppearanceChanged(
+    VoiceIsolationUIAppearance appearance) {
+  UpdateScrollableList();
+}
+
 BEGIN_METADATA(AudioDetailedView)
 END_METADATA
 
