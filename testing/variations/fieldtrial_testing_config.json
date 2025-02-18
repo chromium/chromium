@@ -6515,7 +6515,8 @@
                     ],
                     "min_os_version": "16151.0.0",
                     "hardware_classes": [
-                        "brya"
+                        "brya",
+                        "corsola"
                     ]
                 }
             ]
