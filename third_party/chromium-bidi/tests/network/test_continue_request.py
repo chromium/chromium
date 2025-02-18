@@ -428,7 +428,7 @@ async def test_continue_request_invalid_header(websocket, context_id,
     with pytest.raises(Exception,
                        match=str({
                            "error": "invalid argument",
-                           "message": "Invalid header",
+                           "message": "Invalid header: Chromium-BiDi: ",
                        })):
         await execute_command(
             websocket, {
@@ -458,7 +458,7 @@ async def test_continue_request_unsafe_header(websocket, context_id,
     with pytest.raises(Exception,
                        match=str({
                            "error": "invalid argument",
-                           "message": "Unsafe header",
+                           "message": "Unsafe header: Cookie2",
                        })):
         await execute_command(
             websocket, {
