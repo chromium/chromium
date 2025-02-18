@@ -26,16 +26,16 @@ template <typename E, E MinEnumValue, E MaxEnumValue>
 class EnumSet;
 
 template <typename E, E Min, E Max>
-constexpr EnumSet<E, Min, Max> Union(EnumSet<E, Min, Max> set1,
-                                     EnumSet<E, Min, Max> set2);
+EnumSet<E, Min, Max> Union(EnumSet<E, Min, Max> set1,
+                           EnumSet<E, Min, Max> set2);
 
 template <typename E, E Min, E Max>
-constexpr EnumSet<E, Min, Max> Intersection(EnumSet<E, Min, Max> set1,
-                                            EnumSet<E, Min, Max> set2);
+EnumSet<E, Min, Max> Intersection(EnumSet<E, Min, Max> set1,
+                                  EnumSet<E, Min, Max> set2);
 
 template <typename E, E Min, E Max>
-constexpr EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
-                                          EnumSet<E, Min, Max> set2);
+EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
+                                EnumSet<E, Min, Max> set2);
 
 // An EnumSet is a set that can hold enum values between a min and a
 // max value (inclusive of both).  It's essentially a wrapper around
@@ -340,14 +340,12 @@ class EnumSet {
   std::string ToString() const { return enums_.to_string(); }
 
  private:
-  friend constexpr EnumSet Union<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
-                                                                EnumSet set2);
-  friend constexpr EnumSet Intersection<E, MinEnumValue, MaxEnumValue>(
-      EnumSet set1,
-      EnumSet set2);
-  friend constexpr EnumSet Difference<E, MinEnumValue, MaxEnumValue>(
-      EnumSet set1,
-      EnumSet set2);
+  friend EnumSet Union<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
+                                                      EnumSet set2);
+  friend EnumSet Intersection<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
+                                                             EnumSet set2);
+  friend EnumSet Difference<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
+                                                           EnumSet set2);
 
   static constexpr uint64_t bitstring(const std::initializer_list<E>& values) {
     uint64_t result = 0;
@@ -402,20 +400,20 @@ const size_t EnumSet<E, MinEnumValue, MaxEnumValue>::kValueCount;
 // The usual set operations.
 
 template <typename E, E Min, E Max>
-constexpr EnumSet<E, Min, Max> Union(EnumSet<E, Min, Max> set1,
-                                     EnumSet<E, Min, Max> set2) {
+EnumSet<E, Min, Max> Union(EnumSet<E, Min, Max> set1,
+                           EnumSet<E, Min, Max> set2) {
   return EnumSet<E, Min, Max>(set1.enums_ | set2.enums_);
 }
 
 template <typename E, E Min, E Max>
-constexpr EnumSet<E, Min, Max> Intersection(EnumSet<E, Min, Max> set1,
-                                            EnumSet<E, Min, Max> set2) {
+EnumSet<E, Min, Max> Intersection(EnumSet<E, Min, Max> set1,
+                                  EnumSet<E, Min, Max> set2) {
   return EnumSet<E, Min, Max>(set1.enums_ & set2.enums_);
 }
 
 template <typename E, E Min, E Max>
-constexpr EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
-                                          EnumSet<E, Min, Max> set2) {
+EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
+                                EnumSet<E, Min, Max> set2) {
   return EnumSet<E, Min, Max>(set1.enums_ & ~set2.enums_);
 }
 
