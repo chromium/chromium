@@ -1036,7 +1036,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // `IsProfileEligible` returns true if the feature flags are present and the
   // profile can potentially enable the feature. If the feature is disabled the
   // view will exist but never become visible.
-  if (GlicEnabling::IsProfileEligible(browser_->profile())) {
+  if (glic::GlicEnabling::IsProfileEligible(browser_->profile())) {
     glic_border_ = contents_container->AddChildView(
         views::Builder<glic::GlicBorderView>(
             std::make_unique<glic::GlicBorderView>(browser_.get()))

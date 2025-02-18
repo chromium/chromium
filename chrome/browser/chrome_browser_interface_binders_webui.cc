@@ -406,7 +406,7 @@ void PopulateChromeWebUIFrameBinders(
       DataSharingInternalsUI>(map);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(
+  if (glic::GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()))) {
     // Register the binder for all eligible profiles but the WebUI page will
     // check whether Glic is policy-enabled and restrict access if needed.

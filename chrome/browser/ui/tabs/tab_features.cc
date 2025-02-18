@@ -168,7 +168,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab.GetContents());
 
 #if BUILDFLAG(ENABLE_GLIC)
-    if (GlicEnabling::IsProfileEligible(
+    if (glic::GlicEnabling::IsProfileEligible(
             tab.GetBrowserWindowInterface()->GetProfile())) {
       glic_tab_indicator_helper_ =
           std::make_unique<glic::GlicTabIndicatorHelper>(&tab);

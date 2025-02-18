@@ -12,6 +12,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+namespace glic {
+
 bool GlicEnabling::IsEnabledByFlags() {
   // Check that the feature flags are enabled.
   return base::FeatureList::IsEnabled(features::kGlic) &&
@@ -56,3 +58,27 @@ bool GlicEnabling::IsReadyForProfile(Profile* profile) {
          !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
              core_account_info.account_id);
 }
+
+GlicEnabling::GlicEnabling(Profile* profile) : profile_(profile) {
+  pref_registrar_.Init(profile_->GetPrefs());
+  pref_registrar_.Add(
+      prefs::kGlicSettingsPolicy,
+      base::BindRepeating(&GlicEnabling::OnGlicSettingsPolicyChanged,
+                          base::Unretained(this)));
+}
+GlicEnabling::~GlicEnabling() = default;
+
+bool GlicEnabling::IsEnabled() {
+  return IsEnabledForProfile(profile_);
+}
+
+base::CallbackListSubscription GlicEnabling::RegisterEnableChanged(
+    EnableChangedCallback callback) {
+  return enable_changed_callback_list_.Add(std::move(callback));
+}
+
+void GlicEnabling::OnGlicSettingsPolicyChanged() {
+  enable_changed_callback_list_.Notify();
+}
+
+}  // namespace glic

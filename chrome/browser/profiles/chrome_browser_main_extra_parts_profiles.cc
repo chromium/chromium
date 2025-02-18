@@ -902,7 +902,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   GalleryWatchManager::EnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledByFlags()) {
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
     glic::GlicKeyedServiceFactory::GetInstance();
   }
 #endif

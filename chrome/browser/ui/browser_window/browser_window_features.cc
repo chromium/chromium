@@ -138,7 +138,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
 #if BUILDFLAG(ENABLE_GLIC)
-    if (GlicEnabling::IsProfileEligible(browser->GetProfile())) {
+    if (glic::GlicEnabling::IsProfileEligible(browser->GetProfile())) {
       DCHECK(features::IsTabstripComboButtonEnabled());
       glic_nudge_controller_ =
           std::make_unique<tabs::GlicNudgeController>(browser);
@@ -245,7 +245,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // some unit tests without browser view.
   if (browser_view->GetIsNormalType()) {
 #if BUILDFLAG(ENABLE_GLIC)
-    if (GlicEnabling::IsProfileEligible(browser_view->browser()->profile())) {
+    if (glic::GlicEnabling::IsProfileEligible(
+            browser_view->browser()->profile())) {
       glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
           browser_view->GetProfile(),
           browser_view->tab_strip_region_view()->GetGlicButton(),

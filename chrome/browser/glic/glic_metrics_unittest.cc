@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -66,8 +67,9 @@ class GlicMetricsTest : public testing::Test {
     controller_ = std::make_unique<MockWindowController>(
         &profile_, identity_env_.identity_manager());
     tab_manager_ = std::make_unique<MockTabManager>(&profile_, *controller_);
+    enabling_ = std::make_unique<GlicEnabling>(&profile_);
 
-    metrics_ = std::make_unique<GlicMetrics>(&profile_);
+    metrics_ = std::make_unique<GlicMetrics>(&profile_, enabling_.get());
     metrics_->SetControllers(controller_.get(), tab_manager_.get());
   }
 
@@ -85,6 +87,7 @@ class GlicMetricsTest : public testing::Test {
 
   std::unique_ptr<MockWindowController> controller_;
   std::unique_ptr<MockTabManager> tab_manager_;
+  std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
 };
 
@@ -260,6 +263,29 @@ TEST_F(GlicMetricsTest, ImpressionAfterFre) {
   histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Impression",
                                       /*kAfterFreGlicEnabled=*/1,
                                       /*expected_count=*/1);
+}
+
+TEST_F(GlicMetricsTest, EnablingChanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {
+          features::kGlic,
+          features::kTabstripComboButton,
+      },
+      {});
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
 }
 
 }  // namespace

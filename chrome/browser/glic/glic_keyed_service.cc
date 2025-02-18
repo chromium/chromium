@@ -39,8 +39,9 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
                                    signin::IdentityManager* identity_manager,
                                    GlicProfileManager* profile_manager)
     : profile_(profile),
+      enabling_(std::make_unique<GlicEnabling>(profile)),
       configuration_(profile),
-      metrics_(std::make_unique<GlicMetrics>(profile)),
+      metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       window_controller_(
           std::make_unique<GlicWindowController>(profile,
                                                  identity_manager,

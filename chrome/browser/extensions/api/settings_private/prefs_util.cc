@@ -1271,7 +1271,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Glic prefs
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledByFlags()) {
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
     (*s_allowlist)[glic::prefs::kGlicLauncherEnabled] =
         settings_api::PrefType::kBoolean;
     (*s_allowlist)[glic::prefs::kGlicGeolocationEnabled] =

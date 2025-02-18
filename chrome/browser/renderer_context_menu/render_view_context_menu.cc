@@ -2318,7 +2318,7 @@ void RenderViewContextMenu::AppendReadingModeItem() {
 
 void RenderViewContextMenu::AppendGlicItems() {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledByFlags()) {
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
     auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         browser_context_, false);
     if (glic_service && glic_service->IsActiveWebContents(
@@ -3301,7 +3301,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
 #if BUILDFLAG(ENABLE_GLIC)
-      if (GlicEnabling::IsEnabledByFlags()) {
+      if (glic::GlicEnabling::IsEnabledByFlags()) {
         auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
             browser_context_, false);
         if (glic_service) {
@@ -3313,7 +3313,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
 #if BUILDFLAG(ENABLE_GLIC)
-      if (GlicEnabling::IsEnabledByFlags()) {
+      if (glic::GlicEnabling::IsEnabledByFlags()) {
         auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
             browser_context_, false);
         if (glic_service) {

@@ -5,17 +5,20 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 #define CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 
+#include <vector>
+
+#include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enums.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class Profile;
 
 namespace glic {
 
+class GlicEnabling;
 class GlicFocusedTabManager;
 class GlicWindowController;
 
@@ -24,7 +27,7 @@ class GlicWindowController;
 // convenience.
 class GlicMetrics {
  public:
-  explicit GlicMetrics(Profile* profile);
+  GlicMetrics(Profile* profile, GlicEnabling* enabling);
   GlicMetrics(const GlicMetrics&) = delete;
   GlicMetrics& operator=(const GlicMetrics&) = delete;
   ~GlicMetrics();
@@ -86,8 +89,14 @@ class GlicMetrics {
   raw_ptr<GlicWindowController> window_controller_;
   raw_ptr<GlicFocusedTabManager> tab_manager_;
   raw_ptr<Profile> profile_;
+  raw_ptr<GlicEnabling> enabling_;
+
+  // Cache the last value so that we only emit metrics for changes to the last
+  // value.
   bool is_enabled_ = false;
-  PrefChangeRegistrar pref_registrar_;
+
+  // Holds subscriptions for callbacks.
+  std::vector<base::CallbackListSubscription> subscriptions_;
 };
 
 }  // namespace glic

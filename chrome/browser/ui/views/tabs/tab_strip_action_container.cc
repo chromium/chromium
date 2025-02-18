@@ -258,7 +258,8 @@ TabStripActionContainer::TabStripActionContainer(
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsProfileEligible(tab_strip_controller->GetProfile())) {
+  if (glic::GlicEnabling::IsProfileEligible(
+          tab_strip_controller->GetProfile())) {
     glic_button_ = AddChildView(CreateGlicButton());
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
