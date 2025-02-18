@@ -9048,7 +9048,6 @@ crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-cross-o
 crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-cross-site-sibling-iframes.sub.https.window.html [ Failure ]
 crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Timeout ]
 crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-no-storage-access.sub.https.window.html [ Timeout ]
-crbug.com/366530634 external/wpt/storage-access-api/storage-access-beyond-cookies.SharedWorker.sub.https.window.html [ Failure ]
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-headers.tentative.https.sub.window.html [ Failure Timeout ]
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-permission.sub.https.window.html [ Timeout ]
 
