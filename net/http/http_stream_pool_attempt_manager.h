@@ -110,22 +110,14 @@ class HttpStreamPool::AttemptManager
   const NetLogWithSource& net_log();
 
   // Starts a Job. Will call one of Job::Delegate methods to notify results.
-  void StartJob(Job* job,
-                RequestPriority priority,
-                const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-                quic::ParsedQuicVersion quic_version,
-                const NetLogWithSource& request_net_log,
-                const NetLogWithSource& job_controller_net_log);
+  void StartJob(Job* job, const NetLogWithSource& request_net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
-  // Note that this method finishes synchronously, or `callback` is called, once
-  // `this` has enough streams/sessions for `num_streams` be opened. This means
-  // that when there are two preconnect requests with `num_streams = 1`, all
-  // callbacks are invoked when one stream/session is established (not two).
-  int Preconnect(size_t num_streams,
-                 quic::ParsedQuicVersion quic_version,
-                 const NetLogWithSource& job_controller_net_log,
-                 CompletionOnceCallback callback);
+  // Note that `job` will be notified once `this` has enough streams/sessions
+  // for `num_streams` be opened. This means that when there are two preconnect
+  // requests with `num_streams = 1`, all jobs are notified when one
+  // stream/session is established (not two).
+  void Preconnect(Job* job);
 
   // HostResolver::ServiceEndpointRequest::Delegate implementation:
   void OnServiceEndpointsUpdated() override;
@@ -270,7 +262,6 @@ class HttpStreamPool::AttemptManager
   using JobQueue = PriorityQueue<raw_ptr<Job>>;
 
   class InFlightAttempt;
-  struct PreconnectEntry;
 
   static std::string_view CanAttemptResultToString(CanAttemptResult result);
 
@@ -419,10 +410,10 @@ class HttpStreamPool::AttemptManager
   void ProcessPreconnectsAfterAttemptComplete(int rv,
                                               size_t active_stream_count);
 
-  // Helper methods to post a task to invoke `callback`. If `this` is deleted
-  // `callback` is canceled.
-  void InvokePreconnectCallbackLater(CompletionOnceCallback callback, int rv);
-  void InvokePreconnectCallback(CompletionOnceCallback callback, int rv);
+  // Helper methods to post a task to notify a job of preconnect completion. If
+  // `this` is deleted the notification is canceled.
+  void NotifyJobOfPreconnectCompleteLater(Job* job, int rv);
+  void NotifyJobOfPreconnectComplete(Job* job, int rv);
 
   // Creates a text based stream and notifies the highest priority job.
   void CreateTextBasedStreamAndNotify(
@@ -539,8 +530,7 @@ class HttpStreamPool::AttemptManager
   base::flat_set<raw_ptr<Job>> alternative_service_disabling_jobs_;
 
   // Holds preconnect requests.
-  std::set<std::unique_ptr<PreconnectEntry>, base::UniquePtrComparator>
-      preconnects_;
+  std::set<raw_ptr<Job>> preconnect_jobs_;
   size_t notifying_preconnect_completion_count_ = 0;
 
   std::unique_ptr<HostResolver::ServiceEndpointRequest>

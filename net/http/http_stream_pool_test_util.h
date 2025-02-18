@@ -306,6 +306,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
                           const SSLInfo& ssl_info) override;
   void OnNeedsClientAuth(HttpStreamPool::Job* job,
                          SSLCertRequestInfo* cert_info) override;
+  void OnPreconnectComplete(HttpStreamPool::Job* job, int status) override;
 
   HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
 

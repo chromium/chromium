@@ -103,16 +103,6 @@ class HttpStreamPool::Group {
   // Called when `job` is going to be destroyed.
   void OnJobComplete(Job* job);
 
-  // Creates idle streams or sessions for `num_streams` be opened.
-  // Note that this method finishes synchronously, or `callback` is called, once
-  // `this` has enough streams/sessions for `num_streams` be opened. This means
-  // that when there are two preconnect requests with `num_streams = 1`, all
-  // callbacks are invoked when one stream/session is established (not two).
-  int Preconnect(size_t num_streams,
-                 quic::ParsedQuicVersion quic_version,
-                 const NetLogWithSource& job_controller_net_log,
-                 CompletionOnceCallback callback);
-
   // Creates an HttpStreamPoolHandle from `socket`. Call sites must ensure that
   // the number of active streams do not exceed the global/per-group limits.
   std::unique_ptr<HttpStreamPoolHandle> CreateHandle(

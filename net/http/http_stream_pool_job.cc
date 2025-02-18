@@ -53,7 +53,8 @@ HttpStreamPool::Job::Job(Delegate* delegate,
                          Group* group,
                          quic::ParsedQuicVersion quic_version,
                          NextProto expected_protocol,
-                         const NetLogWithSource& request_net_log)
+                         const NetLogWithSource& request_net_log,
+                         size_t num_streams)
     : delegate_(delegate),
       group_(group),
       quic_version_(quic_version),
@@ -63,6 +64,7 @@ HttpStreamPool::Job::Job(Delegate* delegate,
       job_net_log_(
           NetLogWithSource::Make(request_net_log.net_log(),
                                  NetLogSourceType::HTTP_STREAM_POOL_JOB)),
+      num_streams_(num_streams),
       create_time_(base::TimeTicks::Now()) {
   CHECK(delegate_->is_http1_allowed() ||
         expected_protocol != NextProto::kProtoHTTP11);
@@ -75,6 +77,7 @@ HttpStreamPool::Job::Job(Delegate* delegate,
       allowed_alpn_list.Append(NextProtoToString(alpn));
     }
     dict.Set("allowed_alpns", std::move(allowed_alpn_list));
+    dict.Set("num_streams", static_cast<int>(num_streams_));
     delegate_->net_log().source().AddToEventParameters(dict);
     return dict;
   });
@@ -225,6 +228,13 @@ void HttpStreamPool::Job::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   delegate_->OnNeedsClientAuth(this, cert_info);
 }
 
+void HttpStreamPool::Job::OnPreconnectComplete(int status) {
+  CHECK(delegate_);
+  CHECK(!result_.has_value());
+  result_ = status;
+  delegate_->OnPreconnectComplete(this, status);
+}
+
 base::TimeDelta HttpStreamPool::Job::CreateToResumeTime() const {
   if (resume_time_.is_null()) {
     return base::TimeDelta();
@@ -241,9 +251,11 @@ void HttpStreamPool::Job::StartInternal() {
   CHECK(attempt_manager());
   CHECK(!attempt_manager()->is_failing());
 
-  attempt_manager()->StartJob(this, priority(), delegate_->allowed_bad_certs(),
-                              quic_version_, request_net_log_,
-                              delegate_->net_log());
+  if (IsPreconnect()) {
+    attempt_manager()->Preconnect(this);
+  } else {
+    attempt_manager()->StartJob(this, request_net_log_);
+  }
 }
 
 }  // namespace net

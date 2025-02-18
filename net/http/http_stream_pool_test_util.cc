@@ -332,4 +332,9 @@ void TestJobDelegate::OnCertificateError(HttpStreamPool::Job* job,
 void TestJobDelegate::OnNeedsClientAuth(HttpStreamPool::Job* job,
                                         SSLCertRequestInfo* cert_info) {}
 
+void TestJobDelegate::OnPreconnectComplete(HttpStreamPool::Job* job,
+                                           int status) {
+  SetResult(status);
+}
+
 }  // namespace net

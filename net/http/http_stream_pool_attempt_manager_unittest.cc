@@ -3985,7 +3985,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleRequests) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   Preconnector preconnector1(kDestination);
-  Preconnector preconnector2(kDestination);
 
   std::array<MockConnectCompleter, 2> completers;
   std::vector<MockConnect> connects = {
@@ -4010,6 +4009,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleRequests) {
   preconnector1.WaitForResult();
   EXPECT_THAT(preconnector1.result(), Optional(IsOk()));
 
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  Preconnector preconnector2(kDestination);
   rv = preconnector2.set_num_streams(2).Preconnect(pool());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -4119,11 +4124,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_EQ(request2->GetLoadState(), LOAD_STATE_IDLE);
   EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(), 1u);
 
-  // Preconnect during the failing mode fails.
-  // TODO(crbug.com/381742472): Consider pausing the preconnect and resuming
-  // later.
+  // Preconnect during the failing mode is paused.
   Preconnector preconnector1(kDestination);
-  EXPECT_THAT(preconnector1.Preconnect(pool()), IsError(ERR_CONNECTION_RESET));
+  EXPECT_THAT(preconnector1.Preconnect(pool()), IsError(ERR_IO_PENDING));
 
   // Destroy the failed request. This should destroy the failing attempt manager
   // and should create a new one.
@@ -4137,8 +4140,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   requester2.WaitForResult();
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
 
-  // Preconnect should also succeed.
+  // Preconnects (one already paused, one scheduled after creating a new attempt
+  // manager) should also succeed.
   Preconnector preconnector2(kDestination);
+  EXPECT_THAT(preconnector1.WaitForResult(), IsOk());
   EXPECT_THAT(preconnector2.Preconnect(pool()), IsOk());
 }
 
