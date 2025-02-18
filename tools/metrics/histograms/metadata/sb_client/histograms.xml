@@ -419,7 +419,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.{Encryption}DeepScanEvent3"
-    enum="SBDeepScanEvent" expires_after="2025-06-15">
+    enum="SBDeepScanEvent" expires_after="2025-08-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -710,7 +710,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.MatchHighConfidenceAllowlist{RequestType}"
-    enum="ClientSideAllowlistMatchResult" expires_after="2025-06-17">
+    enum="ClientSideAllowlistMatchResult" expires_after="2025-08-17">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -920,7 +920,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingImageEmbeddingResult"
-    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2025-06-15">
+    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2025-08-17">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

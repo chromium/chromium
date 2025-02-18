@@ -1052,7 +1052,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.CctAccountMismatchNoticeSuppressed"
-    enum="SuppressedReason" expires_after="2025-06-15">
+    enum="SuppressedReason" expires_after="2025-08-17">
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

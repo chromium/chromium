@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.CorruptReportsInDatabase5"
-    enum="ConversionCorruptReportStatus" expires_after="2025-06-08">
+    enum="ConversionCorruptReportStatus" expires_after="2025-08-17">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

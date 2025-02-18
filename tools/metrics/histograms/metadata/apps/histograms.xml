@@ -2185,7 +2185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppsCountPerInstallReason.{AppType}.{InstallReason}"
-    units="Apps" expires_after="2025-06-15">
+    units="Apps" expires_after="2025-08-17">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <component>1389907</component>
