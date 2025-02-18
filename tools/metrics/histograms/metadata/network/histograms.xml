@@ -5326,6 +5326,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NetworkService.MaskedDomainList.DiskUsageInKB" units="KB"
+    expires_after="2025-06-08">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Records the on-disk size of each MDL, when stored on disk (in the flatbuffer
+    format). A single execution of the browser may generate multiple MDLs, such
+    as for multiple experiments; each of these will be a distinct record. This
+    record is emitted when the flatbuffer MDL is generated. The generated
+    flatbuffer MDL may be cached and reused for multiple network service
+    instances, or may be re-generated for each one.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.MaskedDomainList.FirstUpdateTime" units="ms"
     expires_after="2025-03-10">
   <owner>ashleynewson@chromium.org</owner>

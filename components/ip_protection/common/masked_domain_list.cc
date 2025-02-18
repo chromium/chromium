@@ -8,11 +8,15 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "components/ip_protection/common/flat/masked_domain_list_generated.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace ip_protection {
 
 namespace {
+
+using ::masked_domain_list::Resource;
+using ::masked_domain_list::ResourceOwner;
 
 // Given a domain string, split it on `.` and reverse the result.
 std::vector<std::string_view> ReversedAtoms(const std::string& domain) {
@@ -230,6 +234,53 @@ bool MaskedDomainList::Matches(const std::string& request_domain,
 
   GetResult top_frame_info = Get(top_frame_domain);
   if (top_frame_info.owner_id == request_info.owner_id) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
+bool MaskedDomainList::BuildFromProto(
+    const masked_domain_list::MaskedDomainList& mdl,
+    base::FilePath default_file_name,
+    base::FilePath regular_browsing_file_name) {
+  MaskedDomainList::Builder default_builder;
+  MaskedDomainList::Builder regular_browsing_builder;
+
+  // Insert the relevant owners into the builders for the two MDLs. If a
+  // domain appears multiple times in the input data, the first appearance
+  // is used.
+  base::CheckedNumeric<uint32_t> owner_id = 1;
+  for (const ResourceOwner& owner : mdl.resource_owners()) {
+    for (const auto& resource : owner.owned_resources()) {
+      for (MdlType mdl_type : FromMdlResourceProto(resource)) {
+        auto& builder = mdl_type == MdlType::kDefault
+                            ? default_builder
+                            : regular_browsing_builder;
+        builder.AddOwner(resource.domain(), owner_id.ValueOrDie(),
+                         /*is_resource=*/true,
+                         /*is_wildcard=*/true);
+      }
+    }
+    for (const auto& property : owner.owned_properties()) {
+      default_builder.AddOwner(property, owner_id.ValueOrDie(),
+                               /*is_resource=*/false,
+                               /*is_wildcard=*/true);
+      regular_browsing_builder.AddOwner(property, owner_id.ValueOrDie(),
+                                        /*is_resource=*/false,
+                                        /*is_wildcard=*/true);
+    }
+    owner_id++;
+  }
+
+  if (!default_builder.Finish(default_file_name)) {
+    DLOG(ERROR) << "Could not write default MDL file";
+    return false;
+  }
+
+  if (!regular_browsing_builder.Finish(regular_browsing_file_name)) {
+    DLOG(ERROR) << "Could not write regular browsing MDL file";
     return false;
   }
 

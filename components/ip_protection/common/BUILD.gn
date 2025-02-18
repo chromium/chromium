@@ -471,6 +471,7 @@ source_set("masked_domain_list_manager") {
     "masked_domain_list_manager.h",
   ]
   public_deps = [
+    ":masked_domain_list",
     ":url_matcher_with_bypass",
     "//base",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
@@ -506,10 +507,13 @@ source_set("masked_domain_list") {
     "masked_domain_list.cc",
     "masked_domain_list.h",
   ]
-  deps = [
-    "//base",
+  public_deps = [
     "//components/ip_protection/common/flat:masked_domain_list",
     "//third_party/flatbuffers",
+  ]
+  deps = [
+    ":ip_protection_data_types",
+    "//base",
   ]
 }
 

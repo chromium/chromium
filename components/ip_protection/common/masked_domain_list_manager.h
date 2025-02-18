@@ -23,6 +23,8 @@
 
 namespace ip_protection {
 
+class MaskedDomainList;
+
 // Class MaskedDomainListManager is a pseudo-singleton owned by the
 // NetworkService. It uses the MaskedDomainList to generate the
 // CustomProxyConfigPtr needed for NetworkContexts that are using the Privacy
@@ -67,6 +69,10 @@ class MaskedDomainListManager {
   // present. Returns a reference to either the modified sanitized URL or the
   // original URL if no changes were made.
   const GURL& SanitizeURLIfNeeded(const GURL& url, GURL& sanitized_url) const;
+
+  // The MDLs, for each MdlType.
+  std::unique_ptr<MaskedDomainList> default_mdl_;
+  std::unique_ptr<MaskedDomainList> regular_browsing_mdl_;
 
   // Policy that determines which domains are bypassed from IP Protection.
   network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;

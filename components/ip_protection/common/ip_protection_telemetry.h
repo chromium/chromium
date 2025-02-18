@@ -167,6 +167,11 @@ class IpProtectionTelemetry {
   // MDL is fully loaded/updated (with any exclusions applied).
   virtual void MdlEstimatedMemoryUsage(size_t) = 0;
 
+  // The estimated disk usage of the MDL, in KB. This is emitted only for the
+  // disk-based data structure, and only after the MDL is fully loaded/updated.
+  // This is measured for all types of MDLs.
+  virtual void MdlEstimatedDiskUsage(int64_t) = 0;
+
   // Time taken to create an Android IP Protection auth client, including
   // binding to the system-provided auth service.
   virtual void AndroidAuthClientCreationTime(base::TimeDelta duration) = 0;

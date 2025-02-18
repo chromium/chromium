@@ -12,6 +12,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 
 namespace ip_protection {
 
@@ -106,6 +107,12 @@ class MaskedDomainList {
 
   // Determine if the given domain has an owner and is a resource.
   bool IsOwnedResource(const std::string& request_domain) const;
+
+  // Build a representation of the given proto data and write it to the given
+  // filenames. Returns false on failure.
+  static bool BuildFromProto(const masked_domain_list::MaskedDomainList& mdl,
+                             base::FilePath default_file_name,
+                             base::FilePath regular_browsing_file_name);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MaskedDomainListTest, AddOwnerCollision);
