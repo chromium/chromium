@@ -7,7 +7,7 @@ option optimize_for = LITE_RUNTIME;
 
 package ip_protection;
 
-message GetIssuerTokenRequest {
+message GetProbabilisticRevealTokenRequest {
   enum ServiceType {
     SERVICE_TYPE_UNSPECIFIED = 0;
     CHROME = 1;
@@ -15,10 +15,10 @@ message GetIssuerTokenRequest {
   optional ServiceType service_type = 1;
 }
 
-// Response to get issuer tokens.
-message GetIssuerTokenResponse {
-  // A single issuer token
-  message IssuerToken {
+// Response to get probabilistic reveal tokens.
+message GetProbabilisticRevealTokenResponse {
+  // A single probabilistic reveal token
+  message ProbabilisticRevealToken {
     // Version 1 indicates curve secp224r1.
     // Chrome verifies version is 1 and complains if not.
     optional int32 version = 1;
@@ -37,7 +37,7 @@ message GetIssuerTokenResponse {
     optional bytes y = 1;
   }
 
-  repeated IssuerToken tokens = 1;
+  repeated ProbabilisticRevealToken tokens = 1;
 
   optional PublicKey public_key = 2;
 

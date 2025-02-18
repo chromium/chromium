@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
@@ -38,9 +38,8 @@ absl::StatusOr<std::string> GetSerializedPublicKey(uint64_t private_key) {
   return y.ToBytesCompressed();
 }
 
-absl::StatusOr<ip_protection::IssuerToken> CreateTokenFromPlaintext(
-    uint64_t private_key,
-    const std::string& plaintext) {
+absl::StatusOr<ip_protection::ProbabilisticRevealToken>
+CreateTokenFromPlaintext(uint64_t private_key, const std::string& plaintext) {
   Context context;
   ASSIGN_OR_RETURN(ECGroup group, ECGroup::Create(NID_secp224r1, &context));
   ASSIGN_OR_RETURN(ECPoint plaintext_point,
@@ -54,28 +53,30 @@ absl::StatusOr<ip_protection::IssuerToken> CreateTokenFromPlaintext(
   ASSIGN_OR_RETURN(Ciphertext ciphertext, encrypter.Encrypt(plaintext_point));
   ASSIGN_OR_RETURN(std::string u_compressed, ciphertext.u.ToBytesCompressed());
   ASSIGN_OR_RETURN(std::string e_compressed, ciphertext.e.ToBytesCompressed());
-  return ip_protection::IssuerToken{1, std::move(u_compressed),
-                                    std::move(e_compressed)};
+  return ip_protection::ProbabilisticRevealToken{1, std::move(u_compressed),
+                                                 std::move(e_compressed)};
 }
 
 }  // namespace
 
-// Fuzz test for creating issuer token crypter. Creating crypter de-serializes
-// an Elgamal encryption public key and ciphertext (elliptic curve points) using
-// private-join-and-compute third party library. Serialized public key and
-// ciphertext are returned from the issuer server.
+// Fuzz test for creating probabilistic reveal token crypter. Creating crypter
+// de-serializes an Elgamal encryption public key and ciphertext (elliptic curve
+// points) using private-join-and-compute third party library. Serialized public
+// key and ciphertext are returned from the issuer server.
 void CreateDoesNotCrash(const std::string& serialized_public_key,
                         const std::string& u,
                         const std::string& e) {
-  auto crypter = ip_protection::IpProtectionIssuerTokenCrypter::Create(
-      serialized_public_key, {ip_protection::IssuerToken{1, u, e}});
+  auto crypter =
+      ip_protection::IpProtectionProbabilisticRevealTokenCrypter::Create(
+          serialized_public_key,
+          {ip_protection::ProbabilisticRevealToken{1, u, e}});
 }
 
-// Fuzz test for issuer token randomization of ciphertexts.  library. In chrome,
-// ciphertext is returned by the issuer service, which is from a hard coded
-// url. Fuzzer creates a valid encrypter from valid public key and ciphertexts
-// before calling randomize. Ciphertexts are created by hashing random strings
-// to the curve.
+// Fuzz test for probabilistic reveal token randomization of ciphertexts.
+// library. In chrome, ciphertext is returned by the issuer service, which is
+// from a hard coded url. Fuzzer creates a valid encrypter from valid public key
+// and ciphertexts before calling randomize. Ciphertexts are created by hashing
+// random strings to the curve.
 void RandomizeDoesNotCrash(const std::string& plaintext) {
   // public key
   const uint64_t private_key = 12345;
@@ -88,8 +89,9 @@ void RandomizeDoesNotCrash(const std::string& plaintext) {
   ASSERT_TRUE(maybe_token.ok());
   auto& token = maybe_token.value();
 
-  auto maybe_crypter = ip_protection::IpProtectionIssuerTokenCrypter::Create(
-      serialized_public_key, {token});
+  auto maybe_crypter =
+      ip_protection::IpProtectionProbabilisticRevealTokenCrypter::Create(
+          serialized_public_key, {token});
   ASSERT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   ASSERT_TRUE(crypter->IsTokenAvailable());
@@ -97,6 +99,8 @@ void RandomizeDoesNotCrash(const std::string& plaintext) {
   auto result = crypter->Randomize(0);
 }
 
-FUZZ_TEST(IpProtectionIssuerTokenCrypterFuzzTests, CreateDoesNotCrash);
+FUZZ_TEST(IpProtectionProbabilisticRevealTokenCrypterFuzzTests,
+          CreateDoesNotCrash);
 
-FUZZ_TEST(IpProtectionIssuerTokenCrypterFuzzTests, RandomizeDoesNotCrash);
+FUZZ_TEST(IpProtectionProbabilisticRevealTokenCrypterFuzzTests,
+          RandomizeDoesNotCrash);

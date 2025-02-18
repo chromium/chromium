@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_issuer_token_data_storage.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -21,7 +21,7 @@ namespace {
 const int kCurrentVersionNumber = 1;
 
 // clang-format off
-static constexpr char kCreateIssuerTokensTableSql[] =
+static constexpr char kCreateProbabilisticRevealTokensTableSql[] =
   "CREATE TABLE IF NOT EXISTS tokens("
       "version INTEGER NOT NULL,"
       "u TEXT NOT NULL,"
@@ -30,7 +30,7 @@ static constexpr char kCreateIssuerTokensTableSql[] =
       "num_tokens_with_signal INTEGER NOT NULL,"
       "public_key TEXT NOT NULL)";
 
-static constexpr char kInsertIssuerTokenSql[] =
+static constexpr char kInsertProbabilisticRevealTokenSql[] =
   "INSERT INTO tokens("
       "version,u,e,expiration,num_tokens_with_signal,public_key) "
       "VALUES(?,?,?,?,?,?)";
@@ -40,44 +40,48 @@ static constexpr char kInsertIssuerTokenSql[] =
 
 namespace ip_protection {
 
-IpProtectionIssuerTokenDataStorage::IpProtectionIssuerTokenDataStorage(
-    const base::FilePath& path_to_database)
+IpProtectionProbabilisticRevealTokenDataStorage::
+    IpProtectionProbabilisticRevealTokenDataStorage(
+        const base::FilePath& path_to_database)
     : path_to_database_(path_to_database),
       db_(sql::DatabaseOptions{},
-          sql::Database::Tag("IpProtectionIssuerTokens")) {
+          sql::Database::Tag("IpProtectionProbabilisticRevealTokens")) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(!path_to_database_.empty());
 }
 
-IpProtectionIssuerTokenDataStorage::~IpProtectionIssuerTokenDataStorage() {
+IpProtectionProbabilisticRevealTokenDataStorage::
+    ~IpProtectionProbabilisticRevealTokenDataStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool IpProtectionIssuerTokenDataStorage::EnsureDBInitialized() {
+bool IpProtectionProbabilisticRevealTokenDataStorage::EnsureDBInitialized() {
   if (db_.is_open()) {
     return true;
   }
   return InitializeDB();
 }
 
-bool IpProtectionIssuerTokenDataStorage::InitializeDB() {
+bool IpProtectionProbabilisticRevealTokenDataStorage::InitializeDB() {
   // Using base::Unretained here is safe because the error callback will never
   // be called after the Database instance is destroyed.
   db_.set_error_callback(base::BindRepeating(
-      &IpProtectionIssuerTokenDataStorage::DatabaseErrorCallback,
+      &IpProtectionProbabilisticRevealTokenDataStorage::DatabaseErrorCallback,
       base::Unretained(this)));
 
   const base::FilePath dir = path_to_database_.DirName();
   if (!base::CreateDirectory(dir)) {
-    DLOG(ERROR) << "Failed to create directory for Issuer Token database";
+    DLOG(ERROR)
+        << "Failed to create directory for Probabilistic Reveal Token database";
     return false;
   }
   if (!base::PathIsWritable(dir)) {
-    DLOG(ERROR) << "Issuer Token database directory is not writable";
+    DLOG(ERROR)
+        << "Probabilistic Reveal Token database directory is not writable";
     return false;
   }
   if (!db_.Open(path_to_database_)) {
-    DLOG(ERROR) << "Failed to open Issuer Token database: "
+    DLOG(ERROR) << "Failed to open Probabilistic Reveal Token database: "
                 << db_.GetErrorMessage();
     return false;
   }
@@ -92,7 +96,8 @@ bool IpProtectionIssuerTokenDataStorage::InitializeDB() {
 
   return true;
 }
-bool IpProtectionIssuerTokenDataStorage::InitializeSchema(bool is_retry) {
+bool IpProtectionProbabilisticRevealTokenDataStorage::InitializeSchema(
+    bool is_retry) {
   if (!db_.is_open()) {
     return false;
   }
@@ -110,8 +115,9 @@ bool IpProtectionIssuerTokenDataStorage::InitializeSchema(bool is_retry) {
     // then something went wrong with the initialization logic. Return early to
     // avoid an infinite loop.
     if (is_retry) {
-      DLOG(ERROR) << "Issuer Token database version not current after "
-                     "re-initialization.";
+      DLOG(ERROR)
+          << "Probabilistic Reveal Token database version not current after "
+             "re-initialization.";
       return false;
     }
     return InitializeSchema(true);
@@ -124,16 +130,16 @@ bool IpProtectionIssuerTokenDataStorage::InitializeSchema(bool is_retry) {
   return true;
 }
 
-bool IpProtectionIssuerTokenDataStorage::CreateSchema() {
-  return db_.Execute(kCreateIssuerTokensTableSql);
+bool IpProtectionProbabilisticRevealTokenDataStorage::CreateSchema() {
+  return db_.Execute(kCreateProbabilisticRevealTokensTableSql);
 }
 
-void IpProtectionIssuerTokenDataStorage::DatabaseErrorCallback(
+void IpProtectionProbabilisticRevealTokenDataStorage::DatabaseErrorCallback(
     int extended_error,
     sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sql::UmaHistogramSqliteResult("Storage.IpProtectionIssuerTokens.DBErrors",
-                                extended_error);
+  sql::UmaHistogramSqliteResult(
+      "Storage.IpProtectionProbabilisticRevealTokens.DBErrors", extended_error);
 
   if (sql::IsErrorCatastrophic(extended_error)) {
     // Normally this will poison the database, causing any subsequent operations
@@ -151,20 +157,21 @@ void IpProtectionIssuerTokenDataStorage::DatabaseErrorCallback(
   }
 }
 
-void IpProtectionIssuerTokenDataStorage::StoreTokenOutcome(
-    TryGetIssuerTokensOutcome outcome) {
+void IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome(
+    TryGetProbabilisticRevealTokensOutcome outcome) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!EnsureDBInitialized()) {
     return;
   }
 
-  for (const IssuerToken& token : outcome.tokens) {
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kInsertIssuerTokenSql));
+  for (const ProbabilisticRevealToken& token : outcome.tokens) {
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, kInsertProbabilisticRevealTokenSql));
 
     if (!statement.is_valid()) {
-      DLOG(ERROR) << "InsertIssuerToken SQL statement did not compile.";
+      DLOG(ERROR)
+          << "InsertProbabilisticRevealToken SQL statement did not compile.";
       return;
     }
     statement.BindInt64(0, token.version);
@@ -175,7 +182,8 @@ void IpProtectionIssuerTokenDataStorage::StoreTokenOutcome(
     statement.BindString(5, outcome.public_key);
 
     if (!statement.Run()) {
-      DLOG(ERROR) << "Could not insert Issuer Token: " << db_.GetErrorMessage();
+      DLOG(ERROR) << "Could not insert Probabilistic Reveal Token: "
+                  << db_.GetErrorMessage();
     }
   }
 }

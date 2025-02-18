@@ -15,8 +15,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +71,7 @@ class MockIssuer {
         std::make_unique<ElGamalDecrypter>(std::make_unique<PrivateKey>(
             PrivateKey{context->CreateBigNum(private_key)}));
 
-    std::vector<IssuerToken> tokens;
+    std::vector<ProbabilisticRevealToken> tokens;
     tokens.reserve(num_tokens);
     for (std::size_t i = 0; i < num_tokens; ++i) {
       ASSIGN_OR_RETURN(
@@ -92,16 +92,19 @@ class MockIssuer {
         std::move(tokens), expiration, next_start, num_tokens_with_signal));
   }
 
-  const std::vector<IssuerToken>& Tokens() const { return tokens_; }
+  const std::vector<ProbabilisticRevealToken>& Tokens() const {
+    return tokens_;
+  }
 
-  void SetTokens(std::vector<IssuerToken> tokens) {
+  void SetTokens(std::vector<ProbabilisticRevealToken> tokens) {
     tokens_ = std::move(tokens);
   }
 
   std::string GetSerializedPublicKey() const { return serialized_public_key_; }
 
   // Decrypt given token, serialize returned point, and base64 encode.
-  absl::StatusOr<std::string> DecryptSerializeEncode(const IssuerToken& token) {
+  absl::StatusOr<std::string> DecryptSerializeEncode(
+      const ProbabilisticRevealToken& token) {
     ASSIGN_OR_RETURN(ECPoint u, group_->CreateECPoint(token.u));
     ASSIGN_OR_RETURN(ECPoint e, group_->CreateECPoint(token.e));
     Ciphertext ciphertext{std::move(u), std::move(e)};
@@ -111,7 +114,7 @@ class MockIssuer {
   }
 
   absl::StatusOr<std::vector<std::string>> DecryptSerializeEncode(
-      const std::vector<IssuerToken>& tokens) {
+      const std::vector<ProbabilisticRevealToken>& tokens) {
     std::vector<std::string> encoded;
     for (const auto& t : tokens) {
       ASSIGN_OR_RETURN(std::string sp, DecryptSerializeEncode(t));
@@ -130,7 +133,7 @@ class MockIssuer {
              std::unique_ptr<ElGamalEncrypter> encrypter,
              std::unique_ptr<ElGamalDecrypter> decrypter,
              std::string serialized_public_key,
-             std::vector<IssuerToken> tokens,
+             std::vector<ProbabilisticRevealToken> tokens,
              base::Time expiration,
              base::Time next_start,
              int32_t num_tokens_with_signal)
@@ -148,7 +151,7 @@ class MockIssuer {
   std::unique_ptr<const ElGamalEncrypter> encrypter_;
   std::unique_ptr<const ElGamalDecrypter> decrypter_;
   const std::string serialized_public_key_;
-  std::vector<IssuerToken> tokens_;
+  std::vector<ProbabilisticRevealToken> tokens_;
   const base::Time expiration_;
   const base::Time next_start_;
   const int32_t num_tokens_with_signal_;
@@ -156,17 +159,19 @@ class MockIssuer {
 
 // Mocks a PRT fetcher. Uses MockIssuer for successful fetches with valid tokens
 // and SetResponse to mock error results.
-class MockFetcher : public IpProtectionIssuerTokenFetcher {
+class MockFetcher : public IpProtectionProbabilisticRevealTokenFetcher {
  public:
   MockFetcher() = default;
-  void TryGetIssuerTokens(TryGetIssuerTokensCallback callback) override {
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override {
     num_calls_++;
     std::move(callback).Run(outcome_, result_);
   }
 
   // Set fetcher response, used for null outcomes.
-  void SetResponse(std::optional<TryGetIssuerTokensOutcome> outcome,
-                   TryGetIssuerTokensResult result) {
+  void SetResponse(
+      std::optional<TryGetProbabilisticRevealTokensOutcome> outcome,
+      TryGetProbabilisticRevealTokensResult result) {
     outcome_ = std::move(outcome);
     result_ = std::move(result);
   }
@@ -182,7 +187,7 @@ class MockFetcher : public IpProtectionIssuerTokenFetcher {
                      MockIssuer::Create(private_key, num_tokens, expiration,
                                         next_start, num_tokens_with_signal));
 
-    TryGetIssuerTokensOutcome outcome;
+    TryGetProbabilisticRevealTokensOutcome outcome;
     outcome.tokens = issuer_->Tokens();
     outcome.public_key = issuer_->GetSerializedPublicKey();
     outcome.expiration_time_seconds = expiration.InSecondsFSinceUnixEpoch();
@@ -190,8 +195,9 @@ class MockFetcher : public IpProtectionIssuerTokenFetcher {
         next_start.InSecondsFSinceUnixEpoch();
     outcome.num_tokens_with_signal = num_tokens_with_signal;
     SetResponse({std::move(outcome)},
-                TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kSuccess,
-                                         net::OK, std::nullopt});
+                TryGetProbabilisticRevealTokensResult{
+                    TryGetProbabilisticRevealTokensStatus::kSuccess, net::OK,
+                    std::nullopt});
     return absl::OkStatus();
   }
 
@@ -200,8 +206,8 @@ class MockFetcher : public IpProtectionIssuerTokenFetcher {
   MockIssuer* Issuer() { return issuer_.get(); }
 
  private:
-  std::optional<TryGetIssuerTokensOutcome> outcome_;
-  TryGetIssuerTokensResult result_;
+  std::optional<TryGetProbabilisticRevealTokensOutcome> outcome_;
+  TryGetProbabilisticRevealTokensResult result_;
   size_t num_calls_ = 0;
   std::unique_ptr<MockIssuer> issuer_;
 };
@@ -228,8 +234,9 @@ class IpProtectionProbabilisticRevealTokenManagerTest : public testing::Test {
 
  public:
   // Set fetcher response, used for error status/outcomes.
-  void SetResponse(std::optional<TryGetIssuerTokensOutcome> outcome,
-                   TryGetIssuerTokensResult result) {
+  void SetResponse(
+      std::optional<TryGetProbabilisticRevealTokensOutcome> outcome,
+      TryGetProbabilisticRevealTokensResult result) {
     fetcher_ptr_->SetResponse(std::move(outcome), std::move(result));
   }
 
@@ -246,7 +253,7 @@ class IpProtectionProbabilisticRevealTokenManagerTest : public testing::Test {
   }
 
   // Decrypt given token, serialize returned point, and base64 encode.
-  std::string DecryptSerializeEncode(const IssuerToken& token) {
+  std::string DecryptSerializeEncode(const ProbabilisticRevealToken& token) {
     auto maybe_serialized_point =
         fetcher_ptr_->Issuer()->DecryptSerializeEncode(token);
     EXPECT_TRUE(maybe_serialized_point.ok());
@@ -254,7 +261,7 @@ class IpProtectionProbabilisticRevealTokenManagerTest : public testing::Test {
   }
 
   std::vector<std::string> DecryptSerializeEncode(
-      const std::vector<IssuerToken>& tokens) {
+      const std::vector<ProbabilisticRevealToken>& tokens) {
     auto maybe_serialized_points =
         fetcher_ptr_->Issuer()->DecryptSerializeEncode(tokens);
     EXPECT_TRUE(maybe_serialized_points.ok());
@@ -275,8 +282,9 @@ class IpProtectionProbabilisticRevealTokenManagerTest : public testing::Test {
 // null.
 TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
        NoIssuerServerResponseNullCrypter) {
-  SetResponse({}, {TryGetIssuerTokensStatus::kNullResponse, net::OK,
-                   /*try_again_after=*/std::nullopt});
+  SetResponse({},
+              {TryGetProbabilisticRevealTokensStatus::kNullResponse, net::OK,
+               /*try_again_after=*/std::nullopt});
   manager_ = std::make_unique<IpProtectionProbabilisticRevealTokenManager>(
       std::move(fetcher_));
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -333,12 +341,12 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
 
   auto maybe_token = manager_->GetToken(top_level, third_party);
   ASSERT_TRUE(maybe_token.has_value());
-  const IssuerToken token1 = maybe_token.value();
+  const ProbabilisticRevealToken token1 = maybe_token.value();
 
   for (int i = 0; i < 5; ++i) {
     maybe_token = manager_->GetToken(top_level, third_party);
     ASSERT_TRUE(maybe_token.has_value());
-    const IssuerToken token2 = maybe_token.value();
+    const ProbabilisticRevealToken token2 = maybe_token.value();
     EXPECT_EQ(token1, token2);
   }
 }
@@ -357,11 +365,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
 
   auto maybe_token = manager_->GetToken(top_level, "tp.ex");
   ASSERT_TRUE(maybe_token.has_value());
-  const IssuerToken token_ex = maybe_token.value();
+  const ProbabilisticRevealToken token_ex = maybe_token.value();
 
   maybe_token = manager_->GetToken(top_level, "tp.com");
   ASSERT_TRUE(maybe_token.has_value());
-  const IssuerToken token_com = maybe_token.value();
+  const ProbabilisticRevealToken token_com = maybe_token.value();
 
   EXPECT_NE(token_ex, token_com);
 
@@ -378,7 +386,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, RefetchSuccess) {
   SetIssuer(/*private_key=*/12345,
             /*num_tokens=*/10, first_batch_expiration, first_batch_next_start,
             /*num_tokens_with_signal=*/3);
-  const std::vector<IssuerToken> first_batch_tokens =
+  const std::vector<ProbabilisticRevealToken> first_batch_tokens =
       fetcher_ptr_->Issuer()->Tokens();
 
   // Constructor fetches first batch and schedules next fetch at `next_start`.
@@ -403,7 +411,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, RefetchSuccess) {
             /*expiration=*/base::Time::Now() + base::Hours(16),
             /*next_start==*/base::Time::Now() + base::Hours(8),
             /*num_tokens_with_signal=*/12);
-  const std::vector<IssuerToken> second_batch_tokens =
+  const std::vector<ProbabilisticRevealToken> second_batch_tokens =
       fetcher_ptr_->Issuer()->Tokens();
 
   task_environment_.FastForwardBy(first_batch_next_start - base::Time::Now());
@@ -423,10 +431,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, RefetchSuccess) {
 // Check whether manager tries again in accordance with the try again returned
 // by the direct fetcher.
 TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, NetworkErrorTryAgain) {
-  SetResponse(std::nullopt,
-              TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kNetNotOk,
-                                       net::ERR_OUT_OF_MEMORY,
-                                       base::Time::Now() + base::Seconds(23)});
+  SetResponse(
+      std::nullopt,
+      TryGetProbabilisticRevealTokensResult{
+          TryGetProbabilisticRevealTokensStatus::kNetNotOk,
+          net::ERR_OUT_OF_MEMORY, base::Time::Now() + base::Seconds(23)});
   manager_ = std::make_unique<IpProtectionProbabilisticRevealTokenManager>(
       std::move(fetcher_));
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -437,17 +446,19 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, NetworkErrorTryAgain) {
   task_environment_.FastForwardBy(base::Seconds(22));
   EXPECT_EQ(fetcher_ptr_->NumCalls(), std::size_t(1));
 
-  SetResponse(std::nullopt,
-              TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kNetNotOk,
-                                       net::ERR_OUT_OF_MEMORY,
-                                       base::Time::Now() + base::Seconds(42)});
+  SetResponse(
+      std::nullopt,
+      TryGetProbabilisticRevealTokensResult{
+          TryGetProbabilisticRevealTokensStatus::kNetNotOk,
+          net::ERR_OUT_OF_MEMORY, base::Time::Now() + base::Seconds(42)});
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(fetcher_ptr_->NumCalls(), std::size_t(2));
 
-  SetResponse(std::nullopt,
-              TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kNetNotOk,
-                                       net::ERR_OUT_OF_MEMORY,
-                                       base::Time::Now() + base::Seconds(51)});
+  SetResponse(
+      std::nullopt,
+      TryGetProbabilisticRevealTokensResult{
+          TryGetProbabilisticRevealTokensStatus::kNetNotOk,
+          net::ERR_OUT_OF_MEMORY, base::Time::Now() + base::Seconds(51)});
   task_environment_.FastForwardBy(base::Seconds(42));
   EXPECT_EQ(fetcher_ptr_->NumCalls(), std::size_t(3));
 }
@@ -480,14 +491,15 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, PassedNextEpochStart) {
 // IsTokenAvailable() and GetToken() should behave as expected.
 TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
        InvalidServerResponseCreatingCrypterFails) {
-  std::vector<IssuerToken> tokens = fetcher_ptr_->Issuer()->Tokens();
+  std::vector<ProbabilisticRevealToken> tokens =
+      fetcher_ptr_->Issuer()->Tokens();
   // mess up tokens[0] to make it invalid
   tokens[0].e[0] = 'A';
   tokens[0].e[28] = 'A';
   tokens[0].u[0] = 'A';
   tokens[0].u[28] = 'A';
 
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   outcome.tokens = tokens;
   outcome.public_key = fetcher_ptr_->Issuer()->GetSerializedPublicKey();
   outcome.expiration_time_seconds =
@@ -496,8 +508,9 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
       (base::Time::Now() + base::Hours(4)).InSecondsFSinceUnixEpoch();
   outcome.num_tokens_with_signal = 1;
   SetResponse({std::move(outcome)},
-              TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kSuccess,
-                                       net::OK, std::nullopt});
+              TryGetProbabilisticRevealTokensResult{
+                  TryGetProbabilisticRevealTokensStatus::kSuccess, net::OK,
+                  std::nullopt});
 
   // Create manager, posts token fetch task in constructor.
   manager_ = std::make_unique<IpProtectionProbabilisticRevealTokenManager>(
@@ -520,7 +533,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
       /*private_key=*/4455,
       /*num_tokens=*/10, expiration, next_start,
       /*num_tokens_with_signal=*/3);
-  const std::vector<IssuerToken> first_batch_tokens =
+  const std::vector<ProbabilisticRevealToken> first_batch_tokens =
       fetcher_ptr_->Issuer()->Tokens();
 
   // Constructor fetches first batch and schedules next fetch at `next_start`.
@@ -532,8 +545,10 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
   EXPECT_TRUE(manager_->IsTokenAvailable());
 
   // set fetcher to return parsing error.
-  SetResponse({}, {TryGetIssuerTokensStatus::kResponseParsingFailed, net::OK,
-                   /*try_again_after=*/std::nullopt});
+  SetResponse(
+      {},
+      {TryGetProbabilisticRevealTokensStatus::kResponseParsingFailed, net::OK,
+       /*try_again_after=*/std::nullopt});
 
   // Check that fetching triggered at next start.
   task_environment_.FastForwardBy(next_start - base::Time::Now());

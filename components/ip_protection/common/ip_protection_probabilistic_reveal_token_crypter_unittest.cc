@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -45,7 +45,7 @@ absl::StatusOr<std::string> GetSerializedPublicKey(uint64_t private_key) {
   return y.ToBytesCompressed();
 }
 
-absl::StatusOr<IssuerToken> CreateTokenFromPlaintext(
+absl::StatusOr<ProbabilisticRevealToken> CreateTokenFromPlaintext(
     uint64_t private_key,
     const std::string& plaintext) {
   Context context;
@@ -60,12 +60,14 @@ absl::StatusOr<IssuerToken> CreateTokenFromPlaintext(
   ASSIGN_OR_RETURN(Ciphertext ciphertext, encrypter.Encrypt(plaintext_point));
   ASSIGN_OR_RETURN(std::string u_compressed, ciphertext.u.ToBytesCompressed());
   ASSIGN_OR_RETURN(std::string e_compressed, ciphertext.e.ToBytesCompressed());
-  return IssuerToken{1, std::move(u_compressed), std::move(e_compressed)};
+  return ProbabilisticRevealToken{1, std::move(u_compressed),
+                                  std::move(e_compressed)};
 }
 
-absl::StatusOr<std::vector<IssuerToken>> CreateTokens(uint64_t private_key,
-                                                      std::size_t num_tokens) {
-  std::vector<IssuerToken> tokens(num_tokens);
+absl::StatusOr<std::vector<ProbabilisticRevealToken>> CreateTokens(
+    uint64_t private_key,
+    std::size_t num_tokens) {
+  std::vector<ProbabilisticRevealToken> tokens(num_tokens);
   for (std::size_t i = 0; i < num_tokens; ++i) {
     ASSIGN_OR_RETURN(tokens[i],
                      CreateTokenFromPlaintext(
@@ -75,7 +77,7 @@ absl::StatusOr<std::vector<IssuerToken>> CreateTokens(uint64_t private_key,
 }
 
 absl::StatusOr<ECPoint> DecryptToken(uint64_t private_key,
-                                     const IssuerToken& token) {
+                                     const ProbabilisticRevealToken& token) {
   Context context;
   ASSIGN_OR_RETURN(ECGroup group, ECGroup::Create(NID_secp224r1, &context));
   ASSIGN_OR_RETURN(ECPoint u, group.CreateECPoint(token.u));
@@ -88,7 +90,7 @@ absl::StatusOr<ECPoint> DecryptToken(uint64_t private_key,
 
 }  // namespace
 
-TEST(IpProtectionIssuerTokenCrypter, CreateSuccess) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateSuccess) {
   const uint64_t private_key = 12345;
   auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
@@ -99,36 +101,36 @@ TEST(IpProtectionIssuerTokenCrypter, CreateSuccess) {
   ASSERT_TRUE(maybe_tokens.ok());
   const auto& tokens = maybe_tokens.value();
 
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, tokens);
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, tokens);
   EXPECT_TRUE(maybe_crypter.ok());
   const auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), num_tokens);
 }
 
-TEST(IpProtectionIssuerTokenCrypter, CreateEmptyTokens) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateEmptyTokens) {
   const uint64_t private_key = 12345;
   auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
   auto& serialized_public_key = maybe_serialized_public_key.value();
 
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, {});
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, {});
   EXPECT_TRUE(maybe_crypter.ok());
   const auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
 }
 
-TEST(IpProtectionIssuerTokenCrypter, CreateInvalidPublicKey) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateInvalidPublicKey) {
   const auto& serialized_public_key = "invalid-public-key";
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, {});
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, {});
   EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
 }
 
-TEST(IpProtectionIssuerTokenCrypter, CreateInvalidTokenU) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateInvalidTokenU) {
   const uint64_t private_key = 12345;
   auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
@@ -140,12 +142,12 @@ TEST(IpProtectionIssuerTokenCrypter, CreateInvalidTokenU) {
   auto& tokens = maybe_tokens.value();
   tokens[num_tokens - 1].u = "invalid-u";
 
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, tokens);
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, tokens);
   EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
 }
 
-TEST(IpProtectionIssuerTokenCrypter, CreateInvalidTokenE) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateInvalidTokenE) {
   const uint64_t private_key = 12345;
   auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
@@ -157,20 +159,21 @@ TEST(IpProtectionIssuerTokenCrypter, CreateInvalidTokenE) {
   auto& tokens = maybe_tokens.value();
   tokens[num_tokens - 1].e = "invalid-e";
 
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, tokens);
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, tokens);
   EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
 }
 
-TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensSuccess) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter,
+     SetNewPublicKeyAndTokensSuccess) {
   auto maybe_serialized_public_key =
       GetSerializedPublicKey(/* private_key = */ 11111);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
   auto& serialized_public_key = maybe_serialized_public_key.value();
 
   // Create a crypter with no tokens.
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, {});
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, {});
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
@@ -196,13 +199,14 @@ TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensSuccess) {
   EXPECT_EQ(crypter->NumTokens(), num_tokens);
 }
 
-TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensEmptyTokens) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter,
+     SetNewPublicKeyAndTokensEmptyTokens) {
   auto maybe_serialized_public_key =
       GetSerializedPublicKey(/* private_key = */ 11111);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
   auto& serialized_public_key = maybe_serialized_public_key.value();
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, {});
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, {});
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
@@ -220,7 +224,8 @@ TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensEmptyTokens) {
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
 }
 
-TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidPublicKey) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter,
+     SetNewPublicKeyAndTokensInvalidPublicKey) {
   const uint64_t private_key = 42;
   auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
@@ -231,8 +236,8 @@ TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidPublicKey) {
   ASSERT_TRUE(maybe_tokens.ok());
   const auto& tokens = maybe_tokens.value();
 
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, tokens);
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, tokens);
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
@@ -245,7 +250,8 @@ TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidPublicKey) {
   EXPECT_EQ(crypter->NumTokens(), num_tokens);
 }
 
-TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidTokenU) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter,
+     SetNewPublicKeyAndTokensInvalidTokenU) {
   const uint64_t private_key = 42;
   auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
@@ -256,8 +262,8 @@ TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidTokenU) {
   ASSERT_TRUE(maybe_tokens.ok());
   const auto& tokens = maybe_tokens.value();
 
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, tokens);
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, tokens);
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
@@ -285,7 +291,8 @@ TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidTokenU) {
   EXPECT_EQ(crypter->NumTokens(), num_tokens);
 }
 
-TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidTokenE) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter,
+     SetNewPublicKeyAndTokensInvalidTokenE) {
   const uint64_t private_key = 42;
   auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
@@ -296,8 +303,8 @@ TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidTokenE) {
   ASSERT_TRUE(maybe_tokens.ok());
   auto& tokens = maybe_tokens.value();
 
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, tokens);
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, tokens);
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
@@ -325,7 +332,7 @@ TEST(IpProtectionIssuerTokenCrypter, SetNewPublicKeyAndTokensInvalidTokenE) {
   EXPECT_EQ(crypter->NumTokens(), num_tokens);
 }
 
-TEST(IpProtectionIssuerTokenCrypter, ClearTokens) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter, ClearTokens) {
   const uint64_t private_key = 7654;
   auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
@@ -336,8 +343,8 @@ TEST(IpProtectionIssuerTokenCrypter, ClearTokens) {
   ASSERT_TRUE(maybe_tokens.ok());
   const auto& tokens = maybe_tokens.value();
 
-  auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, tokens);
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+      serialized_public_key, tokens);
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
@@ -348,7 +355,7 @@ TEST(IpProtectionIssuerTokenCrypter, ClearTokens) {
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
 }
 
-TEST(IpProtectionIssuerTokenCrypter, Randomize) {
+TEST(IpProtectionProbabilisticRevealTokenCrypter, Randomize) {
   const uint64_t private_key = 2025;
   const auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
   ASSERT_TRUE(maybe_serialized_public_key.ok());
@@ -360,7 +367,8 @@ TEST(IpProtectionIssuerTokenCrypter, Randomize) {
   const auto& tokens = maybe_tokens.value();
 
   const auto maybe_crypter =
-      IpProtectionIssuerTokenCrypter::Create(serialized_public_key, tokens);
+      IpProtectionProbabilisticRevealTokenCrypter::Create(serialized_public_key,
+                                                          tokens);
   EXPECT_TRUE(maybe_crypter.ok());
   const auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());

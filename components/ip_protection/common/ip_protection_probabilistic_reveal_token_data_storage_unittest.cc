@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_issuer_token_data_storage.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 
 #include <string>
 
@@ -14,7 +14,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -39,14 +39,15 @@ int VersionFromMetaTable(sql::Database& db) {
 
 }  // namespace
 
-class IssuerTokenDataStorageTest : public testing::Test {
+class ProbabilisticRevealTokenDataStorageTest : public testing::Test {
  public:
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void TearDown() override { EXPECT_TRUE(temp_dir_.Delete()); }
 
   base::FilePath DbPath() const {
-    return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("IssuerTokens"));
+    return temp_dir_.GetPath().Append(
+        FILE_PATH_LITERAL("ProbabilisticRevealTokens"));
   }
 
   base::FilePath GetSqlFilePath(std::string_view sql_filename) {
@@ -71,32 +72,36 @@ class IssuerTokenDataStorageTest : public testing::Test {
 
   void OpenDatabase() {
     storage_.reset();
-    storage_ = std::make_unique<IpProtectionIssuerTokenDataStorage>(DbPath());
+    storage_ =
+        std::make_unique<IpProtectionProbabilisticRevealTokenDataStorage>(
+            DbPath());
   }
 
   void CloseDatabase() { storage_.reset(); }
 
-  IpProtectionIssuerTokenDataStorage* storage() { return storage_.get(); }
+  IpProtectionProbabilisticRevealTokenDataStorage* storage() {
+    return storage_.get();
+  }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<IpProtectionIssuerTokenDataStorage> storage_;
+  std::unique_ptr<IpProtectionProbabilisticRevealTokenDataStorage> storage_;
 };
 
-TEST_F(IssuerTokenDataStorageTest,
+TEST_F(ProbabilisticRevealTokenDataStorageTest,
        DatabaseInitialized_TablesAndIndexesLazilyInitialized) {
   OpenDatabase();
   CloseDatabase();
 
-  // An unused IssuerTokenDataStorage instance should not create
+  // An unused ProbabilisticRevealTokenDataStorage instance should not create
   // the database.
   EXPECT_FALSE(base::PathExists(DbPath()));
 
   OpenDatabase();
   // Trigger the lazy-initialization. No tokens are stored, as the outcome is
   // empty.
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   storage()->StoreTokenOutcome(outcome);
   CloseDatabase();
 
@@ -117,13 +122,14 @@ TEST_F(IssuerTokenDataStorageTest,
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
 
-TEST_F(IssuerTokenDataStorageTest, LoadFromFile_CurrentVersion_Success) {
+TEST_F(ProbabilisticRevealTokenDataStorageTest,
+       LoadFromFile_CurrentVersion_Success) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("issuer_tokens_v1.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v1.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   storage()->StoreTokenOutcome(outcome);
   CloseDatabase();
 
@@ -135,13 +141,14 @@ TEST_F(IssuerTokenDataStorageTest, LoadFromFile_CurrentVersion_Success) {
   EXPECT_EQ(1u, CountTokenEntries(db));
 }
 
-TEST_F(IssuerTokenDataStorageTest, LoadFromFile_VersionTooOld_Failure) {
+TEST_F(ProbabilisticRevealTokenDataStorageTest,
+       LoadFromFile_VersionTooOld_Failure) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("issuer_tokens_v0.too_old.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v0.too_old.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   storage()->StoreTokenOutcome(outcome);
   CloseDatabase();
 
@@ -153,13 +160,14 @@ TEST_F(IssuerTokenDataStorageTest, LoadFromFile_VersionTooOld_Failure) {
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
 
-TEST_F(IssuerTokenDataStorageTest, LoadFromFile_VersionTooNew_Failure) {
+TEST_F(ProbabilisticRevealTokenDataStorageTest,
+       LoadFromFile_VersionTooNew_Failure) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("issuer_tokens_v2.too_new.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v2.too_new.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   storage()->StoreTokenOutcome(outcome);
   CloseDatabase();
 
@@ -171,10 +179,10 @@ TEST_F(IssuerTokenDataStorageTest, LoadFromFile_VersionTooNew_Failure) {
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
 
-TEST_F(IssuerTokenDataStorageTest, StoreTokenOutcome) {
+TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
   // Trigger the lazy-initialization with an empty token outcome.
   OpenDatabase();
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   storage()->StoreTokenOutcome(outcome);
   CloseDatabase();
 
@@ -193,7 +201,7 @@ TEST_F(IssuerTokenDataStorageTest, StoreTokenOutcome) {
   outcome.public_key = "public_key";
   storage()->StoreTokenOutcome(outcome);
 
-  TryGetIssuerTokensOutcome outcome2;
+  TryGetProbabilisticRevealTokensOutcome outcome2;
   outcome2.tokens.emplace_back(/*version=*/1, "u2", "e2");
   outcome2.tokens.emplace_back(/*version=*/1, "u3", "e3");
   outcome2.expiration_time_seconds = 234;
@@ -207,22 +215,22 @@ TEST_F(IssuerTokenDataStorageTest, StoreTokenOutcome) {
   EXPECT_EQ(3u, CountTokenEntries(db));
 }
 
-TEST_F(IssuerTokenDataStorageTest, OpenDatabaseThatIsAlreadyOpen) {
+TEST_F(ProbabilisticRevealTokenDataStorageTest, OpenDatabaseThatIsAlreadyOpen) {
   // Open the database directly.
   sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(DbPath()));
 
   // Trigger the lazy-initialization with an empty token outcome.
   OpenDatabase();
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   EXPECT_DCHECK_DEATH_WITH(storage()->StoreTokenOutcome(outcome),
                            "Unexpected Sqlite error");
 }
 
-TEST_F(IssuerTokenDataStorageTest, OpenCorruptedDatabase) {
+TEST_F(ProbabilisticRevealTokenDataStorageTest, OpenCorruptedDatabase) {
   // Create a corrupted database file.
-  base::FilePath db_path =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("CorruptedIssuerTokens"));
+  base::FilePath db_path = temp_dir_.GetPath().Append(
+      FILE_PATH_LITERAL("CorruptedProbabilisticRevealTokens"));
   base::File corrupted_db_file(db_path, base::File::FLAG_CREATE_ALWAYS |
                                             base::File::FLAG_WRITE |
                                             base::File::FLAG_READ);
@@ -238,10 +246,11 @@ TEST_F(IssuerTokenDataStorageTest, OpenCorruptedDatabase) {
 
   // Create the Token Data Storage with the corrupted database file.
   storage_.reset();
-  storage_ = std::make_unique<IpProtectionIssuerTokenDataStorage>(db_path);
+  storage_ = std::make_unique<IpProtectionProbabilisticRevealTokenDataStorage>(
+      db_path);
 
   // Trigger the lazy-initialization by attempting to store a token.
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   outcome.tokens.emplace_back(/*version=*/1, "u1", "e1");
   outcome.expiration_time_seconds = 123;
   outcome.next_epoch_start_time_seconds = 456;

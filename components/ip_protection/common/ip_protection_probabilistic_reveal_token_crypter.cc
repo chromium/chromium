@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 
 #include <cstddef>
 #include <memory>
@@ -46,7 +46,7 @@ absl::StatusOr<std::unique_ptr<ElGamalEncrypter>> CreateEncrypter(
 // In anonymous namespace to prevent misuse.
 absl::StatusOr<std::vector<Ciphertext>> CreateCiphertext(
     ECGroup const* group,
-    const std::vector<IssuerToken>& tokens) {
+    const std::vector<ProbabilisticRevealToken>& tokens) {
   std::vector<Ciphertext> ciphertext;
   ciphertext.reserve(tokens.size());
   for (const auto& t : tokens) {
@@ -59,9 +59,10 @@ absl::StatusOr<std::vector<Ciphertext>> CreateCiphertext(
 
 }  // namespace
 
-absl::StatusOr<std::unique_ptr<IpProtectionIssuerTokenCrypter>>
-IpProtectionIssuerTokenCrypter::Create(const std::string& serialized_public_key,
-                                       const std::vector<IssuerToken>& tokens) {
+absl::StatusOr<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>>
+IpProtectionProbabilisticRevealTokenCrypter::Create(
+    const std::string& serialized_public_key,
+    const std::vector<ProbabilisticRevealToken>& tokens) {
   auto context = std::make_unique<Context>();
   std::unique_ptr<ECGroup> group;
   {
@@ -76,19 +77,21 @@ IpProtectionIssuerTokenCrypter::Create(const std::string& serialized_public_key,
   // Can not use `make_unique` since constructor is private.
   // Can not use `return std::unique_ptr`, git cl upload
   // returns pre-submit error and recommends using base::WrapUnique.
-  return base::WrapUnique<IpProtectionIssuerTokenCrypter>(
-      new IpProtectionIssuerTokenCrypter(std::move(context), std::move(group),
-                                         std::move(encrypter),
-                                         std::move(ciphertext)));
+  return base::WrapUnique<IpProtectionProbabilisticRevealTokenCrypter>(
+      new IpProtectionProbabilisticRevealTokenCrypter(
+          std::move(context), std::move(group), std::move(encrypter),
+          std::move(ciphertext)));
 }
 
-IpProtectionIssuerTokenCrypter::~IpProtectionIssuerTokenCrypter() = default;
+IpProtectionProbabilisticRevealTokenCrypter::
+    ~IpProtectionProbabilisticRevealTokenCrypter() = default;
 
-IpProtectionIssuerTokenCrypter::IpProtectionIssuerTokenCrypter(
-    std::unique_ptr<Context> context,
-    std::unique_ptr<ECGroup> group,
-    std::unique_ptr<ElGamalEncrypter> encrypter,
-    std::vector<Ciphertext> ciphertext)
+IpProtectionProbabilisticRevealTokenCrypter::
+    IpProtectionProbabilisticRevealTokenCrypter(
+        std::unique_ptr<Context> context,
+        std::unique_ptr<ECGroup> group,
+        std::unique_ptr<ElGamalEncrypter> encrypter,
+        std::vector<Ciphertext> ciphertext)
     : context_(std::move(context)),
       group_(std::move(group)),
       encrypter_(std::move(encrypter)),
@@ -96,9 +99,10 @@ IpProtectionIssuerTokenCrypter::IpProtectionIssuerTokenCrypter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-absl::Status IpProtectionIssuerTokenCrypter::SetNewPublicKeyAndTokens(
+absl::Status
+IpProtectionProbabilisticRevealTokenCrypter::SetNewPublicKeyAndTokens(
     const std::string& serialized_public_key,
-    const std::vector<IssuerToken>& tokens) {
+    const std::vector<ProbabilisticRevealToken>& tokens) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ASSIGN_OR_RETURN(std::unique_ptr<ElGamalEncrypter> encrypter,
                    CreateEncrypter(group_.get(), serialized_public_key));
@@ -110,23 +114,23 @@ absl::Status IpProtectionIssuerTokenCrypter::SetNewPublicKeyAndTokens(
   return absl::OkStatus();
 }
 
-bool IpProtectionIssuerTokenCrypter::IsTokenAvailable() const {
+bool IpProtectionProbabilisticRevealTokenCrypter::IsTokenAvailable() const {
   return ciphertext_.size();
 }
 
-void IpProtectionIssuerTokenCrypter::ClearTokens() {
+void IpProtectionProbabilisticRevealTokenCrypter::ClearTokens() {
   ciphertext_.clear();
 }
 
-absl::StatusOr<IssuerToken> IpProtectionIssuerTokenCrypter::Randomize(
-    size_t i) const {
+absl::StatusOr<ProbabilisticRevealToken>
+IpProtectionProbabilisticRevealTokenCrypter::Randomize(size_t i) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (i >= ciphertext_.size()) {
     return absl::InvalidArgumentError("invalid index");
   }
   ASSIGN_OR_RETURN(Ciphertext randomized_ciphertext,
                    encrypter_->ReRandomize(ciphertext_[i]));
-  IssuerToken randomized_token;
+  ProbabilisticRevealToken randomized_token;
   randomized_token.version = 1;
   ASSIGN_OR_RETURN(randomized_token.u,
                    randomized_ciphertext.u.ToBytesCompressed());
@@ -135,7 +139,7 @@ absl::StatusOr<IssuerToken> IpProtectionIssuerTokenCrypter::Randomize(
   return randomized_token;
 }
 
-size_t IpProtectionIssuerTokenCrypter::NumTokens() const {
+size_t IpProtectionProbabilisticRevealTokenCrypter::NumTokens() const {
   return ciphertext_.size();
 }
 

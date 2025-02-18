@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_ISSUER_TOKEN_CRYPTER_H_
-#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_ISSUER_TOKEN_CRYPTER_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROBABILISTIC_REVEAL_TOKEN_CRYPTER_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROBABILISTIC_REVEAL_TOKEN_CRYPTER_H_
 
 #include <cstddef>
 #include <memory>
@@ -21,20 +21,21 @@
 
 namespace ip_protection {
 
-// IpProtectionIssuerTokenCrypter stores crypto context and ciphertexts for
-// issuer tokens. Provides a method to randomize a specified token. This
-// class sits between issuer token manager and private-join-and-compute
-// third party library. private-join-and-compute dependency is private,
-// i.e., rest of the ip protection code does not depend on
-// private-join-and-compute and all necessary functionality is provided
-// by this class.
-class IpProtectionIssuerTokenCrypter {
+// IpProtectionProbabilisticRevealTokenCrypter stores crypto context and
+// ciphertexts for probabilistic reveal tokens. Provides a method to randomize a
+// specified token. This class sits between probabilistic reveal token manager
+// and private-join-and-compute third party library. private-join-and-compute
+// dependency is private, i.e., rest of the ip protection code does not depend
+// on private-join-and-compute and all necessary functionality is provided by
+// this class.
+class IpProtectionProbabilisticRevealTokenCrypter {
  public:
   // Returns a unique pointer to crypter if successful.
-  static absl::StatusOr<std::unique_ptr<IpProtectionIssuerTokenCrypter>> Create(
-      const std::string& serialized_public_key,
-      const std::vector<IssuerToken>& tokens);
-  ~IpProtectionIssuerTokenCrypter();
+  static absl::StatusOr<
+      std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>>
+  Create(const std::string& serialized_public_key,
+         const std::vector<ProbabilisticRevealToken>& tokens);
+  ~IpProtectionProbabilisticRevealTokenCrypter();
   bool IsTokenAvailable() const;
   // Clears ciphertexts stored. This method can be used when tokens are expired
   // but no new tokens are available.
@@ -45,17 +46,18 @@ class IpProtectionIssuerTokenCrypter {
   // successful. State is not changed if not successful.
   absl::Status SetNewPublicKeyAndTokens(
       const std::string& serialized_public_key,
-      const std::vector<IssuerToken>& tokens);
+      const std::vector<ProbabilisticRevealToken>& tokens);
   // Randomizes ciphertext corresponding to token i, creates and returns an
-  // IssuerToken by serializing it, if successful. This method fails if there is
-  // no ciphertext for index `i` or `encrypter_.ReRandomize()` fails.
-  absl::StatusOr<IssuerToken> Randomize(size_t i) const;
+  // ProbabilisticRevealToken by serializing it, if successful. This method
+  // fails if there is no ciphertext for index `i` or `encrypter_.ReRandomize()`
+  // fails.
+  absl::StatusOr<ProbabilisticRevealToken> Randomize(size_t i) const;
 
  private:
   // Private since it assumes all arguments are valid. Static `Create()`
   // calls this after validating its arguments and creating arguments
   // for this constructor.
-  IpProtectionIssuerTokenCrypter(
+  IpProtectionProbabilisticRevealTokenCrypter(
       std::unique_ptr<::private_join_and_compute::Context> context,
       std::unique_ptr<::private_join_and_compute::ECGroup> group,
       std::unique_ptr<::private_join_and_compute::ElGamalEncrypter> encrypter,
@@ -72,8 +74,9 @@ class IpProtectionIssuerTokenCrypter {
   // `group_` should be defined before `encrypter_` and deleted after.
   std::unique_ptr<::private_join_and_compute::ElGamalEncrypter> encrypter_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  // ciphertext_ is obtained by de-serializing IssuerTokens to ECPoints.
-  // `group_` should be defined before `ciphertext_` and deleted after.
+  // ciphertext_ is obtained by de-serializing ProbabilisticRevealTokens to
+  // ECPoints. `group_` should be defined before `ciphertext_` and deleted
+  // after.
   std::vector<::private_join_and_compute::elgamal::Ciphertext> ciphertext_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -81,4 +84,4 @@ class IpProtectionIssuerTokenCrypter {
 
 }  // namespace ip_protection
 
-#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_ISSUER_TOKEN_CRYPTER_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROBABILISTIC_REVEAL_TOKEN_CRYPTER_H_

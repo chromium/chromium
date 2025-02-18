@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_issuer_token_direct_fetcher.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_direct_fetcher.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -18,7 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
@@ -30,8 +30,8 @@
 // the private-join-and-compute code. We need to undefine the macro here to
 // avoid compiler errors.
 #undef ASSIGN_OR_RETURN
-#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
-#include "components/ip_protection/get_issuer_token.pb.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
+#include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
@@ -43,12 +43,12 @@ namespace {
 // TODO(crbug.com/391358219): Add more details.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation(
-        "ip_protection_service_get_issuer_token",
+        "ip_protection_service_get_probabilistic_reveal_token",
         R"(
     semantics {
       sender: "IP Protection Service Client"
       description:
-        "Request to a Google server to obtain issuer tokens "
+        "Request to a Google server to obtain probabilistic reveal tokens "
         "for IP Protection proxied origins."
       trigger:
         "On incognito profile startup, and periodically during incognito "
@@ -74,7 +74,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       ""
     )");
 
-// The maximum size of a valid serialized GetIssuerTokenResponse.
+// The maximum size of a valid serialized GetProbabilisticRevealTokenResponse.
 //
 // Calculations here are to have a rough estimate and assumes following.
 // Calculations are for version 1 (only supported version so far, browser will
@@ -86,8 +86,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 //
 // - Assume `bytes` and `repeated` fields use 8 bytes for size.
 // - A token takes (4 + 37 + 37) 78 bytes. A response has at most 400 tokens.
-//   GetIssuerTokenResponse.tokens might take as much as 400*78 + 8 (31208)
-//   bytes.
+//   GetProbabilisticRevealTokenResponse.tokens might take as much as 400*78 + 8
+//   (31208) bytes.
 // - public_key takes (29 + 8) 37 bytes.
 // - expiration_time_seconds take 8 bytes.
 // - next_epoch_start_time_seconds take 8 bytes.
@@ -97,8 +97,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Limit is set to 32 * 1024 (32768) which gives more than our rough estimate.
 //
 // Serialized response with 400 tokens size is 26443, obtained by tweaking test
-// TryGetIssuerTokensLargeResponse.
-constexpr size_t kGetIssuerTokenResponseMaxBodySize = 32 * 1024;
+// TryGetProbabilisticRevealTokensLargeResponse.
+constexpr size_t kGetProbabilisticRevealTokenResponseMaxBodySize = 32 * 1024;
 constexpr char kProtobufContentType[] = "application/x-protobuf";
 constexpr int32_t kMinNumberOfTokens = 10;
 constexpr int32_t kMaxNumberOfTokens = 400;
@@ -109,13 +109,14 @@ constexpr base::TimeDelta kMinExpirationTimeDelta = base::Hours(3);
 constexpr base::TimeDelta kMaxExpirationTimeDelta = base::Days(3);
 
 network::ResourceRequest CreateFetchRequest() {
-  const std::string& get_issuer_token_path =
-      net::features::kIpPrivacyIssuerTokenServerPath.Get();
+  const std::string& get_prt_server_path =
+      net::features::kIpPrivacyProbabilisticRevealTokenServerPath.Get();
   GURL::Replacements replacements;
-  replacements.SetPathStr(get_issuer_token_path);
+  replacements.SetPathStr(get_prt_server_path);
   network::ResourceRequest resource_request;
-  resource_request.url = GURL(net::features::kIpPrivacyIssuerTokenServer.Get())
-                             .ReplaceComponents(replacements);
+  resource_request.url =
+      GURL(net::features::kIpPrivacyProbabilisticRevealTokenServer.Get())
+          .ReplaceComponents(replacements);
   resource_request.method = net::HttpRequestHeaders::kPostMethod;
   resource_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
@@ -130,39 +131,45 @@ network::ResourceRequest CreateFetchRequest() {
 
 std::string CreateFetchRequestBody() {
   std::string body;
-  GetIssuerTokenRequest request;
-  request.set_service_type(GetIssuerTokenRequest_ServiceType_CHROME);
+  GetProbabilisticRevealTokenRequest request;
+  request.set_service_type(
+      GetProbabilisticRevealTokenRequest_ServiceType_CHROME);
   request.SerializeToString(&body);
   return body;
 }
 
 }  // namespace
 
-IpProtectionIssuerTokenDirectFetcher::IpProtectionIssuerTokenDirectFetcher(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory)
+IpProtectionProbabilisticRevealTokenDirectFetcher::
+    IpProtectionProbabilisticRevealTokenDirectFetcher(
+        std::unique_ptr<network::PendingSharedURLLoaderFactory>
+            pending_url_loader_factory)
     : retriever_(std::move(pending_url_loader_factory)) {}
 
-IpProtectionIssuerTokenDirectFetcher::~IpProtectionIssuerTokenDirectFetcher() =
-    default;
+IpProtectionProbabilisticRevealTokenDirectFetcher::
+    ~IpProtectionProbabilisticRevealTokenDirectFetcher() = default;
 
-void IpProtectionIssuerTokenDirectFetcher::TryGetIssuerTokens(
-    TryGetIssuerTokensCallback callback) {
-  // If we are not able to call `RetrieveIssuerToken` yet, return early.
-  if (no_get_issuer_tokens_until_ > base::Time::Now()) {
+void IpProtectionProbabilisticRevealTokenDirectFetcher::
+    TryGetProbabilisticRevealTokens(
+        TryGetProbabilisticRevealTokensCallback callback) {
+  // If we are not able to call `RetrieveProbabilisticRevealTokens` yet, return
+  // early.
+  if (no_get_probabilistic_reveal_tokens_until_ > base::Time::Now()) {
     std::move(callback).Run(
         std::nullopt,
-        TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kRequestBackedOff,
-                                 net::OK, no_get_issuer_tokens_until_});
+        TryGetProbabilisticRevealTokensResult{
+            TryGetProbabilisticRevealTokensStatus::kRequestBackedOff, net::OK,
+            no_get_probabilistic_reveal_tokens_until_});
     return;
   }
 
-  retriever_.RetrieveIssuerToken(base::BindOnce(
-      &IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  retriever_.RetrieveProbabilisticRevealTokens(
+      base::BindOnce(&IpProtectionProbabilisticRevealTokenDirectFetcher::
+                         OnGetProbabilisticRevealTokensCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-IpProtectionIssuerTokenDirectFetcher::Retriever::Retriever(
+IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever::Retriever(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory)
     : url_loader_factory_(network::SharedURLLoaderFactory::Create(
@@ -173,10 +180,11 @@ IpProtectionIssuerTokenDirectFetcher::Retriever::Retriever(
   CHECK(request_.url.is_valid());
 }
 
-IpProtectionIssuerTokenDirectFetcher::Retriever::~Retriever() = default;
+IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever::~Retriever() =
+    default;
 
-void IpProtectionIssuerTokenDirectFetcher::Retriever::RetrieveIssuerToken(
-    RetrieveCallback callback) {
+void IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever::
+    RetrieveProbabilisticRevealTokens(RetrieveCallback callback) {
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(
           std::make_unique<network::ResourceRequest>(request_),
@@ -194,17 +202,17 @@ void IpProtectionIssuerTokenDirectFetcher::Retriever::RetrieveIssuerToken(
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&Retriever::OnRetrieveIssuerTokenCompleted,
+      base::BindOnce(&Retriever::OnRetrieveProbabilisticRevealTokensCompleted,
                      weak_ptr_factory_.GetWeakPtr(),
                      // Include the URLLoader in the callback to get error code
                      // and prevent it to go out of scope until the download is
                      // complete.
                      std::move(url_loader), std::move(callback)),
-      kGetIssuerTokenResponseMaxBodySize);
+      kGetProbabilisticRevealTokenResponseMaxBodySize);
 }
 
-void IpProtectionIssuerTokenDirectFetcher::Retriever::
-    OnRetrieveIssuerTokenCompleted(
+void IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever::
+    OnRetrieveProbabilisticRevealTokensCompleted(
         std::unique_ptr<network::SimpleURLLoader> url_loader,
         RetrieveCallback callback,
         std::optional<std::string> response) {
@@ -218,23 +226,25 @@ void IpProtectionIssuerTokenDirectFetcher::Retriever::
 }
 
 // TODO(crbug.com/391358904): add metrics
-void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
-    TryGetIssuerTokensCallback callback,
-    base::expected<std::optional<std::string>, int> response) {
+void IpProtectionProbabilisticRevealTokenDirectFetcher::
+    OnGetProbabilisticRevealTokensCompleted(
+        TryGetProbabilisticRevealTokensCallback callback,
+        base::expected<std::optional<std::string>, int> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!response.has_value() || !response.value().has_value()) {
     // Apply exponential backoff to these sorts of failures.
-    no_get_issuer_tokens_until_ =
-        base::Time::Now() + next_get_issuer_tokens_backoff_;
-    next_get_issuer_tokens_backoff_ *= 2;
+    no_get_probabilistic_reveal_tokens_until_ =
+        base::Time::Now() + next_get_probabilistic_reveal_tokens_backoff_;
+    next_get_probabilistic_reveal_tokens_backoff_ *= 2;
   }
 
   if (!response.has_value()) {
     std::move(callback).Run(
-        std::nullopt, TryGetIssuerTokensResult{
-                          TryGetIssuerTokensStatus::kNetNotOk, response.error(),
-                          no_get_issuer_tokens_until_});
+        std::nullopt,
+        TryGetProbabilisticRevealTokensResult{
+            TryGetProbabilisticRevealTokensStatus::kNetNotOk, response.error(),
+            no_get_probabilistic_reveal_tokens_until_});
     // TODO(crbug.com/391358904): add failure metrics using response.error()
     // before returning.
     return;
@@ -243,28 +253,30 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
     // null response.
     std::move(callback).Run(
         std::nullopt,
-        TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kNetOkNullResponse,
-                                 net::OK, no_get_issuer_tokens_until_});
+        TryGetProbabilisticRevealTokensResult{
+            TryGetProbabilisticRevealTokensStatus::kNetOkNullResponse, net::OK,
+            no_get_probabilistic_reveal_tokens_until_});
     // TODO(crbug.com/391358904): add failure metrics using response.error()
     // before returning.
     return;
   }
 
-  GetIssuerTokenResponse response_proto;
+  GetProbabilisticRevealTokenResponse response_proto;
   // Parsing is OK since server URL is hard coded in net features.
   if (!response_proto.ParseFromString(response.value().value())) {
     std::move(callback).Run(
         std::nullopt,
-        TryGetIssuerTokensResult{
-            TryGetIssuerTokensStatus::kResponseParsingFailed, net::OK});
+        TryGetProbabilisticRevealTokensResult{
+            TryGetProbabilisticRevealTokensStatus::kResponseParsingFailed,
+            net::OK});
     return;
   }
 
-  if (TryGetIssuerTokensStatus status =
-          ValidateIssuerTokenResponse(response_proto);
-      status != TryGetIssuerTokensStatus::kSuccess) {
-    std::move(callback).Run(std::nullopt,
-                            TryGetIssuerTokensResult{status, net::OK});
+  if (TryGetProbabilisticRevealTokensStatus status =
+          ValidateProbabilisticRevealTokenResponse(response_proto);
+      status != TryGetProbabilisticRevealTokensStatus::kSuccess) {
+    std::move(callback).Run(
+        std::nullopt, TryGetProbabilisticRevealTokensResult{status, net::OK});
     return;
   }
 
@@ -272,7 +284,7 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
   ClearBackoffTimer();
 
   // TODO(crbug.com/391358904): add success metrics before returning.
-  TryGetIssuerTokensOutcome outcome;
+  TryGetProbabilisticRevealTokensOutcome outcome;
   for (const auto& t : response_proto.tokens()) {
     outcome.tokens.emplace_back(t.version(), t.u(), t.e());
   }
@@ -282,60 +294,63 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
       response_proto.next_epoch_start_time_seconds();
   outcome.num_tokens_with_signal = response_proto.num_tokens_with_signal();
   std::move(callback).Run(
-      std::optional<TryGetIssuerTokensOutcome>{std::move(outcome)},
-      TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kSuccess, net::OK});
+      std::optional<TryGetProbabilisticRevealTokensOutcome>{std::move(outcome)},
+      TryGetProbabilisticRevealTokensResult{
+          TryGetProbabilisticRevealTokensStatus::kSuccess, net::OK});
 }
 
-TryGetIssuerTokensStatus
-IpProtectionIssuerTokenDirectFetcher::ValidateIssuerTokenResponse(
-    const GetIssuerTokenResponse& response) {
+TryGetProbabilisticRevealTokensStatus
+IpProtectionProbabilisticRevealTokenDirectFetcher::
+    ValidateProbabilisticRevealTokenResponse(
+        const GetProbabilisticRevealTokenResponse& response) {
   if (response.tokens_size() < kMinNumberOfTokens) {
-    return TryGetIssuerTokensStatus::kTooFewTokens;
+    return TryGetProbabilisticRevealTokensStatus::kTooFewTokens;
   }
   if (response.tokens_size() > kMaxNumberOfTokens) {
-    return TryGetIssuerTokensStatus::kTooManyTokens;
+    return TryGetProbabilisticRevealTokensStatus::kTooManyTokens;
   }
   base::TimeDelta expiration_time_delta =
       base::Time::FromSecondsSinceUnixEpoch(
           response.expiration_time_seconds()) -
       base::Time::Now();
   if (expiration_time_delta < kMinExpirationTimeDelta) {
-    return TryGetIssuerTokensStatus::kExpirationTooSoon;
+    return TryGetProbabilisticRevealTokensStatus::kExpirationTooSoon;
   }
   if (expiration_time_delta > kMaxExpirationTimeDelta) {
-    return TryGetIssuerTokensStatus::kExpirationTooLate;
+    return TryGetProbabilisticRevealTokensStatus::kExpirationTooLate;
   }
   if (response.num_tokens_with_signal() < kMinNumTokensWithSignal ||
       response.num_tokens_with_signal() > response.tokens_size()) {
-    return TryGetIssuerTokensStatus::kInvalidNumTokensWithSignal;
+    return TryGetProbabilisticRevealTokensStatus::kInvalidNumTokensWithSignal;
   }
-  if (auto crypter =
-          IpProtectionIssuerTokenCrypter::Create(response.public_key().y(), {});
+  if (auto crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          response.public_key().y(), {});
       !crypter.ok()) {
-    return TryGetIssuerTokensStatus::kInvalidPublicKey;
+    return TryGetProbabilisticRevealTokensStatus::kInvalidPublicKey;
   }
 
   for (const auto& t : response.tokens()) {
     if (t.version() != kTokenVersion) {
-      return TryGetIssuerTokensStatus::kInvalidTokenVersion;
+      return TryGetProbabilisticRevealTokensStatus::kInvalidTokenVersion;
     }
     if (t.u().size() != kTokenSize || t.e().size() != kTokenSize) {
-      return TryGetIssuerTokensStatus::kInvalidTokenSize;
+      return TryGetProbabilisticRevealTokensStatus::kInvalidTokenSize;
     }
   }
-  return TryGetIssuerTokensStatus::kSuccess;
+  return TryGetProbabilisticRevealTokensStatus::kSuccess;
 }
 
-void IpProtectionIssuerTokenDirectFetcher::AccountStatusChanged(
+void IpProtectionProbabilisticRevealTokenDirectFetcher::AccountStatusChanged(
     bool account_available) {
   if (account_available) {
     ClearBackoffTimer();
   }
 }
 
-void IpProtectionIssuerTokenDirectFetcher::ClearBackoffTimer() {
-  no_get_issuer_tokens_until_ = base::Time();
-  next_get_issuer_tokens_backoff_ = kGetIssuerTokensFailureTimeout;
+void IpProtectionProbabilisticRevealTokenDirectFetcher::ClearBackoffTimer() {
+  no_get_probabilistic_reveal_tokens_until_ = base::Time();
+  next_get_probabilistic_reveal_tokens_backoff_ =
+      kGetProbabilisticRevealTokensFailureTimeout;
 }
 
 }  // namespace ip_protection
