@@ -101,7 +101,7 @@ void OrtModelBuilder::AddOutput(std::string_view name,
   void* ort_tensor_raw_data = nullptr;
   RETURN_STATUS_IF_FAILED(
       GetOrtApi()->GetTensorMutableData(initializer, &ort_tensor_raw_data));
-  CHECK(ort_tensor_raw_data);
+  // ort_tensor_raw_data can be nullprt when data is empty.
   UNSAFE_BUFFERS(
       base::span(static_cast<uint8_t*>(ort_tensor_raw_data), data.size()))
       .copy_from(data);

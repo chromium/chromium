@@ -131,6 +131,13 @@ class GraphBuilderOrt {
   std::string PrependCast(std::string_view input_name,
                           ONNXTensorElementDataType to_data_type);
 
+  [[nodiscard]] base::expected<std::string, mojom::ErrorPtr> PrependReshape(
+      std::string_view input_name,
+      base::span<const int64_t> new_shape);
+
+  std::string PrependTranspose(std::string_view input_name,
+                               base::span<const uint32_t> permutation);
+
   // Insert a cast operation after an operation to convert its output to the
   // target `to_data_type`. The `input_name` specifies the cast operation's
   // input (the output of the operation to be casted), and the `output_name`
@@ -138,6 +145,10 @@ class GraphBuilderOrt {
   void AppendCast(std::string_view input_name,
                   std::string_view output_name,
                   ONNXTensorElementDataType to_data_type);
+
+  void AppendTranspose(std::string_view input_name,
+                       std::string_view output_name,
+                       base::span<const uint32_t> permutation);
 
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);
@@ -175,6 +186,9 @@ class GraphBuilderOrt {
       const mojom::Conv2d& conv2d);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddExpandOperation(
       const mojom::Expand& expand);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddDequantizeLinearOperation(
+      const mojom::DequantizeLinear& dequantize_linear);
   void AddGatherOperation(const mojom::Gather& gather);
   void AddGemmOperation(const mojom::Gemm& gemm);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>

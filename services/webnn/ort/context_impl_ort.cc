@@ -59,6 +59,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
   static constexpr SupportedRanks kNonScalarMaxRank =
       SupportedRanks::NonScalarUpTo(8);
 
+  static constexpr SupportedDataTypes kDequantizeLinearInputSupportedDataTypes{
+      OperandDataType::kInt4, OperandDataType::kUint4, OperandDataType::kUint8,
+      OperandDataType::kInt8, OperandDataType::kInt32};
+
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
@@ -74,8 +78,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        /*cumulative_sum_input=*/{},
-       /*dequantize_linear_input=*/{},
-       /*dequantize_linear_scale=*/{},
+       /*dequantize_linear_input=*/kDequantizeLinearInputSupportedDataTypes,
+       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat16To32,
        /*add_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sub_input=*/
