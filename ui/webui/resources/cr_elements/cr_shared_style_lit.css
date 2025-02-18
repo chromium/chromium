@@ -31,10 +31,10 @@ iron-list.cr-separators > *:not([first]) {
   overflow-y: auto;
 }
 [scrollable].is-scrolled {
-  border-top-color: var(--scrollable-border-color);
+  border-top-color: var(--cr-scrollable-border-color);
 }
 [scrollable].can-scroll:not(.scrolled-to-bottom) {
-  border-bottom-color: var(--scrollable-border-color);
+  border-bottom-color: var(--cr-scrollable-border-color);
 }
 [scrollable] iron-list > :not(.no-outline):focus,
 [selectable]:focus,
