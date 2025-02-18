@@ -405,9 +405,6 @@ BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
 // rolling out restrictions on supporting SCANOUT usage must check the value of
 // these base::Features.
 // TODO(crbug.com/330865436): Remove post-safe rollout.
-BASE_FEATURE(kExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage,
-             "ExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage,
              "FastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
