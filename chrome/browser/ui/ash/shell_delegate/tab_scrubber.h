@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_SCRUBBER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_SCRUBBER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_ASH_SHELL_DELEGATE_TAB_SCRUBBER_H_
+#define CHROME_BROWSER_UI_ASH_SHELL_DELEGATE_TAB_SCRUBBER_H_
 
 #include <memory>
 
@@ -24,27 +24,29 @@ namespace gfx {
 class Point;
 }
 
+namespace ash {
+
 // Class to enable quick tab switching via horizontal X finger swipes (see
 // kFingerCount definition).
-class TabScrubberChromeOS : public ui::EventHandler,
-                            public BrowserListObserver,
-                            public TabStripObserver {
+class TabScrubber : public ui::EventHandler,
+                    public BrowserListObserver,
+                    public TabStripObserver {
  public:
   static constexpr int kFingerCount = 3;
 
   enum Direction { LEFT, RIGHT };
 
-  TabScrubberChromeOS(const TabScrubberChromeOS&) = delete;
-  TabScrubberChromeOS& operator=(const TabScrubberChromeOS&) = delete;
+  TabScrubber(const TabScrubber&) = delete;
+  TabScrubber& operator=(const TabScrubber&) = delete;
 
-  // Returns a the single instance of a TabScrubberChromeOS.
-  static TabScrubberChromeOS* GetInstance();
+  // Returns a the single instance of a TabScrubber.
+  static TabScrubber* GetInstance();
 
   // Returns the starting position (in tabstrip coordinates) of a swipe starting
   // in the tab at |index| and traveling in |direction|.
   static gfx::Point GetStartPoint(TabStrip* tab_strip,
                                   int index,
-                                  TabScrubberChromeOS::Direction direction);
+                                  TabScrubber::Direction direction);
 
   int highlighted_tab() const { return highlighted_tab_; }
   bool IsActivationPending();
@@ -57,10 +59,10 @@ class TabScrubberChromeOS : public ui::EventHandler,
   void SynthesizedScrollEvent(float x_offset, bool is_fling_scroll_event);
 
  private:
-  friend class TabScrubberChromeOSTest;
+  friend class TabScrubberTest;
 
-  TabScrubberChromeOS();
-  ~TabScrubberChromeOS() override;
+  TabScrubber();
+  ~TabScrubber() override;
 
   // ui::EventHandler overrides:
   void OnScrollEvent(ui::ScrollEvent* event) override;
@@ -124,4 +126,6 @@ class TabScrubberChromeOS : public ui::EventHandler,
   bool enabled_ = true;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SCRUBBER_CHROMEOS_H_
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_UI_ASH_SHELL_DELEGATE_TAB_SCRUBBER_H_

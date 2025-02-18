@@ -56,6 +56,7 @@ include_rules = [
   "+chrome/browser/ui/ash/projector",
   "+chrome/browser/ui/ash/session",
   "+chrome/browser/ui/ash/shelf",
+  "+chrome/browser/ui/ash/shell_delegate",
   "+chrome/browser/ui/ash/shell_init",
   "+chrome/browser/ui/ash/system",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
@@ -66,7 +67,6 @@ include_rules = [
   "+chrome/browser/ui/chromeos/screen_orientation/screen_orientation_delegate.h",
   "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h",
   "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
-  "+chrome/browser/ui/views/tabs",
   "+chrome/browser/ui/webui/ash/settings/pref_names.h",
   "+chrome/common",
 ]

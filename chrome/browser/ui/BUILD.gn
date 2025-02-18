@@ -2045,8 +2045,6 @@ static_library("ui") {
       "views/profiles/profile_indicator_icon.h",
       "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.cc",
       "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.h",
-      "views/tabs/tab_scrubber_chromeos.cc",
-      "views/tabs/tab_scrubber_chromeos.h",
       "views/web_apps/isolated_web_apps/pref_observer_ash.cc",
       "web_applications/web_app_relaunch_notification.cc",
       "web_applications/web_app_relaunch_notification.h",

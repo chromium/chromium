@@ -85,6 +85,7 @@
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shell_delegate/tab_scrubber.h"
 #include "chrome/browser/ui/ash/shell_init/ash_shell_init.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -95,7 +96,6 @@
 #include "chrome/browser/ui/chromeos/screen_orientation/screen_orientation_delegate.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h"
-#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -452,8 +452,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
         ->SetPeripheralsAppDelegate(peripherals_app_delegate_.get());
   }
 
-  // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
-  TabScrubberChromeOS::GetInstance();
+  // Initialize TabScrubber after the Ash Shell has been initialized.
+  ash::TabScrubber::GetInstance();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {

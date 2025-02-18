@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chrome/browser/ui/ash/shell_delegate/tab_scrubber.h"
 
 #include <memory>
 #include <utility>
@@ -90,20 +90,22 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
 
 }  // namespace
 
-class TabScrubberChromeOSTest : public InProcessBrowserTest,
-                                public TabStripModelObserver {
- public:
-  TabScrubberChromeOSTest() = default;
+namespace ash {
 
-  TabScrubberChromeOSTest(const TabScrubberChromeOSTest&) = delete;
-  TabScrubberChromeOSTest& operator=(const TabScrubberChromeOSTest&) = delete;
+class TabScrubberTest : public InProcessBrowserTest,
+                        public TabStripModelObserver {
+ public:
+  TabScrubberTest() = default;
+
+  TabScrubberTest(const TabScrubberTest&) = delete;
+  TabScrubberTest& operator=(const TabScrubberTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(ash::switches::kNaturalScrollDefault);
   }
 
   void SetUpOnMainThread() override {
-    TabScrubberChromeOS::GetInstance()->use_default_activation_delay_ = false;
+    TabScrubber::GetInstance()->use_default_activation_delay_ = false;
     // Disable external monitor scaling of coordinates.
     ash::Shell* shell = ash::Shell::Get();
     shell->event_transformation_handler()->set_transformation_mode(
@@ -127,11 +129,8 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
     return tab_strip;
   }
 
-  int GetStartX(Browser* browser,
-                int index,
-                TabScrubberChromeOS::Direction direction) {
-    return TabScrubberChromeOS::GetStartPoint(GetTabStrip(browser), index,
-                                              direction)
+  int GetStartX(Browser* browser, int index, TabScrubber::Direction direction) {
+    return TabScrubber::GetStartPoint(GetTabStrip(browser), index, direction)
         .x();
   }
 
@@ -150,11 +149,11 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
   // RTL layouts:
   // Tab indices in an English layout : 0 - 1 - 2 - 3 - 4.
   // Tab indices in an Arabic layout  : 4 - 3 - 2 - 1 - 0.
-  TabScrubberChromeOS::Direction InvertDirectionIfNeeded(
-      TabScrubberChromeOS::Direction direction) {
+  TabScrubber::Direction InvertDirectionIfNeeded(
+      TabScrubber::Direction direction) {
     if (base::i18n::IsRTL()) {
-      return direction == TabScrubberChromeOS::LEFT ? TabScrubberChromeOS::RIGHT
-                                                    : TabScrubberChromeOS::LEFT;
+      return direction == TabScrubber::LEFT ? TabScrubber::RIGHT
+                                            : TabScrubber::LEFT;
     }
 
     return direction;
@@ -165,9 +164,8 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
   void SendScrubEvent(Browser* browser, int index) {
     auto event_generator = CreateEventGenerator(browser);
     int active_index = browser->tab_strip_model()->active_index();
-    TabScrubberChromeOS::Direction direction = index < active_index
-                                                   ? TabScrubberChromeOS::LEFT
-                                                   : TabScrubberChromeOS::RIGHT;
+    TabScrubber::Direction direction =
+        index < active_index ? TabScrubber::LEFT : TabScrubber::RIGHT;
 
     direction = InvertDirectionIfNeeded(direction);
 
@@ -193,13 +191,13 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
     int active_index = browser->tab_strip_model()->active_index();
     ASSERT_NE(index, active_index);
     ASSERT_TRUE(scrub_type != SKIP_TABS || ((index - active_index) % 2) == 0);
-    TabScrubberChromeOS::Direction direction;
+    TabScrubber::Direction direction;
     int increment;
     if (index < active_index) {
-      direction = TabScrubberChromeOS::LEFT;
+      direction = TabScrubber::LEFT;
       increment = -1;
     } else {
-      direction = TabScrubberChromeOS::RIGHT;
+      direction = TabScrubber::RIGHT;
       increment = 1;
     }
 
@@ -251,8 +249,8 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
     event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
   }
 
-  bool IsTabScrubberChromeOSEnabled() {
-    return TabScrubberChromeOS::GetInstance()->GetEnabledForTesting();
+  bool IsTabScrubberEnabled() {
+    return TabScrubber::GetInstance()->GetEnabledForTesting();
   }
 
   void AddTabs(Browser* browser, int num_tabs) {
@@ -295,7 +293,7 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
  private:
   // Used to generate a sequence of scrolls. Starts with a cancel, is followed
   // by any number of scrolls and finally a fling-start. After every event this
-  // forces the TabScrubberChromeOS to complete any pending activation.
+  // forces the TabScrubber to complete any pending activation.
   class ScrollGenerator {
    public:
     explicit ScrollGenerator(ui::test::EventGenerator* event_generator)
@@ -304,8 +302,8 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
                                    gfx::Point(), time_for_next_event_, 0, 0, 0,
                                    0, 0, kScrubbingGestureFingerCount);
       event_generator->Dispatch(&fling_cancel);
-      if (TabScrubberChromeOS::GetInstance()->IsActivationPending()) {
-        TabScrubberChromeOS::GetInstance()->FinishScrub(true);
+      if (TabScrubber::GetInstance()->IsActivationPending()) {
+        TabScrubber::GetInstance()->FinishScrub(true);
       }
     }
 
@@ -318,8 +316,8 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
                                   last_x_offset_, 0, last_x_offset_, 0,
                                   kScrubbingGestureFingerCount);
       event_generator_->Dispatch(&fling_start);
-      if (TabScrubberChromeOS::GetInstance()->IsActivationPending()) {
-        TabScrubberChromeOS::GetInstance()->FinishScrub(true);
+      if (TabScrubber::GetInstance()->IsActivationPending()) {
+        TabScrubber::GetInstance()->FinishScrub(true);
       }
     }
 
@@ -330,8 +328,8 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
                              kScrubbingGestureFingerCount);
       last_x_offset_ = x_offset;
       event_generator_->Dispatch(&scroll);
-      if (TabScrubberChromeOS::GetInstance()->IsActivationPending()) {
-        TabScrubberChromeOS::GetInstance()->FinishScrub(true);
+      if (TabScrubber::GetInstance()->IsActivationPending()) {
+        TabScrubber::GetInstance()->FinishScrub(true);
       }
     }
 
@@ -344,7 +342,7 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
 };
 
 // Swipe a single tab in each direction.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Single) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, Single) {
   AddTabs(browser(), 1);
 
   Scrub(browser(), 0, EACH_TAB);
@@ -357,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Single) {
 }
 
 // Swipe 4 tabs in each direction. Each of the tabs should become active.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Multi) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, Multi) {
   AddTabs(browser(), 4);
 
   Scrub(browser(), 0, EACH_TAB);
@@ -369,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Multi) {
   EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
 }
 
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MultiBrowser) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, MultiBrowser) {
   AddTabs(browser(), 1);
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
@@ -385,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MultiBrowser) {
 }
 
 // Tests that tab scrubbing works correctly for a full-screen browser.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, FullScreenBrowser) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, FullScreenBrowser) {
   // Initializes the position of mouse. Makes the mouse away from the tabstrip
   // to prevent any interference on this test.
   auto event_generator = CreateEventGenerator(browser());
@@ -414,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, FullScreenBrowser) {
 
 // Swipe 4 tabs in each direction with an extra swipe within each. The same
 // 4 tabs should become active.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Repeated) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, Repeated) {
   AddTabs(browser(), 4);
 
   Scrub(browser(), 0, REPEAT_TABS);
@@ -429,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Repeated) {
 // Confirm that we get the last tab made active when we skip tabs.
 // These tests have 5 total tabs. We will only received scroll events
 // on tabs 0, 2 and 4.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Skipped) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, Skipped) {
   AddTabs(browser(), 4);
 
   Scrub(browser(), 0, SKIP_TABS);
@@ -442,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Skipped) {
 }
 
 // Confirm that nothing happens when the swipe is small.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, NoChange) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, NoChange) {
   AddTabs(browser(), 1);
 
   SendScrubSequence(browser(), -1, 1);
@@ -453,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, NoChange) {
 }
 
 // Confirm that very large swipes go to the beginning and and of the tabstrip.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Bounds) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, Bounds) {
   AddTabs(browser(), 1);
 
   SendScrubSequence(browser(), -10000, 0);
@@ -463,77 +461,77 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Bounds) {
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 }
 
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, DeleteHighlighted) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, DeleteHighlighted) {
   AddTabs(browser(), 1);
 
   SendScrubEvent(browser(), 0);
-  EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_FALSE(TabScrubber::GetInstance()->IsActivationPending());
 }
 
-// Delete the currently highlighted tab. Make sure the TabScrubberChromeOS is
+// Delete the currently highlighted tab. Make sure the TabScrubber is
 // aware.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, DeleteBeforeHighlighted) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, DeleteBeforeHighlighted) {
   AddTabs(browser(), 2);
 
   SendScrubEvent(browser(), 1);
-  EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
-  EXPECT_EQ(0, TabScrubberChromeOS::GetInstance()->highlighted_tab());
+  EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
 }
 
 // Move the currently highlighted tab and confirm it gets tracked.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MoveHighlighted) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveHighlighted) {
   AddTabs(browser(), 1);
 
   SendScrubEvent(browser(), 0);
-  EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->ToggleSelectionAt(0);
   browser()->tab_strip_model()->ToggleSelectionAt(1);
   browser()->tab_strip_model()->MoveSelectedTabsTo(1, std::nullopt);
-  EXPECT_EQ(1, TabScrubberChromeOS::GetInstance()->highlighted_tab());
+  EXPECT_EQ(1, TabScrubber::GetInstance()->highlighted_tab());
 }
 
 // Move a tab to before the highlighted one. Make sure that the highlighted tab
 // index is updated correctly.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MoveBefore) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveBefore) {
   AddTabs(browser(), 2);
 
   SendScrubEvent(browser(), 1);
-  EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->ToggleSelectionAt(0);
   browser()->tab_strip_model()->ToggleSelectionAt(2);
   browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
-  EXPECT_EQ(0, TabScrubberChromeOS::GetInstance()->highlighted_tab());
+  EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
 }
 
 // Move a tab to after the highlighted one. Make sure that the highlighted tab
 // index is updated correctly.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MoveAfter) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveAfter) {
   AddTabs(browser(), 2);
 
   SendScrubEvent(browser(), 1);
-  EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->MoveSelectedTabsTo(0, std::nullopt);
-  EXPECT_EQ(2, TabScrubberChromeOS::GetInstance()->highlighted_tab());
+  EXPECT_EQ(2, TabScrubber::GetInstance()->highlighted_tab());
 }
 
 // Close the browser while an activation is pending.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, CloseBrowser) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, CloseBrowser) {
   AddTabs(browser(), 1);
 
   SendScrubEvent(browser(), 0);
-  EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
   browser()->window()->Close();
-  EXPECT_FALSE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_FALSE(TabScrubber::GetInstance()->IsActivationPending());
 }
 
 // In an RTL layout, swipe 4 tabs in each direction. Each of the tabs should
 // become active.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, RTLMulti) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMulti) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
 
@@ -551,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, RTLMulti) {
 // In an RTL layout, confirm that we get the last tab made active when we skip
 // tabs. These tests have 5 total tabs. We will only received scroll events
 // on tabs 0, 2 and 4.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, RTLSkipped) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLSkipped) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
 
@@ -568,22 +566,22 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, RTLSkipped) {
 
 // In an RTL layout, move a tab to before the highlighted one. Make sure that
 // the highlighted tab index is updated correctly.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, RTLMoveBefore) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMoveBefore) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
 
   AddTabs(browser(), 2);
 
   SendScrubEvent(browser(), 1);
-  EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->ToggleSelectionAt(0);
   browser()->tab_strip_model()->ToggleSelectionAt(2);
   browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
-  EXPECT_EQ(0, TabScrubberChromeOS::GetInstance()->highlighted_tab());
+  EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
 }
 
 // If the window cycle list is open, the tab scrubber should be disabled.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, DisabledIfWindowCycleListOpen) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, DisabledIfWindowCycleListOpen) {
   AddTabs(browser(), 4);
 
   // Create a second browser, but don't make it active.
@@ -595,20 +593,20 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, DisabledIfWindowCycleListOpen) {
   // Open window cycle list. It should be open now so tab scrubber should be
   // disabled.
   StartCyclingWindows(browser());
-  EXPECT_FALSE(IsTabScrubberChromeOSEnabled());
+  EXPECT_FALSE(IsTabScrubberEnabled());
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_EQ(0u, activation_order_.size());
   EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
 
   // Stop cycling. Scrub should work again.
   StopCyclingWindows(browser());
-  EXPECT_TRUE(IsTabScrubberChromeOSEnabled());
+  EXPECT_TRUE(IsTabScrubberEnabled());
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 }
 
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, VerticalAndHorizontalScroll) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, VerticalAndHorizontalScroll) {
   auto event_generator = CreateEventGenerator(browser());
   constexpr int kOffset = 100;
 
@@ -653,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, VerticalAndHorizontalScroll) {
 
 // Check scroll events other than 3-fingers scroll are not handled by
 // TabScrubber.
-IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, EventHandling) {
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, EventHandling) {
   auto event_generator = CreateEventGenerator(browser());
   constexpr int kOffset = 100;
 
@@ -696,3 +694,5 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, EventHandling) {
     EXPECT_FALSE(scroll_event_with_2_fingers.handled());
   }
 }
+
+}  // namespace ash
