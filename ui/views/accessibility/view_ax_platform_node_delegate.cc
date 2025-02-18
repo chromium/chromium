@@ -165,6 +165,15 @@ ViewAXPlatformNodeDelegate::~ViewAXPlatformNodeDelegate() {
   ax_platform_node_.ExtractAsDangling()->Destroy();
 }
 
+void ViewAXPlatformNodeDelegate::EnsureAtomicViewAXTreeManager() {
+  if (atomic_view_ax_tree_manager_) {
+    return;
+  }
+
+  atomic_view_ax_tree_manager_ =
+      views::AtomicViewAXTreeManager::Create(this, GetData());
+}
+
 bool ViewAXPlatformNodeDelegate::IsAccessibilityFocusable() const {
   return GetData().HasState(ax::mojom::State::kFocusable);
 }
@@ -214,6 +223,18 @@ void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNativeObject() const {
   DCHECK(ax_platform_node_);
   return ax_platform_node_->GetNativeViewAccessible();
+}
+
+void ViewAXPlatformNodeDelegate::OnWidgetUpdated(Widget* widget,
+                                                 Widget* old_widget) {
+  ViewAccessibility::OnWidgetUpdated(widget, old_widget);
+
+  // Initialize the AtomicViewAXTreeManager if necessary when the view gets
+  // added to the widget. We must wait for the widget to become available to
+  // get valid data our of GetData().
+  if (widget && needs_ax_tree_manager()) {
+    EnsureAtomicViewAXTreeManager();
+  }
 }
 
 void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
@@ -321,13 +342,6 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   }
 
   GetAccessibleNodeData(&data_);
-
-
-#if BUILDFLAG(IS_WIN)
-  if (view()->GetViewAccessibility().needs_ax_tree_manager()) {
-    view()->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   return data_;
 }

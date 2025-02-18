@@ -1245,6 +1245,54 @@ TEST_F(ViewAXPlatformNodeDelegateTest, GetUnignoredSelection) {
   EXPECT_EQ(expected_focus_offset, selection_2.focus_offset);
 }
 
+TEST_F(ViewAXPlatformNodeDelegateTest, CreateTextPositionAtInLabel) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  widget->Init(std::move(init_params));
+
+  View* content = widget->SetContentsView(std::make_unique<View>());
+
+  Label* label = new Label(u"Label's Name");
+  content->AddChildView(label);
+  label->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
+  ViewAXPlatformNodeDelegate* label_accessibility =
+      static_cast<ViewAXPlatformNodeDelegate*>(&label->GetViewAccessibility());
+  label_accessibility->GetData();
+
+  ui::AXNodePosition::AXPositionInstance actual_position =
+      label_accessibility->CreateTextPositionAt(
+          0, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, actual_position.get());
+  ASSERT_FALSE(actual_position->IsNullPosition());
+  EXPECT_EQ(0, actual_position->text_offset());
+  EXPECT_EQ(u"Label's Name", actual_position->GetText());
+}
+
+TEST_F(ViewAXPlatformNodeDelegateTest, CreateTextPositionAtInTextfield) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  widget->Init(std::move(init_params));
+
+  View* content = widget->SetContentsView(std::make_unique<View>());
+
+  Textfield* textfield = new Textfield;
+  textfield->GetViewAccessibility().SetName(u"hello world");
+  textfield->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
+  content->AddChildView(textfield);
+
+  ViewAXPlatformNodeDelegate* delegate =
+      static_cast<ViewAXPlatformNodeDelegate*>(
+          &textfield->GetViewAccessibility());
+  ui::AXNodePosition::AXPositionInstance text_position =
+      delegate->CreateTextPositionAt(1, ax::mojom::TextAffinity::kDownstream);
+
+  ASSERT_NE(nullptr, text_position.get());
+  ASSERT_FALSE(text_position->IsNullPosition());
+  EXPECT_EQ(1, text_position->text_offset());
+}
+
 TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasHeader) {
   EXPECT_TRUE(table_accessibility()->TableHasColumnOrRowHeaderNodeForTesting());
   EXPECT_EQ(size_t{4}, table_accessibility()->GetColHeaderNodeIds().size());

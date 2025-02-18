@@ -51,12 +51,14 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   ~ViewAXPlatformNodeDelegate() override;
 
   // ViewAccessibility:
+  void EnsureAtomicViewAXTreeManager() override;
   bool IsAccessibilityFocusable() const override;
   bool IsFocusedForTesting() const override;
   void SetPopupFocusOverride() override;
   void EndPopupFocusOverride() override;
   void FireFocusAfterMenuClose() override;
   gfx::NativeViewAccessible GetNativeObject() const override;
+  void OnWidgetUpdated(Widget* widget, Widget* old_widget) override;
   void FireNativeEvent(ax::mojom::Event event_type) override;
 #if BUILDFLAG(IS_MAC)
   void AnnounceTextAs(const std::u16string& text,
