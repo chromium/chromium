@@ -67,7 +67,6 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : DeveloperPrivateEventRouterShared(profile) {
   app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
   warning_service_observation_.Observe(WarningService::Get(profile));
-  extension_prefs_observation_.Observe(ExtensionPrefs::Get(profile));
   extension_management_observation_.Observe(
       ExtensionManagementFactory::GetForBrowserContext(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
@@ -124,18 +123,6 @@ void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
     const ExtensionId& extension_id,
     const Command& removed_command) {
   BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
-                            extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnExtensionDisableReasonsChanged(
-    const ExtensionId& extension_id,
-    DisableReasonSet disable_reasons) {
-  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnExtensionRuntimePermissionsChanged(
-    const ExtensionId& extension_id) {
-  BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
                             extension_id);
 }
 

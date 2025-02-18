@@ -16,7 +16,6 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/permissions_manager.h"
@@ -27,7 +26,6 @@ namespace extensions {
 class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                     public AppWindowRegistry::Observer,
                                     public CommandService::Observer,
-                                    public ExtensionPrefsObserver,
                                     public ExtensionAllowlist::Observer,
                                     public ExtensionManagement::Observer,
                                     public WarningService::Observer,
@@ -59,13 +57,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                const Command& added_command) override;
   void OnExtensionCommandRemoved(const ExtensionId& extension_id,
                                  const Command& removed_command) override;
-
-  // ExtensionPrefsObserver:
-  void OnExtensionDisableReasonsChanged(
-      const ExtensionId& extension_id,
-      DisableReasonSet disable_reasons) override;
-  void OnExtensionRuntimePermissionsChanged(
-      const ExtensionId& extension_id) override;
 
   // ExtensionAllowlist::Observer
   void OnExtensionAllowlistWarningStateChanged(const ExtensionId& extension_id,
@@ -115,8 +106,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
       app_window_registry_observation_{this};
   base::ScopedObservation<WarningService, WarningService::Observer>
       warning_service_observation_{this};
-  base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
-      extension_prefs_observation_{this};
   base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
       extension_management_observation_{this};
   base::ScopedObservation<CommandService, CommandService::Observer>

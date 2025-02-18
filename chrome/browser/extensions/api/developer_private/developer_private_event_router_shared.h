@@ -13,8 +13,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_error.h"
+#include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_observer.h"
@@ -25,7 +27,8 @@ namespace extensions {
 
 class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
                                           public ErrorConsole::Observer,
-                                          public ProcessManagerObserver {
+                                          public ProcessManagerObserver,
+                                          public ExtensionPrefsObserver {
  public:
   explicit DeveloperPrivateEventRouterShared(Profile* profile);
 
@@ -81,6 +84,13 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
   void OnStoppedTrackingServiceWorkerInstance(
       const WorkerId& worker_id) override;
 
+  // ExtensionPrefsObserver:
+  void OnExtensionDisableReasonsChanged(
+      const ExtensionId& extension_id,
+      DisableReasonSet disable_reasons) override;
+  void OnExtensionRuntimePermissionsChanged(
+      const ExtensionId& extension_id) override;
+
   // Broadcasts an event to all listeners.
   virtual void BroadcastItemStateChanged(
       api::developer_private::EventType event_type,
@@ -92,6 +102,8 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       error_console_observation_{this};
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};
+  base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
+      extension_prefs_observation_{this};
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently
