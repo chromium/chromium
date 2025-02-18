@@ -1130,6 +1130,54 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
   }
 }
 
+// This test shows different behaviors for keepalive fetch on prerenderred pages
+// when handled in the browser (in browser migration enabled) and in the
+// renderer.
+//
+// TODO(crbug.com/395906295): Align the behaviors for keepalive fetch on
+// prerendered pages.
+ATTRIBUTION_PRERENDER_BROWSER_TEST(KeepAliveFetchOnPrerender) {
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");
+  {
+    auto url_loader_interceptor =
+        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+            kBaseDataDir, kEmptyUrl.DeprecatedGetOriginAsURL());
+    EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+  }
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager());
+
+  // The trigger was registered on prerendered pages when the keepalive fetch is
+  // handled in the browser, but not when it is handled in the renderer.
+  const bool in_browser_migration_enabled = GetParam();
+  EXPECT_CALL(observer, OnTriggerHandled).Times(in_browser_migration_enabled);
+
+  // Pre-render the conversion url.
+  const GURL kConversionUrl = https_server()->GetURL(
+      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(kConversionUrl);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  const GURL register_trigger_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/register_trigger_headers.html");
+  EXPECT_TRUE(ExecJs(prerender_rfh, JsReplace(R"(fetch($1, {keepalive: true}))",
+                                              register_trigger_url)));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+  run_loop.Run();
+}
+
 class AttributionsCrossAppWebEnabledBrowserTest
     : public AttributionsBrowserTest {};
 
