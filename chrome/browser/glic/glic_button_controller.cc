@@ -32,10 +32,12 @@ GlicButtonController::GlicButtonController(
 
   // Observe for changes in preferences and panel state events
   pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(
-      prefs::kGlicSettingsPolicy,
-      base::BindRepeating(&GlicButtonController::OnEnabledByPolicyChanged,
-                          base::Unretained(this)));
+  for (std::string_view pref :
+       {glic::prefs::kGlicPinnedToTabstrip, glic::prefs::kGlicSettingsPolicy}) {
+    pref_registrar_.Add(
+        pref, base::BindRepeating(&GlicButtonController::UpdateShowState,
+                                  base::Unretained(this)));
+  }
 
   glic_keyed_service_->window_controller().AddStateObserver(this);
 }
@@ -55,14 +57,13 @@ void GlicButtonController::PanelStateChanged(
   }
 }
 
-void GlicButtonController::OnEnabledByPolicyChanged() {
-  UpdateShowState();
-}
-
 void GlicButtonController::UpdateShowState() {
-  bool is_enabled_for_profile = GlicEnabling::IsEnabledForProfile(profile_);
+  const bool is_enabled_for_profile =
+      GlicEnabling::IsEnabledForProfile(profile_);
+  const bool is_pinned_to_tabstrip =
+      profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
 
-  if (is_enabled_for_profile) {
+  if (is_enabled_for_profile && is_pinned_to_tabstrip) {
     glic_keyed_service_->TryPreload();
     glic_controller_delegate_->SetShowState(true);
   } else {

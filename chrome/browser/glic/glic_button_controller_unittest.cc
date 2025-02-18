@@ -112,11 +112,25 @@ TEST_F(GlicButtonControllerTest, GlicSettingsPolicy) {
   prefs->SetInteger(
       glic::prefs::kGlicSettingsPolicy,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(controller_delegate()->show_state());
 
   prefs->SetInteger(
       glic::prefs::kGlicSettingsPolicy,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+  prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_FALSE(controller_delegate()->show_state());
+
+  prefs->SetInteger(
+      glic::prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
+  EXPECT_FALSE(controller_delegate()->show_state());
+
+  prefs->SetInteger(
+      glic::prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+  prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(controller_delegate()->show_state());
 }
 
