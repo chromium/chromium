@@ -68,6 +68,7 @@ source_set("unit_tests") {
 
   sources = [
     "process_type_unittest.cc",
+    "thread_profiler_configuration_unittest.cc",
     "thread_profiler_platform_configuration_unittest.cc",
   ]
 
