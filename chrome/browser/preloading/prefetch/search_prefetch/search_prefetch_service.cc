@@ -556,6 +556,7 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::TakePrefetchResponseFromDiskCache(
     const GURL& navigation_url) {
+  DCHECK(!IsNoVarySearchDiskCacheEnabled());
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   if (prefetch_cache_.find(navigation_url_without_ref) ==
       prefetch_cache_.end()) {
@@ -842,6 +843,9 @@ void SearchPrefetchService::OnTemplateURLServiceChanged() {
 }
 
 void SearchPrefetchService::ClearCacheEntry(const GURL& navigation_url) {
+  if (IsNoVarySearchDiskCacheEnabled()) {
+    return;
+  }
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   if (prefetch_cache_.find(navigation_url_without_ref) ==
       prefetch_cache_.end()) {
@@ -853,6 +857,7 @@ void SearchPrefetchService::ClearCacheEntry(const GURL& navigation_url) {
 }
 
 void SearchPrefetchService::UpdateServeTime(const GURL& navigation_url) {
+  DCHECK(!IsNoVarySearchDiskCacheEnabled());
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   if (prefetch_cache_.find(navigation_url_without_ref) == prefetch_cache_.end())
     return;
@@ -863,6 +868,11 @@ void SearchPrefetchService::UpdateServeTime(const GURL& navigation_url) {
 
 void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
                                           const GURL& prefetch_url) {
+  // Disk cache is responsible for retrieving the cache and we do not need to
+  // modify the URL to help the disk cache retrieve the cache.
+  if (IsNoVarySearchDiskCacheEnabled()) {
+    return;
+  }
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   GURL prefetch_url_without_ref(net::SimplifyUrlForRequest(prefetch_url));
   if (navigation_url_without_ref == prefetch_url_without_ref) {
