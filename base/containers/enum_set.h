@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -51,14 +52,9 @@ class EnumSet {
   static_assert(
       std::is_enum_v<E>,
       "First template parameter of EnumSet must be an enumeration type");
-  using enum_underlying_type = std::underlying_type_t<E>;
 
   static constexpr bool InRange(E value) {
     return (value >= MinEnumValue) && (value <= MaxEnumValue);
-  }
-
-  static constexpr enum_underlying_type GetUnderlyingValue(E value) {
-    return static_cast<enum_underlying_type>(value);
   }
 
  public:
@@ -66,7 +62,7 @@ class EnumSet {
   static const E kMinValue = MinEnumValue;
   static const E kMaxValue = MaxEnumValue;
   static const size_t kValueCount =
-      GetUnderlyingValue(kMaxValue) - GetUnderlyingValue(kMinValue) + 1;
+      to_underlying(kMaxValue) - to_underlying(kMinValue) + 1;
 
   static_assert(kMinValue <= kMaxValue,
                 "min value must be no greater than max value");
@@ -228,37 +224,37 @@ class EnumSet {
 
   // Returns an EnumSet constructed from |bitmask|.
   static constexpr EnumSet FromEnumBitmask(const uint64_t bitmask) {
-    static_assert(GetUnderlyingValue(kMaxValue) < 64,
+    static_assert(to_underlying(kMaxValue) < 64,
                   "The highest enum value must be < 64 for FromEnumBitmask ");
-    static_assert(GetUnderlyingValue(kMinValue) >= 0,
+    static_assert(to_underlying(kMinValue) >= 0,
                   "The lowest enum value must be >= 0 for FromEnumBitmask ");
-    return EnumSet(EnumBitSet(bitmask >> GetUnderlyingValue(kMinValue)));
+    return EnumSet(EnumBitSet(bitmask >> to_underlying(kMinValue)));
   }
   // Returns a bitmask for the EnumSet.
   uint64_t ToEnumBitmask() const {
-    static_assert(GetUnderlyingValue(kMaxValue) < 64,
+    static_assert(to_underlying(kMaxValue) < 64,
                   "The highest enum value must be < 64 for ToEnumBitmask ");
-    static_assert(GetUnderlyingValue(kMinValue) >= 0,
+    static_assert(to_underlying(kMinValue) >= 0,
                   "The lowest enum value must be >= 0 for FromEnumBitmask ");
-    return enums_.to_ullong() << GetUnderlyingValue(kMinValue);
+    return enums_.to_ullong() << to_underlying(kMinValue);
   }
 
   // Returns a uint64_t bit mask representing the values within the range
   // [64*n, 64*n + 63] of the EnumSet.
   std::optional<uint64_t> GetNth64bitWordBitmask(size_t n) const {
     // If the EnumSet contains less than n 64-bit masks, return std::nullopt.
-    if (GetUnderlyingValue(kMaxValue) / 64 < n) {
+    if (to_underlying(kMaxValue) / 64 < n) {
       return std::nullopt;
     }
 
     std::bitset<kValueCount> mask = ~uint64_t{0};
     std::bitset<kValueCount> bits = enums_;
-    if (GetUnderlyingValue(kMinValue) < n * 64) {
-      bits >>= n * 64 - GetUnderlyingValue(kMinValue);
+    if (to_underlying(kMinValue) < n * 64) {
+      bits >>= n * 64 - to_underlying(kMinValue);
     }
     uint64_t result = (bits & mask).to_ullong();
-    if (GetUnderlyingValue(kMinValue) > n * 64) {
-      result <<= GetUnderlyingValue(kMinValue) - n * 64;
+    if (to_underlying(kMinValue) > n * 64) {
+      result <<= to_underlying(kMinValue) - n * 64;
     }
     return result;
   }
@@ -382,13 +378,13 @@ class EnumSet {
   // Converts a value to/from an index into |enums_|.
   static constexpr size_t ToIndex(E value) {
     CHECK(InRange(value));
-    return static_cast<size_t>(GetUnderlyingValue(value)) -
-           static_cast<size_t>(GetUnderlyingValue(MinEnumValue));
+    return static_cast<size_t>(to_underlying(value)) -
+           static_cast<size_t>(to_underlying(MinEnumValue));
   }
 
   static E FromIndex(size_t i) {
     DCHECK_LT(i, kValueCount);
-    return static_cast<E>(GetUnderlyingValue(MinEnumValue) + i);
+    return static_cast<E>(to_underlying(MinEnumValue) + i);
   }
 
   EnumBitSet enums_;
