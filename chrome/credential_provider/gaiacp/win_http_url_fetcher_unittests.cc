@@ -41,7 +41,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   request.Set("request-str-key", "request-str-value");
   request.Set("request-int-key", 1234);
   base::TimeDelta request_timeout = base::Milliseconds(timeout_in_millis);
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
 
   auto expected_result = base::Value::Dict()
                              .Set("response-str-key", "response-str-value")
@@ -89,14 +89,14 @@ TEST_P(GcpWinHttpUrlFetcherTest,
       ASSERT_TRUE(FAILED(hr));
     } else {
       ASSERT_EQ(S_OK, hr);
-      ASSERT_EQ(expected_result, request_result.value());
+      ASSERT_EQ(expected_result, request_result);
     }
   } else {
     if (nonretryable_error_response) {
       ASSERT_TRUE(FAILED(hr));
     } else {
       ASSERT_EQ(S_OK, hr);
-      ASSERT_EQ(expected_result, request_result.value());
+      ASSERT_EQ(expected_result, request_result);
     }
   }
 
@@ -138,7 +138,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   base::Value::Dict request;
 
   base::TimeDelta request_timeout = base::Milliseconds(timeout_in_millis);
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
 
   auto expected_result = base::Value::Dict()
                              .Set("response-str-key", "response-str-value")
@@ -156,7 +156,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
       request_timeout, num_retries, &request_result);
 
   ASSERT_EQ(S_OK, hr);
-  ASSERT_EQ(expected_result, request_result.value());
+  ASSERT_EQ(expected_result, request_result);
   ASSERT_EQ(1UL, fake_http_url_fetcher_factory()->requests_created());
 
   for (size_t idx = 0;

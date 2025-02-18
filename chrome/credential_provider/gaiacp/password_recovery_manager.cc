@@ -275,7 +275,7 @@ HRESULT EncryptUserPasswordUsingEscrowService(
   std::string public_key;
   base::Value::Dict request_dict;
   request_dict.Set(kGenerateKeyPairRequestDeviceIdParameterName, device_id);
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
 
   // Fetch the results and extract the |resource_id| for the key and the
   // |public_key| to be used for encryption.
@@ -290,9 +290,9 @@ HRESULT EncryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  if (!request_result.has_value() || !request_result->is_dict() ||
+  if (!request_result ||
       !ExtractKeysFromDict(
-          request_result->GetDict(),
+          *request_result,
           {
               {kGenerateKeyPairResponseResourceIdParameterName, &resource_id},
               {kGenerateKeyPairResponsePublicKeyParameterName, &public_key},
@@ -358,7 +358,7 @@ HRESULT DecryptUserPasswordUsingEscrowService(
   }
 
   std::string private_key;
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
 
   // Fetch the results and extract the |private_key| to be used for decryption.
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
@@ -373,9 +373,9 @@ HRESULT DecryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  if (!request_result.has_value() || !request_result->is_dict() ||
+  if (!request_result ||
       !ExtractKeysFromDict(
-          request_result->GetDict(),
+          *request_result,
           {
               {kGetPrivateKeyResponsePrivateKeyParameterName, &private_key},
           })) {

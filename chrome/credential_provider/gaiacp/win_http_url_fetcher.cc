@@ -75,9 +75,9 @@ class HttpServiceRequest {
   // within the given |request_timeout|. If the background thread returns before
   // the timeout expires, it is guaranteed that a result can be returned and the
   // requester will delete itself.
-  std::optional<base::Value> WaitForResponseFromHttpService(
+  std::optional<base::Value::Dict> WaitForResponseFromHttpService(
       const base::TimeDelta& request_timeout) {
-    std::optional<base::Value> result;
+    std::optional<base::Value::Dict> result;
 
     // Start the thread and wait on its handle until |request_timeout| expires
     // or the thread finishes.
@@ -113,15 +113,12 @@ class HttpServiceRequest {
       return result;
     }
 
-    result = base::JSONReader::Read(
+    result = base::JSONReader::ReadDict(
         std::string_view(response_.data(), response_.size()),
         base::JSON_PARSE_CHROMIUM_EXTENSIONS |
             base::JSON_ALLOW_TRAILING_COMMAS);
     if (!result) {
-      LOGFN(ERROR) << "base::JSONReader::Read returned 0";
-      result.reset();
-    } else if (!result->is_dict()) {
-      LOGFN(ERROR) << "json result is not a dictionary";
+      LOGFN(ERROR) << "base::JSONReader::ReadDict failed";
       result.reset();
     }
 
@@ -434,7 +431,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     const base::Value::Dict& request_dict,
     const base::TimeDelta& request_timeout,
     unsigned int request_retries,
-    std::optional<base::Value>* request_result) {
+    std::optional<base::Value::Dict>* request_result) {
   DCHECK(request_result);
 
   std::string request_body;
@@ -467,7 +464,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     *request_result = std::move(extracted_param);
 
     const base::Value::Dict* error_detail =
-        (*request_result)->GetDict().FindDict(kErrorKeyInRequestResult);
+        (*request_result)->FindDict(kErrorKeyInRequestResult);
     if (!error_detail)
       return S_OK;
 
