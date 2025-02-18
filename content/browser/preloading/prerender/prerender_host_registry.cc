@@ -1182,15 +1182,6 @@ FrameTreeNodeId PrerenderHostRegistry::FindPotentialHostToActivate(
       "Prerender.Experimental.MatchableHostCountOnActivation",
       matchable_hosts.size());
 
-  // Disallow activation when the navigation URL has an effective URL like
-  // hosted apps and NTP.
-  if (SiteInstanceImpl::HasEffectiveURL(web_contents()->GetBrowserContext(),
-                                        navigation_request.GetURL())) {
-    CancelHost(host->frame_tree_node_id(),
-               PrerenderFinalStatus::kActivationUrlHasEffectiveUrl);
-    return FrameTreeNodeId();
-  }
-
   // Cannot activate if prerendering navigation has not started yet.
   if (!host->GetInitialNavigationId().has_value()) {
     CancelHost(host->frame_tree_node_id(),
@@ -1212,11 +1203,7 @@ FrameTreeNodeId PrerenderHostRegistry::ReserveHostToActivate(
                "navigation_url", navigation_request.GetURL().spec(),
                "render_frame_host", render_frame_host);
 
-  // These should be ensured in `FindPotentialHostToActivate()`. See the
-  // corresponding checks in the function for details.
   CHECK(navigation_request.IsInPrimaryMainFrame());
-  CHECK(!SiteInstanceImpl::HasEffectiveURL(web_contents()->GetBrowserContext(),
-                                           navigation_request.GetURL()));
 
   // Choose the host that NavigationRequest expects.
   //
@@ -1689,6 +1676,15 @@ bool PrerenderHostRegistry::CanNavigationActivateHost(
   TRACE_EVENT2("navigation", "PrerenderHostRegistry::CanNavigationActivateHost",
                "navigation_url", navigation_request.GetURL().spec(),
                "render_frame_host", render_frame_host);
+
+  // Disallow activation when the navigation URL has an effective URL like
+  // hosted apps and NTP.
+  if (SiteInstanceImpl::HasEffectiveURL(web_contents()->GetBrowserContext(),
+                                        navigation_request.GetURL())) {
+    CancelHost(host.frame_tree_node_id(),
+               PrerenderFinalStatus::kActivationUrlHasEffectiveUrl);
+    return false;
+  }
 
   // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
   // windows) exist in the same browsing context group. This is because these
