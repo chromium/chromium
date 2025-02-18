@@ -853,8 +853,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         // - Irrelevant modules are hidden and it's not the first ranked module.
         BOOL disabled =
             !IsSafetyCheckMagicStackEnabled() ||
-            safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
-                IsHomeCustomizationEnabled() ? _prefService : _localState);
+            safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_prefService);
 
         if (disabled) {
           base::UmaHistogramEnumeration(

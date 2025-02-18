@@ -358,6 +358,15 @@ void MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
                      profile_pref_service);
 }
 
+// Helper function migrating the `bool` preference from LocalState prefs to
+// Profile prefs.
+void MigrateBooleanPrefFromLocalStatePrefsToProfilePrefs(
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  MigrateBooleanPref(pref_name, profile_pref_service,
+                     GetApplicationContext()->GetLocalState());
+}
+
 // Helper function migrating the `bool` preference from Profile prefs to
 // LocalState prefs.
 void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
@@ -407,6 +416,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   signin::ActivePrimaryAccountsMetricsRecorder::RegisterLocalStatePrefs(
       registry);
   tab_resumption_prefs::RegisterLocalStatePrefs(registry);
+  // TODO(crbug.com/395840121): Remove Safety Check registration from
+  // local-state Prefs after successfully migrating to profile Prefs.
   safety_check_prefs::RegisterPrefs(registry);
   RegisterParcelTrackingPrefs(registry);
   update_client::RegisterPrefs(registry);
@@ -1013,6 +1024,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 12/2024.
   registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
+
+  // Added 02/2025
+  safety_check_prefs::RegisterPrefs(registry);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1167,6 +1181,13 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 12/2024.
   prefs->ClearPref(kPageContentCollectionEnabled);
+
+  // Added 02/2025
+  // TODO(crbug.com/395840121): Remove migration call below after successfully
+  // migrating `kSafetyCheckInMagicStackDisabledPref` from local-state to
+  // profile Prefs.
+  MigrateBooleanPrefFromLocalStatePrefsToProfilePrefs(
+      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, prefs);
 }
 
 void MigrateObsoleteUserDefault() {
