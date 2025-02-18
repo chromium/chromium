@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 }
 
 // Verify members see the leave group button instead of the delete button and
-// that pressing the leave group buttons deletes the group.
+// that pressing the leave group buttons displays a dialog.
 IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, LeaveGroupPressed) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, "fake_collaboration_id",
@@ -484,13 +484,13 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, LeaveGroupPressed) {
       WaitForShow(kTabGroupEditorBubbleId),
       PressButton(kTabGroupEditorBubbleLeaveGroupButtonId),
       WaitForHide(kTabGroupEditorBubbleLeaveGroupButtonId),
-      WaitForShow(kDeletionDialogOkButtonId),
-      PressButton(kDeletionDialogOkButtonId),
-      WaitForHide(kTabGroupHeaderElementId), FinishTabstripAnimations());
+      WaitForShow(kDeletionDialogCancelButtonId),
+      PressButton(kDeletionDialogCancelButtonId),
+      WaitForHide(kDeletionDialogCancelButtonId), FinishTabstripAnimations());
 }
 
 // Verify members see the leave group button instead of the delete button in the
-// context menu of a tab group. Pressing the button should delete the group.
+// context menu of a tab group. Pressing the button displays a dialog.
 IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
                        LeaveGroupPressedFromContextMenu) {
   TabGroupId group_id = CreateNewTabGroup();
@@ -505,9 +505,9 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       SelectMenuItem(STGEverythingMenu::kTabGroup),
       EnsurePresent(STGTabsMenuModel::kLeaveGroupMenuItem),
       SelectMenuItem(STGTabsMenuModel::kLeaveGroupMenuItem),
-      WaitForShow(kDeletionDialogOkButtonId),
-      PressButton(kDeletionDialogOkButtonId), FinishTabstripAnimations(),
-      WaitForHide(kTabGroupHeaderElementId));
+      WaitForShow(kDeletionDialogCancelButtonId),
+      PressButton(kDeletionDialogCancelButtonId), FinishTabstripAnimations(),
+      WaitForHide(kDeletionDialogCancelButtonId));
 }
 
 // Verify members see the recent activity button when activity exists.
