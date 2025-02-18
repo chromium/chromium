@@ -193,6 +193,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1607312127821884567">Anzeige der Apps auf deinem Smartphone nicht einrichten</translation>
 <translation id="1610778689852195798">„Rückgängig machen“</translation>
 <translation id="1611993646327628135">An</translation>
+<translation id="1612679292338846734">Wenn du diese Funktionen aktivierst, werden der eingegebene Text, der Dokumentinhalt und die URL der Webseite möglicherweise an Google AI-Server gesendet. Diese Informationen werden gemäß den <ph name="LINK_TO_SERVICE_TERMS" /> verwendet, um Vorschläge für Formulierungen zu generieren, Zusammenfassungen zu erstellen, Fragen zu beantworten und das Produkt zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Google Classroom minimieren</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ist nicht verfügbar.</translation>
@@ -565,6 +566,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="2946119680249604491">Verbindung hinzufügen</translation>
 <translation id="2947835478872237115">Aktueller Akkustand: <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> bis zur vollständigen Aufladung</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" /> drücken und auf einen Link klicken</translation>
+<translation id="2957159466053076448">Du kannst diese Funktionen jederzeit in den Einstellungen deaktivieren. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio des Geräts</translation>
 <translation id="2960314608273155470">Aufnahmemodus – die Standardeinstellung ist <ph name="TYPE" /> (<ph name="SOURCE" />). Drücke für die Navigation über die Tastatur die Tabulatortaste.</translation>
 <translation id="2961963223658824723">Ein Fehler ist aufgetreten. Bitte versuche es in ein paar Sekunden noch einmal.</translation>
@@ -1905,6 +1907,7 @@ Neuinstallation</translation>
 <translation id="735745346212279324">VPN-Verbindung getrennt</translation>
 <translation id="7360036564632145207">Möglicherweise kannst du die Leistung optimieren, indem du die Einstellungen für den Schutz vor Datenzugriff durch Peripheriegeräte änderst</translation>
 <translation id="736045644501761622">Hintergrund und Stil festlegen</translation>
+<translation id="7368041336688136012">Du musst mindestens 18 Jahre alt sein, um die Funktionen „Erstelle einen Überblick für mich“ und „Formuliere für mich“ nutzen und mithilfe von KI Bilder erstellen zu können.</translation>
 <translation id="7371404428569700291">Fenster aufzeichnen</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> von insgesamt <ph name="TOTAL_MEMORY" /> Arbeitsspeicher verfügbar</translation>
 <translation id="737315737514430195">Dies erlaubt den Mikrofonzugriff für alle Apps und Websites mit der Mikrofonberechtigung</translation>
@@ -2030,6 +2033,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7749443890790263709">Maximale Anzahl von Arbeitsbereichen erreicht.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Alle anzeigen</translation>
+<translation id="7762664108390426952">Nutzungsbedingungen und der Datenschutzerklärung von Google</translation>
 <translation id="7768784765476638775">Vorlesen</translation>
 <translation id="7769299611924763557">Die GIF-Datei ist gleich bereit</translation>
 <translation id="7773536009433685931">Stattdessen WLAN aktivieren</translation>

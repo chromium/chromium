@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"

@@ -66,6 +66,20 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Returns the list of account capabilities associated with the identity.
   AccountCapabilities GetVisibleCapabilities(id<SystemIdentity> identity);
 
+  // Sets whether the hosted domain for each identity will be automatically and
+  // immediately available via GetCachedHostedDomainForIdentity(). If false, the
+  // hosted domain must first be queried (asynchronously) via GetHostedDomain().
+  // True by default.
+  void SetInstantlyFillHostedDomainCache(bool instantly_fill);
+
+  // Sets the error to be returned from all GetHostedDomain() calls. If nil, the
+  // calls will succeed.
+  void SetGetHostedDomainError(NSError* error);
+
+  // Returns the number of hosted domain requests that have been answered with
+  // an error (as set by SetGetHostedDomainError()).
+  size_t GetNumHostedDomainErrorsReturned() const;
+
   // Simulates reloading the identities from the keychain.
   void FireSystemIdentityReloaded();
 
@@ -170,6 +184,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // execution of `WaitForServiceCallbacksToComplete()` when the counter
   // reaches 0.
   void ExecuteClosure(base::OnceClosure closure);
+
+  bool instantly_fill_hosted_domain_cache_ = true;
+  NSMutableSet<id<SystemIdentity>>* hosted_domain_cache_ = [NSMutableSet set];
+  NSError* get_hosted_domain_error_ = nil;
+  size_t num_hosted_domain_errors_returned_ = 0;
 
   // Counter of pending callback and closure used to resume the execution
   // of `WaitForServiceCallbacksToComplete()` when the counter reaches 0.

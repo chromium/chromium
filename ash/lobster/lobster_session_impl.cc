@@ -465,6 +465,8 @@ void LobsterSessionImpl::ShowDisclaimerUIAndCacheContext(
     std::optional<std::string> query,
     const gfx::Rect& anchor_bounds) {
   client_->ShowDisclaimerUI();
+  RecordLobsterState(ash::LobsterMetricState::kConsentScreenImpression);
+
   query_before_disclaimer_ui_ = query;
   anchor_bounds_before_disclaimer_ui_ = anchor_bounds;
 }

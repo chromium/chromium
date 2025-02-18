@@ -471,6 +471,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1791415068765905273">Afficher tous les tableaux comparatifs</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer vos infos, votre vie privée et votre sécurité dans votre compte Google</translation>
+<translation id="1793473605302304726">Paiement échelonné</translation>
 <translation id="1793631236004319016">Dernière utilisation il y a <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, plusieurs actions disponibles, appuyez sur Tabulation pour passer de l'une à l'autre</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="238459632961158867">Site Web</translation>
 <translation id="2385809941344967209">Mettez à jour votre navigateur dans les paramètres Chrome</translation>
 <translation id="2386255080630008482">Le certificat du serveur a été révoqué.</translation>
-<translation id="2386410849674401722">"J'aime" indique que la saisie automatique avec l'IA vous convient</translation>
 <translation id="2388828676877700238">Planification fiscale et établissement de déclarations fiscales</translation>
 <translation id="239203817277685015">Développer</translation>
 <translation id="239293030466334554">Décapotables</translation>
@@ -1441,7 +1441,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3543935938072367282">Réglez vos achats plus rapidement grâce à la saisie automatique</translation>
 <translation id="3547442767634383572">Aperçu du profil professionnel</translation>
 <translation id="3547746132308051926">20 x 24 pouces</translation>
-<translation id="3550325450190222557">Envoyez des commentaires sur la saisie automatique avec l'IA.</translation>
 <translation id="3552155506104542239">Avertissement : Cette règle est en conflit avec <ph name="POLICY_NAME" /> et n'aura aucune incidence sur les applis Android. En absence de conflit, cette règle fonctionne comme prévu.</translation>
 <translation id="3552297013052089404">Police Sans Serif</translation>
 <translation id="3558573058928565255">Dans la journée</translation>
@@ -2898,7 +2897,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6124432979022149706">Connecteurs Chrome Enterprise</translation>
 <translation id="6126565365696310362">Enveloppe chinoise n°2</translation>
 <translation id="6127379762771434464">Élément supprimé</translation>
-<translation id="6128214169525122635">"Je n'aime pas" indique que la saisie automatique avec l'IA ne vous convient pas</translation>
 <translation id="6131824478727057281">position</translation>
 <translation id="6133320744616005677">Maintenir l'autorisation</translation>
 <translation id="6133984428121856852">L'extension de fichier est vide ou incorrecte.</translation>
@@ -3411,6 +3409,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7042616127917168121">Affiner les résultats</translation>
 <translation id="7043552168914147882">Fiche intercalaire</translation>
 <translation id="7044081119134178347">Accès à l'appareil photo autorisé cette fois-ci</translation>
+<translation id="704738887031336226">Afficher les options de <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />paiement échelonné<ph name="PAY_OVER_TIME_HELP_LINK_END" /> au moment du règlement</translation>
 <translation id="7048095965575426564">Fanfold européen</translation>
 <translation id="7050187094878475250">Vous avez essayé d'accéder à <ph name="DOMAIN" />, mais la durée de validité du certificat du serveur est trop longue pour être fiable.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Impossible d'enregistrer cette carte pour le moment}one{Impossible d'enregistrer cette carte pour le moment}other{Impossible d'enregistrer ces cartes pour le moment}}</translation>
@@ -4596,7 +4595,6 @@ Informations supplémentaires :
 <translation id="9150025764986957246">Exemples de ce que vous pouvez saisir :</translation>
 <translation id="9154194610265714752">Mis à jour</translation>
 <translation id="9155211586651734179">Périphériques audio connectés</translation>
-<translation id="9155453166708525139">La saisie automatique avec l'IA est une fonctionnalité expérimentale qui n'est pas infaillible. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> peut inclure du contenu sensible}one{<ph name="FILE_COUNT" /> fichier peut inclure du contenu sensible}other{<ph name="FILE_COUNT" /> fichiers peuvent inclure du contenu sensible}}</translation>

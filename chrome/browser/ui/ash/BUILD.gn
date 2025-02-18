@@ -106,6 +106,7 @@ group("browser_tests") {
     "//chrome/browser/ui/ash/sharesheet:browser_tests",
     "//chrome/browser/ui/ash/shelf:browser_tests",
     "//chrome/browser/ui/ash/shelf/app_service:browser_tests",
+    "//chrome/browser/ui/ash/shell_delegate:browser_tests",
     "//chrome/browser/ui/ash/system:browser_tests",
     "//chrome/browser/ui/ash/test:browser_tests",
     "//chrome/browser/ui/ash/thumbnail_loader:browser_tests",

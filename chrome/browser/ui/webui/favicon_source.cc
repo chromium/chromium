@@ -15,8 +15,6 @@
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -35,6 +33,11 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -213,17 +216,23 @@ bool FaviconSource::ShouldServiceRequest(
     const GURL& url,
     content::BrowserContext* browser_context,
     int render_process_id) {
+#if !BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(chrome::kChromeSearchScheme)) {
     return InstantService::ShouldServiceRequest(url, browser_context,
                                                 render_process_id);
   }
+#endif
   return URLDataSource::ShouldServiceRequest(url, browser_context,
                                              render_process_id);
 }
 
 ui::NativeTheme* FaviconSource::GetNativeTheme(
     const content::WebContents::Getter& wc_getter) {
+#if BUILDFLAG(IS_ANDROID)
+  return ui::NativeTheme::GetInstanceForNativeUi();
+#else
   return webui::GetNativeThemeDeprecated(wc_getter.Run());
+#endif
 }
 
 void FaviconSource::OnFaviconDataAvailable(

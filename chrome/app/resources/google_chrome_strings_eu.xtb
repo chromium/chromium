@@ -67,7 +67,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome zaharkituta dago</translation>
 <translation id="1880677175115548835">Hautatu testua</translation>
-<translation id="1907925560334657849">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren hobespenetan</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
 <translation id="1953553007165777902">Deskargatzen… <ph name="MINUTE" /> minutu geratzen dira.</translation>
 <translation id="1982647487457769627">Chrome-k hainbat plataformatan funtzionatzen du, ezagutzen duzun moduan arakatu ahal izan dezazun edozein gailutan</translation>
@@ -245,7 +244,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4050175100176540509">Segurtasun-hobekuntza garrantzitsuak eta eginbide berriak dituzu erabilgarri azken bertsioan.</translation>
 <translation id="4053720452172726777">Pertsonalizatu eta kontrolatu Google Chrome</translation>
 <translation id="408393047846373801">Pasahitzak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chrome-n. Saioa hasi ondoren, pasahitz hau zure Google-ko kontuan gordeko da.</translation>
-<translation id="4084404300720192944">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren hobespenetan.</translation>
 <translation id="4110895483821904099">Konfiguratu Chrome-ko profil berria</translation>
 <translation id="4111566860456076004">Chrome-k ezin du egiaztatu luzapena nondik datorren, eta baliteke segurua ez izatea. Ken ezazu Chrome-tik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
 <translation id="4128488089242627000">Chrome-k bizkorrago funtzionatzen du eta JavaScript darabilten eginbideek behar bezala funtzionatu beharko lukete (gomendatua)</translation>
@@ -410,7 +408,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6180522807229584611">Fitxa honek baliabide gehiago erabiltzen ditu. Errendimendua hobetzeko, eman fitxa inaktibo ezartzeko baimena Chrome-ri.</translation>
 <translation id="6182736845697986886">Instalazioak huts egin du, eguneratze-zerbitzariak barneko errore bat izan duelako.</translation>
 <translation id="6200139057479872438">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> erabiltzeko baimenak kendu dizkio.</translation>
-<translation id="621585339844629864">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren hobespenetan.</translation>
 <translation id="6235018212288296708">Google Chrome-k mDNS trafikoa baimentzeko sarrerako araua.</translation>
 <translation id="624230925347970731">Chrome itxi egingo da laster</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
@@ -479,7 +476,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7088681679121566888">Eguneratuta dago Chrome</translation>
 <translation id="7098166902387133879">Google Chrome zure mikrofonoa erabiltzen ari da.</translation>
 <translation id="7099479769133613710">&amp;Chrome OS eguneratzeko, exekuta ezazu berriro</translation>
-<translation id="7100085796996987445">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren hobespenetan</translation>
 <translation id="7106741999175697885">Zeregin-kudeatzailea - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berriro exekutatzen duzunean aplikatuko da.}=1{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berriro exekutatzen duzunean aplikatuko da. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berriro exekutatzen duzunean aplikatuko da. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="7155997830309522122">Hala bada, editatu Chrome-n gordetako pasahitza, berriarekin bat etor dadin.</translation>

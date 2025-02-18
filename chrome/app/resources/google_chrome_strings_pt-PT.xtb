@@ -63,7 +63,6 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">O Chrome está desatualizado</translation>
 <translation id="1880677175115548835">Selecionar texto</translation>
-<translation id="1907925560334657849">Para partilhar a sua janela, permita a gravação de ecrã para o Chrome nas Preferências do sistema</translation>
 <translation id="1919130412786645364">Permitir o início de sessão no Chrome</translation>
 <translation id="1953553007165777902">A transferir… Falta(m) <ph name="MINUTE" /> minuto(s)</translation>
 <translation id="1982647487457769627">O Chrome funciona em várias plataformas para lhe oferecer uma experiência familiar, independentemente do dispositivo</translation>
@@ -242,7 +241,6 @@
 <translation id="4050175100176540509">Estão disponíveis na versão mais recente melhorias de segurança importantes e novas funcionalidades.</translation>
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
 <translation id="408393047846373801">Para aceder às suas palavras-passe e muito mais em todos os seus dispositivos, inicie sessão no Chrome. Esta palavra-passe é guardada na sua Conta Google depois de iniciar sessão.</translation>
-<translation id="4084404300720192944">Para partilhar a sua janela, permita a gravação de ecrã para o Chrome nas Preferências do sistema.</translation>
 <translation id="4110895483821904099">Configure o seu novo perfil do Chrome</translation>
 <translation id="4111566860456076004">O Chrome não consegue validar a origem desta extensão, e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo informações pessoais.</translation>
 <translation id="4128488089242627000">O Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto (recomendado)</translation>
@@ -403,7 +401,6 @@
 <translation id="6180522807229584611">Este separador está a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chrome o torne inativo.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6200139057479872438">Não visitou o site recentemente. O Chrome removeu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
-<translation id="621585339844629864">Para partilhar o ecrã, permita a gravação de ecrã para o Chrome nas Preferências do sistema.</translation>
 <translation id="6235018212288296708">Regra de importação para o Google Chrome permitir o tráfego mDNS.</translation>
 <translation id="624230925347970731">O Chrome vai ser fechado em breve</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
@@ -472,7 +469,6 @@
 <translation id="7088681679121566888">O Chrome está atualizado.</translation>
 <translation id="7098166902387133879">O Google Chrome está a utilizar o microfone.</translation>
 <translation id="7099479769133613710">Reiniciar para atualizar o &amp;ChromeOS</translation>
-<translation id="7100085796996987445">Para partilhar o ecrã, permita a gravação de ecrã para o Chrome nas Preferências do sistema</translation>
 <translation id="7106741999175697885">Gestor de tarefas - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie.}=1{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir a sua janela de navegação anónima.}other{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="7155997830309522122">Em caso afirmativo, edite a sua palavra-passe guardada no Chrome para que corresponda à nova palavra-passe.</translation>

@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">Бардык салыштыруучу таблицаларды көрсөтүү</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Маалыматты, купуялыкты жана коопсуздукту Google аккаунтуңузда башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
+<translation id="1793473605302304726">Бөлүп төлөө</translation>
 <translation id="1793631236004319016">Акыркы жолу <ph name="NUM_HOURS_MINUTES_SECONDS" /> мурун колдонулду</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, бир нече аракет жеткиликтүү, Tab баскычын басып, аларды карап чыгыңыз</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@
 <translation id="238459632961158867">Вебсайт</translation>
 <translation id="2385809941344967209">Chrome'дун параметрлерине өтүп, Chrome'ду жаңыртыңыз</translation>
 <translation id="2386255080630008482">Сервер тастыктамасы жокко чыгарылды.</translation>
-<translation id="2386410849674401722">"Жакты" дегенди басып, ЖИнин жардамы менен автотолтуруу функциясын жактырганыңызды билдире аласыз</translation>
 <translation id="2388828676877700238">Салык төлөөгө даярдануу жана пландоо</translation>
 <translation id="239203817277685015">Толуктоо</translation>
 <translation id="239293030466334554">Кабриолеттер</translation>
@@ -1440,7 +1440,6 @@
 <translation id="3543935938072367282">Автотолтуруу менен тезирээк төлөңүз</translation>
 <translation id="3547442767634383572">Жумуш профили тууралуу жалпы маалымат</translation>
 <translation id="3547746132308051926">20 x 24 дюйм</translation>
-<translation id="3550325450190222557">ЖИнин жардамы менен автотолтуруу жөнүндө пикир билдирүү</translation>
 <translation id="3552155506104542239">Эскертүү: Бул эреже <ph name="POLICY_NAME" /> эрежесине карама-каршы келет жана Android колдонмолоруна эч кандай таасир этпейт. Болбосо, бул эреже ойдогудай иштейт.</translation>
 <translation id="3552297013052089404">Sans-serif ариби</translation>
 <translation id="3558573058928565255">Күндүз</translation>
@@ -2897,7 +2896,6 @@
 <translation id="6124432979022149706">Chrome Enterprise туташтыргычтары</translation>
 <translation id="6126565365696310362">Конверт Кытайча #2</translation>
 <translation id="6127379762771434464">Нерсе өчүрүлдү</translation>
-<translation id="6128214169525122635">"Жаккан жок" дегенди басып, ЖИнин жардамы менен автотолтуруу функциясын жактырбаганыңызды билдире аласыз</translation>
 <translation id="6131824478727057281">жайгашкан жер</translation>
 <translation id="6133320744616005677">Колдоно берүүгө уруксат берүү</translation>
 <translation id="6133984428121856852">Файлдын кеңейтүүсү бош же туура эмес түзүлгөн.</translation>
@@ -3410,6 +3408,7 @@
 <translation id="7042616127917168121">Натыйжаларды өркүндөтүү</translation>
 <translation id="7043552168914147882">Бөлгүч</translation>
 <translation id="7044081119134178347">Камераны колдонууга бул жолу уруксат берилди</translation>
+<translation id="704738887031336226">Төлөп жатканда <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />бөлүп төлөө<ph name="PAY_OVER_TIME_HELP_LINK_END" /> параметри көрсөтүлсүн</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> доменине кирүүгө аракет кылдыңыз, бирок сервер ишенимдүү болушу үчүн жарактуу мөөнөтү өтө узун уруксаттама берди.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Бул картаны азыр сактап коюуга болбойт}other{Бул карталарды азыр сактап коюуга болбойт}}</translation>
@@ -4594,7 +4593,6 @@
 <translation id="9150025764986957246">Төмөнкүдөй нерселерди киргизе аласыз:</translation>
 <translation id="9154194610265714752">Жаңыртылды</translation>
 <translation id="9155211586651734179">Аудио түзмөктүн көмөкчү жабдыктары тиркелди</translation>
-<translation id="9155453166708525139">ЖИнин жардамы менен автотолтуруу сынамык функция болгондуктан, кээде туура эмес иштеши мүмкүн. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Журналдар</translation>
 <translation id="9157595877708044936">Орнотууда…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында купуя контент болушу мүмкүн}other{<ph name="FILE_COUNT" /> файлда купуя контент болушу мүмкүн}}</translation>

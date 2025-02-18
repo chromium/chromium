@@ -41,6 +41,10 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for SafetyHubFetchService. */
 @RunWith(BaseRobolectricTestRunner.class)
+// TODO(crbug.com/390442009): Update the tests when the logic starts taking the flag into account
+// explicitly. For now the flag is checked in PasswordManagerHelper which gets indirectly
+// invoked by these tests.
+@Features.DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class SafetyHubFetchServiceTest {
     private static final int ONE_DAY_IN_MILLISECONDS = (int) TimeUnit.DAYS.toMillis(1);
 

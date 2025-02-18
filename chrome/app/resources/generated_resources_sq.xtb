@@ -196,6 +196,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Shiko fotografitë dhe mediat e telefonit tënd</translation>
 <translation id="1129850422003387628">Menaxho aplikacionet</translation>
+<translation id="1130430615924359526">{0,plural, =1{Mbyll dritaren e fshehtë}other{Mbyll dritaret e fshehta (# dritare)}}</translation>
 <translation id="113050636487300043">Zgjidh një emër dhe temë ngjyre për të bërë dallimin mes profileve</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - pjesë e grupit <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Niveli i baterisë djathtas - <ph name="PERCENTAGE" />%.</translation>
@@ -1510,6 +1511,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2042279886444479655">Profilet aktive</translation>
 <translation id="2042427131767688936">Për t'u siguruar që kjo pajisje mund të përdoret në mënyrë të sigurt, organizata jote mund të shikojë informacione në lidhje me sistemin operativ, shfletuesin dhe cilësimet e saj, si dhe se çfarë softuerësh janë instaluar në pajisje.</translation>
 <translation id="2044014337866019681">Sigurohu që po verifikon <ph name="ACCOUNT" /> për të shkyçur sesionin.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Mbyll vizitorin}other{Mbyll vizitorin (# dritare)}}</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045211794962848221">Nuk do ta shikosh më këtë mesazh specifik</translation>
 <translation id="2045838962742066664">Shkrimi me shkurtime</translation>
@@ -2283,7 +2285,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2569972178052279830">Emri i shitësit me pakicë</translation>
 <translation id="257088987046510401">Temat</translation>
 <translation id="2571638829488071045">Të ruhet kjo shtesë në "Llogarinë tënde të Google"?</translation>
-<translation id="2571655996835834626">Ndrysho cilësimet që kontrollojnë qasjen e faqeve të uebit në funksione të tilla si kukit, JavaScript, përbërësit shtesë, vendndodhja gjeografike, mikrofoni, kamera, etj.</translation>
 <translation id="257175846174451436">Grupi i sugjeruar i skedave</translation>
 <translation id="2572032849266859634">Është dhënë qasja "vetëm për lexim" për <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> skeda</translation>
@@ -7350,6 +7351,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6214106213498203737">Bojëra uji</translation>
 <translation id="621470880408090483">Mos lejo që sajtet të lidhen me pajisjet me Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Për t'i mbajtur fjalëkalimet e tua të sigurta, "<ph name="BRAND" />" kyçet pas 1 minute pa aktivitet}other{Për t'i mbajtur fjalëkalimet e tua të sigurta, "<ph name="BRAND" />" kyçet pas # minutash pa aktivitet}}</translation>
+<translation id="6216154119179790291">Lëviz te skeda e parë</translation>
 <translation id="6216239400972191926">Sajtet dhe aplikacionet e refuzuara</translation>
 <translation id="6216601812881225442">Kontejneri yt nuk mbështet ndryshimin e madhësisë. Për të rregulluar sasinë e hapësirës që i është paracaktuar për Linux, rezervoje dhe më pas restauroje në një kontejner të ri.</translation>
 <translation id="6216696360484424239">Identifikohu automatikisht</translation>
@@ -7546,6 +7548,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6357305427698525450">Disa lidhje të mbështetura do të vazhdojnë të hapen në <ph name="APP_NAME" /> ose <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Identifikues të tjerë të qëndrueshëm (p.sh. hash-et ose UUID-të)</translation>
 <translation id="6358884629796491903">Dragua</translation>
+<translation id="6359640073754977254">Lëviz te skeda e fundit</translation>
 <translation id="6361850914223837199">Detajet e gabimit:</translation>
 <translation id="6362853299801475928">&amp;Raporto një problem...</translation>
 <translation id="6363786367719063276">Shiko evidencat</translation>
@@ -7608,7 +7611,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6411135999030237579">Shtyp dhe mbaj shtypur për të përsëritur automatikisht tastin</translation>
 <translation id="6414618057231176439">Zgjidh se cilin version të <ph name="VM_NAME" /> do të instalosh.</translation>
 <translation id="641469293210305670">Instalo përditësimet dhe aplikacionet</translation>
-<translation id="6414878884710400018">Hap preferencat e sistemit</translation>
 <translation id="6415757856498750027">Shkruaj "w" për të marrë "ư"</translation>
 <translation id="6415816101512323589">Të aktivizohet rikuperimi i të dhënave lokale për të mbrojtur të dhënat e tua?</translation>
 <translation id="6415900369006735853">Lidhu me internetin përmes telefonit</translation>
@@ -10203,6 +10205,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8258027225380843424">Importimi u krye me sukses!</translation>
 <translation id="8259048637628995340">Lidh telefonin tënd Android për një përvojë pa ndërprerje</translation>
 <translation id="8260177673299865994">Përmirëso mbrojtjen e shkarkimit</translation>
+<translation id="8260473380156923937">Aplikacionet e Chrome do të hiqen së shpejti nga funksionimi. Për alternativa, kontakto me zhvilluesin ose kontaktin tënd të shërbimit të teknologjisë së informacionit.</translation>
 <translation id="8260864402787962391">Miu</translation>
 <translation id="8261378640211443080">Kjo shtesë nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="8261506727792406068">Fshi</translation>

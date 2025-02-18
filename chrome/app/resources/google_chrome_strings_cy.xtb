@@ -67,7 +67,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1874309113135274312">Beta Google Chrome (mDNS-In)</translation>
 <translation id="1877026089748256423">Rydych yn defnyddio hen fersiwn o Chrome</translation>
 <translation id="1880677175115548835">Dewis testun</translation>
-<translation id="1907925560334657849">I rannu'ch ffenestr, caniatewch recordiad sgrîn ar gyfer Chrome yn y Dewisiadau System</translation>
 <translation id="1919130412786645364">Caniatáu mewngofnodi i Chrome</translation>
 <translation id="1953553007165777902">Wrthi'n lawrlwytho... Mae <ph name="MINUTE" /> o funudau ar ôl</translation>
 <translation id="1982647487457769627">Mae Chrome yn gweithio ar draws llwyfannau i roi profiad cyfarwydd i chi waeth beth fo'r ddyfais</translation>
@@ -246,7 +245,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4050175100176540509">Mae gwelliannau diogelwch pwysig a nodweddion newydd ar gael yn y fersiwn ddiweddaraf.</translation>
 <translation id="4053720452172726777">Personoleiddio a rheoli Google Chrome</translation>
 <translation id="408393047846373801">I gael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau, mewngofnodwch i Chrome. Bydd y cyfrinair hwn yn cael ei gadw yn eich Cyfrif Google ar ôl i chi fewngofnodi.</translation>
-<translation id="4084404300720192944">I rannu'ch ffenestr, caniatewch recordiad sgrîn ar gyfer Chrome yn y Dewisiadau System.</translation>
 <translation id="4110895483821904099">Gosodwch eich proffil Chrome newydd</translation>
 <translation id="4111566860456076004">Nid yw Chrome yn gallu dilysu o ble mae'r estyniad hwn yn dod, ac mae'n bosib ei fod yn anniogel. Tynnwch ef o Chrome fel na all weld a newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys gwybodaeth bersonol.</translation>
 <translation id="4128488089242627000">Mae Chrome yn rhedeg yn gyflymach a dylai nodweddion sy'n defnyddio JavaScript weithio fel y'u dyluniwyd (argymhellir)</translation>
@@ -411,7 +409,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6180522807229584611">Mae'r tab hwn yn defnyddio adnoddau ychwanegol. Er mwyn gwella eich perfformiad, gadewch i Chrome ei wneud yn anweithredol.</translation>
 <translation id="6182736845697986886">Methodd y gosodiad oherwydd gwall mewnol yn y gweinydd diweddaru.</translation>
 <translation id="6200139057479872438">Nid ydych wedi ymweld yn ddiweddar. Mae Chrome wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
-<translation id="621585339844629864">I rannu'ch sgrîn, caniatewch recordiad sgîin ar gyfer Chrome yn y Dewisiadau System.</translation>
 <translation id="6235018212288296708">Rheol dod i mewn ar gyfer Google Chrome i ganiatáu traffig mDNS.</translation>
 <translation id="624230925347970731">Bydd Chrome yn cau yn fuan</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
@@ -480,7 +477,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7088681679121566888">Mae Chrome yn gyfoes</translation>
 <translation id="7098166902387133879">Mae Google Chrome yn defnyddio'ch meicroffon.</translation>
 <translation id="7099479769133613710">Ail-lansiwch i ddiweddaru &amp;ChromeOS</translation>
-<translation id="7100085796996987445">I rannu'ch sgrîn, caniatewch recordiad sgrin ar gyfer Chrome yn y Dewisiadau System</translation>
 <translation id="7106741999175697885">Rheolwr Tasgau - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Mae diweddariad newydd ar gyfer Chrome ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio.}=1{Mae diweddariad newydd ar gyfer Chrome ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae diweddariad newydd ar gyfer Chrome ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae diweddariad newydd ar gyfer Chrome ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae diweddariad newydd ar gyfer Chrome ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae diweddariad newydd ar gyfer Chrome ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
 <translation id="7155997830309522122">Os felly, golygwch eich cyfrinair sydd wedi'i gadw yn Chrome fel ei fod yn cyfateb i'ch cyfrinair newydd.</translation>

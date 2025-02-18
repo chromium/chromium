@@ -24,6 +24,10 @@ class AutofillEntityDataManagerFactory : public ProfileKeyedServiceFactory {
   static EntityDataManager* GetForProfile(Profile* profile);
   static AutofillEntityDataManagerFactory* GetInstance();
 
+ protected:
+  // ProfileKeyedServiceFactory:
+  bool ServiceIsCreatedWithBrowserContext() const override;
+
  private:
   friend base::NoDestructor<AutofillEntityDataManagerFactory>;
 

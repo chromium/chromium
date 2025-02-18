@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
 <translation id="2161656808144014275">Мәтін</translation>
 <translation id="2163937499206714165">Қараңғы режимді қосу</translation>
+<translation id="2164131940279488868">Аудио жазуды бастау үшін микрофон қосыңыз.</translation>
 <translation id="2173302385160625112">Интернет байланысын тексеріңіз</translation>
 <translation id="2180197493692062006">Бірдеңе дұрыс болмады. Қолданбаны қайта ашып көріңіз.</translation>
 <translation id="2189104374785738357">APN мәліметтерін өзгерту</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">лимондар</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
 <translation id="2573178735329662769">Барлық Chromebook аудиосын жазып алу</translation>
-<translation id="2575552334616524665">Мұны "Параметрлер" бөлімінде немесе <ph name="THREE_DOTS_MENU_ICON" /> мәзірінде қосуға болады.</translation>
 <translation id="2576253868710695442">Жадтың 2 ГБ орнына дейін алады.</translation>
 <translation id="2584547424703650812">Жылтыр пейзаждар</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> әрпі бар <ph name="LETTERS_COLOR" /> фон</translation>
 <translation id="3383623117265110236">Эксклюзивті</translation>
 <translation id="3404249063913988450">Скринсейверді қосу</translation>
-<translation id="3410165745972100556">Транскрипция өшірілген</translation>
 <translation id="3413935475507503304">Жаңартуды жалғастыру үшін "Келесі" түймесін басыңыз.</translation>
 <translation id="3428551088151258685">сыртқы</translation>
 <translation id="3428971106895559033">пастель</translation>
@@ -1469,6 +1468,7 @@
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> кафе</translation>
 <translation id="7841134249932030522">Қараңғы режимді қосу</translation>
 <translation id="7846634333498149051">Пернетақта</translation>
+<translation id="7847923465436619066">Транскрипция тілін таңдағыш</translation>
 <translation id="7849030488395653706">солтүстік шұғыласы</translation>
 <translation id="7849737607196682401">шілтер</translation>
 <translation id="7850320739366109486">Мазаламау</translation>
@@ -1655,6 +1655,7 @@
 <translation id="8749478549112817787">Камера фоны</translation>
 <translation id="8755946156089753497">мұнара</translation>
 <translation id="8760616037557661287">Алдыңғы нұсқаулар</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> транскрипция үлгісін жүктеп алу және таңдау</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos альбомы</translation>
 <translation id="8775713578693478175">Модем таңдаған APN</translation>
@@ -1685,6 +1686,7 @@
 <translation id="8876270629542503161">Бұл — планшет.</translation>
 <translation id="8881098542468797602">Тексеріс сәтті аяқталды.</translation>
 <translation id="8882789155418924367">үкілер</translation>
+<translation id="8885038613856655272">Микрофон қосыңыз</translation>
 <translation id="8892443466059986410">Пернелер тіркесімін өзгертуден бас тарту</translation>
 <translation id="8897043028305808902">Файл атауы өзгерді.</translation>
 <translation id="8898840733695078011">Сигнал күші</translation>

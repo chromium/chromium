@@ -75,7 +75,6 @@ class ChromeAppDelegate : public extensions::AppDelegate {
   void SetTerminatingCallback(base::OnceClosure callback) override;
   void OnHide() override;
   void OnShow() override;
-  bool TakeFocus(content::WebContents* web_contents, bool reverse) override;
   content::PictureInPictureResult EnterPictureInPicture(
       content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;

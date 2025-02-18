@@ -154,7 +154,10 @@ void PDFDocumentHelper::SetPluginCanSave(bool can_save) {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PDFDocumentHelper::OnSearchifyStarted() {
-  client_->OnSearchifyStarted(&GetWebContents());
+  if (!searchify_started_) {
+    searchify_started_ = true;
+    client_->OnSearchifyStarted(&GetWebContents());
+  }
 }
 #endif
 

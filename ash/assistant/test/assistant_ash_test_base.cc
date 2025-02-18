@@ -141,7 +141,7 @@ void AssistantAshTestBase::CreateAndSwitchActiveUser(
 
   session_controller_client->AddUserSession(
       display_email, user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true,
+      /*pref_service=*/nullptr,
       /*is_new_profile=*/false, given_name);
 
   session_controller_client->SwitchActiveUser(Shell::Get()

@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
 <translation id="2161656808144014275">テキスト</translation>
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
+<translation id="2164131940279488868">音声の録音を開始するには、マイクが接続されていることを確認してください</translation>
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2180197493692062006">エラーが発生しました。アプリをもう一度開いてください。</translation>
 <translation id="2189104374785738357">APN の詳細の編集</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">レモン</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
 <translation id="2573178735329662769">Chromebook オーディオをすべて録音</translation>
-<translation id="2575552334616524665">[設定] または <ph name="THREE_DOTS_MENU_ICON" /> メニューでこの機能をオンにできます</translation>
 <translation id="2576253868710695442">この処理には最大 2 GB の保存容量が必要です</translation>
 <translation id="2584547424703650812">グロースケープ</translation>
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">「<ph name="LETTERS_LETTER" />」という文字を含む<ph name="LETTERS_COLOR" />背景</translation>
 <translation id="3383623117265110236">限定</translation>
 <translation id="3404249063913988450">スクリーン セーバーを有効にする</translation>
-<translation id="3410165745972100556">文字起こしはオフになっています</translation>
 <translation id="3413935475507503304">更新を進めるには、[次へ] をクリックしてください。</translation>
 <translation id="3428551088151258685">アウトドア</translation>
 <translation id="3428971106895559033">パステル</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">デバイスの種類はタブレットです。</translation>
 <translation id="8881098542468797602">テストが成功しました</translation>
 <translation id="8882789155418924367">フクロウ</translation>
+<translation id="8885038613856655272">マイクを接続</translation>
 <translation id="8892443466059986410">ショートカットの編集をキャンセル</translation>
 <translation id="8897043028305808902">ファイルの名前を変更しました</translation>
 <translation id="8898840733695078011">電波強度</translation>

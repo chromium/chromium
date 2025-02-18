@@ -326,7 +326,7 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <!-- MD Extensions specific strings -->
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <part file="extensions_strings.grdp" />
       </if>
 
@@ -500,8 +500,8 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DISABLE" desc="Used for Disable on buttons">
         Disable
       </message>
-      <!-- Search strings are only used in webui, so no mobile. -->
-      <if expr="not is_android">
+      <!-- Search strings are only used in webui. These aren't needed on android unless are enabled. -->
+      <if expr="not is_android or enable_extensions_core">
         <message name="IDS_SEARCH_CLEARED" desc="Message announced to screenreader users when search is cleared.">
           Search cleared
         </message>
@@ -12671,8 +12671,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
 
       <!-- Settings related strings not specific to chrome://settings.
            (Settings specific strings are in settings_strings.grdp).
-           Android uses native UI for settings -->
-      <if expr="not is_android">
+           Not necessary on Android that uses native UI in settings unless extensions are enabled. -->
+      <if expr="not is_android or enable_extensions_core">
         <message name="IDS_TOOLBAR_INFORM_SET_HOME_PAGE" desc="The confirmation message when dropping a link on the Home toolbar button">
            Your home page has been set.
         </message>

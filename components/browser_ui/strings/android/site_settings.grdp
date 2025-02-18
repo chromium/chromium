@@ -177,6 +177,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_LOUD" desc="Label for the loud version of the permission prompt.">
     Expand all requests
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_TITLE" desc="Label as the title for the CPSS permission prompt.">
+    How to show requests
+  </message>
 
   <!-- Site settings: general category strings -->
 

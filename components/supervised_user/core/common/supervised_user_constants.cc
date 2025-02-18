@@ -110,6 +110,9 @@ const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
 const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[] =
     "ManagedUsers.TopLevelFilteringResult2";
 
+const char kLocalWebApprovalResultHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalResult";
+
 const char kManagedByParentUiMoreInfoUrl[] =
     "https://familylink.google.com/setting/resource/94";
 

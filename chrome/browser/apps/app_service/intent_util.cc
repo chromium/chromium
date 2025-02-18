@@ -56,7 +56,6 @@
 #include "chromeos/ash/experiences/arc/intent_helper/intent_filter.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
-#include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #include "storage/browser/file_system/file_system_url.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -365,13 +364,6 @@ apps::IntentFilters CreateIntentFiltersForChromeApp(
   if (!CanLaunchViaEvent(extension)) {
     return filters;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (extensions::ActionHandlersInfo::HasActionHandler(
-          extension, extensions::api::app_runtime::ActionType::kNewNote)) {
-    filters.push_back(CreateNoteTakingFilter());
-  }
-#endif
 
   const extensions::FileHandlersInfo* file_handlers =
       extensions::FileHandlers::GetFileHandlers(extension);

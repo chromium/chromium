@@ -65,7 +65,6 @@
 <translation id="1874309113135274312">Google Chrome'i beetaversioon (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome on aegunud</translation>
 <translation id="1880677175115548835">Valige tekst</translation>
-<translation id="1907925560334657849">Oma akna jagamiseks lubage süsteemieelistustes Chrome'i ekraanisalvesti</translation>
 <translation id="1919130412786645364">Luba Chrome'i sisselogimine</translation>
 <translation id="1953553007165777902">Allalaadimine … <ph name="MINUTE" /> minut(it) jäänud</translation>
 <translation id="1982647487457769627">Chrome töötab eri platvormidel, et teile seadmest olenemata tuttavat kasutuskogemust pakkuda</translation>
@@ -244,7 +243,6 @@
 <translation id="4050175100176540509">Uusimas versioonis on saadaval olulised turvatäiendused ja uued funktsioonid.</translation>
 <translation id="4053720452172726777">Google Chrome'i kohandamine ja juhtimine</translation>
 <translation id="408393047846373801">Kõigis seadmetes paroolide ja muude võimaluste kasutamiseks logige sisse Chrome'i. See parool salvestatakse pärast sisselogimist teie Google'i kontole.</translation>
-<translation id="4084404300720192944">Oma akna jagamiseks lubage süsteemieelistustes Chrome'i ekraanisalvesti.</translation>
 <translation id="4110895483821904099">Uue Chrome'i profiili seadistamine</translation>
 <translation id="4111566860456076004">Chrome ei suuda tuvastada, kust see laiendus pärineb. Laiendus võib olla ebaturvaline. Eemaldage see Chrome'ist, et see ei saaks enam näha ja muuta teie andmeid saitidel, mida külastate, sealhulgas isiklikku teavet.</translation>
 <translation id="4128488089242627000">Chrome töötab kiiremini ja JavaScripti kasutavad funktsioonid peaksid töötama kavandatud viisil (soovitatav)</translation>
@@ -407,7 +405,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6180522807229584611">See vaheleht kasutab lisaressursse. Laske Chrome'il see toimivuse täiustamiseks interaktiivseks teha.</translation>
 <translation id="6182736845697986886">Installimine ebaõnnestus, kuna värskendusserveris ilmnes sisemine viga.</translation>
 <translation id="6200139057479872438">Te pole hiljuti külastanud. Chrome eemaldas <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
-<translation id="621585339844629864">Oma ekraani jagamiseks lubage süsteemieelistustes Chrome'i ekraanisalvesti.</translation>
 <translation id="6235018212288296708">Sissetuleku reegel Google Chrome'ile mDNS-liikluse lubamiseks.</translation>
 <translation id="624230925347970731">Chrome suletakse peagi</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>
@@ -476,7 +473,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7088681679121566888">Chrome on ajakohane</translation>
 <translation id="7098166902387133879">Google Chrome kasutab teie mikrofoni.</translation>
 <translation id="7099479769133613710">Taaskäivitage &amp;Chrome OS-i värskendamiseks</translation>
-<translation id="7100085796996987445">Oma ekraani jagamiseks lubage süsteemieelistustes Chrome'i ekraanisalvesti</translation>
 <translation id="7106741999175697885">Tegumihaldur - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel.}=1{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie inkognito akent ei avata uuesti.}other{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="7155997830309522122">Sellisel juhul muutke Chrome'is oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>

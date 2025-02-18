@@ -33,6 +33,10 @@ import org.chromium.components.prefs.PrefService;
     ChromeFeatureList.SAFETY_HUB,
     ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
 })
+// TODO(crbug.com/390442009): Update the tests when the logic starts taking the flag into account
+// explicitly. For now the flag is checked in PasswordManagerHelper which gets indirectly
+// invoked by these tests.
+@Features.DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class SafetyHubPasswordsFetchServiceTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();

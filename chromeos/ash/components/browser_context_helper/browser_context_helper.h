@@ -125,9 +125,6 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   // this loads the BrowserContext instance, instead of returning nullptr.
   content::BrowserContext* DeprecatedGetOrCreateSigninBrowserContext();
 
-  // Returns the path of lock-screen-app browser context.
-  base::FilePath GetLockScreenAppBrowserContextPath() const;
-
   // Returns the path of lock-screen browser context.
   base::FilePath GetLockScreenBrowserContextPath() const;
 

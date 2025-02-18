@@ -2289,7 +2289,6 @@
 <translation id="2569972178052279830">Название магазина</translation>
 <translation id="257088987046510401">Темы</translation>
 <translation id="2571638829488071045">Сохранить расширение в аккаунте Google?</translation>
-<translation id="2571655996835834626">Изменение настроек доступа сайтов к файлам cookie, JavaScript, плагинам, геоданным, микрофону, камере и другим функциям</translation>
 <translation id="257175846174451436">Рекомендуется создать группу</translation>
 <translation id="2572032849266859634">Предоставлен доступ к тому <ph name="VOLUME_NAME" /> (только чтение).</translation>
 <translation id="2573147659521059501">Вкладок: <ph name="NUM" /></translation>
@@ -7619,7 +7618,6 @@
 <translation id="6411135999030237579">Удерживание клавиши для автоматического повтора символа или действия</translation>
 <translation id="6414618057231176439">Укажите, какую версию <ph name="VM_NAME" /> вы хотите установить.</translation>
 <translation id="641469293210305670">Установка обновлений и приложений</translation>
-<translation id="6414878884710400018">Открыть системные настройки</translation>
 <translation id="6415757856498750027">Ввод "ư" с помощью "w"</translation>
 <translation id="6415816101512323589">Включить восстановление локальных данных?</translation>
 <translation id="6415900369006735853">Подключение к интернету через телефон</translation>

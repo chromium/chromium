@@ -470,32 +470,28 @@ static_library("safe_browsing") {
         deps += [ "//chrome/browser/ui:browser_list" ]
       }
     } else if (safe_browsing_mode == 2) {
-      if (is_android) {
-        sources += [
-          "android/services_delegate_android.cc",
-          "android/services_delegate_android.h",
-          "tailored_security/consented_message_android.cc",
-          "tailored_security/consented_message_android.h",
-          "tailored_security/unconsented_message_android.cc",
-          "tailored_security/unconsented_message_android.h",
-          "telemetry/android/android_telemetry_service.cc",
-          "telemetry/android/android_telemetry_service.h",
-        ]
-        deps += [
-          "//chrome/app/vector_icons:vector_icons",
-          "//components/messages/android:android",
-          "//components/safe_browsing/android:remote_database_manager",
-          "//ui/android:android",
-
-          # TODO(crbug.com/41437292): Use //chrome/browser after fixing cyclic
-          # dependency.
-          "//chrome/browser/page_info:page_info_buildflags",
-        ]
-      }
+      sources += [
+        "android/services_delegate_android.cc",
+        "android/services_delegate_android.h",
+        "tailored_security/consented_message_android.cc",
+        "tailored_security/consented_message_android.h",
+        "tailored_security/unconsented_message_android.cc",
+        "tailored_security/unconsented_message_android.h",
+        "telemetry/android/android_telemetry_service.cc",
+        "telemetry/android/android_telemetry_service.h",
+      ]
       deps += [
+        "//chrome/app/vector_icons:vector_icons",
         "//chrome/browser/safe_browsing/android",
+        "//components/messages/android:android",
         "//components/safe_browsing:buildflags",
+        "//components/safe_browsing/android:remote_database_manager",
         "//components/safe_browsing/android:safe_browsing_mobile",
+        "//ui/android:android",
+
+        # TODO(crbug.com/41437292): Use //chrome/browser after fixing cyclic
+        # dependency.
+        "//chrome/browser/page_info:page_info_buildflags",
       ]
     }
   }

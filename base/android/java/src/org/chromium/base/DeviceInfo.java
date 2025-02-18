@@ -33,7 +33,7 @@ import org.chromium.build.annotations.Nullable;
 public final class DeviceInfo {
     private static final String TAG = "DeviceInfo";
 
-    private @Nullable String mGmsVersionCodeForTesting;
+    private static @Nullable String sGmsVersionCodeForTesting;
     private static boolean sInitialized;
 
     /** The versionCode of Play Services. Can be overridden in tests. */
@@ -83,14 +83,14 @@ public final class DeviceInfo {
     }
 
     public static String getGmsVersionCode() {
-        return getInstance().mGmsVersionCodeForTesting == null
+        return sGmsVersionCodeForTesting == null
                 ? getInstance().mGmsVersionCode
-                : getInstance().mGmsVersionCodeForTesting;
+                : sGmsVersionCodeForTesting;
     }
 
     @CalledByNativeForTesting
     public static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
-        getInstance().mGmsVersionCodeForTesting = gmsVersionCode;
+        sGmsVersionCodeForTesting = gmsVersionCode;
     }
 
     public static boolean isTV() {

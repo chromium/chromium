@@ -50,7 +50,6 @@ group("browser_tests") {
   testonly = true
 
   deps = [
-    "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
     "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
     "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
     "//chrome/browser/chromeos/extensions/file_system_provider:browser_tests",

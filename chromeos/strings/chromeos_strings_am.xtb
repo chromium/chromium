@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
 <translation id="2161656808144014275">ጽሁፍ</translation>
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
+<translation id="2164131940279488868">ኦዲዮ መቅዳት ለመጀመር ማይክሮፎን እንደተገናኘ ያረጋግጡ</translation>
 <translation id="2173302385160625112">የበይነመረብ ግኑኝነትዎን ይፈትሹ</translation>
 <translation id="2180197493692062006">የሆነ ችግር ተፈጥሯል። መተግበሪያውን ዳግም ለመክፈት ይሞክሩ።</translation>
 <translation id="2189104374785738357">የኤፒኤን ዝርዝሮችን ያርትዑ</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">ሎሚዎች</translation>
 <translation id="2570743873672969996">የ<ph name="TEST_NAME" /> ሙከራን በማሄድ ላይ...</translation>
 <translation id="2573178735329662769">ሁሉንም የChromebook ኦዲዮ በመቅዳት ላይ</translation>
-<translation id="2575552334616524665">ይህን በቅንብሮች ወይም<ph name="THREE_DOTS_MENU_ICON" /> ምናሌ ውስጥ ማብራት ይችላሉ</translation>
 <translation id="2576253868710695442">ይህ እስከ 2ጊባ ማከማቻ ይወስዳል</translation>
 <translation id="2584547424703650812">የሚያብረቀርቅ እይታ</translation>
 <translation id="2584559707064218956">ለማዋቀር ወደ ቅንብሮች ይሂዱ</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">የ<ph name="LETTERS_COLOR" /> ዳራ ከ<ph name="LETTERS_LETTER" /> ፊደል ጋር</translation>
 <translation id="3383623117265110236">ለሚመለከተው የተወሰነ</translation>
 <translation id="3404249063913988450">የማያ ገፅ ማቆያን አንቃ</translation>
-<translation id="3410165745972100556">የጽሑፍ ግልባጭ ጠፍቷል</translation>
 <translation id="3413935475507503304">በዝማኔው ለመቀጠል ቀጣይ የሚለውን ጠቅ ያድርጉ።</translation>
 <translation id="3428551088151258685">ከቤት ውጭ</translation>
 <translation id="3428971106895559033">ገርጣ ያለ</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">መሣሪያ ጡባዊ ነው።</translation>
 <translation id="8881098542468797602">ሙከራ ተሳክቷል</translation>
 <translation id="8882789155418924367">ጉጉቶች</translation>
+<translation id="8885038613856655272">ከማይክሮፎን ጋር ይገናኙ</translation>
 <translation id="8892443466059986410">የአቋራጭ ማርትዕን ሰርዝ</translation>
 <translation id="8897043028305808902">ፋይል እንደገና ተሰይሟል</translation>
 <translation id="8898840733695078011">የሲግናል ጥንካሬ</translation>

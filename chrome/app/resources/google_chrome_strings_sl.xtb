@@ -67,7 +67,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome je zastarel</translation>
 <translation id="1880677175115548835">Izbira besedila</translation>
-<translation id="1907925560334657849">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome</translation>
 <translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
 <translation id="1953553007165777902">Prenašanje … Še <ph name="MINUTE" /> min.</translation>
 <translation id="1982647487457769627">Chrome deluje v več okoljih in vam tako zagotavlja znano izkušnjo ne glede na napravo</translation>
@@ -246,7 +245,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4050175100176540509">V najnovejši različici so na voljo pomembne varnostne izboljšave in nove funkcije.</translation>
 <translation id="4053720452172726777">Prilagajanje in nadziranje Google Chroma</translation>
 <translation id="408393047846373801">Če želite dostopati do gesel in drugega v vseh napravah, se prijavite v Chrome. To geslo bo po prijavi shranjeno v računu Google.</translation>
-<translation id="4084404300720192944">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
 <translation id="4110895483821904099">Nastavitev novega profila v Chromu</translation>
 <translation id="4111566860456076004">Chrome ne more preveriti, od kod je ta razširitev, in morda ni varna. Odstranite jo iz Chroma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
 <translation id="4128488089242627000">Chrome se izvaja hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno (priporočeno)</translation>
@@ -411,7 +409,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6180522807229584611">Ta zavihek uporablja dodatna sredstva. Če želite izboljšati učinkovitost delovanja, pustite Chromu, da ga spremeni v neaktivnega.</translation>
 <translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
 <translation id="6200139057479872438">Nedavno niste obiskali tega mesta. Chrome je odstranil ti dovoljenji: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
-<translation id="621585339844629864">Če želite deliti zaslon, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
 <translation id="6235018212288296708">Pravilo za dohodni promet za Google Chrome, ki omogoča promet mDNS.</translation>
 <translation id="624230925347970731">Chrome se bo kmalu zaprl</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>
@@ -480,7 +477,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7088681679121566888">Chrome je posodobljen</translation>
 <translation id="7098166902387133879">Google Chrome uporablja vaš mikrofon.</translation>
 <translation id="7099479769133613710">Znova zaženite, če želite posodobiti &amp;Chrome OS</translation>
-<translation id="7100085796996987445">Če želite deliti zaslon, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome</translation>
 <translation id="7106741999175697885">Upravitelj opravil – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete.}=1{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. Anonimno okno se ne bo znova odprlo.}one{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. # anonimno okno se ne bo znova odprlo.}two{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. # anonimni okni se ne bosta znova odprli.}few{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. # anonimna okna se ne bodo znova odprla.}other{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="7155997830309522122">Če ste ga, uredite shranjeno geslo v Chromu, da se bo ujemalo z novim geslom.</translation>

@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">密码遭遇数据泄露时向您发出警告</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="104491362976654916">离线网页</translation>
+<translation id="1049200476149974839">邀请您加入一个标签页分组。知道链接的任何人都能修改所有标签页，因此请谨慎加入。链接将在 48 小时后失效。</translation>
 <translation id="1049743911850919806">无痕</translation>
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />《服务条款》<ph name="END_LINK" />。</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">受管理的账号</translation>
 <translation id="1358214951266274152">访问您复制的链接</translation>
 <translation id="1360432990279830238">退出账号并关闭同步功能？</translation>
+<translation id="1362192716574455663">现有的浏览数据不会移至您的工作账号。您仍可通过退出账号或添加个人账号来访问这些数据。</translation>
 <translation id="1363028406613469049">跟踪</translation>
 <translation id="1364367057792633742">打开新的标签页</translation>
 <translation id="1365106417372288489">您最近恢复过您的 iPhone，这可能更改了您的默认浏览器设置。</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">关闭组</translation>
 <translation id="178400879184240105">您的每个密码都互不重复</translation>
 <translation id="17906873777101817">主动询问是否保存密码和通行密钥</translation>
+<translation id="1794893174442046596">标签页分组</translation>
 <translation id="1807893857950749072">允许接收价格跟踪通知…</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密码</translation>
@@ -655,6 +658,7 @@
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3904270275864974753">修改轮播界面</translation>
 <translation id="3909222758573607742">将密码和其他内容保存到账号</translation>
+<translation id="3913463964270756493">隐藏“使用 Google 智能镜头搜索屏幕上的内容”</translation>
 <translation id="3914640181019354363">检测地址</translation>
 <translation id="3922185497376658606">预加载网页</translation>
 <translation id="3922395466317605522">自定义菜单</translation>

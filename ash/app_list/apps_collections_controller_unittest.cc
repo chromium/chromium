@@ -298,7 +298,7 @@ TEST_P(AppsCollectionsControllerUserElegibilityTest, EnforcesUserEligibility) {
   const AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
   TestSessionControllerClient* const session = GetSessionControllerClient();
   session->AddUserSession(primary_account_id.GetUserEmail(), GetUserType(),
-                          /*provide_pref_service=*/true,
+                          /*pref_service=*/nullptr,
                           /*is_new_profile=*/IsNewUserLocally(),
                           /*given_name=*/std::string(), IsManagedUser());
   session->SwitchActiveUser(primary_account_id);
@@ -322,7 +322,7 @@ TEST_P(AppsCollectionsControllerUserElegibilityTest, SecondaryUserNotElegible) {
       AccountId::FromUserEmail("secondary@test");
   TestSessionControllerClient* const session = GetSessionControllerClient();
   session->AddUserSession(secondary_account_id.GetUserEmail(), GetUserType(),
-                          /*provide_pref_service=*/true,
+                          /*pref_service=*/nullptr,
                           /*is_new_profile=*/IsNewUserLocally(),
                           /*given_name=*/std::string(), IsManagedUser());
   session->SwitchActiveUser(secondary_account_id);
@@ -373,7 +373,7 @@ class AppsCollectionsControllerPrefTest
 
     session_controller->AddUserSession("primary@test",
                                        user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/true,
+                                       /*pref_service=*/nullptr,
                                        /*is_new_profile=*/true);
     session_controller->SwitchActiveUser(account_id);
     session_controller->SetSessionState(session_manager::SessionState::ACTIVE);

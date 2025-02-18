@@ -193,6 +193,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1607312127821884567">Ignorer la configuration concernant l'affichage des applis de votre téléphone</translation>
 <translation id="1610778689852195798">"Annuler"</translation>
 <translation id="1611993646327628135">Activé</translation>
+<translation id="1612679292338846734">Lorsque vous activez ces fonctionnalités, le texte saisi, le contenu du document et l'URL de la page Web peuvent être envoyés aux serveurs de l'IA de Google. Ces informations sont utilisées pour générer des suggestions de texte et des résumés, répondre aux questions, et améliorer le produit, et sont soumises aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1623768535032616219">Réduire Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> n'est pas disponible.</translation>
@@ -565,6 +566,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2946119680249604491">Ajouter une connexion</translation>
 <translation id="2947835478872237115">Niveau de batterie actuel : <ph name="BATTERY_PERCENTAGE" /> %. Temps restant avant charge complète : <ph name="TIME" /></translation>
 <translation id="2949420361496057765">Appuyez sur <ph name="MODIFIER" />, puis cliquez sur un lien</translation>
+<translation id="2957159466053076448">Vous pouvez désactiver ces fonctionnalités à tout moment dans les paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio de l'appareil</translation>
 <translation id="2960314608273155470">Mode de capture, la valeur par défaut est : <ph name="TYPE" /> <ph name="SOURCE" />. Appuyez sur Tab pour la navigation au clavier.</translation>
 <translation id="2961963223658824723">Une erreur s'est produite. Veuillez réessayer dans quelques secondes.</translation>
@@ -1906,6 +1908,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
 <translation id="7360036564632145207">Vous pouvez optimiser les performances en modifiant le paramètre "Protection de l'accès aux données pour les périphériques"</translation>
 <translation id="736045644501761622">Définir le fond d'écran et le style</translation>
+<translation id="7368041336688136012">Vous devez avoir au moins 18 ans pour utiliser M'aider à lire, M'aider à écrire et pour créer des images avec l'IA.</translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de mémoire disponible sur un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">L'accès au micro est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
@@ -2031,6 +2034,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Tout afficher</translation>
+<translation id="7762664108390426952">Conditions d'utilisation et aux Règles de confidentialité de Google</translation>
 <translation id="7768784765476638775">Sélectionner pour écouter</translation>
 <translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
 <translation id="7773536009433685931">Activer le Wi-Fi à la place</translation>

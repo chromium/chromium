@@ -17,7 +17,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1157985233335035034">Idiomas recientes</translation>
 <translation id="1184145431117212167">No se ha podido realizar la instalación porque no es compatible con tu versión de Windows.</translation>
 <translation id="1185134272377778587">Información de Chromium</translation>
-<translation id="1188705220418984327">Para compartir tu ventana, permite la grabación de pantalla de Chromium en Preferencias del sistema.</translation>
 <translation id="1203500561924088507">Gracias por realizar la instalación. Debes reiniciar tu navegador para poder usar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Mientras esta pestaña estaba inactiva, se ha liberado memoria para que Chromium siga funcionando rápido. Si quieres, puedes excluir este sitio para que no pueda estar inactivo.</translation>
 <translation id="1265577313130862557">Chromium ha bloqueado esta descarga porque el archivo es peligroso</translation>
@@ -194,7 +193,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="364817392622123556">{COUNT,plural, =0{Hay una nueva actualización de Chromium disponible que se aplicará cuando reinicies el navegador.}=1{Hay una nueva actualización de Chromium disponible que se aplicará cuando reinicies el navegador. La ventana de Incógnito no se volverá a abrir.}other{Hay una nueva actualización de Chromium disponible que se aplicará cuando reinicies el navegador. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
 <translation id="3651803019964686660">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chromium con ambos dispositivos.</translation>
 <translation id="3667616615096815454">No se puede realizar la instalación porque se trata de una aplicación desconocida para el servidor.</translation>
-<translation id="3669334504579945026">Para compartir tu pantalla, permite la grabación de pantalla de Chromium en Preferencias del sistema.</translation>
 <translation id="3685209450716071127">Chromium no puede comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Tu administrador pide que reinicies Chromium para aplicar esta actualización}=1{Tu administrador pide que reinicies Chromium para aplicar esta actualización La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chromium para aplicar esta actualización Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
 <translation id="3713809861844741608">Abrir enlace en una pes&amp;taña nueva de Chromium</translation>
@@ -266,7 +264,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4594305310729380060">En el gestor de contraseñas de este dispositivo</translation>
 <translation id="459535195905078186">Aplicaciones de Chromium</translation>
 <translation id="4613863813562375431">Versión de ChromiumOS</translation>
-<translation id="4617285639650863674">Para compartir tu pantalla, permite la grabación de pantalla de Chromium en Preferencias del sistema</translation>
 <translation id="4621240073146040695">Chromium casi ha terminado de actualizarse. Reinícialo para completar la actualización.</translation>
 <translation id="4665829708273112819">Advertencia: Chromium no puede evitar que las extensiones registren el historial de navegación. Para inhabilitar esta extensión en modo Incógnito, desmarca esta opción.</translation>
 <translation id="4673151026126227699">Si también compartes informes de uso de Chromium, esos informes incluyen las URLs que visitas</translation>
@@ -475,7 +472,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7483335560992089831">No se puede instalar la misma versión de Chromium que se está ejecutando actualmente. Cierra Chromium y vuelve a intentarlo.</translation>
 <translation id="751935028865900641">Es probable que los sitios funcionen correctamente. Cuando cierres todas las ventanas de Chromium, se cerrará tu sesión en la mayoría de los sitios, salvo la de tu cuenta de Google si has iniciado sesión en Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium se reiniciará dentro de 1 minuto}other{Chromium se reiniciará dentro de # minutos}}</translation>
-<translation id="7553334751796114046">Para compartir tu ventana, permite la grabación de pantalla de Chromium en Preferencias del sistema</translation>
 <translation id="7582945390259497898">Chromium estima tus intereses. Después, un sitio que visites puede pedirle a Chromium consultar tus intereses para personalizar los anuncios que veas.</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7585391435984513350">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION" />.</translation>

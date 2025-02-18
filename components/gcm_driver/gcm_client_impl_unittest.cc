@@ -1495,7 +1495,7 @@ TEST_F(GCMClientImplStartAndStopTest, OnGCMReadyAccountsAndTokenFetchingTime) {
   base::Time expected_time = base::Time::Now();
   gcm_client()->SetLastTokenFetchTime(expected_time);
   AccountMapping expected_mapping;
-  expected_mapping.account_id = CoreAccountId::FromGaiaId("accId");
+  expected_mapping.account_id = CoreAccountId::FromGaiaId(GaiaId("accId"));
   expected_mapping.email = "email@gmail.com";
   expected_mapping.status = AccountMapping::MAPPED;
   expected_mapping.status_change_timestamp = expected_time;

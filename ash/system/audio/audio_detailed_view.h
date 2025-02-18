@@ -99,6 +99,8 @@ class ASH_EXPORT AudioDetailedView
 
   // CrasAudioHandler::AudioObserver:
   void OnNumStreamIgnoreUiGainsChanged(int32_t num) override;
+  void OnVoiceIsolationUIAppearanceChanged(
+      VoiceIsolationUIAppearance appearance) override;
 
  private:
   friend class AudioDetailedViewTest;

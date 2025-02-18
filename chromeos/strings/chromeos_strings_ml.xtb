@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">പ്രിന്റ് ജോലി റദ്ദാക്കുക</translation>
 <translation id="2161656808144014275">വാചകം</translation>
 <translation id="2163937499206714165">ഡാർക്ക് മോഡ് ഓണാക്കുക</translation>
+<translation id="2164131940279488868">ഓഡിയോ റെക്കോർഡിംഗ് ആരംഭിക്കാൻ ഒരു മൈക്ക് കണക്റ്റ് ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="2173302385160625112">ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="2180197493692062006">എന്തോ കുഴപ്പമുണ്ടായി. ആപ്പ് വീണ്ടും തുറക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="2189104374785738357">APN വിശദാംശങ്ങൾ എഡിറ്റ് ചെയ്യുക</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">നാരങ്ങകൾ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
 <translation id="2573178735329662769">എല്ലാ Chromebook ഓഡിയോയും റെക്കോർഡ് ചെയ്യുന്നു</translation>
-<translation id="2575552334616524665">ക്രമീകരണത്തിലോ <ph name="THREE_DOTS_MENU_ICON" /> മെനുവിലോ നിങ്ങൾക്ക് ഇത് ഓണാക്കാം</translation>
 <translation id="2576253868710695442">ഇതിന് 2GB സ്റ്റോറേജ് വരെ ആവശ്യമായി വരും</translation>
 <translation id="2584547424703650812">ഗ്ലോസ്കേപ്പുകൾ</translation>
 <translation id="2584559707064218956">സജ്ജീകരിക്കാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> പശ്ചാത്തലത്തിലുള്ള <ph name="LETTERS_LETTER" /> എന്ന അക്ഷരം</translation>
 <translation id="3383623117265110236">എക്‌സ്ക്ലൂസീവ്</translation>
 <translation id="3404249063913988450">സ്ക്രീൻ സേവർ പ്രവർത്തനക്ഷമമാക്കുക</translation>
-<translation id="3410165745972100556">ട്രാൻസ്‌ക്രിപ്ഷൻ ഓഫാണ്</translation>
 <translation id="3413935475507503304">അപ്‌ഡേറ്റുമായി മുന്നോട്ട് പോകാൻ, 'അടുത്തത്' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3428551088151258685">ഔട്ട്ഡോർ</translation>
 <translation id="3428971106895559033">പാസ്റ്റൽ</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">ഉപകരണം ഒരു ടാബ്‌ലെറ്റാണ്.</translation>
 <translation id="8881098542468797602">ടെസ്റ്റ് പൂർത്തിയായി</translation>
 <translation id="8882789155418924367">മൂങ്ങകൾ</translation>
+<translation id="8885038613856655272">ഒരു മെെക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="8892443466059986410">കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുന്നത് റദ്ദാക്കുക</translation>
 <translation id="8897043028305808902">ഫയലിന്റെ പേര് മാറ്റി</translation>
 <translation id="8898840733695078011">സിഗ്‌നൽ ശക്തി</translation>

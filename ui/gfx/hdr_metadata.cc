@@ -9,6 +9,7 @@
 
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkData.h"
 
 namespace gfx {
 
@@ -49,6 +50,43 @@ std::string HdrMetadataExtendedRange::ToString() const {
      << "desired_headroom:" << desired_headroom << "}";
   return ss.str();
 }
+
+HdrMetadataAgtm::HdrMetadataAgtm() = default;
+
+HdrMetadataAgtm::HdrMetadataAgtm(const void* payload, size_t size)
+    : payload(SkData::MakeWithCopy(payload, size)) {}
+
+HdrMetadataAgtm::HdrMetadataAgtm(sk_sp<SkData> payload)
+    : payload(std::move(payload)) {}
+
+HdrMetadataAgtm::HdrMetadataAgtm(const HdrMetadataAgtm& other) = default;
+HdrMetadataAgtm& HdrMetadataAgtm::operator=(const HdrMetadataAgtm& other) =
+    default;
+
+HdrMetadataAgtm::~HdrMetadataAgtm() = default;
+
+std::string HdrMetadataAgtm::ToString() const {
+  return "agtm placeholder";
+}
+
+bool HdrMetadataAgtm::operator==(const HdrMetadataAgtm& rhs) const {
+  if (!payload) {
+    return !rhs.payload;
+  }
+  return payload->equals(rhs.payload.get());
+}
+
+HDRMetadata::HDRMetadata() = default;
+HDRMetadata::HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
+                         const HdrMetadataCta861_3& cta_861_3)
+    : smpte_st_2086(smpte_st_2086), cta_861_3(cta_861_3) {}
+HDRMetadata::HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086)
+    : smpte_st_2086(smpte_st_2086) {}
+HDRMetadata::HDRMetadata(const HdrMetadataCta861_3& cta_861_3)
+    : cta_861_3(cta_861_3) {}
+HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;
+HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
+HDRMetadata::~HDRMetadata() = default;
 
 // static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
@@ -93,6 +131,9 @@ std::string HDRMetadata::ToString() const {
   }
   if (extended_range) {
     ss << "extended_range:" << extended_range->ToString() << ", ";
+  }
+  if (agtm) {
+    ss << "agtm:" << agtm->ToString() << ", ";
   }
   ss << "}";
   return ss.str();

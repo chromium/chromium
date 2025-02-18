@@ -6,8 +6,15 @@
 #define CHROMEOS_ASH_COMPONENTS_POLICY_EXTERNAL_STORAGE_DEVICE_ID_H_
 
 #include <cstdint>
+#include <optional>
+#include <string_view>
 
 #include "base/component_export.h"
+#include "base/values.h"
+
+namespace ash::disks {
+class Disk;
+}  // namespace ash::disks
 
 namespace policy {
 
@@ -18,9 +25,35 @@ namespace policy {
 // It consists of the vendor_id/product_id external storage identifier.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) DeviceId {
  public:
+  static const char kVendorId[];
+  static const char kProductId[];
+
   DeviceId(uint16_t vid, uint16_t pid);
 
-  // TODO(isandrk): Move to private section when more code gets added.
+  // Constructs from a Value::Dict:
+  // {
+  //   "vendor_id": 39612,
+  //   "product_id": 57072
+  // }
+  static std::optional<DeviceId> FromDict(const base::Value& dict);
+
+  // Constructs from uint32_t, checking the range.
+  static std::optional<DeviceId> FromUint32(uint32_t vid, uint32_t pid);
+
+  // Constructs from hex strings:
+  // ("9abc", "def0") -> DeviceId(39612, 57072)
+  static std::optional<DeviceId> FromVidPid(std::string_view vid,
+                                            std::string_view pid);
+
+  // Constructs from given Disk* (disk->vendor_id() and disk->product_id()).
+  static std::optional<DeviceId> FromDisk(const ash::disks::Disk* disk);
+
+  // Creates a Value::Dict from the current DeviceId. Opposite of `FromDict`.
+  base::Value::Dict ToDict() const;
+
+  friend bool operator==(const DeviceId&, const DeviceId&) = default;
+
+ private:
   uint16_t vid;
   uint16_t pid;
 };

@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">賽博龐克</translation>
 <translation id="1129420403709586868">查看手機上的相片和媒體</translation>
 <translation id="1129850422003387628">管理應用程式</translation>
+<translation id="1130430615924359526">{0,plural, =1{關閉無痕模式}other{關閉無痕模式 (# 個視窗)}}</translation>
 <translation id="113050636487300043">你可以指定設定檔的名稱和顏色主題，以便和其他設定檔加以區分</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 屬於「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="1130676589211693127">右側耳機電量為 <ph name="PERCENTAGE" />%。</translation>
@@ -1183,6 +1184,7 @@
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="1812284620455788548">投放 <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">服務</translation>
+<translation id="1813828404076816564">選取「意見回饋」按鈕，提供有關共用分頁群組功能的意見</translation>
 <translation id="18139523105317219">EDI 合作對象名稱</translation>
 <translation id="1815083418640426271">以純文字貼上</translation>
 <translation id="1815097521077272760">你已受邀試用這個遊戲的鍵盤操控功能。</translation>
@@ -1513,6 +1515,7 @@
 <translation id="2042279886444479655">使用中的設定檔</translation>
 <translation id="2042427131767688936">貴機構可以查看這部裝置的作業系統、瀏覽器和設定的相關資訊，以及裝置上安裝的軟體，確保裝置能安全使用。</translation>
 <translation id="2044014337866019681">請確認你驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
+<translation id="2044750031738659219">{0,plural, =1{關閉訪客視窗}other{關閉訪客視窗 (# 個視窗)}}</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
 <translation id="2045211794962848221">你不會再看到這一則訊息</translation>
 <translation id="2045838962742066664">快速輸入</translation>
@@ -2285,7 +2288,6 @@
 <translation id="2569972178052279830">零售商名稱</translation>
 <translation id="257088987046510401">主題</translation>
 <translation id="2571638829488071045">要將這項擴充功能儲存到 Google 帳戶嗎？</translation>
-<translation id="2571655996835834626">變更設定來管理網站對 Cookie、JavaScript、外掛程式、地理位置、麥克風、相機等功能的存取權。</translation>
 <translation id="257175846174451436">建議的分頁群組</translation>
 <translation id="2572032849266859634">已授予 <ph name="VOLUME_NAME" /> 的唯讀權限。</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> 個分頁</translation>
@@ -4106,6 +4108,7 @@
 <translation id="3857807444929313943">移開手指，然後再次輕觸感應器</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="385939467708172187">使用高強度密碼</translation>
+<translation id="3859869403161297890">請在此提供有關共用分頁群組的意見</translation>
 <translation id="3859987779882450877">自動根據已開啟的分頁提供建議並建立群組</translation>
 <translation id="386009056910366930">管理「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
@@ -7346,6 +7349,7 @@
 <translation id="6214106213498203737">水彩</translation>
 <translation id="621470880408090483">禁止網站連線至藍牙裝置</translation>
 <translation id="6215039389782910006">{1,plural, =1{為保護密碼安全，<ph name="BRAND" />會在閒置 1 分鐘後鎖定}other{為保護密碼安全，<ph name="BRAND" />會在閒置 # 分鐘後鎖定}}</translation>
+<translation id="6216154119179790291">捲動至第一個分頁</translation>
 <translation id="6216239400972191926">已拒絕的網站和應用程式</translation>
 <translation id="6216601812881225442">無法調整容器大小。如要調整預先分配給 Linux 的空間大小，請先備份容器，然後再還原至新容器。</translation>
 <translation id="6216696360484424239">自動登入</translation>
@@ -7542,6 +7546,7 @@
 <translation id="6357305427698525450">某些支援連結仍會在「<ph name="APP_NAME" />」或「<ph name="APP_NAME_2" />」中開啟。</translation>
 <translation id="6357750620525943720">其他穩定 ID (例如 雜湊或 UUID)</translation>
 <translation id="6358884629796491903">龍</translation>
+<translation id="6359640073754977254">捲動至最後一個分頁</translation>
 <translation id="6361850914223837199">錯誤詳細資料：</translation>
 <translation id="6362853299801475928">回報問題(&amp;R)...</translation>
 <translation id="6363786367719063276">查看記錄</translation>
@@ -7604,7 +7609,6 @@
 <translation id="6411135999030237579">按住即可自動重複按鍵動作</translation>
 <translation id="6414618057231176439">選取要安裝的「<ph name="VM_NAME" />」版本。</translation>
 <translation id="641469293210305670">安裝更新內容和應用程式</translation>
-<translation id="6414878884710400018">開啟系統偏好設定</translation>
 <translation id="6415757856498750027">輸入「w」會得到「ư」</translation>
 <translation id="6415816101512323589">要開啟本機資料復原功能功能保護資料嗎？</translation>
 <translation id="6415900369006735853">透過手機連上網際網路</translation>
@@ -8151,6 +8155,7 @@
 <translation id="6805478749741295868">這項 AI 功能仍在實驗階段，提供的建議不一定符合需求。</translation>
 <translation id="6805647936811177813">登入 <ph name="TOKEN_NAME" /> 即可從 <ph name="HOST_NAME" /> 匯入用戶端憑證。</translation>
 <translation id="680572642341004180">針對 <ph name="SHORT_PRODUCT_OS_NAME" /> 啟用 RLZ  追蹤功能。</translation>
+<translation id="6805817411033102703">共用分頁群組意見回饋</translation>
 <translation id="6806089545527108739">不允許但稍後再詢問</translation>
 <translation id="680644983456221885">系統會根據你傳送到 Google 的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充功能</translation>
 <translation id="6806781719264274042">僅限擁有 Google 帳戶的聯絡人。<ph name="LINK_BEGIN" />查看聯絡人<ph name="LINK_END" /></translation>
@@ -10201,6 +10206,7 @@
 <translation id="8258027225380843424">成功匯入！</translation>
 <translation id="8259048637628995340">連結 Android 手機即可享有流暢的使用體驗</translation>
 <translation id="8260177673299865994">強化下載防護功能</translation>
+<translation id="8260473380156923937">Chrome 應用程式即將淘汰。如需替代選項，請洽詢開發人員或 IT 服務聯絡人。</translation>
 <translation id="8260864402787962391">滑鼠</translation>
 <translation id="8261378640211443080">這個擴充功能未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中，可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="8261506727792406068">刪除</translation>

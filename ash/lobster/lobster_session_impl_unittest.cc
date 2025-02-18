@@ -425,6 +425,22 @@ TEST_F(LobsterSessionImplTest, RecordMetricsForRightClickEntryPoint) {
       "Ash.Lobster.State", LobsterMetricState::kRightClickTriggerFired, 1);
 }
 
+TEST_F(LobsterSessionImplTest, RecordMetricsWhenDisplayingConsentScreen) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+
+  ON_CALL(*lobster_client, ShowDisclaimerUI()).WillByDefault(testing::Return());
+
+  LobsterSessionImpl session(std::move(lobster_client),
+                             LobsterEntryPoint::kRightClickMenu,
+                             LobsterMode::kInsert);
+
+  session.ShowDisclaimerUIAndCacheContext(/*query=*/"a nice strawberry",
+                                          /*anchor_bounds=*/gfx::Rect());
+
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kConsentScreenImpression, 1);
+}
+
 TEST_F(LobsterSessionImplTest,
        RecordMetricsWhenDownloadingCandidateSuccessfully) {
   auto lobster_client = std::make_unique<MockLobsterClient>();

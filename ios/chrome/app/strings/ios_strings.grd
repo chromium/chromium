@@ -5684,7 +5684,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         This link doesn’t work
       </message>
       <message name="IDS_IOS_SHARE_KIT_JOIN_DISCLAIMER_CAPTION" desc="The caption part of the disclaimer for sharing a tab group.">
-        wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
+        <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
       </message>
       <message name="IDS_IOS_SHARE_KIT_JOIN_DISCLAIMER_LINK" desc="The link part of the disclaimer for sharing a tab group.">
         Learn about shared tab groups

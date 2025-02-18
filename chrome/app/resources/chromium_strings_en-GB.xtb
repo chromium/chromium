@@ -17,7 +17,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1157985233335035034">Recent languages</translation>
 <translation id="1184145431117212167">Installation failed because your version of Windows is not supported.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
-<translation id="1188705220418984327">To share your window, allow screen recording for Chromium in System Preferences.</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">While this tab was inactive, memory was freed up to keep Chromium fast. You can choose to always exclude this site from being inactive.</translation>
 <translation id="1265577313130862557">Chromium blocked this download because the file is dangerous</translation>
@@ -194,7 +193,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="364817392622123556">{COUNT,plural, =0{A new update for Chromium is available and will be applied as soon as you relaunch.}=1{A new update for Chromium is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3651803019964686660">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chromium on both devices.</translation>
 <translation id="3667616615096815454">Unable to install, the application is unknown to the server.</translation>
-<translation id="3669334504579945026">To share your screen, allow screen recording for Chromium in System Preferences.</translation>
 <translation id="3685209450716071127">Chromium can't check your passwords. Try checking your Internet connection.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Your administrator asks that you relaunch Chromium to apply this update}=1{Your administrator asks that you relaunch Chromium to apply this update. Your Incognito window won't reopen.}other{Your administrator asks that you relaunch Chromium to apply this update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3713809861844741608">Open link in new Chromium &amp;tab</translation>
@@ -266,7 +264,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4594305310729380060">To Password Manager on this device</translation>
 <translation id="459535195905078186">Chromium Apps</translation>
 <translation id="4613863813562375431">Chromium OS version</translation>
-<translation id="4617285639650863674">To share your screen, allow screen recording for Chromium in System Preferences</translation>
 <translation id="4621240073146040695">Nearly up to date! Relaunch Chromium to finish updating.</translation>
 <translation id="4665829708273112819">Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
 <translation id="4673151026126227699">If you also share Chromium usage reports, those reports include the URLs that you visit</translation>
@@ -475,7 +472,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7483335560992089831">Cannot install the same Chromium version that is currently running. Please close Chromium and try again.</translation>
 <translation id="751935028865900641">Sites will probably work as expected. You'll be signed out of most sites when you close all Chromium windows, except your Google Account if you're signed in to Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium will relaunch in 1 minute}other{Chromium will relaunch in # minutes}}</translation>
-<translation id="7553334751796114046">To share your window, allow screen recording for Chromium in System Preferences</translation>
 <translation id="7582945390259497898">Chromium can estimate your interests. Later, a site that you visit can ask Chromium to see your interests in order to personalise the ads that you see.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="7585391435984513350">You haven't visited recently. Chromium removed <ph name="PERMISSION" /></translation>

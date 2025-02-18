@@ -362,7 +362,6 @@
 <translation id="2561093647892030937">lemons</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2573178735329662769">Recording all Chromebook audio</translation>
-<translation id="2575552334616524665">You can turn this on in Settings or the <ph name="THREE_DOTS_MENU_ICON" /> menu</translation>
 <translation id="2576253868710695442">This will take up to 2 GB of storage</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
@@ -501,7 +500,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> background with the letter <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusive</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
-<translation id="3410165745972100556">Transcript is off</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
 <translation id="3428551088151258685">outdoor</translation>
 <translation id="3428971106895559033">pastel</translation>

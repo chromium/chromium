@@ -16,6 +16,7 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/entity_type.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/is_required.h"
@@ -39,7 +40,7 @@ class AttributeInstance;
 
 // An attribute instance is a typed string value with additional metadata.
 // It is associated with an EntityInstance. The type is an AttributeType.
-class AttributeInstance final {
+class AttributeInstance final : public FormGroup {
  public:
   // Metadata from the saving moment.
   // This is more or less a placeholder for now.
@@ -73,7 +74,7 @@ class AttributeInstance final {
   AttributeInstance& operator=(const AttributeInstance&);
   AttributeInstance(AttributeInstance&&);
   AttributeInstance& operator=(AttributeInstance&&);
-  ~AttributeInstance();
+  ~AttributeInstance() override;
 
   const AttributeType& type() const { return type_; }
 
@@ -83,8 +84,22 @@ class AttributeInstance final {
   // Metadata from the saving moment of the value.
   const Context& context() const { return context_; }
 
-  friend bool operator==(const AttributeInstance&,
-                         const AttributeInstance&) = default;
+  // autofill::FormGroup:
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status) override;
+  std::u16string GetInfo(const AutofillType& type,
+                         const std::string& app_locale) const override;
+  VerificationStatus GetVerificationStatus(FieldType type) const override;
+  bool SetInfoWithVerificationStatus(const AutofillType& type,
+                                     const std::u16string& value,
+                                     const std::string& app_locale,
+                                     const VerificationStatus status) override;
+  FieldTypeSet GetSupportedTypes() const override;
+
+  friend bool operator==(const AttributeInstance& lhs,
+                         const AttributeInstance& rhs);
 
  private:
   AttributeType type_;

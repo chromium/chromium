@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">Барлық салыстыру кестесін көрсету</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google аккаунтыңыздағы ақпаратты, құпиялықты және қауіпсіздікті басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
+<translation id="1793473605302304726">Белгілі бір уақыттан кейін төлеу</translation>
 <translation id="1793631236004319016">Соңғы рет <ph name="NUM_HOURS_MINUTES_SECONDS" /> бұрын пайдаланылған</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бірнеше әрекет қолжетімді, оларды қарап шығу үшін Tab пернесін басыңыз.</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@
 <translation id="238459632961158867">Веб-сайт</translation>
 <translation id="2385809941344967209">Chrome браузерін Chrome параметрлерінен жаңартыңыз.</translation>
 <translation id="2386255080630008482">Сервер сертификаты қайтарып алынды.</translation>
-<translation id="2386410849674401722">"Ұнайды" белгішесін бассаңыз, сізге жасанды интеллект көмегімен автотолтыру ұнағанын білдіресіз.</translation>
 <translation id="2388828676877700238">Салықтарды есептеу және жоспарлау</translation>
 <translation id="239203817277685015">Нақтылау</translation>
 <translation id="239293030466334554">Кабриолеттер</translation>
@@ -1440,7 +1440,6 @@
 <translation id="3543935938072367282">Автотолтыру арқылы жылдам төлеңіз</translation>
 <translation id="3547442767634383572">жұмыс профилі туралы жалпы ақпарат;</translation>
 <translation id="3547746132308051926">20 x 24 дюйм</translation>
-<translation id="3550325450190222557">Жасанды интеллект көмегімен автотолтыруға қатысты пікіріңізді жазыңыз.</translation>
 <translation id="3552155506104542239">Ескерту: бұл саясат <ph name="POLICY_NAME" /> саясатына қайшы. Ол Android қолданбаларына әсер етпейді. Бұл мәселені есептемегенде, саясат ойдағыдай жұмыс істеп тұр.</translation>
 <translation id="3552297013052089404">Sans-serif қарпі</translation>
 <translation id="3558573058928565255">Күн, уақыт</translation>
@@ -2897,7 +2896,6 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Chinese #2 хатқалтасы</translation>
 <translation id="6127379762771434464">Элемент жойылған</translation>
-<translation id="6128214169525122635">"Ұнамайды" белгішесін бассаңыз, сізге жасанды интеллект көмегімен автотолтыру ұнамағанын білдіресіз.</translation>
 <translation id="6131824478727057281">орын</translation>
 <translation id="6133320744616005677">Рұқсатты қалдыру</translation>
 <translation id="6133984428121856852">Файл кеңейтімі бос немесе оның форматы қате.</translation>
@@ -3410,6 +3408,7 @@
 <translation id="7042616127917168121">Нәтижелерді нақтылау</translation>
 <translation id="7043552168914147882">Қойындылар будасы</translation>
 <translation id="7044081119134178347">Бұл жолы камераға рұқсат берілген.</translation>
+<translation id="704738887031336226">Төлейтін кезде, <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />белгілі бір уақыттан кейін төлеу<ph name="PAY_OVER_TIME_HELP_LINK_END" /> опцияларын көрсету</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сенімді болуы үшін жарамдылық мерзімі тым ұзақ болған сертификатты ұсынды.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Бұл карта қазір сақталмайды}other{Бұл карталар қазір сақталмайды}}</translation>
@@ -4593,7 +4592,6 @@
 <translation id="9150025764986957246">Келесідей нәрселер енгізуге болады:</translation>
 <translation id="9154194610265714752">Жаңартылды</translation>
 <translation id="9155211586651734179">Жалғанған перифериялық аудиоқұрылғылар</translation>
-<translation id="9155453166708525139">Жасанды интеллект көмегімен автотолтыру — эксперименттік функция және кейде қате жіберуі мүмкін. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Журналдар</translation>
 <translation id="9157595877708044936">Орнатылуда…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында шетін контент болуы мүмкін.}other{<ph name="FILE_COUNT" /> файлда шетін контент болуы мүмкін.}}</translation>

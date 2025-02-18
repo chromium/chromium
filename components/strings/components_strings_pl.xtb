@@ -809,7 +809,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="238459632961158867">Strona</translation>
 <translation id="2385809941344967209">Aktualizuj Chrome z poziomu ustawień przeglądarki</translation>
 <translation id="2386255080630008482">Certyfikat serwera został unieważniony.</translation>
-<translation id="2386410849674401722">Opcja Lubię powoduje przesłanie opinii, że podoba Ci się autouzupełnianie za pomocą AI</translation>
 <translation id="2388828676877700238">Pomoc i planowanie dotyczące rozliczeń podatkowych</translation>
 <translation id="239203817277685015">Rozwiń twórczo</translation>
 <translation id="239293030466334554">Kabriolety</translation>
@@ -1442,7 +1441,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3543935938072367282">Płać szybciej dzięki autouzupełnianiu</translation>
 <translation id="3547442767634383572">ogólne informacje o profilu służbowym;</translation>
 <translation id="3547746132308051926">20 x 24 cale</translation>
-<translation id="3550325450190222557">Prześlij opinię o autouzupełnianiu za pomocą AI.</translation>
 <translation id="3552155506104542239">Ostrzeżenie: ta zasada jest w konflikcie z zasadą <ph name="POLICY_NAME" /> i nie będzie miała wpływu na aplikacje na Androida. Gdy konflikt nie występuje, zasada działa zgodnie z oczekiwaniami.</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
@@ -2899,7 +2897,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6124432979022149706">Oprogramowanie sprzęgające Chrome Enterprise</translation>
 <translation id="6126565365696310362">Koperta chińska nr 2</translation>
 <translation id="6127379762771434464">Element został usunięty</translation>
-<translation id="6128214169525122635">Opcja Nie lubię powoduje przesłanie opinii, że nie podoba Ci się autouzupełnianie za pomocą AI</translation>
 <translation id="6131824478727057281">lokalizacja</translation>
 <translation id="6133320744616005677">Nadal zezwalaj</translation>
 <translation id="6133984428121856852">Rozszerzenie pliku jest puste lub ma nieprawidłowy format.</translation>
@@ -4597,7 +4594,6 @@ Dodatkowe informacje:
 <translation id="9150025764986957246">Możesz na przykład wpisać:</translation>
 <translation id="9154194610265714752">Zaktualizowano</translation>
 <translation id="9155211586651734179">Podłączone urządzenia peryferyjne audio</translation>
-<translation id="9155453166708525139">Autouzupełnianie za pomocą AI to funkcja eksperymentalna, która nie zawsze działa prawidłowo. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Czasopisma</translation>
 <translation id="9157595877708044936">Konfigurowanie...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Plik <ph name="FILE_NAME" /> może zawierać treści poufne}few{<ph name="FILE_COUNT" /> pliki mogą zawierać treści poufne}many{<ph name="FILE_COUNT" /> plików może zawierać treści poufne}other{<ph name="FILE_COUNT" /> pliku może zawierać treści poufne}}</translation>

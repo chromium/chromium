@@ -367,8 +367,7 @@ void ReportingClient::DeliverAsyncStartUploader(
     // provider. In case of missived Uploader will be provided by
     // EncryptedReportingServiceProvider so it does not need to be
     // enabled here.
-    if (!StorageSelector::is_uploader_required() ||
-        StorageSelector::is_use_missive() ||
+    if (StorageSelector::is_use_missive() ||
         storage() == nullptr  // report queue provider is not (yet?) ready
     ) {
       std::move(start_uploader_cb)

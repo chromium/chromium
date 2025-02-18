@@ -150,6 +150,9 @@ class PDFDocumentHelper
 
   bool is_document_load_complete_ = false;
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  bool searchify_started_ = false;
+#endif
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
 
   base::ObserverList<Observer> observers_;

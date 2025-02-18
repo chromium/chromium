@@ -40,9 +40,6 @@
           [區域網路設定]
           然後取消勾選 [在你的區域網路使用 Proxy 伺服器] 核取方塊。</translation>
 <translation id="7230956101631259640">目前顯示的是安全型 Chrome 網頁</translation>
-<translation id="8187289872471304532">前往
-          [應用程式] &gt; [系統偏好設定] &gt; [網路] &gt; [進階] &gt; [Proxy]
-          然後取消勾選所有已選取的 Proxy。</translation>
 <translation id="8232971017369963250">Chrome 的開發受惠於 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼計畫。</translation>
 <translation id="8279509328145658601">Chrome 的開發也受惠於其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟體<ph name="END_LINK_OSS" />。</translation>
 <translation id="8544217240017914508">Google Chrome 正嘗試修改填入付款方式的設定。</translation>

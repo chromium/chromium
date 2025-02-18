@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Telefonunuzdaki fotoğrafları ve medya içeriklerini görün</translation>
 <translation id="1129850422003387628">Uygulamaları yönet</translation>
+<translation id="1130430615924359526">{0,plural, =1{Gizli pencereyi kapat}other{Gizli pencereleri kapat (# pencere)}}</translation>
 <translation id="113050636487300043">Profilleri birbirinden ayırt edebilmek için bir ad ve renk teması seçin</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> grubunun parçası</translation>
 <translation id="1130676589211693127">Sağ tarafın pil seviyesi %<ph name="PERCENTAGE" />.</translation>
@@ -1513,6 +1514,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2042279886444479655">Etkin profiller</translation>
 <translation id="2042427131767688936">Bu cihazın güvenli bir şekilde kullanılabildiğinden emin olmak için kuruluşunuzun işletim sistemi, tarayıcısı, ayarları ve cihazda hangi yazılımların yüklü olduğu ile ilgili bilgileri görmesi gerekebilir.</translation>
 <translation id="2044014337866019681">Oturumun kilidini açmak için lütfen <ph name="ACCOUNT" /> hesabını doğruladığınızdan emin olun.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Misafir penceresini kapat}other{Misafir pencerelerini kapat (# pencere)}}</translation>
 <translation id="204497730941176055">Microsoft Sertifika Şablonu Adı</translation>
 <translation id="2045211794962848221">Bu mesajı bir daha görmeyeceksiniz</translation>
 <translation id="2045838962742066664">Steno ile yazma</translation>
@@ -2283,7 +2285,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2569972178052279830">Perakendeci Adı</translation>
 <translation id="257088987046510401">Temalar</translation>
 <translation id="2571638829488071045">Bu uzantı Google Hesabınıza kaydedilsin mi?</translation>
-<translation id="2571655996835834626">Web sitelerinin çerezler, JavaScript, eklentiler, coğrafi konum, mikrofon, kamera ve benzeri erişimini denetleyen ayarlarınızı değiştirin.</translation>
 <translation id="257175846174451436">Sekme grubu önerisi</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> birimine salt okunur erişim izni verildi.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> sekme</translation>
@@ -7352,6 +7353,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6214106213498203737">Sulu boya</translation>
 <translation id="621470880408090483">Sitelerin Bluetooth cihazlara bağlanmasına izin verme</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" />, şifrelerinizin güvenliğini sağlamak için 1 dakika işlem yapılmadığında kilitlenir}other{<ph name="BRAND" />, şifrelerinizin güvenliğini sağlamak için # dakika işlem yapılmadığında kilitlenir}}</translation>
+<translation id="6216154119179790291">İlk sekmeye git</translation>
 <translation id="6216239400972191926">Reddedilen siteler ve uygulamalar</translation>
 <translation id="6216601812881225442">Kapsayıcınız yeniden boyutlandırılmayı desteklemiyor. Linux'a önceden ayrılan yer miktarını düzenlemek için yedekleme yapın, ardından yeni bir kapsayıcıya geri yükleyin.</translation>
 <translation id="6216696360484424239">Oturumu otomatik olarak aç</translation>
@@ -7548,6 +7550,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6357305427698525450">Bazı desteklenen bağlantılar <ph name="APP_NAME" /> veya <ph name="APP_NAME_2" /> uygulamalarında açılmaya devam eder.</translation>
 <translation id="6357750620525943720">Diğer Sabit Tanımlayıcılar (ör. Karmalar veya UUID'ler)</translation>
 <translation id="6358884629796491903">Ejderha</translation>
+<translation id="6359640073754977254">Son sekmeye git</translation>
 <translation id="6361850914223837199">Hata ayrıntıları:</translation>
 <translation id="6362853299801475928">&amp;Sorun bildir...</translation>
 <translation id="6363786367719063276">Günlükleri göster</translation>
@@ -7610,7 +7613,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6411135999030237579">Tuşun otomatik olarak tekrarlanması için basılı tutun</translation>
 <translation id="6414618057231176439">Yüklenecek <ph name="VM_NAME" /> sürümünü seçin.</translation>
 <translation id="641469293210305670">Güncellemeleri ve Uygulamaları Yükle</translation>
-<translation id="6414878884710400018">Sistem Tercihleri'ni aç</translation>
 <translation id="6415757856498750027">"ư" karakterini kullanmak için "w" yazın</translation>
 <translation id="6415816101512323589">Verilerinizi korumak için yerel veri kurtarma özelliği etkinleştirilsin mi?</translation>
 <translation id="6415900369006735853">Telefonunuz üzerinden internete bağlanın</translation>
@@ -10207,6 +10209,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8258027225380843424">İçe aktarma başarılı!</translation>
 <translation id="8259048637628995340">Sorunsuz bir deneyim için Android telefonunuzu bağlayın</translation>
 <translation id="8260177673299865994">İndirme korumasını iyileştirin</translation>
+<translation id="8260473380156923937">Chrome Uygulamalarının desteği yakında sonlandırılacak. Alternatif seçenekler için geliştiriciyle veya BT hizmetinizle iletişime geçin.</translation>
 <translation id="8260864402787962391">Fare</translation>
 <translation id="8261378640211443080">Bu uzantı <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmiyor ve bilginiz dışında eklenmiş olabilir.</translation>
 <translation id="8261506727792406068">Sil</translation>

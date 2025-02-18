@@ -21,6 +21,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
@@ -29,10 +30,10 @@ using signin::ConsentLevel;
 namespace {
 
 // Constants used by the different tests.
-const char kPrimaryAccountEmail[] = "primary.account@example.com";
+constexpr char kPrimaryAccountEmail[] = "primary.account@example.com";
 #if !BUILDFLAG(IS_CHROMEOS)
-const char kAnotherAccountEmail[] = "another.account@example.com";
-const char kUnknownAccountId[] = "{unknown account id}";
+constexpr char kAnotherAccountEmail[] = "another.account@example.com";
+constexpr GaiaId::Literal kUnknownAccountId("{unknown account id}");
 #endif
 
 // See RunRevokeConsentTest().

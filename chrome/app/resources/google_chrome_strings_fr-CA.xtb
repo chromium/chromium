@@ -67,7 +67,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1874309113135274312">Google Chrome bêta (mDNS-In)</translation>
 <translation id="1877026089748256423">Google Chrome n'est pas à jour</translation>
 <translation id="1880677175115548835">Sélectionnez du texte</translation>
-<translation id="1907925560334657849">Pour partager votre fenêtre, autorisez Enregistreur d'écran pour Chrome dans les préférences système</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
 <translation id="1953553007165777902">Téléchargement en cours… <ph name="MINUTE" /> minute(s) restante(s)</translation>
 <translation id="1982647487457769627">Chrome fonctionne sur toutes les plateformes afin de vous offrir une expérience familière, quel que soit l'appareil utilisé</translation>
@@ -245,7 +244,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et gérer Google Chrome</translation>
 <translation id="408393047846373801">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous à Chrome. Ce mot de passe sera enregistré dans votre compte Google après votre connexion.</translation>
-<translation id="4084404300720192944">Pour partager votre fenêtre, autorisez la fonctionnalité Enregistreur d'écran pour Chrome dans les préférences système.</translation>
 <translation id="4110895483821904099">Configurer votre nouveau profil Chrome</translation>
 <translation id="4111566860456076004">Chrome ne peut pas vérifier l'origine de cette extension et elle peut s'avérer dangereuse. Retirez-la de Chrome afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="4128488089242627000">Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu (recommandé)</translation>
@@ -410,7 +408,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6180522807229584611">Cet onglet utilise des ressources supplémentaires. Pour améliorer vos performances, permettez à Chrome de le rendre inactif.</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6200139057479872438">Vous n'êtes pas venu récemment. Chrome a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
-<translation id="621585339844629864">Pour partager votre écran, autorisez la fonctionnalité Enregistreur d'écran pour Chrome dans les préférences système.</translation>
 <translation id="6235018212288296708">Règle de trafic entrant pour Google Chrome autorisant le trafic mDNS.</translation>
 <translation id="624230925347970731">Chrome se fermera bientôt</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
@@ -479,7 +476,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7088681679121566888">Chrome est à jour</translation>
 <translation id="7098166902387133879">Google Chrome se sert de votre microphone.</translation>
 <translation id="7099479769133613710">Relancer Chrome OS pour le mettre à jour</translation>
-<translation id="7100085796996987445">Pour partager votre écran, autorisez la fonctionnalité Enregistreur d'écran pour Chrome dans les préférences système</translation>
 <translation id="7106741999175697885">Gestionnaire de tâches — Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Une nouvelle mise à jour de Chrome est proposée et sera appliquée dès que vous le relancerez.}=1{Une nouvelle mise à jour de Chrome est proposée et sera appliquée dès que vous le relancerez. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chrome est proposée et sera appliquée dès que vous le relancerez. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Une nouvelle mise à jour de Chrome est proposée et sera appliquée dès que vous le relancerez. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="7155997830309522122">Dans ce cas, veuillez modifier votre mot de passe enregistré dans Chrome pour qu'il corresponde à votre nouveau mot de passe.</translation>

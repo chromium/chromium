@@ -196,6 +196,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Se din telefons billeder og mediefiler</translation>
 <translation id="1129850422003387628">Administrer apps</translation>
+<translation id="1130430615924359526">{0,plural, =1{Luk inkognitotilstand}one{Luk inkognitotilstand (# vindue)}other{Luk inkognitotilstand (# vinduer)}}</translation>
 <translation id="113050636487300043">Vælg et navn og et farvetema, så du kan skelne mellem profiler</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – en del af gruppen <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Batteriniveau på <ph name="PERCENTAGE" /> % for højre.</translation>
@@ -1524,6 +1525,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2042279886444479655">Aktive profiler</translation>
 <translation id="2042427131767688936">Da din organisation skal sikre, at denne enhed kan bruges sikkert, skal organisationen muligvis se oplysninger om dens operativsystem, browser og indstillinger, og hvilken software der er installeret på enheden.</translation>
 <translation id="2044014337866019681">Sørg for, at du verificerer <ph name="ACCOUNT" /> for at låse sessionen op.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Luk gæstetilstand}one{Luk gæstetilstand (# vindue)}other{Luk gæstetilstand (# vinduer)}}</translation>
 <translation id="204497730941176055">Navn på skabelon til Microsoft-certifikat</translation>
 <translation id="2045211794962848221">Du får ikke vist denne specifikke meddelelse igen</translation>
 <translation id="2045838962742066664">Stenografisk skrivning</translation>
@@ -2299,7 +2301,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2569972178052279830">Forhandlernavn</translation>
 <translation id="257088987046510401">Temaer</translation>
 <translation id="2571638829488071045">Vil du gemme denne udvidelse på din Google-konto?</translation>
-<translation id="2571655996835834626">Skift de indstillinger, der styrer websites' adgang til funktioner som f.eks. cookies, JavaScript, plugins, geoplacering, mikrofon og kamera.</translation>
 <translation id="257175846174451436">Foreslået fanegruppe</translation>
 <translation id="2572032849266859634">Skrivebeskyttet adgang til <ph name="VOLUME_NAME" /> er blevet tildelt.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> faner</translation>
@@ -7370,6 +7371,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6214106213498203737">Akvarel</translation>
 <translation id="621470880408090483">Tillad ikke, at websites opretter forbindelse til Bluetooth-enheder</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" /> låses efter 1 minuts inaktivitet for at beskytte dine adgangskoder}one{<ph name="BRAND" /> låses efter # minuts inaktivitet for at beskytte dine adgangskoder}other{<ph name="BRAND" /> låses efter # minutters inaktivitet for at beskytte dine adgangskoder}}</translation>
+<translation id="6216154119179790291">Rul til første fane</translation>
 <translation id="6216239400972191926">Afviste websites og apps</translation>
 <translation id="6216601812881225442">Din container understøtter ikke størrelsesjusteringer. Du kan justere den mængde plads, der er forudallokeret til Linux, ved at sikkerhedskopiere og derefter gendanne i en ny container.</translation>
 <translation id="6216696360484424239">Log automatisk ind</translation>
@@ -7566,6 +7568,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6357305427698525450">Nogle understøttede links åbnes fortsat i <ph name="APP_NAME" /> eller <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Andre stabile id'er (f.eks. hash-værdier eller UUID'er)</translation>
 <translation id="6358884629796491903">Drage</translation>
+<translation id="6359640073754977254">Rul til sidste fane</translation>
 <translation id="6361850914223837199">Info om fejl:</translation>
 <translation id="6362853299801475928">&amp;Rapporter et problem...</translation>
 <translation id="6363786367719063276">Se logfiler</translation>
@@ -7628,7 +7631,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6411135999030237579">Hold fingeren nede for automatisk at gentage tasten</translation>
 <translation id="6414618057231176439">Vælg, hvilken version af <ph name="VM_NAME" /> du vil installere.</translation>
 <translation id="641469293210305670">Installer opdateringer og apps</translation>
-<translation id="6414878884710400018">Åbn systemindstillingerne</translation>
 <translation id="6415757856498750027">Skriv "w" for "ư"</translation>
 <translation id="6415816101512323589">Vil du aktivere gendannelsen af lokale data for at beskytte dine data?</translation>
 <translation id="6415900369006735853">Opret forbindelse til internettet via din telefon</translation>
@@ -10227,6 +10229,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8258027225380843424">Importen er fuldført.</translation>
 <translation id="8259048637628995340">Forbind din Android-telefon for at få en optimal brugeroplevelse</translation>
 <translation id="8260177673299865994">Forbedrer downloadbeskyttelsen</translation>
+<translation id="8260473380156923937">Chrome-apps udfases snart. Kontakt udvikleren eller din it-tjenesteudbyder for at få flere oplysninger.</translation>
 <translation id="8260864402787962391">Mus</translation>
 <translation id="8261378640211443080">Denne udvidelse er ikke anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og er muligvis blevet tilføjet, uden at du vidste det.</translation>
 <translation id="8261506727792406068">Slet</translation>

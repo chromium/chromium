@@ -94,15 +94,6 @@ EncryptedReportingServiceProvider::~EncryptedReportingServiceProvider() =
 void EncryptedReportingServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   CHECK(OnOriginThread());
-
-  if (!::reporting::StorageSelector::is_uploader_required()) {
-    // We should never get to here, since the provider is only exported
-    // when is_uploader_required() is true. Have this code only
-    // in order to log configuration inconsistency.
-    LOG(ERROR) << "Uploads are not expected in this configuration";
-    return;
-  }
-
   exported_object->ExportMethod(
       chromeos::kChromeReportingServiceInterface,
       chromeos::kChromeReportingServiceUploadEncryptedRecordMethod,
@@ -181,19 +172,6 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   CHECK(OnOriginThread());
   auto response = dbus::Response::FromMethodCall(method_call);
   ::reporting::UploadEncryptedRecordResponse response_message;
-
-  if (!::reporting::StorageSelector::is_uploader_required()) {
-    // We should never get to here, since the provider is only exported when
-    // is_uploader_required() is true. Have this code only as a door stopper in
-    // order to let `missive` daemon log configuration inconsistency.
-    ::reporting::Status status{
-        ::reporting::error::FAILED_PRECONDITION,
-        "Uploads are not expected in this configuration"};
-    LOG(ERROR) << status;
-    SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), base::unexpected(status));
-    return;
-  }
 
   chromeos::MissiveClient* const missive_client =
       chromeos::MissiveClient::Get();

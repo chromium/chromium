@@ -420,6 +420,18 @@ V8CodeCache::GetCompileOptionsInternal(
                            no_cache_reason);
   }
 
+  // Handlers managing bundled webui cached metadata do not require production
+  // of cached metadata following compilation, and only metadata consume tasks
+  // should be issued when the metadata is available.
+  if (cache_handler->GetServingSource() ==
+      CachedMetadataHandler::ServingSource::kWebUIBundledCache) {
+    return std::make_tuple(HasCodeCache(cache_handler)
+                               ? v8::ScriptCompiler::kConsumeCodeCache
+                               : v8::ScriptCompiler::kNoCompileOptions,
+                           ProduceCacheOptions::kNoProduceCache,
+                           v8::ScriptCompiler::kNoCacheBecauseStaticCodeCache);
+  }
+
   if (source_text_length < kMinimalCodeLength) {
     no_cache_reason = v8::ScriptCompiler::kNoCacheBecauseScriptTooSmall;
     return std::make_tuple(no_code_cache_compile_options,
@@ -441,8 +453,10 @@ V8CodeCache::GetCompileOptionsInternal(
 
   // If the resource is served from CacheStorage, generate the V8 code cache in
   // the first load.
-  if (cache_handler->IsServedFromCacheStorage())
+  if (cache_handler->GetServingSource() ==
+      CachedMetadataHandler::ServingSource::kCacheStorage) {
     cache_options = mojom::blink::V8CacheOptions::kCodeWithoutHeatCheck;
+  }
 
   bool local_compile_hints_enabled =
       base::FeatureList::IsEnabled(features::kLocalCompileHints) &&

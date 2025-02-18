@@ -72,7 +72,7 @@ using HandleMDMNotificationCallback =
 namespace {
 
 CoreAccountId GetAccountId(id<SystemIdentity> identity) {
-  return CoreAccountId::FromGaiaId(base::SysNSStringToUTF8([identity gaiaID]));
+  return CoreAccountId::FromGaiaId(GaiaId([identity gaiaID]));
 }
 
 }  // namespace
@@ -422,11 +422,11 @@ TEST_P(AuthenticationServiceTest, OnAddIdentity) {
       identity_manager()->GetAccountsWithRefreshTokens();
   std::sort(accounts.begin(), accounts.end(), account_compare_func);
   ASSERT_EQ(2u, accounts.size());
-  CoreAccountId gaiad_id_1 = CoreAccountId::FromGaiaId(
-      base::SysNSStringToUTF8(fake_system_identity1_.gaiaID));
+  CoreAccountId gaiad_id_1 =
+      CoreAccountId::FromGaiaId(GaiaId(fake_system_identity1_.gaiaID));
   EXPECT_EQ(gaiad_id_1, accounts[0].account_id);
-  CoreAccountId gaiad_id_2 = CoreAccountId::FromGaiaId(
-      base::SysNSStringToUTF8(fake_system_identity2_.gaiaID));
+  CoreAccountId gaiad_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId(fake_system_identity2_.gaiaID));
   EXPECT_EQ(gaiad_id_2, accounts[1].account_id);
 
   FakeSystemIdentity* fake_system_identity3 =
@@ -440,8 +440,8 @@ TEST_P(AuthenticationServiceTest, OnAddIdentity) {
   ASSERT_EQ(3u, accounts.size());
   EXPECT_EQ(gaiad_id_1, accounts[0].account_id);
   EXPECT_EQ(gaiad_id_2, accounts[1].account_id);
-  CoreAccountId gaiad_id_3 = CoreAccountId::FromGaiaId(
-      base::SysNSStringToUTF8(fake_system_identity3.gaiaID));
+  CoreAccountId gaiad_id_3 =
+      CoreAccountId::FromGaiaId(GaiaId(fake_system_identity3.gaiaID));
   EXPECT_EQ(gaiad_id_3, accounts[2].account_id);
 }
 

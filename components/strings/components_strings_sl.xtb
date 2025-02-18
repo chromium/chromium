@@ -471,6 +471,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1791415068765905273">Prikaži vse primerjalne tabele</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati podatke, zasebnost in varnost v računu Google</translation>
+<translation id="1793473605302304726">Plačilo na obroke</translation>
 <translation id="1793631236004319016">Nazadnje uporabljeno pred: <ph name="NUM_HOURS_MINUTES_SECONDS" />.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, na voljo je več dejanj, pritisnite tabulatorko, če želite krožiti po njih</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="238459632961158867">Spletno mesto</translation>
 <translation id="2385809941344967209">Posodabljanje Chroma v nastavitvah v Chromu</translation>
 <translation id="2386255080630008482">Potrdilo strežnika je bilo preklicano.</translation>
-<translation id="2386410849674401722">S palcem gor pošljete povratne informacije, da vam je samodejno izpolnjevanje z umetno inteligenco všeč</translation>
 <translation id="2388828676877700238">Priprava davčnih dokumentov in načrtovanje davčnih obveznosti</translation>
 <translation id="239203817277685015">Podrobneje razloži</translation>
 <translation id="239293030466334554">Hibridi</translation>
@@ -1441,7 +1441,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3543935938072367282">Hitreje dokončajte nakup s samodejnim izpolnjevanjem</translation>
 <translation id="3547442767634383572">Pregled delovnega profila</translation>
 <translation id="3547746132308051926">20 x 24 palcev</translation>
-<translation id="3550325450190222557">Pošljite povratne informacije za samodejno izpolnjevanje z umetno inteligenco.</translation>
 <translation id="3552155506104542239">Opozorilo: Ta pravilnik je v sporu s pravilnikom <ph name="POLICY_NAME" /> in ne bo vplival na aplikacije za Android. Ta pravilnik drugače deluje, kot je predvideno.</translation>
 <translation id="3552297013052089404">Neserifna pisava</translation>
 <translation id="3558573058928565255">Dnevni čas</translation>
@@ -2898,7 +2897,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6124432979022149706">Priključki za Chrome za podjetja</translation>
 <translation id="6126565365696310362">Kitajska kuverta št. 2</translation>
 <translation id="6127379762771434464">Element odstranjen</translation>
-<translation id="6128214169525122635">S palcem dol pošljete povratne informacije, da vam samodejno izpolnjevanje z umetno inteligenco ni všeč</translation>
 <translation id="6131824478727057281">lokacija</translation>
 <translation id="6133320744616005677">Še naprej dovoli</translation>
 <translation id="6133984428121856852">Pripona datoteke je prazna ali napačno oblikovana.</translation>
@@ -3411,6 +3409,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7042616127917168121">Izboljšanje rezultatov</translation>
 <translation id="7043552168914147882">Tab Stock</translation>
 <translation id="7044081119134178347">Kamera je tokrat dovoljena</translation>
+<translation id="704738887031336226">Pri zaključku nakupa prikaži možnosti <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />plačila na obroke<ph name="PAY_OVER_TIME_HELP_LINK_END" /></translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Poskusili ste odpreti <ph name="DOMAIN" />, vendar je strežnik uporabil potrdilo, ki ima predolgo obdobje veljavnosti, da bi bilo verodostojno.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Te kartice trenutno ni mogoče shraniti}one{Teh kartic trenutno ni mogoče shraniti}two{Teh kartic trenutno ni mogoče shraniti}few{Teh kartic trenutno ni mogoče shraniti}other{Teh kartic trenutno ni mogoče shraniti}}</translation>
@@ -4596,7 +4595,6 @@ Dodatne podrobnosti:
 <translation id="9150025764986957246">Vnesete lahko na primer:</translation>
 <translation id="9154194610265714752">Posodobljeno</translation>
 <translation id="9155211586651734179">Priključena zvočna dodatna oprema</translation>
-<translation id="9155453166708525139">Samodejno izpolnjevanje z umetno inteligenco je preizkusna funkcija in se lahko včasih tudi zmoti. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Revije</translation>
 <translation id="9157595877708044936">Nastavljanje ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Datoteka <ph name="FILE_NAME" /> morda vsebuje občutljivo vsebino}one{<ph name="FILE_COUNT" /> datoteka morda vsebuje občutljivo vsebino}two{<ph name="FILE_COUNT" /> datoteki morda vsebujeta občutljivo vsebino}few{<ph name="FILE_COUNT" /> datoteke morda vsebujejo občutljivo vsebino}other{<ph name="FILE_COUNT" /> datotek morda vsebuje občutljivo vsebino}}</translation>

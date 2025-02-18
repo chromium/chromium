@@ -148,27 +148,6 @@ void HttpStreamPool::Group::OnJobComplete(Job* job) {
   }
 }
 
-int HttpStreamPool::Group::Preconnect(
-    size_t num_streams,
-    quic::ParsedQuicVersion quic_version,
-    const NetLogWithSource& job_controller_net_log,
-    CompletionOnceCallback callback) {
-  if (ActiveStreamSocketCount() >= num_streams) {
-    return OK;
-  }
-
-  // When failing, just returns the current error.
-  // TODO(crbug.com/381742472): Consider resuming this preconnect after the
-  // current failing attempt manager completes.
-  if (IsFailing()) {
-    return attempt_manager_->final_error_to_notify_jobs();
-  }
-
-  EnsureAttemptManager();
-  return attempt_manager_->Preconnect(
-      num_streams, quic_version, job_controller_net_log, std::move(callback));
-}
-
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
     std::unique_ptr<StreamSocket> socket,
     StreamSocketHandle::SocketReuseType reuse_type,

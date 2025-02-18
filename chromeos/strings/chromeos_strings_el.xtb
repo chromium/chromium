@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Ακύρωση εργασίας εκτύπωσης</translation>
 <translation id="2161656808144014275">Κείμενο</translation>
 <translation id="2163937499206714165">Ενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
+<translation id="2164131940279488868">Βεβαιωθείτε ότι ένα μικρόφωνο είναι συνδεδεμένο, για να ξεκινήσει η εγγραφή ήχου</translation>
 <translation id="2173302385160625112">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο</translation>
 <translation id="2180197493692062006">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε να ανοίξετε ξανά την εφαρμογή.</translation>
 <translation id="2189104374785738357">Επεξεργασία λεπτομερειών APN</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">λεμόνια</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
 <translation id="2573178735329662769">Εγγραφή όλου του ήχου του Chromebook</translation>
-<translation id="2575552334616524665">Μπορείτε να ενεργοποιήσετε αυτή τη λειτουργία στις Ρυθμίσεις ή στο μενού <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Για να γίνει αυτό απαιτούνται έως και 2 GB αποθηκευτικού χώρου</translation>
 <translation id="2584547424703650812">Λάμψεις</translation>
 <translation id="2584559707064218956">Για να ρυθμίσετε το δίκτυο, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> φόντο με το γράμμα <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Αποκλειστικό</translation>
 <translation id="3404249063913988450">Ενεργοποίηση προφύλαξης οθόνης.</translation>
-<translation id="3410165745972100556">Η μεταγραφή είναι απενεργοποιημένη</translation>
 <translation id="3413935475507503304">Για να συνεχίσετε με την ενημέρωση, κάντε κλικ στο Επόμενο.</translation>
 <translation id="3428551088151258685">εξωτερικού χώρου</translation>
 <translation id="3428971106895559033">παστέλ</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">Η συσκευή είναι tablet.</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>
 <translation id="8882789155418924367">κουκουβάγιες</translation>
+<translation id="8885038613856655272">Σύνδεση μικροφώνου</translation>
 <translation id="8892443466059986410">Ακύρωση επεξεργασίας συντόμευσης</translation>
 <translation id="8897043028305808902">Το αρχείο μετονομάστηκε</translation>
 <translation id="8898840733695078011">Ισχύς σήματος</translation>

@@ -809,7 +809,6 @@
 <translation id="238459632961158867">Веб-сајт</translation>
 <translation id="2385809941344967209">Ажурирајте Chrome помоћу подешавања Chrome-а</translation>
 <translation id="2386255080630008482">Сертификат сервера је опозван.</translation>
-<translation id="2386410849674401722">Опција Свиђа ми се шаље повратне информације да вам се свиђа аутоматско попуњавање помоћу вештачке интелигенције</translation>
 <translation id="2388828676877700238">Припрема и планирање пореза</translation>
 <translation id="239203817277685015">Разради</translation>
 <translation id="239293030466334554">Кабриолети</translation>
@@ -1442,7 +1441,6 @@
 <translation id="3543935938072367282">Плаћајте брже помоћу аутоматског попуњавања</translation>
 <translation id="3547442767634383572">Преглед пословног профила</translation>
 <translation id="3547746132308051926">20×24 in</translation>
-<translation id="3550325450190222557">Пошаљите повратне информације за аутоматско попуњавање помоћу вештачке интелигенције.</translation>
 <translation id="3552155506104542239">Упозорење: Ове смернице су неусаглашене са документом <ph name="POLICY_NAME" /> и неће имати утицаја на Android апликације. У супротном, ове смернице раде као што је предвиђено.</translation>
 <translation id="3552297013052089404">Фонт Sans Serif</translation>
 <translation id="3558573058928565255">Време дана</translation>
@@ -2899,7 +2897,6 @@
 <translation id="6124432979022149706">Прикључци за Chrome за предузећа</translation>
 <translation id="6126565365696310362">Кинеска коверта бр. 2</translation>
 <translation id="6127379762771434464">Уклонили сте ставку</translation>
-<translation id="6128214169525122635">Опција Не свиђа ми се шаље повратне информације да вам се аутоматско попуњавање помоћу вештачке интелигенције не свиђа</translation>
 <translation id="6131824478727057281">локација</translation>
 <translation id="6133320744616005677">Не опозивај дозволу</translation>
 <translation id="6133984428121856852">Екстензија фајла је празна или је у погрешном формату.</translation>
@@ -4598,7 +4595,6 @@
 <translation id="9150025764986957246">Можете да уносите ствари попут следећих:</translation>
 <translation id="9154194610265714752">Ажурирано</translation>
 <translation id="9155211586651734179">Аудио периферни уређаји су прикључени</translation>
-<translation id="9155453166708525139">Ауоматско попуњавање помоћу вештачке интелигенције је експериментална функција и неће увек радити како треба. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Часописи</translation>
 <translation id="9157595877708044936">Подешавање...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> можда има осетљив садржај}one{<ph name="FILE_COUNT" /> фајл можда има осетљив садржај}few{<ph name="FILE_COUNT" /> фајла можда имају осетљив садржај}other{<ph name="FILE_COUNT" /> фајлова можда има осетљив садржај}}</translation>

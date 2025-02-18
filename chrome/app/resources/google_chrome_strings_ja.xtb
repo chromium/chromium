@@ -63,7 +63,6 @@
 <translation id="1874309113135274312">Google Chrome ベータ版（mDNS-In）</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
 <translation id="1880677175115548835">テキストを選択</translation>
-<translation id="1907925560334657849">ウィンドウを共有するには、[システム環境設定] で Chrome に画面の録画を許可してください</translation>
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>
 <translation id="1953553007165777902">ダウンロードしています... 残り <ph name="MINUTE" /> 分です</translation>
 <translation id="1982647487457769627">Chrome は複数のプラットフォームで動作し、どのデバイスでも同じ環境で使用できます</translation>
@@ -241,7 +240,6 @@
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
 <translation id="408393047846373801">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome にログインしてください。このパスワードは、ログイン後に Google アカウントに保存されます。</translation>
-<translation id="4084404300720192944">ウィンドウを共有するには、[システム環境設定] で Chrome に画面の録画を許可してください。</translation>
 <translation id="4110895483821904099">新しい Chrome プロファイルの設定</translation>
 <translation id="4111566860456076004">Chrome では、この拡張機能の提供元を確認できないため、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chrome からこの拡張機能を削除してください。</translation>
 <translation id="4128488089242627000">Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します（推奨）</translation>
@@ -402,7 +400,6 @@
 <translation id="6180522807229584611">このタブでは追加のリソースが使用されています。パフォーマンスを改善するには、このタブを非アクティブにしてください。</translation>
 <translation id="6182736845697986886">更新サーバーの内部エラーが発生したため、インストールできませんでした。</translation>
 <translation id="6200139057479872438">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" /> と <ph name="PERMISSION_2" /> の権限を削除しました</translation>
-<translation id="621585339844629864">画面を共有するには、[システム環境設定] で Chrome に画面の録画を許可してください。</translation>
 <translation id="6235018212288296708">mDNS トラフィックを許可する Google Chrome のインバウンド ルールです。</translation>
 <translation id="624230925347970731">Chrome はまもなく終了します</translation>
 <translation id="6247557882553405851">Google パスワード マネージャー</translation>
@@ -471,7 +468,6 @@
 <translation id="7088681679121566888">Chrome は最新の状態です</translation>
 <translation id="7098166902387133879">Google Chrome がマイクを使用しています。</translation>
 <translation id="7099479769133613710">再起動して ChromeOS を更新</translation>
-<translation id="7100085796996987445">画面を共有するには、[システム環境設定] で Chrome に画面の録画を許可してください</translation>
 <translation id="7106741999175697885">タスク マネージャ - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。}=1{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="7155997830309522122">その場合は、Chrome に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>

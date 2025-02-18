@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">ਡਾਟਾ ਉਲੰਘਣਾ ਵਜੋਂ ਪਾਸਵਰਡਾਂ ਦਾ ਖੁਲਾਸਾ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਵੇ</translation>
 <translation id="1044891598689252897">ਸਾਈਟਾਂ ਸਹੀ ਤਰੀਕੇ ਨਾਲ ਕੰਮ ਕਰਨਗੀਆਂ</translation>
 <translation id="104491362976654916">ਆਫ਼ਲਾਈਨ ਪੰਨਾ</translation>
+<translation id="1049200476149974839">ਚਾਹੁੰਦੇ ਹਨ ਕਿ ਤੁਸੀਂ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ। ਜਿਸ ਕੋਲ ਵੀ ਲਿੰਕ ਹੈ, ਉਹ ਸਾਰੀਆਂ ਟੈਬਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਇਸ ਲਈ ਸਾਵਧਾਨੀ ਨਾਲ ਸ਼ਾਮਲ ਹੋਵੋ। ਲਿੰਕ ਦੀ ਮਿਆਦ 48 ਘੰਟਿਆਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="1049743911850919806">ਗੁਮਨਾਮ</translation>
 <translation id="1053651653201045802">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਵਰਤਣ ਲਈ ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="1054745118061919935">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
@@ -194,6 +195,7 @@
 <translation id="1780152987505130652">ਗਰੁੱਪ ਬੰਦ ਕਰੋ</translation>
 <translation id="178400879184240105">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਵਿਲੱਖਣ ਹਨ</translation>
 <translation id="17906873777101817">ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
+<translation id="1794893174442046596">ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="1807893857950749072">ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਦਿਓ…</translation>
 <translation id="1810976980198522421">ਰੱਦ ਕਰੋ</translation>
 <translation id="1815941218935345331">ਪਾਸਕੋਡ</translation>
@@ -656,6 +658,7 @@
 <translation id="3897092660631435901">ਮੀਨੂ</translation>
 <translation id="3904270275864974753">ਕੈਰੋਸਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="3909222758573607742">ਖਾਤੇ ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="3913463964270756493">Google Lens ਨਾਲ ਖੋਜ ਸਕ੍ਰੀਨ ਲੁਕਾਓ</translation>
 <translation id="3914640181019354363">ਪਤਿਆਂ ਦਾ ਪਤਾ ਲਗਾਓ</translation>
 <translation id="3922185497376658606">ਵੈੱਬ-ਪੰਨੇ ਪ੍ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="3922395466317605522">ਮੀਨੂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>

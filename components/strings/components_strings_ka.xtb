@@ -809,7 +809,6 @@
 <translation id="238459632961158867">ვებსაიტი</translation>
 <translation id="2385809941344967209">განაახლეთ Chrome თქვენი Chrome-ის პარამეტრებიდან</translation>
 <translation id="2386255080630008482">სერვერის სერტიფიკატი გაუქმდა.</translation>
-<translation id="2386410849674401722">ზევით აწეული ცერით გაიგზავნება გამოხმაურება იმის შესახებ, რომ ხელოვნური ინტელექტით ავტომატური შევსების ფუნქცია მოგწონთ</translation>
 <translation id="2388828676877700238">საგადასახადო საქმე და დაგეგმვა</translation>
 <translation id="239203817277685015">განვრცობა</translation>
 <translation id="239293030466334554">ავტომობილები გადასახსნელი ზედით</translation>
@@ -1442,7 +1441,6 @@
 <translation id="3543935938072367282">სწრაფი ანგარიშსწორება ავტომატური შევსებით</translation>
 <translation id="3547442767634383572">სამსახურის პროფილის მიმოხილვა</translation>
 <translation id="3547746132308051926">20 x 24 დუიმი</translation>
-<translation id="3550325450190222557">გამოხმაურება ხელოვნური ინტელექტის მეშვეობით ავტომატური შევსების შესახებ.</translation>
 <translation id="3552155506104542239">ყურადღება: ეს წესები კონფლიქტშია „<ph name="POLICY_NAME" />“-თან და მას არ ექნება გავლენა Android-აპებზე. სხვა მხრივ ეს წესები დანიშნულებისამებრ მუშაობს.</translation>
 <translation id="3552297013052089404">Sans-serif შრიფტი</translation>
 <translation id="3558573058928565255">დღე</translation>
@@ -2899,7 +2897,6 @@
 <translation id="6124432979022149706">Chrome Enterprise მაერთებლები</translation>
 <translation id="6126565365696310362">კონვერტი Chinese 2</translation>
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
-<translation id="6128214169525122635">ქვევით დაწეული ცერით გაიგზავნება გამოხმაურება იმის შესახებ, რომ ხელოვნური ინტელექტით ავტომატური შევსების ფუნქცია არ მოგწონთ</translation>
 <translation id="6131824478727057281">მდებარეობა</translation>
 <translation id="6133320744616005677">დაშვების გაგრძელება</translation>
 <translation id="6133984428121856852">ფაილის გაფართოება ცარიელი ან არასწორად ფორმირებულია.</translation>
@@ -4597,7 +4594,6 @@
 <translation id="9150025764986957246">მაგალითად, შეგიძლიათ მიუთითოთ:</translation>
 <translation id="9154194610265714752">განახლებული</translation>
 <translation id="9155211586651734179">მიერთებული პერიფერიული აუდიომოწყობილობები</translation>
-<translation id="9155453166708525139">ავტომატური შევსება ხელოვნური ინტელექტის მეშვეობით ექსპერიმენტული ფუნქციაა და ის ყოველთვის არ იქნება ზუსტი. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">ჟურნალები</translation>
 <translation id="9157595877708044936">დაყენება…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}other{<ph name="FILE_COUNT" /> ფაილი, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}}</translation>

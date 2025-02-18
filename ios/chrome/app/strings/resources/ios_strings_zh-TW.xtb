@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">密碼因資料侵害事件外洩時發出警告</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="104491362976654916">離線版網頁</translation>
+<translation id="1049200476149974839">邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1053651653201045802">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資訊。</translation>
 <translation id="1054745118061919935">選擇繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">代管帳戶</translation>
 <translation id="1358214951266274152">前往你複製的連結</translation>
 <translation id="1360432990279830238">要登出並關閉同步處理功能嗎？</translation>
+<translation id="1362192716574455663">現有的瀏覽資料不會轉移到公司帳戶，但你仍可透過登出或新增個人帳戶的方式存取這些資料。</translation>
 <translation id="1363028406613469049">追蹤</translation>
 <translation id="1364367057792633742">新分頁</translation>
 <translation id="1365106417372288489">你的 iPhone 最近執行過還原作業，可能已變更預設瀏覽器。</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">關閉群組</translation>
 <translation id="178400879184240105">沒有重複使用的密碼</translation>
 <translation id="17906873777101817">提供儲存密碼和密碼金鑰的選項</translation>
+<translation id="1794893174442046596">分頁群組</translation>
 <translation id="1807893857950749072">允許接收價格追蹤通知…</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密碼</translation>
@@ -973,6 +976,7 @@
 <translation id="5238596603078743134">現在起，當<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />透過 Google 密碼管理工具登入 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 時，可以直接使用你的使用者名稱和密碼。</translation>
 <translation id="5242899254250321823">變更網站密碼</translation>
 <translation id="5248640482715684545">這個網站正在嘗試開啟另一個應用程式。</translation>
+<translation id="5250371859659394278">來源不明</translation>
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5279214046729249716">是，請保留</translation>

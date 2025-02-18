@@ -55,7 +55,17 @@ AutofillEntityDataManagerFactory::BuildServiceInstanceForBrowserContext(
   scoped_refptr<autofill::AutofillWebDataService> local_storage =
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
+  if (!local_storage) {
+    // This happens in tests because
+    // WebDataServiceFactory::ServiceIsNULLWhileTesting() is true.
+    return nullptr;
+  }
   return std::make_unique<EntityDataManager>(std::move(local_storage));
+}
+
+bool AutofillEntityDataManagerFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
 }
 
 }  // namespace autofill

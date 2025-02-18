@@ -34,7 +34,6 @@ class ServiceWorkerScriptCachedMetadataHandler : public CachedMetadataHandler {
       uint32_t data_type_id,
       GetCachedMetadataBehavior behavior = kCrashIfUnchecked) const override;
   String Encoding() const override;
-  bool IsServedFromCacheStorage() const override;
   void OnMemoryDump(WebProcessMemoryDump* pmd,
                     const String& dump_prefix) const override;
   size_t GetCodeCacheSize() const override;

@@ -35,11 +35,6 @@ class BrowserContext;
 
 namespace extensions {
 class Extension;
-namespace api {
-namespace app_runtime {
-struct ActionData;
-}  // namespace app_runtime
-}  // namespace api
 }  // namespace extensions
 
 namespace ash {
@@ -114,8 +109,7 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   // Callback used to launch a Chrome app.
   using LaunchChromeAppCallback =
       base::RepeatingCallback<void(content::BrowserContext* context,
-                                   const extensions::Extension*,
-                                   extensions::api::app_runtime::ActionData)>;
+                                   const extensions::Extension*)>;
 
   // Intent action used to launch Android apps.
   static const char kIntentAction[];

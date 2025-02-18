@@ -1985,6 +1985,8 @@ _CONFIG = [
             'third_party/blink/renderer/core/layout/layout_theme.cc',
             'third_party/blink/renderer/core/layout/layout_theme.h',
             'third_party/blink/renderer/core/scroll/',
+            'third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc',
+            'third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h',
         ],
         'allowed': ['ui::ColorProvider'],
     },

@@ -10,7 +10,7 @@
 #include "base/notimplemented.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
@@ -43,24 +43,22 @@
 #include "net/base/features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "url/gurl.h"
+
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/scoped_command_line.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "components/nacl/browser/nacl_browser.h"
 #endif  // BUILDFLAG(ENABLE_NACL)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/test/scoped_command_line.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/common/chrome_switches.h"
-#include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -81,19 +79,14 @@ constexpr char kTrustedUrl[] = "https://example.com/sample";
 constexpr char kUntrustedUrl[] = "https://non-example.com/sample";
 constexpr char kKioskAppInstallUrl[] = "https://kiosk.com/install";
 constexpr char kUserEmail[] = "user-email@example.com";
-
 constexpr char kNotAffiliatedErrorMessage[] =
     "This web API is not allowed if the current profile is not affiliated.";
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kUntrustedIwaAppOrigin[] =
     "isolated-app://abc2sheak3vpmm7vmjqnjwuzx3xwot3vdayrlgnvbkq2mp5lg4daaaic";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kKioskAppUrl[] = "https://kiosk.com/sample";
 constexpr char kInvalidKioskAppUrl[] = "https://invalid-kiosk.com/sample";
-
 constexpr char kNotAllowedOriginErrorMessage[] =
     "The current origin cannot use this web API because it is not allowed by "
     "the DeviceAttributesAllowedForOrigins policy.";
@@ -480,10 +473,6 @@ TEST_F(DeviceAPIServiceIwaTest, ReportErrorForDefaultUser) {
   ASSERT_TRUE(remote()->is_connected());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 class DeviceAPIServiceParamTest
     : public DeviceAPIServiceWebAppTest,
       public testing::WithParamInterface<std::pair<std::string, bool>> {
@@ -860,4 +849,4 @@ INSTANTIATE_TEST_SUITE_P(
                        std::pair<std::string, bool>("kiosk.com", true),
                        std::pair<std::string, bool>("*://kiosk.com:*/", true),
                        std::pair<std::string, bool>("[*.]kiosk.com", true)}));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

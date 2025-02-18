@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">আটাইবোৰ তুলনাৰ তালিকা দেখুৱাওক</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপোনাৰ Google একাউণ্টত নিজৰ তথ্য, গোপনীয়তা আৰু সুৰক্ষা পৰিচালনা কৰিবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
+<translation id="1793473605302304726">নিৰ্ধাৰিত সময়তকৈ বেছি পৰিশোধ কৰক</translation>
 <translation id="1793631236004319016">অন্তিমবাৰ <ph name="NUM_HOURS_MINUTES_SECONDS" /> পূর্বে ব্যৱহাৰ কৰা হৈছিল</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, একাধিক কাৰ্য উপলব্ধ, সেইবিলাক এটা এটাকৈ চাবলৈ টেব টিপক</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@
 <translation id="238459632961158867">ৱেবছাইট</translation>
 <translation id="2385809941344967209">আপোনাৰ Chromeৰ ছেটিংসমূহৰ পৰা Chrome আপডে’ট কৰক</translation>
 <translation id="2386255080630008482">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ প্ৰত্যাহাৰ কৰা হৈছে।</translation>
-<translation id="2386410849674401722">থাম্বছ আপে আপুনি AIৰ জৰিয়তে স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধাটো লাইক কৰা বুলি মতামত দাখিল কৰে</translation>
 <translation id="2388828676877700238">কৰৰ পৰিমাণ নিৰ্ধাৰণ আৰু পৰিকল্পনা কৰা</translation>
 <translation id="239203817277685015">বিস্তৃত কৰক</translation>
 <translation id="239293030466334554">কনভাৰ্টিবল</translation>
@@ -1438,7 +1438,6 @@
 <translation id="3543935938072367282">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ জৰিয়তে দ্ৰুতভাৱে চেক আউট কৰক</translation>
 <translation id="3547442767634383572">কৰ্মস্থানৰ প্ৰ’ফাইলৰ অৱলোকন</translation>
 <translation id="3547746132308051926">২০ x ২৪ ইঞ্চি</translation>
-<translation id="3550325450190222557">AIৰ জৰিয়তে স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ বাবে মতামত প্ৰেৰণ কৰক।</translation>
 <translation id="3552155506104542239">সকীয়নি: এই নীতিটো <ph name="POLICY_NAME" />ৰ সৈতে বিবাদমান হৈছে আৰু Android এপত কোনো প্ৰভাৱ নপৰে। অন্যথা, এই নীতিটোৱে আশা কৰা ধৰণে কাম কৰি আছে।</translation>
 <translation id="3552297013052089404">Sans-serif ফ’ণ্ট</translation>
 <translation id="3558573058928565255">দিনত</translation>
@@ -2894,7 +2893,6 @@
 <translation id="6124432979022149706">Chrome এণ্টাৰপ্ৰাইজ কানেক্টৰসমূহ</translation>
 <translation id="6126565365696310362">এনভেল’প চীনা #২</translation>
 <translation id="6127379762771434464">বস্তুটো আঁতৰোৱা হ’ল</translation>
-<translation id="6128214169525122635">থাম্বছ ডাউনে আপুনি AIৰ জৰিয়তে স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধাটো ডিছলাইক কৰা বুলি মতামত দাখিল কৰে</translation>
 <translation id="6131824478727057281">অৱস্থান</translation>
 <translation id="6133320744616005677">অনুমতি দি থাকক</translation>
 <translation id="6133984428121856852">ফাইলৰ এক্সটেনশ্বনটো খালী অথবা ই ভালকৈ কাম কৰা নাই।</translation>
@@ -3406,6 +3404,7 @@
 <translation id="7042616127917168121">ফলাফল পৰিষ্কাৰ কৰক</translation>
 <translation id="7043552168914147882">টেব ষ্টক</translation>
 <translation id="7044081119134178347">এইবাৰ কেমেৰা ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
+<translation id="704738887031336226">চেক আউটত <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />নিৰ্ধাৰিত সময়তকৈ বেছি পৰিশোধ কৰক<ph name="PAY_OVER_TIME_HELP_LINK_END" /> বিকল্পসমূহ প্ৰদৰ্শন কৰক</translation>
 <translation id="7048095965575426564">ইউৰোপীয়ান ফেনফ’ল্ড</translation>
 <translation id="7050187094878475250">আপুনি <ph name="DOMAIN" />লৈ যাবলৈ চেষ্টা কৰিছিল, কিন্তু ছাৰ্ভাৰটোৱে এখন প্ৰমাণপত্ৰ উপস্থাপন কৰিছে যাৰ ম্যাদ উকলাৰ সময় অৱধি যথেষ্ট দীঘল হোৱাৰ বাবে সেইখন বিশ্বাস কৰিব নোৱাৰি।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{এই মুহূৰ্তত এই কার্ডখন ছেভ কৰিব নোৱাৰি}one{এই মুহূৰ্তত এই কার্ডসমূহ ছেভ কৰিব নোৱাৰি}other{এই মুহূৰ্তত এই কার্ডসমূহ ছেভ কৰিব নোৱাৰি}}</translation>
@@ -4590,7 +4589,6 @@
 <translation id="9150025764986957246">আপুনি এইসমূহৰ দৰে বস্তু অন্তৰ্ভুক্ত কৰিব পাৰে:</translation>
 <translation id="9154194610265714752">আপডে’ট কৰা হ’ল</translation>
 <translation id="9155211586651734179">অডিঅ’ পৰিধীয় সংযুক্ত কৰা হ’ল</translation>
-<translation id="9155453166708525139">AIৰ জৰিয়তে স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধা হৈছে এটা পৰীক্ষামূলক সুবিধা আৰু ই সদায়েই সঠিক নহয়। <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />।</translation>
 <translation id="9155646082713385498">আলোচনী</translation>
 <translation id="9157595877708044936">ছেট আপ কৰি থকা হৈছে...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />ত সংবেদনশীল সমল থাকিব পাৰে}one{<ph name="FILE_COUNT" /> টা ফাইলত সংবেদনশীল সমল থাকিব পাৰে}other{<ph name="FILE_COUNT" /> টা ফাইলত সংবেদনশীল সমল থাকিব পাৰে}}</translation>

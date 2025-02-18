@@ -1191,6 +1191,7 @@
 <translation id="1812027881030482584">ບໍ່ສາມາດດຳເນີນການຕໍ່ໂດຍໃຊ້ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ໃນ <ph name="SITE_ETLD_PLUS_ONE" /> ໄດ້</translation>
 <translation id="1812284620455788548">ກຳລັງສົ່ງສັນຍານ <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">ການ​ບໍ​ລິ​ການ</translation>
+<translation id="1813828404076816564">ເລືອກປຸ່ມຄຳຕິຊົມເພື່ອສົ່ງຄຳຕິຊົມກ່ຽວກັບຄຸນສົມບັດກຸ່ມແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="18139523105317219">ຊື່ຝ່າຍ EDI</translation>
 <translation id="1815083418640426271">ແປະເປັນຂໍ້ຄວາມທໍາມະດາ</translation>
 <translation id="1815097521077272760">ທ່ານຖືກເຊີນໃຫ້ລອງໃຊ້ການຄວບຄຸມດ້ວຍແປ້ນພິມສຳລັບເກມນີ້.</translation>
@@ -2299,7 +2300,6 @@
 <translation id="2569972178052279830">ຊື່ຜູ້ຂາຍຍ່ອຍ</translation>
 <translation id="257088987046510401">ເທມ</translation>
 <translation id="2571638829488071045">ບັນທຶກສ່ວນຂະຫຍາຍນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານບໍ?</translation>
-<translation id="2571655996835834626">ປ່ຽນການຕັ້ງຄ່າທີ່ຄວບຄຸມການເຂົ້າເຖິງຄຸນສົມບັດຕ່າງໆຂອງເວັບໄຊ ເຊັ່ນ: ຄຸກກີ້, JavaScript, ປລັກອິນ, ສະຖານທີ່ທາງພູມສາດ, ໄມໂຄຣໂຟນ, ກ້ອງຖ່າຍຮູບ ແລະ ອື່ນໆ.</translation>
 <translation id="257175846174451436">ກຸ່ມແຖບທີ່ແນະນຳ</translation>
 <translation id="2572032849266859634">​ການເຂົ້າ​ຫາ <ph name="VOLUME_NAME" /> ອ່ານ​ເທົ່າ​ນັ້ນໄດ້​ຮັບ​​ອະ​ນຸ​ຍາດແລ້ວ​.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> ແຖບ</translation>
@@ -4123,6 +4123,7 @@
 <translation id="3857807444929313943">ຍົກຂຶ້ນ, ຈາກນັ້ນແຕະອີກຄັ້ງ</translation>
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="385939467708172187">ໃຊ້ລະຫັດຜ່ານຍາກ</translation>
+<translation id="3859869403161297890">ສົ່ງຄຳຕິຊົມຂອງທ່ານກ່ຽວກັບກຸ່ມແຖບທີ່ແບ່ງປັນໄດ້ບ່ອນນີ້</translation>
 <translation id="3859987779882450877">ແນະນຳ ແລະ ສ້າງກຸ່ມຈາກແຖບທີ່ເປີດຢູ່ຂອງທ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="386009056910366930">ຈັດການກຸ່ມແຖບ “<ph name="GROUP_NAME" />”</translation>
 <translation id="3861638017150647085">ຊື່ຜູ້ໃຊ້ "<ph name="USERNAME" />" ບໍ່ສາມາດໃຊ້ໄດ້</translation>
@@ -7629,7 +7630,6 @@
 <translation id="6411135999030237579">ກົດຄ້າງໄວ້ເພື່ອກົດປຸ່ມຊ້ຳໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6414618057231176439">ເລືອກເວີຊັນຂອງ <ph name="VM_NAME" /> ທີ່ຈະຕິດຕັ້ງ.</translation>
 <translation id="641469293210305670">ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບ</translation>
-<translation id="6414878884710400018">ເປີດການຕັ້ງຄ່າລະບົບ</translation>
 <translation id="6415757856498750027">ພິມ "w" ເພື່ອໃຊ້ "ư"</translation>
 <translation id="6415816101512323589">ເປີດການກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານບໍ?</translation>
 <translation id="6415900369006735853">ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດຜ່ານໂທລະສັບຂອງທ່ານ</translation>
@@ -8176,6 +8176,7 @@
 <translation id="6805478749741295868">ນີ້ແມ່ນຄຸນສົມບັດ AI ເວີຊັນທົດລອງ ແລະ ອາດເຮັດວຽກໄດ້ບໍ່ຖືກຕ້ອງສະເໝີໄປ.</translation>
 <translation id="6805647936811177813">ກະ​ລຸ​ນາ​ລົງຊື່ເຂົ້າ​ໃຊ້ <ph name="TOKEN_NAME" /> ເພື່ອນໍາເອົາໃບຢັ້ງຢືນເຄືອຂ່າຍເຂົ້າມາຈາກ <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">ເປີດໃຊ້ງານການຕິດຕາມ RLZ ຢູ່ໃນ <ph name="SHORT_PRODUCT_OS_NAME" /> .</translation>
+<translation id="6805817411033102703">ຄຳຕິຊົມກ່ຽວກັບກຸ່ມແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="6806089545527108739">ບໍ່ອະນຸຍາດແຕ່ໃຫ້ຖາມຄືນໃນພາຍຫຼັງ</translation>
 <translation id="680644983456221885">ການປົກປ້ອງເຊີງບຸກແບບສົດໆຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ ເຊິ່ງອີງຕາມຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານທີ່ສົ່ງໄປຫາ Google</translation>
 <translation id="6806781719264274042">ສະເພາະລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານທີ່ມີບັນຊີ Google. <ph name="LINK_BEGIN" />ເບິ່ງລາຍຊື່ຜູ້ຕິດຕໍ່<ph name="LINK_END" /></translation>

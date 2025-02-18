@@ -33,6 +33,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -50,6 +52,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for the Safety Hub Magic Stack mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
+// TODO(crbug.com/390442009): Update the tests when the logic starts taking the flag into account
+// explicitly. For now the flag is checked in PasswordManagerHelper which gets indirectly
+// invoked by these tests.
+@Features.DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class SafetyHubMagicStackMediatorTest {
     private static final String DESCRIPTION = "description";
 

@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Uključite tamni režim</translation>
+<translation id="2164131940279488868">Proverite da li je mikrofon povezan da biste počeli da snimate zvuk</translation>
 <translation id="2173302385160625112">Proverite internet vezu</translation>
 <translation id="2180197493692062006">Došlo je do greške. Probajte da ponovo otvorite aplikaciju.</translation>
 <translation id="2189104374785738357">Izmenite detalje naziva pristupne tačke</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">limunovi</translation>
 <translation id="2570743873672969996">Pokreće se test <ph name="TEST_NAME" />...</translation>
 <translation id="2573178735329662769">Snimanje svih zvukova na Chromebook-u</translation>
-<translation id="2575552334616524665">To možete da uključite u Podešavanjima ili meniju <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Ovo će zauzeti do 2 GB memorijskog prostora</translation>
 <translation id="2584547424703650812">Svetleći pejzaži</translation>
 <translation id="2584559707064218956">Da biste podesili mrežu, idite u Podešavanja</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> pozadina sa slovom <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
 <translation id="3404249063913988450">Omogućite čuvar ekrana</translation>
-<translation id="3410165745972100556">Transkript je isključen</translation>
 <translation id="3413935475507503304">Da biste nastavili sa ažuriranjem, kliknite na Dalje.</translation>
 <translation id="3428551088151258685">otvoreni</translation>
 <translation id="3428971106895559033">pastelnim</translation>
@@ -1685,6 +1684,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8876270629542503161">Uređaj je tablet.</translation>
 <translation id="8881098542468797602">Test je uspeo</translation>
 <translation id="8882789155418924367">sove</translation>
+<translation id="8885038613856655272">Povežite mikrofon</translation>
 <translation id="8892443466059986410">Otkažite izmenu prečica</translation>
 <translation id="8897043028305808902">Fajl je preimenovan</translation>
 <translation id="8898840733695078011">Jačina signala</translation>

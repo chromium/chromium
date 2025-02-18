@@ -60,11 +60,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiWebPImageDecodeAcceleration);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kVulkan);
 
-#if BUILDFLAG(IS_OZONE)
-GPU_EXPORT BASE_DECLARE_FEATURE(
-    kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported);
-#endif
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphite);
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphitePrecompilation);
 GPU_EXPORT extern const base::FeatureParam<bool>
@@ -79,13 +74,9 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
 #endif
 
 GPU_EXPORT BASE_DECLARE_FEATURE(
-    kExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage);
-GPU_EXPORT BASE_DECLARE_FEATURE(
     kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage);
 GPU_EXPORT BASE_DECLARE_FEATURE(
     kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage);
-GPU_EXPORT BASE_DECLARE_FEATURE(
-    kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
 

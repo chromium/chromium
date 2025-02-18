@@ -340,34 +340,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
             extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error);
   }
 
-  scoped_refptr<const extensions::Extension> CreateAndInstallLockScreenApp(
-      const std::string& id,
-      const std::string& app_name,
-      Profile* profile) {
-    return CreateAndInstallLockScreenAppWithPermissions(
-        id, app_name, base::Value::List().Append("lockScreen"), profile);
-  }
-
-  scoped_refptr<const extensions::Extension>
-  CreateAndInstallLockScreenAppWithPermissions(
-      const std::string& id,
-      const std::string& app_name,
-      std::optional<base::Value::List> permissions,
-      Profile* profile) {
-    base::Value::List lock_enabled_action_handler = base::Value::List().Append(
-        base::Value::Dict()
-            .Set("action",
-                 app_runtime::ToString(app_runtime::ActionType::kNewNote))
-            .Set("enabled_on_lock_screen", true));
-
-    scoped_refptr<const extensions::Extension> keep_extension =
-        CreateExtension(id, app_name, std::move(permissions),
-                        std::move(lock_enabled_action_handler));
-    InstallExtension(keep_extension.get(), profile);
-
-    return keep_extension;
-  }
-
   // BrowserWithTestWindowTest:
   std::optional<std::string> GetDefaultProfileName() override {
     return kTestProfileName;
@@ -470,10 +442,8 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
  private:
   // Callback registered with the helper to record Chrome app launch requests.
   void LaunchChromeApp(content::BrowserContext* passed_context,
-                       const extensions::Extension* extension,
-                       app_runtime::ActionData action_data) {
+                       const extensions::Extension* extension) {
     EXPECT_EQ(profile(), passed_context);
-    EXPECT_EQ(app_runtime::ActionType::kNewNote, action_data.action_type);
     launched_chrome_apps_.push_back(ChromeAppLaunchInfo{extension->id()});
   }
 
@@ -544,70 +514,6 @@ TEST_F(NoteTakingHelperTest, ListChromeApps) {
       {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/},
        {kProdKeepAppName, kProdKeepExtensionId, true /*preferred*/}}));
   EXPECT_EQ(helper()->GetPreferredAppId(profile()), kProdKeepExtensionId);
-}
-
-TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
-  Init(ENABLE_PALETTE);
-
-  ASSERT_FALSE(helper()->IsAppAvailable(profile()));
-  ASSERT_TRUE(helper()->GetAvailableApps(profile()).empty());
-
-  base::Value::List lock_disabled_action_handler = base::Value::List().Append(
-      app_runtime::ToString(app_runtime::ActionType::kNewNote));
-
-  // Install Keep app that does not support lock screen note taking - it should
-  // be reported not to support lock screen note taking.
-  scoped_refptr<const extensions::Extension> prod_extension = CreateExtension(
-      kProdKeepExtensionId, kProdKeepAppName, /*permissions=*/std::nullopt,
-      std::move(lock_disabled_action_handler));
-  InstallExtension(prod_extension.get(), profile());
-  EXPECT_TRUE(helper()->IsAppAvailable(profile()));
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kProdKeepAppName, kProdKeepExtensionId, false /*preferred*/}}));
-  EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
-
-  // Install additional Keep app - one that supports lock screen note taking.
-  // This app should be reported to support note taking.
-  scoped_refptr<const extensions::Extension> dev_extension =
-      CreateAndInstallLockScreenApp(kDevKeepExtensionId, kDevKeepAppName,
-                                    profile());
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/},
-       {kProdKeepAppName, kProdKeepExtensionId, false /*preferred*/}}));
-  EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
-}
-
-// Verify the note helper detects apps with "new_note" "action_handler" manifest
-// entries.
-TEST_F(NoteTakingHelperTest, CustomChromeApps) {
-  Init(ENABLE_PALETTE);
-
-  const extensions::ExtensionId kNewNoteId = crx_file::id_util::GenerateId("a");
-  const extensions::ExtensionId kEmptyArrayId =
-      crx_file::id_util::GenerateId("b");
-  const extensions::ExtensionId kEmptyId = crx_file::id_util::GenerateId("c");
-  const std::string kName = "Some App";
-
-  // "action_handlers": ["new_note"]
-  scoped_refptr<const extensions::Extension> has_new_note = CreateExtension(
-      kNewNoteId, kName, /*permissions=*/std::nullopt,
-      base::Value::List().Append(
-          app_runtime::ToString(app_runtime::ActionType::kNewNote)));
-  InstallExtension(has_new_note.get(), profile());
-  // "action_handlers": []
-  scoped_refptr<const extensions::Extension> empty_array = CreateExtension(
-      kEmptyArrayId, kName, /*permissions=*/std::nullopt, base::Value::List());
-  InstallExtension(empty_array.get(), profile());
-  // (no action handler entry)
-  scoped_refptr<const extensions::Extension> none =
-      CreateExtension(kEmptyId, kName);
-  InstallExtension(none.get(), profile());
-
-  // Only the "new_note" extension is returned from GetAvailableApps.
-  EXPECT_TRUE(AvailableAppsMatch(profile(),
-                                 {{kName, kNewNoteId, false /*preferred*/}}));
 }
 
 // Web apps with a note_taking_new_note_url show as available note-taking apps.
@@ -721,33 +627,6 @@ TEST_F(NoteTakingHelperTest_WebLockScreenApiEnabled, LockScreenWebAppsListed) {
   EXPECT_TRUE(AvailableAppsMatch(
       profile(), {{"Web App 1", app1_id, /*preferred=*/false},
                   {"Web App 2", app2_id, /*preferred=*/false}}));
-}
-
-// Verify that non-allowlisted apps cannot be enabled on lock screen.
-TEST_F(NoteTakingHelperTest, CustomLockScreenEnabledApps) {
-  Init(ENABLE_PALETTE);
-
-  const extensions::ExtensionId kNewNoteId = crx_file::id_util::GenerateId("a");
-  const std::string kName = "Some App";
-
-  scoped_refptr<const extensions::Extension> extension =
-      CreateAndInstallLockScreenApp(kNewNoteId, kName, profile());
-
-  EXPECT_TRUE(AvailableAppsMatch(profile(),
-                                 {{kName, kNewNoteId, false /*preferred*/}}));
-}
-
-TEST_F(NoteTakingHelperTest, AllowlistedAndCustomAppsShowOnlyOnce) {
-  Init(ENABLE_PALETTE);
-
-  scoped_refptr<const extensions::Extension> extension = CreateExtension(
-      kProdKeepExtensionId, "Keep", /*permissions=*/std::nullopt,
-      base::Value::List().Append(
-          app_runtime::ToString(app_runtime::ActionType::kNewNote)));
-  InstallExtension(extension.get(), profile());
-
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{"Keep", kProdKeepExtensionId, false /*preferred*/}}));
 }
 
 TEST_F(NoteTakingHelperTest, LaunchChromeApp) {

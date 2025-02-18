@@ -114,8 +114,13 @@ import java.util.Set;
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(
-        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+// TODO(crbug.com/397186266): Update the tests when updating SafetyCheckMediator itself.
+// The mediator exercises a code path checking the LOGIN_DB_DEPRECATION_ANDROID
+// flag, so it has to be set up explicitly in tests.
+@DisableFeatures({
+    ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING,
+    ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID
+})
 public class SafetyCheckMediatorTest {
     private static final String SAFETY_CHECK_INTERACTIONS_HISTOGRAM =
             "Settings.SafetyCheck.Interactions";

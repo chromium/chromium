@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -19,10 +20,12 @@
 #include "third_party/blink/renderer/core/testing/dummy_modulator.h"
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/webui_bundled_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -32,6 +35,33 @@ using ::testing::_;
 namespace blink {
 
 namespace {
+
+// Creates cached metadata for `module_text`.
+scoped_refptr<blink::CachedMetadata> CreateCachedMetadataForModule(
+    v8::Isolate* isolate,
+    const String& module_text,
+    CachedMetadataHandler* cache_handler) {
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = v8::Context::New(isolate);
+  v8::Context::Scope context_scope(context);
+
+  v8::ScriptOrigin origin(
+      V8String(isolate, nullptr), /*resource_line_offset=*/0,
+      /*resource_column_offset=*/0, /*resource_is_shared_cross_origin=*/false,
+      /*script_id=*/-1,
+      /*source_map_url=*/v8::Local<v8::Value>(), /*resource_is_opaque=*/false,
+      /*is_wasm=*/false, /*is_module=*/true);
+  v8::ScriptCompiler::Source source(V8String(isolate, module_text), origin);
+  v8::Local<v8::Module> module;
+  EXPECT_TRUE(v8::ScriptCompiler::CompileModule(
+                  isolate, &source, v8::ScriptCompiler::kEagerCompile)
+                  .ToLocal(&module));
+
+  std::unique_ptr<v8::ScriptCompiler::CachedData> cache_data(
+      v8::ScriptCompiler::CreateCodeCache(module->GetUnboundModuleScript()));
+  return blink::CachedMetadata::Create(
+      blink::V8CodeCache::TagForCodeCache(cache_handler), ToSpan(*cache_data));
+}
 
 class ModuleScriptTestModulator final : public DummyModulator {
  public:
@@ -463,6 +493,60 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
         break;
     }
   }
+}
+
+TEST_F(ModuleScriptTest, LoadingSupportsWebUIBundledCodeCaching) {
+  // Initialize the modulator.
+  V8TestingScope scope;
+  Modulator* modulator =
+      MakeGarbageCollected<ModuleScriptTestModulator>(scope.GetScriptState());
+  Modulator::SetModulator(scope.GetScriptState(), modulator);
+
+  // Create the webui cached metadata handler.
+  WebUIBundledCachedMetadataHandler* cache_handler =
+      MakeGarbageCollected<WebUIBundledCachedMetadataHandler>();
+  const uint32_t code_tag = V8CodeCache::TagForCodeCache(cache_handler);
+  EXPECT_FALSE(cache_handler->GetCachedMetadata(code_tag, kCrashIfUnchecked));
+
+  // Generate the module source.
+  const String module_source = LargeSourceText();
+
+  auto load_and_test_module = [&]() {
+    JSModuleScript* module_script =
+        CreateJSModuleScript(modulator, module_source, cache_handler);
+    ASSERT_TRUE(module_script);
+
+    // Check that the module script is instantiated/evaluated correctly.
+    ASSERT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(),
+                                          module_script->V8Module(),
+                                          module_script->SourceUrl())
+                    .IsEmpty());
+    ASSERT_EQ(module_script
+                  ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())
+                  .GetResultType(),
+              ScriptEvaluationResult::ResultType::kSuccess);
+    TestFoo(scope);
+  };
+
+  // Load the module and assert the script is instantiated/evaluated
+  // successfully with no metadata provided.
+  EXPECT_FALSE(cache_handler->did_use_code_cache_for_testing());
+  load_and_test_module();
+  EXPECT_FALSE(cache_handler->did_use_code_cache_for_testing());
+
+  // Generate cached metadata for the module and update the cache handler.
+  scoped_refptr<blink::CachedMetadata> cached_metadata =
+      CreateCachedMetadataForModule(scope.GetIsolate(), LargeSourceText(),
+                                    cache_handler);
+  cache_handler->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(cached_metadata->SerializedData()));
+  EXPECT_TRUE(cache_handler->GetCachedMetadata(code_tag, kCrashIfUnchecked));
+
+  // Load the module and assert the script is instantiated/evaluated
+  // successfully with cached metadata supplied.
+  EXPECT_FALSE(cache_handler->did_use_code_cache_for_testing());
+  load_and_test_module();
+  EXPECT_TRUE(cache_handler->did_use_code_cache_for_testing());
 }
 
 }  // namespace blink

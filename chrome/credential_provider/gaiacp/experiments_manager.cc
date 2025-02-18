@@ -77,16 +77,16 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   experiments_file->Read(0, buffer.data(), buffer.size());
   experiments_file.reset();
 
-  std::optional<base::Value> experiments_data =
-      base::JSONReader::Read(std::string_view(buffer.data(), buffer.size()),
-                             base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!experiments_data || !experiments_data->is_dict()) {
+  std::optional<base::Value::Dict> experiments_data =
+      base::JSONReader::ReadDict(std::string_view(buffer.data(), buffer.size()),
+                                 base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!experiments_data) {
     LOGFN(ERROR) << "Failed to read experiments data from file!";
     return false;
   }
 
   const base::Value::List* experiments_value =
-      experiments_data->GetDict().FindList(kResponseExperimentsKeyName);
+      experiments_data->FindList(kResponseExperimentsKeyName);
   if (!experiments_value) {
     LOGFN(ERROR) << "User experiments not found!";
     return false;

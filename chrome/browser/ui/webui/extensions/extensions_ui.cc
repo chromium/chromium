@@ -395,7 +395,15 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"safetyCheckExtensionThreeDotDetails",
        IDS_EXTENSIONS_SC_THREEDOT_DETAILS},
       {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
+
+// TODO(crbug.com/391777809): Make the message available on desktop android
+// without adding unused strings.
+#if BUILDFLAG(IS_ANDROID)
+      {"safetyHubHeader", IDS_OK /* placeholder to avoid crash */},
+#else
       {"safetyHubHeader", IDS_SETTINGS_SAFETY_HUB},
+#endif
+
       {"safetyCheckRemoveButtonA11yLabel",
        IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
       {"safetyCheckOptionMenuA11yLabel",
@@ -471,6 +479,11 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "safetyHubThreeDotDetails",
       base::FeatureList::IsEnabled(features::kSafetyHubThreeDotDetails));
 
+// TODO(crbug.com/392777363): Clean these up with non-placeholder values.
+#if BUILDFLAG(IS_ANDROID)
+  source->AddInteger("MV2ExperimentStage", 0);
+  source->AddBoolean("MV2DeprecationNoticeDismissed", true);
+#else
   // MV2 deprecation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
   MV2ExperimentStage experiment_stage =
@@ -479,6 +492,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean(
       "MV2DeprecationNoticeDismissed",
       mv2_experiment_manager->DidUserAcknowledgeNoticeGlobally());
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddString(

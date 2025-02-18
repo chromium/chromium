@@ -2299,7 +2299,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2569972178052279830">Jälleenmyyjän nimi</translation>
 <translation id="257088987046510401">Teemat</translation>
 <translation id="2571638829488071045">Tallennetaanko tämä laajennus Google-tilille?</translation>
-<translation id="2571655996835834626">Muokata asetuksia, jotka määrittävät verkkosivustojen pääsyn ominaisuuksiin (esim. evästeet, JavaScript, laajennukset, sijainnit, mikrofoni, kamera)</translation>
 <translation id="257175846174451436">Välilehtiryhmää ehdotettu</translation>
 <translation id="2572032849266859634">Laajennukselle myönnettiin vain luku -oikeus tallennusvälineeseen <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> välilehteä</translation>
@@ -7627,7 +7626,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6411135999030237579">Toista näppäin automaattisesti painamalla pitkään</translation>
 <translation id="6414618057231176439">Valitse asennettava versio (<ph name="VM_NAME" />).</translation>
 <translation id="641469293210305670">Päivitysten ja sovellusten asentaminen</translation>
-<translation id="6414878884710400018">Avaa järjestelmäasetukset</translation>
 <translation id="6415757856498750027">Saat kirjaimen "u" kirjoittamalla "w".</translation>
 <translation id="6415816101512323589">Otetaanko paikallinen datan palautus käyttöön datan suojaamiseksi?</translation>
 <translation id="6415900369006735853">Yhdistä internetiin puhelimella</translation>

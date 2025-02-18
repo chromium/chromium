@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -66,19 +67,23 @@ typedef NS_ENUM(NSUInteger, SectionIdentifier) {
   SyncErrorsSectionIdentifier = kSectionIdentifierEnumZero,
   // List of accounts.
   AccountsSectionIdentifier,
-  // Manage accounts ans sign-out.
+  // Manage accounts and sign-out.
   SignOutSectionIdentifier,
+  // Settings.
+  SettingsSectionIdentifier,
 };
 
 typedef NS_ENUM(NSUInteger, RowIdentifier) {
-  // Error section
+  // Error section.
   RowIdentifierErrorExplanation = kItemTypeEnumZero,
   RowIdentifierErrorButton,
-  // Signout section
+  // Signout section.
   RowIdentifierSignOut,
   // Accounts section.
   RowIdentifierAddAccount,
   // The secondary account entries use the gaia ID as item identifier.
+  // Settings section.
+  RowIdentifierSettings,
 };
 
 // Custom detent identifier for when the bottom sheet is minimized.
@@ -348,6 +353,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   NSString* label = nil;
   NSString* accessibilityIdentifier = nil;
   NSString* accessibilityLabel = nil;
+  UIColor* textColor = [UIColor colorNamed:kBlueColor];
   switch (rowIdentifier) {
     case RowIdentifierErrorExplanation: {
       SettingsImageDetailTextCell* cell =
@@ -380,6 +386,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
           l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
       accessibilityIdentifier = kAccountMenuSignoutButtonId;
       break;
+    case RowIdentifierSettings:
+      label = l10n_util::GetNSString(IDS_IOS_ACCOUNT_MENU_OPEN_SETTINGS);
+      accessibilityIdentifier = kAccountMenuOpenSettingsButtonId;
+      textColor = [UIColor colorNamed:kSolidBlackColor];
+      break;
     default:
       NOTREACHED();
   }
@@ -391,7 +402,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   cell.textLabel.text = label;
   cell.accessibilityLabel = accessibilityLabel ? accessibilityLabel : label;
   cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
+  cell.textLabel.textColor = textColor;
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = accessibilityIdentifier;
   return cell;
@@ -466,6 +477,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
              intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
 
+  [snapshot appendSectionsWithIdentifiers:@[ @(SettingsSectionIdentifier) ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSettings) ]
+             intoSectionWithIdentifier:@(SettingsSectionIdentifier)];
+
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
@@ -504,6 +519,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_AddAccount"));
         [self.mutator didTapAddAccount];
+        break;
+      case RowIdentifierSettings:
+        [self.mutator didTapSettingsButton];
         break;
       case RowIdentifierErrorExplanation:
         break;
@@ -618,14 +636,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [self resize];
 }
 
-- (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
+- (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)gaiaIDsToAdd
                           gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove
                             gaiaIDsToKeep:(NSArray<NSString*>*)gaiaIDsToKeep {
   CHECK(!_selectedIndexPath, base::NotFatalUntil::M135);
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
 
   NSMutableArray* accountsIdentifiersToAdd = [[NSMutableArray alloc] init];
-  for (NSString* gaiaID in indicesToAdd) {
+  for (NSString* gaiaID in gaiaIDsToAdd) {
     [accountsIdentifiersToAdd addObject:gaiaID];
   }
   [snapshot insertItemsWithIdentifiers:accountsIdentifiersToAdd

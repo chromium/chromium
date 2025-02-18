@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
 <translation id="104491362976654916">Pagina offline</translation>
+<translation id="1049200476149974839">vorrebbe che partecipassi a un gruppo di schede. Chiunque abbia il link può modificare tutte le schede, quindi agisci con prudenza. Il link scade tra 48 ore.</translation>
 <translation id="1049743911850919806">In incognito</translation>
 <translation id="1053651653201045802">Account disconnesso. Accedi di nuovo per usare i preferiti, le password e altri dati nel tuo account.</translation>
 <translation id="1054745118061919935">Se continui, accetti i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" />.</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">Account gestito</translation>
 <translation id="1358214951266274152">Visita il link che hai copiato</translation>
 <translation id="1360432990279830238">Uscire e disattivare la sincronizzazione?</translation>
+<translation id="1362192716574455663">I dati di navigazione esistenti non verranno spostati nel tuo account aziendale. Puoi comunque accedervi disconnettendoti o aggiungendo un account personale.</translation>
 <translation id="1363028406613469049">Traccia</translation>
 <translation id="1364367057792633742">Nuova scheda</translation>
 <translation id="1365106417372288489">Il tuo iPhone è stato ripristinato di recente e questo potrebbe aver modificato il tuo browser predefinito.</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">Chiudi gruppo</translation>
 <translation id="178400879184240105">Le tue password sono univoche</translation>
 <translation id="17906873777101817">Chiedi di salvare password e passkey</translation>
+<translation id="1794893174442046596">Gruppo di schede</translation>
 <translation id="1807893857950749072">Consenti notifiche per il monitoraggio del prezzo…</translation>
 <translation id="1810976980198522421">Annulla</translation>
 <translation id="1815941218935345331">Passcode</translation>

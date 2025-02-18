@@ -66,7 +66,7 @@ DialogContentLoadWithTimeoutObserver::~DialogContentLoadWithTimeoutObserver() =
 void DialogContentLoadWithTimeoutObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (!render_frame_host->IsInPrimaryMainFrame() ||
+  if (!render_frame_host->IsInPrimaryMainFrame() || !validated_url.is_valid() ||
       !validated_url.spec().starts_with(pacp_url_->spec())) {
     return;
   }
@@ -78,7 +78,10 @@ void DialogContentLoadWithTimeoutObserver::DidFinishLoad(
   }
 }
 
-ParentAccessView::ParentAccessView(content::BrowserContext* context) {
+ParentAccessView::ParentAccessView(
+    content::BrowserContext* context,
+    base::OnceClosure dialog_result_reset_callback)
+    : dialog_result_reset_callback_(std::move(dialog_result_reset_callback)) {
   CHECK(context);
   // Create the web view in the native dialog.
   web_view_ = AddChildView(std::make_unique<views::WebView>(context));
@@ -92,7 +95,8 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
     const GURL& target_url,
     const supervised_user::FilteringBehaviorReason& filtering_reason,
     WebContentsObserverCreationCallback web_contents_observer_creation_cb,
-    base::OnceClosure abort_dialog_callback) {
+    base::OnceClosure abort_dialog_callback,
+    base::OnceClosure dialog_result_reset_callback) {
   CHECK(web_contents);
   CHECK(web_contents_observer_creation_cb);
 
@@ -104,23 +108,25 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   dialog_delegate->SetShowCloseButton(/*show_close_button=*/true);
   dialog_delegate->SetOwnedByWidget(/*delete_self=*/true);
 
-  // Obtain the default, platform-approriate, corner radius value computed by
-  // the delegate. This needs to be set in the ParentAccessView's inner web_view.
+  // Obtain the default, platform-appropriate, corner radius value computed by
+  // the delegate. This needs to be set in the ParentAccessView's inner
+  // web_view.
   int corner_radius = dialog_delegate->GetCornerRadius();
 
-  auto parent_access_view =
-      std::make_unique<ParentAccessView>(web_contents->GetBrowserContext());
+  auto parent_access_view = std::make_unique<ParentAccessView>(
+      web_contents->GetBrowserContext(),
+      std::move(dialog_result_reset_callback));
   const GURL pacp_url = GetPacpUrl(target_url, filtering_reason);
   parent_access_view->Initialize(pacp_url, corner_radius);
-
   // Keeps a pointer to the parent access views as it's ownership is transferred
   // to the delegate.
   auto view_weak_ptr = parent_access_view->GetWeakPtr();
   dialog_delegate->SetContentsView(std::move(parent_access_view));
 
-  constrained_window::CreateBrowserModalDialogViews(
+  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       std::move(dialog_delegate),
       /*parent=*/web_contents->GetTopLevelNativeWindow());
+  view_weak_ptr->widget_observations_.AddObservation(widget);
 
   // Starts observing the new dialog contents that have been created in
   // `Initialize`.
@@ -138,6 +144,16 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
           std::move(show_dialog_callback), std::move(abort_dialog_callback));
 
   return view_weak_ptr;
+}
+
+void ParentAccessView::OnWidgetClosing(views::Widget* widget) {
+  // The cancellation_metrics_callback_ is an once callback,
+  // so the metrics about a cancelled parent approval flow are recorded only
+  // once per dialog.
+  if (!dialog_result_reset_callback_.is_null()) {
+    std::move(dialog_result_reset_callback_).Run();
+  }
+  widget_observations_.RemoveAllObservations();
 }
 
 void ParentAccessView::CloseView() {

@@ -471,6 +471,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1791415068765905273">Tüm Karşılaştırma Tablolarını Göster</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınızda bilgilerinizi, gizliliğinizi ve güvenliğinizi yönetmek için Sekme'ye, ardından Enter'a basın</translation>
+<translation id="1793473605302304726">Taksitli ödeme</translation>
 <translation id="1793631236004319016">En son <ph name="NUM_HOURS_MINUTES_SECONDS" /> önce kullanıldı.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, birden fazla işlem mevcut, işlemler arasında geçiş yapmak için Sekme'ye basın</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="238459632961158867">Web sitesi</translation>
 <translation id="2385809941344967209">Chrome ayarlarınızdan Chrome'u güncelleyin</translation>
 <translation id="2386255080630008482">Sunucunun sertifikası iptal edildi.</translation>
-<translation id="2386410849674401722">Beğenme düğmesini tıkladığınızda yapay zeka ile otomatik doldurma özelliğinin hoşunuza gittiğine dair geri bildirim gönderilir</translation>
 <translation id="2388828676877700238">Vergi Hazırlığı ve Planlama</translation>
 <translation id="239203817277685015">Detaylandır</translation>
 <translation id="239293030466334554">Dönüştürülebilir ürünler</translation>
@@ -1441,7 +1441,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3543935938072367282">Otomatik doldurma özelliğiyle daha hızlı ödeme yapın</translation>
 <translation id="3547442767634383572">İş profiline genel bakış</translation>
 <translation id="3547746132308051926">20 x 24 inç</translation>
-<translation id="3550325450190222557">Yapay zeka ile otomatik doldurma hakkında geri bildirim gönderin.</translation>
 <translation id="3552155506104542239">Uyarı: Bu politika <ph name="POLICY_NAME" /> ile çakıştığından Android uygulamalarını etkilemeyecektir. Bunun dışında politika beklendiği şekilde çalışmaktadır.</translation>
 <translation id="3552297013052089404">Sans-Serif Yazı Tipi</translation>
 <translation id="3558573058928565255">Gündüz</translation>
@@ -2898,7 +2897,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Zarf Chinese #2</translation>
 <translation id="6127379762771434464">Öğe kaldırıldı</translation>
-<translation id="6128214169525122635">Beğenmeme düğmesini tıkladığınızda yapay zeka ile otomatik doldurma özelliğinin hoşunuza gitmediğine dair geri bildirim gönderilir</translation>
 <translation id="6131824478727057281">konum</translation>
 <translation id="6133320744616005677">İzin vermeye devam et</translation>
 <translation id="6133984428121856852">Dosya uzantısı boş veya bozuk.</translation>
@@ -3411,6 +3409,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7042616127917168121">Sonuçları hassaslaştır</translation>
 <translation id="7043552168914147882">Tab Stok</translation>
 <translation id="7044081119134178347">Şu anda kameraya izin veriliyor</translation>
+<translation id="704738887031336226">Ödeme sırasında <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />taksitli ödeme<ph name="PAY_OVER_TIME_HELP_LINK_END" /> seçeneklerini göster</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> alan adına erişmeyi denediniz, ancak sunucu, geçerlilik dönemi güvenilir olmayacak kadar uzun olan bir sertifika sundu.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Bu kart şu anda kaydedilemiyor}other{Bu kartlar şu anda kaydedilemiyor}}</translation>
@@ -4596,7 +4595,6 @@ Ek ayrıntılar:
 <translation id="9150025764986957246">Aşağıdaki gibi bilgileri girebilirsiniz:</translation>
 <translation id="9154194610265714752">Güncellendi</translation>
 <translation id="9155211586651734179">Takılı durumdaki ses çevre birimleri</translation>
-<translation id="9155453166708525139">Yapay zeka ile otomatik doldurma deneysel bir özellik olduğundan her zaman doğru sonuç vermeyebilir. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Dergiler</translation>
 <translation id="9157595877708044936">Ayarlanıyor...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> hassas içeriğe sahip olabilir}other{<ph name="FILE_COUNT" /> dosya hassas içeriğe sahip olabilir}}</translation>

@@ -363,8 +363,8 @@ TEST_F(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillExperimentsTest, WalletSyncTransportPref_GetAndSet) {
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
-  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
-  const CoreAccountId account2 = CoreAccountId::FromGaiaId("account2");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
+  const CoreAccountId account2 = CoreAccountId::FromGaiaId(GaiaId("account2"));
 
   // There should be no opt-in recorded at first.
   ASSERT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
@@ -411,7 +411,7 @@ TEST_F(AutofillExperimentsTest, WalletSyncTransportPrefExplicitSignin) {
       features::kAutofillRemovePaymentsButterDropdown};
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
 
-  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
   // There should be no opt-in recorded at first.
   ASSERT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
 
@@ -427,7 +427,7 @@ TEST_F(AutofillExperimentsTest, WalletSyncTransportPrefExplicitSignin) {
 TEST_F(AutofillExperimentsTest, WalletSyncTransportPref_UsesHashAccountId) {
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
 
-  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
 
   // There should be no opt-in recorded at first.
   EXPECT_TRUE(
@@ -448,8 +448,8 @@ TEST_F(AutofillExperimentsTest, WalletSyncTransportPref_UsesHashAccountId) {
 TEST_F(AutofillExperimentsTest, WalletSyncTransportPref_Clear) {
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
 
-  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
-  const CoreAccountId account2 = CoreAccountId::FromGaiaId("account2");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
+  const CoreAccountId account2 = CoreAccountId::FromGaiaId(GaiaId("account2"));
 
   // There should be no opt-in recorded at first.
   EXPECT_TRUE(
@@ -477,7 +477,7 @@ TEST_F(AutofillExperimentsTest,
        WalletSyncTransportPref_CanBeSetAndReadFromJSON) {
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
 
-  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
 
   // Set the opt-in for the first account.
   SetUserOptedInWalletSyncTransport(&pref_service_, account1, true);

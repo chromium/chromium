@@ -471,6 +471,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1791415068765905273">Shfaq të gjitha tabelat e krahasimit</translation>
 <translation id="1791429645902722292">Smart Lock-u i Google</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp butonin Tab pastaj Enter për të menaxhuar informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google</translation>
+<translation id="1793473605302304726">Paguaj me kalimin e kohës</translation>
 <translation id="1793631236004319016">Përdorur së fundi <ph name="NUM_HOURS_MINUTES_SECONDS" /> më parë</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ofrohen shumë veprime, shtyp "Tab" për të kaluar në cikël mes tyre</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="238459632961158867">Uebsajti</translation>
 <translation id="2385809941344967209">Përditësoje Chrome nga cilësimet e tua të Chrome</translation>
 <translation id="2386255080630008482">Certifikata e serverit është revokuar.</translation>
-<translation id="2386410849674401722">Opsioni i gishtave lart tregon se të pëlqen plotësimi automatik me IA-në</translation>
 <translation id="2388828676877700238">Përgatitja dhe planifikimi i taksave</translation>
 <translation id="239203817277685015">Shtjello</translation>
 <translation id="239293030466334554">Kabrioletë</translation>
@@ -1441,7 +1441,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3543935938072367282">Përfundo blerjen më shpejt me plotësimin automatik</translation>
 <translation id="3547442767634383572">Përmbledhja e profilit të punës</translation>
 <translation id="3547746132308051926">20 x 24 inç</translation>
-<translation id="3550325450190222557">Dërgo komente për "Plotësimin automatik me IA-në".</translation>
 <translation id="3552155506104542239">Paralajmërim: Kjo politikë është në konflikt me <ph name="POLICY_NAME" /> dhe nuk do të ketë asnjë efekt në aplikacionet për Android. Në rast të kundërt, kjo politikë funksionon siç pritet.</translation>
 <translation id="3552297013052089404">Fonti sans-serif</translation>
 <translation id="3558573058928565255">Dita dhe ora</translation>
@@ -2898,7 +2897,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Zarf kinez nr. 2</translation>
 <translation id="6127379762771434464">Artikulli u hoq</translation>
-<translation id="6128214169525122635">Opsioni i gishtave poshtë tregon se nuk të pëlqen plotësimi automatik me IA-në</translation>
 <translation id="6131824478727057281">vendndodhja</translation>
 <translation id="6133320744616005677">Vazhdo lejimin</translation>
 <translation id="6133984428121856852">Shtesa e skedarit është bosh ose e keqformuar.</translation>
@@ -3410,6 +3408,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7042616127917168121">Rafino rezultatet</translation>
 <translation id="7043552168914147882">Karton i hollë me skeda</translation>
 <translation id="7044081119134178347">Kamera lejohet këtë herë</translation>
+<translation id="704738887031336226">Shfaq opsionet e <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />pagesës me kalimin e kohës<ph name="PAY_OVER_TIME_HELP_LINK_END" /> në përfundim të blerjes</translation>
 <translation id="7048095965575426564">Palosje fizarmonikë (evropiane)</translation>
 <translation id="7050187094878475250">Tentove të arrije <ph name="DOMAIN" />, por serveri paraqiti një certifikatë, periudha e vlefshmërisë së të cilës është tepër e gjatë dhe nuk mund të jetë e besueshme.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kjo kartë nuk mund të ruhet për momentin}other{Këto karta nuk mund të ruhen për momentin}}</translation>
@@ -4594,7 +4593,6 @@ Detaje shtesë:
 <translation id="9150025764986957246">Mund të futësh gjëra të tilla si:</translation>
 <translation id="9154194610265714752">I përditësuar</translation>
 <translation id="9155211586651734179">Pajisjet periferike audio të lidhura</translation>
-<translation id="9155453166708525139">"Plotësimi automatik me IA-në" është një veçori eksperimentale dhe nuk do të jetë gjithmonë i saktë. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Revista</translation>
 <translation id="9157595877708044936">Po konfiguron...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> mund të përfshijë përmbajtje delikate}other{<ph name="FILE_COUNT" /> skedarë mund të përfshijnë përmbajtje delikate}}</translation>

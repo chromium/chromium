@@ -135,7 +135,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
 
   // Allocate the cropped source image.
   {
-    SkAlphaType bm_alpha_type = source_info.alphaType();
+    SkAlphaType bm_alpha_type = source->GetAlphaType();
     if (bm_alpha_type != kOpaque_SkAlphaType) {
       if (options.premultiply_alpha) {
         bm_alpha_type = kPremul_SkAlphaType;

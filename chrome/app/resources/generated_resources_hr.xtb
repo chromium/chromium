@@ -1186,6 +1186,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne može nastaviti s upotrebom usluge <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Aplikacija za prijem emitiranja <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Usluge</translation>
+<translation id="1813828404076816564">Odaberite gumb za povratne informacije da biste poslali povratne informacije o značajci dijeljenih grupa kartica</translation>
 <translation id="18139523105317219">Naziv EDI strane</translation>
 <translation id="1815083418640426271">Zalijepi kao običan tekst</translation>
 <translation id="1815097521077272760">Pozvani ste da isprobate komandu tipkovnice za ovu igru.</translation>
@@ -2290,7 +2291,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2569972178052279830">Naziv prodavača</translation>
 <translation id="257088987046510401">Teme</translation>
 <translation id="2571638829488071045">Želite li spremiti to proširenje na Google račun?</translation>
-<translation id="2571655996835834626">Mijenja postavke koje upravljaju pristupom web-lokacija značajkama kao što su kolačići, JavaScript, priključci, geolokacija, mikrofon, fotoaparat itd.</translation>
 <translation id="257175846174451436">Predložena grupa kartica</translation>
 <translation id="2572032849266859634">Odobren je samo pristup za čitanje jedinice <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501">Kartice: <ph name="NUM" /></translation>
@@ -4113,6 +4113,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3857807444929313943">Podignite prst i ponovo dodirnite senzor</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="385939467708172187">Upotrijebite snažnu zaporku</translation>
+<translation id="3859869403161297890">Ovdje pošaljite povratne informacije o dijeljenim grupama kartica</translation>
 <translation id="3859987779882450877">Automatski predlaže i izrađuje grupe na temelju otvorenih kartica</translation>
 <translation id="386009056910366930">Upravljajte grupom kartica <ph name="GROUP_NAME" /></translation>
 <translation id="3861638017150647085">Korisničko ime "<ph name="USERNAME" />" nije dostupno</translation>
@@ -7615,7 +7616,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6411135999030237579">Pritisnite i zadržite za automatsko ponavljanje tipke</translation>
 <translation id="6414618057231176439">Odaberite verziju VM-a <ph name="VM_NAME" /> koju želite instalirati.</translation>
 <translation id="641469293210305670">Instaliranje ažuriranja i aplikacija</translation>
-<translation id="6414878884710400018">Otvori postavke sustava</translation>
 <translation id="6415757856498750027">Upišite "w" da biste dobili "ư"</translation>
 <translation id="6415816101512323589">Želite li uključiti oporavak lokalnih podataka radi zaštite svojih podataka?</translation>
 <translation id="6415900369006735853">Povežite se s internetom pomoću telefona</translation>
@@ -8166,6 +8166,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6805478749741295868">Ovo je eksperimentalna značajka AI-ja i neće uvijek biti bez pogrešaka.</translation>
 <translation id="6805647936811177813">Prijavite se u uređaj <ph name="TOKEN_NAME" /> kako biste uvezli certifikat klijenta s <ph name="HOST_NAME" /></translation>
 <translation id="680572642341004180">Omogući praćenje RLZ-a za <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Povratne informacije o dijeljenim grupama kartica</translation>
 <translation id="6806089545527108739">Nemoj dopustiti, ali pitaj kasnije</translation>
 <translation id="680644983456221885">Proaktivna zaštita u stvarnom vremenu od opasnih web-lokacija, preuzimanja i proširenja koja se temelji na slanju vaših podataka o pregledavanju Googleu</translation>
 <translation id="6806781719264274042">Samo vaši kontakti s Google računom. <ph name="LINK_BEGIN" />Pregledajte kontakte<ph name="LINK_END" /></translation>

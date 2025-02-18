@@ -680,7 +680,8 @@ int AwBrowserContext::AllowedPrerenderingCount() const {
 void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* const env,
                                                    int allowed_count) {
   CHECK_GT(allowed_count, 0);
-  allowed_prerendering_count_ = allowed_count;
+  allowed_prerendering_count_ =
+      std::min(allowed_count, MAX_ALLOWED_PRERENDERING_COUNT);
 }
 
 std::unique_ptr<AwContentsIoThreadClient>

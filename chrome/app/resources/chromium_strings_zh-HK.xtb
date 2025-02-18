@@ -17,7 +17,6 @@
 <translation id="1157985233335035034">最近使用過的語言</translation>
 <translation id="1184145431117212167">你的 Windows 版本不受支援，因此無法安裝。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
-<translation id="1188705220418984327">如要分享視窗，請前往「系統偏好設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1262876892872089030">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chromium 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
 <translation id="1265577313130862557">由於此檔案有危險，因此 Chromium 已禁止下載</translation>
@@ -193,7 +192,6 @@
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。您的無痕式視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3651803019964686660">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="3667616615096815454">伺服器無法識別應用程式，因此無法安裝。</translation>
-<translation id="3669334504579945026">如要分享螢幕內容，請前往「系統偏好設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="3685209450716071127">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{管理員要求您重新啟動 Chromium，以套用此更新}=1{管理員要求您重新啟動 Chromium，以套用此更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chromium，以套用此更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3713809861844741608">在 Chromium 的新分頁中開啟連結(&amp;T)</translation>
@@ -265,7 +263,6 @@
 <translation id="4594305310729380060">儲存至此裝置的「密碼管理工具」中</translation>
 <translation id="459535195905078186">Chromium 應用程式</translation>
 <translation id="4613863813562375431">Chromium 作業系統版本</translation>
-<translation id="4617285639650863674">如要分享螢幕內容，請前往「系統偏好設定」允許 Chromium 螢幕錄影</translation>
 <translation id="4621240073146040695">即將更新至最新版本！重新啟動 Chromium 即可完成更新程序。</translation>
 <translation id="4665829708273112819">警告：Chromium 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
 <translation id="4673151026126227699">如果您同時分享 Chromium 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
@@ -474,7 +471,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7483335560992089831">無法安裝這個版本的 Chromium，因為目前正在執行相同版本。請關閉 Chromium，然後再試一次。</translation>
 <translation id="751935028865900641">網站可能會正常運作。關閉所有 Chromium 視窗後，系統會將你登出所有網站，但如果你已登入 Chromium，Google 帳戶就會維持登入狀態。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 將於 1 分鐘後重新啟動}other{Chromium 將於 # 分鐘後重新啟動}}</translation>
-<translation id="7553334751796114046">如要分享視窗，請前往「系統偏好設定」允許 Chromium 螢幕錄影</translation>
 <translation id="7582945390259497898">Chromium 可以推測您的興趣。您日後瀏覽的網站可向 Chromium 要求查看您的興趣，以便向您顯示個人化廣告。</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
 <translation id="7585391435984513350">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION" />權限</translation>

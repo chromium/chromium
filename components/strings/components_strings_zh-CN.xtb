@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">显示所有比较表格</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在您的 Google 账号中管理自己的信息、隐私和安全</translation>
+<translation id="1793473605302304726">分期付款</translation>
 <translation id="1793631236004319016">上次使用时间：<ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可执行多种操作，按 Tab 键可循环浏览这些操作</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@
 <translation id="238459632961158867">网站</translation>
 <translation id="2385809941344967209">请前往 Chrome 设置以更新 Chrome</translation>
 <translation id="2386255080630008482">服务器的证书已撤消。</translation>
-<translation id="2386410849674401722">点按“我喜欢”，即可提交反馈来表明自己喜欢“利用 AI 自动填充”功能</translation>
 <translation id="2388828676877700238">报税与纳税筹划</translation>
 <translation id="239203817277685015">详述</translation>
 <translation id="239293030466334554">敞篷车</translation>
@@ -1438,7 +1438,6 @@
 <translation id="3543935938072367282">利用自动填充功能更快结账</translation>
 <translation id="3547442767634383572">工作资料概览</translation>
 <translation id="3547746132308051926">20 x 24 英寸</translation>
-<translation id="3550325450190222557">发送有关“利用 AI 自动填充”的反馈。</translation>
 <translation id="3552155506104542239">警告：此政策与 <ph name="POLICY_NAME" /> 冲突，不会影响 Android 应用。否则，此政策将会按预期运行。</translation>
 <translation id="3552297013052089404">Sans-Serif 字体</translation>
 <translation id="3558573058928565255">日间</translation>
@@ -2894,7 +2893,6 @@
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
 <translation id="6126565365696310362">中式 #2 信封</translation>
 <translation id="6127379762771434464">该项已移除</translation>
-<translation id="6128214169525122635">点按“不喜欢”，即可提交反馈来表明自己不喜欢“利用 AI 自动填充”功能</translation>
 <translation id="6131824478727057281">位置</translation>
 <translation id="6133320744616005677">继续允许</translation>
 <translation id="6133984428121856852">文件扩展名为空或格式错误。</translation>
@@ -3406,6 +3404,7 @@
 <translation id="7042616127917168121">优化结果</translation>
 <translation id="7043552168914147882">隔页纸</translation>
 <translation id="7044081119134178347">这次可以使用摄像头</translation>
+<translation id="704738887031336226">在结账时显示<ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />分期付款<ph name="PAY_OVER_TIME_HELP_LINK_END" />选项</translation>
 <translation id="7048095965575426564">欧洲 Fanfold</translation>
 <translation id="7050187094878475250">您尝试访问 <ph name="DOMAIN" />，但服务器提供的证书不可信（有效期过长）。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{此刻无法保存这张卡}other{此刻无法保存这些卡}}</translation>
@@ -4591,7 +4590,6 @@
 <translation id="9150025764986957246">您可以输入诸如以下内容：</translation>
 <translation id="9154194610265714752">已更新</translation>
 <translation id="9155211586651734179">已连接音频外围设备</translation>
-<translation id="9155453166708525139">“利用 AI 自动填充”是一项实验性功能，有时可能会出错。<ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />。</translation>
 <translation id="9155646082713385498">杂志</translation>
 <translation id="9157595877708044936">正在设置...</translation>
 <translation id="9161794544616754735">{0,plural, =1{“<ph name="FILE_NAME" />”可能包含敏感内容}other{<ph name="FILE_COUNT" /> 个文件可能包含敏感内容}}</translation>

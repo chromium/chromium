@@ -196,6 +196,7 @@
 <translation id="1129348283834595293">赛博朋克</translation>
 <translation id="1129420403709586868">查看您手机上的照片和媒体内容</translation>
 <translation id="1129850422003387628">管理应用</translation>
+<translation id="1130430615924359526">{0,plural, =1{关闭无痕模式}other{关闭无痕模式（# 个窗口）}}</translation>
 <translation id="113050636487300043">欢迎选择名字和颜色主题，以便区分个人资料</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 属于“<ph name="GROUP_NAME" />”群组</translation>
 <translation id="1130676589211693127">右侧耳机的电池电量为 <ph name="PERCENTAGE" />%。</translation>
@@ -1506,6 +1507,7 @@
 <translation id="2042279886444479655">使用中的配置文件</translation>
 <translation id="2042427131767688936">为确保您可以安全使用此设备，贵组织可以查看设备操作系统、浏览器和设置方面的信息，以及设备上安装了哪些软件。</translation>
 <translation id="2044014337866019681">请确保您验证的账号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
+<translation id="2044750031738659219">{0,plural, =1{关闭访客模式}other{关闭访客模式（# 个窗口）}}</translation>
 <translation id="204497730941176055">Microsoft 证书模板名称</translation>
 <translation id="2045211794962848221">系统不会再显示这条特定消息</translation>
 <translation id="2045838962742066664">简略输入</translation>
@@ -2277,7 +2279,6 @@
 <translation id="2569972178052279830">零售商名称</translation>
 <translation id="257088987046510401">主题</translation>
 <translation id="2571638829488071045">要将此扩展程序保存到您的 Google 账号中吗？</translation>
-<translation id="2571655996835834626">更改您用于控制以下权限的设置：网站对 Cookie、JavaScript、插件、地理位置信息、麦克风、摄像头等功能的使用权限。</translation>
 <translation id="257175846174451436">已建议标签页分组</translation>
 <translation id="2572032849266859634">已授予对 <ph name="VOLUME_NAME" />的只读权限。</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> 个标签页</translation>
@@ -7340,6 +7341,7 @@
 <translation id="6214106213498203737">水彩</translation>
 <translation id="621470880408090483">不允许网站连接到蓝牙设备</translation>
 <translation id="6215039389782910006">{1,plural, =1{为确保您的密码安全，<ph name="BRAND" />会在闲置 1 分钟后锁定}other{为确保您的密码安全，<ph name="BRAND" />会在闲置 # 分钟后锁定}}</translation>
+<translation id="6216154119179790291">滚动到第一个标签页</translation>
 <translation id="6216239400972191926">已拒绝的网站和应用</translation>
 <translation id="6216601812881225442">您的容器无法调整大小。若要调整预先分配给 Linux 的空间，请先备份旧容器中的内容，然后再将这些内容恢复到新容器中。</translation>
 <translation id="6216696360484424239">自动登录</translation>
@@ -7536,6 +7538,7 @@
 <translation id="6357305427698525450">部分受支持的链接仍会在“<ph name="APP_NAME" />”或“<ph name="APP_NAME_2" />”中打开。</translation>
 <translation id="6357750620525943720">其他稳定的标识符（例如，哈希或 UUID）</translation>
 <translation id="6358884629796491903">龙</translation>
+<translation id="6359640073754977254">滚动到最后一个标签页</translation>
 <translation id="6361850914223837199">错误详情：</translation>
 <translation id="6362853299801475928">报告问题(&amp;R)...</translation>
 <translation id="6363786367719063276">查看日志</translation>
@@ -7598,7 +7601,6 @@
 <translation id="6411135999030237579">按住即可自动重复输入该键对应的字符</translation>
 <translation id="6414618057231176439">选择要安装的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安装更新和应用</translation>
-<translation id="6414878884710400018">打开“系统偏好设置”</translation>
 <translation id="6415757856498750027">输入“w”即可显示“ư”</translation>
 <translation id="6415816101512323589">开启本地数据恢复功能以保护您的数据？</translation>
 <translation id="6415900369006735853">通过手机连接到互联网</translation>
@@ -10196,6 +10198,7 @@
 <translation id="8258027225380843424">导入成功！</translation>
 <translation id="8259048637628995340">连接 Android 手机，畅享顺畅体验</translation>
 <translation id="8260177673299865994">增强下载保护</translation>
+<translation id="8260473380156923937">Chrome 应用即将弃用。如需替代选项，请与开发者或您的 IT 服务联系人联系。</translation>
 <translation id="8260864402787962391">鼠标</translation>
 <translation id="8261378640211443080">该扩展程序未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并可能是在您不知情的情况下添加的。</translation>
 <translation id="8261506727792406068">删除</translation>

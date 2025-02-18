@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
 <translation id="2161656808144014275">Szöveg</translation>
 <translation id="2163937499206714165">Sötét mód bekapcsolása</translation>
+<translation id="2164131940279488868">A hangfelvétel megkezdéséhez győződjön meg arról, hogy csatlakoztatta a mikrofont</translation>
 <translation id="2173302385160625112">Ellenőrizze az internetkapcsolatot</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
 <translation id="2189104374785738357">APN-adatok szerkesztése</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">citromok</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
 <translation id="2573178735329662769">A Chromebook összes hangjának rögzítése</translation>
-<translation id="2575552334616524665">Ezt a Beállításokban vagy a <ph name="THREE_DOTS_MENU_ICON" /> menüben kapcsolhatja be.</translation>
 <translation id="2576253868710695442">Ez akár 2 GB tárhelyet is igénybe vehet.</translation>
 <translation id="2584547424703650812">Ragyogó tájak</translation>
 <translation id="2584559707064218956">A beállításhoz nyissa meg a Beállításokat</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> háttér a következő betűvel: <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exkluzív</translation>
 <translation id="3404249063913988450">Képernyővédő engedélyezése</translation>
-<translation id="3410165745972100556">Az átírás ki van kapcsolva</translation>
 <translation id="3413935475507503304">A frissítéssel való folytatáshoz kattintson a Tovább lehetőségre.</translation>
 <translation id="3428551088151258685">a szabadban</translation>
 <translation id="3428971106895559033">pasztell</translation>
@@ -1685,6 +1684,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8876270629542503161">Az eszköz egy táblagép.</translation>
 <translation id="8881098542468797602">Sikeres tesztelés</translation>
 <translation id="8882789155418924367">baglyok</translation>
+<translation id="8885038613856655272">Csatlakoztasson egy mikrofont</translation>
 <translation id="8892443466059986410">Gyorsparancs szerkesztésének visszavonása</translation>
 <translation id="8897043028305808902">Fájl átnevezve</translation>
 <translation id="8898840733695078011">Jelerősség</translation>

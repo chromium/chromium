@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">ביוטול ההגדרה של הצגת האפליקציות שבטלפון</translation>
 <translation id="1610778689852195798">‏"Undo" (ביטול הפעולה)</translation>
 <translation id="1611993646327628135">פועל</translation>
+<translation id="1612679292338846734">‏כשמפעילים את התכונות האלה, יכול להיות שהטקסט שהוזן, התוכן של המסמך וכתובת ה-URL של דף האינטרנט יישלחו לשרתי ה-AI מבית Google. המידע הזה משמש ליצירת הצעות לכתיבה, ליצירת סיכומים, למתן תשובות על שאלות ולשיפור המוצר, בכפוף למדיניות <ph name="LINK_TO_SERVICE_TERMS" />. אין לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1623768535032616219">‏כיווץ של Google Classroom</translation>
 <translation id="163032029566320584">התכונה <ph name="UNAVAILABLE_DLC" /> לא זמינה.</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">הוספת חיבור</translation>
 <translation id="2947835478872237115">רמת הטעינה הנוכחית של הסוללה: %<ph name="BATTERY_PERCENTAGE" />, <ph name="TIME" /> עד לטעינה מלאה</translation>
 <translation id="2949420361496057765">הקשה על <ph name="MODIFIER" /> ולחיצה על קישור</translation>
+<translation id="2957159466053076448">אפשר להשבית את התכונות האלה בכל שלב בהגדרות. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">אודיו מהמכשיר</translation>
 <translation id="2960314608273155470">‏מצב צילום מסך, ברירת המחדל היא <ph name="SOURCE" /> <ph name="TYPE" />. צריך להקיש על Tab כדי לנווט באמצעות המקלדת.</translation>
 <translation id="2961963223658824723">משהו השתבש. אפשר לנסות שוב בעוד כמה שניות.</translation>
@@ -1905,6 +1907,7 @@
 <translation id="735745346212279324">‏VPN מנותק</translation>
 <translation id="7360036564632145207">הביצועים עשויים להשתפר אם ההגדרות של הגנת הגישה לנתונים עבור ציוד היקפי ישונו</translation>
 <translation id="736045644501761622">הגדרה של טפט וסגנון</translation>
+<translation id="7368041336688136012">‏צריך להיות בגיל 18 לפחות כדי להשתמש בתכונות "עזרה בקריאה", "עזרה בכתיבה", וכדי ליצור תמונות באמצעות AI.</translation>
 <translation id="7371404428569700291">חלון ההקלטה</translation>
 <translation id="7372069265635026568">נפח זיכרון פנוי של <ph name="AVAILABLE_MEMORY" /> מתוך <ph name="TOTAL_MEMORY" /> סה"כ</translation>
 <translation id="737315737514430195">הפעולה הזו מאפשרת גישה למיקרופון לכל האפליקציות והאתרים עם הרשאת הגישה למיקרופון</translation>
@@ -2032,6 +2035,7 @@
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">הצגת הכול</translation>
+<translation id="7762664108390426952">‏התנאים וההגבלות ומדיניות הפרטיות של Google</translation>
 <translation id="7768784765476638775">הקראה</translation>
 <translation id="7769299611924763557">‏קובץ ה-GIF יהיה מוכן בקרוב</translation>
 <translation id="7773536009433685931">‏הפעלת Wi-Fi במקום זאת</translation>

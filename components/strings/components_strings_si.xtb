@@ -809,7 +809,6 @@
 <translation id="238459632961158867">වෙබ් අඩවිය</translation>
 <translation id="2385809941344967209">ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කරන්න</translation>
 <translation id="2386255080630008482">සර්වරයේ සහතිකය අවලංගු කර තිබේ.</translation>
-<translation id="2386410849674401722">ලකුණක් ඉහළට ඔබ AI සමග ස්වයංව පිරවීමට කැමති ප්‍රතිපෝෂණ ඉදිරිපත් කරයි</translation>
 <translation id="2388828676877700238">බදු සකස් කිරීම සහ සැලසුම් කිරීම</translation>
 <translation id="239203817277685015">විස්තර කරන්න</translation>
 <translation id="239293030466334554">කන්වර්ටිබල්ස්</translation>
@@ -1442,7 +1441,6 @@
 <translation id="3543935938072367282">ස්වයං පිරවීම සමග වේගයෙන් පරීක්ෂා කරන්න</translation>
 <translation id="3547442767634383572">කාර්යාල පැතිකඩ දළ විශ්ලේෂණය</translation>
 <translation id="3547746132308051926">අඟ 20 x 24</translation>
-<translation id="3550325450190222557">AI සමග ස්වයං පිරවීම සඳහා ප්‍රතිපෝෂණ යවන්න.</translation>
 <translation id="3552155506104542239">අවවාදයයි: මෙම ප්‍රතිපත්තිය <ph name="POLICY_NAME" />ට පටහැනි වන අතර Android යෙදුම්වලට කිසිදු බලපෑමක් සිදු නොවේ. එසේ නොමැති නම්, මෙම ප්‍රතිපත්තිය අපේක්ෂිත පරිදි ක්‍රියාත්මක වේ.</translation>
 <translation id="3552297013052089404">Sans-serif ෆොන්ට</translation>
 <translation id="3558573058928565255">දවස, වේලාව</translation>
@@ -2899,7 +2897,6 @@
 <translation id="6124432979022149706">Chrome ව්‍යවසාය සම්බන්ධක</translation>
 <translation id="6126565365696310362">ලියුම් කවරය චීන #2</translation>
 <translation id="6127379762771434464">අයිතමය ඉවත් කරන ලදී</translation>
-<translation id="6128214169525122635">ලකුණක් පහළට දැමීම ඔබ AI සමග ස්වයං පිරවීමට අකමැති ප්‍රතිපෝෂණ ඉදිරිපත් කරයි</translation>
 <translation id="6131824478727057281">ස්ථානය</translation>
 <translation id="6133320744616005677">දිගටම ඉඩ දෙන්න</translation>
 <translation id="6133984428121856852">ගොනු දිගුව හිස් හෝ විකෘති වී ඇත.</translation>
@@ -4596,7 +4593,6 @@
 <translation id="9150025764986957246">ඔබට මෙවැනි දේවල් ඇතුළු කළ හැක:</translation>
 <translation id="9154194610265714752">යාවත්කාලීන කෙරිණි</translation>
 <translation id="9155211586651734179">ශ්‍රව්‍ය පර්යන්ත අමුණා ඇත</translation>
-<translation id="9155453166708525139">AI සමග ස්වයං පිරවීම පර්යේෂණාත්මක අංගයක් වන අතර එය සැමවිටම නිවැරදි නොවේ. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">සඟරා</translation>
 <translation id="9157595877708044936">පිහිටුවමින්...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> තුළ සංවේදී අන්තර්ගතය අඩංගු වේවි}one{ගොනු <ph name="FILE_COUNT" />ක් තුළ සංවේදී අන්තර්ගතය අඩංගු වේවි}other{ගොනු <ph name="FILE_COUNT" />ක් තුළ සංවේදී අන්තර්ගතය අඩංගු වේවි}}</translation>

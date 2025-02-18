@@ -59,18 +59,6 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   // Returns an empty CoreAccountId if |gaia_id| is empty.
   static CoreAccountId FromGaiaId(const GaiaId& gaia_id);
 
-  // Temporary API to construct from a string, while class GaiaId is being
-  // adopted in unit-tests.
-  // TODO(crbug.com/380416867): Remove this API.
-#if defined(UNIT_TEST)
-  static CoreAccountId FromGaiaId(std::string gaia_id) {
-    return FromGaiaId(GaiaId(std::move(gaia_id)));
-  }
-  static CoreAccountId FromGaiaId(const char gaia_id[]) {
-    return FromGaiaId(GaiaId(gaia_id));
-  }
-#endif  // defined(UNIT_TEST)
-
   // Create a CoreAccountId object from an email of a robot account.
   // Returns an empty CoreAccountId if |email| is empty.
   static CoreAccountId FromRobotEmail(const std::string& robot_email);

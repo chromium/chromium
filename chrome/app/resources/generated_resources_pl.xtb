@@ -2273,7 +2273,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2569972178052279830">Nazwa sprzedawcy</translation>
 <translation id="257088987046510401">Motywy</translation>
 <translation id="2571638829488071045">Zapisać to rozszerzenie na koncie Google?</translation>
-<translation id="2571655996835834626">Możesz zmienić swoje ustawienia kontrolujące dostęp witryn internetowych do plików cookie, kodu JavaScript, wtyczek, geolokalizacji, mikrofonu, kamery itd.</translation>
 <translation id="257175846174451436">Sugerowana grupa kart</translation>
 <translation id="2572032849266859634">Uprawnienia tylko do odczytu dysku <ph name="VOLUME_NAME" /> zostały przyznane.</translation>
 <translation id="2573147659521059501">Karty: <ph name="NUM" /></translation>
@@ -3033,7 +3032,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3109724472072898302">Zwinięty</translation>
 <translation id="310979712355504754">Usuń wszystkie</translation>
 <translation id="3112292765614504292">Rozmiar aplikacji: <ph name="APP_SIZE" /></translation>
-<translation id="311347022006935575">Dodano tę kartę</translation>
+<translation id="311347022006935575">Dodaje tę kartę</translation>
 <translation id="311394601889664316">Nie zezwalaj witrynom na edytowanie plików ani folderów na urządzeniu</translation>
 <translation id="3113970906450647715">Przycisk został odpięty</translation>
 <translation id="3115147772012638511">Czekam na pamięć podręczną...</translation>
@@ -7597,7 +7596,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6411135999030237579">Naciśnij i przytrzymaj, aby automatycznie powtarzać znak</translation>
 <translation id="6414618057231176439">Wybierz wersję elementu <ph name="VM_NAME" />, którą chcesz zainstalować.</translation>
 <translation id="641469293210305670">Instalowanie aktualizacji i aplikacji</translation>
-<translation id="6414878884710400018">Otwórz Preferencje systemowe</translation>
 <translation id="6415757856498750027">Wpisz „w”, aby uzyskać „ư”</translation>
 <translation id="6415816101512323589">Włączyć przywracanie danych lokalnych w celu ochrony danych?</translation>
 <translation id="6415900369006735853">Łącz się z internetem przez telefon</translation>

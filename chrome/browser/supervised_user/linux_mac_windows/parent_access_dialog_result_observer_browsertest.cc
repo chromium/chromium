@@ -53,7 +53,7 @@ std::string CreateInvalidPacpResponse() {
 
 std::string GetPacpApprovalResultMatchingForgivingDecoding() {
   // Returns a result that can be decoded only in base64 forgiving decoding
-  // mofe.
+  // mode.
   std::string encoded_result = supervised_user::CreatePacpApprovalResult();
 
   // Make the input size non divisible by 4 in order to fail strict decoding.

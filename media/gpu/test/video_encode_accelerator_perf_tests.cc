@@ -22,6 +22,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/bitstream_buffer.h"
@@ -56,6 +57,7 @@ constexpr const char* usage_msg =
            [--bitrate_mode=(cbr|vbr)] [--reverse] [--bitrate=<bitrate>]
            [-v=<level>] [--vmodule=<config>] [--output_folder]
            [--output_bitstream]
+           [--enable-features=<features>] [--disable-features=<features>]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
 )";
@@ -1119,6 +1121,7 @@ int main(int argc, char** argv) {
 
   media::test::g_env = static_cast<media::test::VideoEncoderTestEnvironment*>(
       testing::AddGlobalTestEnvironment(test_environment));
+  base::test::AllowCheckIsTestForTesting();
 
   return RUN_ALL_TESTS();
 }

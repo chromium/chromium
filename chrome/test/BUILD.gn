@@ -3504,7 +3504,10 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources += [ "../browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer_browsertest.cc" ]
+      sources += [
+        "../browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer_browsertest.cc",
+        "../browser/supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl_browsertest.cc",
+      ]
     }
 
     if (enable_nacl) {
@@ -4875,7 +4878,6 @@ if (!is_android) {
         "../browser/ui/views/frame/system_menu_model_builder_browsertest_chromeos.cc",
         "../browser/ui/views/frame/top_controls_slide_controller_chromeos_browsertest.cc",
         "../browser/ui/views/intent_picker_bubble_view_browsertest_chromeos.cc",
-        "../browser/ui/views/tabs/tab_scrubber_chromeos_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
         "../browser/webshare/chromeos/sharesheet_client_browsertest.cc",
         "//ash/webui/boca_ui/provider/tab_info_collector_browsertest.cc",

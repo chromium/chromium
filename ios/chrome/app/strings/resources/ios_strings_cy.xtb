@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Yn eich rhybuddio os yw cyfrineiriau'n cael eu Datgelu mewn Tor data</translation>
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
 <translation id="104491362976654916">Tudalen All-lein</translation>
+<translation id="1049200476149974839">Mae {NAME} eisiau i chi ymuno â grŵp tabiau. Gall unrhyw un sydd â'r ddolen olygu'r holl dabiau, felly ymunwch â gofal. Dolen yn dod i ben mewn 48 awr.</translation>
 <translation id="1049743911850919806">Anhysbys</translation>
 <translation id="1053651653201045802">Rydych wedi'ch allgofnodi. Mewngofnodwch eto i ddefnyddio'r nodau tudalen, y cyfrineiriau a rhagor yn eich cyfrif.</translation>
 <translation id="1054745118061919935">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_LINK" />Telerau Gwasanaeth<ph name="END_LINK" />.</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">Cyfrif a Reolir</translation>
 <translation id="1358214951266274152">Mynd i Ddolen y Gwnaethoch ei Chopïo</translation>
 <translation id="1360432990279830238">Allgofnodi a diffodd cysoni?</translation>
+<translation id="1362192716574455663">Ni fydd data pori presennol yn cael ei symud i'ch cyfrif gwaith. Gallwch barhau i gael mynediad iddo trwy allgofnodi neu ychwanegu cyfrif personol.</translation>
 <translation id="1363028406613469049">Olrhain</translation>
 <translation id="1364367057792633742">Tab newydd</translation>
 <translation id="1365106417372288489">Cafodd eich iPhone ei adfer yn ddiweddar, a allai fod wedi newid eich porwr diofyn.</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">Cau'r Grŵp</translation>
 <translation id="178400879184240105">Mae eich cyfrineiriau yn unigryw</translation>
 <translation id="17906873777101817">Cynnig i gadw cyfrineiriau a chodau pas</translation>
+<translation id="1794893174442046596">Grŵp tabiau</translation>
 <translation id="1807893857950749072">Caniatáu hysbysiadau olrhain prisiau…</translation>
 <translation id="1810976980198522421">Canslo</translation>
 <translation id="1815941218935345331">Cyfrinair</translation>
@@ -654,6 +657,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3897092660631435901">Dewislen</translation>
 <translation id="3904270275864974753">Golygu'r carwsél</translation>
 <translation id="3909222758573607742">Cadw cyfrineiriau ac eitemau eraill yn y cyfrif</translation>
+<translation id="3913463964270756493">Cuddio Chwilio'r sgrîn gyda Google Lens</translation>
 <translation id="3914640181019354363">Canfod cyfeiriadau</translation>
 <translation id="3922185497376658606">Rhag-lwytho tudalennau gwe</translation>
 <translation id="3922395466317605522">Personoleiddio Dewislen</translation>

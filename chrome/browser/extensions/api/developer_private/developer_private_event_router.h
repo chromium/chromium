@@ -5,43 +5,35 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_H_
 
+#include <memory>
+#include <vector>
+
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/commands/command_service.h"
-#include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_prefs_observer.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/permissions_manager.h"
-#include "extensions/browser/process_manager_observer.h"
-#include "extensions/browser/warning_service.h"
+#include "extensions/common/command.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
-                                    public ProcessManagerObserver,
                                     public AppWindowRegistry::Observer,
                                     public CommandService::Observer,
-                                    public ExtensionPrefsObserver,
                                     public ExtensionAllowlist::Observer,
                                     public ExtensionManagement::Observer,
-                                    public WarningService::Observer,
-                                    public PermissionsManager::Observer,
                                     public ToolbarActionsModel::Observer,
                                     public AccountExtensionTracker::Observer {
  public:
   static std::unique_ptr<api::developer_private::ProfileInfo> CreateProfileInfo(
       Profile* profile);
-
-  static api::developer_private::UserSiteSettings ConvertToUserSiteSettings(
-      const PermissionsManager::UserPermissionsSettings& settings);
 
   explicit DeveloperPrivateEventRouter(Profile* profile);
 
@@ -52,18 +44,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   ~DeveloperPrivateEventRouter() override;
 
  private:
-  // ProcessManagerObserver:
-  void OnExtensionFrameRegistered(
-      const ExtensionId& extension_id,
-      content::RenderFrameHost* render_frame_host) override;
-  void OnExtensionFrameUnregistered(
-      const ExtensionId& extension_id,
-      content::RenderFrameHost* render_frame_host) override;
-  void OnStartedTrackingServiceWorkerInstance(
-      const WorkerId& worker_id) override;
-  void OnStoppedTrackingServiceWorkerInstance(
-      const WorkerId& worker_id) override;
-
   // AppWindowRegistry::Observer:
   void OnAppWindowAdded(AppWindow* window) override;
   void OnAppWindowRemoved(AppWindow* window) override;
@@ -74,13 +54,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   void OnExtensionCommandRemoved(const ExtensionId& extension_id,
                                  const Command& removed_command) override;
 
-  // ExtensionPrefsObserver:
-  void OnExtensionDisableReasonsChanged(
-      const ExtensionId& extension_id,
-      DisableReasonSet disable_reasons) override;
-  void OnExtensionRuntimePermissionsChanged(
-      const ExtensionId& extension_id) override;
-
   // ExtensionAllowlist::Observer
   void OnExtensionAllowlistWarningStateChanged(const ExtensionId& extension_id,
                                                bool show_warning) override;
@@ -88,17 +61,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   // ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
 
-  // WarningService::Observer:
-  void ExtensionWarningsChanged(
-      const ExtensionIdSet& affected_extensions) override;
-
-  // PermissionsManager::Observer:
-  void OnUserPermissionsSettingsChanged(
-      const PermissionsManager::UserPermissionsSettings& settings) override;
-  void OnExtensionPermissionsUpdated(
-      const Extension& extension,
-      const PermissionSet& permissions,
-      PermissionsManager::UpdateReason reason) override;
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override {}
@@ -125,22 +87,14 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
       std::unique_ptr<ExtensionInfoGenerator> info_generator,
       std::vector<api::developer_private::ExtensionInfo> infos);
 
-  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
-      process_manager_observation_{this};
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       app_window_registry_observation_{this};
-  base::ScopedObservation<WarningService, WarningService::Observer>
-      warning_service_observation_{this};
-  base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
-      extension_prefs_observation_{this};
   base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
       extension_management_observation_{this};
   base::ScopedObservation<CommandService, CommandService::Observer>
       command_service_observation_{this};
   base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
       extension_allowlist_observer_{this};
-  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
-      permissions_manager_observation_{this};
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_actions_model_observation_{this};
   base::ScopedObservation<AccountExtensionTracker,

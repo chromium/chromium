@@ -69,6 +69,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",
+    "//chrome/browser/ui/ash/shell_delegate",
     "//chrome/browser/ui/ash/shell_init",
     "//chrome/browser/ui/ash/system",
     "//chrome/browser/ui/ash/system_web_apps:system_web_apps",

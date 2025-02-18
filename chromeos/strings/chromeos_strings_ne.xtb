@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2161656808144014275">पाठ</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
+<translation id="2164131940279488868">अडियो रेकर्ड गर्न थाल्न माइक कनेक्ट गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2173302385160625112">आफ्नो इन्टरनेट जडानको जाँच गर्नुहोस्</translation>
 <translation id="2180197493692062006">कुनै समस्या आयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
 <translation id="2189104374785738357">APN सम्बन्धी विवरणहरू परिवर्तन गर्नुहोस्</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">कागतीहरू</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2573178735329662769">Chromebook का सबै अडियो रेकर्ड गरिँदै छ</translation>
-<translation id="2575552334616524665">तपाईं सेटिङ वा <ph name="THREE_DOTS_MENU_ICON" /> मेनुमा गई यसलाई अन गर्न सक्नुहुन्छ</translation>
 <translation id="2576253868710695442">यसले भण्डारणमा बढीमा २ जि.बि. ठाउँ ओगट्ने छ</translation>
 <translation id="2584547424703650812">ग्लोस्केप</translation>
 <translation id="2584559707064218956">नेटवर्क सेटअप गर्न सेटिङमा जानुहोस्</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> अक्षर भएको <ph name="LETTERS_COLOR" /> ब्याकग्राउन्ड</translation>
 <translation id="3383623117265110236">विशेष</translation>
 <translation id="3404249063913988450">स्क्रिन सेभर सक्षम पार्नुहोस्</translation>
-<translation id="3410165745972100556">ट्रान्स्क्रिप्ट अफ छ</translation>
 <translation id="3413935475507503304">तपाईं यो अपडेट प्राप्त गर्न चाहनुहुन्छ भने अर्को नामक बटन क्लिक गर्नुहोस्।</translation>
 <translation id="3428551088151258685">बाहिर</translation>
 <translation id="3428971106895559033">प्यास्टेल</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">यो डिभाइस ट्याब्लेट हो।</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>
 <translation id="8882789155418924367">लाटोकोसेरोहरू</translation>
+<translation id="8885038613856655272">माइक कनेक्ट गर्नुहोस्</translation>
 <translation id="8892443466059986410">सर्टकट सम्पादन गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="8897043028305808902">फाइलको नाम बदलिएको छ</translation>
 <translation id="8898840733695078011">सिग्नलको क्षमता</translation>

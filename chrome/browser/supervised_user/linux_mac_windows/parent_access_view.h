@@ -10,10 +10,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class WebView;
@@ -57,11 +60,12 @@ using WebContentsObserverCreationCallback =
 
 // Implements a View to display the Parent Access Widget (PACP).
 // The view contains a WebView which loads the PACP url.
-class ParentAccessView : public views::View {
+class ParentAccessView : public views::View, public views::WidgetObserver {
   METADATA_HEADER(ParentAccessView, views::View)
 
  public:
-  explicit ParentAccessView(content::BrowserContext* context);
+  ParentAccessView(content::BrowserContext* context,
+                   base::OnceClosure dialog_result_reset_callback);
   ~ParentAccessView() override;
 
   // Creates and opens a view that displays the Parent Access widget (PACP).
@@ -70,7 +74,8 @@ class ParentAccessView : public views::View {
       const GURL& target_url,
       const supervised_user::FilteringBehaviorReason& filtering_reason,
       WebContentsObserverCreationCallback web_contents_observer_creation_cb,
-      base::OnceClosure abort_dialog_callback);
+      base::OnceClosure abort_dialog_callback,
+      base::OnceClosure dialog_result_reset_callback);
 
   base::WeakPtr<ParentAccessView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -85,6 +90,13 @@ class ParentAccessView : public views::View {
   void Initialize(const GURL& pacp_url, int corner_radius);
   void ShowNativeView();
   content::WebContents* GetWebViewContents();
+
+  // views::WidgetObserver implementation:
+  void OnWidgetClosing(views::Widget* widget) override;
+
+  base::OnceClosure dialog_result_reset_callback_;
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
 
   std::unique_ptr<DialogContentLoadWithTimeoutObserver>
       content_loader_timeout_observer_;

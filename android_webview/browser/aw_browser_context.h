@@ -62,6 +62,9 @@ class AwFormDatabaseService;
 class AwQuotaManagerBridge;
 class CookieManager;
 
+// The maximum number of prerendering allowed for this BrowserContext.
+inline constexpr int MAX_ALLOWED_PRERENDERING_COUNT = 3;
+
 // Lifetime: Profile
 class AwBrowserContext : public content::BrowserContext,
                          public visitedlink::VisitedLinkDelegate,

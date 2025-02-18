@@ -67,7 +67,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
 <translation id="1880677175115548835">Piliin ang text</translation>
-<translation id="1907925560334657849">Para i-share ang iyong window, payagan ang pag-record ng screen para sa Chrome sa Mga Preference sa System</translation>
 <translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
 <translation id="1953553007165777902">Nagda-download... <ph name="MINUTE" /> (na) minuto na lang ang natitira</translation>
 <translation id="1982647487457769627">Gumagana ang Chrome sa lahat ng platform para magbigay sa iyo ng pamilyar na experience anuman ang device</translation>
@@ -246,7 +245,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4050175100176540509">May available na mahahalagang pagpapahusay sa seguridad at mga bagong feature sa pinakabagong bersyon.</translation>
 <translation id="4053720452172726777">I-customize at kontrolin ang Google Chrome</translation>
 <translation id="408393047846373801">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome. Mase-save ang password na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
-<translation id="4084404300720192944">Para i-share ang iyong window, payagan ang pag-record ng screen para sa Chrome sa Mga Preference sa System.</translation>
 <translation id="4110895483821904099">I-set up ang iyong bagong profile sa Chrome</translation>
 <translation id="4111566860456076004">Hindi ma-verify ng Chrome kung saan galing ang extension na ito, at posibleng hindi ito ligtas. Alisin ito sa Chrome para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang personal na impormasyon.</translation>
 <translation id="4128488089242627000">Mas mabilis na tatakbo ang Chrome at gagana ayon sa pagkakadisenyo sa mga ito ang mga feature na gumagamit ng JavaScript (inirerekomenda)</translation>
@@ -411,7 +409,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6180522807229584611">Gumagamit ang tab na ito ng mga karagdagang resource. Para pahusayin ang iyong performance, hayaan ang Chrome na gawin itong hindi aktibo.</translation>
 <translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
 <translation id="6200139057479872438">Hindi mo ito binisita kamakailan. Inalis ng Chrome ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
-<translation id="621585339844629864">Para i-share ang iyong screen, payagan ang pag-record ng screen para sa Chrome sa Mga Preference sa System.</translation>
 <translation id="6235018212288296708">Inbound na panuntunan para sa Google Chrome upang payagan ang trapiko ng mDNS.</translation>
 <translation id="624230925347970731">Malapit nang magsara ang Chrome</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -480,7 +477,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7088681679121566888">Updated ang Chrome</translation>
 <translation id="7098166902387133879">Ginagamit ng Google Chrome ang iyong mikropono.</translation>
 <translation id="7099479769133613710">Ilunsad ulit para ma-update ang &amp;ChromeOS</translation>
-<translation id="7100085796996987445">Para i-share ang iyong screen, payagan ang pag-record ng screen para sa Chrome sa Mga Preference sa System</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit.}=1{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong Incognito window.}one{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # Incognito window.}other{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="7155997830309522122">Kung nagawa mo na ito, paki-edit ang iyong naka-save na password sa Chrome para tumugma ito sa bago mong password.</translation>

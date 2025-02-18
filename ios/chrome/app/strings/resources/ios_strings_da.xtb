@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="104491362976654916">Offlineside</translation>
+<translation id="1049200476149974839">inviterer dig til at deltage i en fanegruppe. Alle med linket kan redigere alle faner, så vær opmærksom på det, når du deltager. Linket udløber om 48 timer.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget ud. Log ind igen for at bruge bogmærkerne, adgangskoderne m.m. på din konto.</translation>
 <translation id="1054745118061919935">Ved at fortsætte accepterer du <ph name="BEGIN_LINK" />servicevilkårene<ph name="END_LINK" />.</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">Administreret konto</translation>
 <translation id="1358214951266274152">Gå til link, du har kopieret</translation>
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
+<translation id="1362192716574455663">Eksisterende browserdata flyttes ikke til din arbejdskonto. Du kan stadig få adgang til dem ved at logge ud eller tilføje en personlig konto.</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1364367057792633742">Ny fane</translation>
 <translation id="1365106417372288489">Din iPhone blev for nylig gendannet, hvilket muligvis har ændret din standardbrowser.</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">Luk gruppe</translation>
 <translation id="178400879184240105">Dine adgangskoder er unikke</translation>
 <translation id="17906873777101817">Få tilbudt at gemme adgangskoder og adgangsnøgler</translation>
+<translation id="1794893174442046596">Fanegruppe</translation>
 <translation id="1807893857950749072">Tillad notifikationer om prissporing…</translation>
 <translation id="1810976980198522421">Annuller</translation>
 <translation id="1815941218935345331">Adgangskode</translation>
@@ -655,6 +658,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Rediger karrusel</translation>
 <translation id="3909222758573607742">Gem adgangskoder og andre elementer på kontoen</translation>
+<translation id="3913463964270756493">Skjul Søg på skærmen med Google Lens</translation>
 <translation id="3914640181019354363">Registrer adresser</translation>
 <translation id="3922185497376658606">Forudindlæs websider</translation>
 <translation id="3922395466317605522">Tilpas menuen</translation>

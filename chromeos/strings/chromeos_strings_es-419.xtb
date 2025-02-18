@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Cancelar el trabajo de impresión</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Activar el modo oscuro</translation>
+<translation id="2164131940279488868">Asegúrate de que haya un micrófono conectado para comenzar a grabar audio</translation>
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2180197493692062006">Se produjo un error. Intenta volver a abrir la app.</translation>
 <translation id="2189104374785738357">Edita los detalles de APN</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">limones</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2573178735329662769">Se está grabando todo el audio de la Chromebook</translation>
-<translation id="2575552334616524665">Puedes activar esta opción en Configuración o en el menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Esto ocupará hasta 2 GB de almacenamiento</translation>
 <translation id="2584547424703650812">Paisajes brillantes</translation>
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">Fondo <ph name="LETTERS_COLOR" /> con la letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivo</translation>
 <translation id="3404249063913988450">Habilitar el protector de pantalla</translation>
-<translation id="3410165745972100556">La transcripción está desactivada</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3428551088151258685">al aire libre</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -1685,6 +1684,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8876270629542503161">El dispositivo es una tablet.</translation>
 <translation id="8881098542468797602">Se completó correctamente la prueba</translation>
 <translation id="8882789155418924367">búhos</translation>
+<translation id="8885038613856655272">Conecta un micrófono</translation>
 <translation id="8892443466059986410">Cancelar la edición de combinaciones de teclas</translation>
 <translation id="8897043028305808902">Se cambió el nombre del archivo</translation>
 <translation id="8898840733695078011">Intensidad de la señal</translation>

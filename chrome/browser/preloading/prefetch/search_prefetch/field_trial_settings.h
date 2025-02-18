@@ -13,6 +13,8 @@ BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
 BASE_DECLARE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 
+BASE_DECLARE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache);
+
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
 
@@ -70,6 +72,7 @@ bool PrefetchSearchHistorySuggestions();
 // Whether Omnibox prefetch and prerender should be restricted to the suggestion
 // being the default match.
 bool OnlyAllowDefaultMatchPreloading();
+bool IsNoVarySearchDiskCacheEnabled();
 
 // Allows the omnibox search prefetch in Incognito.
 //

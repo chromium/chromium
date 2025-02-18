@@ -2287,7 +2287,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2569972178052279830">Nome do retalhista</translation>
 <translation id="257088987046510401">Temas</translation>
 <translation id="2571638829488071045">Guardar esta extensão na sua Conta Google?</translation>
-<translation id="2571655996835834626">Altere as definições que controlam o acesso dos Websites a funcionalidades como cookies, JavaScript, plug-ins, geolocalização, microfone, câmara, etc.</translation>
 <translation id="257175846174451436">Grupo de separadores sugerido</translation>
 <translation id="2572032849266859634">Autorizações só de leitura concedidas a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> separadores</translation>
@@ -7620,7 +7619,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6411135999030237579">Premir sem soltar para repetir automaticamente a tecla</translation>
 <translation id="6414618057231176439">Selecione a versão de <ph name="VM_NAME" /> a instalar.</translation>
 <translation id="641469293210305670">Instale atualizações e apps</translation>
-<translation id="6414878884710400018">Abra as preferências do sistema</translation>
 <translation id="6415757856498750027">Escrever "w" para obter "ư"</translation>
 <translation id="6415816101512323589">Ativar a recuperação dos dados locais para proteger os seus dados?</translation>
 <translation id="6415900369006735853">Ligue-se à Internet através do seu telemóvel</translation>

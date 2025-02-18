@@ -16,7 +16,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_data.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -31,10 +30,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
 
 using testing::_;
 using testing::DoAll;
@@ -96,14 +91,6 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (!chromeos::LacrosService::Get()) {
-      scoped_lacros_test_helper_ =
-          std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
-    }
-#endif
-
     InitOneGoogleBarLoader();
   }
 
@@ -155,10 +142,6 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
 
   GURL last_request_url_;
   net::HttpRequestHeaders last_request_headers_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
-      scoped_lacros_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<OneGoogleBarLoaderImpl> one_google_bar_loader_;
 };
 

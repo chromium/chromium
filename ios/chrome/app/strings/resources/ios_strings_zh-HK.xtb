@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">在密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="104491362976654916">離線頁面</translation>
+<translation id="1049200476149974839">希望你加入分頁群組。任何擁有連結的人均可編輯所有分頁，因此加入時請小心。連結會於 48 小時後到期。</translation>
 <translation id="1049743911850919806">無痕</translation>
 <translation id="1053651653201045802">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資料。</translation>
 <translation id="1054745118061919935">繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
@@ -194,6 +195,7 @@
 <translation id="1780152987505130652">關閉群組</translation>
 <translation id="178400879184240105">你沒有重用密碼</translation>
 <translation id="17906873777101817">提示儲存密碼和密鑰</translation>
+<translation id="1794893174442046596">分頁群組</translation>
 <translation id="1807893857950749072">允許價格追蹤通知…</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密碼</translation>
@@ -656,7 +658,7 @@
 <translation id="3897092660631435901">選單</translation>
 <translation id="3904270275864974753">編輯輪播</translation>
 <translation id="3909222758573607742">將密碼和其他項目儲存至帳戶</translation>
-<translation id="3913463964270756493">隱藏「透過 Google 智慧鏡頭搜尋畫面內容」</translation>
+<translation id="3913463964270756493">隱藏「使用『Google 智能鏡頭』搜尋畫面內容」</translation>
 <translation id="3914640181019354363">偵測地址</translation>
 <translation id="3922185497376658606">預先載入網頁</translation>
 <translation id="3922395466317605522">自訂選單</translation>
@@ -974,6 +976,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />現在透過「Google 密碼管理工具」登入 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 時，可以使用你的使用者名稱和密碼。</translation>
 <translation id="5242899254250321823">變更網站上的密碼</translation>
 <translation id="5248640482715684545">此網站正在嘗試開啟另一個應用程式。</translation>
+<translation id="5250371859659394278">來源不明</translation>
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請填寫後再儲存。}other{部分必填欄位沒有內容，請填寫後再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5279214046729249716">是，請保留</translation>

@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">ஒப்பீட்டு அட்டவணைகள் எல்லாவற்றையும் காட்டு</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, உங்கள் Google கணக்கில் உள்ள தகவல்கள், தனியுரிமை, பாதுகாப்பு ஆகியவற்றை நிர்வகிக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
+<translation id="1793473605302304726">பிறகு பணம் செலுத்துதல்</translation>
 <translation id="1793631236004319016">கடைசியாகப் பயன்படுத்தியது: <ph name="NUM_HOURS_MINUTES_SECONDS" /> முன்பு</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ஒன்றுக்கும் மேற்பட்ட செயல்கள் உள்ளன, அவற்றில் ஒன்றைத் தேர்ந்தெடுக்க Tab விசையை அழுத்துங்கள்</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@
 <translation id="238459632961158867">இணையதளம்</translation>
 <translation id="2385809941344967209">Chrome அமைப்புகளில் Chromeமைப் புதுப்பித்தல்</translation>
 <translation id="2386255080630008482">சேவையகச் சான்றிதழ் திரும்பப் பெறப்பட்டது.</translation>
-<translation id="2386410849674401722">தம்ஸ்-அப் வழங்குவதால் 'AI மூலம் தானாக நிரப்புதலை' நீங்கள் விரும்புகிறீர்கள் என்று கருத்து தெரிவிக்கப்படும்</translation>
 <translation id="2388828676877700238">வரி ஆவணங்களைத் தயாரித்தல் மற்றும் திட்டமிடல்</translation>
 <translation id="239203817277685015">விவரி</translation>
 <translation id="239293030466334554">கன்வெர்ட்டிபிள் வாகனங்கள்</translation>
@@ -1437,7 +1437,6 @@
 <translation id="3543935938072367282">தன்னிரப்பி அம்சம் மூலம் விரைவாகச் செக்-அவுட் செய்யுங்கள்</translation>
 <translation id="3547442767634383572">பணிக் கணக்கின் மேலோட்டப் பார்வை</translation>
 <translation id="3547746132308051926">20 x 24 இன்ச்</translation>
-<translation id="3550325450190222557">‘AI மூலம் தானாக நிரப்புதல்’ அம்சம் தொடர்பான கருத்தை அனுப்பவும்.</translation>
 <translation id="3552155506104542239">எச்சரிக்கை: இந்தக் கொள்கை <ph name="POLICY_NAME" /> உடன் முரண்படுகிறது, இதனால் Android ஆப்ஸில் எந்தப் பாதிப்பும் இருக்காது. மற்றபடி, இந்தக் கொள்கை தொடர்பாக எந்தச் சிக்கலும் இல்லை.</translation>
 <translation id="3552297013052089404">Sans-serif எழுத்துரு</translation>
 <translation id="3558573058928565255">பகல் நேரம்</translation>
@@ -2894,7 +2893,6 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">என்வெலப் சைனீஸ் #2</translation>
 <translation id="6127379762771434464">உருப்படி அகற்றப்பட்டது</translation>
-<translation id="6128214169525122635">தம்ஸ்-டவுன் வழங்குவதால் AI மூலம் தானாக நிரப்பப்படுவதை நீங்கள் விரும்பவில்லை என்று கருத்து தெரிவிக்கப்படும்</translation>
 <translation id="6131824478727057281">இருப்பிடம்</translation>
 <translation id="6133320744616005677">தொடர்ந்து அனுமதி</translation>
 <translation id="6133984428121856852">ஃபைல் நீட்டிப்பு காலியாக உள்ளது/தவறானது.</translation>
@@ -3406,6 +3404,7 @@
 <translation id="7042616127917168121">முடிவுகளைத் துல்லியமாக்கு</translation>
 <translation id="7043552168914147882">டேப் ஸ்டாக்</translation>
 <translation id="7044081119134178347">இந்த முறை கேமராவிற்கான அனுமதி வழங்கப்பட்டது</translation>
+<translation id="704738887031336226">செக்-அவுட்டில் <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />பிறகு பணம் செலுத்துவதற்கான<ph name="PAY_OVER_TIME_HELP_LINK_END" /> விருப்பங்களைக் காட்டும்</translation>
 <translation id="7048095965575426564">ஐரோப்பிய ஃபேன்ஃபோல்ட்</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" />ஐ அடைய முயற்சித்துள்ளீர்கள், சேவையகம் வழங்கிய சான்றிதழ் நம்புவதற்கு சாத்தியமற்ற நீண்ட செல்லுபடிக்காலத்தைக் கொண்டுள்ளது.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{இந்தக் கார்டை இப்போது சேமிக்க முடியவில்லை}other{இந்தக் கார்டுகளை இப்போது சேமிக்க முடியவில்லை}}</translation>
@@ -4592,7 +4591,6 @@
 <translation id="9150025764986957246">நீங்கள் இவை போன்றவற்றை டைப் செய்யலாம்:</translation>
 <translation id="9154194610265714752">புதுப்பிக்கப்பட்டது</translation>
 <translation id="9155211586651734179">இணைக்கப்பட்டுள்ள ஆடியோ சாதனங்கள்</translation>
-<translation id="9155453166708525139">‘AI மூலம் தானாக நிரப்புதல்’ அம்சம் பரிசோதனை நிலையில் உள்ளதால் சில சமயங்களில் சரியாகச் செயல்படாமல் போகலாம். <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">பத்திரிகைகள்</translation>
 <translation id="9157595877708044936">அமைக்கிறது...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ஃபைலில் பாதுகாக்கவேண்டிய உள்ளடக்கம் இருக்கக்கூடும்}other{<ph name="FILE_COUNT" /> ஃபைல்களில் பாதுகாக்கவேண்டிய உள்ளடக்கம் இருக்கக்கூடும்}}</translation>

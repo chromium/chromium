@@ -190,6 +190,9 @@ extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
 // for use in the navigation throttle context.
 extern const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[];
 
+// Histogram name to log the result of a local url approval request.
+extern const char kLocalWebApprovalResultHistogramName[];
+
 // The URL which the "Managed by your parent" UI links to.
 extern const char kManagedByParentUiMoreInfoUrl[];
 

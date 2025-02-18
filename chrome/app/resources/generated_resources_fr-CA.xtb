@@ -196,6 +196,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Affichez les photos et les fichiers multimédias de votre téléphone</translation>
 <translation id="1129850422003387628">Gérer les applications</translation>
+<translation id="1130430615924359526">{0,plural, =1{Fermer la fenêtre en mode Navigation privée}one{Fermer la fenêtre en mode Navigation privée (# fenêtre)}other{Fermer les fenêtres en mode Navigation privée (# fenêtres)}}</translation>
 <translation id="113050636487300043">Choisissez un nom et un thème de couleur pour différencier les profils</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> : fait partie du groupe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Niveau de la pile droite : <ph name="PERCENTAGE" /> %.</translation>
@@ -1514,6 +1515,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2042279886444479655">Profils actifs</translation>
 <translation id="2042427131767688936">Pour veiller à ce que cet appareil puisse être utilisé en toute sécurité, votre organisation peut consulter des renseignements sur son système d'exploitation, son navigateur et ses paramètres ainsi que sur les logiciels qui y sont installés.</translation>
 <translation id="2044014337866019681">Assurez-vous de vérifier <ph name="ACCOUNT" /> pour déverrouiller la session.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Fermer la fenêtre en mode Invité}one{Fermer la fenêtre en mode Invité (# fenêtre)}other{Fermer les fenêtres en mode Invité (# fenêtres)}}</translation>
 <translation id="204497730941176055">Nom du modèle de certificat Microsoft</translation>
 <translation id="2045211794962848221">Vous ne verrez plus ce message</translation>
 <translation id="2045838962742066664">Saisie abrégée</translation>
@@ -2287,7 +2289,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2569972178052279830">Nom du détaillant</translation>
 <translation id="257088987046510401">Thèmes</translation>
 <translation id="2571638829488071045">Enregistrer cette extension dans votre compte Google?</translation>
-<translation id="2571655996835834626">Modifiez les paramètres qui contrôlent l'accès des sites Web aux éléments comme les témoins, le code JavaScript, les plugiciels, la géolocalisation, le microphone, l'appareil photo, etc.</translation>
 <translation id="257175846174451436">Groupe d'onglets suggéré</translation>
 <translation id="2572032849266859634">L'accès en lecture seule à <ph name="VOLUME_NAME" /> a été accordé.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> onglets</translation>
@@ -7357,6 +7358,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6214106213498203737">Aquarelle</translation>
 <translation id="621470880408090483">Ne pas autoriser les sites à se connecter à des appareils Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après 1 minute d'inactivité}one{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minute d'inactivité}other{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minutes d'inactivité}}</translation>
+<translation id="6216154119179790291">Faire défiler jusqu'au premier onglet</translation>
 <translation id="6216239400972191926">Applis et sites refusés</translation>
 <translation id="6216601812881225442">Votre conteneur ne prend pas en charge le redimensionnement. Pour modifier la quantité d'espace allouée à Linux, sauvegardez votre disque et restaurez-le dans un nouveau conteneur.</translation>
 <translation id="6216696360484424239">Se connecter automatiquement</translation>
@@ -7553,6 +7555,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6357305427698525450">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Autres identifiants stables (p. ex. hachages ou UUID)</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="6359640073754977254">Faire défiler jusqu'au dernier onglet</translation>
 <translation id="6361850914223837199">Information sur l'erreur :</translation>
 <translation id="6362853299801475928">Signale&amp;r un problème...</translation>
 <translation id="6363786367719063276">Afficher les journaux</translation>
@@ -7615,7 +7618,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6411135999030237579">Appuyez et maintenez le doigt sur la touche pour la répéter automatiquement</translation>
 <translation id="6414618057231176439">Sélectionnez la version de <ph name="VM_NAME" /> à installer.</translation>
 <translation id="641469293210305670">Installer les mises à jour et les applications</translation>
-<translation id="6414878884710400018">Ouvrir le menu Préférences Système</translation>
 <translation id="6415757856498750027">Taper « w » pour obtenir « ư »</translation>
 <translation id="6415816101512323589">Activer la récupération des données locales pour protéger vos données?</translation>
 <translation id="6415900369006735853">Connectez-vous à Internet au moyen de votre téléphone</translation>
@@ -10213,6 +10215,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8258027225380843424">Importation réussie!</translation>
 <translation id="8259048637628995340">Connecter votre téléphone Android pour une expérience fluide</translation>
 <translation id="8260177673299865994">Améliorer la protection des téléchargements</translation>
+<translation id="8260473380156923937">Les applis Chrome seront bientôt obsolètes. Pour d'autres solutions, communiquez avec le développeur ou votre personne-ressource du service informatique.</translation>
 <translation id="8260864402787962391">Souris</translation>
 <translation id="8261378640211443080">Cette extension ne figure pas dans la boutique <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et peut avoir été ajoutée à votre insu.</translation>
 <translation id="8261506727792406068">Supprimer</translation>

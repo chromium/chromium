@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "net/base/features.h"
 
 namespace {
 size_t g_cache_size_for_testing = 0;
@@ -17,6 +18,10 @@ size_t g_cache_size_for_testing = 0;
 BASE_FEATURE(kSearchPrefetchServicePrefetching,
              "SearchPrefetchServicePrefetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache,
+             "SearchPrefetchWithNoVarySearchDiskCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool SearchPrefetchServicePrefetchingIsEnabled() {
   if (!base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching)) {
@@ -108,6 +113,11 @@ BASE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading,
 bool OnlyAllowDefaultMatchPreloading() {
   return base::FeatureList::IsEnabled(
       kSearchPrefetchOnlyAllowDefaultMatchPreloading);
+}
+
+bool IsNoVarySearchDiskCacheEnabled() {
+  return base::FeatureList::IsEnabled(net::features::kHttpCacheNoVarySearch) &&
+         base::FeatureList::IsEnabled(kSearchPrefetchWithNoVarySearchDiskCache);
 }
 
 bool IsPrefetchIncognitoEnabled() {

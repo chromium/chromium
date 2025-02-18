@@ -193,6 +193,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1607312127821884567">Hiq konfigurimin e shikimit të aplikacioneve të telefonit tënd</translation>
 <translation id="1610778689852195798">"Zhbëj"</translation>
 <translation id="1611993646327628135">Aktive</translation>
+<translation id="1612679292338846734">Kur aktivizon këto veçori, teksti i futur, përmbajtja e dokumentit dhe URL-ja e faqes së uebit mund të dërgohen te serverët e IA-së së Google. Këto informacione përdoren për të gjeneruar sugjerime për të shkruarit, për të gjeneruar përmbledhje, për t'iu përgjigjur pyetjeve dhe për të përmirësuar produktin, në përputhje me <ph name="LINK_TO_SERVICE_TERMS" />. Mos përfshi asgjë personale, delikate apo konfidenciale.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Palos "Klasën e Google"</translation>
 <translation id="163032029566320584">"<ph name="UNAVAILABLE_DLC" />" nuk ofrohet.</translation>
@@ -565,6 +566,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="2946119680249604491">Shto lidhje</translation>
 <translation id="2947835478872237115">Niveli aktual i baterisë <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> deri në karikim të plotë</translation>
 <translation id="2949420361496057765">Shtyp <ph name="MODIFIER" /> dhe kliko një lidhje</translation>
+<translation id="2957159466053076448">Mund t'i çaktivizosh këto veçori në çdo kohë te "Cilësimet". <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audioja e pajisjes</translation>
 <translation id="2960314608273155470">Modaliteti i regjistrimit, parazgjedhja është <ph name="TYPE" /> (<ph name="SOURCE" />). Shtyp skedën për navigimin e tastierës.</translation>
 <translation id="2961963223658824723">Ndodhi një gabim. Provo sërish pas pak sekondash.</translation>
@@ -1905,6 +1907,7 @@ Instalim i ri</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
 <translation id="7360036564632145207">Ndryshimi i mbrojtjes së qasjes te të dhënat e tua për pajisjet periferike mund të optimizojë cilësinë e funksionimit</translation>
 <translation id="736045644501761622">Cakto imazhin e sfondit dhe stilin</translation>
+<translation id="7368041336688136012">Duhet të jesh të paktën 18 vjeç për të përdorur "Më ndihmo të shkruaj", "Më ndihmo të lexoj" dhe për të krijuar imazhe me IA.</translation>
 <translation id="7371404428569700291">Regjistro dritaren</translation>
 <translation id="7372069265635026568">Memoria: <ph name="AVAILABLE_MEMORY" /> në dispozicion nga <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="737315737514430195">Kjo lejon qasjen te mikrofoni për të gjitha aplikacionet dhe uebsajtet me lejen e mikrofonit</translation>
@@ -2030,6 +2033,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Shfaq të gjitha</translation>
+<translation id="7762664108390426952">Kushtet e shërbimit dhe Politikën e privatësisë së Google</translation>
 <translation id="7768784765476638775">Zgjidh që të thuhet</translation>
 <translation id="7769299611924763557">Imazhi yt GIF do të jetë gati së shpejti</translation>
 <translation id="7773536009433685931">Aktivizo WiFi më mirë</translation>

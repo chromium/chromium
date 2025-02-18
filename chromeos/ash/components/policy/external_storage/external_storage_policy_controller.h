@@ -5,7 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_POLICY_EXTERNAL_STORAGE_EXTERNAL_STORAGE_POLICY_CONTROLLER_H_
 #define CHROMEOS_ASH_COMPONENTS_POLICY_EXTERNAL_STORAGE_EXTERNAL_STORAGE_POLICY_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
+#include "chromeos/ash/components/policy/external_storage/device_id.h"
 
 class PrefService;
 
@@ -20,6 +23,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 
   static bool IsExternalStorageDisabled(const PrefService& pref_service);
   static bool IsExternalStorageReadOnly(const PrefService& pref_service);
+
+  static bool IsDeviceAllowlisted(const PrefService& pref_service,
+                                  std::optional<DeviceId> device_id);
+  static bool IsDeviceDisabled(const PrefService& pref_service,
+                               std::optional<DeviceId> device_id);
+  static bool IsDeviceReadOnly(const PrefService& pref_service,
+                               std::optional<DeviceId> device_id);
+  static bool IsDeviceWriteable(const PrefService& pref_service,
+                                std::optional<DeviceId> device_id);
 };
 
 }  // namespace policy

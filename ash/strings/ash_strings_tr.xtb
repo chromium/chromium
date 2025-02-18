@@ -193,6 +193,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1607312127821884567">Telefonunuzdaki uygulamaları görme seçeneğini ayarlamayı kapatın</translation>
 <translation id="1610778689852195798">"Geri al"</translation>
 <translation id="1611993646327628135">Açık</translation>
+<translation id="1612679292338846734">Bu özellikleri etkinleştirdiğinizde girilen metin, belge içeriği ve web sayfası URL'si Google Yapay Zeka sunucularına gönderilebilir. Bu bilgiler, <ph name="LINK_TO_SERVICE_TERMS" /> uyarınca yazma önerileri oluşturmak, özet üretmek, soruları yanıtlamak ve ürünü geliştirmek için kullanılır. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Google Classroom'u daraltın</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> kullanılamıyor.</translation>
@@ -565,6 +566,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="2946119680249604491">Bağlantı ekle</translation>
 <translation id="2947835478872237115">Mevcut pil seviyesi %<ph name="BATTERY_PERCENTAGE" />, tamamen dolmasına <ph name="TIME" /> var</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" /> tuşunu basılı tutarken bağlantıyı tıklayın</translation>
+<translation id="2957159466053076448">Bu özellikleri dilediğiniz zaman Ayarlar'dan kapatabilirsiniz. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Cihaz sesi</translation>
 <translation id="2960314608273155470">Ekran Görüntüsü Alma Modu, varsayılan <ph name="SOURCE" /> <ph name="TYPE" />. Klavyeyle gezinmek için sekme tuşuna basın.</translation>
 <translation id="2961963223658824723">Bir sorun oluştu. Birkaç saniye sonra tekrar deneyin.</translation>
@@ -1905,6 +1907,7 @@ Yeni yüklenmiş</translation>
 <translation id="735745346212279324">VPN bağlantısı kesildi</translation>
 <translation id="7360036564632145207">Çevre birimleri için veri erişimi koruma ayarınızı değiştirmek performansı optimize edebilir</translation>
 <translation id="736045644501761622">Duvar kağıdı ve stil ayarlayın</translation>
+<translation id="7368041336688136012">"Okumama Yardım Et" ile "Yazmama Yardım Et" özelliklerini kullanmak ve yapay zeka ile resim oluşturmak için en az 18 yaşında olmanız gerekir.</translation>
 <translation id="7371404428569700291">Pencereyi kaydet</translation>
 <translation id="7372069265635026568">Toplam <ph name="TOTAL_MEMORY" /> bellekten <ph name="AVAILABLE_MEMORY" /> kullanılabilir</translation>
 <translation id="737315737514430195">Mikrofonun sesinin açılması, izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
@@ -2030,6 +2033,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Tümünü göster</translation>
+<translation id="7762664108390426952">Google'ın Hizmet Şartları ve Gizlilik Politikası</translation>
 <translation id="7768784765476638775">Seç ve Dinle</translation>
 <translation id="7769299611924763557">GIF'iniz kısa süre içinde hazır olacak</translation>
 <translation id="7773536009433685931">Bunun yerine kablosuz bağlantıyı açın</translation>

@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">Прикажи ги сите табели за споредба</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да управувате со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
+<translation id="1793473605302304726">Плаќање на рати</translation>
 <translation id="1793631236004319016">Последно користење: пред <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, достапни се повеќе дејства, притискајте Tab за да ги менувате</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@
 <translation id="238459632961158867">Веб-сајт</translation>
 <translation id="2385809941344967209">Ажурирајте го Chrome од поставките за Chrome</translation>
 <translation id="2386255080630008482">Сертификатот на серверот е отповикан.</translation>
-<translation id="2386410849674401722">„Ми се допаѓа“ испраќа повратни информации дека ви се допаѓа „Автоматското пополнување со AI“</translation>
 <translation id="2388828676877700238">Подготовка и планирање даноци</translation>
 <translation id="239203817277685015">Детално</translation>
 <translation id="239293030466334554">Кабриолети</translation>
@@ -1441,7 +1441,6 @@
 <translation id="3543935938072367282">Плаќајте побрзо со автоматското пополнување</translation>
 <translation id="3547442767634383572">преглед на работниот профил</translation>
 <translation id="3547746132308051926">20 x 24 инчи</translation>
-<translation id="3550325450190222557">Испратете повратни информации за „Автоматско пополнување со AI“.</translation>
 <translation id="3552155506104542239">Предупредување: правилово е во конфликт со <ph name="POLICY_NAME" /> и нема да има никаков ефект на апликациите за Android. Инаку, правилово функционира како што треба.</translation>
 <translation id="3552297013052089404">Фонт Sans Serif</translation>
 <translation id="3558573058928565255">Во текот на денот</translation>
@@ -2898,7 +2897,6 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Плик Chinese #2</translation>
 <translation id="6127379762771434464">Ставката е отстранета</translation>
-<translation id="6128214169525122635">„Не ми се допаѓа“ испраќа повратни информации дека не ви се допаѓа „Автоматското пополнување со AI“</translation>
 <translation id="6131824478727057281">локација</translation>
 <translation id="6133320744616005677">Продолжи да дозволуваш</translation>
 <translation id="6133984428121856852">Наставката на датотека е празна или неправилно формирана.</translation>
@@ -3411,6 +3409,7 @@
 <translation id="7042616127917168121">Рафинирајте ги резултатите</translation>
 <translation id="7043552168914147882">Пакет хартија</translation>
 <translation id="7044081119134178347">Камерата е дозволена овој пат</translation>
+<translation id="704738887031336226">Прикажувај ги опциите за <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />плаќање на рати<ph name="PAY_OVER_TIME_HELP_LINK_END" /> при плаќањето</translation>
 <translation id="7048095965575426564">Европски на преклопување</translation>
 <translation id="7050187094878475250">Се обидовте да стигнете до <ph name="DOMAIN" />, но серверот прикажа сертификат со период на важност што е премногу долг за да му се верува.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Картичкава не може да се зачува во моментов}one{Картичкиве не може да се зачуваат во моментов}other{Картичкиве не може да се зачуваат во моментов}}</translation>
@@ -4595,7 +4594,6 @@
 <translation id="9150025764986957246">Може да внесувате работи како следниве:</translation>
 <translation id="9154194610265714752">Ажурно</translation>
 <translation id="9155211586651734179">Поврзани периферни уреди за аудио</translation>
-<translation id="9155453166708525139">„Автоматско пополнување со AI“ е експериментална функција, па повремено може да греши. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Списанија</translation>
 <translation id="9157595877708044936">Се поставува…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> можеби содржи чувствителни содржини}one{<ph name="FILE_COUNT" /> датотека можеби содржат чувствителни содржини}other{<ph name="FILE_COUNT" /> датотеки можеби содржат чувствителни содржини}}</translation>

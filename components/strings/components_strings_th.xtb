@@ -809,7 +809,6 @@
 <translation id="238459632961158867">เว็บไซต์</translation>
 <translation id="2385809941344967209">อัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="2386255080630008482">ใบรับรองของเซิร์ฟเวอร์ถูกเพิกถอนแล้ว</translation>
-<translation id="2386410849674401722">ปุ่ม "ชอบ" จะส่งความคิดเห็นว่าคุณชอบฟีเจอร์ป้อนข้อความอัตโนมัติด้วย AI</translation>
 <translation id="2388828676877700238">การจัดเตรียมเอกสารและวางแผนภาษี</translation>
 <translation id="239203817277685015">ลงรายละเอียด</translation>
 <translation id="239293030466334554">เปิดประทุน</translation>
@@ -1441,7 +1440,6 @@
 <translation id="3543935938072367282">ชำระเงินได้เร็วขึ้นด้วยฟีเจอร์ป้อนข้อความอัตโนมัติ</translation>
 <translation id="3547442767634383572">ภาพรวมของโปรไฟล์งาน</translation>
 <translation id="3547746132308051926">20 x 24 นิ้ว</translation>
-<translation id="3550325450190222557">ส่งความคิดเห็นเกี่ยวกับการป้อนข้อความอัตโนมัติด้วย AI</translation>
 <translation id="3552155506104542239">คำเตือน: นโยบายนี้ขัดแย้งกับ <ph name="POLICY_NAME" /> และจะไม่มีผลกับแอป Android หากมิเช่นนั้น นโยบายนี้จะทำงานตามที่ตั้งใจไว้</translation>
 <translation id="3552297013052089404">แบบอักษร Sans Serif</translation>
 <translation id="3558573058928565255">ตอนกลางวัน</translation>
@@ -2898,7 +2896,6 @@
 <translation id="6124432979022149706">เครื่องมือเชื่อมต่อ Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">นำรายการออกแล้ว</translation>
-<translation id="6128214169525122635">ปุ่ม "ไม่ชอบ" จะส่งความคิดเห็นว่าคุณไม่ชอบฟีเจอร์ป้อนข้อความอัตโนมัติด้วย AI</translation>
 <translation id="6131824478727057281">ตำแหน่ง</translation>
 <translation id="6133320744616005677">อนุญาตต่อไป</translation>
 <translation id="6133984428121856852">นามสกุลไฟล์ว่างเปล่าหรือมีรูปแบบไม่ถูกต้อง</translation>
@@ -4597,7 +4594,6 @@
 <translation id="9150025764986957246">คุณป้อนข้อมูลต่อไปนี้ได้</translation>
 <translation id="9154194610265714752">อัปเดตแล้ว</translation>
 <translation id="9155211586651734179">อุปกรณ์ต่อพ่วงเสียงที่ต่อเชื่อมไว้</translation>
-<translation id="9155453166708525139">ฟีเจอร์ป้อนข้อความอัตโนมัติด้วย AI อยู่ในขั้นทดลองและอาจไม่ได้ทำงานถูกต้องเสมอไป <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" /></translation>
 <translation id="9155646082713385498">นิตยสาร</translation>
 <translation id="9157595877708044936">กำลังตั้งค่า...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> อาจมีเนื้อหาที่ละเอียดอ่อน}other{<ph name="FILE_COUNT" /> ไฟล์อาจมีเนื้อหาที่ละเอียดอ่อน}}</translation>

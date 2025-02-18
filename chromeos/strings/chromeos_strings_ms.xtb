@@ -363,7 +363,6 @@
 <translation id="2561093647892030937">lemon</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
 <translation id="2573178735329662769">Merakam semua audio Chromebook</translation>
-<translation id="2575552334616524665">Anda boleh menghidupkan ciri ini dalam Tetapan atau menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Model ini akan menggunakan hingga 2GB storan</translation>
 <translation id="2584547424703650812">Glowscape</translation>
 <translation id="2584559707064218956">Untuk membuat persediaan, pergi ke Tetapan</translation>
@@ -502,7 +501,6 @@
 <translation id="33736539805963175">Latar <ph name="LETTERS_COLOR" /> dengan huruf <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusif</translation>
 <translation id="3404249063913988450">Dayakan penyelamat skrin</translation>
-<translation id="3410165745972100556">Transkrip dimatikan</translation>
 <translation id="3413935475507503304">Untuk meneruskan kemaskinian, klik Seterusnya.</translation>
 <translation id="3428551088151258685">di luar</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -1470,6 +1468,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7828503206075800057">Kafe <ph name="CAFE_TYPE" /> yang <ph name="CAFE_STYLE" /></translation>
 <translation id="7841134249932030522">Dayakan mod gelap</translation>
 <translation id="7846634333498149051">Papan kekunci</translation>
+<translation id="7847923465436619066">Pemilih bahasa transkripsi</translation>
 <translation id="7849030488395653706">teja utara</translation>
 <translation id="7849737607196682401">renda</translation>
 <translation id="7850320739366109486">Jangan Ganggu</translation>
@@ -1656,6 +1655,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8749478549112817787">Latar Kamera</translation>
 <translation id="8755946156089753497">menara</translation>
 <translation id="8760616037557661287">Gesaan sebelumnya</translation>
+<translation id="876280838467039397">Muat turun dan pasang model transkripsi <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8775713578693478175">APN modem</translation>

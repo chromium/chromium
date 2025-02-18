@@ -196,6 +196,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Afficher les photos et contenus multimédias de votre téléphone</translation>
 <translation id="1129850422003387628">Gérer les applications</translation>
+<translation id="1130430615924359526">{0,plural, =1{Fermer la navigation privée}one{Fermer la navigation privée (# fenêtre)}other{Fermer la navigation privée (# fenêtres)}}</translation>
 <translation id="113050636487300043">Choisissez un nom et une couleur de thème pour différencier les profils</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Fait partie du groupe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Niveau de batterie côté droit (<ph name="PERCENTAGE" /> %).</translation>
@@ -1514,6 +1515,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2042279886444479655">Profils actifs</translation>
 <translation id="2042427131767688936">Pour une utilisation sécurisée de cet appareil, votre organisation peut consulter des informations le concernant (système d'exploitation, navigateur, paramètres et logiciels installés).</translation>
 <translation id="2044014337866019681">Pour déverrouiller la session, vérifiez que vous êtes bien en train de valider <ph name="ACCOUNT" />.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Fermer la fenêtre ouverte en tant qu'invité}one{Fermer la fenêtre ouverte en tant qu'invité (# fenêtre)}other{Fermer les fenêtres ouvertes en tant qu'invité (# fenêtres)}}</translation>
 <translation id="204497730941176055">Nom du modèle de certificat Microsoft</translation>
 <translation id="2045211794962848221">Vous ne verrez plus ce message</translation>
 <translation id="2045838962742066664">Saisie abrégée</translation>
@@ -2008,7 +2010,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2381499968174336913">Aperçu de l'onglet partagé</translation>
 <translation id="2382368170666222719">Désactiver le pavé tactile intégré</translation>
 <translation id="2382875860893882175">La diffusion est actuellement suspendue. Vous pouvez la reprendre ou l'arrêter à tout moment.</translation>
-<translation id="2383825469508278924">Modifiez le mappage des touches du clavier, les touches de fonction, etc.</translation>
+<translation id="2383825469508278924">Modifiez les jeux de raccourcis clavier, les touches de fonction, etc.</translation>
 <translation id="2387052489799050037">Revenir à l'accueil</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (bureau actuel)</translation>
 <translation id="2390347491606624519">Impossible de se connecter au proxy, veuillez vous connecter de nouveau</translation>
@@ -2286,7 +2288,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2569972178052279830">Nom du marchand</translation>
 <translation id="257088987046510401">Thèmes</translation>
 <translation id="2571638829488071045">Enregistrer cette extension dans votre compte Google ?</translation>
-<translation id="2571655996835834626">Modifier les paramètres qui contrôlent l'accès des sites Web à des fonctionnalités telles que les cookies, le code JavaScript, les plug-ins, la géolocalisation, le micro, la caméra, etc.</translation>
 <translation id="257175846174451436">Groupe d'onglets suggéré</translation>
 <translation id="2572032849266859634">L'accès en lecture seule à "<ph name="VOLUME_NAME" />" a été accordé.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> onglets</translation>
@@ -7354,6 +7355,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6214106213498203737">Aquarelle</translation>
 <translation id="621470880408090483">Ne pas autoriser les sites à se connecter à des appareils Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après 1 minute d'inactivité}one{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minute d'inactivité}other{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minutes d'inactivité}}</translation>
+<translation id="6216154119179790291">Faire défiler jusqu'au premier onglet</translation>
 <translation id="6216239400972191926">Sites et applis refusés</translation>
 <translation id="6216601812881225442">Votre conteneur ne peut pas être redimensionné. Pour modifier la quantité d'espace pré-allouée à Linux, faites une sauvegarde, puis une restauration dans un nouveau conteneur.</translation>
 <translation id="6216696360484424239">Connexion automatique</translation>
@@ -7550,6 +7552,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6357305427698525450">Certains liens compatibles continueront à s'ouvrir dans <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Autres identifiants stables (hachages ou UUID, par exemple)</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="6359640073754977254">Faire défiler jusqu'au dernier onglet</translation>
 <translation id="6361850914223837199">Informations sur l'erreur :</translation>
 <translation id="6362853299801475928">Signale&amp;r un problème...</translation>
 <translation id="6363786367719063276">Afficher les journaux</translation>
@@ -7612,7 +7615,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6411135999030237579">Appuyer de manière prolongée pour répéter automatiquement la touche</translation>
 <translation id="6414618057231176439">Sélectionnez la version de <ph name="VM_NAME" /> à installer.</translation>
 <translation id="641469293210305670">Installer des mises à jour et des applications</translation>
-<translation id="6414878884710400018">Ouvrir les préférences système</translation>
 <translation id="6415757856498750027">Saisissez "w" pour obtenir "ư"</translation>
 <translation id="6415816101512323589">Activer la récupération des données locales pour protéger vos données ?</translation>
 <translation id="6415900369006735853">Connectez-vous à Internet via votre téléphone</translation>
@@ -10212,6 +10214,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8258027225380843424">Importation réussie</translation>
 <translation id="8259048637628995340">Connecter votre téléphone Android pour une expérience fluide</translation>
 <translation id="8260177673299865994">Améliorer la protection des téléchargements</translation>
+<translation id="8260473380156923937">Les Applications Chrome seront bientôt abandonnées. Pour trouver des alternatives, contactez le développeur ou votre contact du service informatique.</translation>
 <translation id="8260864402787962391">Souris</translation>
 <translation id="8261378640211443080">Cette extension n'est pas répertoriée sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et a pu être ajoutée à votre insu.</translation>
 <translation id="8261506727792406068">Supprimer</translation>

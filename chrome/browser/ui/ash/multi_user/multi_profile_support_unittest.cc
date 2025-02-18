@@ -306,9 +306,8 @@ void MultiProfileSupportTest::SetUp() {
   ash_test_helper()
       ->test_session_controller_client()
       ->set_use_lower_case_user_id(false);
-  ash_test_helper()
-      ->test_session_controller_client()
-      ->set_default_provide_pref_service(false);
+  ash_test_helper()->test_session_controller_client()->set_provide_pref_service(
+      false);
 
   profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());

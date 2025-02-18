@@ -19,6 +19,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelperFactoryImpl;
@@ -50,6 +52,10 @@ import java.util.concurrent.ExecutionException;
 /** Unit tests for {@link GmsCorePasswordCheckController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+// This is only used from Safety Check v1 which will be soon deprecated in favor Safety Check v2.
+// There is still one entry point to this from the PhishGuard dialog.
+// TODO(crbug.com/397186266): Update together with the GmsCorePasswordCheckController isntantiation.
+@Features.DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class GmsCorePasswordCheckControllerTest {
     private static final String TEST_EMAIL_ADDRESS = "test@example.com";
 

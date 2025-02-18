@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.Pattern" enum="HttpCachePattern"
-    expires_after="2025-06-15">
+    expires_after="2025-08-17">
   <owner>morlovich@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>For each http cache transaction, the recorded pattern.</summary>
@@ -1784,7 +1784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Dns.ResolveTimeDiff.{Variant}.{Bucket}" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2026-02-18">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
@@ -3810,7 +3810,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCode{Closer}{ServerType}{HandshakeType}"
-    enum="QuicErrorCodes" expires_after="2025-06-15">
+    enum="QuicErrorCodes" expires_after="2025-08-17">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4850,6 +4850,21 @@ chromium-metrics-reviews@google.com.
     session. Warning: this histogram was expired from 2023-11-19 to 2024-04-11;
     data may be missing.
   </summary>
+</histogram>
+
+<histogram
+    name="Net.QuicSession.SessionKeyMismatch.MismatchedFieldCombination{HostType}"
+    enum="QuicSessionKeyMismatchedFieldCombination" expires_after="2025-07-06">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records which combination of fields in `QuicSessionKey` mismatched with the
+    key of existing session or an in-flight session attempt to {HostType} with
+    the same `ServerId`. We only look at the combinations of frequent fields
+    which cause mismatches, retrieved by `MismatchedField` histograms. Recorded
+    every time when we attempt to create a QUIC session.
+  </summary>
+  <token key="HostType" variants="HostType"/>
 </histogram>
 
 <histogram name="Net.QuicSession.SessionKeyMismatch.MismatchedField{HostType}"

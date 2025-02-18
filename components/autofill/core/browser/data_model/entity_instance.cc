@@ -34,6 +34,45 @@ AttributeInstance::AttributeInstance(AttributeInstance&&) = default;
 AttributeInstance& AttributeInstance::operator=(AttributeInstance&&) = default;
 AttributeInstance::~AttributeInstance() = default;
 
+std::u16string AttributeInstance::GetRawInfo(FieldType type) const {
+  return value_;
+}
+
+void AttributeInstance::SetRawInfoWithVerificationStatus(
+    FieldType type,
+    const std::u16string& value,
+    VerificationStatus status) {
+  value_ = value;
+}
+
+std::u16string AttributeInstance::GetInfo(const AutofillType& type,
+                                          const std::string& app_locale) const {
+  return value_;
+}
+
+VerificationStatus AttributeInstance::GetVerificationStatus(
+    FieldType type) const {
+  return VerificationStatus::kNoStatus;
+}
+
+bool AttributeInstance::SetInfoWithVerificationStatus(
+    const AutofillType& type,
+    const std::u16string& value,
+    const std::string& app_locale,
+    const VerificationStatus status) {
+  value_ = value;
+  return true;
+}
+
+FieldTypeSet AttributeInstance::GetSupportedTypes() const {
+  return {type_.field_type()};
+}
+
+bool operator==(const AttributeInstance& lhs, const AttributeInstance& rhs) {
+  return lhs.context_ == rhs.context_ && lhs.type_ == rhs.type_ &&
+         lhs.value_ == rhs.value_;
+}
+
 EntityInstance::EntityInstance(
     EntityType type,
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>

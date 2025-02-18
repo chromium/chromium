@@ -193,6 +193,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1607312127821884567">Ignorer la configuration de l'affichage des applications de votre téléphone</translation>
 <translation id="1610778689852195798">« Annuler »</translation>
 <translation id="1611993646327628135">Activé</translation>
+<translation id="1612679292338846734">Lorsque vous activez ces fonctionnalités, le texte saisi, le contenu du document et l'URL de la page Web peuvent être envoyés aux serveurs de l'IA de Google. Ces informations sont utilisées pour générer des suggestions de rédaction, des résumés, répondre à des questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1623768535032616219">Réduire Google Classroom</translation>
 <translation id="163032029566320584">La fonctionnalité <ph name="UNAVAILABLE_DLC" /> n'est pas accessible.</translation>
@@ -565,6 +566,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2946119680249604491">Ajouter une connexion</translation>
 <translation id="2947835478872237115">Niveau actuel de charge de la pile à <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> jusqu'à une charge complète</translation>
 <translation id="2949420361496057765">Appuyez sur <ph name="MODIFIER" />, puis cliquez sur un lien</translation>
+<translation id="2957159466053076448">Vous pouvez désactiver ces fonctionnalités à tout moment dans les paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio de l'appareil</translation>
 <translation id="2960314608273155470">Mode de capture, la valeur par défaut est <ph name="TYPE" /> <ph name="SOURCE" />. Appuyez sur la touche Tabulation pour utiliser la navigation au clavier.</translation>
 <translation id="2961963223658824723">Un problème est survenu. Réessayez dans quelques secondes.</translation>
@@ -1904,6 +1906,7 @@ Nouvelle installation</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
 <translation id="7360036564632145207">Modifier les paramètres de protection d'accès aux données des périphériques peut optimiser les performances</translation>
 <translation id="736045644501761622">Définir le fond d'écran et le style</translation>
+<translation id="7368041336688136012">Vous devez avoir au moins 18 ans pour utiliser Aide à la lecture, Aide à la rédaction et créer des images à l'aide de l'IA.</translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7372069265635026568">Mémoire : <ph name="AVAILABLE_MEMORY" /> disponible sur <ph name="TOTAL_MEMORY" /> au total</translation>
 <translation id="737315737514430195">Ceci permet à toutes les applications et à tous les sites Web ayant l'autorisation du microphone d'accéder au microphone</translation>
@@ -2029,6 +2032,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Tout afficher</translation>
+<translation id="7762664108390426952">conditions d'utilisation et de la politique de confidentialité de Google</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
 <translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
 <translation id="7773536009433685931">Activez plutôt le Wi-Fi</translation>

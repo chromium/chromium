@@ -809,7 +809,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="238459632961158867">Svetainė</translation>
 <translation id="2385809941344967209">Atnaujinkite „Chrome“ šios naršyklės nustatymuose</translation>
 <translation id="2386255080630008482">Serverio sertifikatas panaikintas.</translation>
-<translation id="2386410849674401722">Mygtukas „Patinka“ – tai atsiliepimas, kad jums patinka automatinis pildymas naudojant DI</translation>
 <translation id="2388828676877700238">Mokesčių paruošimas ir planavimas</translation>
 <translation id="239203817277685015">Detalizuoti</translation>
 <translation id="239293030466334554">Konvertuojami elementai</translation>
@@ -1443,7 +1442,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3543935938072367282">Apdorokite mokėjimą sparčiau naudodami automatinį pildymą</translation>
 <translation id="3547442767634383572">Darbo profilio apžvalga</translation>
 <translation id="3547746132308051926">20 x 24 col.</translation>
-<translation id="3550325450190222557">Siųsti atsiliepimą apie automatinį pildymą naudojant DI.</translation>
 <translation id="3552155506104542239">Perspėjimas: ši politika nesuderinama su <ph name="POLICY_NAME" /> ir neturės įtakos „Android“ programoms. Kitu atveju ši politika veikia, kaip numatyta.</translation>
 <translation id="3552297013052089404">Šriftas be užraitų</translation>
 <translation id="3558573058928565255">Dienos metas</translation>
@@ -2900,7 +2898,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Nr. 2 kinietiškas vokas</translation>
 <translation id="6127379762771434464">Elementas pašalintas</translation>
-<translation id="6128214169525122635">Mygtukas „Nepatinka“ – tai atsiliepimas, kad jums nepatinka automatinis pildymas naudojant DI</translation>
 <translation id="6131824478727057281">vieta</translation>
 <translation id="6133320744616005677">Toliau leisti</translation>
 <translation id="6133984428121856852">Failo plėtinys nenurodytas arba netinkamai suformatuotas.</translation>
@@ -4600,7 +4597,6 @@ Papildoma išsami informacija:
 <translation id="9150025764986957246">Galite įvesti, pvz.:</translation>
 <translation id="9154194610265714752">Atnaujinta</translation>
 <translation id="9155211586651734179">Pridėti garso įrenginiai</translation>
-<translation id="9155453166708525139">Automatinis pildymas naudojant DI yra eksperimentinė funkcija ir ne visada pateikia tinkamus atsakymus. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Žurnalai</translation>
 <translation id="9157595877708044936">Nustatoma...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Faile „<ph name="FILE_NAME" />“ gali būti neskelbtino turinio}one{<ph name="FILE_COUNT" /> faile gali būti neskelbtino turinio}few{<ph name="FILE_COUNT" /> failuose gali būti neskelbtino turinio}many{<ph name="FILE_COUNT" /> failo gali būti neskelbtino turinio}other{<ph name="FILE_COUNT" /> failų gali būti neskelbtino turinio}}</translation>

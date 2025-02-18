@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/ui_base_features.h"
@@ -224,8 +223,7 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
                                origin_text_without_ellipsis));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // TODO (crbug/1521332): Evaluate fix and re-enable
 #define MAYBE_WidgetIsCenteredWhenArrowIsFloat \
   DISABLED_WidgetIsCenteredWhenArrowIsFloat

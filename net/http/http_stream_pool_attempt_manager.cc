@@ -54,12 +54,6 @@ namespace net {
 
 namespace {
 
-constexpr NextProtoSet kTcpBasedProtocols = {
-    NextProto::kProtoUnknown, NextProto::kProtoHTTP11, NextProto::kProtoHTTP2};
-
-constexpr NextProtoSet kQuicBasedProtocols = {NextProto::kProtoUnknown,
-                                              NextProto::kProtoQUIC};
-
 StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
     const StreamSocket& stream_socket) {
   return stream_socket.WasEverUsed()
@@ -298,22 +292,6 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   base::WeakPtrFactory<InFlightAttempt> weak_ptr_factory_{this};
 };
 
-// Represents a preconnect request.
-struct HttpStreamPool::AttemptManager::PreconnectEntry {
-  PreconnectEntry(size_t num_streams, CompletionOnceCallback callback)
-      : num_streams(num_streams), callback(std::move(callback)) {}
-
-  PreconnectEntry(const PreconnectEntry&) = delete;
-  PreconnectEntry& operator=(const PreconnectEntry&) = delete;
-
-  ~PreconnectEntry() = default;
-
-  size_t num_streams;
-  CompletionOnceCallback callback;
-  // Set to the latest error when errors happened.
-  int result = OK;
-};
-
 // static
 std::string_view HttpStreamPool::AttemptManager::CanAttemptResultToString(
     CanAttemptResult result) {
@@ -372,10 +350,6 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
   CHECK(group_);
 
-  if (group_->force_quic()) {
-    allowed_alpns_.RemoveAll(kTcpBasedProtocols);
-  }
-
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE, [&] {
         base::Value::Dict dict;
@@ -403,20 +377,15 @@ HttpStreamPool::AttemptManager::~AttemptManager() {
 
 void HttpStreamPool::AttemptManager::StartJob(
     Job* job,
-    RequestPriority priority,
-    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-    quic::ParsedQuicVersion quic_version,
-    const NetLogWithSource& request_net_log,
-    const NetLogWithSource& job_controller_net_log) {
+    const NetLogWithSource& request_net_log) {
   CHECK(!is_failing_);
 
-  MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB, [&] {
         base::Value::Dict dict;
-        dict.Set("priority", priority);
+        dict.Set("priority", job->priority());
         base::Value::List allowed_bad_certs_list;
-        for (const auto& cert_and_status : allowed_bad_certs) {
+        for (const auto& cert_and_status : job->allowed_bad_certs()) {
           allowed_bad_certs_list.Append(
               cert_and_status.cert->subject().GetDisplayName());
         }
@@ -424,7 +393,8 @@ void HttpStreamPool::AttemptManager::StartJob(
         dict.Set("enable_ip_based_pooling", job->enable_ip_based_pooling());
         dict.Set("enable_alternative_services",
                  job->enable_alternative_services());
-        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+        dict.Set("quic_version",
+                 quic::ParsedQuicVersionToString(job->quic_version()));
         dict.Set("create_to_resume_ms",
                  static_cast<int>(job->CreateToResumeTime().InMilliseconds()));
         job->net_log().source().AddToEventParameters(dict);
@@ -454,9 +424,7 @@ void HttpStreamPool::AttemptManager::StartJob(
   DCHECK(!CanUseExistingQuicSession());
   DCHECK(!HasAvailableSpdySession());
 
-  jobs_.Insert(job, priority);
-
-  RestrictAllowedProtocols(job->allowed_alpns());
+  jobs_.Insert(job, job->priority());
 
   MaybeChangeServiceEndpointRequestPriority();
 
@@ -475,31 +443,33 @@ void HttpStreamPool::AttemptManager::StartJob(
     return;
   }
 
-  allowed_bad_certs_ = allowed_bad_certs;
-  quic_version_ = quic_version;
+  allowed_bad_certs_ = job->allowed_bad_certs();
+  quic_version_ = job->quic_version();
 
-  StartInternal(priority);
+  StartInternal(job);
 
   return;
 }
 
-int HttpStreamPool::AttemptManager::Preconnect(
-    size_t num_streams,
-    quic::ParsedQuicVersion quic_version,
-    const NetLogWithSource& job_controller_net_log,
-    CompletionOnceCallback callback) {
+void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
   CHECK(!is_failing_);
 
-  MaybeUpdateQuicVersionWhenForced(quic_version);
+  // If `job` is resumed, there could be enough streams at this point.
+  if (group_->ActiveStreamSocketCount() >= job->num_streams()) {
+    NotifyJobOfPreconnectCompleteLater(job, OK);
+    return;
+  }
+
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT, [&] {
         base::Value::Dict dict;
-        dict.Set("num_streams", static_cast<int>(num_streams));
-        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
-        job_controller_net_log.source().AddToEventParameters(dict);
+        dict.Set("num_streams", static_cast<int>(job->num_streams()));
+        dict.Set("quic_version",
+                 quic::ParsedQuicVersionToString(job->quic_version()));
+        job->delegate_net_log().source().AddToEventParameters(dict);
         return dict;
       });
-  job_controller_net_log.AddEventReferencingSource(
+  job->delegate_net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND,
       net_log_.source());
 
@@ -507,16 +477,11 @@ int HttpStreamPool::AttemptManager::Preconnect(
   // this method.
   DCHECK(!CanUseExistingQuicSession());
   DCHECK(!HasAvailableSpdySession());
-  CHECK(group_->ActiveStreamSocketCount() < num_streams);
 
-  auto entry =
-      std::make_unique<PreconnectEntry>(num_streams, std::move(callback));
-  preconnects_.emplace(std::move(entry));
+  preconnect_jobs_.emplace(job);
+  quic_version_ = job->quic_version();
 
-  quic_version_ = quic_version;
-
-  StartInternal(RequestPriority::IDLE);
-  return ERR_IO_PENDING;
+  StartInternal(job);
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
@@ -716,6 +681,7 @@ void HttpStreamPool::AttemptManager::CancelInFlightAttempts(
 }
 
 void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
+  preconnect_jobs_.erase(job);
   ip_based_pooling_disabling_jobs_.erase(job);
   alternative_service_disabling_jobs_.erase(job);
 
@@ -731,6 +697,7 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
       }
     }
   }
+
   MaybeComplete();
 }
 
@@ -848,7 +815,7 @@ LoadState HttpStreamPool::AttemptManager::GetLoadState() const {
 
 RequestPriority HttpStreamPool::AttemptManager::GetPriority() const {
   if (jobs_.empty()) {
-    CHECK(!preconnects_.empty());
+    CHECK(!preconnect_jobs_.empty());
     // Preconnets have IDLE priority.
     return RequestPriority::IDLE;
   }
@@ -958,7 +925,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
   dict.Set("job_count_limit_ignoring",
            static_cast<int>(limit_ignoring_jobs_.size()));
   dict.Set("job_count_notified", static_cast<int>(notified_jobs_.size()));
-  dict.Set("preconnect_count_all", static_cast<int>(preconnects_.size()));
+  dict.Set("preconnect_count_all", static_cast<int>(preconnect_jobs_.size()));
   dict.Set("preconnect_count_pending",
            static_cast<int>(PendingPreconnectCount()));
   dict.Set("preconnect_count_notifying",
@@ -1022,13 +989,14 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
 MultiplexedSessionCreationInitiator
 HttpStreamPool::AttemptManager::CalculateMultiplexedSessionCreationInitiator() {
   // Iff we only have preconnect jobs, return `kPreconnect`.
-  if (!preconnects_.empty() && jobs_.empty() && notified_jobs_.empty()) {
+  if (!preconnect_jobs_.empty() && jobs_.empty() && notified_jobs_.empty()) {
     return MultiplexedSessionCreationInitiator::kPreconnect;
   }
   return MultiplexedSessionCreationInitiator::kUnknown;
 }
 
-void HttpStreamPool::AttemptManager::StartInternal(RequestPriority priority) {
+void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
+  RestrictAllowedProtocols(job->allowed_alpns());
   MaybeSetInitialAttemptState();
   UpdateStreamAttemptState();
 
@@ -1036,7 +1004,7 @@ void HttpStreamPool::AttemptManager::StartInternal(RequestPriority priority) {
     MaybeAttemptQuic();
     MaybeAttemptConnection();
   } else {
-    ResolveServiceEndpoint(priority);
+    ResolveServiceEndpoint(job->priority());
   }
 }
 
@@ -1357,7 +1325,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
       tcp_based_attempt_state_ = TcpBasedAttemptState::kAttempting;
     }
 
-    CHECK(!preconnects_.empty() || group_->IdleStreamSocketCount() == 0);
+    CHECK(!preconnect_jobs_.empty() || group_->IdleStreamSocketCount() == 0);
 
     auto in_flight_attempt = std::make_unique<InFlightAttempt>(this);
     InFlightAttempt* raw_attempt = in_flight_attempt.get();
@@ -1500,8 +1468,8 @@ bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
 
 size_t HttpStreamPool::AttemptManager::CalculateMaxPreconnectCount() const {
   size_t num_streams = 0;
-  for (const auto& entry : preconnects_) {
-    num_streams = std::max(num_streams, entry->num_streams);
+  for (const auto& job : preconnect_jobs_) {
+    num_streams = std::max(num_streams, job->num_streams());
   }
   return num_streams;
 }
@@ -1700,57 +1668,65 @@ void HttpStreamPool::AttemptManager::NotifyJobOfFailure() {
 }
 
 void HttpStreamPool::AttemptManager::NotifyPreconnectsComplete(int rv) {
-  while (!preconnects_.empty()) {
-    std::unique_ptr<PreconnectEntry> entry =
-        std::move(preconnects_.extract(preconnects_.begin()).value());
-    InvokePreconnectCallbackLater(std::move(entry->callback), rv);
+  while (!preconnect_jobs_.empty()) {
+    raw_ptr<Job> job =
+        preconnect_jobs_.extract(preconnect_jobs_.begin()).value();
+    NotifyJobOfPreconnectCompleteLater(job, rv);
   }
+  // TODO(crbug.com/396998469): Do we still need this? Remove if this is not
+  // needed.
   MaybeCompleteLater();
 }
 
 void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
     int rv,
     size_t active_stream_count) {
-  std::vector<PreconnectEntry*> completed;
-  for (auto& entry : preconnects_) {
-    CHECK_GT(entry->num_streams, 0u);
-    if (rv != OK) {
-      entry->result = rv;
-    }
-    if (entry->num_streams <= active_stream_count) {
-      completed.emplace_back(entry.get());
+  std::vector<Job*> completed_jobs;
+  for (auto& job : preconnect_jobs_) {
+    if (job->num_streams() <= active_stream_count) {
+      completed_jobs.emplace_back(job.get());
     }
   }
 
-  for (auto* entry_ptr : completed) {
-    auto it = preconnects_.find(entry_ptr);
-    CHECK(it != preconnects_.end());
-    std::unique_ptr<PreconnectEntry> entry =
-        std::move(preconnects_.extract(it).value());
-    InvokePreconnectCallbackLater(std::move(entry->callback), entry->result);
+  for (auto* completed_job : completed_jobs) {
+    auto it = preconnect_jobs_.find(completed_job);
+    CHECK(it != preconnect_jobs_.end());
+    raw_ptr<Job> job = preconnect_jobs_.extract(it).value();
+    NotifyJobOfPreconnectCompleteLater(job, rv);
   }
-  if (preconnects_.empty()) {
+
+  // TODO(crbug.com/396998469): Do we still need this? Remove if this is not
+  // needed.
+  if (preconnect_jobs_.empty()) {
     MaybeCompleteLater();
   }
 }
 
-void HttpStreamPool::AttemptManager::InvokePreconnectCallbackLater(
-    CompletionOnceCallback callback,
+void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectCompleteLater(
+    Job* job,
     int rv) {
   ++notifying_preconnect_completion_count_;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AttemptManager::InvokePreconnectCallback,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback), rv));
+      FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfPreconnectComplete,
+                                weak_ptr_factory_.GetWeakPtr(), job, rv));
 }
 
-void HttpStreamPool::AttemptManager::InvokePreconnectCallback(
-    CompletionOnceCallback callback,
-    int rv) {
+// TODO(crbug.com/396998469): Ensure `job` isn't a dangling pointer. There are
+// two paths to destroy `job`.
+// 1) JobController::OnPreconnectComplete() is called via
+//    Job::OnPreconnectComplete().
+// 2) JobController is destroyed as a part of HttpStreamPool destruction.
+//
+// In this method, we don't have to consider 1) because we are about to call
+// Job::OnPreconnectComplete(). If 2) happens, `this` should have been destroyed
+// too so we shouldn't reach here because we use "weak this" to post a task.
+void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectComplete(Job* job,
+                                                                   int rv) {
   CHECK_GT(notifying_preconnect_completion_count_, 0u);
   --notifying_preconnect_completion_count_;
-  MaybeCompleteLater();
-  std::move(callback).Run(rv);
+  // We don't need to call MaybeCompleteLater() here, since `job` will call
+  // OnJobComplete() later.
+  job->OnPreconnectComplete(rv);
 }
 
 void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
@@ -2152,16 +2128,6 @@ void HttpStreamPool::AttemptManager::OnStreamAttemptDelayPassed() {
   MaybeAttemptConnection();
 }
 
-void HttpStreamPool::AttemptManager::MaybeUpdateQuicVersionWhenForced(
-    quic::ParsedQuicVersion& quic_version) {
-  if (!quic_version.IsKnown() && group_->force_quic()) {
-    quic_version = http_network_session()
-                       ->context()
-                       .quic_context->params()
-                       ->supported_versions[0];
-  }
-}
-
 bool HttpStreamPool::AttemptManager::CanUseTcpBasedProtocols() {
   return allowed_alpns_.HasAny(kTcpBasedProtocols);
 }
@@ -2252,7 +2218,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
            static_cast<int>(group_->ActiveStreamSocketCount()));
   dict.Set("num_jobs", static_cast<int>(jobs_.size()));
   dict.Set("num_notified_jobs", static_cast<int>(notified_jobs_.size()));
-  dict.Set("num_preconnects", static_cast<int>(preconnects_.size()));
+  dict.Set("num_preconnects", static_cast<int>(preconnect_jobs_.size()));
   dict.Set("num_inflight_attempts",
            static_cast<int>(in_flight_attempts_.size()));
   dict.Set("num_slow_attempts", static_cast<int>(slow_attempt_count_));
@@ -2266,7 +2232,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
 }
 
 bool HttpStreamPool::AttemptManager::CanComplete() const {
-  return jobs_.empty() && notified_jobs_.empty() && preconnects_.empty() &&
+  return jobs_.empty() && notified_jobs_.empty() && preconnect_jobs_.empty() &&
          notifying_preconnect_completion_count_ == 0 &&
          in_flight_attempts_.empty() && !quic_task_;
 }

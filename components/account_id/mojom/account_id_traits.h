@@ -33,11 +33,6 @@ struct EnumTraits<signin::mojom::AccountType, AccountType> {
       case signin::mojom::AccountType::GOOGLE:
         *out = AccountType::GOOGLE;
         return true;
-      case signin::mojom::AccountType::ACTIVE_DIRECTORY:
-        // TODO(crbug.com/291783005): This account type is no longer supported
-        // on ChromeOS, and the ACTIVE_DIRECTORY enum value can be removed from
-        // signin::mojom::AccountType.
-        NOTREACHED();
     }
     NOTREACHED();
   }

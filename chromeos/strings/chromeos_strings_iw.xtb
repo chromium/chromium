@@ -363,7 +363,6 @@
 <translation id="2561093647892030937">לימונים</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2573178735329662769">‏הקלטת כל האודיו ב-Chromebook</translation>
-<translation id="2575552334616524665">אפשר להפעיל את האפשרות הזו ב'הגדרות' או בתפריט <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">‏הקובץ יתפוס עד 2GB מנפח האחסון</translation>
 <translation id="2584547424703650812">מרחבים זוהרים</translation>
 <translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
@@ -502,7 +501,6 @@
 <translation id="33736539805963175">האות <ph name="LETTERS_LETTER" /> על רקע בצבע <ph name="LETTERS_COLOR" /></translation>
 <translation id="3383623117265110236">בלעדי</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
-<translation id="3410165745972100556">התמלול מושבת</translation>
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
 <translation id="3428551088151258685">בחוץ</translation>
 <translation id="3428971106895559033">פסטלי</translation>
@@ -1470,6 +1468,7 @@
 <translation id="7828503206075800057">בית קפה מסוג <ph name="CAFE_TYPE" /> בסגנון <ph name="CAFE_STYLE" /></translation>
 <translation id="7841134249932030522">הפעלת המצב הכהה</translation>
 <translation id="7846634333498149051">מקלדת</translation>
+<translation id="7847923465436619066">הכלי לבחירת שפת התמלול</translation>
 <translation id="7849030488395653706">הזוהר הצפוני</translation>
 <translation id="7849737607196682401">תחרה</translation>
 <translation id="7850320739366109486">נא לא להפריע</translation>
@@ -1656,6 +1655,7 @@
 <translation id="8749478549112817787">רקע המצלמה</translation>
 <translation id="8755946156089753497">מגדל</translation>
 <translation id="8760616037557661287">ההנחיות הקודמות</translation>
+<translation id="876280838467039397">הורדה ובחירה של מודל התמלול ב<ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>
 <translation id="8775713578693478175">‏ה-APN של המודם</translation>

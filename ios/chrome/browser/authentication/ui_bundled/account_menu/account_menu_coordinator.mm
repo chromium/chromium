@@ -232,6 +232,19 @@
   [_manageAccountsCoordinator start];
 }
 
+- (void)didTapSettingsButton {
+  // Close the account menu and open the Settings page.
+  __weak __typeof(self) weakSelf = self;
+  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
+                 completion:^{
+                   id<ApplicationCommands> applicationHandler =
+                       HandlerForProtocol(
+                           weakSelf.browser->GetCommandDispatcher(),
+                           ApplicationCommands);
+                   [applicationHandler showSettingsFromViewController:nil];
+                 }];
+}
+
 - (void)signOutFromTargetRect:(CGRect)targetRect
                     forSwitch:(BOOL)forSwitch
                    completion:(void (^)(BOOL))completion {

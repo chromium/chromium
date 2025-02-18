@@ -471,6 +471,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1791415068765905273">Vis alle sammenligningstabeller</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at administrere dine oplysninger, dit privatliv og beskyttelsen på din Google-konto</translation>
+<translation id="1793473605302304726">Afbetaling</translation>
 <translation id="1793631236004319016">Senest brugt for <ph name="NUM_HOURS_MINUTES_SECONDS" /> siden</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, flere handlinger er tilgængelige, tryk på Tab-tasten for at gennemse dem</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="238459632961158867">Website</translation>
 <translation id="2385809941344967209">Opdater Chrome i dine Chrome-indstillinger</translation>
 <translation id="2386255080630008482">Serverens certifikat er blevet tilbagekaldt.</translation>
-<translation id="2386410849674401722">Hvis du giver et like, indsendes der feedback om, at du kan lide autofyld med AI</translation>
 <translation id="2388828676877700238">Skatterelateret planlægning og forberedelse</translation>
 <translation id="239203817277685015">Uddyb</translation>
 <translation id="239293030466334554">Cabrioleter</translation>
@@ -1441,7 +1441,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3543935938072367282">Betal hurtigere med autofyld</translation>
 <translation id="3547442767634383572">Oversigt over arbejdsprofilen</translation>
 <translation id="3547746132308051926">20 x 24 tommer</translation>
-<translation id="3550325450190222557">Send feedback om Autofyld med AI.</translation>
 <translation id="3552155506104542239">Advarsel! Denne politik er i konflikt med <ph name="POLICY_NAME" /> og har ingen indflydelse på Android-apps. Ud over dette fungerer denne politik efter hensigten.</translation>
 <translation id="3552297013052089404">Sans Serif-skrifttype</translation>
 <translation id="3558573058928565255">Dagtimer</translation>
@@ -2898,7 +2897,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6124432979022149706">Chrome Enterprise-connectorer</translation>
 <translation id="6126565365696310362">Konvolut Kinesisk nr. 2</translation>
 <translation id="6127379762771434464">Elementet blev fjernet</translation>
-<translation id="6128214169525122635">Hvis du giver et dislike, indsendes der feedback om, at du ikke er tilfreds med autofyld med AI</translation>
 <translation id="6131824478727057281">placering</translation>
 <translation id="6133320744616005677">Tillad fortsat</translation>
 <translation id="6133984428121856852">Filtypen er tom eller ugyldig.</translation>
@@ -3411,6 +3409,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7042616127917168121">Indskrænk resultater</translation>
 <translation id="7043552168914147882">Faneblade</translation>
 <translation id="7044081119134178347">Der er givet adgang til kameraet denne gang</translation>
+<translation id="704738887031336226">Vis valgmuligheder for <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />afbetaling<ph name="PAY_OVER_TIME_HELP_LINK_END" /> ved betaling</translation>
 <translation id="7048095965575426564">Europa Fanfold</translation>
 <translation id="7050187094878475250">Du forsøgte at gå til <ph name="DOMAIN" />, men serveren præsenterede et certifikat, hvis gyldighedsperiode er for lang til at være pålidelig.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kortet kan ikke tilføjes lige nu}one{Kortet kan ikke tilføjes lige nu}other{Kortene kan ikke tilføjes lige nu}}</translation>
@@ -4597,7 +4596,6 @@ Yderligere oplysninger:
 <translation id="9150025764986957246">Du kan f.eks. angive følgende:</translation>
 <translation id="9154194610265714752">Opdateret</translation>
 <translation id="9155211586651734179">Forbundne eksterne lydenheder</translation>
-<translation id="9155453166708525139">Autofyld med AI er en eksperimentel funktion, som ikke altid rammer plet. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Magasiner</translation>
 <translation id="9157595877708044936">Konfigurerer...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> indeholder muligvis følsomt indhold}one{<ph name="FILE_COUNT" /> fil indeholder muligvis følsomt indhold}other{<ph name="FILE_COUNT" /> filer indeholder muligvis følsomt indhold}}</translation>

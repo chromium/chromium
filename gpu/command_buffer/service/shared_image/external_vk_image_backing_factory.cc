@@ -38,16 +38,6 @@ BASE_FEATURE(kRestrictExternalVkImageBackingScanoutSupportToFuchsia,
 // TODO(crbug.com/330865436): Eliminate once killswitches checked within this
 // function roll out safely.
 bool RestrictScanoutSupportToFuchsia() {
-#if BUILDFLAG(IS_OZONE)
-  // On Ozone, this requires that we are computing SCANOUT support in
-  // SharedImageCapabilities by overlays being supported rather than the
-  // too-generous native pixmaps being supported.
-  if (!base::FeatureList::IsEnabled(
-          features::kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported)) {
-    return false;
-  }
-#endif
-
   return base::FeatureList::IsEnabled(
       kRestrictExternalVkImageBackingScanoutSupportToFuchsia);
 }

@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">Bütün müqayisə cədvəllərini göstərin</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Hesabınızda məlumat, məxfilik və təhlükəsizliyinizi idarə edin</translation>
+<translation id="1793473605302304726">Hissə-hissə ödəyin</translation>
 <translation id="1793631236004319016">Son istifadə: <ph name="NUM_HOURS_MINUTES_SECONDS" /> əvvəl</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bir neçə əməliyyat əlçatandır, onları nəzərdən keçirmək üçün Tab düyməsinə basın</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@
 <translation id="238459632961158867">Veb-sayt</translation>
 <translation id="2385809941344967209">Chrome'u Chrome ayarlarınızdan güncəlləyin</translation>
 <translation id="2386255080630008482">Serverin sertifikatı geri alındı.</translation>
-<translation id="2386410849674401722">"Baş barmaq yuxarı" Sİ ilə avtodoldurmanı bəyəndiyinizə dair rəy göndərir</translation>
 <translation id="2388828676877700238">Vergi Hazırlığı və Planlama</translation>
 <translation id="239203817277685015">Ətraflı izah edin</translation>
 <translation id="239293030466334554">Kabriole avtomobilləri</translation>
@@ -1438,7 +1438,6 @@
 <translation id="3543935938072367282">Avto-doldurma ilə sürətlə ödəyin</translation>
 <translation id="3547442767634383572">İş profili icmalı</translation>
 <translation id="3547746132308051926">20 x 24 düym</translation>
-<translation id="3550325450190222557">Sİ ilə avtodoldurma barədə rəy göndərin.</translation>
 <translation id="3552155506104542239">Xəbərdarlıq: Bu siyasət <ph name="POLICY_NAME" /> ilə ziddiyyət təşkil edir və Android tətbiqlərinə təsiri olmayacaq. Əks halda, siyasət lazım olan qaydada işləyir.</translation>
 <translation id="3552297013052089404">Sans-serif şrifti</translation>
 <translation id="3558573058928565255">Gündüz vaxtı</translation>
@@ -2894,7 +2893,6 @@
 <translation id="6124432979022149706">Chrome Enterprise Birləşdiriciləri</translation>
 <translation id="6126565365696310362">Zərf Çin #2</translation>
 <translation id="6127379762771434464">Element silindi</translation>
-<translation id="6128214169525122635">"Baş barmaq aşağı" Sİ ilə avtodoldurmanı bəyənmədiyinizə dair rəy göndərir</translation>
 <translation id="6131824478727057281">məkan</translation>
 <translation id="6133320744616005677">İcazəni davam etdirin</translation>
 <translation id="6133984428121856852">Fayl artırması boşdur və ya səhvdir.</translation>
@@ -3407,6 +3405,7 @@
 <translation id="7042616127917168121">Nəticələri dəqiqləşdirin</translation>
 <translation id="7043552168914147882">Çıxıntılı kağız</translation>
 <translation id="7044081119134178347">Bu dəfə üçün kameraya icazə verilib</translation>
+<translation id="704738887031336226">Ödəmə zamanı <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />hissə-hissə ödəmə<ph name="PAY_OVER_TIME_HELP_LINK_END" /> seçimləri göstərilsin</translation>
 <translation id="7048095965575426564">Avropa Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> domeninə girmək istədiniz, lakin server etibarlıq müddəti güvənmək üçün həddən uzun olan sertifikat təqdim edib.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Hazırda bu kartı yadda saxlamaq mümkün deyil}other{Hazırda bu kartları yadda saxlamaq mümkün deyil}}</translation>
@@ -4591,7 +4590,6 @@
 <translation id="9150025764986957246">Belə daxiletmələr edə bilərsiniz:</translation>
 <translation id="9154194610265714752">Güncəlləşib</translation>
 <translation id="9155211586651734179">Köməkçi audio cihazları əlavə edilib</translation>
-<translation id="9155453166708525139">Sİ ilə avtodoldurma təcrübi funksiyadır və həmişə düzgün olmaya bilər. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Jurnallar</translation>
 <translation id="9157595877708044936">Ayarlanır...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> faylında həssas kontent ola bilər}other{<ph name="FILE_COUNT" /> faylda həssas kontent ola bilər}}</translation>

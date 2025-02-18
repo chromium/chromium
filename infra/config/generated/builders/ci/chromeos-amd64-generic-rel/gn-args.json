@@ -7,6 +7,7 @@
     "target_cpu": "x64",
     "target_os": "chromeos",
     "use_real_dbus_clients": false,
+    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
   }

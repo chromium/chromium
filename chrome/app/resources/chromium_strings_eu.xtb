@@ -17,7 +17,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1157985233335035034">Azkenaldian erabilitako hizkuntzak</translation>
 <translation id="1184145431117212167">Ezin izan da instalatu, Windows-en bertsio hau ez delako bateragarria.</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
-<translation id="1188705220418984327">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren hobespenetan.</translation>
 <translation id="1203500561924088507">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzailea berrabiarazi behar duzu.</translation>
 <translation id="1262876892872089030">Fitxa inaktibo zegoen bitartean, memorian tokia egin da Chromium-ek bizkor funtzionatzen jarrai dezan. Webgune hau inoiz ez inaktibo ezartzea aukera dezakezu.</translation>
 <translation id="1265577313130862557">Chromium-ek deskarga hau blokeatu du, fitxategia arriskutsua delako</translation>
@@ -193,7 +192,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berriro exekutatzen duzunean aplikatuko da.}=1{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berriro exekutatzen duzunean aplikatuko da. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berriro exekutatzen duzunean aplikatuko da. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="3651803019964686660">Zenbaki bat <ph name="ORIGIN" /> webgunetik Android-eko telefonora bidaltzeko, hasi Chromium-eko saioa bi gailuetan.</translation>
 <translation id="3667616615096815454">Ezin da instalatu, zerbitzariak ez duelako ezagutzen aplikazioa.</translation>
-<translation id="3669334504579945026">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren hobespenetan.</translation>
 <translation id="3685209450716071127">Chromium-ek ezin ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Chromium berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko}=1{Chromium berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="3713809861844741608">Ireki esteka Chromium-eko beste &amp;fitxa batean</translation>
@@ -265,7 +263,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4594305310729380060">Gailuko Pasahitz-kudeatzailea zerbitzuan</translation>
 <translation id="459535195905078186">Chromium aplikazioak</translation>
 <translation id="4613863813562375431">Chromium OS-ren bertsioa</translation>
-<translation id="4617285639650863674">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren hobespenetan</translation>
 <translation id="4621240073146040695">Ia amaitu dugu! Eguneratzen amaitzeko, exekutatu Chromium berriro.</translation>
 <translation id="4665829708273112819">Abisua: Chromium-ek ezin die eragotzi luzapenei arakatze-historia erregistratzea. Ezkutuko moduan luzapen hau desgaitzeko, desautatu aukera.</translation>
 <translation id="4673151026126227699">Chromium-en erabilera-txostenak ere partekatzen badituzu, bisitatzen dituzun URLak agertuko dira txosten horietan</translation>
@@ -474,7 +471,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7483335560992089831">Ezin da instalatu une honetan abian den Chromium-en bertsio bera. Itxi Chromium eta saiatu berriro.</translation>
 <translation id="751935028865900641">Webguneek espero bezala funtzionatuko dute ziurrenik. Chromium-eko leiho guztiak ixtean, webgune gehienetako saioa amaituko da Google-ko kontuarena izan ezik, baldin eta Chromium-en saioa hasita badaukazu.</translation>
 <translation id="753534427205733210">{0,plural, =1{1 minutu barru exekutatuko da Chromium berriro}other{# minutu barru exekutatuko da Chromium berriro}}</translation>
-<translation id="7553334751796114046">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren hobespenetan</translation>
 <translation id="7582945390259497898">Chromium-ek zure interesak estima ditzake. Beranduago, bisitatzen duzun webgune batek zure interesak ikusteko eska diezaioke Chromium-i, agertzen zaizkizun iragarkiak pertsonalizatze aldera.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> zerbitzuaren instalatzailea</translation>
 <translation id="7585391435984513350">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION" /> erabiltzeko baimena kendu dio.</translation>

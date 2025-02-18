@@ -2473,6 +2473,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_DEFAULT_BEHAVIOR_DESC" desc="Description for the site settings notifications content setting default behavior.">
     Sites automatically follow this setting when you visit them. Sites usually send notifications to let you know about breaking news or chat messages.
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_DESC" desc="Description for the site settings notifications content setting.">
+    Sites usually send notifications to let you know about breaking news or chat messages.
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CUSTOMIZED_BEHAVIORS" desc="Label for the site settings exceptions.">
     Customized behaviors
   </message>
@@ -2886,6 +2889,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PERMISSION_LOUD" desc="Label for the loud version of the permission prompt.">
    Expand all requests
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PERMISSION_TITLE" desc="Title for permission prompt request how-to-show chooser.">
+   How to show requests
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED" desc="Label for the blocked option of the notifications content setting.">
     Don't allow sites to send notifications

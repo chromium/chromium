@@ -216,7 +216,7 @@ WebDataServiceFactory::GetAutofillWebDataForProfile(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetProfileAutofillWebData()
                  : scoped_refptr<autofill::AutofillWebDataService>(nullptr);
 }
@@ -228,7 +228,7 @@ WebDataServiceFactory::GetAutofillWebDataForAccount(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetAccountAutofillWebData()
                  : scoped_refptr<autofill::AutofillWebDataService>(nullptr);
 }
@@ -240,7 +240,7 @@ WebDataServiceFactory::GetKeywordWebDataForProfile(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetKeywordWebData()
                  : scoped_refptr<KeywordWebDataService>(nullptr);
 }
@@ -252,7 +252,7 @@ WebDataServiceFactory::GetPlusAddressWebDataForProfile(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetPlusAddressWebData()
                  : scoped_refptr<plus_addresses::PlusAddressWebDataService>(
                        nullptr);
@@ -264,7 +264,7 @@ scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetTokenWebData()
                  : scoped_refptr<TokenWebData>(nullptr);
 }

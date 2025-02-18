@@ -139,21 +139,15 @@ TEST_F(EditorMenuViewTest, TabKeyMovesFocus) {
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
   editor_menu_view->RequestFocus();
 
-  // Settings button should be focused.
-  EXPECT_TRUE(views::IsViewClass<views::ImageButton>(
-      editor_menu_view->GetFocusManager()->GetFocusedView()));
-
-  // Press tab, focus should move to first chip.
-  ui::test::EventGenerator generator(
-      GetContext(), editor_menu_widget->GetNativeWindow()->GetRootWindow());
-  generator.PressAndReleaseKey(ui::VKEY_TAB);
-
+  // First chip should be focused.
   ASSERT_TRUE(views::IsViewClass<EditorMenuChipView>(
       editor_menu_view->GetFocusManager()->GetFocusedView()));
   EXPECT_EQ(GetChipLabel(editor_menu_view->GetFocusManager()->GetFocusedView()),
             queries[0].name);
 
   // Press tab a few more times, focus should move to the last chip.
+  ui::test::EventGenerator generator(
+      GetContext(), editor_menu_widget->GetNativeWindow()->GetRootWindow());
   generator.PressAndReleaseKey(ui::VKEY_TAB);
   generator.PressAndReleaseKey(ui::VKEY_TAB);
   generator.PressAndReleaseKey(ui::VKEY_TAB);

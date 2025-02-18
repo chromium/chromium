@@ -471,6 +471,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1791415068765905273">Erakutsi konparazio-taula guztiak</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu" Google-ko kontuko informazioa, pribatutasuna eta segurtasuna kudeatzeko</translation>
+<translation id="1793473605302304726">Ordaindu epeka</translation>
 <translation id="1793631236004319016">Duela <ph name="NUM_HOURS_MINUTES_SECONDS" /> erabili zen azken aldiz</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />: hainbat ekintza dituzu eskuragarri. Sakatu tabuladorea batetik bestera joateko.</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="238459632961158867">Webgunea</translation>
 <translation id="2385809941344967209">Eguneratu Chrome arakatzaile horren ezarpenetan</translation>
 <translation id="2386255080630008482">Zerbitzariaren ziurtagiria baliogabetu egin da.</translation>
-<translation id="2386410849674401722">"Gustatu zait" sakatuta, AA bidezko betetze automatikoa gustatu zaizula esaten duen ohar bat bidaliko da</translation>
 <translation id="2388828676877700238">Zergen prestaketa eta plangintza</translation>
 <translation id="239203817277685015">Idatzi xehetasun gehiago</translation>
 <translation id="239293030466334554">Kabrioletak</translation>
@@ -1437,7 +1437,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3543935938072367282">Erosi gauzak bizkorrago betetze automatikoarekin</translation>
 <translation id="3547442767634383572">laneko profilaren informazio orokorra</translation>
 <translation id="3547746132308051926">50,8 × 60,96 cm (20 × 24 in)</translation>
-<translation id="3550325450190222557">Bidali AA bidezko betetze automatikoari buruzko oharrak.</translation>
 <translation id="3552155506104542239">Abisua: gidalerro hau gatazkan dago <ph name="POLICY_NAME" /> gidalerroarekin, eta ez du efekturik izango Android-erako aplikazioetan. Horretaz gain, gidalerroa espero bezala ari da funtzionatzen.</translation>
 <translation id="3552297013052089404">Sans-serif letra</translation>
 <translation id="3558573058928565255">Eguna</translation>
@@ -2894,7 +2893,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Gutun-azal txinatarra 2</translation>
 <translation id="6127379762771434464">Kendu egin da elementua</translation>
-<translation id="6128214169525122635">"Ez zait gustatu" sakatzean AA bidezko betetze automatikoa gustatu ez zaizula esaten duen ohar bat bidaliko da</translation>
 <translation id="6131824478727057281">kokapena</translation>
 <translation id="6133320744616005677">Jarraitu baimena ematen</translation>
 <translation id="6133984428121856852">Fitxategi-luzapena hutsik edo gaizki eratuta dago.</translation>
@@ -3406,6 +3404,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7042616127917168121">Mugatu emaitzak</translation>
 <translation id="7043552168914147882">Orri-bereizleak</translation>
 <translation id="7044081119134178347">Kamera erabil daiteke une honetan</translation>
+<translation id="704738887031336226">Erakutsi <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />epeka ordaintzeko <ph name="PAY_OVER_TIME_HELP_LINK_END" /> aukerak ordainketa-prozesuan</translation>
 <translation id="7048095965575426564">Fanfold europarra</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> atzitzen saiatu zara, baina zerbitzariak balio-epe luzeegia duen ziurtagiri bat aurkeztu du eta ez da fidagarria.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ezin da gorde txartela une honetan}other{Ezin dira gorde txartelak une honetan}}</translation>
@@ -4589,7 +4588,6 @@ Xehetasun gehiago:
 <translation id="9150025764986957246">Honako hauek idatz ditzakezu:</translation>
 <translation id="9154194610265714752">Eguneratuta</translation>
 <translation id="9155211586651734179">erantsitako audio-gailu periferikoak</translation>
-<translation id="9155453166708525139">AA bidezko betetze automatikoa eginbide esperimental bat da eta ez du beti dena ongi egingo. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Aldizkariak</translation>
 <translation id="9157595877708044936">Konfiguratzen…</translation>
 <translation id="9161794544616754735">{0,plural, =1{Baliteke <ph name="FILE_NAME" /> fitxategiak kontuzko edukia izatea}other{Baliteke <ph name="FILE_COUNT" /> fitxategik kontuzko edukia izatea}}</translation>

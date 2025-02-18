@@ -8,6 +8,8 @@ static_library("shell_delegate") {
   sources = [
     "chrome_shell_delegate.cc",
     "chrome_shell_delegate.h",
+    "tab_scrubber.cc",
+    "tab_scrubber.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -30,6 +32,7 @@ static_library("shell_delegate") {
     "//chrome/browser/ash/scanner",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/accelerator",
     "//chrome/browser/ui/ash/accessibility",
     "//chrome/browser/ui/ash/back_gesture",
@@ -44,6 +47,8 @@ static_library("shell_delegate") {
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/user_education",
     "//chrome/browser/ui/ash/wm",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/audio",
@@ -57,6 +62,34 @@ static_library("shell_delegate") {
     "//extensions/browser",
     "//ui/aura",
     "//ui/base",
+    "//ui/events:gesture_detection",
     "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "tab_scrubber_browsertest.cc" ]
+
+  deps = [
+    ":shell_delegate",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support_ui",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//ui/aura",
+    "//ui/events:gesture_detection",
+    "//ui/events:test_support",
+    "//ui/wm",
   ]
 }

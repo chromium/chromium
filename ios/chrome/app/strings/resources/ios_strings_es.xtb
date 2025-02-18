@@ -658,6 +658,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3904270275864974753">Editar carrusel</translation>
 <translation id="3909222758573607742">Guarda las contraseñas y otros elementos en la cuenta</translation>
+<translation id="3913463964270756493">Ocultar la pantalla de búsqueda con Google Lens</translation>
 <translation id="3914640181019354363">Detectar direcciones</translation>
 <translation id="3922185497376658606">Precargar páginas</translation>
 <translation id="3922395466317605522">Personalizar menú</translation>
@@ -975,6 +976,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5238596603078743134">Ahora, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> podrá usar tu nombre de usuario y contraseña cuando utilice el Gestor de contraseñas de Google para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5242899254250321823">Cambiar contraseña en el sitio web</translation>
 <translation id="5248640482715684545">Este sitio está intentando abrir otra aplicación.</translation>
+<translation id="5250371859659394278">Desde un origen desconocido</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Rellénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Rellénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
 <translation id="5279214046729249716">Sí, mantenerlos separados</translation>

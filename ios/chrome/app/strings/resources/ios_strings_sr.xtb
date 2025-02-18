@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Упозори ме ако су лозинке откривене при повреди података</translation>
 <translation id="1044891598689252897">Сајтови ће нормално радити</translation>
 <translation id="104491362976654916">Офлајн страница</translation>
+<translation id="1049200476149974839">жели да се придружите групи картица. Свако са линком може да мења све картице, па будите пажљиви када се придружујете. Линк истиче за 48 сати.</translation>
 <translation id="1049743911850919806">Без архивирања</translation>
 <translation id="1053651653201045802">Одјављени сте. Поново се пријавите да бисте користили обележиваче, лозинке и други садржај на налогу.</translation>
 <translation id="1054745118061919935">Ако наставите, прихватате <ph name="BEGIN_LINK" />Услове коришћења услуге<ph name="END_LINK" />.</translation>
@@ -194,6 +195,7 @@
 <translation id="1780152987505130652">Затвори групу</translation>
 <translation id="178400879184240105">Ваше лозинке су јединствене</translation>
 <translation id="17906873777101817">Понуди чување лозинки и приступних кључева</translation>
+<translation id="1794893174442046596">Група картица</translation>
 <translation id="1807893857950749072">Дозволите обавештења о праћењу цена…</translation>
 <translation id="1810976980198522421">Откажи</translation>
 <translation id="1815941218935345331">Шифра</translation>
@@ -656,6 +658,7 @@
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3904270275864974753">Измените вртешку</translation>
 <translation id="3909222758573607742">Сачувајте лозинке и друге ставке на налогу</translation>
+<translation id="3913463964270756493">Сакријте екран претраге помоћу Google објектива</translation>
 <translation id="3914640181019354363">Откривај адресе</translation>
 <translation id="3922185497376658606">Унапред учитавај веб-странице</translation>
 <translation id="3922395466317605522">Прилагодите мени</translation>

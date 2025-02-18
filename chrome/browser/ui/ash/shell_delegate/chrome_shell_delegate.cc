@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
+#include "chrome/browser/ui/ash/shell_delegate/tab_scrubber.h"
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 #include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -73,7 +74,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -258,7 +258,7 @@ bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {
 }
 
 void ChromeShellDelegate::SetTabScrubberChromeOSEnabled(bool enabled) {
-  TabScrubberChromeOS::GetInstance()->SetEnabled(enabled);
+  ash::TabScrubber::GetInstance()->SetEnabled(enabled);
 }
 
 bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {

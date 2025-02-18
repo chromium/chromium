@@ -193,6 +193,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1607312127821884567">Baztertu telefonoko aplikazioak ikusteko aukera konfiguratzeko prozesua</translation>
 <translation id="1610778689852195798">"Desegin"</translation>
 <translation id="1611993646327628135">Aktibatuta</translation>
+<translation id="1612679292338846734">Eginbide hauek aktibatzen badituzu, baliteke idatzitako testua, dokumentuen edukia eta web-orrien URLak Google-ren AAren zerbitzarietara bidaltzea. Idazketa-iradokizunak eta laburpenak sortzeko, galderei erantzuteko eta produktua hobetzeko erabiliko da informazioa, <ph name="LINK_TO_SERVICE_TERMS" /> gordeta. Ez sartu pertsonala, kontuzkoa edo isilpekoa den informaziorik.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Tolestu Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ez dago erabilgarri.</translation>
@@ -565,6 +566,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="2946119680249604491">Gehitu konexioa</translation>
 <translation id="2947835478872237115">Oraingo bateria-maila: % <ph name="BATTERY_PERCENTAGE" />. <ph name="TIME" /> guztiz kargatu arte.</translation>
 <translation id="2949420361496057765">Sakatu <ph name="MODIFIER" /> eta egin klik esteka batean</translation>
+<translation id="2957159466053076448">Eginbide horiek desaktibatzeko, joan Ezarpenak atalera. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Gailuaren audioa</translation>
 <translation id="2960314608273155470">Edukia kapturatzeko modua. Balio lehenetsia <ph name="TYPE" /> <ph name="SOURCE" /> da. Teklatuaren bidez nabigatzeko, sakatu tabuladorea.</translation>
 <translation id="2961963223658824723">Arazo bat izan da. Saiatu berriro segundo batzuk barru.</translation>
@@ -1906,6 +1908,7 @@ Berriki instalatu da</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>
 <translation id="7360036564632145207">Gailu periferikoen datuetarako sarbidea babesteko ezarpenak aldatzen badituzu, errendimendua optimizatuko duzu</translation>
 <translation id="736045644501761622">Ezarri horma-papera eta estiloa</translation>
+<translation id="7368041336688136012">Gutxienez 18 urte izan behar dituzu Irakurtzeko laguntza eta Idazteko laguntza erabiltzeko, eta AAren bidez irudiak sortzeko.</translation>
 <translation id="7371404428569700291">Grabatu leihoa</translation>
 <translation id="7372069265635026568"><ph name="TOTAL_MEMORY" />-tik <ph name="AVAILABLE_MEMORY" /> daude erabilgarri</translation>
 <translation id="737315737514430195">Mikrofonoa erabiltzeko baimena aktibatzen du halakorik baduten aplikazio eta webgune guztietan</translation>
@@ -2031,6 +2034,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Erakutsi guztiak</translation>
+<translation id="7762664108390426952">Google-ren Zerbitzu-baldintzak eta Pribatutasun-gidalerroak</translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7769299611924763557">GIFa laster egongo da prest</translation>
 <translation id="7773536009433685931">Horren ordez, aktibatu wifia</translation>

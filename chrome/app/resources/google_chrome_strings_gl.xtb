@@ -67,7 +67,6 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome está desactualizado</translation>
 <translation id="1880677175115548835">Selecciona texto</translation>
-<translation id="1907925560334657849">Para compartir a ventá, vai a System Preferences (Preferencias do sistema) e activa a función de gravación de pantalla para Chrome</translation>
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
 <translation id="1953553007165777902">Descargando… Tempo restante: <ph name="MINUTE" /> min</translation>
 <translation id="1982647487457769627">Chrome funciona en diversas plataformas para ofrecerche unha experiencia familiar sen importar o dispositivo</translation>
@@ -246,7 +245,6 @@
 <translation id="4050175100176540509">A última versión conta con melloras de seguranza importantes e novas funcións.</translation>
 <translation id="4053720452172726777">Personaliza e controla Google Chrome</translation>
 <translation id="408393047846373801">Para poder acceder aos teus contrasinais e moito máis en todos os teus dispositivos, inicia sesión en Chrome. Despois de iniciar sesión, este contrasinal gardarase na túa Conta de Google.</translation>
-<translation id="4084404300720192944">Para compartir a ventá, vai a System Preferences (Preferencias do sistema) e activa a función de gravación de pantalla para Chrome.</translation>
 <translation id="4110895483821904099">Configura o teu novo perfil de Chrome</translation>
 <translation id="4111566860456076004">Chrome non pode verificar de onde procede esta extensión, polo que pode non ser segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
 <translation id="4128488089242627000">Chrome execútase máis rápido e as funcións que usen JavaScript deberían funcionar tal como se deseñaron (opción recomendada)</translation>
@@ -411,7 +409,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6180522807229584611">Esta pestana está usando recursos adicionais. Para mellorar o rendemento, permite que Chrome a desactive.</translation>
 <translation id="6182736845697986886">Produciuse un erro na instalación debido a un erro interno do servidor de actualizacións.</translation>
 <translation id="6200139057479872438">Levas un tempo sen entrar. Chrome quitou os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
-<translation id="621585339844629864">Para compartir a pantalla, vai a System Preferences (Preferencias do sistema) e activa a función de gravación de pantalla para Chrome.</translation>
 <translation id="6235018212288296708">Norma de entrada de Google Chrome para permitir tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome pecharase en breve</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
@@ -480,7 +477,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7098166902387133879">Google Chrome está usando o teu micrófono.</translation>
 <translation id="7099479769133613710">Reiniciar para actualizar Chrome OS</translation>
-<translation id="7100085796996987445">Para compartir a pantalla, vai a System Preferences (Preferencias do sistema) e activa a función de gravación de pantalla para Chrome</translation>
 <translation id="7106741999175697885">Xestor de tarefas: Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hai dispoñible unha actualización nova para Chrome e aplicarase en canto o reinicies.}=1{Hai dispoñible unha actualización nova para Chrome e aplicarase en canto o reinicies. A ventá do modo de incógnito non se volverá abrir.}other{Hai dispoñible unha actualización nova para Chrome e aplicarase en canto o reinicies. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="7155997830309522122">Se o fixeches, substitúe o contrasinal gardado en Chrome polo novo.</translation>

@@ -3549,7 +3549,7 @@ TEST_F(PaymentsDataManagerTest, GetAccountInfoForPaymentsServer) {
 TEST_F(PaymentsDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   // Set up some sync transport opt-ins in the prefs.
   SetUserOptedInWalletSyncTransport(
-      prefs_.get(), CoreAccountId::FromGaiaId("account1"), true);
+      prefs_.get(), CoreAccountId::FromGaiaId(GaiaId("account1")), true);
   EXPECT_FALSE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 
   // Simulate that the cookies get cleared by the user.

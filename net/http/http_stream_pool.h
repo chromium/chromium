@@ -90,6 +90,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   static constexpr base::TimeDelta kDefaultConnectionAttemptDelay =
       base::Milliseconds(250);
 
+  static inline constexpr NextProtoSet kTcpBasedProtocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoHTTP11,
+      NextProto::kProtoHTTP2};
+  static inline constexpr NextProtoSet kHttp11Protocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoHTTP11};
+  static inline constexpr NextProtoSet kQuicBasedProtocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoQUIC};
+
   // Reasons for closing streams.
   static constexpr std::string_view kIpAddressChanged = "IP address changed";
   static constexpr std::string_view kSslConfigChanged =

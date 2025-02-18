@@ -113,7 +113,7 @@ struct SceneStateData {
 }
 
 - (void)promoCloseButtonTapped {
-  base::UmaHistogramCounts100("IOS.DefaultBrowserBannerPromo.Dismissed",
+  base::UmaHistogramCounts100("IOS.DefaultBrowserBannerPromo.ManuallyDismissed",
                               _sessionDisplayCount);
   base::UmaHistogramEnumeration(
       "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",

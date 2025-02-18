@@ -61,6 +61,8 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
+// TODO(crbug.com/396631651): Update the tests once the logic in PasswordCheckupLauncher is updated.
+@Features.DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class PasswordCheckupLauncherTest {
     private static final AccountInfo TEST_ACCOUNT = TestAccounts.ACCOUNT1;
     private static final String TEST_NO_EMAIL_ADDRESS = null;

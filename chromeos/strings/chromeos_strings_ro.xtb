@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Activează modul întunecat</translation>
+<translation id="2164131940279488868">Asigură-te că ai un microfon conectat pentru a începe înregistrarea audio</translation>
 <translation id="2173302385160625112">Verifică-ți conexiunea la internet</translation>
 <translation id="2180197493692062006">A apărut o eroare. Încearcă să redeschizi aplicația.</translation>
 <translation id="2189104374785738357">Modifică detaliile APN</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">lămâi</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
 <translation id="2573178735329662769">Înregistrarea tuturor elementelor audio de pe Chromebook</translation>
-<translation id="2575552334616524665">Poți activa această opțiune din Setări sau din meniul <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Acesta va ocupa un spațiu de stocare de până la 2 GB</translation>
 <translation id="2584547424703650812">Peisaje strălucitoare</translation>
 <translation id="2584559707064218956">Accesează Setările pentru configurare</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">Fundal <ph name="LETTERS_COLOR" /> cu litera <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusive</translation>
 <translation id="3404249063913988450">Activează screensaverul</translation>
-<translation id="3410165745972100556">Transcrierea este dezactivată</translation>
 <translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
 <translation id="3428551088151258685">în aer liber</translation>
 <translation id="3428971106895559033">pastelat</translation>
@@ -1685,6 +1684,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8876270629542503161">Dispozitivul este o tabletă.</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>
 <translation id="8882789155418924367">bufnițe</translation>
+<translation id="8885038613856655272">Conectează un microfon</translation>
 <translation id="8892443466059986410">Anulează modificarea comenzii rapide</translation>
 <translation id="8897043028305808902">Fișierul a fost redenumit</translation>
 <translation id="8898840733695078011">Puterea semnalului</translation>

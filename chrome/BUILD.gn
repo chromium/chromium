@@ -84,8 +84,8 @@ if (is_win) {
   action("reorder_imports") {
     script = "//build/win/reorder-imports.py"
 
-    # See comment in chrome_dll.gypi in the hardlink_to_output
-    # target for why this cannot be 'initial' like the DLL.
+    # initialexe/ is used so that the we can reorder imports and write back to
+    # the final destination at $root_out_dir/.
     inputs = [ "$root_out_dir/initialexe/chrome.exe" ]
     outputs = [
       "$root_out_dir/chrome.exe",

@@ -270,6 +270,37 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void onReleaseTab_NoMergeCollaboration() {
+        // Dragged object is a collaboration.
+        when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);
+        mMockViewHolder1.model.set(
+                TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
+
+        // Simulate the selection of card#1 in TabListModel.
+        mModel.get(0)
+                .model
+                .set(
+                        TabProperties.CARD_ANIMATION_STATUS,
+                        TabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN);
+        mModel.get(0).model.set(CARD_ALPHA, 0.8f);
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Simulate hovering on card#2.
+        mModel.get(1)
+                .model
+                .set(
+                        TabProperties.CARD_ANIMATION_STATUS,
+                        TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
+
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt());
+        verify(mGridLayoutManager, never()).removeView(any());
+    }
+
+    @Test
     public void onReleaseTab_MergeBackward() {
         // Simulate the selection of card#1 in TabListModel.
         mModel.get(0)
@@ -855,17 +886,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     public void tabItemsAreDropable() {
         setupItemTouchHelperCallback(false);
         assertTrue(
-                mItemTouchHelperCallback.canDropOver(
-                        mRecyclerView, mMockViewHolder2, mMockViewHolder1));
-    }
-
-    @Test
-    public void collaborationCurrentIsNotDropable() {
-        setupItemTouchHelperCallback(false);
-        when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);
-        mMockViewHolder2.model.set(
-                TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
-        assertFalse(
                 mItemTouchHelperCallback.canDropOver(
                         mRecyclerView, mMockViewHolder2, mMockViewHolder1));
     }

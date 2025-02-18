@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
 <translation id="2161656808144014275">Teks</translation>
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
+<translation id="2164131940279488868">Pastikan mikrofon terhubung untuk mulai merekam audio</translation>
 <translation id="2173302385160625112">Periksa koneksi internet Anda</translation>
 <translation id="2180197493692062006">Terjadi error. Coba buka aplikasi kembali.</translation>
 <translation id="2189104374785738357">Edit detail APN</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">lemon</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2573178735329662769">Merekam semua audio Chromebook</translation>
-<translation id="2575552334616524665">Anda dapat mengaktifkannya di Setelan atau menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Tindakan ini akan memerlukan penyimpanan hingga 2 GB</translation>
 <translation id="2584547424703650812">Glowscape</translation>
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">Latar belakang <ph name="LETTERS_COLOR" /> dengan huruf <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusif</translation>
 <translation id="3404249063913988450">Aktifkan screen saver</translation>
-<translation id="3410165745972100556">Transkrip nonaktif</translation>
 <translation id="3413935475507503304">Untuk melanjutkan update, klik Berikutnya.</translation>
 <translation id="3428551088151258685">luar ruangan</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -1685,6 +1684,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8876270629542503161">Perangkat adalah tablet.</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
 <translation id="8882789155418924367">burung hantu</translation>
+<translation id="8885038613856655272">Hubungkan mikrofon</translation>
 <translation id="8892443466059986410">Batalkan pengeditan pintasan</translation>
 <translation id="8897043028305808902">Nama file telah diganti</translation>
 <translation id="8898840733695078011">Kekuatan sinyal</translation>

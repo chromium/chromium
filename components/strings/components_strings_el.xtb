@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">Εμφάνιση όλων των πινάκων σύγκρισης</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε τις πληροφορίες σας, το απόρρητο και την ασφάλεια στον Λογαριασμό σας Google</translation>
+<translation id="1793473605302304726">Πληρωμή σε βάθος χρόνου</translation>
 <translation id="1793631236004319016">Τελευταία χρήση πριν από <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Υπάρχουν πολλές διαθέσιμες ενέργειες. Πατήστε το πλήκτρο Tab για να μετακινηθείτε ανάμεσά τους.</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@
 <translation id="238459632961158867">Ιστότοπος</translation>
 <translation id="2385809941344967209">Ενημερώστε το Chrome από τις ρυθμίσεις του Chrome,</translation>
 <translation id="2386255080630008482">Το πιστοποιητικό του διακομιστή ανακλήθηκε.</translation>
-<translation id="2386410849674401722">Με την επιλογή Μου αρέσουν, υποβάλλετε ένα σχόλιο ότι σας αρέσει η αυτόματη συμπλήρωση με χρήση AI</translation>
 <translation id="2388828676877700238">Προετοιμασία και προγραμματισμός φόρου</translation>
 <translation id="239203817277685015">Σύνθετο</translation>
 <translation id="239293030466334554">Υβριδικά οχήματα</translation>
@@ -1441,7 +1441,6 @@
 <translation id="3543935938072367282">Ταχύτερη ολοκλήρωση αγορών με την αυτόματη συμπλήρωση</translation>
 <translation id="3547442767634383572">Επισκόπηση προφίλ εργασίας</translation>
 <translation id="3547746132308051926">20 x 24 ίντσες</translation>
-<translation id="3550325450190222557">Αποστολή σχολίων για την Αυτόματη συμπλήρωση με χρήση AI.</translation>
 <translation id="3552155506104542239">Προειδοποίηση: Αυτή η πολιτική είναι σε διένεξη με την πολιτική <ph name="POLICY_NAME" /> και δεν θα επηρεάσει τις εφαρμογές Android. Πέρα από αυτό, η πολιτική λειτουργεί με τον αναμενόμενο τρόπο.</translation>
 <translation id="3552297013052089404">Γραμματοσειρά Sans-serif</translation>
 <translation id="3558573058928565255">Ημέρα</translation>
@@ -2900,7 +2899,6 @@
 <translation id="6124432979022149706">Εφαρμογές σύνδεσης Chrome για επιχειρήσεις</translation>
 <translation id="6126565365696310362">Κινεζικός φάκελος #2</translation>
 <translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
-<translation id="6128214169525122635">Με την επιλογή Δεν εγκρίνω, υποβάλλετε ένα σχόλιο ότι δεν σας αρέσει η αυτόματη συμπλήρωση με χρήση AI</translation>
 <translation id="6131824478727057281">τοποθεσία</translation>
 <translation id="6133320744616005677">Να συνεχίσει να επιτρέπεται</translation>
 <translation id="6133984428121856852">Η επέκταση αρχείου είναι κενή ή έχει λανθασμένη μορφή.</translation>
@@ -3413,6 +3411,7 @@
 <translation id="7042616127917168121">Περιορισμός αποτελεσμάτων</translation>
 <translation id="7043552168914147882">Μέσα με καρτέλες</translation>
 <translation id="7044081119134178347">Επιτράπηκε η χρήση της κάμερας για αυτήν τη φορά</translation>
+<translation id="704738887031336226">Εμφάνιση επιλογών για <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />πληρωμή σε βάθος χρόνου<ph name="PAY_OVER_TIME_HELP_LINK_END" /> κατά την ολοκλήρωση αγοράς</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Επιχειρήσατε να μεταβείτε στο <ph name="DOMAIN" />, αλλά ο διακομιστής παρουσίασε ένα πιστοποιητικό με περίοδο εγκυρότητας η οποία είναι πολύ μεγάλη για να θεωρηθεί αξιόπιστη.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Αυτήν τη στιγμή, δεν είναι δυνατή η αποθήκευση αυτής της κάρτας}other{Αυτήν τη στιγμή, δεν είναι δυνατή η αποθήκευση αυτών των καρτών}}</translation>
@@ -4599,7 +4598,6 @@
 <translation id="9150025764986957246">Μπορείτε να εισαγάγετε στοιχεία όπως:</translation>
 <translation id="9154194610265714752">Ενημερώθηκε</translation>
 <translation id="9155211586651734179">Τυχόν συνδεδεμένα περιφερειακά ήχου</translation>
-<translation id="9155453166708525139">Η αυτόματη συμπλήρωση με χρήση AI είναι μια πειραματική λειτουργία η οποία δεν λειτουργεί πάντα σωστά. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Περιοδικά</translation>
 <translation id="9157595877708044936">Ρύθμιση...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Το αρχείο <ph name="FILE_NAME" /> μπορεί να περιέχει ευαίσθητο περιεχόμενο}other{<ph name="FILE_COUNT" /> αρχεία μπορεί να περιέχουν ευαίσθητο περιεχόμενο}}</translation>

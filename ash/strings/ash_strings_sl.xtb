@@ -193,6 +193,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1607312127821884567">Opustitev nastavitve ogleda aplikacij telefona</translation>
 <translation id="1610778689852195798">»Razveljavi«</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
+<translation id="1612679292338846734">Ko vklopite te funkcije, se vneseno besedilo, vsebina dokumenta in URL spletne strani morda pošljejo v strežnike Googlove umetne inteligence. Ti podatki se uporabljajo za generiranje predlogov za pisanje, ustvarjanje povzetkov, odgovarjanje na vprašanja in izboljšanje izdelka v skladu z <ph name="LINK_TO_SERVICE_TERMS" />. Ne vključite osebnih, občutljivih ali zaupnih podatkov.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Strnitev Učilnice Google</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ni na voljo.</translation>
@@ -565,6 +566,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="2946119680249604491">Dodaj povezavo</translation>
 <translation id="2947835478872237115">Trenutna raven napolnjenosti baterije je <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> do napolnjenosti</translation>
 <translation id="2949420361496057765">Pritisnite <ph name="MODIFIER" /> in kliknite povezavo</translation>
+<translation id="2957159466053076448">Te funkcije lahko kadar koli izklopite v nastavitvah. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Zvok v napravi</translation>
 <translation id="2960314608273155470">Način zajema, privzeta nastavitev je <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite tabulatorko za premikanje s tipkovnico.</translation>
 <translation id="2961963223658824723">Prišlo je do napake. Poskusite znova čez nekaj sekund.</translation>
@@ -1905,6 +1907,7 @@ Nova namestitev</translation>
 <translation id="735745346212279324">Povezava z navideznim zasebnim omrežjem je prekinjena</translation>
 <translation id="7360036564632145207">S spremembo nastavitve zaščite dostopa do podatkov za zunanje dodatne opreme lahko optimizirate delovanje.</translation>
 <translation id="736045644501761622">Nastavitev zaslonskega ozadja in sloga</translation>
+<translation id="7368041336688136012">Če želite uporabljati funkciji Pomagaj mi brati in Pomagaj mi pisati ter ustvarjati slike z umetno inteligenco, morate imeti vsaj 18 let.</translation>
 <translation id="7371404428569700291">Okno za snemanje</translation>
 <translation id="7372069265635026568">Pomnilnik: <ph name="AVAILABLE_MEMORY" /> je na voljo od skupno <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">To omogoča dostop do mikrofona za vse aplikacije in spletna mesta z dovoljenjem za mikrofon.</translation>
@@ -2030,6 +2033,7 @@ Nova namestitev</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
 <translation id="7749958366403230681">Hitra tipka 4</translation>
 <translation id="7751260505918304024">Prikaži vse</translation>
+<translation id="7762664108390426952">Googlovimi pogoji storitve in pravilnikom o zasebnosti</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7769299611924763557">GIF bo kmalu pripravljen</translation>
 <translation id="7773536009433685931">Vklopi Wi-Fi</translation>

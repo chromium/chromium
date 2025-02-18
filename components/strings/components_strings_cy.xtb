@@ -471,6 +471,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1791415068765905273">Dangos yr Holl Dablau Cymharu</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli eich gwybodaeth, preifatrwydd, a diogelwch yn eich Cyfrif Google</translation>
+<translation id="1793473605302304726">Talu dros amser</translation>
 <translation id="1793631236004319016">Defnyddiwyd ddiwethaf <ph name="NUM_HOURS_MINUTES_SECONDS" /> yn ôl</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, mae mwy nag un weithred ar gael, pwyswch Tab i fynd drwyddynt</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="238459632961158867">Gwefan</translation>
 <translation id="2385809941344967209">Diweddarwch Chrome o'ch gosodiadau Chrome</translation>
 <translation id="2386255080630008482">Mae tystysgrif y gweinydd wedi'i dirymu.</translation>
-<translation id="2386410849674401722">Mae bodiau i fyny yn cyflwyno adborth eich bod yn hoffi awtolenwi gydag AI</translation>
 <translation id="2388828676877700238">Paratoi a Chynllunio Treth</translation>
 <translation id="239203817277685015">Ymhelaethwch</translation>
 <translation id="239293030466334554">Ceir codi to</translation>
@@ -1441,7 +1441,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3543935938072367282">Gallwch dalu yn gyflymach gydag awtolenwi</translation>
 <translation id="3547442767634383572">Trosolwg proffil gwaith</translation>
 <translation id="3547746132308051926">20 x 24 modfedd</translation>
-<translation id="3550325450190222557">Anfon adborth ar gyfer Awtolenwi gydag AI.</translation>
 <translation id="3552155506104542239">Rhybudd: Mae'r polisi hwn yn gwrthdaro â'r <ph name="POLICY_NAME" /> ac ni fydd yn cael unrhyw effaith ar apiau Android. Fel arall, mae'r polisi hwn yn gweithio fel y bwriadwyd.</translation>
 <translation id="3552297013052089404">Ffont Sans-serif</translation>
 <translation id="3558573058928565255">Yn ystod y dydd</translation>
@@ -2898,7 +2897,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Amlen Chinese #2</translation>
 <translation id="6127379762771434464">Tynnwyd eitem</translation>
-<translation id="6128214169525122635">Mae bodiau i lawr yn cyflwyno adborth nad ydych yn ei hoffi awtolenwi ag AI</translation>
 <translation id="6131824478727057281">lleoliad</translation>
 <translation id="6133320744616005677">Parhau i ganiatáu</translation>
 <translation id="6133984428121856852">Mae'r estyniad ffeil yn wag neu wedi ei gamffurfio.</translation>
@@ -3411,6 +3409,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7042616127917168121">Mireinio canlyniadau</translation>
 <translation id="7043552168914147882">Stoc Tab</translation>
 <translation id="7044081119134178347">Caniateir y camera y tro hwn</translation>
+<translation id="704738887031336226">Dangos opsiynau <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />talu dros amser<ph name="PAY_OVER_TIME_HELP_LINK_END" /> wrth dalu</translation>
 <translation id="7048095965575426564">Ffanffold Ewropeaidd</translation>
 <translation id="7050187094878475250">Gwnaethoch geisio cyrraedd <ph name="DOMAIN" />, ond cyflwynodd y gweinydd dystysgrif y mae ei chyfnod dilysrwydd yn rhy hir i fod yn ddibynadwy.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ni ellir cadw'r cerdyn hwn ar hyn o bryd}zero{Ni ellir cadw'r cardiau hyn ar hyn o bryd}two{Ni ellir cadw'r cardiau hyn ar hyn o bryd}few{Ni ellir cadw'r cardiau hyn ar hyn o bryd}many{Ni ellir cadw'r cardiau hyn ar hyn o bryd}other{Ni ellir cadw'r cardiau hyn ar hyn o bryd}}</translation>
@@ -4595,7 +4594,6 @@ Manylion ychwanegol:
 <translation id="9150025764986957246">Gallwch chi nodi pethau fel:</translation>
 <translation id="9154194610265714752">Diweddarwyd</translation>
 <translation id="9155211586651734179">Wedi atodi perifferolion sain.</translation>
-<translation id="9155453166708525139">Mae Awtolenwi gydag AI yn nodwedd arbrofol ac ni fydd bob amser yn ei chael yn iawn. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Cylchgronau</translation>
 <translation id="9157595877708044936">Wrthi'n gosod...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Mae'n bosib bod <ph name="FILE_NAME" /> yn cynnwys deunydd sensitif}zero{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}two{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}few{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}many{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}other{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}}</translation>

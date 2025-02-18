@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chrome/browser/ui/ash/shell_delegate/tab_scrubber.h"
 
 #include <stdint.h>
 
@@ -27,20 +27,21 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
 
+namespace ash {
+
 // static
-TabScrubberChromeOS* TabScrubberChromeOS::GetInstance() {
-  static TabScrubberChromeOS* instance = nullptr;
+TabScrubber* TabScrubber::GetInstance() {
+  static TabScrubber* instance = nullptr;
   if (!instance) {
-    instance = new TabScrubberChromeOS();
+    instance = new TabScrubber();
   }
   return instance;
 }
 
 // static
-gfx::Point TabScrubberChromeOS::GetStartPoint(
-    TabStrip* tab_strip,
-    int index,
-    TabScrubberChromeOS::Direction direction) {
+gfx::Point TabScrubber::GetStartPoint(TabStrip* tab_strip,
+                                      int index,
+                                      TabScrubber::Direction direction) {
   const Tab* tab = tab_strip->tab_at(index);
   gfx::Rect tab_bounds = tab->GetMirroredBounds();
 
@@ -69,16 +70,16 @@ gfx::Point TabScrubberChromeOS::GetStartPoint(
   return gfx::Point(x, tab_bounds.CenterPoint().y());
 }
 
-bool TabScrubberChromeOS::IsActivationPending() {
+bool TabScrubber::IsActivationPending() {
   return activate_timer_.IsRunning();
 }
 
-void TabScrubberChromeOS::SetEnabled(bool enabled) {
+void TabScrubber::SetEnabled(bool enabled) {
   enabled_ = enabled;
 }
 
-void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset,
-                                                 bool is_fling_scroll_event) {
+void TabScrubber::SynthesizedScrollEvent(float x_offset,
+                                         bool is_fling_scroll_event) {
   // EventType::kScrollFlingStart and EventType::kScrollFlingCancel are both
   // handled in the same way inside OnScrollEvent(), so we can set
   // EventType::kScrollFlingStart if `is_fling_scroll_event` is true.
@@ -98,16 +99,16 @@ void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset,
   OnScrollEvent(&event);
 }
 
-TabScrubberChromeOS::TabScrubberChromeOS() {
+TabScrubber::TabScrubber() {
   ash::Shell::Get()->AddPreTargetHandler(this);
   BrowserList::AddObserver(this);
 }
 
-TabScrubberChromeOS::~TabScrubberChromeOS() {
+TabScrubber::~TabScrubber() {
   BrowserList::RemoveObserver(this);
 }
 
-void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
+void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   if (!enabled_) {
     return;
   }
@@ -198,7 +199,7 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   }
 }
 
-void TabScrubberChromeOS::OnBrowserRemoved(Browser* browser) {
+void TabScrubber::OnBrowserRemoved(Browser* browser) {
   if (browser != browser_) {
     return;
   }
@@ -218,7 +219,7 @@ void TabScrubberChromeOS::OnBrowserRemoved(Browser* browser) {
   tab_strip_ = nullptr;
 }
 
-void TabScrubberChromeOS::OnTabAdded(int index) {
+void TabScrubber::OnTabAdded(int index) {
   if (highlighted_tab_ == -1) {
     return;
   }
@@ -228,7 +229,7 @@ void TabScrubberChromeOS::OnTabAdded(int index) {
   }
 }
 
-void TabScrubberChromeOS::OnTabMoved(int from_index, int to_index) {
+void TabScrubber::OnTabMoved(int from_index, int to_index) {
   if (highlighted_tab_ == -1) {
     return;
   }
@@ -242,7 +243,7 @@ void TabScrubberChromeOS::OnTabMoved(int from_index, int to_index) {
   }
 }
 
-void TabScrubberChromeOS::OnTabRemoved(int index) {
+void TabScrubber::OnTabRemoved(int index) {
   if (highlighted_tab_ == -1) {
     return;
   }
@@ -255,7 +256,7 @@ void TabScrubberChromeOS::OnTabRemoved(int index) {
   }
 }
 
-Browser* TabScrubberChromeOS::GetActiveBrowser() {
+Browser* TabScrubber::GetActiveBrowser() {
   Browser* browser = chrome::FindLastActive();
   if (!browser || !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP) ||
       !browser->window()->IsActive()) {
@@ -265,8 +266,7 @@ Browser* TabScrubberChromeOS::GetActiveBrowser() {
   return browser;
 }
 
-void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
-                                     float x_offset) {
+void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   DCHECK(browser_view);
   DCHECK(browser_view->browser());
 
@@ -292,7 +292,7 @@ void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
   browser_view->GetWidget()->SetCapture(/*view=*/nullptr);
 }
 
-bool TabScrubberChromeOS::FinishScrub(bool activate) {
+bool TabScrubber::FinishScrub(bool activate) {
   const int stops_scrubbing = scrubbing_;
   activate_timer_.Stop();
 
@@ -328,18 +328,18 @@ bool TabScrubberChromeOS::FinishScrub(bool activate) {
   return stops_scrubbing;
 }
 
-void TabScrubberChromeOS::ScheduleFinishScrubIfNeeded() {
+void TabScrubber::ScheduleFinishScrubIfNeeded() {
   // Tests use a really long delay to ensure RunLoops don't unnecessarily
   // trigger the timer running.
   const base::TimeDelta delay =
       base::Milliseconds(use_default_activation_delay_ ? 200 : 20000);
   activate_timer_.Start(
       FROM_HERE, delay,
-      base::BindRepeating(base::IgnoreResult(&TabScrubberChromeOS::FinishScrub),
+      base::BindRepeating(base::IgnoreResult(&TabScrubber::FinishScrub),
                           base::Unretained(this), true));
 }
 
-void TabScrubberChromeOS::ScrubDirectionChanged(Direction direction) {
+void TabScrubber::ScrubDirectionChanged(Direction direction) {
   DCHECK(browser_);
   DCHECK(tab_strip_);
   DCHECK(scrubbing_);
@@ -352,7 +352,7 @@ void TabScrubberChromeOS::ScrubDirectionChanged(Direction direction) {
   swipe_y_ = start_point.y();
 }
 
-void TabScrubberChromeOS::UpdateSwipeX(float x_offset) {
+void TabScrubber::UpdateSwipeX(float x_offset) {
   DCHECK(browser_);
   DCHECK(tab_strip_);
   DCHECK(scrubbing_);
@@ -388,7 +388,7 @@ void TabScrubberChromeOS::UpdateSwipeX(float x_offset) {
   }
 }
 
-void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
+void TabScrubber::UpdateHighlightedTab(Tab* new_tab, int new_index) {
   DCHECK(scrubbing_);
   DCHECK(new_tab);
 
@@ -409,3 +409,5 @@ void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
     highlighted_tab_ = -1;
   }
 }
+
+}  // namespace ash

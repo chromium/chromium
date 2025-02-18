@@ -304,6 +304,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Backend downstream implementation is not available"/>
   <int value="6" label="ApiException"/>
   <int value="7" label="Other API error"/>
+  <int value="8" label="Password manager not available"/>
 </enum>
 
 <enum name="CredentialManagerGetResult">

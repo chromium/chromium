@@ -193,6 +193,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1607312127821884567">Nerādīt iespēju iestatīt tālruņa lietotņu skatīšanu</translation>
 <translation id="1610778689852195798">“Undo” (Atsaukt)</translation>
 <translation id="1611993646327628135">Ieslēgts</translation>
+<translation id="1612679292338846734">Kad ieslēdzat šīs funkcijas, ievadītais teksts, dokumenta saturs un tīmekļa lapas URL var tikt nosūtīts uz Google MI serveriem. Šī informācija tiek izmantota, lai ģenerētu rakstīšanas ieteikumus, ģenerētu apkopojumus, atbildētu uz jautājumiem un uzlabotu produktu, ievērojot <ph name="LINK_TO_SERVICE_TERMS" />. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Sakļaut pakalpojumu Google Classroom</translation>
 <translation id="163032029566320584">Funkcija <ph name="UNAVAILABLE_DLC" /> nav pieejama.</translation>
@@ -565,6 +566,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="2946119680249604491">Pievienot savienojumu</translation>
 <translation id="2947835478872237115">Pašreizējais akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> līdz pilnai uzlādei</translation>
 <translation id="2949420361496057765">Nospiediet <ph name="MODIFIER" /> un noklikšķiniet uz saites</translation>
+<translation id="2957159466053076448">Iestatījumos varat jebkurā laikā izslēgt šīs funkcijas. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Ierīces audio</translation>
 <translation id="2960314608273155470">Uzņemšanas režīms, noklusējuma iestatījums: <ph name="SOURCE" /> <ph name="TYPE" />. Lai aktivizētu tastatūras navigāciju, nospiediet tabulēšanas taustiņu.</translation>
 <translation id="2961963223658824723">Radās problēma. Pēc dažām sekundēm mēģiniet vēlreiz.</translation>
@@ -1905,6 +1907,7 @@ Jauna instalācija</translation>
 <translation id="735745346212279324">VPN ir atvienots</translation>
 <translation id="7360036564632145207">Mainot datu piekļuves aizsardzības iestatījumu perifērajām ierīcēm, var tikt optimizēta veiktspēja.</translation>
 <translation id="736045644501761622">Iestatīt fona tapeti un stilu</translation>
+<translation id="7368041336688136012">Lai izmantotu funkcijas “Palīdzība lasīšanā”, “Palīdzība rakstīšanā” un veidotu attēlus ar MI, jums ir jābūt vismaz 18 gadus vecam.</translation>
 <translation id="7371404428569700291">Ierakstīt logu</translation>
 <translation id="7372069265635026568">Pieejamā atmiņa: <ph name="AVAILABLE_MEMORY" />, kopējā atmiņa: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Atļauj piekļuvi mikrofonam visām lietotnēm un vietnēm, kurām ir mikrofona atļauja.</translation>
@@ -2030,6 +2033,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Rādīt visu</translation>
+<translation id="7762664108390426952">Google pakalpojumu sniegšanas noteikumus un konfidencialitātes politiku</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7769299611924763557">Jūsu GIF attēls drīz būs gatavs</translation>
 <translation id="7773536009433685931">Tā vietā ieslēgt Wi-Fi</translation>

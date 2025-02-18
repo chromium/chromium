@@ -809,7 +809,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="238459632961158867">Website</translation>
 <translation id="2385809941344967209">I-update ang Chrome mula sa iyong mga setting ng Chrome</translation>
 <translation id="2386255080630008482">Nabawi ang certificate ng server.</translation>
-<translation id="2386410849674401722">Nagsusumite ang thumbs up ng feedback na gusto mo ang i-autofill gamit ang AI</translation>
 <translation id="2388828676877700238">Paghahanda at Pagpaplano ng Buwis</translation>
 <translation id="239203817277685015">Idetalye pa</translation>
 <translation id="239293030466334554">Mga convertible</translation>
@@ -1442,7 +1441,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3543935938072367282">Mas mabilis na mag-check out gamit ang autofill</translation>
 <translation id="3547442767634383572">Pangkalahatang-ideya ng profile sa trabaho</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
-<translation id="3550325450190222557">Magpadala ng feedback para sa I-autofill gamit ang AI.</translation>
 <translation id="3552155506104542239">Babala: Sumasalungat ang patakarang ito sa <ph name="POLICY_NAME" /> at hindi ito magkakaroon ng epekto sa mga Android app. Kung hindi man, gagana ang patakarang ito na gaya ng inaasahan.</translation>
 <translation id="3552297013052089404">Sans-serif Font</translation>
 <translation id="3558573058928565255">Oras sa umaga</translation>
@@ -2899,7 +2897,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6124432979022149706">Mga Chrome Enterprise Connector</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">Inalis ang item</translation>
-<translation id="6128214169525122635">Nagsusumite ang thumbs down ng feedback na ayaw mo ang i-autofill gamit ang AI</translation>
 <translation id="6131824478727057281">lokasyon</translation>
 <translation id="6133320744616005677">Patuloy na pahintulutan</translation>
 <translation id="6133984428121856852">Walang laman o mali ang file extension.</translation>
@@ -4598,7 +4595,6 @@ Mga karagdagang detalye:
 <translation id="9150025764986957246">Puwede kang maglagay ng mga bagay na gaya ng:</translation>
 <translation id="9154194610265714752">Na-update</translation>
 <translation id="9155211586651734179">Naka-attach ang mga peripheral ng audio</translation>
-<translation id="9155453166708525139">Isang pang-eksperimentong feature ang I-autofill gamit ang AI at hindi ito palaging tama. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Mga Magazine</translation>
 <translation id="9157595877708044936">Nagse-set up...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_NAME" />}one{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> file}other{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> na file}}</translation>

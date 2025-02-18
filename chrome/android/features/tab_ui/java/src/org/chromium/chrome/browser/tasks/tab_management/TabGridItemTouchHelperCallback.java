@@ -194,10 +194,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 || target.getItemViewType() == TabProperties.UiType.CUSTOM_MESSAGE) {
             return false;
         }
-        // Collaborations cannot be dropped as it would destroy the collaboration.
-        if (hasCollaboration(current)) {
-            return false;
-        }
         return super.canDropOver(recyclerView, current, target);
     }
 
@@ -282,7 +278,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                     !(hoveredViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder)
                             || hasTabPropertiesModel(hoveredViewHolder);
 
-            if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX && mActionsOnAllRelatedTabs) {
+            if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX
+                    && mActionsOnAllRelatedTabs
+                    && !hasCollaboration(viewHolder)) {
                 RecyclerView.ViewHolder selectedViewHolder =
                         mRecyclerView.findViewHolderForAdapterPosition(mSelectedTabIndex);
                 if (selectedViewHolder != null

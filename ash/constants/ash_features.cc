@@ -1732,12 +1732,12 @@ BASE_FEATURE(kLobsterFileNamingImprovement,
 // Enables lobster entry point in quick insert zero state.
 BASE_FEATURE(kLobsterQuickInsertZeroState,
              "LobsterQuickInsertZeroState",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables lobster right click menu entry point.
 BASE_FEATURE(kLobsterRightClickMenu,
              "LobsterRightClickMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabling this flag allows Lobster to receive and use the rewritten queries
 // returned from the server.

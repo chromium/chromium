@@ -855,7 +855,7 @@ BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
 
 BASE_FEATURE(kGroupNewTabWithParent,
              "GroupNewTabWithParent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryPaneAndroid,
              "HistoryPaneAndroid",

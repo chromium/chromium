@@ -67,7 +67,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1880677175115548835">Kies teks</translation>
-<translation id="1907925560334657849">Om jou venster te deel, moet jy skermopname vir Chrome in Stelselvoorkeure toelaat</translation>
 <translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
 <translation id="1953553007165777902">Laai tans af … <ph name="MINUTE" /> minuut(minute) oor</translation>
 <translation id="1982647487457769627">Chrome werk regoor platforms om vir jou ’n bekende ervaring te gee ongeag die toestel</translation>
@@ -246,7 +245,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4050175100176540509">Belangrike sekuriteitverbeterings en nuwe kenmerke is in die jongste weergawe beskikbaar.</translation>
 <translation id="4053720452172726777">Pasmaak en beheer Google Chrome</translation>
 <translation id="408393047846373801">Meld aan by Chrome om jou wagwoorde en meer op al jou toestelle te kry. Hierdie wagwoord sal in jou Google-rekening gestoor word nadat jy aangemeld het.</translation>
-<translation id="4084404300720192944">Om jou venster te deel, moet jy skermopname vir Chrome in Stelselvoorkeure toelaat.</translation>
 <translation id="4110895483821904099">Stel jou nuwe Chrome-profiel op</translation>
 <translation id="4111566860456076004">Chrome kan nie verifieer waar hierdie uitbreiding vandaan kom nie, en dit kan dalk onveilig wees. Verwyder dit uit Chrome sodat dit nie meer jou data, insluitend persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
 <translation id="4128488089242627000">Chrome werk vinniger en kenmerke wat JavaScript gebruik, moet werk soos ontwerp (aanbeveel)</translation>
@@ -411,7 +409,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6180522807229584611">Hierdie oortjie gebruik ekstra hulpbronne. Laat Chrome dit onaktief maak om jou werkverrigting te verbeter.</translation>
 <translation id="6182736845697986886">Installering het misluk as gevolg van ’n interne opdateringbedienerfout.</translation>
 <translation id="6200139057479872438">Jy het nie onlangs die webwerf besoek nie. Chrome het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> verwyder</translation>
-<translation id="621585339844629864">Om jou skerm te deel, moet jy skermopname vir Chrome in Stelselvoorkeure toelaat.</translation>
 <translation id="6235018212288296708">Inkomende reël vir Google Chrome om mDNS-verkeer toe te laat.</translation>
 <translation id="624230925347970731">Chrome gaan binnekort toemaak</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
@@ -480,7 +477,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7088681679121566888">Chrome is op datum</translation>
 <translation id="7098166902387133879">Google Chrome gebruik tans jou mikrofoon.</translation>
 <translation id="7099479769133613710">Herbegin om &amp;Chrome-bedryfstelsel op te dateer</translation>
-<translation id="7100085796996987445">Om jou skerm te deel, moet jy skermopname vir Chrome in Stelselvoorkeure toelaat</translation>
 <translation id="7106741999175697885">Taakbestuurder – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin.}=1{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou incognitovenster sal nie weer oopgemaak word nie.}other{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="7155997830309522122">Indien wel moet jy asseblief jou gestoorde wagwoord in Chrome wysig sodat dit met jou nuwe wagwoord ooreenstem.</translation>

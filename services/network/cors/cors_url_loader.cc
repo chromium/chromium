@@ -25,7 +25,6 @@
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_values.h"
 #include "net/shared_dictionary/shared_dictionary.h"
-#include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/cors/cors_url_loader_factory.h"
@@ -248,19 +247,16 @@ std::optional<CorsErrorStatus> CheckRedirectLocation(
     bool cors_flag,
     bool tainted) {
   // If `actualResponse`’s location URL’s scheme is not an HTTP(S) scheme,
-  // then return a network error (4.4 HTTP-redirect fetch, step 6). This
-  // should be addressed earlier in //net at URLRequestJob::CanFollowRedirect.
+  // then return a network error.
+  // This should be addressed in //net.
 
-  // Note: The redirect count check (steps 7 and 8) is done prior to
-  // calling CheckRedirectLocation in CorsURLLoader::OnReceiveRedirect.
+  // Note: The redirect count check is done elsewhere.
 
   const bool url_has_credentials = url.has_username() || url.has_password();
   // If `request`’s mode is "cors", `actualResponse`’s location URL includes
   // credentials, and either `request`’s tainted origin flag is set or
   // `request`’s origin is not same origin with `actualResponse`’s location
   // URL’s origin, then return a network error.
-  // See 4.4. HTTP-redirect fetch
-  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 9.
   DCHECK(!IsCorsEnabledRequestMode(request_mode) || origin);
   if (IsCorsEnabledRequestMode(request_mode) && url_has_credentials &&
       (tainted || !origin->IsSameOriginWith(url))) {
@@ -269,8 +265,6 @@ std::optional<CorsErrorStatus> CheckRedirectLocation(
 
   // If CORS flag is set and `actualResponse`’s location URL includes
   // credentials, then return a network error.
-  // See 4.4. HTTP-redirect fetch
-  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 10.
   if (cors_flag && url_has_credentials)
     return CorsErrorStatus(mojom::CorsError::kRedirectContainsCredentials);
 
@@ -740,15 +734,11 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
 
   // If `request`’s redirect count is twenty, return a network error.
   // Increase `request`’s redirect count by one.
-  // See 4.4. HTTP-redirect fetch
-  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), steps 7 and 8.
   if (redirect_count_++ == 20) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_TOO_MANY_REDIRECTS));
     return;
   }
 
-  // Implements 4.4. HTTP-redirect fetch
-  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), steps 9 and 10.
   const auto error_status = CheckRedirectLocation(
       redirect_info.new_url, request_.mode, request_.request_initiator,
       fetch_cors_flag_, tainted_);
@@ -759,8 +749,6 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
 
   // If `actualResponse`’s status is not 303, `request`’s body is non-null, and
   // `request`’s body’s source is null, then return a network error.
-  // See 4.4. HTTP-redirect fetch
-  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 11.
   if (redirect_info.status_code != net::HTTP_SEE_OTHER &&
       network::URLLoader::HasFetchStreamingUploadBody(&request_)) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
@@ -769,29 +757,20 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
 
   CheckTainted(redirect_info);
 
-  if (base::FeatureList::IsEnabled(features::kUpdateRequestForCorsRedirect)) {
-    // Completes step 12 of 4.4 HTTP-redirect fetch
-    // (https://fetch.spec.whatwg.org/#http-redirect-fetch). The status code
-    // check and method update to GET is handled earlier in
-    // RedirectInfo::ComputeRedirectInfo. UpdateHttpRequest checks to see if
-    // the method has been updated, and if so, sets clear_body to true so that
-    // the request body can be cleared here (step 12.1) and removes the
-    // "request-body-headers" (step 12.2).
-    bool clear_body = false;
-    net::RedirectUtil::UpdateHttpRequest(
-        request_.url, request_.method, redirect_info,
-        /*removed_headers=*/std::nullopt, /*modified_headers=*/std::nullopt,
-        &request_.headers, &clear_body);
-    if (clear_body) {
-      request_.request_body.reset();
-    }
+  // TODO(crbug.com/40686262): Implement the following:
+  // If either `actualResponse`’s status is 301 or 302 and `request`’s method is
+  // `POST`, or `actualResponse`’s status is 303, set `request`’s method to
+  // `GET` and request’s body to null, and remove request-body-header name from
+  // request's headers. Some of them are implemented in //net, but when we
+  // create another request on exceptional redirect cases, such newly created
+  // request doesn't reflect the spec comformant request modifications. See the
+  // linked crbug for details. See also 4.4. HTTP-redirect fetch
+  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 11.
 
-    // Set request's referrer policy on redirect. The algorithm is invoked
-    // earlier in RedirectInfo::ComputeRedirectInfo, so simply update to the
-    // computed value here. See 4.4. HTTP-redirect fetch
-    // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 19.
-    request_.referrer_policy = redirect_info.new_referrer_policy;
-  }
+  // TODO(crbug.com/40686262): Implement the following:
+  // Invoke `set request’s referrer policy on redirect` on `request` and
+  // `actualResponse`. See 4.4. HTTP-redirect fetch
+  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 14.
 
   redirect_info_ = redirect_info;
 

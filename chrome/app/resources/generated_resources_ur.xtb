@@ -1184,6 +1184,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کا استعمال جاری نہیں رکھ سکتا</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> کو کاسٹ کیا جا رہا ہے</translation>
 <translation id="1813278315230285598">سروسز</translation>
+<translation id="1813828404076816564">مشترکہ ٹیب گروپس کی خصوصیت سے متعلق تاثرات بھیجنے کیلئے، تاثرات بٹن کا انتخاب کریں</translation>
 <translation id="18139523105317219">‏EDI پارٹی نام</translation>
 <translation id="1815083418640426271">سادہ متن کے بطور پیسٹ کریں</translation>
 <translation id="1815097521077272760">آپ کو اس گیم کے لیے کی بورڈ کنٹرول آزمانے کے لیے مدعو کیا گیا ہے۔</translation>
@@ -2289,7 +2290,6 @@
 <translation id="2569972178052279830">ریٹیلر کا نام</translation>
 <translation id="257088987046510401">تھیمز</translation>
 <translation id="2571638829488071045">‏اس ایکسٹینشن کو اپنے Google اکاؤنٹ میں محفوظ کریں؟</translation>
-<translation id="2571655996835834626">‏اپنی وہ ترتیبات تبدیل کریں جو کوکیز، JavaScript، پلگ انز، جغرافیائی مقام، مائیکروفون، کیمرا وغیرہ جیسی خصوصیات تک ویب سائٹس کی رسائی کو کنٹرول کرتی ہیں۔</translation>
 <translation id="257175846174451436">تجویز کردہ ٹیب گروپ</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> کیلئے صرف پڑھنے کی رسائی دی گئی ہے۔</translation>
 <translation id="2573147659521059501">‫<ph name="NUM" /> ٹیبز</translation>
@@ -4111,6 +4111,7 @@
 <translation id="3857807444929313943">اٹھائیں، پھر دوبارہ ٹچ کریں</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="385939467708172187">مضبوط پاس ورڈ استعمال کریں</translation>
+<translation id="3859869403161297890">مشترکہ ٹیب گروپس سے متعلق اپنے تاثرات یہاں بھیجیں</translation>
 <translation id="3859987779882450877">آپ کے کھلے ٹیبز سے خودکار طور پر تجویز کرتا اور گروپس تخلیق کرتا ہے</translation>
 <translation id="386009056910366930">‫"<ph name="GROUP_NAME" />" ٹیب گروپ کا نظم کریں</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" صارف نام دستیاب نہیں ہے</translation>
@@ -7615,7 +7616,6 @@
 <translation id="6411135999030237579">کلید کو خودکار طور پر دہرانے کے لیے چھوئیں اور دبائے رکھیں</translation>
 <translation id="6414618057231176439">منتخب کریں کہ <ph name="VM_NAME" /> کا کون سا ورژن انسٹال کرنا ہے۔</translation>
 <translation id="641469293210305670">اپ ڈیٹس اور ایپس انسٹال کریں</translation>
-<translation id="6414878884710400018">سسٹم کی ترجیحات کھولیں</translation>
 <translation id="6415757856498750027">‏"ư" حاصل کرنے کے لیے "w" ٹائپ کریں</translation>
 <translation id="6415816101512323589">اپنے ڈیٹا کے تحفظ کے لیے مقامی ڈیٹا کی بازیابی کو آن کریں؟</translation>
 <translation id="6415900369006735853">اپنے فون کے ذریعے انٹرنیٹ سے منسلک ہوں</translation>
@@ -8162,6 +8162,7 @@
 <translation id="6805478749741295868">‏یہ ایک تجرباتی AI خصوصیت ہے اور یہ ہمیشہ درست نہیں ہوگی۔</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> سے کلائنٹ سرٹیفیکیٹ درآمد کرنے کیلئے براہ کرم <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="680572642341004180">‏<ph name="SHORT_PRODUCT_OS_NAME" /> پر RLZ ٹریکنگ فعال کریں۔</translation>
+<translation id="6805817411033102703">مشترکہ ٹیب گروپس سے متعلق تاثرات</translation>
 <translation id="6806089545527108739">اجازت نہ دیں لیکن بعد میں پوچھیں</translation>
 <translation id="680644983456221885">‏Google کو بھیجے جا رہے آپ کے براؤزنگ ڈیٹا کی بنیاد پر خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف ریئل ٹائم میں پیشگی حفاظت ملتی ہے</translation>
 <translation id="6806781719264274042">‏صرف وہ رابطے جن کے پاس Google اکاؤنٹ ہے۔ <ph name="LINK_BEGIN" />رابطے دیکھیں<ph name="LINK_END" /></translation>

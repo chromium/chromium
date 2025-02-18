@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Canslo'r dasg argraffu</translation>
 <translation id="2161656808144014275">Testun</translation>
 <translation id="2163937499206714165">Troi'r modd tywyll ymlaen</translation>
+<translation id="2164131940279488868">Gwnewch yn siŵr bod meic wedi'i gysylltu i ddechrau recordio sain</translation>
 <translation id="2173302385160625112">Gwiriwch eich cysylltiad rhyngrwyd</translation>
 <translation id="2180197493692062006">Aeth rhywbeth o'i le. Rhowch gynnig ar ailagor yr ap.</translation>
 <translation id="2189104374785738357">Golygu manylion APN</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">lemwnau</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
 <translation id="2573178735329662769">Wrthi'n recordio holl sain Chromebook</translation>
-<translation id="2575552334616524665">Gallwch droi hyn ymlaen yn y Gosodiadau neu'r ddewislen <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Bydd hyn yn cymryd hyd at 2GB o'r storfa</translation>
 <translation id="2584547424703650812">Disgleirwedd</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">Cefndir <ph name="LETTERS_COLOR" /> gyda'r llythyren <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Unigryw</translation>
 <translation id="3404249063913988450">Galluogi'r arbedydd sgrîn</translation>
-<translation id="3410165745972100556">Trawsgrifiad wedi'i ddiffodd</translation>
 <translation id="3413935475507503304">I barhau gyda'r diweddariad, cliciwch Nesaf.</translation>
 <translation id="3428551088151258685">awyr agored</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -1685,6 +1684,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8876270629542503161">Mae'r ddyfais yn llechen.</translation>
 <translation id="8881098542468797602">Llwyddodd y prawf</translation>
 <translation id="8882789155418924367">tylluanod</translation>
+<translation id="8885038613856655272">Cysylltwch meic</translation>
 <translation id="8892443466059986410">Canslo golygu llwybr byr</translation>
 <translation id="8897043028305808902">Ailenwyd y ffeil</translation>
 <translation id="8898840733695078011">Cryfder signal</translation>

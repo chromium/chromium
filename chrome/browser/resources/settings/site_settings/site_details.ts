@@ -164,6 +164,12 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
       },
 
+      enablePermissionSiteSettingsRadioButton_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enablePermissionSiteSettingsRadioButton'),
+      },
+
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
@@ -202,6 +208,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private enableAutomaticFullscreenContentSetting_: boolean;
   private enableHandTrackingContentSetting_: boolean;
   private capturedSurfaceControlEnabled_: boolean;
+  private enablePermissionSiteSettingsRadioButton_: boolean;
   private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();

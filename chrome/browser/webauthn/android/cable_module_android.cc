@@ -459,36 +459,6 @@ using webauthn::authenticator::SystemInterface;
 
 // JNI callbacks.
 
-static jlong JNI_CableAuthenticatorModuleProvider_GetSystemNetworkContext(
-    JNIEnv* env) {
-  static_assert(sizeof(jlong) >= sizeof(uintptr_t),
-                "Java longs are too small to contain pointers");
-  return static_cast<jlong>(reinterpret_cast<uintptr_t>(
-      SystemNetworkContextManager::GetInstance()->GetContext()));
-}
-
-static jlong JNI_CableAuthenticatorModuleProvider_GetRegistration(JNIEnv* env) {
-  static_assert(sizeof(jlong) >= sizeof(uintptr_t),
-                "Java longs are too small to contain pointers");
-  return static_cast<jlong>(reinterpret_cast<uintptr_t>(
-      webauthn::authenticator::GetRegistrationState()->linking_registration()));
-}
-
-static void JNI_CableAuthenticatorModuleProvider_FreeEvent(JNIEnv* env,
-                                                           jlong event_long) {
-  static_assert(sizeof(jlong) >= sizeof(uintptr_t),
-                "Java longs are too small to contain pointers");
-  Registration::Event* event =
-      reinterpret_cast<Registration::Event*>(event_long);
-  delete event;
-}
-
-static base::android::ScopedJavaLocalRef<jbyteArray>
-JNI_CableAuthenticatorModuleProvider_GetSecret(JNIEnv* env) {
-  return base::android::ToJavaByteArray(
-      env, webauthn::authenticator::GetRegistrationState()->secret());
-}
-
 static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
     JNIEnv* env,
     jlong system_interface_pointer,

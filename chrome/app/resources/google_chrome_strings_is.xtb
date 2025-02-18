@@ -67,7 +67,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-inn)</translation>
 <translation id="1877026089748256423">Chrome er úrelt</translation>
 <translation id="1880677175115548835">Velja texta</translation>
-<translation id="1907925560334657849">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila glugganum þínum</translation>
 <translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>
 <translation id="1953553007165777902">Sækir... <ph name="MINUTE" /> mín. eftir</translation>
 <translation id="1982647487457769627">Chrome vinnur þvert á verkvanga til að gefa þér kunnuglega upplifun, sama hvert tækið er</translation>
@@ -246,7 +245,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4050175100176540509">Mikilvægar öryggislagfæringar og nýir eiginleikar eru í boði í nýjustu útgáfunni.</translation>
 <translation id="4053720452172726777">Sérsníða og stjórna Google Chrome</translation>
 <translation id="408393047846373801">Skráðu þig inn á Chrome til að fá aðgang að aðgangsorðum og fleiru í öllum tækjunum þínum. Þetta aðgangsorð verður vistað á Google-reikningnum þínum eftir að þú skráir þig inn.</translation>
-<translation id="4084404300720192944">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila glugganum þínum.</translation>
 <translation id="4110895483821904099">Settu upp nýja Chrome prófílinn þinn</translation>
 <translation id="4111566860456076004">Chrome getur ekki staðfest hvaðan þessi viðbót kemur og hún gæti verið óörugg. Fjarlægðu hana úr Chrome svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum.</translation>
 <translation id="4128488089242627000">Chrome virkar hraðar og eiginleikar sem nota JavaScript ættu að virka sem skyldi (ráðlagt)</translation>
@@ -411,7 +409,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6180522807229584611">Þessi flipi notar aukagögn. Leyfðu Chrome að óvirkja hann til að bæta afköstin.</translation>
 <translation id="6182736845697986886">Uppsetning mistókst vegna innri villu uppfærsluþjóns.</translation>
 <translation id="6200139057479872438">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
-<translation id="621585339844629864">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila skjánum þínum.</translation>
 <translation id="6235018212288296708">Regla á innleið til að láta Google Chrome leyfa mDNS-umferð.</translation>
 <translation id="624230925347970731">Chrome lokast bráðum</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
@@ -480,7 +477,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7088681679121566888">Chrome er uppfærður</translation>
 <translation id="7098166902387133879">Google Chrome er að nota hljóðnemann.</translation>
 <translation id="7099479769133613710">Endurræstu til að uppfæra &amp;ChromeOS</translation>
-<translation id="7100085796996987445">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila skjánum þínum</translation>
 <translation id="7106741999175697885">Verkstjórn – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir.}=1{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. Huliðsglugginn enduropnast ekki.}one{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. # huliðsgluggi enduropnast ekki.}other{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. # huliðsgluggar enduropnast ekki.}}</translation>
 <translation id="7155997830309522122">Ef svo er skaltu breyta vistaða aðgangsorðinu í Chrome í nýja aðgangsorðið.</translation>

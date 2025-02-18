@@ -63,7 +63,6 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
 <translation id="1880677175115548835">Selecciona el text</translation>
-<translation id="1907925560334657849">Per compartir la finestra, permet que Chrome gravi la pantalla a Preferències del sistema</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
 <translation id="1953553007165777902">S'està baixant... Queden <ph name="MINUTE" /> minuts</translation>
 <translation id="1982647487457769627">Chrome funciona en diverses plataformes per oferir-te l'experiència que ja coneixes independentment del dispositiu que facis servir</translation>
@@ -242,7 +241,6 @@
 <translation id="4050175100176540509">La versió més recent incorpora millores de seguretat i funcions noves importants.</translation>
 <translation id="4053720452172726777">Personalitza i controla Google Chrome</translation>
 <translation id="408393047846373801">Per obtenir les teves contrasenyes i altres dades en tots els dispositius, inicia la sessió a Chrome. Aquesta contrasenya es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
-<translation id="4084404300720192944">Per compartir la finestra, permet que Chrome gravi la pantalla a Preferències del sistema.</translation>
 <translation id="4110895483821904099">Configura el teu perfil de Chrome nou</translation>
 <translation id="4111566860456076004">Chrome no pot verificar d'on prové aquesta extensió i és possible que no sigui segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la informació personal.</translation>
 <translation id="4128488089242627000">Chrome s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar (opció recomanada)</translation>
@@ -403,7 +401,6 @@
 <translation id="6180522807229584611">Aquesta pestanya utilitza recursos addicionals. Per millorar el rendiment, permet que Chrome la desactivi.</translation>
 <translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
 <translation id="6200139057479872438">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
-<translation id="621585339844629864">Per compartir la pantalla, permet que Chrome gravi la pantalla a Preferències del sistema.</translation>
 <translation id="6235018212288296708">Regla d'entrada de Google Chrome per permetre el trànsit de mDNS.</translation>
 <translation id="624230925347970731">Chrome es tancarà aviat</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
@@ -472,7 +469,6 @@
 <translation id="7088681679121566888">Chrome està actualitzat</translation>
 <translation id="7098166902387133879">Google Chrome està utilitzant el micròfon.</translation>
 <translation id="7099479769133613710">Reinicia per actualitzar &amp;Chrome OS</translation>
-<translation id="7100085796996987445">Per compartir la pantalla, permet que Chrome gravi la pantalla a Preferències del sistema</translation>
 <translation id="7106741999175697885">Gestor de tasques - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs.}=1{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs. La finestra d'incògnit no es tornarà a obrir.}other{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="7155997830309522122">Si ja ho has fet, edita la contrasenya desada a Chrome perquè coincideixi amb la contrasenya nova.</translation>

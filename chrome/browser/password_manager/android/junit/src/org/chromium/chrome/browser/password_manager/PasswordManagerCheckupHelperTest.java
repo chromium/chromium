@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,21 +29,24 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
@@ -56,21 +61,33 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 
 /** Tests for the password checkup-related methods in {@link PasswordManagerHelper}.* */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowSystemClock.class})
 @Batch(Batch.PER_CLASS)
 public class PasswordManagerCheckupHelperTest {
+    @ParameterizedRobolectricTestRunner.Parameters
+    public static Collection testCases() {
+        return Arrays.asList(
+                /* isLoginDbDeprecationEnabled= */ true, /* isLoginDbDeprecationEnabled= */ false);
+    }
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
     private static final String TEST_NO_EMAIL_ADDRESS = null;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @ParameterizedRobolectricTestRunner.Parameter public boolean mIsLoginDbDeprecationEnabled;
 
     // TODO(crbug.com/40854050): Use a fake for PasswordCheckupClientHelper.
     @Mock private PasswordCheckupClientHelperFactory mPasswordCheckupClientHelperFactoryMock;
@@ -101,14 +118,17 @@ public class PasswordManagerCheckupHelperTest {
     private PasswordManagerHelper mPasswordManagerHelper;
 
     @Before
-    public void setUp() throws PasswordCheckBackendException, CredentialManagerBackendException {
-        // TODO(crbug.com/40940922): Parametrise the tests for local and account.
+    public void setUp() throws PasswordCheckBackendException {
+        if (mIsLoginDbDeprecationEnabled) {
+            FeatureOverrides.enable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
+        } else {
+            FeatureOverrides.disable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
+        }
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         mPasswordManagerHelper = new PasswordManagerHelper(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
         mModalDialogManager =
@@ -125,12 +145,41 @@ public class PasswordManagerCheckupHelperTest {
                 .addObserver(any(LoadingModalDialogCoordinator.Observer.class));
         PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.areMinUpmRequirementsMet()).thenReturn(true);
-
+        if (mIsLoginDbDeprecationEnabled) {
+            when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
+                            eq(mPrefService), eq(true)))
+                    .thenReturn(true);
+        } else {
+            when(mPasswordManagerUtilBridgeJniMock.areMinUpmRequirementsMet()).thenReturn(true);
+        }
         when(mPasswordCheckupClientHelperFactoryMock.createHelper())
                 .thenReturn(mPasswordCheckupClientHelperMock);
         PasswordCheckupClientHelperFactory.setFactoryForTesting(
                 mPasswordCheckupClientHelperFactoryMock);
+    }
+
+    @Test
+    public void testThrowsPasswordManagerNotAvailableException() {
+        // This test only applies if the login DB deprecation is enabled.
+        assumeTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID));
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
+                        eq(mPrefService), eq(true)))
+                .thenReturn(false);
+        chooseToSyncPasswords();
+        setUpSuccessfulRunPasswordCheckup();
+
+        Callback<Exception> failureCallback = mock(Callback.class);
+        mPasswordManagerHelper.runPasswordCheckupInBackground(
+                org.chromium.chrome.browser.password_manager.PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                failureCallback);
+        final ArgumentCaptor<PasswordCheckBackendException> captor =
+                ArgumentCaptor.forClass(PasswordCheckBackendException.class);
+
+        verify(failureCallback).onResult(captor.capture());
+        assertEquals(
+                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE, captor.getValue().errorCode);
     }
 
     @Test
@@ -208,7 +257,7 @@ public class PasswordManagerCheckupHelperTest {
     }
 
     @Test
-    public void testLaunchesPasswordCheckupSync() {
+    public void testRetrievesIntentForAccountCheckup() {
         chooseToSyncPasswords();
 
         mPasswordManagerHelper.showPasswordCheckup(

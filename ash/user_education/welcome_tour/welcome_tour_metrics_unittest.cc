@@ -119,7 +119,7 @@ TEST_P(WelcomeTourChangedExperimentalArmMetricTest,
   auto* const session_controller_client = GetSessionControllerClient();
   session_controller_client->AddUserSession(
       primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/false);
+      /*pref_service=*/nullptr, /*is_new_profile=*/false);
 
   const std::optional<ExperimentalArm> pref_value = GetPrefValue();
   if (pref_value) {

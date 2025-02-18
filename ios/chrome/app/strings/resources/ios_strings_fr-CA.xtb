@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">Compte géré</translation>
 <translation id="1358214951266274152">Accéder au lien que vous avez copié</translation>
 <translation id="1360432990279830238">Se déconnecter et désactiver la synchro?</translation>
+<translation id="1362192716574455663">Les données de navigation existantes ne seront pas déplacées vers votre compte professionnel. Vous pouvez toujours y accéder en vous déconnectant ou en ajoutant un compte personnel.</translation>
 <translation id="1363028406613469049">Numéro de suivi</translation>
 <translation id="1364367057792633742">Nouvel onglet</translation>
 <translation id="1365106417372288489">Votre iPhone a été récemment restauré, ce qui a peut-être modifié votre navigateur par défaut.</translation>
@@ -655,6 +656,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Modifier le carrousel</translation>
 <translation id="3909222758573607742">Enregistrez les mots de passe et les autres éléments dans le compte</translation>
+<translation id="3913463964270756493">Masquer l'écran de recherche avec Lentille Google</translation>
 <translation id="3914640181019354363">Détecter les adresses</translation>
 <translation id="3922185497376658606">Précharger les pages Web</translation>
 <translation id="3922395466317605522">Personnaliser le menu</translation>

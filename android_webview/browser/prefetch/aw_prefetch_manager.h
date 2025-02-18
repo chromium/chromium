@@ -24,6 +24,10 @@ inline constexpr int DEFAULT_TTL_IN_SEC = 60;
 // The MaxPrefetches number is not present in the `//content` layer, so it is
 // specific to WebView.
 inline constexpr int DEFAULT_MAX_PREFETCHES = 10;
+// This is the source of truth for the absolute maximum number of prefetches
+// that can ever be cached in WebView. It can override the number set by the
+// AndroidX API.
+inline constexpr int ABSOLUTE_MAX_PREFETCHES = 20;
 
 // Manages prefetch operations for this Profile.
 // Lifetime: Profile
@@ -48,7 +52,7 @@ class AwPrefetchManager {
 
   // Updates the maximum number of allowed prefetches in cache
   void SetMaxPrefetches(JNIEnv* env, jint max_prefetches) {
-    max_prefetches_ = max_prefetches;
+    max_prefetches_ = std::min(max_prefetches, ABSOLUTE_MAX_PREFETCHES);
   }
 
   // Returns the Time-to-Live (TTL) for prefetched content in seconds.

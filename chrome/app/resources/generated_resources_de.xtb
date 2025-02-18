@@ -196,6 +196,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Fotos und Medien von deinem Smartphone abrufen</translation>
 <translation id="1129850422003387628">Apps verwalten</translation>
+<translation id="1130430615924359526">{0,plural, =1{Inkognitofenster schließen}other{Inkognitofenster schließen (# Fenster)}}</translation>
 <translation id="113050636487300043">Lege einen Namen und ein Farbdesign fest, um einfach zwischen Profilen unterscheiden zu können</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Teil der Gruppe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Akkustand des rechten Kopfhörers bei <ph name="PERCENTAGE" /> %.</translation>
@@ -1510,6 +1511,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2042279886444479655">Aktive Profile</translation>
 <translation id="2042427131767688936">Damit dieses Gerät sicher verwendet werden kann, hat deine Organisation die Möglichkeit Informationen zu Betriebssystem, Browser und Einstellungen sowie zu der Software abzurufen, die auf dem Gerät installiert ist.</translation>
 <translation id="2044014337866019681">Bitte bestätige <ph name="ACCOUNT" />, um die Sitzung zu entsperren.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Gastfenster schließen}other{Gastfenster schließen (# Fenster)}}</translation>
 <translation id="204497730941176055">Name der Microsoft-Zertifikatsvorlage</translation>
 <translation id="2045211794962848221">Diese Meldung wird dir nicht mehr angezeigt</translation>
 <translation id="2045838962742066664">Kurzeingabe</translation>
@@ -2282,7 +2284,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2569972178052279830">Name des Einzelhändlers</translation>
 <translation id="257088987046510401">Designs</translation>
 <translation id="2571638829488071045">Diese Erweiterung in deinem Google-Konto speichern?</translation>
-<translation id="2571655996835834626">Ändere deine Einstellungen, über die der Websitezugriff auf Funktionen wie Cookies, JavaScript, Plug-ins, Standort, Mikrofon oder Kamera gesteuert wird.</translation>
 <translation id="257175846174451436">Vorgeschlagene Tabgruppe</translation>
 <translation id="2572032849266859634">Nur Lesezugriff auf <ph name="VOLUME_NAME" /> wurde zugelassen.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> Tabs</translation>
@@ -7346,6 +7347,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6214106213498203737">Wasserfarben</translation>
 <translation id="621470880408090483">Websites dürfen keine Verbindung mit Bluetooth-Geräten herstellen</translation>
 <translation id="6215039389782910006">{1,plural, =1{Zum Schutz deiner Passwörter wird <ph name="BRAND" /> nach 1 Minute Inaktivität gesperrt}other{Zum Schutz deiner Passwörter wird <ph name="BRAND" /> nach # Minuten Inaktivität gesperrt}}</translation>
+<translation id="6216154119179790291">Zum ersten Tab scrollen</translation>
 <translation id="6216239400972191926">Abgelehnte Websites und Apps</translation>
 <translation id="6216601812881225442">Dein Container unterstützt keine Größenanpassung. Wenn du den Speicherplatz anpassen möchtest, der Linux zugewiesen wurde, mache eine Sicherungskopie und stelle ihn in einem neuen Container wieder her.</translation>
 <translation id="6216696360484424239">Automatisch anmelden</translation>
@@ -7542,6 +7544,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6357305427698525450">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" /> oder <ph name="APP_NAME_2" /> geöffnet.</translation>
 <translation id="6357750620525943720">Andere stabile Kennungen (z. B. Hashes oder UUIDs)</translation>
 <translation id="6358884629796491903">Drache</translation>
+<translation id="6359640073754977254">Zum letzten Tab scrollen</translation>
 <translation id="6361850914223837199">Fehlerdetails:</translation>
 <translation id="6362853299801475928">P&amp;roblem melden...</translation>
 <translation id="6363786367719063276">Protokolle ansehen</translation>
@@ -7604,7 +7607,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6411135999030237579">Gedrückt halten, um den Tastendruck automatisch zu wiederholen</translation>
 <translation id="6414618057231176439">Leg fest, welche Version von <ph name="VM_NAME" /> installiert werden soll.</translation>
 <translation id="641469293210305670">Updates und Apps installieren</translation>
-<translation id="6414878884710400018">Systemeinstellungen öffnen</translation>
 <translation id="6415757856498750027">„w“ eingeben, um „ư“ zu erhalten</translation>
 <translation id="6415816101512323589">Soll die lokale Datenwiederherstellung zum Schutz deiner Daten aktiviert werden?</translation>
 <translation id="6415900369006735853">Internetverbindung über dein Smartphone herstellen</translation>
@@ -10202,6 +10204,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8258027225380843424">Import erfolgreich.</translation>
 <translation id="8259048637628995340">Android-Smartphone für einen einfachen Wechsel zwischen Geräten verbinden</translation>
 <translation id="8260177673299865994">Downloadschutz verbessern</translation>
+<translation id="8260473380156923937">Chrome-Apps werden bald eingestellt. Wenn du Alternativen suchst, wende dich an den Entwickler oder an deinen IT-Ansprechpartner.</translation>
 <translation id="8260864402787962391">Maus</translation>
 <translation id="8261378640211443080">Diese Erweiterung ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne dein Wissen hinzugefügt.</translation>
 <translation id="8261506727792406068">Löschen</translation>

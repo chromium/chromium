@@ -53,7 +53,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   // encoding detection will result in the same final encoding.
   // TODO(hiroshige): Make these semantics cleaner.
   String Encoding() const override;
-  bool IsServedFromCacheStorage() const override;
+  ServingSource GetServingSource() const override;
   void OnMemoryDump(WebProcessMemoryDump* pmd,
                     const String& dump_prefix) const override;
   size_t GetCodeCacheSize() const override;

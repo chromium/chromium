@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -74,7 +73,7 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
@@ -646,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(window_controller()->GetChildWebContents());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Verify that it is possible to resize a document picture in picture window
 // using the resize outside bound in ChromeOS ASH.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
@@ -680,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   const auto expected_size = initial_window_size + gfx::Size(drag_distance, 0);
   ASSERT_EQ(expected_size, window->GetBoundsInScreen().size());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        WindowBoundsAreCached) {

@@ -1191,7 +1191,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mCategory.getType() == SiteSettingsCategory.Type.DEVICE_LOCATION) {
             if (getSiteSettingsDelegate().isPermissionDedicatedCpssSettingAndroidFeatureEnabled()) {
                 mLocationTriStatePref.initialize(
-                        UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle()));
+                        UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle()),
+                        getSiteSettingsDelegate()
+                                .isPermissionSiteSettingsRadioButtonFeatureEnabled());
                 updateLocationSecondaryControls();
             } else {
                 screen.removePreference(mLocationTriStatePref);
@@ -1232,7 +1234,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             if (getSiteSettingsDelegate().isPermissionDedicatedCpssSettingAndroidFeatureEnabled()) {
                 screen.removePreference(mNotificationsQuietUiPref);
                 mNotificationsTriStatePref.initialize(
-                        UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle()));
+                        UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle()),
+                        getSiteSettingsDelegate()
+                                .isPermissionSiteSettingsRadioButtonFeatureEnabled());
             } else {
                 screen.removePreference(mNotificationsTriStatePref);
             }

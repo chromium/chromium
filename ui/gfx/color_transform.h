@@ -38,7 +38,12 @@ class COLOR_SPACE_EXPORT ColorTransform {
 
   // Parameters that may be specified when the transform is applied. Changing
   // these parameters will change the uniforms for a single SkShader.
-  struct RuntimeOptions {
+  struct COLOR_SPACE_EXPORT RuntimeOptions {
+    RuntimeOptions();
+    RuntimeOptions(const RuntimeOptions&) = delete;
+    RuntimeOptions& operator=(const RuntimeOptions&) = delete;
+    ~RuntimeOptions();
+
     // Offset and multiplier used when sampling textures;
     float offset = 0.f;
     float multiplier = 1.f;

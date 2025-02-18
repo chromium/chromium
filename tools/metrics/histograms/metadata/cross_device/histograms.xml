@@ -1829,7 +1829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.MessageAction"
-    enum="MultiDeviceNearbyMessageAction" expires_after="2025-05-05">
+    enum="MultiDeviceNearbyMessageAction" expires_after="2025-08-17">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1947,7 +1947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NotificationInteracted" units="count"
-    expires_after="2025-05-05">
+    expires_after="2025-08-17">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

@@ -196,6 +196,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1129348283834595293">Kiberpanks</translation>
 <translation id="1129420403709586868">Skatiet tālruņa fotoattēlus un multivides saturu.</translation>
 <translation id="1129850422003387628">Lietotņu pārvaldība</translation>
+<translation id="1130430615924359526">{0,plural, =1{Aizvērt inkognito režīmu}zero{Aizvērt inkognito režīmu (# logi)}one{Aizvērt inkognito režīmu (# logs)}other{Aizvērt inkognito režīmu (# logi)}}</translation>
 <translation id="113050636487300043">Lai atšķirtu dažādus profilus, izvēlieties nosaukumu un krāsu motīvu</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> — grupas “<ph name="GROUP_NAME" />” elements</translation>
 <translation id="1130676589211693127">Labās austiņas akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%.</translation>
@@ -1515,6 +1516,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2042279886444479655">Aktīvie profili</translation>
 <translation id="2042427131767688936">Lai varētu droši izmantot šo ierīci, jūsu organizācija var skatīt informāciju par tās operētājsistēmu, pārlūkprogrammu un iestatījumiem, kā arī to, kāda programmatūra ir instalēta ierīcē.</translation>
 <translation id="2044014337866019681">Lai atbloķētu sesiju, verificējiet kontu <ph name="ACCOUNT" />.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Aizvērt viesa režīmu}zero{Aizvērt viesa režīmu (# logi)}one{Aizvērt viesa režīmu (# logs)}other{Aizvērt viesa režīmu (# logi)}}</translation>
 <translation id="204497730941176055">Microsoft sertifikāta veidnes nosaukums</translation>
 <translation id="2045211794962848221">Šis konkrētais ziņojums vairs netiks rādīts.</translation>
 <translation id="2045838962742066664">Stenogrāfiskā rakstīšana</translation>
@@ -2287,7 +2289,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2569972178052279830">Mazumtirgotāja nosaukums</translation>
 <translation id="257088987046510401">Motīvi</translation>
 <translation id="2571638829488071045">Vai saglabāt šo paplašinājumu jūsu Google kontā?</translation>
-<translation id="2571655996835834626">Mainīt iestatījumus, ar kuriem tiek pārvaldīta vietņu piekļuve funkcijām, piemēram, sīkfailiem, JavaScript, spraudņiem, ģeogrāfiskajai atrašanās vietai, mikrofonam, kamerai u.c.</translation>
 <translation id="257175846174451436">Ieteikta ciļņu grupa</translation>
 <translation id="2572032849266859634">Tika piešķirta tikai lasīšanas piekļuve krātuvei <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> cilnes</translation>
@@ -7352,6 +7353,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6214106213498203737">Akvareļu glezna</translation>
 <translation id="621470880408090483">Neļaut vietnēm veidot savienojumu ar Bluetooth ierīcēm</translation>
 <translation id="6215039389782910006">{1,plural, =1{Lai aizsargātu jūsu paroles, <ph name="BRAND" /> tiek bloķēts pēc 1 minūtes neaktivitātes.}zero{Lai aizsargātu jūsu paroles, <ph name="BRAND" /> tiek bloķēts pēc # minūšu neaktivitātes.}one{Lai aizsargātu jūsu paroles, <ph name="BRAND" /> tiek bloķēts pēc # minūtes neaktivitātes.}other{Lai aizsargātu jūsu paroles, <ph name="BRAND" /> tiek bloķēts pēc # minūšu neaktivitātes.}}</translation>
+<translation id="6216154119179790291">Ritināt līdz pirmajai cilnei</translation>
 <translation id="6216239400972191926">Noraidītas vietnes un lietotnes</translation>
 <translation id="6216601812881225442">Jūsu konteiners neatbalsta tā lieluma mainīšanu. Lai pielāgotu operētājsistēmai Linux iepriekš piešķirtās vietas apjomu, izveidojiet dublējumu un pēc tam atjaunojiet to jaunā konteinerā.</translation>
 <translation id="6216696360484424239">Automātiska pierakstīšanās</translation>
@@ -7548,6 +7550,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6357305427698525450">Dažas atbalstītas saites joprojām tiks atvērtas lietotnē <ph name="APP_NAME" /> vai <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Citi stabili identifikatori (piemēram, jaucējvērtības vai UUID)</translation>
 <translation id="6358884629796491903">Pūķis</translation>
+<translation id="6359640073754977254">Ritināt līdz pēdējai cilnei</translation>
 <translation id="6361850914223837199">Sīkāka informācija par kļūdu:</translation>
 <translation id="6362853299801475928">&amp;Ziņot par problēmu...</translation>
 <translation id="6363786367719063276">Skatīt žurnālus</translation>
@@ -7610,7 +7613,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6411135999030237579">Nospiežot un turot, automātiski atkārtot taustiņa nospiešanu</translation>
 <translation id="6414618057231176439">Atlasiet instalējamo <ph name="VM_NAME" /> versiju.</translation>
 <translation id="641469293210305670">Atjauninājumu un lietotņu saglabāšana</translation>
-<translation id="6414878884710400018">Atvērt sistēmas preferences</translation>
 <translation id="6415757856498750027">Ierakstiet “w”, lai iegūtu “ư”</translation>
 <translation id="6415816101512323589">Vai ieslēgt lokālo datu atkopšanu, lai aizsargātu jūsu datus?</translation>
 <translation id="6415900369006735853">Piekļūstiet internetam, izmantojot tālruni</translation>
@@ -10211,6 +10213,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8258027225380843424">Importēšana ir veiksmīgi pabeigta!</translation>
 <translation id="8259048637628995340">Savienojuma izveide ar Android tālruni, lai gūtu nevainojamu pieredzi</translation>
 <translation id="8260177673299865994">Lejupielādes aizsardzības uzlabošana</translation>
+<translation id="8260473380156923937">Chrome lietotnes drīzumā vairs netiks atbalstītas. Lai uzzinātu par alternatīvām, sazinieties ar izstrādātāju vai IT dienesta kontaktpersonu.</translation>
 <translation id="8260864402787962391">Pele</translation>
 <translation id="8261378640211443080">Šis paplašinājums nav norādīts vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienots, jums nezinot.</translation>
 <translation id="8261506727792406068">Dzēst</translation>

@@ -13,9 +13,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/browser/ui_util.h"
 
 namespace extensions {
@@ -47,36 +45,14 @@ DeveloperPrivateEventRouter::CreateProfileInfo(Profile* profile) {
   return info;
 }
 
-// static
-developer::UserSiteSettings
-DeveloperPrivateEventRouter::ConvertToUserSiteSettings(
-    const PermissionsManager::UserPermissionsSettings& settings) {
-  api::developer_private::UserSiteSettings user_site_settings;
-  user_site_settings.permitted_sites.reserve(settings.permitted_sites.size());
-  for (const auto& origin : settings.permitted_sites) {
-    user_site_settings.permitted_sites.push_back(origin.Serialize());
-  }
-
-  user_site_settings.restricted_sites.reserve(settings.restricted_sites.size());
-  for (const auto& origin : settings.restricted_sites) {
-    user_site_settings.restricted_sites.push_back(origin.Serialize());
-  }
-
-  return user_site_settings;
-}
-
 DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : DeveloperPrivateEventRouterShared(profile) {
-  process_manager_observation_.Observe(ProcessManager::Get(profile));
   app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
-  warning_service_observation_.Observe(WarningService::Get(profile));
-  extension_prefs_observation_.Observe(ExtensionPrefs::Get(profile));
   extension_management_observation_.Observe(
       ExtensionManagementFactory::GetForBrowserContext(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
   extension_allowlist_observer_.Observe(
       ExtensionSystem::Get(profile)->extension_service()->allowlist());
-  permissions_manager_observation_.Observe(PermissionsManager::Get(profile));
   toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
 
   if (sync_util::IsExtensionsExplicitSigninEnabled()) {
@@ -107,32 +83,6 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
 
 DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() = default;
 
-void DeveloperPrivateEventRouter::OnExtensionFrameRegistered(
-    const ExtensionId& extension_id,
-    content::RenderFrameHost* render_frame_host) {
-  BroadcastItemStateChanged(developer::EventType::kViewRegistered,
-                            extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
-    const ExtensionId& extension_id,
-    content::RenderFrameHost* render_frame_host) {
-  BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
-                            extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnStartedTrackingServiceWorkerInstance(
-    const WorkerId& worker_id) {
-  BroadcastItemStateChanged(developer::EventType::kServiceWorkerStarted,
-                            worker_id.extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnStoppedTrackingServiceWorkerInstance(
-    const WorkerId& worker_id) {
-  BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
-                            worker_id.extension_id);
-}
-
 void DeveloperPrivateEventRouter::OnAppWindowAdded(AppWindow* window) {
   BroadcastItemStateChanged(developer::EventType::kViewRegistered,
                             window->extension_id());
@@ -156,18 +106,6 @@ void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
                             extension_id);
 }
 
-void DeveloperPrivateEventRouter::OnExtensionDisableReasonsChanged(
-    const ExtensionId& extension_id,
-    DisableReasonSet disable_reasons) {
-  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnExtensionRuntimePermissionsChanged(
-    const ExtensionId& extension_id) {
-  BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
-                            extension_id);
-}
-
 void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
     const ExtensionId& extension_id,
     bool show_warning) {
@@ -182,34 +120,6 @@ void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
       events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
       developer::OnProfileStateChanged::kEventName, std::move(args));
   event_router_->BroadcastEvent(std::move(event));
-}
-
-void DeveloperPrivateEventRouter::ExtensionWarningsChanged(
-    const ExtensionIdSet& affected_extensions) {
-  for (const ExtensionId& id : affected_extensions) {
-    BroadcastItemStateChanged(developer::EventType::kWarningsChanged, id);
-  }
-}
-
-void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
-    const PermissionsManager::UserPermissionsSettings& settings) {
-  developer::UserSiteSettings user_site_settings =
-      ConvertToUserSiteSettings(settings);
-  base::Value::List args;
-  args.Append(user_site_settings.ToValue());
-
-  auto event = std::make_unique<Event>(
-      events::DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED,
-      developer::OnUserSiteSettingsChanged::kEventName, std::move(args));
-  event_router_->BroadcastEvent(std::move(event));
-}
-
-void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
-    const Extension& extension,
-    const PermissionSet& permissions,
-    PermissionsManager::UpdateReason reason) {
-  BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
-                            extension.id());
 }
 
 void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {

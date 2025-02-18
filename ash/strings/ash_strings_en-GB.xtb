@@ -193,6 +193,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1607312127821884567">Dismiss setting up viewing your phone's apps</translation>
 <translation id="1610778689852195798">'Undo'</translation>
 <translation id="1611993646327628135">On</translation>
+<translation id="1612679292338846734">When you turn on these features, the input text, document content and web page URL may be sent to Google AI servers. This information is used to generate writing suggestions, generate summaries, answer questions and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS" />. Don't include anything personal, sensitive or confidential.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623768535032616219">Collapse Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> is not available.</translation>
@@ -565,6 +566,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2946119680249604491">Add connection</translation>
 <translation id="2947835478872237115">Current battery level <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> until full</translation>
 <translation id="2949420361496057765">Press <ph name="MODIFIER" /> and click a link</translation>
+<translation id="2957159466053076448">You can turn off these features at any time in Settings. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Device audio</translation>
 <translation id="2960314608273155470">Capture mode, default is <ph name="SOURCE" /> <ph name="TYPE" />. Press tab for keyboard navigation.</translation>
 <translation id="2961963223658824723">Something went wrong. Try again in a few seconds.</translation>
@@ -1905,6 +1907,7 @@ New install</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
 <translation id="7360036564632145207">Changing your data access protection for peripherals setting can optimise performance</translation>
 <translation id="736045644501761622">Set wallpaper and style</translation>
+<translation id="7368041336688136012">You must be at least 18 years old to use Help me read, Help me write and create images with AI.</translation>
 <translation id="7371404428569700291">Record window</translation>
 <translation id="7372069265635026568">Memory <ph name="AVAILABLE_MEMORY" /> available out of <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="737315737514430195">This allows microphone access for all apps and websites with the microphone permission</translation>
@@ -2030,6 +2033,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Show all</translation>
+<translation id="7762664108390426952">Google's Terms of Service and Privacy Policy</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Your GIF will be ready shortly</translation>
 <translation id="7773536009433685931">Turn on Wi-Fi instead</translation>

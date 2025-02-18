@@ -5,18 +5,37 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_SHARED_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_SHARED_H_
 
+#include <set>
+
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_error.h"
+#include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/process_manager_observer.h"
+#include "extensions/browser/uninstall_reason.h"
+#include "extensions/browser/warning_service.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
-                                          public ErrorConsole::Observer {
+                                          public ErrorConsole::Observer,
+                                          public ProcessManagerObserver,
+                                          public ExtensionPrefsObserver,
+                                          public WarningService::Observer,
+                                          public PermissionsManager::Observer {
  public:
+  static api::developer_private::UserSiteSettings ConvertToUserSiteSettings(
+      const PermissionsManager::UserPermissionsSettings& settings);
+
   explicit DeveloperPrivateEventRouterShared(Profile* profile);
 
   DeveloperPrivateEventRouterShared(const DeveloperPrivateEventRouterShared&) =
@@ -59,6 +78,37 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
   void OnErrorAdded(const ExtensionError* error) override;
   void OnErrorsRemoved(const std::set<ExtensionId>& extension_ids) override;
 
+  // ProcessManagerObserver:
+  void OnExtensionFrameRegistered(
+      const ExtensionId& extension_id,
+      content::RenderFrameHost* render_frame_host) override;
+  void OnExtensionFrameUnregistered(
+      const ExtensionId& extension_id,
+      content::RenderFrameHost* render_frame_host) override;
+  void OnStartedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override;
+  void OnStoppedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override;
+
+  // ExtensionPrefsObserver:
+  void OnExtensionDisableReasonsChanged(
+      const ExtensionId& extension_id,
+      DisableReasonSet disable_reasons) override;
+  void OnExtensionRuntimePermissionsChanged(
+      const ExtensionId& extension_id) override;
+
+  // WarningService::Observer:
+  void ExtensionWarningsChanged(
+      const ExtensionIdSet& affected_extensions) override;
+
+  // PermissionsManager::Observer:
+  void OnUserPermissionsSettingsChanged(
+      const PermissionsManager::UserPermissionsSettings& settings) override;
+  void OnExtensionPermissionsUpdated(
+      const Extension& extension,
+      const PermissionSet& permissions,
+      PermissionsManager::UpdateReason reason) override;
+
   // Broadcasts an event to all listeners.
   virtual void BroadcastItemStateChanged(
       api::developer_private::EventType event_type,
@@ -68,6 +118,14 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       extension_registry_observation_{this};
   base::ScopedObservation<ErrorConsole, ErrorConsole::Observer>
       error_console_observation_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
+  base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
+      extension_prefs_observation_{this};
+  base::ScopedObservation<WarningService, WarningService::Observer>
+      warning_service_observation_{this};
+  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently

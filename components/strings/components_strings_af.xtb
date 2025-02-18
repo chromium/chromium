@@ -471,6 +471,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1791415068765905273">Wys alle Vergelykingtabelle</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou inligting, privaatheid en sekuriteit in jou Google-rekening te bestuur</translation>
+<translation id="1793473605302304726">Betaal met verloop van tyd</translation>
 <translation id="1793631236004319016"><ph name="NUM_HOURS_MINUTES_SECONDS" /> gelede laas gebruik.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, veelvuldige handelinge is beskikbaar; druk Tab om deur hulle te beweeg</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="238459632961158867">Webwerf</translation>
 <translation id="2385809941344967209">Dateer Chrome in jou Chrome-instellings op</translation>
 <translation id="2386255080630008482">Bediener se sertifikaat is herroep.</translation>
-<translation id="2386410849674401722">Die opduim dien terugvoer in dat jy van outovul met AI hou</translation>
 <translation id="2388828676877700238">Belastingvoorbereiding en -beplanning</translation>
 <translation id="239203817277685015">Wei uit</translation>
 <translation id="239293030466334554">Afslaankapmotors</translation>
@@ -1441,7 +1441,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3543935938072367282">Gaan vinniger na betaalpunt met outovul</translation>
 <translation id="3547442767634383572">Werkprofieloorsig</translation>
 <translation id="3547746132308051926">20x24 dm.</translation>
-<translation id="3550325450190222557">Stuur terugvoer vir outovul met AI.</translation>
 <translation id="3552155506104542239">Waarskuwing: Hierdie beleid bots met die <ph name="POLICY_NAME" /> en sal geen uitwerking op Android-apps hê nie. Andersins werk hierdie beleid soos dit moet.</translation>
 <translation id="3552297013052089404">Sans Serif-lettertipe</translation>
 <translation id="3558573058928565255">Dag</translation>
@@ -2898,7 +2897,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6124432979022149706">Chrome Enterprise-verbinders</translation>
 <translation id="6126565365696310362">Koevert Chinees #2</translation>
 <translation id="6127379762771434464">Item is verwyder</translation>
-<translation id="6128214169525122635">Die afduim dien terugvoer in dat jy nie van outovul met AI hou nie</translation>
 <translation id="6131824478727057281">ligging</translation>
 <translation id="6133320744616005677">Gaan voort om toe te laat</translation>
 <translation id="6133984428121856852">Lêeruitbreidings is leeg of misvorm.</translation>
@@ -3411,6 +3409,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7042616127917168121">Verfyn resultate</translation>
 <translation id="7043552168914147882">Vlaggiepapier</translation>
 <translation id="7044081119134178347">Kamera hierdie keer toegelaat</translation>
+<translation id="704738887031336226">Wys <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />betaal met verloop van tyd<ph name="PAY_OVER_TIME_HELP_LINK_END" />-opsies by die betaalpunt</translation>
 <translation id="7048095965575426564">Europese Valvou</translation>
 <translation id="7050187094878475250">Jy het <ph name="DOMAIN" /> probeer bereik, maar die bediener het 'n sertifikaat aangebied waarvan die geldigheidtydperk te lank is om betroubaar te wees.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Hierdie kaart kan nie op die oomblik gestoor word nie}other{Hierdie kaarte kan nie op die oomblik gestoor word nie}}</translation>
@@ -4595,7 +4594,6 @@ Bykomende besonderhede:
 <translation id="9150025764986957246">Jy kan dinge invoer soos:</translation>
 <translation id="9154194610265714752">Opgedateer</translation>
 <translation id="9155211586651734179">Oudiorandtoestelle is aangeheg</translation>
-<translation id="9155453166708525139">Outovul met AI is ’n eksperimentele kenmerk en sal dit nie altyd regkry nie. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Tydskrifte</translation>
 <translation id="9157595877708044936">Stel tans op …</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> bevat dalk sensitiewe inhoud}other{<ph name="FILE_COUNT" /> lêers bevat dalk sensitiewe inhoud}}</translation>

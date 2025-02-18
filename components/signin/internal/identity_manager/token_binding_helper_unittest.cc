@@ -222,7 +222,7 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
 }
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoEphemeralKey) {
-  CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
   std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   helper().SetBindingKey(account_id, wrapped_key);

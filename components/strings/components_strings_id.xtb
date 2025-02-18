@@ -810,7 +810,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="238459632961158867">Situs</translation>
 <translation id="2385809941344967209">Update Chrome dari setelan Chrome</translation>
 <translation id="2386255080630008482">Sertifikat server telah dicabut.</translation>
-<translation id="2386410849674401722">Memberi tanda Suka akan mengirim masukan bahwa Anda menyukai fitur isi otomatis dengan AI</translation>
 <translation id="2388828676877700238">Persiapan &amp; Perencanaan Pajak</translation>
 <translation id="239203817277685015">Jelaskan</translation>
 <translation id="239293030466334554">Konvertibel</translation>
@@ -1442,7 +1441,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3543935938072367282">Check out lebih cepat dengan isi otomatis</translation>
 <translation id="3547442767634383572">Ringkasan profil kerja</translation>
 <translation id="3547746132308051926">20 x 24 inci (50 x 60 cm)</translation>
-<translation id="3550325450190222557">Kirim masukan untuk fitur Isi Otomatis dengan AI.</translation>
 <translation id="3552155506104542239">Peringatan: Kebijakan ini bertentangan dengan <ph name="POLICY_NAME" /> dan tidak akan berpengaruh pada aplikasi Android. Jika tidak bertentangan, kebijakan ini akan berfungsi sebagaimana mestinya.</translation>
 <translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">Siang hari</translation>
@@ -2899,7 +2897,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">Item dihapus</translation>
-<translation id="6128214169525122635">Memberi tanda Tidak suka akan mengirim masukan bahwa Anda tidak menyukai fitur isi otomatis dengan AI</translation>
 <translation id="6131824478727057281">lokasi</translation>
 <translation id="6133320744616005677">Terus berikan izin</translation>
 <translation id="6133984428121856852">Ekstensi file kosong atau salah format.</translation>
@@ -4594,7 +4591,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9150025764986957246">Anda dapat memasukkan berbagai teks seperti:</translation>
 <translation id="9154194610265714752">Diperbarui</translation>
 <translation id="9155211586651734179">Periferal audio yang terpasang</translation>
-<translation id="9155453166708525139">Isi otomatis dengan AI adalah fitur eksperimental dan tidak selalu benar. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Majalah</translation>
 <translation id="9157595877708044936">Menyiapkan...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> mungkin berisi konten sensitif}other{<ph name="FILE_COUNT" /> file mungkin berisi konten sensitif}}</translation>

@@ -64,7 +64,6 @@
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/display/display.h"
 #include "ui/display/util/display_util.h"
@@ -274,8 +273,6 @@ void NoteTakingHelper::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-// TODO(crbug.com/40227659): Remove this method and observe LockScreenHelper for
-// app updates instead.
 void NoteTakingHelper::NotifyAppUpdated(Profile* profile,
                                         const std::string& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -640,9 +637,7 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     LOG(WARNING) << "Failed to find note-taking app " << app_id;
     return LaunchResult::CHROME_APP_MISSING;
   }
-  app_runtime::ActionData action_data;
-  action_data.action_type = app_runtime::ActionType::kNewNote;
-  launch_chrome_app_callback_.Run(profile, app, std::move(action_data));
+  launch_chrome_app_callback_.Run(profile, app);
   return LaunchResult::CHROME_SUCCESS;
 }
 

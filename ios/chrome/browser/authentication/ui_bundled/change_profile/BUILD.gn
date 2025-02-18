@@ -8,6 +8,8 @@ source_set("change_profile") {
   sources = [
     "change_profile_bookmarks_continuation.h",
     "change_profile_bookmarks_continuation.mm",
+    "change_profile_focus_omnibox.h",
+    "change_profile_focus_omnibox.mm",
     "change_profile_load_url.h",
     "change_profile_load_url.mm",
     "change_profile_reading_list_continuation.h",
@@ -20,6 +22,8 @@ source_set("change_profile") {
     "change_profile_settings_continuation.mm",
     "change_profile_signout_continuation.h",
     "change_profile_signout_continuation.mm",
+    "change_profile_voice_search_continuation.h",
+    "change_profile_voice_search_continuation.mm",
     "sync_history_continuation.h",
     "sync_history_continuation.mm",
   ]

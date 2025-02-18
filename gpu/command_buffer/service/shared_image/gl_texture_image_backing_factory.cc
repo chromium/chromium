@@ -34,10 +34,6 @@ bool SupportScanout() {
   // usage by SCANOUT support being present in SharedImageCapabilities, then
   // GLTextureImageBacking *must* accept SCANOUT usage for this use case.
   if (!base::FeatureList::IsEnabled(
-          features::kExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
           features::kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
     return true;
   }
@@ -46,22 +42,6 @@ bool SupportScanout() {
               kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage)) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(
-          features::kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-
-#if BUILDFLAG(IS_OZONE)
-  // If SharedImageCapabilities is computing SCANOUT support on Ozone via the
-  // legacy (and too generous) native pixmaps being supported rather than by
-  // overlays being supported, GLTextureImageBacking also must accept SCANOUT
-  // usage as the above clients will pass SCANOUT even if they are guarding
-  // adding SCANOUT usage by support being present in SharedImageCapabilities.
-  if (!base::FeatureList::IsEnabled(
-          features::kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported)) {
-    return true;
-  }
-#endif
 
   return base::FeatureList::IsEnabled(kSupportScanoutInGLTextureImageBacking);
 }
