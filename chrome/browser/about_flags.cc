@@ -4330,6 +4330,15 @@ const FeatureEntry::Choice kAccountStoragePrefsThemesAndSearchEnginesChoices[] =
       kAccountStoragePrefsThemesAndSearchEnginesFeatures}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam
+    kMaliciousApkDownloadCheckTelemetryOnlyParams[] = {
+        {"telemetry_only", "true"}};
+const FeatureEntry::FeatureVariation kMaliciousApkDownloadCheckChoices[] = {
+    {"Telemetry only", kMaliciousApkDownloadCheckTelemetryOnlyParams,
+     std::size(kMaliciousApkDownloadCheckTelemetryOnlyParams), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11669,6 +11678,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsAutomaticWorkspaceFoldersDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(features::kDevToolsAutomaticFileSystems)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"malicious-apk-download-check",
+     flag_descriptions::kMaliciousApkDownloadCheckName,
+     flag_descriptions::kMaliciousApkDownloadCheckDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(safe_browsing::kMaliciousApkDownloadCheck,
+                                    kMaliciousApkDownloadCheckChoices,
+                                    "MaliciousApkDownloadCheck")},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

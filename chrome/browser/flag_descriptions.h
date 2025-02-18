@@ -2667,6 +2667,9 @@ extern const char kLogoPolishAnimationKillSwitchDescription[];
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
 
+extern const char kMaliciousApkDownloadCheckName[];
+extern const char kMaliciousApkDownloadCheckDescription[];
+
 extern const char kMayLaunchUrlUsesSeparateStoragePartitionName[];
 extern const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[];
 

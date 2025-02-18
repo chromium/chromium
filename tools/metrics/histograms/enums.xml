@@ -10154,6 +10154,7 @@ from previous Chrome versions.
   <int value="-1574799991" label="SkipServiceWorkerForInstallPromot:enabled"/>
   <int value="-1574315456" label="ArchiveTabService:disabled"/>
   <int value="-1573468162" label="ClientStorageAccessContextAuditing:enabled"/>
+  <int value="-1573043947" label="MaliciousApkDownloadCheck:disabled"/>
   <int value="-1572374515"
       label="SafeSitesFilterBehaviorPolicyAndroid:disabled"/>
   <int value="-1572246329" label="TabDragDropAndroid:enabled"/>
@@ -14756,6 +14757,7 @@ from previous Chrome versions.
   <int value="259633436" label="AutofillDropdownLayout:disabled"/>
   <int value="259812169" label="OmniboxSuggestionsWrapAround:disabled"/>
   <int value="260045929" label="OptimizationGuideModelExecution:disabled"/>
+  <int value="260330068" label="MaliciousApkDownloadCheck:enabled"/>
   <int value="260374622" label="BiometricAuthenticationForFilling:disabled"/>
   <int value="261245835" label="ContextualSearchLiteralTapSearch:disabled"/>
   <int value="261903398" label="CertificateTransparency2022Policy:disabled"/>

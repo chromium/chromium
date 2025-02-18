@@ -4538,6 +4538,10 @@ const char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "
     "NTPs on Android.";
 
+const char kMaliciousApkDownloadCheckName[] = "Malicious APK download check";
+const char kMaliciousApkDownloadCheckDescription[] =
+    "Check APK downloads on Android for malware.";
+
 const char kMayLaunchUrlUsesSeparateStoragePartitionName[] =
     "MayLaunchUrl Uses Separate Storage Partition";
 const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[] =
