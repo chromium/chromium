@@ -484,11 +484,6 @@ class CORE_EXPORT LineBreaker {
 
   bool* depends_on_block_constraints_out_ = nullptr;
 
-  // Keep the last item |HandleTextForFastMinContent()| has handled. This is
-  // used to fallback the last word to |HandleText()|.
-  // TODO(crbug.com/333630754): Remove when `FasterMinContent` is stabilized.
-  const InlineItem* fast_min_content_item_ = nullptr;
-
   // The current base direction for the bidi algorithm.
   // This is copied from InlineNode, then updated after each forced line break
   // if 'unicode-bidi: plaintext'.
