@@ -87,7 +87,7 @@ static scoped_refptr<Extension> CreateExtension(
     bool background_permission) {
   base::Value::Dict manifest;
   manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.Set(extensions::manifest_keys::kManifestVersion, 3);
   manifest.Set(extensions::manifest_keys::kName, name);
   base::Value::List permissions;
   if (background_permission) {

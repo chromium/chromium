@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/extensions/extension_test_util.h"
@@ -347,9 +348,12 @@ TEST_F(RulesRegistryWithCacheTest, RulesPreservedAcrossRestart) {
   // on registry (in particular, browser) restart.
 
   // The Declarative Web Request API used below to interact with the rule
-  // registry is not in stable, threfore set the channel to something where that
-  // API is available.
+  // registry is not in stable, therefore set the channel to something where
+  // that API is available.
   ScopedCurrentChannel channel(version_info::Channel::UNKNOWN);
+  // The Declarative Web Request API is also restricted to MV2, so allow MV2
+  // extensions.
+  ScopedTestMV2Enabler mv2_enabler;
 
   ExtensionService* extension_service = env_.GetExtensionService();
 
