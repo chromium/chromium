@@ -10,6 +10,7 @@ import android.util.LruCache;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -385,6 +386,7 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .setServiceWorkerIoThreadClient(mNativeAwBrowserContext, ioThreadClient);
     }
 
+    @UiThread
     public void setMaxPrerenders(int maxPrerenders) {
         AwBrowserContextJni.get()
                 .setAllowedPrerenderingCount(mNativeAwBrowserContext, maxPrerenders);

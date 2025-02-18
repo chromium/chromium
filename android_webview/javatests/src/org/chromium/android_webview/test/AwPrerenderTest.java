@@ -426,6 +426,13 @@ public class AwPrerenderTest extends AwParameterizedTest {
         activatePage(activateUrl, activateUrl, activationBy);
     }
 
+    private void setMaxPrerenders(int maxPrerenders) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getAwBrowserContext().setMaxPrerenders(maxPrerenders);
+                });
+    }
+
     private void testPrerenderingWithInvalidAdditionalHeaders(
             Map<String, String> invalidAdditionalHeaders) {
         AwPrefetchParameters prefetchParameters =
@@ -479,11 +486,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
     private static HistogramWatcher createFinalStatusHistogramWatcher(int[] expectedStatuses) {
         HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
-        for (int expectedStatus : expectedStatuses) {
-            builder.expectIntRecord(
-                    "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView",
-                    expectedStatus);
-        }
+        builder.expectIntRecords(
+                "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView",
+                expectedStatuses);
         return builder.build();
     }
 
@@ -1992,6 +1997,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // This test assumes that the content/ allows multiple prerendering up to 2. The third
         // request will cancel the first request.
+        setMaxPrerenders(2);
 
         // Expect kActivated(0), kTriggerDestroyed(16), and kOtherPrerenderedPageActivated(84).
         var histogramWatcher = createFinalStatusHistogramWatcher(new int[] {0, 16, 84});

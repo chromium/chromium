@@ -674,11 +674,13 @@ void AwBrowserContext::SetServiceWorkerIoThreadClient(
 }
 
 int AwBrowserContext::AllowedPrerenderingCount() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return allowed_prerendering_count_;
 }
 
 void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* const env,
                                                    int allowed_count) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK_GT(allowed_count, 0);
   allowed_prerendering_count_ =
       std::min(allowed_count, MAX_ALLOWED_PRERENDERING_COUNT);
