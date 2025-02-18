@@ -141,16 +141,6 @@ bool ShouldIgnoreForPositionForPoint(const InlineCursor& line) {
 
 }  // namespace
 
-inline void InlineCursor::MoveToItem(const ItemsSpan::iterator& iter) {
-  DCHECK(HasRoot());
-  DCHECK(iter >= items_.begin() && iter <= items_.end());
-  if (iter != items_.end()) {
-    current_.Set(iter);
-    return;
-  }
-  MakeNull();
-}
-
 void InlineCursor::SetRoot(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& fragment_items,
                            ItemsSpan items) {
@@ -929,11 +919,6 @@ inline wtf_size_t InlineCursor::GetTextOffsetForEndOfLine(
   return text_offset;
 }
 
-void InlineCursor::MoveTo(const InlineCursorPosition& position) {
-  CheckValid(position);
-  current_ = position;
-}
-
 inline wtf_size_t InlineCursor::SpanBeginItemIndex() const {
   DCHECK(HasRoot());
   DCHECK(!items_.empty());
@@ -954,6 +939,21 @@ inline wtf_size_t InlineCursor::SpanIndexFromItemIndex(unsigned index) const {
       fragment_items_->Items().data() - items_.data() + index);
   DCHECK_LT(span_index, items_.size());
   return span_index;
+}
+
+void InlineCursor::MoveTo(const InlineCursorPosition& position) {
+  CheckValid(position);
+  current_ = position;
+}
+
+inline void InlineCursor::MoveToItem(const ItemsSpan::iterator& iter) {
+  DCHECK(HasRoot());
+  DCHECK(iter >= items_.begin() && iter <= items_.end());
+  if (iter != items_.end()) {
+    current_.Set(iter);
+    return;
+  }
+  MakeNull();
 }
 
 void InlineCursor::MoveTo(const FragmentItem& fragment_item) {
