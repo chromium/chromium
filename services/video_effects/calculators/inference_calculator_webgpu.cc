@@ -110,15 +110,16 @@ DISABLE_CFI_DLSYM absl::Status InferenceCalculatorWebGpu::Process(
   CHECK(ml_api);
 
   mediapipe::Packet& config_packet = cc->Inputs().Index(0).Value();
+  if (config_packet.IsEmpty()) {
+    return absl::InternalError("Runtime configuration not present!");
+  }
 
   mediapipe::Packet& input_frame = cc->Inputs().Index(1).Value();
   mediapipe::GpuBuffer input_buffer = input_frame.Get<mediapipe::GpuBuffer>();
   auto input_buffer_view =
       input_buffer.GetReadView<mediapipe::WebGpuTextureView>();
 
-  if (!config_packet.IsEmpty() &&
-      config_packet.Get<RuntimeConfig>().blur_state == BlurState::kEnabled) {
-    // The model we use assumes 256x144 buffers.
+  if (config_packet.Get<RuntimeConfig>().blur_state == BlurState::kEnabled) {
     mediapipe::GpuBuffer output_buffer(kBufferWidth, kBufferHeight,
                                        kBufferFormat);
     auto output_buffer_view =

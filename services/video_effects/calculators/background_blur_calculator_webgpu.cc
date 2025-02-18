@@ -312,20 +312,51 @@ absl::Status BackgroundBlurCalculatorWebGpu::Process(
 
   CHECK(compute_pipeline_);
 
+  mediapipe::Packet& config_packet = cc->Inputs().Index(0).Value();
+  if (config_packet.IsEmpty()) {
+    return absl::InternalError("Runtime configuration not present!");
+  }
+
   mediapipe::Packet& input_packet = cc->Inputs().Index(1).Value();
   auto input_buffer = input_packet.Get<mediapipe::GpuBuffer>();
   auto input_texture_view =
       input_buffer.GetReadView<mediapipe::WebGpuTextureView>();
 
-  mediapipe::Packet& mask_packet = cc->Inputs().Index(2).Value();
-  auto mask_buffer = mask_packet.Get<mediapipe::GpuBuffer>();
-  auto mask_texture_view =
-      mask_buffer.GetReadView<mediapipe::WebGpuTextureView>();
-
   mediapipe::Packet& output_packet = cc->Inputs().Index(3).Value();
   auto output_buffer = output_packet.Get<mediapipe::GpuBuffer>();
   auto output_texture_view =
       output_buffer.GetWriteView<mediapipe::WebGpuTextureView>();
+
+  if (config_packet.Get<RuntimeConfig>().blur_state != BlurState::kEnabled) {
+    wgpu::CommandEncoder command_encoder = device.CreateCommandEncoder();
+    wgpu::ImageCopyTexture source = {.texture = input_texture_view.texture()};
+    wgpu::ImageCopyTexture destination = {.texture =
+                                              output_texture_view.texture()};
+    wgpu::Extent3D extent = {
+        .width = static_cast<uint32_t>(input_buffer.width()),
+        .height = static_cast<uint32_t>(input_buffer.height()),
+        .depthOrArrayLayers = 1};
+    command_encoder.CopyTextureToTexture(&source, &destination, &extent);
+    wgpu::CommandBufferDescriptor command_buffer_descriptor = {
+        .label = "BackgroundBlurCalculatorWebGpuCommandBufferJustCopy",
+    };
+    wgpu::CommandBuffer command_buffer =
+        command_encoder.Finish(&command_buffer_descriptor);
+    device.GetQueue().Submit(1, &command_buffer);
+    cc->Outputs().Index(0).AddPacket(output_packet);
+    return absl::OkStatus();
+  }
+
+  // Mask can only be accessed if the previous calculator produced it, and it
+  // should have done so iff runtime config was enabled:
+  mediapipe::Packet& mask_packet = cc->Inputs().Index(2).Value();
+  if (mask_packet.IsEmpty()) {
+    return absl::InternalError(
+        "Mask is not present even though blur is enabled!");
+  }
+  auto mask_buffer = mask_packet.Get<mediapipe::GpuBuffer>();
+  auto mask_texture_view =
+      mask_buffer.GetReadView<mediapipe::WebGpuTextureView>();
 
   std::vector<wgpu::BindGroupEntry> bind_group_entries;
   bind_group_entries.push_back({

@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_IMPL_H_
 #define SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_IMPL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -19,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "services/video_effects/gpu_channel_host_provider.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/video_effects_processor_webgpu.h"
@@ -69,7 +71,7 @@ class VideoEffectsProcessorImpl
   void OnContextLost(scoped_refptr<GpuChannelHostProvider>) override;
   void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) override;
 
-  // media::mojom::VideoEffectsConfigurationObserver impl.
+  // media::mojom::VideoEffectsConfigurationObserver:
   void OnConfigurationChanged(
       media::mojom::VideoEffectsConfigurationPtr configuration) override;
 
@@ -93,6 +95,8 @@ class VideoEffectsProcessorImpl
   mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
       configuration_observer_{this};
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;
+  mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
+      configuration_observer_receiver_;
 
   scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider_;
 
@@ -106,6 +110,9 @@ class VideoEffectsProcessorImpl
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   std::unique_ptr<VideoEffectsProcessorWebGpu> processor_webgpu_;
+
+  // Most recently seen runtime config.
+  std::optional<RuntimeConfig> runtime_config_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

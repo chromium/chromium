@@ -1,0 +1,25 @@
+From 2c3b206fd7bde1b86c65c440008afd382f040d3f Mon Sep 17 00:00:00 2001
+From: Piotr Bialecki <bialpio@chromium.org>
+Date: Fri, 14 Feb 2025 14:52:58 -0800
+Subject: [PATCH] Fix unused variable compiler warning in type_map.h
+
+---
+ third_party/mediapipe/src/mediapipe/framework/type_map.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/framework/type_map.h b/third_party/mediapipe/src/mediapipe/framework/type_map.h
+index f03f48ce7851c..123668766bd98 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/type_map.h
++++ b/third_party/mediapipe/src/mediapipe/framework/type_map.h
+@@ -148,7 +148,7 @@ class StaticMap {
+    public:
+     ValueInserter(const char* file_and_line, const KeyType& key,
+                   const MediaPipeTypeData& value) {
+-      MapName* static_map = GetMap();
++      StaticMap* static_map = GetMap();
+       absl::MutexLock l(&(static_map->map_lock_));
+ 
+       typename MapType::iterator it = static_map->internal_map_.find(key);
+-- 
+2.47.1.windows.2
+
