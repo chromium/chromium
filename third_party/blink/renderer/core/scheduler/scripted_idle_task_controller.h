@@ -70,7 +70,8 @@ class CORE_EXPORT ScriptedIdleTaskController
  public:
   using RefCountedCounter = scoped_refptr<base::RefCountedData<size_t>>;
 
-  // A move-only type which decrements a ref-counted counter on deletion.
+  // A move-only type which decrements a ref-counted counter on deletion or
+  // on DecrementNow().
   class DecrementOnDelete {
    public:
     explicit DecrementOnDelete(RefCountedCounter counter);
@@ -78,6 +79,8 @@ class CORE_EXPORT ScriptedIdleTaskController
 
     DecrementOnDelete(DecrementOnDelete&&);
     DecrementOnDelete& operator=(DecrementOnDelete&&);
+
+    void DecrementNow();
 
    private:
     RefCountedCounter counter_;
