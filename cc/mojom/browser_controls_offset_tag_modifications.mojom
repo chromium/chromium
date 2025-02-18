@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+import "services/viz/public/mojom/compositing/offset_tag.mojom";
+
+struct BrowserControlsOffsetTags {
+  viz.mojom.OffsetTag top_controls_offset_tag;
+  viz.mojom.OffsetTag content_offset_tag;
+  viz.mojom.OffsetTag bottom_controls_offset_tag;
+};
+
+// Only sent from browser to renderer.
+struct BrowserControlsOffsetTagModifications {
+  BrowserControlsOffsetTags tags;
+  int32 top_controls_additional_height;
+  int32 bottom_controls_additional_height;
+};

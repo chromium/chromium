@@ -5,7 +5,7 @@
 module blink.mojom;
 
 import "cc/mojom/browser_controls_state.mojom";
-import "cc/mojom/browser_controls_offset_tags_info.mojom";
+import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -1260,8 +1260,8 @@ interface LocalMainFrame {
   // enabled, what the current state should be, and whether or not to
   // animate to the proper state.
   //
-  // offset_tags_info consists of OffsetTags, and metadata for creating
-  // OffsetTagConstraints. It is passed to the renderer and used to tag the
+  // offset_tag_modifications consists of OffsetTags and additional metadata
+  // for moving browser controls. It is passed to the renderer and used to tag the
   // browser controls scroll offsets in the compositor frame's metadata, with
   // the goal of allowing viz to scroll the top controls by applying the
   // offset. The slim::Layers for the top controls in the browser must be
@@ -1279,7 +1279,7 @@ interface LocalMainFrame {
       cc.mojom.BrowserControlsState constraints,
       cc.mojom.BrowserControlsState current,
       bool animate,
-      cc.mojom.BrowserControlsOffsetTagsInfo? offset_tags_info);
+      cc.mojom.BrowserControlsOffsetTagModifications? offset_tag_modifications);
 
   // Transmits data to V8CrowdsourcedCompileHintsConsumer in the renderer. The
   // data is a Bloom filter describing which JavaScript functions on the page

@@ -1,6 +1,9 @@
 include_rules = [
+  "+cc/input/android/java",
+  "+cc/input/android/offset_tag_android.h",
   "+cc/input/overscroll_behavior.h",
-  "+cc/input/browser_controls_offset_tags_info.h",
+  "+cc/input/browser_controls_offset_tag_definitions.h",
+  "+cc/input/browser_controls_offset_tags.h",
   "+cc/layers/deadline_policy.h",
   "+cc/slim",
   "+cc/resources",
@@ -17,6 +20,7 @@ include_rules = [
   "+third_party/android_opengl/etc1",
   "+third_party/skia",
   "+ui/accessibility",
+  "+ui/android",
   "+ui/android/ui_android_jni_headers",
   "+ui/base",
   "+ui/compositor/compositor_lock.h",

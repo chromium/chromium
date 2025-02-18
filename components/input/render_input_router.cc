@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "components/input/input_constants.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/render_input_router_client.h"
@@ -108,8 +108,8 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info)
-      override {
+      const std::optional<cc::BrowserControlsOffsetTagModifications>&
+          offset_tag_modifications) override {
     NOTREACHED() << "Input request on unbound interface";
   }
 };

@@ -14,9 +14,9 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -372,13 +372,15 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         mBrowserControlsState = constraints;
         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
             mOffsetTagsInfo = offsetTagsInfo;
+            int additionalHeight = 0;
             for (int layerType : STACK_ORDER) {
                 BottomControlsLayer layer = mLayers.get(layerType);
                 if (layer == null) continue;
-
-                offsetTagsInfo.mBottomControlsAdditionalHeight +=
-                        layer.updateOffsetTag(offsetTagsInfo);
+                additionalHeight += layer.updateOffsetTag(offsetTagsInfo);
             }
+
+            offsetTagsInfo.mBottomControlsConstraints =
+                    new OffsetTagConstraints(0, 0, 0, mTotalHeight + additionalHeight);
         }
     }
 

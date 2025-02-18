@@ -5,7 +5,7 @@
 #include "components/thin_webview/internal/thin_webview.h"
 
 #include "base/android/jni_android.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/slim/layer.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"

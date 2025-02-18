@@ -640,8 +640,8 @@ class CONTENT_EXPORT WebContentsImpl
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info)
-      override;
+      const std::optional<cc::BrowserControlsOffsetTagModifications>&
+          offset_tag_modifications) override;
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
                              bool destination_is_loaded) override;

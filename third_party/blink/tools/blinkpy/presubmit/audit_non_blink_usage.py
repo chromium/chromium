@@ -649,7 +649,7 @@ _CONFIG = [
             'cc::PaintHoldingReason',
 
             # Scrolling
-            'cc::BrowserControlsOffsetTagsInfo',
+            'cc::BrowserControlsOffsetTagModifications',
             'cc::kManipulationInfoNone',
             'cc::kManipulationInfoPinchZoom',
             'cc::kManipulationInfoPrecisionTouchPad',

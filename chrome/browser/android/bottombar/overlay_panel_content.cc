@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"

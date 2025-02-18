@@ -32,7 +32,7 @@
 #include "cc/cc_export.h"
 #include "cc/input/actively_scrolling_type.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/layer_collections.h"
@@ -323,8 +323,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info)
-      override;
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications) override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
 
   void DetachInputDelegateAndRenderFrameObserver();

@@ -26,7 +26,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -1309,15 +1309,15 @@ void WidgetInputHandlerManager::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate,
-    base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
-        offset_tags_info) {
+    base::optional_ref<const cc::BrowserControlsOffsetTagModifications>
+        offset_tag_modifications) {
   if (!input_handler_proxy_) {
     return;
   }
 
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
-  input_handler_proxy_->UpdateBrowserControlsState(constraints, current,
-                                                   animate, offset_tags_info);
+  input_handler_proxy_->UpdateBrowserControlsState(
+      constraints, current, animate, offset_tag_modifications);
 }
 
 void WidgetInputHandlerManager::FlushCompositorQueueForTesting() {

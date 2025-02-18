@@ -22,11 +22,11 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ActivityUtils;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -41,6 +41,8 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
+import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -279,16 +281,22 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                             return;
                         }
 
-                        offsetTagsInfo.mBottomControlsHeight = mBottomControlsHeight;
-                        offsetTagsInfo.mTopControlsHeight = mTopControlsHeight;
-                        offsetTagsInfo.mTopControlsHairlineHeight =
-                                mControlContainer.getToolbarHairlineHeight();
+                        int hairlineHeight = mControlContainer.getToolbarHairlineHeight();
+                        offsetTagsInfo.mTopControlsAdditionalHeight = hairlineHeight;
+                        offsetTagsInfo.mContentConstraints =
+                                new OffsetTagConstraints(0, 0, -mTopControlsHeight, 0);
+                        offsetTagsInfo.mTopControlsConstraints =
+                                new OffsetTagConstraints(
+                                        0, 0, -(mTopControlsHeight + hairlineHeight), 0);
 
-                        // Notify observers of changes before passing tags to native. This allows
-                        // observers to set fields used later for creating OffsetTagConstraints.
+                        // Notify observers of changes before passing tags to native so observers
+                        // can set their relevant fields in offsetTagsInfo.
                         notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
-                        webContents.notifyControlsConstraintsChanged(
-                                oldOffsetTagsInfo, offsetTagsInfo);
+
+                        BrowserControlsOffsetTagDefinitions offsetTagDefinitions =
+                                new BrowserControlsOffsetTagDefinitions(
+                                        offsetTagsInfo.getTags(), offsetTagsInfo.getConstraints());
+                        webContents.notifyControlsConstraintsChanged(offsetTagDefinitions);
                     }
 
                     @Override

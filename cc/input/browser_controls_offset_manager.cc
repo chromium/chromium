@@ -13,7 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -83,24 +83,24 @@ float BrowserControlsOffsetManager::TopControlsMinHeight() const {
   return client_->TopControlsMinHeight();
 }
 
-int BrowserControlsOffsetManager::TopControlsHairlineHeight() const {
-  return top_controls_hairline_height_;
+int BrowserControlsOffsetManager::TopControlsAdditionalHeight() const {
+  return offset_tag_modifications_.top_controls_additional_height;
 }
 
 int BrowserControlsOffsetManager::BottomControlsAdditionalHeight() const {
-  return bottom_controls_additional_height_;
+  return offset_tag_modifications_.bottom_controls_additional_height;
 }
 
 viz::OffsetTag BrowserControlsOffsetManager::BottomControlsOffsetTag() const {
-  return bottom_controls_offset_tag_;
+  return offset_tag_modifications_.tags.bottom_controls_offset_tag;
 }
 
 viz::OffsetTag BrowserControlsOffsetManager::ContentOffsetTag() const {
-  return content_offset_tag_;
+  return offset_tag_modifications_.tags.content_offset_tag;
 }
 
 viz::OffsetTag BrowserControlsOffsetManager::TopControlsOffsetTag() const {
-  return top_controls_offset_tag_;
+  return offset_tag_modifications_.tags.top_controls_offset_tag;
 }
 
 float BrowserControlsOffsetManager::TopControlsMinShownRatio() const {
@@ -166,7 +166,8 @@ void BrowserControlsOffsetManager::UpdateBrowserControlsState(
     BrowserControlsState constraints,
     BrowserControlsState current,
     bool animate,
-    base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info) {
+    base::optional_ref<const BrowserControlsOffsetTagModifications>
+        offset_tag_modifications) {
   DCHECK(!(constraints == BrowserControlsState::kShown &&
            current == BrowserControlsState::kHidden));
   DCHECK(!(constraints == BrowserControlsState::kHidden &&
@@ -185,15 +186,8 @@ void BrowserControlsOffsetManager::UpdateBrowserControlsState(
 
   permitted_state_ = constraints;
 
-  if (offset_tags_info.has_value()) {
-    bottom_controls_offset_tag_ =
-        offset_tags_info.value().bottom_controls_offset_tag;
-    bottom_controls_additional_height_ =
-        offset_tags_info.value().bottom_controls_additional_height;
-    content_offset_tag_ = offset_tags_info.value().content_offset_tag;
-    top_controls_offset_tag_ = offset_tags_info.value().top_controls_offset_tag;
-    top_controls_hairline_height_ =
-        offset_tags_info.value().top_controls_hairline_height;
+  if (offset_tag_modifications.has_value()) {
+    offset_tag_modifications_ = offset_tag_modifications.value();
   }
 
   // Don't do anything if it doesn't matter which state the controls are in.

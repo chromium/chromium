@@ -1,5 +1,5 @@
 include_rules = {
-  "+cc/input/browser_controls_offset_tags_info.h",
+  "+cc/input/browser_controls_offset_tag_modifications.h",
   "+base/metrics/histogram_functions.h",
 }
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/types/optional_ref.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/paint/element_id.h"
@@ -53,8 +53,8 @@ class FakeCompositorDelegateForInput : public CompositorDelegateForInput {
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info)
-      override {}
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications) override {}
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
 
  private:

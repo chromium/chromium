@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;

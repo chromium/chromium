@@ -82,7 +82,7 @@ struct RendererPreferences;
 }  // namespace blink
 
 namespace cc {
-struct BrowserControlsOffsetTagsInfo;
+struct BrowserControlsOffsetTagModifications;
 }  // namespace cc
 
 namespace device {
@@ -1494,8 +1494,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      const std::optional<cc::BrowserControlsOffsetTagsInfo>&
-          offset_tags_info) = 0;
+      const std::optional<cc::BrowserControlsOffsetTagModifications>&
+          offset_tag_modifications) = 0;
 
   // Transmits data to V8CrowdsourcedCompileHintsConsumer in the renderer. The
   // data is a model describing which JavaScript functions on the page should be

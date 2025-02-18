@@ -23,7 +23,7 @@
 #include "cc/base/features.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/trees/latency_info_swap_promise.h"
@@ -850,13 +850,14 @@ void ProxyMain::UpdateBrowserControlsState(
     BrowserControlsState constraints,
     BrowserControlsState current,
     bool animate,
-    base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info) {
+    base::optional_ref<const BrowserControlsOffsetTagModifications>
+        offset_tag_modifications) {
   DCHECK(IsMainThread());
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyImpl::UpdateBrowserControlsStateOnImpl,
                      base::Unretained(proxy_impl_.get()), constraints, current,
-                     animate, offset_tags_info));
+                     animate, offset_tag_modifications));
 }
 
 void ProxyMain::RequestBeginMainFrameNotExpected(bool new_state) {

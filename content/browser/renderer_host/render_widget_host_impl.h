@@ -91,7 +91,7 @@ class WebMouseEvent;
 }  // namespace blink
 
 namespace cc {
-struct BrowserControlsOffsetTagsInfo;
+struct BrowserControlsOffsetTagModifications;
 }  // namespace cc
 
 namespace gfx {
@@ -947,7 +947,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info);
+      const std::optional<cc::BrowserControlsOffsetTagModifications>&
+          offset_tag_modifications);
 
   void StartDragging(blink::mojom::DragDataPtr drag_data,
                      const url::Origin& source_origin,
