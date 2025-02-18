@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -492,7 +493,7 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
-    std::move(callback).Run("");
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -509,10 +510,10 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
 
   // Set a pending request to be fulfilled after the OCR service is ready. We
   // only need to fulfill the latest request when the OCR service becomes ready,
-  // so if there is a previous request then respond to it with an empty string
-  // and create a new request with the new `image` and `callback`.
+  // so if there is a previous request then respond to it with nullopt and
+  // create a new request with the new `image` and `callback`.
   if (!pending_ocr_request_callback_.is_null()) {
-    std::move(pending_ocr_request_callback_).Run("");
+    std::move(pending_ocr_request_callback_).Run(std::nullopt);
   }
   pending_ocr_request_image_ = image;
   pending_ocr_request_callback_ = std::move(callback);
@@ -713,7 +714,7 @@ void ChromeCaptureModeDelegate::PerformOcr(
   // before OCR finishes initialization or if the OCR service is disconnected.
   if (!optical_character_recognizer_ ||
       !optical_character_recognizer_->is_ready()) {
-    std::move(callback).Run("");
+    std::move(callback).Run(std::nullopt);
     ResetOcr();
     return;
   }
@@ -745,6 +746,6 @@ void ChromeCaptureModeDelegate::ResetOcr() {
   optical_character_recognizer_ = nullptr;
   pending_ocr_request_image_.reset();
   if (!pending_ocr_request_callback_.is_null()) {
-    std::move(pending_ocr_request_callback_).Run("");
+    std::move(pending_ocr_request_callback_).Run(std::nullopt);
   }
 }

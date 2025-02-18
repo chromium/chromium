@@ -2033,19 +2033,21 @@ void CaptureModeController::OnImageCapturedForSearch(
 void CaptureModeController::OnTextDetectionComplete(
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
     base::TimeTicks ocr_attempt_start_time,
-    std::string detected_text) {
+    std::optional<std::string> detected_text) {
   RecordOnDeviceOcrTimerCompleted(ocr_attempt_start_time);
-  if (!image_search_token || detected_text.empty()) {
+  if (!image_search_token || !detected_text.has_value() ||
+      detected_text->empty()) {
     return;
   }
 
-  AddCopyTextAndSmartActionsButtons(detected_text);
+  AddCopyTextAndSmartActionsButtons(*detected_text);
 }
 
 void CaptureModeController::OnLensTextDetectionComplete(
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
-    std::string detected_text) {
-  if (!image_search_token || detected_text.empty()) {
+    std::optional<std::string> detected_text) {
+  if (!image_search_token || !detected_text.has_value() ||
+      detected_text->empty()) {
     return;
   }
 
@@ -2053,7 +2055,7 @@ void CaptureModeController::OnLensTextDetectionComplete(
   // we are in a sunfish session.
   if (capture_mode_session_->active_behavior()->behavior_type() ==
       BehaviorType::kSunfish) {
-    AddCopyTextAndSmartActionsButtons(detected_text);
+    AddCopyTextAndSmartActionsButtons(*detected_text);
   }
 }
 

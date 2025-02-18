@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -58,10 +59,11 @@ using OnGotDriveFsFreeSpace =
     base::OnceCallback<void(int64_t free_remaining_bytes)>;
 
 // Defines the type of the callback that will be invoked when text detection has
-// been performed on an image. `detected_text` contains detected text, or is
-// empty if no text is detected.
+// been performed on an image. `detected_text` contains detected text, empty if
+// no text has been detected, or nullopt if text detection fails (such as the
+// OCR service being reset after the text detection request).
 using OnTextDetectionComplete =
-    base::OnceCallback<void(std::string detected_text)>;
+    base::OnceCallback<void(std::optional<std::string> detected_text)>;
 
 // Defines the type of the callback that will be invoked when the search backend
 // result is fetched. Repeating because the `LensOverlayUrlResponseCallback`
