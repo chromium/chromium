@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 
+#include <array>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
@@ -14,6 +16,8 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/network_change_notifier.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace {
 
@@ -37,6 +41,17 @@ ash::LobsterConsentStatus GetConsentStatusFromInteger(int status_value) {
   }
 }
 
+std::string GetCurrentImeEngineId() {
+  ash::input_method::InputMethodManager* input_method_manager =
+      ash::input_method::InputMethodManager::Get();
+  if (input_method_manager == nullptr ||
+      input_method_manager->GetActiveIMEState() == nullptr) {
+    return "";
+  }
+  return ash::extension_ime_util::GetComponentIDByInputMethodID(
+      input_method_manager->GetActiveIMEState()->GetCurrentInputMethod().id());
+}
+
 bool IsInputTypeAllowed(ui::TextInputType type) {
   static constexpr auto kTextInputTypeAllowlist =
       base::MakeFixedFlatSet<ui::TextInputType>(
@@ -44,6 +59,30 @@ bool IsInputTypeAllowed(ui::TextInputType type) {
            ui::TEXT_INPUT_TYPE_TEXT_AREA});
 
   return kTextInputTypeAllowlist.contains(type);
+}
+
+bool IsImeAllowed(std::string_view current_ime_id) {
+  static constexpr auto kImeAllowlist =
+      base::MakeFixedFlatSet<std::string_view>({
+          "xkb:ca:eng:eng",           // Canada
+          "xkb:gb::eng",              // UK
+          "xkb:gb:extd:eng",          // UK Extended
+          "xkb:gb:dvorak:eng",        // UK Dvorak
+          "xkb:in::eng",              // India
+          "xkb:pk::eng",              // Pakistan
+          "xkb:us:altgr-intl:eng",    // US Extended
+          "xkb:us:colemak:eng",       // US Colemak
+          "xkb:us:dvorak:eng",        // US Dvorak
+          "xkb:us:dvp:eng",           // US Programmer Dvorak
+          "xkb:us:intl_pc:eng",       // US Intl (PC)
+          "xkb:us:intl:eng",          // US Intl
+          "xkb:us:workman-intl:eng",  // US Workman Intl
+          "xkb:us:workman:eng",       // US Workman
+          "xkb:us::eng",              // US
+          "xkb:za:gb:eng"             // South Africa
+      });
+
+  return kImeAllowlist.contains(current_ime_id);
 }
 
 }  // namespace
@@ -73,6 +112,13 @@ ash::LobsterSystemState LobsterSystemStateProvider::GetSystemState(
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(
         ash::LobsterSystemCheck::kNoInternetConnection);
+  }
+
+  // Performs an IME check
+  if (!IsImeAllowed(GetCurrentImeEngineId())) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(
+        ash::LobsterSystemCheck::kInvalidInputMethod);
   }
 
   ash::LobsterConsentStatus consent_status = GetConsentStatusFromInteger(
