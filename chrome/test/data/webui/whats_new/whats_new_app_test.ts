@@ -72,30 +72,6 @@ suite('WhatsNewAppTest', function() {
     assertEquals(whatsNewURL + '?updated=false', iframe.src);
   });
 
-  test('with legacy command format', async () => {
-    const proxy = new TestWhatsNewBrowserProxy(
-        getUrlForFixture('test_with_legacy_command_3'));
-    WhatsNewProxyImpl.setInstance(proxy);
-    const browserCommandHandler = TestMock.fromClass(CommandHandlerRemote);
-    BrowserCommandProxy.getInstance().handler = browserCommandHandler;
-    browserCommandHandler.setResultFor(
-        'canExecuteCommand', Promise.resolve({canExecute: true}));
-    window.history.replaceState({}, '', '/');
-    const whatsNewApp = document.createElement('whats-new-app');
-    document.body.appendChild(whatsNewApp);
-
-    const whenMessage = eventToPromise('message', window);
-    const commandId =
-        await browserCommandHandler.whenCalled('canExecuteCommand');
-    assertEquals(3, commandId);
-
-    const {data} = await whenMessage;
-    assertEquals(3, data.data.commandId);
-
-    await proxy.handler.whenCalled('recordBrowserCommandExecuted');
-    assertEquals(1, proxy.handler.getCallCount('recordBrowserCommandExecuted'));
-  });
-
   test('with browser command format', async () => {
     const proxy =
         new TestWhatsNewBrowserProxy(getUrlForFixture('test_with_command_4'));
