@@ -26,10 +26,10 @@
 #include "services/device/public/cpp/test/scoped_pressure_manager_overrider.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "url/gurl.h"
 
@@ -283,7 +283,7 @@ TEST_F(PressureServiceForFrameTest, PermissionsPolicyBlock) {
   // made once on page load, so we refresh the page to simulate that.
   RenderFrameHost* rfh =
       static_cast<RenderFrameHost*>(contents()->GetPrimaryMainFrame());
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
       network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(

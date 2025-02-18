@@ -12,6 +12,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -77,19 +78,19 @@ class PermissionsPolicyTest : public testing::Test {
 
   std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent,
-      ParsedPermissionsPolicy header_policy,
+      network::ParsedPermissionsPolicy header_policy,
       const url::Origin& origin,
       bool headerless = false) {
-    ParsedPermissionsPolicy empty_container_policy;
+    network::ParsedPermissionsPolicy empty_container_policy;
     return PermissionsPolicy::CreateFromParentPolicy(
         parent, header_policy, empty_container_policy, origin, feature_list_,
         headerless);
   }
 
   std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
-      const ParsedPermissionsPolicy& parsed_policy,
+      const network::ParsedPermissionsPolicy& parsed_policy,
       const url::Origin& origin,
-      const std::optional<ParsedPermissionsPolicy>& base_policy =
+      const std::optional<network::ParsedPermissionsPolicy>& base_policy =
           std::nullopt) {
     return PermissionsPolicy::CreateFromParsedPolicy(parsed_policy, base_policy,
                                                      origin, feature_list_);
@@ -97,8 +98,8 @@ class PermissionsPolicyTest : public testing::Test {
 
   std::unique_ptr<PermissionsPolicy> CreateFromParentWithFramePolicy(
       const PermissionsPolicy* parent,
-      ParsedPermissionsPolicy header_policy,
-      const ParsedPermissionsPolicy& frame_policy,
+      network::ParsedPermissionsPolicy header_policy,
+      const network::ParsedPermissionsPolicy& frame_policy,
       const url::Origin& origin,
       bool headerless = false) {
     return PermissionsPolicy::CreateFromParentPolicy(
@@ -107,16 +108,16 @@ class PermissionsPolicyTest : public testing::Test {
 
   std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
       const PermissionsPolicy* parent,
-      ParsedPermissionsPolicy header_policy,
+      network::ParsedPermissionsPolicy header_policy,
       const url::Origin& origin) {
-    ParsedPermissionsPolicy empty_container_policy;
+    network::ParsedPermissionsPolicy empty_container_policy;
     return PermissionsPolicy::CreateFlexibleForFencedFrame(
         parent, header_policy, empty_container_policy, origin, feature_list_);
   }
 
   std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
-      ParsedPermissionsPolicy header_policy,
+      network::ParsedPermissionsPolicy header_policy,
       base::span<const network::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions) {
     return PermissionsPolicy::CreateFixedForFencedFrame(
@@ -385,7 +386,7 @@ TEST_F(PermissionsPolicyTest,
                                 /*matches_opaque_src=*/false}}},
                              origin_a_);
   ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultOffFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_a_,
@@ -452,7 +453,7 @@ TEST_F(PermissionsPolicyTest,
   ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
 
   {
-    ParsedPermissionsPolicy frame_policy = {{
+    network::ParsedPermissionsPolicy frame_policy = {{
         {kDefaultOffFeature, /*allowed_origins=*/
          {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
@@ -491,7 +492,7 @@ TEST_F(PermissionsPolicyTest,
   // +--------------------------------------------------------------+
   // Features disabled in the parent should not be enabled in a headerless
   // subframe.
-  ParsedPermissionsPolicy header_policy = {{
+  network::ParsedPermissionsPolicy header_policy = {{
       {kDefaultOnFeature, /*allowed_origins=*/
        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
@@ -512,7 +513,7 @@ TEST_F(PermissionsPolicyTest,
   ASSERT_FALSE(policy1->IsFeatureEnabled(kDefaultOffFeature));
 
   {
-    ParsedPermissionsPolicy frame_policy = {{
+    network::ParsedPermissionsPolicy frame_policy = {{
         {kDefaultOffFeature, /*allowed_origins=*/{},
          /*self_if_matches=*/std::nullopt,
          /*matches_all_origins=*/true,
@@ -558,7 +559,7 @@ TEST_F(PermissionsPolicyTest,
                                 /*matches_opaque_src=*/false}}},
                              origin_a_);
   ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultOffFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -741,7 +742,7 @@ TEST_F(PermissionsPolicyTest, TestSelectiveFrameInheritance2) {
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false}}},
       origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -925,7 +926,7 @@ TEST_F(PermissionsPolicyTest, TestEnableForAllOriginsAndDelegate) {
                                 /*matches_all_origins=*/true,
                                 /*matches_opaque_src=*/false}}},
                              origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -1075,7 +1076,7 @@ TEST_F(PermissionsPolicyTest, TestDefaultSelfRespectsSameOriginEmbedding) {
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false}}},
       origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/origin_b_,
         /*matches_all_origins=*/false,
@@ -1115,7 +1116,7 @@ TEST_F(PermissionsPolicyTest, TestDelegationRequiredAtAllLevels) {
                                 /*matches_all_origins=*/true,
                                 /*matches_opaque_src=*/false}}},
                              origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -1186,14 +1187,14 @@ TEST_F(PermissionsPolicyTest, TestEnabledFrameCanDelegate) {
   // Feature should be enabled in all frames.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/origin_b_,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy, origin_b_);
-  ParsedPermissionsPolicy frame_policy2 = {
+  network::ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/origin_c_,
         /*matches_all_origins=*/false,
@@ -1315,7 +1316,7 @@ TEST_F(PermissionsPolicyTest, TestFeaturesAreIndependent) {
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false}}},
       origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -1329,7 +1330,7 @@ TEST_F(PermissionsPolicyTest, TestFeaturesAreIndependent) {
         /*matches_opaque_src=*/false}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy, origin_b_);
-  ParsedPermissionsPolicy frame_policy2 = {
+  network::ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
@@ -1370,7 +1371,7 @@ TEST_F(PermissionsPolicyTest, TestSimpleFramePolicy) {
   // <iframe allow="default-self">
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -1403,7 +1404,7 @@ TEST_F(PermissionsPolicyTest, TestAllOriginFramePolicy) {
   // <iframe allowfullscreen>
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -1444,7 +1445,7 @@ TEST_F(PermissionsPolicyTest, TestFramePolicyCanBeFurtherDelegated) {
   // delegated through frame policy.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  ParsedPermissionsPolicy frame_policy1 = {{
+  network::ParsedPermissionsPolicy frame_policy1 = {{
       {kDefaultSelfFeature, /*allowed_origins=*/
        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
@@ -1455,7 +1456,7 @@ TEST_F(PermissionsPolicyTest, TestFramePolicyCanBeFurtherDelegated) {
   }};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
-  ParsedPermissionsPolicy frame_policy2 = {{
+  network::ParsedPermissionsPolicy frame_policy2 = {{
       {kDefaultSelfFeature, /*allowed_origins=*/
        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_c_,
@@ -1499,14 +1500,14 @@ TEST_F(PermissionsPolicyTest, TestDefaultOnCanBeDisabledByFramePolicy) {
   // child frames because permission was removed through frame policy.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  ParsedPermissionsPolicy frame_policy1 = {
+  network::ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultOnFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy1, origin_a_);
-  ParsedPermissionsPolicy frame_policy2 = {
+  network::ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultOnFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
@@ -1564,14 +1565,14 @@ TEST_F(PermissionsPolicyTest, TestFramePolicyModifiesHeaderPolicy) {
                                   /*matches_opaque_src=*/false},
                              }},
                              origin_a_);
-  ParsedPermissionsPolicy frame_policy1 = {
+  network::ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
-  ParsedPermissionsPolicy frame_policy2 = {{
+  network::ParsedPermissionsPolicy frame_policy2 = {{
       {kDefaultSelfFeature, /*allowed_origins=*/{},
        /*self_if_matches=*/std::nullopt,
        /*matches_all_origins=*/false,
@@ -1619,7 +1620,7 @@ TEST_F(PermissionsPolicyTest, TestCombineFrameAndHeaderPolicies) {
   // 4. Feature should be disabled in frame 3 by frame policy.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  ParsedPermissionsPolicy frame_policy1 = {
+  network::ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -1634,7 +1635,7 @@ TEST_F(PermissionsPolicyTest, TestCombineFrameAndHeaderPolicies) {
          /*matches_all_origins=*/true,
          /*matches_opaque_src=*/false}}},
       frame_policy1, origin_b_);
-  ParsedPermissionsPolicy frame_policy2 = {
+  network::ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
@@ -1678,7 +1679,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDeclinedAtTopLevel) {
                                   /*matches_opaque_src=*/false},
                              }},
                              origin_a_);
-  ParsedPermissionsPolicy frame_policy1 = {{
+  network::ParsedPermissionsPolicy frame_policy1 = {{
       {kDefaultSelfFeature, /*allowed_origins=*/
        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
@@ -1689,7 +1690,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDeclinedAtTopLevel) {
   }};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
-  ParsedPermissionsPolicy frame_policy2 = {
+  network::ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -1739,7 +1740,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false}}},
       origin_a_);
-  ParsedPermissionsPolicy frame_policy1 = {
+  network::ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_a_,
@@ -1749,7 +1750,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
         /*matches_opaque_src=*/false}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
-  ParsedPermissionsPolicy frame_policy2 = {
+  network::ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -1759,7 +1760,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
         /*matches_opaque_src=*/false}}};
   std::unique_ptr<PermissionsPolicy> policy3 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy2, origin_b_);
-  ParsedPermissionsPolicy frame_policy3 = {
+  network::ParsedPermissionsPolicy frame_policy3 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -1824,7 +1825,7 @@ TEST_F(PermissionsPolicyTest, TestSandboxedFramePolicyForAllOrigins) {
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
   url::Origin sandboxed_origin = url::Origin();
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -1856,7 +1857,7 @@ TEST_F(PermissionsPolicyTest, TestSandboxedFramePolicyForSelf) {
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
   url::Origin sandboxed_origin = url::Origin();
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/sandboxed_origin,
         /*matches_all_origins=*/true,
@@ -1888,7 +1889,7 @@ TEST_F(PermissionsPolicyTest, TestSandboxedFramePolicyForOpaqueSrcOrigin) {
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
   url::Origin sandboxed_origin = url::Origin();
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
@@ -1924,7 +1925,7 @@ TEST_F(PermissionsPolicyTest, TestSandboxedFrameFromHeaderPolicy) {
                                 /*matches_opaque_src=*/false}}},
                              origin_a_);
   url::Origin sandboxed_origin = url::Origin();
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
@@ -1958,7 +1959,7 @@ TEST_F(PermissionsPolicyTest, TestSandboxedPolicyIsNotInherited) {
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
   url::Origin sandboxed_origin_1 = url::Origin();
   url::Origin sandboxed_origin_2 = url::Origin();
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -2005,14 +2006,14 @@ TEST_F(PermissionsPolicyTest, TestSandboxedPolicyCanBePropagated) {
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
   url::Origin sandboxed_origin_1 = origin_a_.DeriveNewOpaqueOrigin();
   url::Origin sandboxed_origin_2 = sandboxed_origin_1.DeriveNewOpaqueOrigin();
-  ParsedPermissionsPolicy frame_policy_1 = {
+  network::ParsedPermissionsPolicy frame_policy_1 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
         /*matches_opaque_src=*/true}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), /*header_policy=*/{}, frame_policy_1, sandboxed_origin_1);
-  ParsedPermissionsPolicy frame_policy_2 = {
+  network::ParsedPermissionsPolicy frame_policy_2 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -2042,7 +2043,7 @@ TEST_F(PermissionsPolicyTest, TestUndefinedFeaturesInFramePolicy) {
   // present in a container policy.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  ParsedPermissionsPolicy frame_policy = {
+  network::ParsedPermissionsPolicy frame_policy = {
       {{network::mojom::PermissionsPolicyFeature::kNotFound,
         /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
@@ -2692,7 +2693,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestCompletelyBlockedPolicy) {
       CreateFromParentPolicy(policy1.get(), /*header_policy=*/{}, origin_b_);
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy4 = {
+  network::ParsedPermissionsPolicy frame_policy4 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -2701,7 +2702,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestCompletelyBlockedPolicy) {
       policy1.get(), /*header_policy=*/{}, frame_policy4, origin_b_);
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy5 = {
+  network::ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -2713,7 +2714,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestCompletelyBlockedPolicy) {
       policy1.get(), /*header_policy=*/{}, frame_policy5, origin_b_);
   EXPECT_FALSE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy6 = {
+  network::ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
@@ -2771,7 +2772,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 
   // This is a critical change from the existing semantics.
-  ParsedPermissionsPolicy frame_policy4 = {
+  network::ParsedPermissionsPolicy frame_policy4 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -2781,7 +2782,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 
   // This is a critical change from the existing semantics.
-  ParsedPermissionsPolicy frame_policy5 = {
+  network::ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -2793,7 +2794,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
       policy1.get(), /*header_policy=*/{}, frame_policy5, origin_b_);
   EXPECT_FALSE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy6 = {
+  network::ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
@@ -2855,7 +2856,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
       CreateFromParentPolicy(policy1.get(), /*header_policy=*/{}, origin_b_);
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy4 = {
+  network::ParsedPermissionsPolicy frame_policy4 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -2864,7 +2865,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
       policy1.get(), /*header_policy=*/{}, frame_policy4, origin_b_);
   EXPECT_TRUE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy5 = {
+  network::ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -2876,7 +2877,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
       policy1.get(), /*header_policy=*/{}, frame_policy5, origin_b_);
   EXPECT_TRUE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy6 = {
+  network::ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
@@ -2935,7 +2936,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
       CreateFromParentPolicy(policy1.get(), /*header_policy=*/{}, origin_b_);
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy4 = {
+  network::ParsedPermissionsPolicy frame_policy4 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -2944,7 +2945,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
       policy1.get(), /*header_policy=*/{}, frame_policy4, origin_b_);
   EXPECT_TRUE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy5 = {
+  network::ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -2956,7 +2957,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
       policy1.get(), /*header_policy=*/{}, frame_policy5, origin_b_);
   EXPECT_TRUE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedPermissionsPolicy frame_policy6 = {
+  network::ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
@@ -3003,7 +3004,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
 
   // The proposed value in frame 2 should affect the proposed value in frame 3.
-  ParsedPermissionsPolicy frame_policy3 = {
+  network::ParsedPermissionsPolicy frame_policy3 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -3072,7 +3073,7 @@ TEST_F(PermissionsPolicyTest, CreateForSharedStorageFencedFrame) {
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
@@ -3091,7 +3092,7 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyExcludingSelf) {
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -3107,7 +3108,7 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyExcludingSelf) {
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithEmptyAllowlist) {
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
@@ -3118,7 +3119,7 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithEmptyAllowlist) {
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithBasePolicy) {
   url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
-  ParsedPermissionsPolicy base_policy = {
+  network::ParsedPermissionsPolicy base_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {
             *network::OriginWithPossibleWildcards::
@@ -3131,7 +3132,7 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithBasePolicy) {
         /*self_if_matches=*/origin_self,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false}}};
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {
             *network::OriginWithPossibleWildcards::
@@ -3158,12 +3159,12 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithBasePolicy) {
 TEST_F(PermissionsPolicyTest,
        CreateFromParsedPolicyWithBasePolicyExcludingSelf) {
   url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
-  ParsedPermissionsPolicy base_policy = {
+  network::ParsedPermissionsPolicy base_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false}}};
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/origin_a_,
         /*matches_all_origins=*/false,
@@ -3175,12 +3176,12 @@ TEST_F(PermissionsPolicyTest,
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithoutSelfWithBasePolicy) {
   url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
-  ParsedPermissionsPolicy base_policy = {
+  network::ParsedPermissionsPolicy base_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/origin_a_,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false}}};
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
@@ -3192,7 +3193,7 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithoutSelfWithBasePolicy) {
 
 TEST_F(PermissionsPolicyTest,
        CreateFromParsedPolicyWildcardWithMoreRestrictiveBasePolicy) {
-  ParsedPermissionsPolicy base_policy = {
+  network::ParsedPermissionsPolicy base_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
@@ -3200,7 +3201,7 @@ TEST_F(PermissionsPolicyTest,
         /*self_if_matches=*/origin_a_,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false}}};
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
@@ -3215,12 +3216,12 @@ TEST_F(PermissionsPolicyTest,
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithWildcardBasePolicy) {
-  ParsedPermissionsPolicy base_policy = {
+  network::ParsedPermissionsPolicy base_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
         /*matches_opaque_src=*/false}}};
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_a_,
@@ -3240,12 +3241,12 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithWildcardBasePolicy) {
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithMissingBasePolicy) {
   // Tests a parsed policy that includes an allowlist for a feature not
   // declared in the base policy.
-  ParsedPermissionsPolicy base_policy = {
+  network::ParsedPermissionsPolicy base_policy = {
       {{kDefaultOnFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,
         /*matches_opaque_src=*/false}}};
-  ParsedPermissionsPolicy parsed_policy = {
+  network::ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true,

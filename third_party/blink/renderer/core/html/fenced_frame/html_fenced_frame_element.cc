@@ -8,6 +8,7 @@
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
@@ -173,10 +174,10 @@ void HTMLFencedFrameElement::DisconnectContentFrame() {
   HTMLFrameOwnerElement::DisconnectContentFrame();
 }
 
-ParsedPermissionsPolicy HTMLFencedFrameElement::ConstructContainerPolicy()
-    const {
+network::ParsedPermissionsPolicy
+HTMLFencedFrameElement::ConstructContainerPolicy() const {
   if (!GetExecutionContext()) {
-    return ParsedPermissionsPolicy();
+    return network::ParsedPermissionsPolicy();
   }
 
   scoped_refptr<const SecurityOrigin> src_origin =
@@ -186,7 +187,7 @@ ParsedPermissionsPolicy HTMLFencedFrameElement::ConstructContainerPolicy()
 
   PolicyParserMessageBuffer logger;
 
-  ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(allow_, self_origin, src_origin,
                                               logger, GetExecutionContext());
 

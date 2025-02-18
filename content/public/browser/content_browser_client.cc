@@ -302,11 +302,11 @@ size_t ContentBrowserClient::GetProcessCountToIgnoreForLimit() {
   return 0;
 }
 
-std::optional<blink::ParsedPermissionsPolicy>
+std::optional<network::ParsedPermissionsPolicy>
 ContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     WebContents* web_contents,
     const url::Origin& app_origin) {
-  return blink::ParsedPermissionsPolicy();
+  return network::ParsedPermissionsPolicy();
 }
 
 bool ContentBrowserClient::ShouldTryToUseExistingProcessHost(

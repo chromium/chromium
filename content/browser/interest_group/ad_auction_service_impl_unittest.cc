@@ -92,6 +92,8 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -9799,7 +9801,7 @@ function reportResult() {
   // seller origin C should fail.
   auto simulator =
       NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
-  blink::ParsedPermissionsPolicy policy;
+  network::ParsedPermissionsPolicy policy;
   policy.emplace_back(
       network::mojom::PermissionsPolicyFeature::kSharedStorage,
       /*allowed_origins=*/
@@ -10000,7 +10002,7 @@ function scoreAd(
   {
     auto simulator =
         NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
@@ -10026,7 +10028,7 @@ function scoreAd(
   {
     auto simulator =
         NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
@@ -10087,7 +10089,7 @@ function scoreAd(
   {
     auto simulator =
         NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
@@ -10113,7 +10115,7 @@ function scoreAd(
   {
     auto simulator =
         NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/

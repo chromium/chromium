@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -425,7 +426,7 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
       SecurityOrigin::CreateFromString(kFrobulateEnabledOrigin);
 
   PolicyParserMessageBuffer logger;
-  ParsedPermissionsPolicy result;
+  network::ParsedPermissionsPolicy result;
   result = PermissionsPolicyParser::ParsePermissionsPolicyForTest(
       "frobulate=*", security_origin, nullptr, logger, feature_map, window);
   EXPECT_TRUE(logger.GetMessages().empty());

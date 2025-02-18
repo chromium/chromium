@@ -61,11 +61,11 @@
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -986,7 +986,7 @@ class WebAppDatabaseProtoDataTest : public ::testing::Test {
   }
 
   std::unique_ptr<WebApp> CreateWebAppWithPermissionsPolicy(
-      const blink::ParsedPermissionsPolicy& permissions_policy) {
+      const network::ParsedPermissionsPolicy& permissions_policy) {
     std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
     web_app->SetPermissionsPolicy(permissions_policy);
     return web_app;
@@ -1262,7 +1262,7 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
-  const blink::ParsedPermissionsPolicy policy = {
+  const network::ParsedPermissionsPolicy policy = {
       {network::mojom::PermissionsPolicyFeature::kGyroscope,
        /*allowed_origins=*/{},
        /*self_if_matches=*/std::nullopt,
@@ -1292,7 +1292,7 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
-  const blink::ParsedPermissionsPolicy policy = {
+  const network::ParsedPermissionsPolicy policy = {
       {network::mojom::PermissionsPolicyFeature::kGyroscope,
        /*allowed_origins=*/{},
        /*self_if_matches=*/std::nullopt,

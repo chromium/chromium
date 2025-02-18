@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -27,7 +28,7 @@ PermissionsPolicy::Allowlist::Allowlist(const Allowlist& rhs) = default;
 PermissionsPolicy::Allowlist::~Allowlist() = default;
 
 PermissionsPolicy::Allowlist PermissionsPolicy::Allowlist::FromDeclaration(
-    const ParsedPermissionsPolicyDeclaration& parsed_declaration) {
+    const network::ParsedPermissionsPolicyDeclaration& parsed_declaration) {
   auto result = PermissionsPolicy::Allowlist();
   if (parsed_declaration.self_if_matches) {
     result.AddSelf(parsed_declaration.self_if_matches);
@@ -92,8 +93,8 @@ bool PermissionsPolicy::Allowlist::MatchesOpaqueSrc() const {
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const PermissionsPolicy* parent_policy,
-    const ParsedPermissionsPolicy& header_policy,
-    const ParsedPermissionsPolicy& container_policy,
+    const network::ParsedPermissionsPolicy& header_policy,
+    const network::ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin,
     bool headerless) {
   return CreateFromParentPolicy(parent_policy, header_policy, container_policy,
@@ -118,8 +119,8 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CopyStateFrom(
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
-    const ParsedPermissionsPolicy& parsed_policy,
-    const std::optional<ParsedPermissionsPolicy>& base_policy,
+    const network::ParsedPermissionsPolicy& parsed_policy,
+    const std::optional<network::ParsedPermissionsPolicy>& base_policy,
     const url::Origin& origin) {
   return CreateFromParsedPolicy(parsed_policy, base_policy, origin,
                                 GetPermissionsPolicyFeatureList(origin));
@@ -127,8 +128,8 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
-    const ParsedPermissionsPolicy& parsed_policy,
-    const std::optional<ParsedPermissionsPolicy>&
+    const network::ParsedPermissionsPolicy& parsed_policy,
+    const std::optional<network::ParsedPermissionsPolicy>&
         parsed_policy_for_isolated_app,
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features) {
@@ -342,9 +343,9 @@ std::optional<std::string> PermissionsPolicy::GetEndpointForFeature(
 // static
 PermissionsPolicy::AllowlistsAndReportingEndpoints
 PermissionsPolicy::CreateAllowlistsAndReportingEndpoints(
-    const ParsedPermissionsPolicy& parsed_header) {
+    const network::ParsedPermissionsPolicy& parsed_header) {
   AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints;
-  for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
+  for (const network::ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
     network::mojom::PermissionsPolicyFeature feature =
         parsed_declaration.feature;
@@ -362,12 +363,12 @@ PermissionsPolicy::CreateAllowlistsAndReportingEndpoints(
 // static
 PermissionsPolicy::AllowlistsAndReportingEndpoints
 PermissionsPolicy::CombinePolicies(
-    const ParsedPermissionsPolicy& base_policy,
-    const ParsedPermissionsPolicy& second_policy) {
+    const network::ParsedPermissionsPolicy& base_policy,
+    const network::ParsedPermissionsPolicy& second_policy) {
   PermissionsPolicy::AllowlistsAndReportingEndpoints
       allow_lists_and_reporting_endpoints =
           CreateAllowlistsAndReportingEndpoints(base_policy);
-  for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
+  for (const network::ParsedPermissionsPolicyDeclaration& parsed_declaration :
        second_policy) {
     network::mojom::PermissionsPolicyFeature feature =
         parsed_declaration.feature;
@@ -421,10 +422,10 @@ PermissionsPolicy::CombinePolicies(
 }
 
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::WithClientHints(
-    const ParsedPermissionsPolicy& parsed_header) const {
+    const network::ParsedPermissionsPolicy& parsed_header) const {
   std::map<network::mojom::PermissionsPolicyFeature, Allowlist> allowlists =
       allowlists_;
-  for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
+  for (const network::ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
     network::mojom::PermissionsPolicyFeature feature =
         parsed_declaration.feature;
@@ -465,8 +466,8 @@ PermissionsPolicy::~PermissionsPolicy() = default;
 std::unique_ptr<PermissionsPolicy>
 PermissionsPolicy::CreateFlexibleForFencedFrame(
     const PermissionsPolicy* parent_policy,
-    const ParsedPermissionsPolicy& header_policy,
-    const ParsedPermissionsPolicy& container_policy,
+    const network::ParsedPermissionsPolicy& header_policy,
+    const network::ParsedPermissionsPolicy& container_policy,
     const url::Origin& subframe_origin) {
   return CreateFlexibleForFencedFrame(
       parent_policy, header_policy, container_policy, subframe_origin,
@@ -477,8 +478,8 @@ PermissionsPolicy::CreateFlexibleForFencedFrame(
 std::unique_ptr<PermissionsPolicy>
 PermissionsPolicy::CreateFlexibleForFencedFrame(
     const PermissionsPolicy* parent_policy,
-    const ParsedPermissionsPolicy& header_policy,
-    const ParsedPermissionsPolicy& container_policy,
+    const network::ParsedPermissionsPolicy& header_policy,
+    const network::ParsedPermissionsPolicy& container_policy,
     const url::Origin& subframe_origin,
     const PermissionsPolicyFeatureList& features) {
   PermissionsPolicyFeatureState inherited_policies;
@@ -498,7 +499,7 @@ PermissionsPolicy::CreateFlexibleForFencedFrame(
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     const url::Origin& origin,
-    const ParsedPermissionsPolicy& header_policy,
+    const network::ParsedPermissionsPolicy& header_policy,
     base::span<const network::mojom::PermissionsPolicyFeature>
         effective_enabled_permissions) {
   return CreateFixedForFencedFrame(origin, header_policy,
@@ -509,7 +510,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     const url::Origin& origin,
-    const ParsedPermissionsPolicy& header_policy,
+    const network::ParsedPermissionsPolicy& header_policy,
     const PermissionsPolicyFeatureList& features,
     base::span<const network::mojom::PermissionsPolicyFeature>
         effective_enabled_permissions) {
@@ -530,8 +531,8 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const PermissionsPolicy* parent_policy,
-    const ParsedPermissionsPolicy& header_policy,
-    const ParsedPermissionsPolicy& container_policy,
+    const network::ParsedPermissionsPolicy& header_policy,
+    const network::ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features,
     bool headerless) {
@@ -624,7 +625,7 @@ bool PermissionsPolicy::InheritedValueForFeature(
     const PermissionsPolicy* parent_policy,
     std::pair<network::mojom::PermissionsPolicyFeature,
               PermissionsPolicyFeatureDefault> feature,
-    const ParsedPermissionsPolicy& container_policy) {
+    const network::ParsedPermissionsPolicy& container_policy) {
   // 9.7 1: If container is null, return "Enabled".
   if (!parent_policy) {
     return true;

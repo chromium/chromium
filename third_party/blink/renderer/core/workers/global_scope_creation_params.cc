@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/storage_access_api/status.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
@@ -85,7 +86,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       blob_url_store(std::move(blob_url_store)),
       begin_frame_provider_params(std::move(begin_frame_provider_params)),
       // At the moment, workers do not support their container policy being set,
-      // so it will just be an empty ParsedPermissionsPolicy for now.
+      // so it will just be an empty network::ParsedPermissionsPolicy for now.
       // Shared storage worklets have a null `parent_permissions_policy` and
       // `starter_origin`.
       // TODO(crbug.com/1419253): Pass non-null `parent_permissions_policy` and
@@ -94,7 +95,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       worker_permissions_policy(PermissionsPolicy::CreateFromParentPolicy(
           parent_permissions_policy,
           /*header_policy=*/{},
-          ParsedPermissionsPolicy() /* container_policy */,
+          network::ParsedPermissionsPolicy() /* container_policy */,
           starter_origin ? starter_origin->ToUrlOrigin() : url::Origin())),
       agent_cluster_id(agent_cluster_id),
       ukm_source_id(ukm_source_id),

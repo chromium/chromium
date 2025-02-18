@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -69,7 +70,8 @@ class IFramePolicyTest : public PolicyTest {
   void SetUp() override {
     PolicyTest::SetUp();
     policy_ = MakeGarbageCollected<IFramePolicy>(
-        page_holder_->GetFrame().DomWindow(), ParsedPermissionsPolicy(),
+        page_holder_->GetFrame().DomWindow(),
+        network::ParsedPermissionsPolicy(),
         SecurityOrigin::CreateFromString(kSelfOrigin));
   }
 };
@@ -198,7 +200,8 @@ TEST_F(IFramePolicyTest, TestSameOriginAllowedFeatures) {
 TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
   // Update the iframe's policy, given a new origin.
   GetPolicy()->UpdateContainerPolicy(
-      ParsedPermissionsPolicy(), SecurityOrigin::CreateFromString(kOriginA));
+      network::ParsedPermissionsPolicy(),
+      SecurityOrigin::CreateFromString(kOriginA));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   // None of these features should be allowed in a cross-origin context.
   EXPECT_FALSE(allowed_features.Contains("fullscreen"));
@@ -215,7 +218,7 @@ TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
 
 TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginA) {
   PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
-  ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
@@ -242,7 +245,7 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginA) {
 
 TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginASubdomain) {
   PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
-  ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
@@ -269,7 +272,7 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginASubdomain) {
 
 TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginB) {
   PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
-  ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
@@ -295,7 +298,7 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginB) {
 
 TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
   PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
-  ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",

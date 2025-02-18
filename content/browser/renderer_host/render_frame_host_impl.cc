@@ -238,8 +238,10 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -659,7 +661,7 @@ DetermineWhetherToForbidTrustTokenOperation(
       // permissions from their parent's permissions policy.
       const blink::PermissionsPolicy* parent_policy =
           frame->GetParentOrOuterDocument()->GetPermissionsPolicy();
-      blink::ParsedPermissionsPolicy container_policy =
+      network::ParsedPermissionsPolicy container_policy =
           commit_params.frame_policy.container_policy;
       subframe_policy = blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
           parent_policy, /*header_policy=*/{}, container_policy,
@@ -684,7 +686,7 @@ DetermineWhetherToForbidTrustTokenOperation(
 
     const blink::PermissionsPolicy* parent_policy =
         frame->GetParent()->GetPermissionsPolicy();
-    blink::ParsedPermissionsPolicy container_policy =
+    network::ParsedPermissionsPolicy container_policy =
         commit_params.frame_policy.container_policy;
 
     subframe_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
@@ -7641,7 +7643,7 @@ const blink::PermissionsPolicy* RenderFrameHostImpl::GetPermissionsPolicy() {
   return permissions_policy_.get();
 }
 
-const blink::ParsedPermissionsPolicy&
+const network::ParsedPermissionsPolicy&
 RenderFrameHostImpl::GetPermissionsPolicyHeader() {
   return permissions_policy_header_;
 }
@@ -12378,7 +12380,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
     auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
 
-    std::optional<blink::ParsedPermissionsPolicy> manifest_policy;
+    std::optional<network::ParsedPermissionsPolicy> manifest_policy;
     if (IsOutermostMainFrame() && isolation_info.is_isolated_application()) {
       if (auto isolated_web_app_permissions_policy =
               delegate_->GetPermissionsPolicyForIsolatedWebApp(this)) {
@@ -13528,7 +13530,7 @@ void RenderFrameHostImpl::CreateWebUsbService(
 }
 
 void RenderFrameHostImpl::ResetPermissionsPolicy(
-    const blink::ParsedPermissionsPolicy& header_policy) {
+    const network::ParsedPermissionsPolicy& header_policy) {
   if (IsFencedFrameRoot()) {
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
         frame_tree_node()->GetFencedFrameProperties();
@@ -13544,7 +13546,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
       // permissions from their parent's permissions policy.
       const blink::PermissionsPolicy* parent_policy =
           GetParentOrOuterDocument()->GetPermissionsPolicy();
-      blink::ParsedPermissionsPolicy container_policy =
+      network::ParsedPermissionsPolicy container_policy =
           browsing_context_state_->effective_frame_policy().container_policy;
       permissions_policy_ =
           blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
@@ -13583,7 +13585,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
   RenderFrameHostImpl* parent_frame_host = GetParent();
   const blink::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->GetPermissionsPolicy() : nullptr;
-  blink::ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       browsing_context_state_->effective_frame_policy().container_policy;
 
   permissions_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
@@ -15757,7 +15759,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
         keep_alive_loader_factory,
     mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
         fetch_later_loader_factory,
-    const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+    const std::optional<network::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token) {

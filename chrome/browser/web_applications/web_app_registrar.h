@@ -34,6 +34,7 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -185,7 +186,7 @@ class WebAppRegistrar {
   // the app with |app_id|. This permissions policy is not yet parsed by the
   // PermissionsPolicyParser, and thus may contain invalid permissions and/or
   // origin allowlists.
-  blink::ParsedPermissionsPolicy GetPermissionsPolicy(
+  network::ParsedPermissionsPolicy GetPermissionsPolicy(
       const webapps::AppId& app_id) const;
 
   // Returns true if there exists a currently installed app that has been

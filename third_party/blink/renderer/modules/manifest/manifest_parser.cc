@@ -16,12 +16,12 @@
 #include "net/base/mime_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
@@ -1916,21 +1916,21 @@ String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
   return gcm_sender_id.has_value() ? *gcm_sender_id : String();
 }
 
-Vector<blink::ParsedPermissionsPolicyDeclaration>
+Vector<network::ParsedPermissionsPolicyDeclaration>
 ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
   PermissionsPolicyParser::Node policy{
       network::OriginWithPossibleWildcards::NodeType::kHeader};
 
   JSONValue* json_value = object->Get("permissions_policy");
   if (!json_value) {
-    return Vector<blink::ParsedPermissionsPolicyDeclaration>();
+    return Vector<network::ParsedPermissionsPolicyDeclaration>();
   }
 
   JSONObject* permissions_dict = object->GetJSONObject("permissions_policy");
   if (!permissions_dict) {
     AddErrorInfo(
         "property 'permissions_policy' ignored, type object expected.");
-    return Vector<blink::ParsedPermissionsPolicyDeclaration>();
+    return Vector<network::ParsedPermissionsPolicyDeclaration>();
   }
 
   for (wtf_size_t i = 0; i < permissions_dict->size(); ++i) {
@@ -1979,12 +1979,12 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
 
   PolicyParserMessageBuffer logger(
       "Error with permissions_policy manifest field: ");
-  blink::ParsedPermissionsPolicy parsed_policy =
+  network::ParsedPermissionsPolicy parsed_policy =
       PermissionsPolicyParser::ParsePolicyFromNode(
           policy, SecurityOrigin::Create(manifest_url_), logger,
           execution_context_);
 
-  Vector<blink::ParsedPermissionsPolicyDeclaration> out;
+  Vector<network::ParsedPermissionsPolicyDeclaration> out;
   for (const auto& decl : parsed_policy) {
     out.push_back(std::move(decl));
   }

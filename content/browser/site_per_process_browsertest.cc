@@ -142,7 +142,9 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -151,7 +153,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -372,13 +373,13 @@ bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
 // list of origins. (Equivalent to the declared policy "feature origin1 origin2
 // ...".) If the origins list is empty, it's treated as matches all origins
 // (Equivalent to the declared policy "feature *")
-blink::ParsedPermissionsPolicyDeclaration
+network::ParsedPermissionsPolicyDeclaration
 CreateParsedPermissionsPolicyDeclaration(
     network::mojom::PermissionsPolicyFeature feature,
     const std::vector<GURL>& origins,
     bool match_all_origins = false,
     const std::optional<GURL> self_if_matches = std::nullopt) {
-  blink::ParsedPermissionsPolicyDeclaration declaration;
+  network::ParsedPermissionsPolicyDeclaration declaration;
 
   declaration.feature = feature;
   if (self_if_matches.has_value()) {
@@ -398,12 +399,12 @@ CreateParsedPermissionsPolicyDeclaration(
   return declaration;
 }
 
-blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicy(
+network::ParsedPermissionsPolicy CreateParsedPermissionsPolicy(
     const std::vector<network::mojom::PermissionsPolicyFeature>& features,
     const std::vector<GURL>& origins,
     bool match_all_origins = false,
     const std::optional<GURL> self_if_matches = std::nullopt) {
-  blink::ParsedPermissionsPolicy result;
+  network::ParsedPermissionsPolicy result;
   result.reserve(features.size());
   for (const auto& feature : features)
     result.push_back(CreateParsedPermissionsPolicyDeclaration(
@@ -411,18 +412,18 @@ blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicy(
   return result;
 }
 
-blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesSelf(
+network::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesSelf(
     const std::vector<network::mojom::PermissionsPolicyFeature>& features,
     const GURL& self_if_matches) {
   return CreateParsedPermissionsPolicy(features, {}, false, self_if_matches);
 }
 
-blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesAll(
+network::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesAll(
     const std::vector<network::mojom::PermissionsPolicyFeature>& features) {
   return CreateParsedPermissionsPolicy(features, {}, true);
 }
 
-blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesNone(
+network::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesNone(
     const std::vector<network::mojom::PermissionsPolicyFeature>& features) {
   return CreateParsedPermissionsPolicy(features, {});
 }
@@ -7644,7 +7645,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Validate that the effective container policy contains a single non-unique
   // origin.
-  const blink::ParsedPermissionsPolicy initial_effective_policy =
+  const network::ParsedPermissionsPolicy initial_effective_policy =
       root->child_at(2)->effective_frame_policy().container_policy;
   EXPECT_EQ(1UL, initial_effective_policy[0].allowed_origins.size());
 
@@ -7654,9 +7655,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // origin yet) but the effective policy should remain unchanged.
   EXPECT_TRUE(ExecJs(
       root, "document.getElementById('child-2').setAttribute('sandbox','')"));
-  const blink::ParsedPermissionsPolicy updated_effective_policy =
+  const network::ParsedPermissionsPolicy updated_effective_policy =
       root->child_at(2)->effective_frame_policy().container_policy;
-  const blink::ParsedPermissionsPolicy updated_pending_policy =
+  const network::ParsedPermissionsPolicy updated_pending_policy =
       root->child_at(2)->pending_frame_policy().container_policy;
   EXPECT_EQ(1UL, updated_effective_policy[0].allowed_origins.size());
   EXPECT_TRUE(updated_pending_policy[0].matches_opaque_src);
@@ -7664,7 +7665,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Navigate the frame; pending policy should now be committed.
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(2), nav_url));
-  const blink::ParsedPermissionsPolicy final_effective_policy =
+  const network::ParsedPermissionsPolicy final_effective_policy =
       root->child_at(2)->effective_frame_policy().container_policy;
   EXPECT_TRUE(final_effective_policy[0].matches_opaque_src);
   EXPECT_EQ(0UL, final_effective_policy[0].allowed_origins.size());

@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_OWNER_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_OWNER_ELEMENT_H_
 
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
@@ -190,7 +191,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // Return a permissions policy container policy for this frame, based on the
   // frame attributes and the effective origin specified in the frame
   // attributes.
-  virtual ParsedPermissionsPolicy ConstructContainerPolicy() const = 0;
+  virtual network::ParsedPermissionsPolicy ConstructContainerPolicy() const = 0;
 
   // Update the container policy and notify the frame loader client of any
   // changes.
@@ -227,7 +228,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool IsCurrentlyWithinFrameLimit() const;
 
   // Pre-iframe frame-owning elements have certain policies by default.
-  static ParsedPermissionsPolicy GetLegacyFramePolicies();
+  static network::ParsedPermissionsPolicy GetLegacyFramePolicies();
 
  private:
   // Intentionally private to prevent redundant checks when the type is

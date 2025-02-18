@@ -19,6 +19,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -65,7 +66,7 @@ class PermissionContextBasePermissionsPolicyTest
       const char* origin,
       network::mojom::PermissionsPolicyFeature feature =
           network::mojom::PermissionsPolicyFeature::kNotFound) {
-    blink::ParsedPermissionsPolicy frame_policy = {};
+    network::ParsedPermissionsPolicy frame_policy = {};
     if (feature != network::mojom::PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,

@@ -9,7 +9,7 @@ import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
@@ -123,7 +123,7 @@ struct Manifest {
   // As such, this field should not be exposed by default.
   CaptureLinks capture_links;
 
-  array<ParsedPermissionsPolicyDeclaration> permissions_policy;
+  array<network.mojom.ParsedPermissionsPolicyDeclaration> permissions_policy;
 
   // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
   // experiment. See:

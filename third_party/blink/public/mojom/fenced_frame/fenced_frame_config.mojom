@@ -8,7 +8,7 @@
 module blink.mojom;
 
 import "services/network/public/mojom/schemeful_site.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -112,7 +112,7 @@ union PotentiallyOpaqueSharedStorageBudgetMetadata {
 // is needed when calculating permissions inheritance. This information will be
 // used to build a copy of the fenced frame's parent's permissions policy.
 struct ParentPermissionsInfo {
-  array<blink.mojom.ParsedPermissionsPolicyDeclaration>
+  array<network.mojom.ParsedPermissionsPolicyDeclaration>
       parsed_permissions_policy;
   url.mojom.Origin origin;
 };

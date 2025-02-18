@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DECLARATION_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DECLARATION_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DECLARATION_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DECLARATION_H_
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
-#include "third_party/blink/public/common/common_export.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/origin.h"
 
-namespace blink {
+namespace network {
 
 // This struct holds permissions policy allowlist data that needs to be
 // replicated between a RenderFrame and any of its associated
 // RenderFrameProxies. A list of these form a ParsedPermissionsPolicy. NOTE:
 // These types are used for replication frame state between processes.
-struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
+struct COMPONENT_EXPORT(NETWORK_CPP) ParsedPermissionsPolicyDeclaration {
   ParsedPermissionsPolicyDeclaration();
   explicit ParsedPermissionsPolicyDeclaration(
       network::mojom::PermissionsPolicyFeature feature);
@@ -61,10 +61,11 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
 
 using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;
 
-bool BLINK_COMMON_EXPORT
-operator==(const ParsedPermissionsPolicyDeclaration& lhs,
-           const ParsedPermissionsPolicyDeclaration& rhs);
+bool COMPONENT_EXPORT(
+    NETWORK_CPP) operator==(const ParsedPermissionsPolicyDeclaration & lhs,
+                            const ParsedPermissionsPolicyDeclaration &
+                                rhs);
 
-}  // namespace blink
+}  // namespace network
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DECLARATION_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DECLARATION_H_

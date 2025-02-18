@@ -39,6 +39,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -738,7 +739,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Returns the base permissions policy that should be applied to the Isolated
   // Web App running in the given RenderFrameHostImpl. If std::nullopt is
   // returned the default non-isolated permissions policy will be applied.
-  virtual std::optional<blink::ParsedPermissionsPolicy>
+  virtual std::optional<network::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source);
 
   // Updates the draggable regions defined by the app-region CSS property.

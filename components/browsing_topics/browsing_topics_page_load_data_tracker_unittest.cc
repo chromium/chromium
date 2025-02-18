@@ -25,6 +25,8 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace browsing_topics {
 
@@ -89,7 +91,7 @@ class BrowsingTopicsPageLoadDataTrackerTest
       simulator->SetSocketAddress(net::IPEndPoint(address, /*port=*/0));
     }
 
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
 
     if (!browsing_topics_permissions_policy_allowed) {
       policy.emplace_back(

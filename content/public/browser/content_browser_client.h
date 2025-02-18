@@ -68,6 +68,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/proxy_config.mojom-forward.h"
@@ -655,7 +656,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Web App Manifest. The embedder might choose to return an std::nullopt in
   // specific cases -- then the default non-isolated permissions policy will be
   // applied.
-  virtual std::optional<blink::ParsedPermissionsPolicy>
+  virtual std::optional<network::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
                                         const url::Origin& app_origin);
 

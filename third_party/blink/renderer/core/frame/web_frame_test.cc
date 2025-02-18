@@ -62,6 +62,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -4668,7 +4669,7 @@ class ClearScrollStateOnCommitWebFrameClient
   void DidCommitNavigation(
       WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
-      const ParsedPermissionsPolicy& permissions_policy_header,
+      const network::ParsedPermissionsPolicy& permissions_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) override {
     Frame()->View()->ResetScrollAndScaleState();
   }
@@ -6924,7 +6925,7 @@ class TestWillInsertBodyWebFrameClient final
   void DidCommitNavigation(
       WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
-      const ParsedPermissionsPolicy& permissions_policy_header,
+      const network::ParsedPermissionsPolicy& permissions_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) final {
     did_load_ = true;
   }
@@ -10108,7 +10109,7 @@ class RemoteToLocalSwapWebFrameClient
   void DidCommitNavigation(
       WebHistoryCommitType history_commit_type,
       bool should_reset_browser_interface_broker,
-      const ParsedPermissionsPolicy& permissions_policy_header,
+      const network::ParsedPermissionsPolicy& permissions_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) override {
     history_commit_type_ = history_commit_type;
   }
@@ -10377,7 +10378,7 @@ class CommitTypeWebFrameClient final
   void DidCommitNavigation(
       WebHistoryCommitType history_commit_type,
       bool should_reset_browser_interface_broker,
-      const ParsedPermissionsPolicy& permissions_policy_header,
+      const network::ParsedPermissionsPolicy& permissions_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) final {
     history_commit_type_ = history_commit_type;
   }

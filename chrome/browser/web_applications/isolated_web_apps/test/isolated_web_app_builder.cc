@@ -49,11 +49,11 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -390,7 +390,7 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   }
 
   for (const auto& policy : permissions_policy_) {
-    blink::ParsedPermissionsPolicyDeclaration decl;
+    network::ParsedPermissionsPolicyDeclaration decl;
     decl.feature = policy.first;
     if (policy.second.wildcard) {
       decl.matches_all_origins = true;

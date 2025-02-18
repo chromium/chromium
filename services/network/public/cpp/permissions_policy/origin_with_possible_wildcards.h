@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "url/origin.h"
 
 namespace network {

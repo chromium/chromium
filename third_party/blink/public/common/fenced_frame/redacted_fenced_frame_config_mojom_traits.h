@@ -7,9 +7,10 @@
 
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom.h"
 
 namespace mojo {
@@ -76,7 +77,7 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ParentPermissionsInfoDataView,
                  blink::FencedFrame::ParentPermissionsInfo> {
-  static const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
+  static const std::vector<network::ParsedPermissionsPolicyDeclaration>&
   parsed_permissions_policy(
       const blink::FencedFrame::ParentPermissionsInfo& input);
   static const url::Origin& origin(

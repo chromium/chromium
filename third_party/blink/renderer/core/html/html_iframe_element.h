@@ -24,9 +24,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IFRAME_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IFRAME_ELEMENT_H_
 
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element_sandbox.h"
@@ -52,7 +52,7 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
   // Returns attributes that should be checked against Trusted Types
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
-  ParsedPermissionsPolicy ConstructContainerPolicy() const override;
+  network::ParsedPermissionsPolicy ConstructContainerPolicy() const override;
   DocumentPolicyFeatureState ConstructRequiredPolicy() const override;
 
   FrameOwnerElementType OwnerType() const final {

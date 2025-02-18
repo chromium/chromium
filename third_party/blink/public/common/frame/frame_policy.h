@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_POLICY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_POLICY_H_
 
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -28,7 +29,7 @@ namespace blink {
 struct BLINK_COMMON_EXPORT FramePolicy {
   FramePolicy();
   FramePolicy(network::mojom::WebSandboxFlags sandbox_flags,
-              const ParsedPermissionsPolicy& container_policy,
+              const network::ParsedPermissionsPolicy& container_policy,
               const DocumentPolicyFeatureState& required_document_policy,
               mojom::DeferredFetchPolicy deferred_fetch_policy);
   FramePolicy(const FramePolicy& lhs);
@@ -38,7 +39,7 @@ struct BLINK_COMMON_EXPORT FramePolicy {
                                              const FramePolicy& rhs);
 
   network::mojom::WebSandboxFlags sandbox_flags;
-  ParsedPermissionsPolicy container_policy;
+  network::ParsedPermissionsPolicy container_policy;
   // |required_document_policy| is the combination of the following:
   // - iframe 'policy' attribute
   // - 'Require-Document-Policy' http header

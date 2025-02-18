@@ -14,9 +14,9 @@
 #include <vector>
 
 #include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -74,7 +74,7 @@ struct BLINK_COMMON_EXPORT SharedStorageBudgetMetadata {
 };
 
 struct BLINK_COMMON_EXPORT ParentPermissionsInfo {
-  std::vector<blink::ParsedPermissionsPolicyDeclaration>
+  std::vector<network::ParsedPermissionsPolicyDeclaration>
       parsed_permissions_policy;
   url::Origin origin;
 };

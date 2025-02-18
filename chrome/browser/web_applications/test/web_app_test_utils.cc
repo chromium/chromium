@@ -86,10 +86,10 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -237,7 +237,7 @@ apps::ShareTarget CreateRandomShareTarget(uint32_t suffix) {
   return share_target;
 }
 
-blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
+network::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
     RandomHelper& random) {
   const int num_permissions_policy_declarations =
       random.next_uint(test_features.size());
@@ -248,7 +248,7 @@ blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
   std::default_random_engine rng;
   std::shuffle(available_features.begin(), available_features.end(), rng);
 
-  blink::ParsedPermissionsPolicy permissions_policy(
+  network::ParsedPermissionsPolicy permissions_policy(
       num_permissions_policy_declarations);
   const auto& feature_name_map = blink::GetPermissionsPolicyNameToFeatureMap();
   for (int i = 0; i < num_permissions_policy_declarations; ++i) {

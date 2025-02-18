@@ -37,12 +37,12 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -158,7 +158,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   {
-    blink::ParsedPermissionsPolicyDeclaration declaration;
+    network::ParsedPermissionsPolicyDeclaration declaration;
     declaration.feature = network::mojom::PermissionsPolicyFeature::kFullscreen;
     declaration.allowed_origins = {
         *network::OriginWithPossibleWildcards::FromOrigin(

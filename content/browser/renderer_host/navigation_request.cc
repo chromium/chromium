@@ -161,12 +161,14 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
@@ -189,7 +191,6 @@
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -9565,11 +9566,11 @@ bool NavigationRequest::IsFencedFrameRequiredPolicyFeatureAllowed(
   // explicitly enabled for `origin`, or the policy must by default
   // be enabled for all origins. Note: because the policies have not been
   // read into a RenderFrameHost's permissions_policy_ yet, we need to check
-  // the ParsedPermissionsPolicyDeclaration object directly.
+  // the network::ParsedPermissionsPolicyDeclaration object directly.
   auto policy_iter = std::find_if(
       commit_params_->frame_policy.container_policy.begin(),
       commit_params_->frame_policy.container_policy.end(),
-      [feature](const blink::ParsedPermissionsPolicyDeclaration& d) {
+      [feature](const network::ParsedPermissionsPolicyDeclaration& d) {
         return d.feature == feature;
       });
   if (policy_iter == commit_params_->frame_policy.container_policy.end()) {

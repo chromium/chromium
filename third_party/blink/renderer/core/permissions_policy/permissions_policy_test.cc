@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -101,7 +102,7 @@ class PermissionsPolicyParserTest : public ::testing::Test {
       {"payment", network::mojom::PermissionsPolicyFeature::kPayment},
       {"geolocation", network::mojom::PermissionsPolicyFeature::kGeolocation}};
 
-  ParsedPermissionsPolicy ParseFeaturePolicyHeader(
+  network::ParsedPermissionsPolicy ParseFeaturePolicyHeader(
       const String& feature_policy_header,
       scoped_refptr<const SecurityOrigin> origin,
       PolicyParserMessageBuffer& logger,
@@ -157,7 +158,7 @@ class PermissionsPolicyParserParsingTest
   }
 
  protected:
-  ParsedPermissionsPolicy ParseFeaturePolicy(
+  network::ParsedPermissionsPolicy ParseFeaturePolicy(
       const char* policy_string,
       const char* self_origin_string,
       const char* src_origin_string,
@@ -169,7 +170,7 @@ class PermissionsPolicyParserParsingTest
         GetSrcOrigin(src_origin_string), logger, feature_names, context);
   }
 
-  ParsedPermissionsPolicy ParsePermissionsPolicy(
+  network::ParsedPermissionsPolicy ParsePermissionsPolicy(
       const char* policy_string,
       const char* self_origin_string,
       const char* src_origin_string,
@@ -181,7 +182,7 @@ class PermissionsPolicyParserParsingTest
         GetSrcOrigin(src_origin_string), logger, feature_names, context);
   }
 
-  void CheckParsedPolicy(const ParsedPermissionsPolicy& actual,
+  void CheckParsedPolicy(const network::ParsedPermissionsPolicy& actual,
                          const ParsedPolicyForTest& expected) {
     ASSERT_EQ(actual.size(), expected.size());
     for (size_t i = 0; i < actual.size(); ++i) {
@@ -1297,9 +1298,9 @@ class FeaturePolicyMutationTest : public testing::Test {
   // allows it in all origins.
   bool IsFeatureAllowedEverywhere(
       network::mojom::PermissionsPolicyFeature feature,
-      const ParsedPermissionsPolicy& policy) {
+      const network::ParsedPermissionsPolicy& policy) {
     const auto& result = std::ranges::find(
-        policy, feature, &ParsedPermissionsPolicyDeclaration::feature);
+        policy, feature, &network::ParsedPermissionsPolicyDeclaration::feature);
     if (result == policy.end())
       return false;
 
@@ -1311,9 +1312,9 @@ class FeaturePolicyMutationTest : public testing::Test {
   // disallows it in all origins.
   bool IsFeatureDisallowedEverywhere(
       network::mojom::PermissionsPolicyFeature feature,
-      const ParsedPermissionsPolicy& policy) {
+      const network::ParsedPermissionsPolicy& policy) {
     const auto& result = std::ranges::find(
-        policy, feature, &ParsedPermissionsPolicyDeclaration::feature);
+        policy, feature, &network::ParsedPermissionsPolicyDeclaration::feature);
     if (result == policy.end())
       return false;
 
@@ -1321,7 +1322,7 @@ class FeaturePolicyMutationTest : public testing::Test {
            !result->matches_opaque_src && result->allowed_origins.empty();
   }
 
-  ParsedPermissionsPolicy test_policy = {
+  network::ParsedPermissionsPolicy test_policy = {
       {network::mojom::PermissionsPolicyFeature::kFullscreen,
        /*allowed_origins=*/
        {*network::OriginWithPossibleWildcards::FromOrigin(url_origin_a_),
@@ -1336,7 +1337,7 @@ class FeaturePolicyMutationTest : public testing::Test {
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false}};
 
-  ParsedPermissionsPolicy empty_policy = {};
+  network::ParsedPermissionsPolicy empty_policy;
   test::TaskEnvironment task_environment_;
 };
 
@@ -1426,7 +1427,7 @@ TEST_F(FeaturePolicyMutationTest, TestRemoveAllFeatures) {
 }
 
 TEST_F(FeaturePolicyMutationTest, TestDisallowIfNotPresent) {
-  ParsedPermissionsPolicy copy = test_policy;
+  network::ParsedPermissionsPolicy copy = test_policy;
   // Try to disallow a feature which already exists
   EXPECT_FALSE(DisallowFeatureIfNotPresent(
       network::mojom::PermissionsPolicyFeature::kFullscreen, copy));
@@ -1442,7 +1443,7 @@ TEST_F(FeaturePolicyMutationTest, TestDisallowIfNotPresent) {
 }
 
 TEST_F(FeaturePolicyMutationTest, TestAllowEverywhereIfNotPresent) {
-  ParsedPermissionsPolicy copy = test_policy;
+  network::ParsedPermissionsPolicy copy = test_policy;
   // Try to allow a feature which already exists
   EXPECT_FALSE(AllowFeatureEverywhereIfNotPresent(
       network::mojom::PermissionsPolicyFeature::kFullscreen, copy));

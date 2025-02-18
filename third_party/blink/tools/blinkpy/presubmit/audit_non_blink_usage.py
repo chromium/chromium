@@ -2428,6 +2428,8 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/common/client_hints/',
+            'third_party/blink/common/fenced_frame/',
+            'third_party/blink/common/frame/',
             'third_party/blink/common/permissions/',
             'third_party/blink/common/permissions_policy/',
             'third_party/blink/common/use_counter/',
@@ -2442,6 +2444,8 @@ _CONFIG = [
         'allowed': [
             'network::mojom::PermissionsPolicyFeature',
             'network::OriginWithPossibleWildcards',
+            'network::ParsedPermissionsPolicy',
+            'network::ParsedPermissionsPolicyDeclaration',
         ]
     },
     {

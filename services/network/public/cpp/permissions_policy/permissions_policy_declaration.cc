@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 
 #include <tuple>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "url/origin.h"
 
-namespace blink {
+namespace network {
 
 ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration() =
     default;
@@ -66,4 +66,4 @@ bool operator==(const ParsedPermissionsPolicyDeclaration& lhs,
                   rhs.allowed_origins);
 }
 
-}  // namespace blink
+}  // namespace network

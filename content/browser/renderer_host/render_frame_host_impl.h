@@ -118,6 +118,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
@@ -130,7 +131,6 @@
 #include "third_party/blink/public/common/frame/history_user_activation_state.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -543,7 +543,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature feature) override;
   const blink::PermissionsPolicy* GetPermissionsPolicy() override;
-  const blink::ParsedPermissionsPolicy& GetPermissionsPolicyHeader() override;
+  const network::ParsedPermissionsPolicy& GetPermissionsPolicyHeader() override;
   void ViewSource() override;
   void ExecuteMediaPlayerActionAtLocation(
       const gfx::Point&,
@@ -3272,7 +3272,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
           keep_alive_loader_factory,
       mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
           fetch_later_loader_factory,
-      const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+      const std::optional<network::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token);
@@ -3852,7 +3852,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Clears any existing policy and constructs a new policy for this frame,
   // based on its parent frame and the parsed `header_policy`.
   void ResetPermissionsPolicy(
-      const blink::ParsedPermissionsPolicy& header_policy);
+      const network::ParsedPermissionsPolicy& header_policy);
 
   // Runs |callback| for all the local roots immediately under this frame, i.e.
   // local roots which are under this frame and their first ancestor which is a
@@ -4906,7 +4906,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Parsed permissions policy header. It is parsed from blink, received during
   // DidCommitProvisionalLoad. This is constant during the whole lifetime of
   // this document.
-  blink::ParsedPermissionsPolicy permissions_policy_header_;
+  network::ParsedPermissionsPolicy permissions_policy_header_;
 
   // Tracks the permissions policy which has been set on this frame.
   std::unique_ptr<blink::PermissionsPolicy> permissions_policy_;

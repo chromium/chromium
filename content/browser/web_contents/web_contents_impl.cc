@@ -3735,7 +3735,7 @@ void WebContentsImpl::OnVibrate(RenderFrameHostImpl* rfh) {
   observers_.NotifyObservers(&WebContentsObserver::VibrationRequested);
 }
 
-std::optional<blink::ParsedPermissionsPolicy>
+std::optional<network::ParsedPermissionsPolicy>
 WebContentsImpl::GetPermissionsPolicyForIsolatedWebApp(
     RenderFrameHostImpl* source) {
   WebExposedIsolationInfo weii =

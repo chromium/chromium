@@ -187,7 +187,6 @@ mojom("mojom_platform") {
     "permissions/permission_automation.mojom",
     "permissions/permission_status.mojom",
     "permissions_policy/document_policy_feature.mojom",
-    "permissions_policy/permissions_policy.mojom",
     "permissions_policy/policy_disposition.mojom",
     "permissions_policy/policy_value.mojom",
     "picture_in_picture/picture_in_picture.mojom",
@@ -405,16 +404,6 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/input/web_coalesced_input_event_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.ParsedPermissionsPolicyDeclaration"
-          cpp = "::blink::ParsedPermissionsPolicyDeclaration"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h" ]
-      traits_private_headers = [ "//third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h" ]
     },
     {
       types = [
@@ -1427,6 +1416,7 @@ mojom("mojom_core") {
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:mojom_permissions_policy",
     "//services/service_manager/public/mojom",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
@@ -1667,6 +1657,7 @@ mojom("mojom_modules") {
     ":android_mojo_bindings",
     ":mojom_core",
     "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_permissions_policy",
     "//services/network/public/mojom:mojom_shared_storage",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",

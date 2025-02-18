@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -99,9 +100,9 @@ class ParsingContext {
 
   ~ParsingContext() = default;
 
-  ParsedPermissionsPolicy ParseFeaturePolicy(const String& policy);
-  ParsedPermissionsPolicy ParsePermissionsPolicy(const String& policy);
-  ParsedPermissionsPolicy ParsePolicyFromNode(
+  network::ParsedPermissionsPolicy ParseFeaturePolicy(const String& policy);
+  network::ParsedPermissionsPolicy ParsePermissionsPolicy(const String& policy);
+  network::ParsedPermissionsPolicy ParsePolicyFromNode(
       const PermissionsPolicyParser::Node& root);
 
  private:
@@ -113,7 +114,7 @@ class ParsingContext {
   // max length to parse = 2^16 = 64 kB
   static constexpr wtf_size_t MAX_LENGTH_PARSE = 1 << 16;
 
-  std::optional<ParsedPermissionsPolicyDeclaration> ParseFeature(
+  std::optional<network::ParsedPermissionsPolicyDeclaration> ParseFeature(
       const PermissionsPolicyParser::Declaration& declaration_node,
       const network::OriginWithPossibleWildcards::NodeType type);
 
@@ -334,7 +335,8 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
   return allowlist;
 }
 
-std::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
+std::optional<network::ParsedPermissionsPolicyDeclaration>
+ParsingContext::ParseFeature(
     const PermissionsPolicyParser::Declaration& declaration_node,
     const network::OriginWithPossibleWildcards::NodeType type) {
   std::optional<network::mojom::PermissionsPolicyFeature> feature =
@@ -351,7 +353,7 @@ std::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
     return std::nullopt;
   }
 
-  ParsedPermissionsPolicyDeclaration parsed_feature(*feature);
+  network::ParsedPermissionsPolicyDeclaration parsed_feature(*feature);
   parsed_feature.allowed_origins = std::move(parsed_allowlist.allowed_origins);
   parsed_feature.self_if_matches = parsed_allowlist.self_if_matches;
   parsed_feature.matches_all_origins = parsed_allowlist.matches_all_origins;
@@ -365,22 +367,22 @@ std::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
   return parsed_feature;
 }
 
-ParsedPermissionsPolicy ParsingContext::ParseFeaturePolicy(
+network::ParsedPermissionsPolicy ParsingContext::ParseFeaturePolicy(
     const String& policy) {
   return ParsePolicyFromNode(ParseFeaturePolicyToIR(policy));
 }
 
-ParsedPermissionsPolicy ParsingContext::ParsePermissionsPolicy(
+network::ParsedPermissionsPolicy ParsingContext::ParsePermissionsPolicy(
     const String& policy) {
   return ParsePolicyFromNode(ParsePermissionsPolicyToIR(policy));
 }
 
-ParsedPermissionsPolicy ParsingContext::ParsePolicyFromNode(
+network::ParsedPermissionsPolicy ParsingContext::ParsePolicyFromNode(
     const PermissionsPolicyParser::Node& root) {
-  ParsedPermissionsPolicy parsed_policy;
+  network::ParsedPermissionsPolicy parsed_policy;
   for (const PermissionsPolicyParser::Declaration& declaration_node :
        root.declarations) {
-    std::optional<ParsedPermissionsPolicyDeclaration> parsed_feature =
+    std::optional<network::ParsedPermissionsPolicyDeclaration> parsed_feature =
         ParseFeature(declaration_node, root.type);
     if (parsed_feature) {
       ReportFeatureUsage(parsed_feature->feature);
@@ -541,7 +543,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
 
 }  // namespace
 
-ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
+network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
     const String& feature_policy_header,
     const String& permissions_policy_header,
     scoped_refptr<const SecurityOrigin> origin,
@@ -550,12 +552,12 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
     ExecutionContext* execution_context) {
   bool is_isolated_context =
       execution_context && execution_context->IsIsolatedContext();
-  ParsedPermissionsPolicy permissions_policy =
+  network::ParsedPermissionsPolicy permissions_policy =
       ParsingContext(permissions_policy_logger, origin, nullptr,
                      GetDefaultFeatureNameMap(is_isolated_context),
                      execution_context)
           .ParsePermissionsPolicy(permissions_policy_header);
-  ParsedPermissionsPolicy feature_policy =
+  network::ParsedPermissionsPolicy feature_policy =
       ParsingContext(feature_policy_logger, origin, nullptr,
                      GetDefaultFeatureNameMap(is_isolated_context),
                      execution_context)
@@ -596,7 +598,7 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
   return permissions_policy;
 }
 
-ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
+network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
     const String& policy,
     scoped_refptr<const SecurityOrigin> self_origin,
     scoped_refptr<const SecurityOrigin> src_origin,
@@ -610,7 +612,7 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
       .ParseFeaturePolicy(policy);
 }
 
-ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
+network::ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
     PermissionsPolicyParser::Node& policy,
     scoped_refptr<const SecurityOrigin> origin,
     PolicyParserMessageBuffer& logger,
@@ -623,7 +625,8 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
       .ParsePolicyFromNode(policy);
 }
 
-ParsedPermissionsPolicy PermissionsPolicyParser::ParseFeaturePolicyForTest(
+network::ParsedPermissionsPolicy
+PermissionsPolicyParser::ParseFeaturePolicyForTest(
     const String& policy,
     scoped_refptr<const SecurityOrigin> self_origin,
     scoped_refptr<const SecurityOrigin> src_origin,
@@ -635,7 +638,8 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParseFeaturePolicyForTest(
       .ParseFeaturePolicy(policy);
 }
 
-ParsedPermissionsPolicy PermissionsPolicyParser::ParsePermissionsPolicyForTest(
+network::ParsedPermissionsPolicy
+PermissionsPolicyParser::ParsePermissionsPolicyForTest(
     const String& policy,
     scoped_refptr<const SecurityOrigin> self_origin,
     scoped_refptr<const SecurityOrigin> src_origin,
@@ -648,13 +652,13 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParsePermissionsPolicyForTest(
 }
 
 bool IsFeatureDeclared(network::mojom::PermissionsPolicyFeature feature,
-                       const ParsedPermissionsPolicy& policy) {
+                       const network::ParsedPermissionsPolicy& policy) {
   return base::Contains(policy, feature,
-                        &ParsedPermissionsPolicyDeclaration::feature);
+                        &network::ParsedPermissionsPolicyDeclaration::feature);
 }
 
 bool RemoveFeatureIfPresent(network::mojom::PermissionsPolicyFeature feature,
-                            ParsedPermissionsPolicy& policy) {
+                            network::ParsedPermissionsPolicy& policy) {
   auto new_end = std::remove_if(policy.begin(), policy.end(),
                                 [feature](const auto& declaration) {
                                   return declaration.feature == feature;
@@ -668,22 +672,22 @@ bool RemoveFeatureIfPresent(network::mojom::PermissionsPolicyFeature feature,
 
 bool DisallowFeatureIfNotPresent(
     network::mojom::PermissionsPolicyFeature feature,
-    ParsedPermissionsPolicy& policy) {
+    network::ParsedPermissionsPolicy& policy) {
   if (IsFeatureDeclared(feature, policy)) {
     return false;
   }
-  ParsedPermissionsPolicyDeclaration allowlist(feature);
+  network::ParsedPermissionsPolicyDeclaration allowlist(feature);
   policy.push_back(allowlist);
   return true;
 }
 
 bool AllowFeatureEverywhereIfNotPresent(
     network::mojom::PermissionsPolicyFeature feature,
-    ParsedPermissionsPolicy& policy) {
+    network::ParsedPermissionsPolicy& policy) {
   if (IsFeatureDeclared(feature, policy)) {
     return false;
   }
-  ParsedPermissionsPolicyDeclaration allowlist(feature);
+  network::ParsedPermissionsPolicyDeclaration allowlist(feature);
   allowlist.matches_all_origins = true;
   allowlist.matches_opaque_src = true;
   policy.push_back(allowlist);
@@ -691,7 +695,7 @@ bool AllowFeatureEverywhereIfNotPresent(
 }
 
 void DisallowFeature(network::mojom::PermissionsPolicyFeature feature,
-                     ParsedPermissionsPolicy& policy) {
+                     network::ParsedPermissionsPolicy& policy) {
   RemoveFeatureIfPresent(feature, policy);
   DisallowFeatureIfNotPresent(feature, policy);
 }
@@ -702,7 +706,7 @@ bool IsFeatureForMeasurementOnly(
 }
 
 void AllowFeatureEverywhere(network::mojom::PermissionsPolicyFeature feature,
-                            ParsedPermissionsPolicy& policy) {
+                            network::ParsedPermissionsPolicy& policy) {
   RemoveFeatureIfPresent(feature, policy);
   AllowFeatureEverywhereIfNotPresent(feature, policy);
 }

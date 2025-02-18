@@ -35,7 +35,7 @@ import "third_party/blink/public/mojom/input/scroll_direction.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/timing/resource_timing.mojom";
@@ -395,7 +395,7 @@ interface RemoteFrame {
   // Used to replicate the updated sandbox flags and permissions policy headers to
   // all corresponding remote frames of a local frame when a navigation commits.
   DidSetFramePolicyHeaders(network.mojom.WebSandboxFlags sandbox_flags,
-      array<blink.mojom.ParsedPermissionsPolicyDeclaration> parsed_permissions_policy);
+      array<network.mojom.ParsedPermissionsPolicyDeclaration> parsed_permissions_policy);
 
   // Notifies the frame that its parent has changed the frame's sandbox flags or
   // container policy.

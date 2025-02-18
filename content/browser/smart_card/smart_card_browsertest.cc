@@ -27,10 +27,11 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
 
 using base::test::RunOnceCallback;
@@ -184,7 +185,7 @@ class SmartCardTestContentBrowserClient
   SmartCardDelegate* GetSmartCardDelegate() override;
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override;
-  std::optional<blink::ParsedPermissionsPolicy>
+  std::optional<network::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
                                         const url::Origin& app_origin) override;
 
@@ -311,16 +312,16 @@ bool SmartCardTestContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   return true;
 }
 
-std::optional<blink::ParsedPermissionsPolicy>
+std::optional<network::ParsedPermissionsPolicy>
 SmartCardTestContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     WebContents* web_contents,
     const url::Origin& app_origin) {
-  blink::ParsedPermissionsPolicyDeclaration coi_decl(
+  network::ParsedPermissionsPolicyDeclaration coi_decl(
       network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
       /*allowed_origins=*/{},
       /*self_if_matches=*/std::nullopt, /*matches_all_origins=*/true,
       /*matches_opaque_src=*/false);
-  blink::ParsedPermissionsPolicyDeclaration smart_card_decl(
+  network::ParsedPermissionsPolicyDeclaration smart_card_decl(
       network::mojom::PermissionsPolicyFeature::kSmartCard,
       /*allowed_origins=*/{},
       /*self_if_matches=*/app_origin, /*matches_all_origins=*/false,
@@ -1638,11 +1639,11 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ContextDiesConnectionStays) {
 class NoCoiPermissionSmartCardTestContentBrowserClient
     : public SmartCardTestContentBrowserClient {
  public:
-  std::optional<blink::ParsedPermissionsPolicy>
+  std::optional<network::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
       WebContents* web_contents,
       const url::Origin& app_origin) override {
-    return {{blink::ParsedPermissionsPolicyDeclaration(
+    return {{network::ParsedPermissionsPolicyDeclaration(
         network::mojom::PermissionsPolicyFeature::kSmartCard,
         /*allowed_origins=*/{},
         /*self_if_matches=*/app_origin,

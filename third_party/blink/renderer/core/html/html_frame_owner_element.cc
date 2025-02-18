@@ -24,6 +24,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
@@ -869,14 +870,15 @@ void HTMLFrameOwnerElement::Trace(Visitor* visitor) const {
 }
 
 // static
-ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
-  ParsedPermissionsPolicy container_policy;
+network::ParsedPermissionsPolicy
+HTMLFrameOwnerElement::GetLegacyFramePolicies() {
+  network::ParsedPermissionsPolicy container_policy;
   {
     // Legacy frames are not allowed to enable the fullscreen feature. Add an
     // empty allowlist for the fullscreen feature so that the nested browsing
     //  context is unable to use the API, regardless of origin.
     // https://fullscreen.spec.whatwg.org/#model
-    ParsedPermissionsPolicyDeclaration allowlist(
+    network::ParsedPermissionsPolicyDeclaration allowlist(
         network::mojom::PermissionsPolicyFeature::kFullscreen);
     container_policy.push_back(allowlist);
   }
@@ -887,7 +889,7 @@ ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
     // origins. Even with this, it still requires permission from the containing
     // frame for the origin.
     // https://fergald.github.io/docs/explainers/permissions-policy-deprecate-unload.html
-    ParsedPermissionsPolicyDeclaration allowlist(
+    network::ParsedPermissionsPolicyDeclaration allowlist(
         network::mojom::PermissionsPolicyFeature::kUnload, {}, std::nullopt,
         /*matches_all_origins=*/true, /*matches_opaque_src=*/true);
     container_policy.push_back(allowlist);

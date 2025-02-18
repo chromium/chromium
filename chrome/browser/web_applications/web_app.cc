@@ -41,9 +41,9 @@
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
@@ -732,7 +732,7 @@ void WebApp::SetParentAppId(
 }
 
 void WebApp::SetPermissionsPolicy(
-    blink::ParsedPermissionsPolicy permissions_policy) {
+    network::ParsedPermissionsPolicy permissions_policy) {
   permissions_policy_ = std::move(permissions_policy);
 }
 
@@ -1277,7 +1277,7 @@ bool operator!=(const WebAppOsIntegrationState& os_integration_state1,
 }  // namespace proto
 
 std::vector<std::string> GetSerializedAllowedOrigins(
-    const blink::ParsedPermissionsPolicyDeclaration
+    const network::ParsedPermissionsPolicyDeclaration
         permissions_policy_declaration) {
   std::vector<std::string> allowed_origins;
   if (permissions_policy_declaration.self_if_matches) {

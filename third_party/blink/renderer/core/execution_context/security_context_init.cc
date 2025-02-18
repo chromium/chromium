@@ -107,7 +107,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     LocalFrame& frame,
     const ResourceResponse& response,
     const FramePolicy& frame_policy,
-    const std::optional<ParsedPermissionsPolicy>& isolated_app_policy,
+    const std::optional<network::ParsedPermissionsPolicy>& isolated_app_policy,
     const base::optional_ref<const FencedFrame::RedactedFencedFrameProperties>
         fenced_frame_properties,
     const KURL& document_url) {
@@ -150,13 +150,14 @@ void SecurityContextInit::ApplyPermissionsPolicy(
       execution_context_->GetSecurityOrigin(), feature_policy_logger,
       permissions_policy_logger, execution_context_);
 
-  ParsedPermissionsPolicy parsed_report_only_permissions_policy_header =
-      PermissionsPolicyParser::ParseHeader(
-          response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
-          report_only_permissions_policy_header,
-          execution_context_->GetSecurityOrigin(),
-          report_only_feature_policy_logger,
-          report_only_permissions_policy_logger, execution_context_);
+  network::ParsedPermissionsPolicy
+      parsed_report_only_permissions_policy_header =
+          PermissionsPolicyParser::ParseHeader(
+              response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
+              report_only_permissions_policy_header,
+              execution_context_->GetSecurityOrigin(),
+              report_only_feature_policy_logger,
+              report_only_permissions_policy_logger, execution_context_);
 
   if (!response.HttpHeaderField(http_names::kFeaturePolicyReportOnly).empty()) {
     UseCounter::Count(execution_context_,
@@ -175,7 +176,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
         message.content));
   }
 
-  ParsedPermissionsPolicy container_policy;
+  network::ParsedPermissionsPolicy container_policy;
   if (frame.Owner() || frame.IsFencedFrameRoot()) {
     container_policy = frame_policy.container_policy;
   }

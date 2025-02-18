@@ -117,7 +117,9 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -1127,7 +1129,7 @@ TEST_F(AuthenticatorImplTest,
 
 TEST_F(AuthenticatorImplTest,
        GetClientCapabilities_HybridTransport_BluetoothDisabled) {
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
       network::mojom::PermissionsPolicyFeature::kBluetooth;
   // Simulate navigating to a page with this Permissions Policy.

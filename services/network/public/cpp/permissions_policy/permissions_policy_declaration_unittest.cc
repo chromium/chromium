@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace blink {
+namespace network {
 
 TEST(ParsedPermissionsPolicyDeclarationTest, Contains) {
   const url::Origin kTestOrigin =
@@ -63,4 +63,4 @@ TEST(ParsedPermissionsPolicyDeclarationTest, Contains) {
   EXPECT_TRUE(opaque_self_decl.Contains(kOpaqueOrigin));
 }
 
-}  // namespace blink
+}  // namespace network

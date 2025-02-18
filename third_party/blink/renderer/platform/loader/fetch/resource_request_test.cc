@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -24,9 +25,9 @@ namespace {
 
 std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
     const PermissionsPolicy* parent,
-    ParsedPermissionsPolicy header_policy,
+    network::ParsedPermissionsPolicy header_policy,
     const url::Origin& origin) {
-  ParsedPermissionsPolicy empty_container_policy;
+  network::ParsedPermissionsPolicy empty_container_policy;
   return PermissionsPolicy::CreateFromParentPolicy(
       parent, header_policy, empty_container_policy, origin);
 }

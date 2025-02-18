@@ -399,6 +399,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -2421,7 +2422,7 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 #endif
 }
 
-std::optional<blink::ParsedPermissionsPolicy>
+std::optional<network::ParsedPermissionsPolicy>
 ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::WebContents* web_contents,
     const url::Origin& app_origin) {
@@ -2441,13 +2442,13 @@ ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
       registrar.FindAllAppsNestedInUrl(
           app_origin.GetURL(), web_app::WebAppFilter::InstalledInChrome());
   if (app_ids_for_origin.empty()) {
-    return blink::ParsedPermissionsPolicy();
+    return network::ParsedPermissionsPolicy();
   }
 
   return registrar.GetPermissionsPolicy(app_ids_for_origin[0]);
 #else
   NOTIMPLEMENTED();
-  return blink::ParsedPermissionsPolicy();
+  return network::ParsedPermissionsPolicy();
 #endif
 }
 
