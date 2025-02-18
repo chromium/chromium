@@ -171,6 +171,12 @@ GetSignalsContract() {
       base::BindRepeating(VerifyIsSettingInteger, names::kScreenLockSecured);
 
 #if BUILDFLAG(IS_WIN)
+
+  // TODO(crbug.com/396369157): Change this to expect an integer value once the
+  // feature flag is on by default.
+  contract[names::kAntivirusState] =
+      base::BindRepeating(VerifyUnset, names::kAntivirusState);
+
   contract[names::kWindowsMachineDomain] =
       base::BindRepeating(VerifyOptionalString, names::kWindowsMachineDomain);
   contract[names::kWindowsUserDomain] =
@@ -202,6 +208,8 @@ GetSignalsContract() {
 
 #else
   // Windows-only signals that shouldn't be set on other platforms.
+  contract[names::kAntivirusState] =
+      base::BindRepeating(VerifyUnset, names::kAntivirusState);
   contract[names::kWindowsMachineDomain] =
       base::BindRepeating(VerifyUnset, names::kWindowsMachineDomain);
   contract[names::kWindowsUserDomain] =

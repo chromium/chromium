@@ -16,6 +16,10 @@ const char kAgentId[] = "agentId";
 // policy https://chromeenterprise.google/policies/?policy=AllowScreenLock.
 const char kAllowScreenLock[] = "allowScreenLock";
 
+// Name of the signal indicating the state of antivirus software on the
+// device.
+const char kAntivirusState[] = "antivirusState";
+
 // Name of the signal for getting information about the browser version.
 const char kBrowserVersion[] = "browserVersion";
 
