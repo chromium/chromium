@@ -159,6 +159,19 @@ AccountCapabilities FakeSystemIdentityManager::GetVisibleCapabilities(
   return details.visibleCapabilities;
 }
 
+void FakeSystemIdentityManager::SetInstantlyFillHostedDomainCache(
+    bool instantly_fill) {
+  instantly_fill_hosted_domain_cache_ = instantly_fill;
+}
+
+void FakeSystemIdentityManager::SetGetHostedDomainError(NSError* error) {
+  get_hosted_domain_error_ = error;
+}
+
+size_t FakeSystemIdentityManager::GetNumHostedDomainErrorsReturned() const {
+  return num_hosted_domain_errors_returned_;
+}
+
 void FakeSystemIdentityManager::FireSystemIdentityReloaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FireIdentityListChanged();
@@ -363,8 +376,12 @@ void FakeSystemIdentityManager::GetHostedDomain(id<SystemIdentity> identity,
 NSString* FakeSystemIdentityManager::GetCachedHostedDomainForIdentity(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NSString* domain = FakeGetHostedDomainForIdentity(identity);
-  return [domain isEqualToString:@"gmail.com"] ? @"" : domain;
+  if (instantly_fill_hosted_domain_cache_ ||
+      [hosted_domain_cache_ containsObject:identity]) {
+    NSString* domain = FakeGetHostedDomainForIdentity(identity);
+    return [domain isEqualToString:@"gmail.com"] ? @"" : domain;
+  }
+  return nil;
 }
 
 void FakeSystemIdentityManager::FetchCapabilities(
@@ -489,10 +506,19 @@ void FakeSystemIdentityManager::GetHostedDomainAsync(
     HostedDomainCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (![storage_ containsIdentityWithGaiaID:identity.gaiaID]) {
-    // The identity was removed before async method was called. There is
+    // The identity was removed before the async method was called. There is
     // nothing to do.
     return;
   }
+  // If a GetHostedDomain error has been set up, return that.
+  if (get_hosted_domain_error_) {
+    ++num_hosted_domain_errors_returned_;
+    std::move(callback).Run(nil, get_hosted_domain_error_);
+    return;
+  }
+  // No error -> success! The hosted domain is now also available via
+  // GetCachedHostedDomainForIdentity().
+  [hosted_domain_cache_ addObject:identity];
   std::move(callback).Run(FakeGetHostedDomainForIdentity(identity), nil);
 }
 

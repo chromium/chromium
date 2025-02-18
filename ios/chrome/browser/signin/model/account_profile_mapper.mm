@@ -239,7 +239,7 @@ class AccountProfileMapper::Assigner
   void FetchHostedDomain();
   // Called when the hosted domain for `identity` has been fetched
   // asynchronously. Triggers the assignment to an appropriate profile.
-  void HostedDomainedFetched(NSString* hosted_domain, NSError* error);
+  void HostedDomainFetched(NSString* hosted_domain, NSError* error);
   // Ensure that each identity is fetched at least twice, and
   // kMinimalNumberOfRetry fetches are tried.
   void ResetNumberOfFetchTries();
@@ -612,7 +612,7 @@ void AccountProfileMapper::Assigner::FetchHostedDomainNow() {
   [system_identities_to_fetch_ insertObject:identity atIndex:0];
   system_identity_manager_->GetHostedDomain(
       identity,
-      base::BindOnce(&AccountProfileMapper::Assigner::HostedDomainedFetched,
+      base::BindOnce(&AccountProfileMapper::Assigner::HostedDomainFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -624,7 +624,7 @@ void AccountProfileMapper::Assigner::FetchHostedDomain() {
       backoff_entry_.GetTimeUntilRelease());
 }
 
-void AccountProfileMapper::Assigner::HostedDomainedFetched(
+void AccountProfileMapper::Assigner::HostedDomainFetched(
     NSString* hosted_domain,
     NSError* error) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
