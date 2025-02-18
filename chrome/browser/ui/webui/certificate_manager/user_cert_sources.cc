@@ -367,7 +367,7 @@ void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
       std::move(import_callback_)
           .Run(certificate_manager_v2::mojom::ActionResult::NewError(
               l10n_util::GetStringUTF8(
-                  IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR)));
+                  IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_INVALID_FILE)));
       return;
     }
     std::move(import_callback_)
