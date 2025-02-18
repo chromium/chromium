@@ -86,6 +86,7 @@ export class GlicAppController implements PageInterface {
     // needed.
     this.onLoadCommit = this.onLoadCommit.bind(this);
     this.contentLoaded = this.contentLoaded.bind(this);
+    this.onLoadStop = this.onLoadStop.bind(this);
     this.onNewWindow = this.onNewWindow.bind(this);
     this.onPermissionRequest = this.onPermissionRequest.bind(this);
     this.onUnresponsive = this.onUnresponsive.bind(this);
@@ -115,6 +116,12 @@ export class GlicAppController implements PageInterface {
 
   private onLoadCommit(e: any): void {
     this.loadCommit(e.url, e.isTopLevel);
+  }
+
+  private onLoadStop(): void {
+    if (this.webview) {
+      this.webview.focus();
+    }
   }
 
   private onNewWindow(e: Event): void {
@@ -292,6 +299,7 @@ export class GlicAppController implements PageInterface {
 
     webview.addEventListener('loadcommit', this.onLoadCommit);
     webview.addEventListener('contentload', this.contentLoaded);
+    webview.addEventListener('loadstop', this.onLoadStop);
     webview.addEventListener('newwindow', this.onNewWindow);
     webview.addEventListener('permissionrequest', this.onPermissionRequest);
     webview.addEventListener('unresponsive', this.onUnresponsive);
@@ -371,6 +379,7 @@ export class GlicAppController implements PageInterface {
 
     this.webview.removeEventListener('loadcommit', this.onLoadCommit);
     this.webview.removeEventListener('contentload', this.contentLoaded);
+    this.webview.removeEventListener('loadstop', this.onLoadStop);
     this.webview.removeEventListener('newwindow', this.onNewWindow);
     this.webview.removeEventListener(
         'permissionrequest', this.onPermissionRequest);
