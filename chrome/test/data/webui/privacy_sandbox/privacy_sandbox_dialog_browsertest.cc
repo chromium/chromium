@@ -84,6 +84,11 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, CombinedAdsApiUxEnhancement) {
   RunTestSuite("CombinedAdsApiUxEnhancement");
 }
 
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest,
+                       CombinedAdsApiUxEnhancementAdTopicsContentParity) {
+  RunTestSuite("CombinedAdsApiUxEnhancementAdTopicsContentParity");
+}
+
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeEEAAdsApiUxEnhancement) {
   RunTestSuite("NoticeEEAAdsApiUxEnhancement");
 }

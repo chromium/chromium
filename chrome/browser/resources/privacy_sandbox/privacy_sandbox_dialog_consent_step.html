@@ -48,8 +48,8 @@
     </template>
     <template is="dom-if" if="[[shouldShowV2()]]">
       <div id="consentContentV2">
-        <div class="section cr-secondary-text">
-          $i18n{m1ConsentDescription2V2}
+        <div id="consentContentV2FirstDescription" class="section cr-secondary-text">
+          [[consentContentV2FirstDescription_]]
         </div>
         <div class="banner">
           <img class="topics-banner" alt="">
@@ -64,13 +64,20 @@
             <li>$i18nRaw{m1ConsentLearnmoreBullet1V2}</li>
             <li>$i18nRaw{m1ConsentLearnmoreBullet2V2}</li>
             <template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
-              <div class="learn-more-bullet-description">
-                $i18nRaw{m1ConsentLearnmoreBullet2Description}
-              </div>
+              <template is="dom-if" if="[[!shouldShowAdTopicsContentParity_]]">
+                <div id="learnMoreBulletDescription" class="learn-more-bullet-description">
+                  $i18nRaw{m1ConsentLearnmoreBullet2Description}
+                </div>
+              </template>
+              <template is="dom-if" if="[[shouldShowAdTopicsContentParity_]]">
+                <div id="learnMoreBulletDescriptionContentParity" class="learn-more-bullet-description">
+                  $i18nRaw{m1ConsentLearnMoreBullet2DescriptionContentParity}
+                </div>
+              </template>
             </template>
             <template is="dom-if" if="[[!isPrivacyPolicyLinkEnabled_]]">
-              <div class="learn-more-bullet-description">
-                $i18n{m1ConsentLearnmoreBullet2DescriptionNoLink}
+              <div id="learnMoreBulletDescriptionNoLink" class="learn-more-bullet-description">
+                [[learnMoreBulletDescriptionNoLink_]]
               </div>
             </template>
             <li>$i18nRaw{m1ConsentLearnmoreBullet3V2}</li>
