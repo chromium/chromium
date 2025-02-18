@@ -51,6 +51,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Content error"/>
 </enum>
 
+<enum name="MicrosoftFilesRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="JSON parse error"/>
+  <int value="3" label="Content error"/>
+  <int value="4" label="Throttling error"/>
+  <int value="5" label="Unauthorized error"/>
+</enum>
+
 <enum name="MvtReselectUrlMatchResult">
   <summary>
     For MVT Reselect: The degree of match between the &quot;key&quot; URL from a

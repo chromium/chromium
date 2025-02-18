@@ -322,6 +322,29 @@ std::string GetTimeNowAsString() {
   return TimeFormatAsIso8601(base::Time::Now());
 }
 
+// Emits the total number of Microsoft drive items found in the response. Note:
+// The Microsoft Graph API by default returns a max of 100 files per endpoint.
+// For the recent & shared files experiment arm, 2 endpoints are being used, so
+// the max files returned may be 200.
+void RecordResponseValueCount(int count) {
+  base::UmaHistogramCustomCounts(
+      /*name=*/"NewTabPage.MicrosoftFiles.ResponseResult",
+      /*sample=*/count, /*min=*/1, /*exclusive_max=*/201, /*buckets=*/50);
+}
+
+// Emits the result of the request for files.
+void RecordFilesRequestResult(MicrosoftFilesRequestResult result) {
+  base::UmaHistogramEnumeration("NewTabPage.MicrosoftFiles.RequestResult",
+                                result);
+}
+
+// Emits the time in seconds that should be waited before attempting another
+// request.
+void RecordThrottlingWaitTime(base::TimeDelta seconds) {
+  base::UmaHistogramTimes("NewTabPage.MicrosoftFiles.ThrottlingWaitTime",
+                          seconds);
+}
+
 }  // namespace
 
 // static
@@ -456,6 +479,8 @@ void MicrosoftFilesPageHandler::OnJsonReceived(
     GetFilesCallback callback,
     std::unique_ptr<std::string> response_body) {
   const int net_error = url_loader_->NetError();
+  MicrosoftFilesRequestResult request_result =
+      MicrosoftFilesRequestResult::kNetworkError;
 
   // Check for unauthorized and throttling errors.
   auto* response_info = url_loader_->ResponseInfo();
@@ -463,10 +488,13 @@ void MicrosoftFilesPageHandler::OnJsonReceived(
     int64_t wait_time =
         response_info->headers->GetInt64HeaderValue("Retry-After");
     if (wait_time != -1) {
+      request_result = MicrosoftFilesRequestResult::kThrottlingError;
+      RecordThrottlingWaitTime(base::Seconds(wait_time));
       pref_service_->SetTime(prefs::kNtpMicrosoftFilesModuleRetryAfterTime,
                              base::Time::Now() + base::Seconds(wait_time));
     } else if (response_info->headers->response_code() ==
                net::HTTP_UNAUTHORIZED) {
+      request_result = MicrosoftFilesRequestResult::kAuthError;
       microsoft_auth_service_->SetAuthStateError();
     }
   }
@@ -479,6 +507,7 @@ void MicrosoftFilesPageHandler::OnJsonReceived(
         base::BindOnce(&MicrosoftFilesPageHandler::OnJsonParsed,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
+    RecordFilesRequestResult(request_result);
     std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
   }
 }
@@ -487,6 +516,7 @@ void MicrosoftFilesPageHandler::OnJsonParsed(
     GetFilesCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
+    RecordFilesRequestResult(MicrosoftFilesRequestResult::kJsonParseError);
     std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     return;
   }
@@ -508,9 +538,12 @@ void MicrosoftFilesPageHandler::CreateTrendingFiles(GetFilesCallback callback,
                                                     base::Value::Dict result) {
   auto* suggestions = result.FindList("value");
   if (!suggestions) {
+    RecordFilesRequestResult(MicrosoftFilesRequestResult::kContentError);
     std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     return;
   }
+
+  RecordResponseValueCount(suggestions->size());
 
   std::vector<file_suggestion::mojom::FilePtr> created_suggestions;
   const size_t num_max_files =
@@ -529,6 +562,7 @@ void MicrosoftFilesPageHandler::CreateTrendingFiles(GetFilesCallback callback,
         "resourceVisualization.mediaType");
 
     if (!id || !title || !url || !mime_type) {
+      RecordFilesRequestResult(MicrosoftFilesRequestResult::kContentError);
       std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
       return;
     }
@@ -551,6 +585,7 @@ void MicrosoftFilesPageHandler::CreateTrendingFiles(GetFilesCallback callback,
     created_suggestions.push_back(std::move(created_file));
   }
 
+  RecordFilesRequestResult(MicrosoftFilesRequestResult::kSuccess);
   std::move(callback).Run(std::move(created_suggestions));
 }
 
@@ -559,8 +594,26 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
     base::Value::Dict result) {
   auto* responses = result.FindList("responses");
   if (!responses) {
+    RecordFilesRequestResult(MicrosoftFilesRequestResult::kContentError);
     std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     return;
+  }
+
+  // The response body should contain a list that has 2 dictionaries - one for
+  // each request, with their own lists containing file data.
+  if (responses->size() != 2) {
+    RecordFilesRequestResult(MicrosoftFilesRequestResult::kContentError);
+    std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+    return;
+  } else {
+    const base::Value::List* first_response =
+        (*responses)[0].GetDict().FindListByDottedPath("body.value");
+    const base::Value::List* second_response =
+        (*responses)[1].GetDict().FindListByDottedPath("body.value");
+    if (first_response && second_response) {
+      const int total_count = first_response->size() + second_response->size();
+      RecordResponseValueCount(total_count);
+    }
   }
 
   std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
@@ -572,6 +625,7 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
     auto* suggestions = response_dict.FindListByDottedPath("body.value");
 
     if (!suggestions) {
+      RecordFilesRequestResult(MicrosoftFilesRequestResult::kContentError);
       std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
       return;
     }
@@ -630,6 +684,7 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
                                               &sort_time);
       if (!id || !title || !item_url || !last_modified_time_str ||
           !suggestion_has_formatted_time) {
+        RecordFilesRequestResult(MicrosoftFilesRequestResult::kContentError);
         std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
         return;
       }
@@ -672,6 +727,7 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
   std::vector<file_suggestion::mojom::FilePtr> sorted_suggestions =
       SortAndRemoveDuplicates(std::move(unsorted_suggestions));
 
+  RecordFilesRequestResult(MicrosoftFilesRequestResult::kSuccess);
   std::move(callback).Run(std::move(sorted_suggestions));
 }
 

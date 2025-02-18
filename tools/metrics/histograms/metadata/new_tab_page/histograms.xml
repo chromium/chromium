@@ -635,6 +635,63 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.MicrosoftFiles.FileClick" units="index"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the index of a file within the Microsoft files module, with the first
+    file index at 0. Recorded when a file is clicked. Only logged on the 1P NTP.
+    Note that even if the user has Google as their default search engine,
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.MicrosoftFiles.RequestResult"
+    enum="MicrosoftFilesRequestResult" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The result from requesting user files from the Microsoft Graph API. Recorded
+    after every request. Only logged on the 1P NTP. Note that even if the user
+    has Google as their default search engine, Incognito and Guest mode NTPs are
+    not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.MicrosoftFiles.ResponseResult" units="count"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The response size retrieved from the Microsoft Graph API. Recorded when a
+    successful response is retrieved. A response is successful only if the
+    response body for each request contains a list with Microsoft drive item
+    info, which can be empty. May be more than the amount of files shown. Only
+    logged on the 1P NTP. Note that even if the user has Google as their default
+    search engine, Incognito and Guest mode NTPs are not considered 1P and don't
+    log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.MicrosoftFiles.ThrottlingWaitTime" units="seconds"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Time in seconds that should be waited out before attempting another request
+    to the Microosft Graph API because of throttling. Recorded when the response
+    is receieved. Only logged on the 1P NTP. Note that even if the user has
+    Google as their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Module.Click" enum="ModuleTypeOnStartAndNTP"
     expires_after="2025-07-27">
   <owner>hanxi@chromium.org</owner>
