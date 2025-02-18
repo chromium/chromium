@@ -582,11 +582,16 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
     // Attach the impression regardless, the embedder will be able to drop
     // impressions for subframe navigations.
 
-    frame_request.SetImpression(
+    std::optional<Impression> impression =
         frame->GetAttributionSrcLoader()->RegisterNavigation(
             /*navigation_url=*/completed_url, attribution_src,
             /*element=*/this, request.HasUserGesture(),
-            request.GetReferrerPolicy()));
+            request.GetReferrerPolicy());
+    if (impression.has_value()) {
+      impression->is_empty_attribution_src_tag = attribution_src.empty();
+    }
+
+    frame_request.SetImpression(impression);
   }
 
   Frame* target_frame =
