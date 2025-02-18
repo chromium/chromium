@@ -8697,7 +8697,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
        Hide for 12 hours
       </message>
       <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_HEADING" desc="First line of text shown in the Microsoft Authentication module.">
-       See your Outlook Calendar and Sharepoint files
+       See your Outlook Calendar and SharePoint and OneDrive files
       </message>
       <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_SUBHEADING" desc="Second line of text shown in the Microsoft Authentication module.">
        Easily access recent documents and upcoming calendar events
@@ -8706,7 +8706,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
        Sign in with Microsoft
       </message>
       <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION" desc="Text in the side panel describing the Microsoft Authentication module.">
-       If this card is disabled, your Microsoft cards such as Sharepoint and Outlook Calendar will be disabled as well.
+       If this card is disabled, your Microsoft cards such as SharePoint and OneDrive files and Outlook Calendar will be disabled as well.
       </message>
 
       <!-- Mobile NTP Middle Slot Promo -->
