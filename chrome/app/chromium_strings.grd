@@ -805,7 +805,7 @@ Chromium is unable to recover your settings.
         Google API keys are missing. Some functionality of Chromium will be disabled.
       </message>
 
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <!-- Extension installed bubble -->
         <message name="IDS_EXTENSION_INSTALLED_HEADING" desc="Title of the extension-installed bubble. Instructs that the extension was installed.">
           <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph> has been added to Chromium

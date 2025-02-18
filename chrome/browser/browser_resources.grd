@@ -221,9 +221,11 @@
         <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings\internal\pref_hash_seed.bin" type="BINDATA" />
         <include name="IDR_ADDITIONAL_MODULE_IDS" file="${additional_modules_list_file}" use_base_dir="false" type="BINDATA" />
       </if>
-      <if expr="not is_android">
+      <if expr="not is_android or enable_extensions_core">
         <!-- Page not available for guest. -->
         <include name="IDR_PAGE_NOT_AVAILABLE_FOR_GUEST_APP_HTML" file="resources\page_not_available_for_guest\app.html" type="BINDATA" />
+      </if>
+      <if expr="not is_android">
         <include name="IDR_IME_WINDOW_CLOSE" file="resources\input_ime\ime_window_close.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_C" file="resources\input_ime\ime_window_close_click.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_H" file="resources\input_ime\ime_window_close_hover.png" type="BINDATA" />

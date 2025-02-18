@@ -50,15 +50,24 @@ generate_grd("build_grd") {
     "$target_gen_dir/mojo/resources.grdp",
   ]
 
+  if ((!is_android && !is_ios) || is_desktop_android) {
+    public_deps += [
+      "cr_components/cr_shortcut_input:build_grdp",
+      "cr_components/managed_footnote:build_grdp",
+    ]
+    grdp_files += [
+      "$target_gen_dir/cr_components/cr_shortcut_input/resources.grdp",
+      "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
+    ]
+  }
+
   if (!is_android && !is_ios) {
     public_deps += [
       "cr_components/app_management:build_grdp",
-      "cr_components/cr_shortcut_input:build_grdp",
       "cr_components/customize_color_scheme_mode:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/localized_link:build_grdp",
       "cr_components/managed_dialog:build_grdp",
-      "cr_components/managed_footnote:build_grdp",
       "cr_components/most_visited:build_grdp",
       "cr_components/theme_color_picker:build_grdp",
       "//third_party/d3:build_grdp",
@@ -69,12 +78,10 @@ generate_grd("build_grd") {
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/theme_color_picker/resources.grdp",
-      "$target_gen_dir/cr_components/cr_shortcut_input/resources.grdp",
       "$target_gen_dir/cr_components/customize_color_scheme_mode/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
       "$target_gen_dir/cr_components/localized_link/resources.grdp",
       "$target_gen_dir/cr_components/managed_dialog/resources.grdp",
-      "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
     ]
 

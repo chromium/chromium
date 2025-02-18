@@ -1401,10 +1401,6 @@ static_library("ui") {
       "webui/extension_control_handler.h",
       "webui/extensions/extensions_internals_source.cc",
       "webui/extensions/extensions_internals_source.h",
-      "webui/extensions/extensions_ui.cc",
-      "webui/extensions/extensions_ui.h",
-      "webui/favicon_source.cc",
-      "webui/favicon_source.h",
       "webui/feedback/feedback_dialog.cc",
       "webui/feedback/feedback_dialog.h",
       "webui/feedback/feedback_handler.cc",
@@ -1426,8 +1422,6 @@ static_library("ui") {
       "webui/history_clusters/history_clusters_handler.h",
       "webui/inspect/inspect_ui.cc",
       "webui/inspect/inspect_ui.h",
-      "webui/managed_ui_handler.cc",
-      "webui/managed_ui_handler.h",
       "webui/management/management_ui.cc",
       "webui/management/management_ui.h",
       "webui/management/management_ui_constants.cc",
@@ -1475,8 +1469,6 @@ static_library("ui") {
       "webui/on_device_internals/on_device_internals_page_handler.h",
       "webui/on_device_internals/on_device_internals_ui.cc",
       "webui/on_device_internals/on_device_internals_ui.h",
-      "webui/page_not_available_for_guest/page_not_available_for_guest_ui.cc",
-      "webui/page_not_available_for_guest/page_not_available_for_guest_ui.h",
       "webui/password_manager/password_manager_ui.cc",
       "webui/password_manager/password_manager_ui.h",
       "webui/password_manager/promo_card.cc",
@@ -1485,8 +1477,6 @@ static_library("ui") {
       "webui/password_manager/promo_cards_handler.h",
       "webui/password_manager/sync_handler.cc",
       "webui/password_manager/sync_handler.h",
-      "webui/plural_string_handler.cc",
-      "webui/plural_string_handler.h",
       "webui/policy_indicator_localized_strings_provider.cc",
       "webui/policy_indicator_localized_strings_provider.h",
       "webui/privacy_sandbox/privacy_sandbox_dialog_handler.cc",
@@ -5275,6 +5265,18 @@ static_library("ui") {
   }
 
   if (enable_extensions_core) {
+    sources += [
+      "webui/extensions/extensions_ui.cc",
+      "webui/extensions/extensions_ui.h",
+      "webui/favicon_source.cc",
+      "webui/favicon_source.h",
+      "webui/managed_ui_handler.cc",
+      "webui/managed_ui_handler.h",
+      "webui/page_not_available_for_guest/page_not_available_for_guest_ui.cc",
+      "webui/page_not_available_for_guest/page_not_available_for_guest_ui.h",
+      "webui/plural_string_handler.cc",
+      "webui/plural_string_handler.h",
+    ]
     deps += [ "//chrome/browser/extensions" ]
     allow_circular_includes_from += [ "//chrome/browser/extensions" ]
   }
@@ -5686,6 +5688,9 @@ static_library("ui_public_dependencies") {
     "//mojo/public/cpp/bindings",
     "//ui/webui/resources",
   ]
+  if (enable_extensions_core) {
+    public_deps += [ "//extensions/browser" ]
+  }
   if (!is_android) {
     public_deps += [
       "//build:branding_buildflags",

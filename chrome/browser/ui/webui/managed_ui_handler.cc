@@ -113,9 +113,11 @@ void ManagedUIHandler::RemoveObservers() {
 
 base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
   base::Value::Dict update;
+#if !BUILDFLAG(IS_ANDROID)
   update.Set("managedByIcon", GetManagedUiWebUIIcon(profile_));
   update.Set("managementPageUrl", GetManagedUiUrl(profile_).spec());
   update.Set("browserManagedByOrg", GetManagedUiWebUILabel(profile_));
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   update.Set("deviceManagedByOrg", GetDeviceManagedUiWebUILabel());
 #endif

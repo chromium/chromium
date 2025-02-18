@@ -99,7 +99,7 @@
       </if>
       <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON" file="common/default_favicon.png" />
       <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK" file="common/default_favicon_dark.png" />
-      <if expr="not is_android">
+      <if expr="not is_android or is_desktop_android">
         <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_32" file="common/default_favicon_32.png" />
         <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK_32" file="common/default_favicon_dark_32.png" />
         <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_64" file="common/default_favicon_64.png" />

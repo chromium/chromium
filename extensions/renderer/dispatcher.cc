@@ -32,6 +32,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -1504,11 +1505,13 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
     module_system->Require("appViewDeny");
   }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Require ExtensionOptions.
   if (context->GetAvailability("extensionOptionsInternal").is_available()) {
     requires_guest_view_module = true;
     module_system->Require("extensionOptionsElement");
   }
+#endif
 
   // Require WebView.
   if (context->GetAvailability("webViewInternal").is_available()) {
