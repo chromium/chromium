@@ -257,7 +257,7 @@ bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {
   return contents ? contents->GetController().CanGoBack() : false;
 }
 
-void ChromeShellDelegate::SetTabScrubberChromeOSEnabled(bool enabled) {
+void ChromeShellDelegate::SetTabScrubberEnabled(bool enabled) {
   ash::TabScrubber::GetInstance()->SetEnabled(enabled);
 }
 
