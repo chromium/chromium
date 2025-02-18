@@ -112,6 +112,10 @@ const char kFirstContentfulPaint[] = "FirstContentfulPaint";
 const char kDOMContentLoaded[] = "DOMContentLoaded";
 const char kLoadEventStarted[] = "LoadEventStarted";
 const char kLargestContentfulPaint[] = "LargestContentfulPaint";
+const char kMilestoneSecondRedirectedRequestStart[] =
+    "SecondRedirectedRequestStart";
+const char kMilestoneSecondRedirectResponseStart[] =
+    "SecondRedirectResponseStart";
 
 const char kAFTStart[] = "AFTStart";
 const char kAFTEnd[] = "AFTEnd";
@@ -230,6 +234,10 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kBodyChunkStart;
     case NavigationMilestone::kBodyChunkEnd:
       return internal::kBodyChunkEnd;
+    case NavigationMilestone::kSecondRedirectResponseStart:
+      return internal::kMilestoneSecondRedirectResponseStart;
+    case NavigationMilestone::kSecondRedirectedRequestStart:
+      return internal::kMilestoneSecondRedirectedRequestStart;
   }
 }
 
@@ -531,6 +539,8 @@ void AbandonedPageLoadMetricsObserver::LogUKMHistograms(
       case NavigationMilestone::kCommitSent:
       case NavigationMilestone::kCommitReceived:
       case NavigationMilestone::kDidCommit:
+      case NavigationMilestone::kSecondRedirectResponseStart:
+      case NavigationMilestone::kSecondRedirectedRequestStart:
         break;
     }
   }
@@ -546,8 +556,8 @@ void AbandonedPageLoadMetricsObserver::LogLoadingMilestone(
   if (loading_milestones_.contains(milestone)) {
     return;
   }
-  CHECK_GE(milestone, NavigationMilestone::kParseStart);
-  CHECK_LE(milestone, NavigationMilestone::kBodyChunkEnd);
+  CHECK_GE(milestone, NavigationMilestone::kFirstEssentialLoadingEvent);
+  CHECK_LE(milestone, NavigationMilestone::kLastEssentialLoadingEvent);
   LogMilestoneHistogram(milestone, time);
   loading_milestones_[milestone] = time;
 }
@@ -761,13 +771,13 @@ void AbandonedPageLoadMetricsObserver::FinalizeLCP() {
 }
 
 bool AbandonedPageLoadMetricsObserver::DidLogAllLoadingMilestones() const {
-  CHECK_EQ(NavigationMilestone::kBodyChunkEnd, NavigationMilestone::kMaxValue);
   // We've logged all loading milestones if the map contains all the loading
   // milestones. Since the keys are unique in the map, we only need to check if
   // we have amount of entries is the same as the amount of loading milestones.
   return loading_milestones_.size() ==
-         (static_cast<int>(NavigationMilestone::kBodyChunkEnd) -
-          static_cast<int>(NavigationMilestone::kParseStart) + 1);
+         (static_cast<int>(NavigationMilestone::kLastEssentialLoadingEvent) -
+          static_cast<int>(NavigationMilestone::kFirstEssentialLoadingEvent) +
+          1);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

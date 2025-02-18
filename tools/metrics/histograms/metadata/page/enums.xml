@@ -236,6 +236,8 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="kHeaderChunkEnd"/>
   <int value="20" label="kBodyChunkStart"/>
   <int value="21" label="kBodyChunkEnd"/>
+  <int value="22" label="kSecondRedirectedRequestStart"/>
+  <int value="23" label="kSecondedirectResponseStart"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->

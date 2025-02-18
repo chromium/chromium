@@ -43,6 +43,8 @@ class AbandonedPageLoadMetricsObserver
   enum class NavigationMilestone {
     kNavigationStart = 0,
     kLoaderStart = 1,
+    // The `kFirstRedirected*` milestones are optional. They will not be
+    // recorded if the navigation did not involve any redirects.
     kFirstRedirectedRequestStart = 2,
     kFirstRedirectResponseStart = 3,
     kFirstRedirectResponseLoaderCallback = 4,
@@ -57,13 +59,29 @@ class AbandonedPageLoadMetricsObserver
     kDOMContentLoaded = 13,
     kLoadEventStarted = 14,
     kLargestContentfulPaint = 15,
+
+    // TODO(crbug.com/390216631): Move `kAFT*`, `kHeaderChunk*`, `kBodyChunk*`
+    // milestones to GWSAbandonedPLMO as they may only appear in certain
+    // navigations.
     kAFTStart = 16,
     kAFTEnd = 17,
     kHeaderChunkStart = 18,
     kHeaderChunkEnd = 19,
     kBodyChunkStart = 20,
     kBodyChunkEnd = 21,
-    kMaxValue = kBodyChunkEnd,
+
+    // The `kSecondRedirected*` milestones are optional. They will not be
+    // recorded if the navigation had at most one redirect.
+    kSecondRedirectedRequestStart = 22,
+    kSecondRedirectResponseStart = 23,
+
+    kMaxValue = kSecondRedirectResponseStart,
+    // `kFirstEssentialLoadingEvent` and `kLastEssentialLoadingEvent` aliases to
+    // the first / last loading milestones which always exists unless abandoned.
+    // Note that events such as `kAFT*`, `kHeaderChunk*` and `kBodyChunk*` only
+    // appears in certain navigations, hence these events may not be mandatory.
+    kFirstEssentialLoadingEvent = kParseStart,
+    kLastEssentialLoadingEvent = kBodyChunkEnd,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum2)
 
@@ -464,6 +482,8 @@ void AbandonedPageLoadMetricsObserver::LogUKMHistogramsForMilestoneMetrics(
       case NavigationMilestone::kCommitSent:
       case NavigationMilestone::kCommitReceived:
       case NavigationMilestone::kDidCommit:
+      case NavigationMilestone::kSecondRedirectResponseStart:
+      case NavigationMilestone::kSecondRedirectedRequestStart:
         break;
     }
   }
