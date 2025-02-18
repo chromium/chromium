@@ -243,58 +243,70 @@ DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
   if (delegation_result.has_value()) {
     OverlayCandidateList delegated_candidates =
         std::move(delegation_result.value().candidates);
-    PromotedRenderPassesInfo promoted_render_passes_info =
-        std::move(delegation_result.value().promoted_render_passes_info);
+    if (!is_full_delegated_compositing) {
+      PromotedRenderPassesInfo promoted_render_passes_info =
+          std::move(delegation_result.value().promoted_render_passes_info);
 
-    DCLayerOverlayProcessor::RenderPassOverlayDataMap
-        surface_content_render_passes =
-            UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
-                is_full_delegated_compositing, *render_passes,
-                promoted_render_passes_info);
+      DCLayerOverlayProcessor::RenderPassOverlayDataMap
+          surface_content_render_passes =
+              UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
+                  *render_passes, promoted_render_passes_info);
 
-    dc_layer_overlay_processor_->Process(
-        resource_provider, render_pass_filters, render_pass_backdrop_filters,
-        surface_damage_rect_list_in_root_space, is_page_fullscreen_mode_,
-        surface_content_render_passes);
+      dc_layer_overlay_processor_->Process(
+          resource_provider, render_pass_filters, render_pass_backdrop_filters,
+          surface_damage_rect_list_in_root_space, is_page_fullscreen_mode_,
+          surface_content_render_passes);
 
-    // Remove entries that were not seen this frame. These counters are used
-    // to avoid thrashing between swap chain and DComp surface allocations,
-    // but are not useful when the render pass backing itself doesn't exist.
-    base::EraseIf(
-        frames_since_using_dc_layers_map_,
-        [&surface_content_render_passes](const auto& frames_since_kv) {
-          const auto& [pass_id, _num_frames] = frames_since_kv;
-          return std::ranges::none_of(surface_content_render_passes,
-                                      [&pass_id](const auto& overlay_data_kv) {
-                                        const auto& [pass, _data] =
-                                            overlay_data_kv;
-                                        return pass_id == pass->id;
-                                      });
-        });
+      // Remove entries that were not seen this frame. These counters are used
+      // to avoid thrashing between swap chain and DComp surface allocations,
+      // but are not useful when the render pass backing itself doesn't exist.
+      base::EraseIf(
+          frames_since_using_dc_layers_map_,
+          [&surface_content_render_passes](const auto& frames_since_kv) {
+            const auto& [pass_id, _num_frames] = frames_since_kv;
+            return std::ranges::none_of(
+                surface_content_render_passes,
+                [&pass_id](const auto& overlay_data_kv) {
+                  const auto& [pass, _data] = overlay_data_kv;
+                  return pass_id == pass->id;
+                });
+          });
 
-    for (auto& [render_pass, overlay_data] : surface_content_render_passes) {
-      render_pass->damage_rect = UpdateRenderPassFromOverlayData(
-          overlay_data, render_pass, frames_since_using_dc_layers_map_,
-          frame_has_delegated_ink_);
+      for (auto& [render_pass, overlay_data] : surface_content_render_passes) {
+        render_pass->damage_rect = UpdateRenderPassFromOverlayData(
+            overlay_data, render_pass, frames_since_using_dc_layers_map_,
+            frame_has_delegated_ink_);
 
-      DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_BLUE,
-                  "Partially delegated pass{id: %llu, damage: %s}, "
-                  "overlay_data{overlays: %zu, damage: %s}",
-                  render_pass->id.value(),
-                  render_pass->damage_rect.ToString().c_str(),
-                  overlay_data.promoted_overlays.size(),
-                  overlay_data.damage_rect.ToString().c_str());
+        DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_BLUE,
+                    "Partially delegated pass{id: %llu, damage: %s}, "
+                    "overlay_data{overlays: %zu, damage: %s}",
+                    render_pass->id.value(),
+                    render_pass->damage_rect.ToString().c_str(),
+                    overlay_data.promoted_overlays.size(),
+                    overlay_data.damage_rect.ToString().c_str());
 
-      if (debug_settings_->show_dc_layer_debug_borders) {
-        InsertDebugBorderDrawQuadsForOverlayCandidates(
-            overlay_data.promoted_overlays, render_pass,
-            render_pass->damage_rect);
+        if (debug_settings_->show_dc_layer_debug_borders) {
+          InsertDebugBorderDrawQuadsForOverlayCandidates(
+              overlay_data.promoted_overlays, render_pass,
+              render_pass->damage_rect);
+        }
       }
-    }
 
-    previous_frame_overlay_rect_ =
-        InsertSurfaceContentOverlaysAndSetPlaneZOrder(
-            std::move(surface_content_render_passes), delegated_candidates);
+      previous_frame_overlay_rect_ =
+          InsertSurfaceContentOverlaysAndSetPlaneZOrder(
+              std::move(surface_content_render_passes), delegated_candidates);
+    } else {
+      // We're doing full delegated compositing so we don't have to keep track
+      // of any surfaces for render passes. If we fall out of delegated
+      // compositing this will be repopulated.
+      frames_since_using_dc_layers_map_.clear();
+
+      // The candidates are already in back-to-front order, but we will
+      // explicitly set their z-index because DCLayerTree expects it.
+      previous_frame_overlay_rect_ =
+          InsertSurfaceContentOverlaysAndSetPlaneZOrder(
+              /*surface_content_render_passes=*/{}, delegated_candidates);
+    }
 
     // Set this to the full output rect unconditionally on success. This is
     // unioned with the next frame's damage (via |GetAndResetOverlayDamage|)
@@ -593,7 +605,6 @@ OverlayProcessorWin::TryDelegatedCompositing(
 // static
 DCLayerOverlayProcessor::RenderPassOverlayDataMap OverlayProcessorWin::
     UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
-        bool is_full_delegated_compositing,
         const AggregatedRenderPassList& render_passes,
         const PromotedRenderPassesInfo& promoted_render_passes_info) {
   struct Embedder {
@@ -693,8 +704,7 @@ DCLayerOverlayProcessor::RenderPassOverlayDataMap OverlayProcessorWin::
 
     // If we're in partial delegation, we want to promote video quads out of
     // e.g. web contents surfaces as if they were the root surface.
-    if (!is_full_delegated_compositing &&
-        render_pass->is_from_surface_root_pass) {
+    if (render_pass->is_from_surface_root_pass) {
       DCLayerOverlayProcessor::RenderPassOverlayData overlay_data;
       overlay_data.damage_rect = render_pass->damage_rect;
       surface_content_render_passes.insert(
@@ -703,11 +713,6 @@ DCLayerOverlayProcessor::RenderPassOverlayDataMap OverlayProcessorWin::
       render_pass->needs_synchronous_dcomp_commit = true;
     }
   }
-
-  // If we are not doing partial delegation, we don't expect any surface content
-  // render passes.
-  CHECK(!is_full_delegated_compositing ||
-        surface_content_render_passes.empty());
 
   return surface_content_render_passes;
 }

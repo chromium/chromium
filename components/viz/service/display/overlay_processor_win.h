@@ -179,7 +179,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // TODO(crbug.com/324460866): Used for partially delegated compositing.
   static DCLayerOverlayProcessor::RenderPassOverlayDataMap
   UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
-      bool is_full_delegated_compositing,
       const AggregatedRenderPassList& render_passes,
       const PromotedRenderPassesInfo& promoted_render_passes_info);
 
