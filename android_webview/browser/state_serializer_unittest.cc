@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -123,6 +124,11 @@ class TestNavigationController : public internal::NavigationHistory,
     current_entry_ = entries_.size() - 1;
   }
 
+  void SetCurrentEntry(unsigned int index) {
+    DCHECK_LT(index, entries_.size());
+    current_entry_ = index;
+  }
+
   void Restore(int selected_entry,
                std::vector<std::unique_ptr<content::NavigationEntry>>* entries)
       override {
@@ -136,6 +142,43 @@ class TestNavigationController : public internal::NavigationHistory,
   int current_entry_ = 0;
   std::vector<std::unique_ptr<content::NavigationEntry>> entries_;
 };
+
+void AssertHistoriesEqual(TestNavigationController& lhs,
+                          TestNavigationController& rhs) {
+  EXPECT_EQ(lhs.GetEntryCount(), rhs.GetEntryCount());
+  EXPECT_EQ(lhs.GetCurrentEntry(), rhs.GetCurrentEntry());
+  for (int i = 0; i < lhs.GetEntryCount(); i++) {
+    AssertEntriesEqual(lhs.GetEntryAtIndex(i), rhs.GetEntryAtIndex(i));
+  }
+}
+
+void WriteToPickleLegacy_VersionDataUrl(internal::NavigationHistory& history,
+                                        base::Pickle* pickle) {
+  DCHECK(pickle);
+  int state_version = internal::AW_STATE_VERSION_DATA_URL;
+
+  internal::WriteHeaderToPickle(state_version, pickle);
+
+  const int entry_count = history.GetEntryCount();
+  const int selected_entry = history.GetCurrentEntry();
+  // A NavigationEntry will always exist, so there will always be at least 1
+  // entry.
+  DCHECK_GE(entry_count, 1);
+  DCHECK_GE(selected_entry, 0);
+  DCHECK_LT(selected_entry, entry_count);
+
+  pickle->WriteInt(entry_count);
+  pickle->WriteInt(selected_entry);
+  for (int i = 0; i < entry_count; ++i) {
+    internal::WriteNavigationEntryToPickle(state_version,
+                                           *history.GetEntryAtIndex(i), pickle);
+  }
+
+  // Please update AW_STATE_VERSION and IsSupportedVersion() if serialization
+  // format is changed.
+  // Make sure the serialization format is updated in a backwards compatible
+  // way.
+}
 
 }  // namespace
 
@@ -336,7 +379,8 @@ TEST_F(AndroidWebViewStateSerializerTest, TestHugeDataURLSerialization) {
   EXPECT_EQ(huge_data_url, copy->GetDataURLAsString()->as_string());
 }
 
-TEST_F(AndroidWebViewStateSerializerTest, TestSerializeMultipleEntries) {
+TEST_F(AndroidWebViewStateSerializerTest,
+       TestDeserializeLegacy_VersionDataUrl) {
   TestNavigationController controller;
 
   controller.Add(CreateNavigationEntry("http://url1"));
@@ -344,17 +388,127 @@ TEST_F(AndroidWebViewStateSerializerTest, TestSerializeMultipleEntries) {
   controller.Add(CreateNavigationEntry("http://url3"));
 
   base::Pickle pickle;
-  internal::WriteToPickle(controller, &pickle);
+  WriteToPickleLegacy_VersionDataUrl(controller, &pickle);
 
   TestNavigationController copy;
   base::PickleIterator iterator(pickle);
   internal::RestoreFromPickle(&iterator, copy);
 
-  EXPECT_EQ(controller.GetEntryCount(), copy.GetEntryCount());
-  EXPECT_EQ(controller.GetCurrentEntry(), controller.GetCurrentEntry());
-  for (int i = 0; i < controller.GetEntryCount(); i++) {
-    AssertEntriesEqual(controller.GetEntryAtIndex(i), copy.GetEntryAtIndex(i));
+  AssertHistoriesEqual(controller, copy);
+}
+
+TEST_F(AndroidWebViewStateSerializerTest, TestHistorySerialization) {
+  TestNavigationController controller;
+
+  controller.Add(CreateNavigationEntry("http://url1"));
+  controller.Add(CreateNavigationEntry("http://url2"));
+  controller.Add(CreateNavigationEntry("http://url3"));
+
+  base::Pickle pickle = internal::WriteToPickle(controller).value();
+
+  TestNavigationController copy;
+  base::PickleIterator iterator(pickle);
+  internal::RestoreFromPickle(&iterator, copy);
+
+  AssertHistoriesEqual(controller, copy);
+}
+
+TEST_F(AndroidWebViewStateSerializerTest, TestHistoryTruncation) {
+  // Create the expected result first, so we can measure it and determine what
+  // to set the max size to.
+  TestNavigationController expected;
+  expected.Add(CreateNavigationEntry("http://url2"));
+  expected.Add(CreateNavigationEntry("http://url3"));
+  size_t max_size = internal::WriteToPickle(expected)->size();
+
+  TestNavigationController controller;
+  controller.Add(CreateNavigationEntry("http://url1"));
+  controller.Add(CreateNavigationEntry("http://url2"));
+  controller.Add(CreateNavigationEntry("http://url3"));
+
+  base::Pickle pickle = internal::WriteToPickle(controller, max_size).value();
+
+  TestNavigationController copy;
+  base::PickleIterator iterator(pickle);
+  EXPECT_TRUE(internal::RestoreFromPickle(&iterator, copy));
+
+  AssertHistoriesEqual(expected, copy);
+}
+
+TEST_F(AndroidWebViewStateSerializerTest,
+       TestHistoryTruncation_MaxSizeTooSmall) {
+  size_t max_size = 0;
+
+  TestNavigationController controller;
+  controller.Add(CreateNavigationEntry("http://url1"));
+  controller.Add(CreateNavigationEntry("http://url2"));
+  controller.Add(CreateNavigationEntry("http://url3"));
+
+  std::optional<base::Pickle> maybe_pickle =
+      internal::WriteToPickle(controller, max_size);
+
+  EXPECT_FALSE(maybe_pickle.has_value());
+}
+
+TEST_F(AndroidWebViewStateSerializerTest,
+       TestHistoryTruncation_NoForwardHistory) {
+  // In this test we expect url3 to be cut, because url2 is selected and we pass
+  // save_forward_history as false.
+  TestNavigationController expected;
+  expected.Add(CreateNavigationEntry("http://url1"));
+  expected.Add(CreateNavigationEntry("http://url2"));
+  size_t max_size = internal::WriteToPickle(expected)->size();
+
+  TestNavigationController controller;
+  controller.Add(CreateNavigationEntry("http://url1"));
+  controller.Add(CreateNavigationEntry("http://url2"));
+  controller.Add(CreateNavigationEntry("http://url3"));
+  controller.SetCurrentEntry(1);
+
+  base::Pickle pickle =
+      internal::WriteToPickle(controller, max_size,
+                              /* save_forward_history= */ false)
+          .value();
+
+  TestNavigationController copy;
+  base::PickleIterator iterator(pickle);
+  EXPECT_TRUE(internal::RestoreFromPickle(&iterator, copy));
+
+  AssertHistoriesEqual(expected, copy);
+}
+
+TEST_F(AndroidWebViewStateSerializerTest,
+       TestHistoryTruncation_SelectedEntryFarBack) {
+  // The selected entry is far back in history (more than max_size) back. Make
+  // sure that we don't drop it.
+
+  // The current implementation falls back to save_forward_history = false, but
+  // the key requirement is that the selected entry is saved.
+
+  size_t max_size;
+  {
+    TestNavigationController controller;
+    controller.Add(CreateNavigationEntry("http://url2"));
+    controller.Add(CreateNavigationEntry("http://url3"));
+    max_size = internal::WriteToPickle(controller)->size();
   }
+
+  TestNavigationController expected;
+  expected.Add(CreateNavigationEntry("http://url1"));
+
+  TestNavigationController controller;
+  controller.Add(CreateNavigationEntry("http://url1"));
+  controller.Add(CreateNavigationEntry("http://url2"));
+  controller.Add(CreateNavigationEntry("http://url3"));
+  controller.SetCurrentEntry(0);
+
+  base::Pickle pickle = internal::WriteToPickle(controller, max_size).value();
+
+  TestNavigationController copy;
+  base::PickleIterator iterator(pickle);
+  EXPECT_TRUE(internal::RestoreFromPickle(&iterator, copy));
+
+  AssertHistoriesEqual(expected, copy);
 }
 
 }  // namespace android_webview

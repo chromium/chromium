@@ -1088,12 +1088,16 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
   if (web_contents_->GetController()
           .GetLastCommittedEntry()
           ->IsInitialEntry()) {
-    return ScopedJavaLocalRef<jbyteArray>();
+    return nullptr;
   }
 
-  base::Pickle pickle;
-  WriteToPickle(*web_contents_, &pickle);
-  return base::android::ToJavaByteArray(env, pickle);
+  std::optional<base::Pickle> pickle = WriteToPickle(*web_contents_);
+
+  if (!pickle.has_value()) {
+    return nullptr;
+  }
+
+  return base::android::ToJavaByteArray(env, *pickle);
 }
 
 jboolean AwContents::RestoreFromOpaqueState(
