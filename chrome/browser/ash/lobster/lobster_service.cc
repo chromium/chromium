@@ -28,12 +28,6 @@
 #include "components/manta/snapper_provider.h"
 #include "ui/display/screen.h"
 
-namespace {
-
-constexpr std::u16string_view kAnnouncementViewName = u"Lobster";
-
-}  // namespace
-
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider,
     Profile* profile)
@@ -48,8 +42,7 @@ LobsterService::LobsterService(
               image_provider_.get(),
               &candidate_id_generator_))),
       resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
-      system_state_provider_(profile),
-      announcer_(kAnnouncementViewName) {
+      system_state_provider_(profile) {
   if (profile != nullptr) {
     PrefService* pref_service = profile->GetPrefs();
     pref_change_registrar_.Init(pref_service);
@@ -143,10 +136,6 @@ void LobsterService::OnFocus(int context_id) {
 
   queued_insertion_->Commit();
   queued_insertion_ = nullptr;
-}
-
-void LobsterService::Announce(const std::u16string& message) {
-  announcer_.Announce(message);
 }
 
 bool LobsterService::OverrideLobsterImageProviderForTesting() {

@@ -46,7 +46,6 @@ class ASH_PUBLIC_EXPORT LobsterClient {
   // equivalent to getting the active user's account ID when this class was
   // created.
   virtual const AccountId& GetAccountId() = 0;
-  virtual void Announce(const std::u16string& message) = 0;
 };
 
 }  // namespace ash
