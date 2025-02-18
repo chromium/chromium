@@ -104,7 +104,8 @@ public class AppModalPresenterTest {
                             new ModalDialogManager(
                                     new AppModalPresenter(sActivity),
                                     ModalDialogManager.ModalDialogType.APP,
-                                    sEdgeToEdgeStateSupplier);
+                                    sEdgeToEdgeStateSupplier,
+                                    /* isEdgeToEdgeEverywhereEnabled= */ false);
                     sInsetObserver =
                             new InsetObserver(
                                     new ImmutableWeakReference<>(

@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.modaldialog;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
@@ -521,6 +522,15 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
     int getVerticalMarginForTesting() {
         return mVerticalMargin;
+    }
+
+    /**
+     * Set padding to the dialog view.
+     *
+     * @param padding The padding to be applied to the dialog view.
+     */
+    void setPadding(Rect padding) {
+        setPadding(padding.left, padding.top, padding.right, padding.bottom);
     }
 
     /**

@@ -4,6 +4,7 @@
 
 package org.chromium.ui.modaldialog;
 
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -284,6 +285,9 @@ public class ModalDialogProperties {
     /** The minimum vertical margin used by the dialog relative to the window. */
     public static final WritableIntPropertyKey VERTICAL_MARGIN = new WritableIntPropertyKey();
 
+    /** The padding used by the dialog content view. */
+    public static final WritableObjectPropertyKey<Rect> PADDING = new WritableObjectPropertyKey();
+
     /**
      * Whether the positive button should draw an indeterminate spinner within the button while
      * awaiting a pending result. Only one of the positive or negative buttons should have the
@@ -340,6 +344,7 @@ public class ModalDialogProperties {
                 TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE,
                 HORIZONTAL_MARGIN,
                 VERTICAL_MARGIN,
+                PADDING,
                 POSITIVE_BUTTON_LOADING,
                 NEGATIVE_BUTTON_LOADING,
                 BLOCK_INPUTS,
