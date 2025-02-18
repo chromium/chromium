@@ -4669,51 +4669,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FillingProduct" variants="Autofill.FillingProduct"/>
 </histogram>
 
-<histogram name="Autofill.PreFilledFieldClassifications.{FormType}"
-    enum="AutofillPreFilledFieldClassifications" expires_after="2025-02-23">
-  <owner>bwolfgang@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the number of pre-filled fields that had a placeholder
-    classification. The metric is emitted on form submission.
-  </summary>
-  <token key="FormType" variants="Autofill.Ablation.FormType"/>
-</histogram>
-
-<histogram name="Autofill.PreFilledFieldClassificationsQuality.{FormType}"
-    enum="AutofillPreFilledFieldClassificationsQuality"
-    expires_after="2025-07-06">
-  <owner>bwolfgang@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the quality of a placeholder classification. The metric is emitted
-    on form submission and only if there was a placeholder prediction for the
-    field.
-  </summary>
-  <token key="FormType" variants="Autofill.Ablation.FormType"/>
-</histogram>
-
-<histogram name="Autofill.PreFilledFieldStatus.ByFieldType"
-    enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2025-06-29">
-  <owner>bwolfgang@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records if an address or credit card field is pre-filled or empty on page
-    load, by field type. The metric is emitted on form submission.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.PreFilledFieldStatus.{FormType}"
-    enum="AutofillPreFilledFieldStatus" expires_after="2025-07-06">
-  <owner>bwolfgang@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records if a field is pre-filled or empty on page load. The metric is
-    emitted on form submission.
-  </summary>
-  <token key="FormType" variants="Autofill.Ablation.FormType"/>
-</histogram>
-
 <histogram name="Autofill.ProfileDeleted.{DeletionType}"
     enum="BooleanAutofillDeleteAddress" expires_after="2025-06-22">
   <owner>tchudakov@google.com</owner>

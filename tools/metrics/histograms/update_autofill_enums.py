@@ -121,14 +121,6 @@ def GenerateAutofillFieldPredictionQualityByFieldType():
   return result
 
 
-def GenerateAutofillPreFilledFieldStatusByFieldType(field_types):
-  result = {}
-  for enum_id, enum_name in field_types.items():
-    result[16 * enum_id + 0] = f'{enum_name}: Pre-filled on page load'
-    result[16 * enum_id + 1] = f'{enum_name}: Empty on page load'
-  return result
-
-
 def GenerateAutofillDataUtilizationByFieldType(field_types):
   result = {}
   for enum_id, enum_name in field_types.items():
@@ -171,12 +163,6 @@ if __name__ == '__main__':
       'AutofillFieldPredictionQualityByFieldType',
       GenerateAutofillFieldPredictionQualityByFieldType(),
       FIELD_PREDICTION_GROUPS_PATH, os.path.basename(__file__))
-
-  update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillPreFilledFieldStatusByFieldType',
-      GenerateAutofillPreFilledFieldStatusByFieldType(server_field_types),
-      FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
       'tools/metrics/histograms/metadata/autofill/enums.xml',
