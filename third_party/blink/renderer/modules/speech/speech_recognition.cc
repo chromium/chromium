@@ -169,7 +169,9 @@ ScriptPromise<IDLBoolean> SpeechRecognition::availableOnDevice(
   LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
   auto* controller = SpeechRecognitionController::From(window);
 
-  if (!controller) {
+  if (!controller || !script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Execution context is detached.");
     return EmptyPromise();
   }
 
@@ -194,7 +196,9 @@ ScriptPromise<IDLBoolean> SpeechRecognition::installOnDevice(
   LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
   auto* controller = SpeechRecognitionController::From(window);
 
-  if (!controller) {
+  if (!controller || !script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Execution context is detached.");
     return EmptyPromise();
   }
 
