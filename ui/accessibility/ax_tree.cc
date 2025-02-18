@@ -2927,14 +2927,14 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
 #endif
 
   std::string tree_str = TreeToString(root_, 0, false);
+  std::string tree_update_str = update_state.pending_tree_update
+                                    ->ToString(
+                                        /*verbose=*/false)
+                                    .substr(0, 1000);
 
   std::ostringstream verbose_error;
   verbose_error << new_error << "\n** Pending tree update **\n"
-                << update_state.pending_tree_update
-                       ->ToString(
-                           /*verbose*/ false)
-                       .substr(0, 1000)
-                << "** Root **\n"
+                << tree_update_str << "** Root **\n"
                 << root() << "\n** AXTreeData **\n"
                 << data_.ToString() + "\n** AXTree **\n"
                 << tree_str.substr(0, 2000);
@@ -2954,8 +2954,7 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
 
   // Log additional crash keys so we can debug bad tree updates.
   base::debug::SetCrashKeyString(ax_tree_error_key, new_error);
-  base::debug::SetCrashKeyString(ax_tree_update_key,
-                                 update_state.pending_tree_update->ToString());
+  base::debug::SetCrashKeyString(ax_tree_update_key, tree_update_str);
   base::debug::SetCrashKeyString(ax_tree_key, tree_str);
   base::debug::SetCrashKeyString(ax_tree_data_key, data_.ToString());
   LOG(ERROR) << verbose_error.str();
