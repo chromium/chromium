@@ -4031,6 +4031,11 @@ void AXObjectCacheImpl::MaybeDisallowImplicitSelectionWithCleanLayout(
   }
 
   if (AXObject* container = subwidget->ContainerWidget()) {
+    if (container->IsMultiSelectable()) {
+      // Multi-selectable containers do not allow implicit selection, so
+      // we can skip the remaining checks.
+      return;
+    }
     if (containers_disallowing_implicit_selection_
             .insert(container->AXObjectID())
             .is_new_entry) {
@@ -4044,13 +4049,15 @@ void AXObjectCacheImpl::MaybeDisallowImplicitSelectionWithCleanLayout(
         return;
       }
       // The active descendant or focus may lose its implicit selected state.
-      AXObject* ax_focus = FocusedObject();
-      if (ax_focus == container) {
+      Node* focus = FocusedNode();
+      if (focus == container->GetNode()) {
         if (AXObject* activedescendant = container->ActiveDescendant()) {
           AddDirtyObjectToSerializationQueue(activedescendant);
         }
       }
-      AddDirtyObjectToSerializationQueue(ax_focus);
+      if (AXObject* ax_focus = Get(focus)) {
+        AddDirtyObjectToSerializationQueue(ax_focus);
+      }
     }
   }
 }
