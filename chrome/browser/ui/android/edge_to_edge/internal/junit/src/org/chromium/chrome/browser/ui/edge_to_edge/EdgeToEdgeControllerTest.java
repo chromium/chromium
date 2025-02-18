@@ -226,13 +226,15 @@ public class EdgeToEdgeControllerTest {
                         mFullscreenManager);
         verify(mEdgeToEdgeStateProvider, times(1)).acquireSetDecorFitsSystemWindowToken();
 
-        verify(mOsWrapper, times(1))
-                .setPadding(
-                        any(),
-                        eq(0),
-                        intThat(Matchers.greaterThan(0)),
-                        eq(0),
-                        intThat(Matchers.greaterThan(0)));
+        if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            verify(mOsWrapper, times(1))
+                    .setPadding(
+                            any(),
+                            eq(0),
+                            intThat(Matchers.greaterThan(0)),
+                            eq(0),
+                            intThat(Matchers.greaterThan(0)));
+        }
         verify(mInsetObserver, times(1))
                 .addInsetsConsumer(any(), eq(InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL));
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
@@ -990,6 +992,25 @@ public class EdgeToEdgeControllerTest {
         mockPadAdjuster.checkInsets(BOTTOM_INSET);
 
         mEdgeToEdgeControllerImpl.unregisterAdjuster(mockPadAdjuster);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
+    public void drawToEdge_EdgeToEdgeEverywhereEnabled() {
+        Mockito.clearInvocations(mEdgeToEdgeManager);
+        mEdgeToEdgeControllerImpl.drawToEdge(
+                /* pageOptedIntoEdgeToEdge= */ false, /* changedWindowState= */ true);
+        verify(mEdgeToEdgeManager, never()).setContentFitsWindowInsets(anyBoolean());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
+    public void drawToEdge_EdgeToEdgeEverywhereDisabled() {
+        Mockito.clearInvocations(mEdgeToEdgeManager);
+        mEdgeToEdgeControllerImpl.drawToEdge(
+                /* pageOptedIntoEdgeToEdge= */ false, /* changedWindowState= */ true);
+        // #setContentFitsWindowInsets should be called once when EdgeToEdgeEverywhere is disabled.
+        verify(mEdgeToEdgeManager, times(1)).setContentFitsWindowInsets(anyBoolean());
     }
 
     void assertToEdgeExpectations() {

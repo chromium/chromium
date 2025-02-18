@@ -528,7 +528,9 @@ public class EdgeToEdgeControllerImpl
         // TODO(crbug.com/377959835): Move padding logic to the EdgeToEdgeManager, to be triggered
         //  by calls to this #setContentFitsWindow() method.
         // Content should fit within the window insets if the activity is not drawing edge-to-edge.
-        mEdgeToEdgeManager.setContentFitsWindowInsets(!isDrawingToEdge());
+        if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            mEdgeToEdgeManager.setContentFitsWindowInsets(!isDrawingToEdge());
+        }
 
         View contentView = getContentView();
         assert contentView != null : "Root view for Edge To Edge not found!";
