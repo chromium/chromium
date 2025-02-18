@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ROBIN_HOOD_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ROBIN_HOOD_MAP_H_
 
@@ -126,7 +121,8 @@ struct RobinHoodMap {
     }
 
     Bucket* bucket = FindBucket(key);
-    for (unsigned i = 0; i < kPossibleBucketsPerKey; ++i, ++bucket) {
+    for (unsigned i = 0; i < kPossibleBucketsPerKey;
+         ++i, UNSAFE_TODO(++bucket)) {
       if (bucket->key == key) {
         return bucket;
       }
@@ -152,15 +148,15 @@ struct RobinHoodMap {
    public:
     iterator(Bucket* pos, const Bucket* end) : pos_(pos), end_(end) {
       while (pos_ != end_ && pos_->key.IsNull()) {
-        ++pos_;
+        UNSAFE_TODO(++pos_);
       }
     }
     Bucket& operator*() const { return *pos_; }
     Bucket* operator->() const { return pos_; }
     iterator& operator++() {
-      ++pos_;
+      UNSAFE_TODO(++pos_);
       while (pos_ != end_ && pos_->key.IsNull()) {
-        ++pos_;
+        UNSAFE_TODO(++pos_);
       }
       return *this;
     }
@@ -176,15 +172,15 @@ struct RobinHoodMap {
     const_iterator(const Bucket* pos, const Bucket* end)
         : pos_(pos), end_(end) {
       while (pos_ != end_ && pos_->key.IsNull()) {
-        ++pos_;
+        UNSAFE_TODO(++pos_);
       }
     }
     const Bucket& operator*() const { return *pos_; }
     const Bucket* operator->() const { return pos_; }
     const_iterator& operator++() {
-      ++pos_;
+      UNSAFE_TODO(++pos_);
       while (pos_ != end_ && pos_->key.IsNull()) {
-        ++pos_;
+        UNSAFE_TODO(++pos_);
       }
       return *this;
     }
@@ -208,14 +204,14 @@ struct RobinHoodMap {
 
  private:
   Bucket* EndBucket() {
-    return buckets_.get()
-               ? buckets_.get() + num_buckets_ + kPossibleBucketsPerKey
-               : nullptr;
+    return buckets_.get() ? UNSAFE_TODO(buckets_.get() + num_buckets_ +
+                                        kPossibleBucketsPerKey)
+                          : nullptr;
   }
   const Bucket* EndBucket() const {
-    return buckets_.get()
-               ? buckets_.get() + num_buckets_ + kPossibleBucketsPerKey
-               : nullptr;
+    return buckets_.get() ? UNSAFE_TODO(buckets_.get() + num_buckets_ +
+                                        kPossibleBucketsPerKey)
+                          : nullptr;
   }
   unsigned FindBucketIndex(const Key& key) const {
     // AtomicString has a 24-bit hash, so we treat it as a number in
@@ -233,10 +229,10 @@ struct RobinHoodMap {
   // to find the element. This can never overflow; see the definition
   // of buckets_ below.
   Bucket* FindBucket(const Key& key) {
-    return buckets_.get() + FindBucketIndex(key);
+    return UNSAFE_TODO(buckets_.get() + FindBucketIndex(key));
   }
   const Bucket* FindBucket(const Key& key) const {
-    return buckets_.get() + FindBucketIndex(key);
+    return UNSAFE_TODO(buckets_.get() + FindBucketIndex(key));
   }
 
   // Inserts the given key/value, possibly displacing other buckets in the

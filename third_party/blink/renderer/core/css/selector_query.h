@@ -27,11 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_QUERY_H_
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -106,7 +102,8 @@ class CORE_EXPORT SelectorQuery : public GarbageCollected<SelectorQuery> {
   bool SelectorListMatches(ContainerNode& root_node, Element&) const;
 
   const CSSSelector* StartOfComplexSelector(unsigned index) const {
-    return selector_list_->First() + selector_start_offsets_[index];
+    return UNSAFE_TODO(selector_list_->First() +
+                       selector_start_offsets_[index]);
   }
 
   Member<CSSSelectorList> selector_list_;
