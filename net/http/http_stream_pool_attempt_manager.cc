@@ -54,12 +54,6 @@ namespace net {
 
 namespace {
 
-constexpr NextProtoSet kTcpBasedProtocols = {
-    NextProto::kProtoUnknown, NextProto::kProtoHTTP11, NextProto::kProtoHTTP2};
-
-constexpr NextProtoSet kQuicBasedProtocols = {NextProto::kProtoUnknown,
-                                              NextProto::kProtoQUIC};
-
 StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
     const StreamSocket& stream_socket) {
   return stream_socket.WasEverUsed()
@@ -356,10 +350,6 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
   CHECK(group_);
 
-  if (group_->force_quic()) {
-    allowed_alpns_.RemoveAll(kTcpBasedProtocols);
-  }
-
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE, [&] {
         base::Value::Dict dict;
@@ -436,8 +426,6 @@ void HttpStreamPool::AttemptManager::StartJob(
 
   jobs_.Insert(job, job->priority());
 
-  RestrictAllowedProtocols(job->allowed_alpns());
-
   MaybeChangeServiceEndpointRequestPriority();
 
   // Check idle streams. If found, notify the job that an HttpStream is ready.
@@ -458,7 +446,7 @@ void HttpStreamPool::AttemptManager::StartJob(
   allowed_bad_certs_ = job->allowed_bad_certs();
   quic_version_ = job->quic_version();
 
-  StartInternal(job->priority());
+  StartInternal(job);
 
   return;
 }
@@ -493,7 +481,7 @@ void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
   preconnect_jobs_.emplace(job);
   quic_version_ = job->quic_version();
 
-  StartInternal(job->priority());
+  StartInternal(job);
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
@@ -1007,7 +995,8 @@ HttpStreamPool::AttemptManager::CalculateMultiplexedSessionCreationInitiator() {
   return MultiplexedSessionCreationInitiator::kUnknown;
 }
 
-void HttpStreamPool::AttemptManager::StartInternal(RequestPriority priority) {
+void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
+  RestrictAllowedProtocols(job->allowed_alpns());
   MaybeSetInitialAttemptState();
   UpdateStreamAttemptState();
 
@@ -1015,7 +1004,7 @@ void HttpStreamPool::AttemptManager::StartInternal(RequestPriority priority) {
     MaybeAttemptQuic();
     MaybeAttemptConnection();
   } else {
-    ResolveServiceEndpoint(priority);
+    ResolveServiceEndpoint(job->priority());
   }
 }
 

@@ -303,7 +303,7 @@ class HttpStreamPool::AttemptManager
 
   bool RequiresHTTP11();
 
-  void StartInternal(RequestPriority priority);
+  void StartInternal(Job* job);
 
   void ResolveServiceEndpoint(RequestPriority initial_priority);
 

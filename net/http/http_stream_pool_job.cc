@@ -34,16 +34,30 @@ namespace net {
 
 namespace {
 
-NextProtoSet CalculateAllowedAlpns(NextProto expected_protocol,
-                                   bool is_http1_allowed) {
+NextProtoSet CalculateAllowedAlpns(HttpStreamPool::Job::Delegate* delegate,
+                                   HttpStreamPool::Group* group,
+                                   NextProto expected_protocol) {
+  if (group->force_quic()) {
+    return NextProtoSet({NextProto::kProtoQUIC});
+  }
+
   NextProtoSet allowed_alpns = expected_protocol == NextProto::kProtoUnknown
                                    ? NextProtoSet::All()
                                    : NextProtoSet({expected_protocol});
-  if (!is_http1_allowed) {
-    static constexpr NextProtoSet kHttp11Protocols = {NextProto::kProtoUnknown,
-                                                      NextProto::kProtoHTTP11};
-    allowed_alpns.RemoveAll(kHttp11Protocols);
+
+  if (!delegate->is_http1_allowed()) {
+    allowed_alpns.RemoveAll(HttpStreamPool::kHttp11Protocols);
   }
+
+  if (!group->pool()->CanUseQuic(
+          group->stream_key().destination(),
+          group->stream_key().network_anonymization_key(),
+          delegate->enable_ip_based_pooling(),
+          delegate->enable_alternative_services())) {
+    allowed_alpns.Remove(NextProto::kProtoQUIC);
+  }
+
+  CHECK(!allowed_alpns.empty());
   return allowed_alpns;
 }
 
@@ -71,8 +85,8 @@ HttpStreamPool::Job::Job(Delegate* delegate,
     : delegate_(delegate),
       group_(group),
       quic_version_(CalculateQuicVersion(quic_version, group_)),
-      allowed_alpns_(CalculateAllowedAlpns(expected_protocol,
-                                           delegate_->is_http1_allowed())),
+      allowed_alpns_(
+          CalculateAllowedAlpns(delegate_, group_, expected_protocol)),
       request_net_log_(request_net_log),
       job_net_log_(
           NetLogWithSource::Make(request_net_log.net_log(),
