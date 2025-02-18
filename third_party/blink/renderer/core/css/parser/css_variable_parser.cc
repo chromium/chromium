@@ -334,13 +334,32 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
 
   // Consume the arguments.
   while (!stream.AtEnd()) {
-    // TODO(crbug.com/390205875): Handle {}-wrapped values.
+    // Commas and "{}" blocks are normally not allowed in argument values
+    // (at the top level), unless the whole value is wrapped in a "{}" block.
+    //
     // https://drafts.csswg.org/css-values-5/#component-function-commas
-    if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
-                              /*comma_ends_declaration=*/true, has_references,
-                              has_font_units, has_root_font_units,
-                              has_line_height_units, context)) {
-      return false;
+    if (stream.Peek().GetType() == kLeftBraceToken) {
+      CSSParserTokenStream::BlockGuard brace_guard(stream);
+      stream.ConsumeWhitespace();
+      if (stream.AtEnd()) {
+        // Empty values are not allowed. (The "{}" wrapper is not part
+        // of the value.)
+        return false;
+      }
+      if (!ConsumeUnparsedValue(
+              stream, /*restricted_value=*/false,
+              /*comma_ends_declaration=*/false, has_references, has_font_units,
+              has_root_font_units, has_line_height_units, context)) {
+        return false;
+      }
+    } else {
+      // Passing restricted_value=true effectively disallows "{}".
+      if (!ConsumeUnparsedValue(stream, /*restricted_value=*/true,
+                                /*comma_ends_declaration=*/true, has_references,
+                                has_font_units, has_root_font_units,
+                                has_line_height_units, context)) {
+        return false;
+      }
     }
     if (stream.Peek().GetType() == kCommaToken) {
       stream.ConsumeIncludingWhitespace();  // kCommaToken
