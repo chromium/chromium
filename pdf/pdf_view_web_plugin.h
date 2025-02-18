@@ -935,6 +935,9 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   bool show_searchify_in_progress_ = false;
+
+  // Tells if searchify ever started.
+  bool searchify_started_ = false;
 #endif
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};

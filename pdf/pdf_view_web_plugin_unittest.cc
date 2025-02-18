@@ -1805,6 +1805,8 @@ TEST_F(PdfViewWebPluginTest, OnSearchifyStarted) {
 
   plugin_->OnSearchifyStateChange(true);
 
+  EXPECT_CALL(pdf_host_, OnSearchifyStarted);
+
   // Wait for the state to be propagated.
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -1854,6 +1856,16 @@ TEST_F(PdfViewWebPluginTest, OnSearchifyStartedAndStoppedWithDelay) {
   run_loop.Run();
 
   plugin_->OnSearchifyStateChange(false);
+}
+
+TEST_F(PdfViewWebPluginTest, OnSearchifyStartedMoreThanOnce) {
+  plugin_->OnSearchifyStateChange(true);
+  plugin_->OnSearchifyStateChange(false);
+  plugin_->OnSearchifyStateChange(true);
+
+  EXPECT_CALL(pdf_host_, OnSearchifyStarted);
+
+  pdf_receiver_.FlushForTesting();
 }
 
 TEST_F(PdfViewWebPluginTest, OnHasSearchifyText) {

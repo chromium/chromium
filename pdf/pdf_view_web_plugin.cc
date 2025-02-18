@@ -1459,7 +1459,10 @@ void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
     return;
   }
 
-  pdf_host_->OnSearchifyStarted();
+  if (!searchify_started_) {
+    searchify_started_ = true;
+    pdf_host_->OnSearchifyStarted();
+  }
 
   if (!show_searchify_in_progress_) {
     // The UI is asked to show the progress indicator with 1s delay, so that if

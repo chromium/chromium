@@ -68,7 +68,8 @@ interface PdfHost {
   // Notifies the embedder know the plugin can handle save commands internally.
   SetPluginCanSave(bool can_save);
 
-  // Notifies that PDF searchifier has started processing pages.
+  // Notifies that PDF searchifier has started processing pages. This should be
+  // called at most once.
   [EnableIf=enable_screen_ai_service]
   OnSearchifyStarted();
 };
