@@ -26,6 +26,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/types/pass_key.h"
@@ -56,6 +57,9 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
@@ -210,6 +214,7 @@ void OsIntegrationManager::Synchronize(
     const webapps::AppId& app_id,
     base::OnceClosure callback,
     std::optional<SynchronizeOsOptions> options) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   first_synchronize_called_ = true;
 
   // This is usually called to clean up OS integration states on the OS,
@@ -238,6 +243,32 @@ void OsIntegrationManager::Synchronize(
     return;
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    LOG(ERROR)
+        << "Can't perform OS integration while the browser is shutting down.";
+    std::move(callback).Run();
+    return;
+  }
+
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+      std::make_unique<ScopedProfileKeepAlive>(
+          profile_, ProfileKeepAliveOrigin::kWebAppUpdate);
+  std::unique_ptr<ScopedKeepAlive> browser_keep_alive =
+      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::WEB_APP_INSTALL,
+                                        KeepAliveRestartOption::DISABLED);
+
+  auto end_keep_alive_then_run_callback =
+      base::OnceClosure(
+          base::DoNothingWithBoundArgs(std::move(profile_keep_alive),
+                                       std::move(browser_keep_alive)))
+          .Then(std::move(callback));
+#else
+  // TODO(crbug.com/394384898): Do this for ChromeOS too once it
+  // doesn't break browser tests using InstallSystemAppsForTesting.
+  auto end_keep_alive_then_run_callback = std::move(callback);
+#endif
+
   std::unique_ptr<proto::WebAppOsIntegrationState> desired_states =
       std::make_unique<proto::WebAppOsIntegrationState>();
   proto::WebAppOsIntegrationState* desired_states_ptr = desired_states.get();
@@ -250,7 +281,8 @@ void OsIntegrationManager::Synchronize(
       sub_managers_.size(),
       base::BindOnce(&OsIntegrationManager::StartSubManagerExecutionIfRequired,
                      weak_ptr_factory_.GetWeakPtr(), app_id, options,
-                     std::move(desired_states), std::move(callback)));
+                     std::move(desired_states),
+                     std::move(end_keep_alive_then_run_callback)));
 
   for (const auto& sub_manager : sub_managers_) {
     // This dereference is safe because the barrier closure guarantees that it
