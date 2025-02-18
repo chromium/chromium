@@ -28,6 +28,7 @@ include_rules = [
   "+services/service_manager/public",
   "+third_party/boringssl/src/include",
   "+third_party/boringssl/src/pki",
+  "+third_party/fuzztest",
   "+url",
 ]
 
