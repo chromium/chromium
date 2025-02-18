@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,8 @@ public class UndoRefocusHelper {
     private boolean mTabSwitcherActive;
     private Callback<LayoutManagerImpl> mLayoutManagerSupplierCallback;
     private boolean mIsTablet;
+    private int mActivePendingTabClosures;
+    private final List<Set<Tab>> mTabsClosedTogether = new ArrayList<>();
 
     /**
      * @param modelSelector TabModelSelector used to subscribe to TabModelSelectorTabModelObserver
@@ -72,9 +75,12 @@ public class UndoRefocusHelper {
                 new TabModelSelectorTabModelObserver(mModelSelector) {
                     @Override
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                        if (tab.isIncognito()) return;
+
+                        mActivePendingTabClosures++;
                         // Tabs not closed alone are handled in #willCloseMultipleTabs and
                         // #willCloseAllTabs
-                        if (!didCloseAlone || tab.isIncognito()) return;
+                        if (!didCloseAlone) return;
 
                         int tabId = tab.getId();
                         if (!mTabSwitcherActive && mIsTablet) {
@@ -98,6 +104,7 @@ public class UndoRefocusHelper {
                                 break;
                             }
                         }
+                        mTabsClosedTogether.add(new HashSet<>(tabs));
                     }
 
                     @Override
@@ -135,16 +142,31 @@ public class UndoRefocusHelper {
                         if (mSelectedTabIdWhenTabClosed == id) {
                             selectPreviouslySelectedTab();
                         }
-                    }
 
-                    @Override
-                    public void allTabsClosureUndone() {
-                        if (mSelectedTabIdWhenTabClosed != Tab.INVALID_TAB_ID) {
-                            selectPreviouslySelectedTab();
+                        mActivePendingTabClosures--;
+                        @Nullable
+                        Set<Tab> setContainingTab =
+                                removeTabFromTabClosedTogetherListIfPresent(tab);
+
+                        // if all tab closures are undone OR entire group of multiple tabs is
+                        // restored, reset the selections.
+                        if (mActivePendingTabClosures == 0
+                                || (setContainingTab != null && setContainingTab.isEmpty())) {
+
+                            if (setContainingTab != null) {
+                                boolean isTabsSetRemoved =
+                                        mTabsClosedTogether.remove(setContainingTab);
+
+                                // Tabs set should be removed correctly.
+                                assert isTabsSetRemoved;
+                            }
+
+                            if (mSelectedTabIdWhenTabClosed != Tab.INVALID_TAB_ID) {
+                                selectPreviouslySelectedTab();
+                            }
+                            resetSelectionsForUndo();
+                            mTabsClosedFromTabStrip.clear();
                         }
-
-                        resetSelectionsForUndo();
-                        mTabsClosedFromTabStrip.clear();
                     }
 
                     @Override
@@ -154,6 +176,15 @@ public class UndoRefocusHelper {
                                 resetSelectionsForUndo();
                             }
                             mTabsClosedFromTabStrip.remove(tab.getId());
+                            mActivePendingTabClosures--;
+
+                            @Nullable
+                            Set<Tab> setContainingTab =
+                                    removeTabFromTabClosedTogetherListIfPresent(tab);
+
+                            if (setContainingTab != null && setContainingTab.isEmpty()) {
+                                mTabsClosedTogether.remove(setContainingTab);
+                            }
                         }
                     }
 
@@ -163,6 +194,8 @@ public class UndoRefocusHelper {
                             resetSelectionsForUndo();
                             mTabsClosedFromTabStrip.clear();
                         }
+
+                        resetCurrentlyClosingTabsTracking();
                     }
 
                     private boolean maybeSetSelectedTabId(Tab tab) {
@@ -239,5 +272,25 @@ public class UndoRefocusHelper {
      */
     private void resetSelectionsForUndo() {
         mSelectedTabIdWhenTabClosed = Tab.INVALID_TAB_ID;
+    }
+
+    private @Nullable Set<Tab> removeTabFromTabClosedTogetherListIfPresent(Tab tab) {
+        Set<Tab> setContainingTab = null;
+        for (Set<Tab> tabsSet : mTabsClosedTogether) {
+            if (tabsSet.remove(tab)) {
+                setContainingTab = tabsSet;
+                break;
+            }
+        }
+        return setContainingTab;
+    }
+
+    /**
+     * Resets the counter for currently active pending tab closures and clears the list of tabs
+     * closed together.
+     */
+    private void resetCurrentlyClosingTabsTracking() {
+        mActivePendingTabClosures = 0;
+        mTabsClosedTogether.clear();
     }
 }

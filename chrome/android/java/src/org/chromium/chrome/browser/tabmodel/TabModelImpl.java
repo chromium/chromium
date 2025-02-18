@@ -131,13 +131,6 @@ public class TabModelImpl extends TabModelJniBridge {
         }
 
         @Override
-        public void notifyAllTabsClosureUndone() {
-            for (TabModelObserver obs : mObservers) {
-                obs.allTabsClosureUndone();
-            }
-        }
-
-        @Override
         public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs) {
             TabModelImpl.this.notifyOnFinishingMultipleTabClosure(
                     tabs, /* saveToTabRestoreService= */ true);
@@ -490,13 +483,6 @@ public class TabModelImpl extends TabModelJniBridge {
         mPendingTabClosureManager.commitAllTabClosures();
 
         for (TabModelObserver obs : mObservers) obs.allTabsClosureCommitted(isIncognito());
-    }
-
-    @Override
-    public void notifyAllTabsClosureUndone() {
-        if (!supportsPendingClosures()) return;
-
-        mPendingTabClosureManager.notifyAllTabsClosureUndone();
     }
 
     /**

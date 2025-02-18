@@ -372,7 +372,6 @@ public class UndoTabModelUnitTest {
     private void cancelAllTabClosures(final TabModel model, final Tab[] expectedToClose)
             throws TimeoutException {
         final CallbackHelper tabClosureUndoneHelper = new CallbackHelper();
-        final CallbackHelper allTabClosureCancellationCompletedHelper = new CallbackHelper();
 
         for (int i = 0; i < expectedToClose.length; i++) {
             Tab tab = expectedToClose[i];
@@ -388,11 +387,6 @@ public class UndoTabModelUnitTest {
                         public void tabClosureUndone(Tab currentTab) {
                             tabClosureUndoneHelper.notifyCalled();
                         }
-
-                        @Override
-                        public void allTabsClosureUndone() {
-                            allTabClosureCancellationCompletedHelper.notifyCalled();
-                        }
                     });
         }
 
@@ -400,10 +394,8 @@ public class UndoTabModelUnitTest {
             Tab tab = expectedToClose[i];
             model.cancelTabClosure(tab.getId());
         }
-        model.notifyAllTabsClosureUndone();
 
         tabClosureUndoneHelper.waitForCallback(0, expectedToClose.length);
-        allTabClosureCancellationCompletedHelper.waitForCallback(0, 1);
 
         for (int i = 0; i < expectedToClose.length; i++) {
             final Tab tab = expectedToClose[i];
