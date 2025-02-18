@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -169,6 +170,7 @@ void GlicPageContextFetcher::Fetch(
   Observe(aweb_contents);
   // TODO(crbug.com/391851902): implement kSensitiveContentAttribute error
   // checking and signaling.
+  start_time_ = base::TimeTicks::Now();
   callback_ = std::move(callback);
 
   if (options.include_viewport_screenshot) {
@@ -255,6 +257,8 @@ void GlicPageContextFetcher::GetTabScreenshot(
 
 void GlicPageContextFetcher::ReceivedViewportBitmap(const SkBitmap& bitmap) {
   screenshot_dimensions_ = bitmap.dimensions();
+  base::UmaHistogramTimes("Glic.PageContextFetcher.GetScreenshot",
+                          base::TimeTicks::Now() - start_time_);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
@@ -281,6 +285,8 @@ void GlicPageContextFetcher::RecievedJpegScreenshot(
         glic::mojom::ImageOriginAnnotations::New());
   }
   screenshot_done_ = true;
+  base::UmaHistogramTimes("Glic.PageContextFetcher.GetEncodedScreenshot",
+                          base::TimeTicks::Now() - start_time_);
   RunCallbackIfComplete();
 }
 
@@ -288,6 +294,8 @@ void GlicPageContextFetcher::ReceivedInnerText(
     std::unique_ptr<content_extraction::InnerTextResult> result) {
   inner_text_result_ = std::move(result);
   inner_text_done_ = true;
+  base::UmaHistogramTimes("Glic.PageContextFetcher.GetInnerText",
+                          base::TimeTicks::Now() - start_time_);
   RunCallbackIfComplete();
 }
 
@@ -295,6 +303,8 @@ void GlicPageContextFetcher::ReceivedAnnotatedPageContent(
     std::optional<optimization_guide::proto::AnnotatedPageContent> content) {
   annotated_page_content_ = std::move(content);
   annotated_page_content_done_ = true;
+  base::UmaHistogramTimes("Glic.PageContextFetcher.GetAnnotatedPageContent",
+                          base::TimeTicks::Now() - start_time_);
   RunCallbackIfComplete();
 }
 
@@ -306,6 +316,8 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
   if (!work_complete) {
     return;
   }
+  base::UmaHistogramTimes("Glic.PageContextFetcher.Total",
+                          base::TimeTicks::Now() - start_time_);
   mojom::GetContextResultPtr result;
   if (web_contents() && web_contents()->GetPrimaryMainFrame() &&
       !primary_page_changed_) {

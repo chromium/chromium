@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_tab_data.h"
@@ -80,6 +81,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   std::optional<pdf::mojom::PdfListener_GetPdfBytesStatus> pdf_status_;
   std::optional<optimization_guide::proto::AnnotatedPageContent>
       annotated_page_content_;
+  base::TimeTicks start_time_;
 
   base::WeakPtrFactory<GlicPageContextFetcher> weak_ptr_factory_{this};
 };
