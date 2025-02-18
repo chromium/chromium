@@ -15,6 +15,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -89,6 +90,7 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
             };
 
     private final Context mContext;
+    private final Profile mProfile;
     private final BookmarkModel mBookmarkModel;
     private final SnackbarManager mSnackbarManager;
     private final IdentityManager mIdentityManager;
@@ -99,10 +101,12 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
 
     public BookmarkMoveSnackbarManager(
             @NonNull Context context,
+            @NonNull Profile profile,
             @NonNull BookmarkModel bookmarkModel,
             @NonNull SnackbarManager snackbarManager,
             @NonNull IdentityManager identityManager) {
         mContext = context;
+        mProfile = profile;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
         mSnackbarManager = snackbarManager;
@@ -127,7 +131,7 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
         mBookmarkIds = Arrays.asList(bookmarkIds);
 
         // TODO(crbug.com/1465757): Record user action.
-        BookmarkUtils.startFolderPickerActivity(mContext, bookmarkIds);
+        BookmarkUtils.startFolderPickerActivity(mContext, mProfile, bookmarkIds);
     }
 
     // ActivityStateListener implementation.

@@ -107,6 +107,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mBookmarkMoveSnackbarManager =
                 new BookmarkMoveSnackbarManager(
                         /* context= */ this,
+                        profile,
                         mModel,
                         getSnackbarManager(),
                         IdentityServicesProvider.get()

@@ -192,6 +192,7 @@ public class BookmarkManagerCoordinator
         BookmarkMoveSnackbarManager moveSnackbarManager =
                 new BookmarkMoveSnackbarManager(
                         context,
+                        mProfile,
                         mBookmarkModel,
                         snackbarManager,
                         IdentityServicesProvider.get()

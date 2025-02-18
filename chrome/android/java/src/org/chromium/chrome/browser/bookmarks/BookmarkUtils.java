@@ -731,11 +731,13 @@ public class BookmarkUtils {
     }
 
     /** Starts an {@link BookmarkFolderPickerActivity} for the given {@link BookmarkId}s. */
-    public static void startFolderPickerActivity(Context context, BookmarkId... bookmarkIds) {
+    public static void startFolderPickerActivity(
+            Context context, Profile profile, BookmarkId... bookmarkIds) {
         Intent intent = new Intent(context, BookmarkFolderPickerActivity.class);
         intent.putStringArrayListExtra(
                 BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
                 BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
+        ProfileIntentUtils.addProfileToIntent(profile, intent);
         context.startActivity(intent);
     }
 
