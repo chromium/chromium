@@ -17,5 +17,6 @@ AutoDeletionService::~AutoDeletionService() = default;
 void AutoDeletionService::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDownloadAutoDeletionEnabled, false);
+  registry->RegisterBooleanPref(prefs::kDownloadAutoDeletionIPHShown, false);
 }
 }  // namespace auto_deletion
