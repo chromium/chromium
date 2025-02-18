@@ -5,6 +5,7 @@
 #include "components/enterprise/obfuscation/core/utils.h"
 
 #include "base/containers/span_reader.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -48,6 +49,16 @@ void ObfuscateTestDataInChunks(base::span<const uint8_t> test_data,
                               obfuscated_result.value().begin(),
                               obfuscated_result.value().end());
   }
+}
+
+// Helper function to count the number of files in a directory.
+int CountFilesInDirectory(const base::FilePath& dir_path) {
+  base::FileEnumerator enum_files(dir_path, false, base::FileEnumerator::FILES);
+  int count = 0;
+  while (!enum_files.Next().empty()) {
+    count++;
+  }
+  return count;
 }
 
 }  // namespace
@@ -148,6 +159,9 @@ TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
   ASSERT_EQ(result.error(), original_size == 0 ? Error::kFileOperationError
                                                : Error::kDeobfuscationFailed);
 
+  // Only the original test file should remain.
+  EXPECT_EQ(CountFilesInDirectory(test_file_path().DirName()), 1);
+
   std::vector<uint8_t> obfuscated_content;
 
   ObfuscateTestDataInChunks(test_data, obfuscated_content);
@@ -170,6 +184,9 @@ TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
       test_file_path().InsertBeforeExtensionASCII("_invalid"));
   ASSERT_EQ(DeobfuscateFileInPlace(invalid_path).error(),
             Error::kFileOperationError);
+
+  // Only the original test file should remain.
+  EXPECT_EQ(CountFilesInDirectory(test_file_path().DirName()), 1);
 }
 
 TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateVariableChunks) {
