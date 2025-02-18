@@ -57,7 +57,12 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   friend auto operator<=>(const GaiaId&, const GaiaId&) = default;
 
   // Convenience test-only class that allows defining constexpr or static
-  // values and can be implicitly converted to GaiaId.
+  // values and can be implicitly converted to GaiaId. Prefer using GaiaId
+  // directly where possible, i.e. in all cases except those where the C++ style
+  // guide disallows constructing a GaiaId instance (variables with static
+  // storage duration, see
+  // https://google.github.io/styleguide/cppguide.html#Static_and_Global_Variables
+  // for more information).
 #if defined(UNIT_TEST)
   class Literal {
    public:

@@ -25,7 +25,7 @@
 
 namespace {
 
-constexpr char kTestAccountId[] = "test_user_account_id";
+constexpr GaiaId::Literal kTestAccountId("test_user_account_id");
 
 class FakeOAuth2AccessTokenManagerDelegate
     : public OAuth2AccessTokenManager::Delegate {

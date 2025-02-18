@@ -20,6 +20,7 @@
 #include "components/sync/service/configure_context.h"
 #include "components/sync/test/fake_data_type_processor.h"
 #include "components/sync/test/mock_data_type_controller_delegate.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,12 +37,12 @@ using testing::NiceMock;
 using testing::NotNull;
 using testing::SaveArg;
 
-const DataType kTestDataType = AUTOFILL;
-const char kCacheGuid[] = "SomeCacheGuid";
-const char kAccountId[] = "SomeAccountId";
+constexpr DataType kTestDataType = AUTOFILL;
+constexpr char kCacheGuid[] = "SomeCacheGuid";
+constexpr GaiaId::Literal kAccountId("SomeAccountId");
 
-const char kStartFailuresHistogram[] = "Sync.DataTypeStartFailures2";
-const char kRunFailuresHistogram[] = "Sync.DataTypeRunFailures2";
+constexpr char kStartFailuresHistogram[] = "Sync.DataTypeStartFailures2";
+constexpr char kRunFailuresHistogram[] = "Sync.DataTypeRunFailures2";
 
 // Class used to expose ReportModelError() publicly.
 class TestDataTypeController : public DataTypeController {
