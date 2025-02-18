@@ -340,6 +340,7 @@ TEST_F(RendererAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
 
   ExpectNoFilterGetsInjected();
+  EXPECT_CALL(*agent(), RequestActivationState());
   StartLoadWithoutSettingActivationState();
   FinishLoad();
 
@@ -430,8 +431,13 @@ TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
   EXPECT_CALL(*agent(), OnSetFilterCalled());
-  agent_as_rfo()->DidStartNavigation(GURL(), std::nullopt);
-  agent_as_rfo()->ReadyToCommitNavigation(nullptr);
+  // The mocked function `GetMainDocumentUrl` will be called several times in
+  // the stack of `DidCreateNewDocument`.
+  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(testing::AtLeast(2));
+  // The agent should request activation state since the newly-started load is
+  // cross-origin (about:blank vs. example.com).
+  EXPECT_CALL(*agent(), RequestActivationState());
+  StartLoadWithoutSettingActivationState();
   subresource_filter::mojom::ActivationStatePtr state =
       subresource_filter::mojom::ActivationState::New();
   state->activation_level =
@@ -444,6 +450,12 @@ TEST_F(
   // The activation state should have been reset.
   EXPECT_EQ(agent()->activation_state().activation_level,
             subresource_filter::mojom::ActivationLevel::kDisabled);
+
+  // The agent should request activation again even though the next load is
+  // same origin (example.com) because the activation state has been reset.
+  EXPECT_CALL(*agent(), RequestActivationState());
+  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(testing::AtLeast(2));
+  StartLoadWithoutSettingActivationState();
 
   histogram_tester.ExpectUniqueSample(
       MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
