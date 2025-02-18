@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
@@ -587,6 +588,22 @@ void BrowserActions::InitializeBrowserActions() {
 
     AddListeners();
   }
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                web_app::ShowPwaInstallDialog(browser);
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionInstallPwa)
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kInstallDesktopChromeRefreshIcon, ui::kColorIcon))
+          .SetProperty(actions::kActionItemPinnableKey, false)
+          // Text and TooltipText are not populated yet because they are
+          // dynamic. They depend on the current tab WebContents.
+          .Build());
 
   // Actions that do not directly show up in chrome UI.
   root_action_item_->AddChild(

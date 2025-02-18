@@ -1034,6 +1034,8 @@ static_library("ui") {
       "confirm_bubble_model.h",
       "focus_tab_after_navigation_helper.cc",
       "focus_tab_after_navigation_helper.h",
+      "web_applications/web_app_dialog_utils.cc",
+      "web_applications/web_app_dialog_utils.h",
 
       # TODO(crbug.com/369756821): this file includes //c/b/ash/crosapi headers,
       # and hence needs to depend on //c/b/ash/crosapi GN target. This causes a circular
@@ -5390,8 +5392,6 @@ static_library("ui") {
       "web_applications/tabbed_web_app_navigation_throttle.h",
       "web_applications/web_app_browser_controller.cc",
       "web_applications/web_app_browser_controller.h",
-      "web_applications/web_app_dialog_utils.cc",
-      "web_applications/web_app_dialog_utils.h",
       "web_applications/web_app_dialogs.h",
       "web_applications/web_app_launch_navigation_handle_user_data.cc",
       "web_applications/web_app_launch_navigation_handle_user_data.h",
