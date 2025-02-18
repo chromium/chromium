@@ -171,6 +171,18 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       HotkeyDetachedWithNotNormalBrowser) {
+  RunTestSequence(Do([&]() {
+                    Browser* const pwa =
+                        CreateBrowserForApp("app name", browser()->profile());
+                    pwa->window()->Activate();
+                  }),
+                  SimulateGlicHotkey(),
+                  InAnyContext(WaitForShow(kGlicViewElementId)),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
+}
+
 // TODO(388102775): When Mac app focus issues are resolved, add a test to verify
 // that invoking the hotkey while open detached always closes glic regardless of
 // activation.

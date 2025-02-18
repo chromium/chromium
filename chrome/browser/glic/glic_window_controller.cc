@@ -319,7 +319,8 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
   // TODO(392644541): There may be edge cases w.r.t. multi-glic-profile.
   if (!new_attached_browser) {
     Browser* last_active_browser = chrome::FindLastActiveWithProfile(profile_);
-    if (last_active_browser && last_active_browser->IsActive()) {
+    if (last_active_browser && last_active_browser->IsActive() &&
+        last_active_browser->is_type_normal()) {
       new_attached_browser = last_active_browser;
     }
   }
