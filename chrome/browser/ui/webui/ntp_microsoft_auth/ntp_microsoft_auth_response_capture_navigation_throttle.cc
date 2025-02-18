@@ -30,6 +30,8 @@ constexpr char kEnrollmentFallbackUrl[] =
 // We consider this a common host for Microsoft authentication to be a valid
 // redirection source.
 constexpr char kEntraLoginHost[] = "https://login.microsoftonline.com";
+// Valid redirection from MSFT Cloud App Security portal.
+constexpr char kEntraMcasHost[] = "https://mcas.ms";
 
 std::unique_ptr<URLMatcher> CreateEnrollmentRedirectUrlMatcher() {
   auto matcher = std::make_unique<URLMatcher>();
@@ -51,7 +53,8 @@ bool IsEnrollmentUrl(GURL& url) {
 std::unique_ptr<URLMatcher> CreateMicrosoftEnrollmentUrlMatcher() {
   auto matcher = std::make_unique<URLMatcher>();
   url_matcher::util::AddAllowFiltersWithLimit(
-      matcher.get(), std::vector<std::string>({kEntraLoginHost}));
+      matcher.get(),
+      std::vector<std::string>({kEntraLoginHost, kEntraMcasHost}));
   return matcher;
 }
 
