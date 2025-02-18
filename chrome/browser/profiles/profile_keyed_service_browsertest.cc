@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -193,6 +194,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
           features::kEnableCertManagementUIV2Write,
 #endif
+          autofill::features::kAutofillAiWithDataSchema,
           blink::features::kBrowsingTopics,
           blink::features::kBuiltInAIAPI,
           extensions_features::kForceWebRequestProxyForTest,
