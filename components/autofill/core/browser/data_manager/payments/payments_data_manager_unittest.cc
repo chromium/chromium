@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
@@ -1091,7 +1092,7 @@ TEST_F(PaymentsDataManagerTest, GetCreditCardsToSuggest_LocalCardsRanking) {
   // Sublabel is card number when filling name (exact format depends on
   // the platform, but the last 4 digits should appear).
   std::vector<const CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(3U, card_to_suggest.size());
 
   // Ordered as expected.
@@ -1134,7 +1135,7 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_EQ(5U, payments_data_manager().GetCreditCards().size());
 
   std::vector<const CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(5U, card_to_suggest.size());
 
   // All cards should be ordered as expected.
@@ -1185,10 +1186,10 @@ TEST_F(PaymentsDataManagerTest,
   // Check that profiles were saved.
   EXPECT_EQ(5U, payments_data_manager().GetCreditCards().size());
   // Expect no autofilled values or suggestions.
-  EXPECT_EQ(0U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(0U, GetCreditCardsToSuggest(payments_data_manager()).size());
 
   std::vector<const CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(0U, card_to_suggest.size());
 }
 
@@ -1230,10 +1231,10 @@ TEST_F(PaymentsDataManagerTest,
   ResetPaymentsDataManager();
 
   // Expect no credit card values or suggestions were loaded.
-  EXPECT_EQ(0U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(0U, GetCreditCardsToSuggest(payments_data_manager()).size());
 
   std::vector<const CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(0U, card_to_suggest.size());
 }
 
@@ -1276,7 +1277,7 @@ TEST_F(PaymentsDataManagerTest,
   WaitForOnPaymentsDataChanged();
 
   std::vector<const CreditCard*> credit_cards =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(1U, credit_cards.size());
   EXPECT_EQ(0, credit_cards.front()->Compare(masked_card));
 }
@@ -1298,7 +1299,7 @@ TEST_F(PaymentsDataManagerTest,
   WaitForOnPaymentsDataChanged();
 
   std::vector<const CreditCard*> credit_cards =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   EXPECT_EQ(2U, credit_cards.size());
 }
 
@@ -1322,7 +1323,7 @@ TEST_F(PaymentsDataManagerTest,
   WaitForOnPaymentsDataChanged();
 
   std::vector<const CreditCard*> credit_cards =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(1U, credit_cards.size());
 
   // Verify `masked_card` is returned after deduping `credit_cards` list.
@@ -1481,7 +1482,7 @@ TEST_F(PaymentsDataManagerTest, UsePersistentServerStorage) {
   SetUpTwoCardTypes();
 
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(2U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(2U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 }
@@ -1585,7 +1586,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Check that the server card is available for suggestion.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(2U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(2U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 
@@ -1596,7 +1597,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Check that server cards are unavailable.
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(1U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(1U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(0U, payments_data_manager().GetServerCreditCards().size());
 }
@@ -1614,7 +1615,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   // The server card should not be available at first. The user needs to
   // accept the opt-in offer.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(1U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(1U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 
@@ -1623,7 +1624,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Check that the server card is available for suggestion.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(2U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(2U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 }

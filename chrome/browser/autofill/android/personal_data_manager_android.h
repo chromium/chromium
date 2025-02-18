@@ -130,7 +130,8 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env);
 
   // Returns the GUIDs of the credit cards to suggest to the user. See
-  // PersonalDataManager::GetCreditCardsToSuggest for more details.
+  // GetCreditCardsToSuggest in payments_suggestion_generator.h for more
+  // details.
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDsToSuggest(
       JNIEnv* env);
 

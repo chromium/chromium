@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 
 FastCheckoutPersonalDataHelperImpl::FastCheckoutPersonalDataHelperImpl(
     content::WebContents* web_contents)
@@ -36,9 +37,8 @@ FastCheckoutPersonalDataHelperImpl::GetProfilesToSuggest() const {
 std::vector<const autofill::CreditCard*>
 FastCheckoutPersonalDataHelperImpl::GetCreditCardsToSuggest() const {
   std::vector<const autofill::CreditCard*> cards_to_suggest =
-      GetPersonalDataManager()
-          ->payments_data_manager()
-          .GetCreditCardsToSuggest();
+      autofill::GetCreditCardsToSuggest(
+          GetPersonalDataManager()->payments_data_manager());
   // Do not offer cards with empty number.
   std::erase_if(cards_to_suggest, [](const autofill::CreditCard* card) {
     return !card->HasRawInfo(autofill::CREDIT_CARD_NUMBER);
@@ -67,9 +67,8 @@ bool FastCheckoutPersonalDataHelperImpl::IsCompleteAddressProfile(
 std::vector<const autofill::CreditCard*>
 FastCheckoutPersonalDataHelperImpl::GetValidCreditCards() const {
   std::vector<const autofill::CreditCard*> cards =
-      GetPersonalDataManager()
-          ->payments_data_manager()
-          .GetCreditCardsToSuggest();
+      autofill::GetCreditCardsToSuggest(
+          GetPersonalDataManager()->payments_data_manager());
   std::erase_if(cards, std::not_fn(&autofill::CreditCard::IsCompleteValidCard));
   return cards;
 }

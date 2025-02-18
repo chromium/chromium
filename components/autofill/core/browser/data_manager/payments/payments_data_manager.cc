@@ -117,27 +117,6 @@ bool FindByContents(const C& container, const T& needle) {
   });
 }
 
-// TODO(crbug.com/326408802): Move to payments_suggestion_generator.
-std::vector<const CreditCard*> DeduplicatedCreditCardsForSuggestions(
-    base::span<const CreditCard* const> cards_to_suggest) {
-  std::vector<const CreditCard*> deduplicated_cards;
-  for (const CreditCard* card : cards_to_suggest) {
-    // Full server cards should never be suggestions, as they exist only as a
-    // cached state post-fill.
-    CHECK_NE(card->record_type(), CreditCard::RecordType::kFullServerCard);
-    // Masked server cards are preferred over their local duplicates.
-    if (!CreditCard::IsLocalCard(card) ||
-        std::ranges::none_of(
-            cards_to_suggest, [&card](const CreditCard* other_card) {
-              return card != other_card &&
-                     card->IsLocalOrServerDuplicateOf(*other_card);
-            })) {
-      deduplicated_cards.push_back(card);
-    }
-  }
-  return deduplicated_cards;
-}
-
 }  // namespace
 
 // Helper class to abstract the switching between account and profile storage
@@ -1294,31 +1273,6 @@ PaymentsDataManager::GetVirtualCardUsageData() const {
     return {};
   }
   return autofill_virtual_card_usage_data_;
-}
-
-std::vector<const CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
-    bool should_use_legacy_algorithm) const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
-    return {};
-  }
-  std::vector<const CreditCard*> cards_to_suggest =
-      DeduplicatedCreditCardsForSuggestions(ShouldSuggestServerPaymentMethods()
-                                                ? GetCreditCards()
-                                                : GetLocalCreditCards());
-  // Rank the cards by ranking score (see UsageHistoryInformation for details).
-  // All expired cards should be suggested last, also by ranking score.
-  std::ranges::sort(
-      cards_to_suggest,
-      [comparison_time = base::Time::Now(), should_use_legacy_algorithm](
-          const CreditCard* a, const CreditCard* b) {
-        if (const bool a_is_expired = a->IsExpired(comparison_time);
-            a_is_expired != b->IsExpired(comparison_time)) {
-          return !a_is_expired;
-        }
-        return a->HasGreaterRankingThan(*b, comparison_time,
-                                        should_use_legacy_algorithm);
-      });
-  return cards_to_suggest;
 }
 
 std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {

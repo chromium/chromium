@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
@@ -62,7 +63,8 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
 std::vector<CreditCard> FetchCards(
     const autofill::PersonalDataManager& personal_data_manager) {
   std::vector<const CreditCard*> fetched_cards =
-      personal_data_manager.payments_data_manager().GetCreditCardsToSuggest();
+      autofill::GetCreditCardsToSuggest(
+          personal_data_manager.payments_data_manager());
   std::vector<CreditCard> cards;
   cards.reserve(fetched_cards.size());
 

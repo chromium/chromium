@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
@@ -5205,10 +5206,10 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
                         /*include_masked_server_credit_card=*/false,
                         /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-    credit_card_ = *autofill_client_->GetPersonalDataManager()
-                        .payments_data_manager()
-                        .GetCreditCardsToSuggest()
-                        .front();
+    credit_card_ =
+        *GetCreditCardsToSuggest(
+             autofill_client_->GetPersonalDataManager().payments_data_manager())
+             .front();
     credit_card_.set_cvc(u"123");
 
     url::Origin main_origin =
