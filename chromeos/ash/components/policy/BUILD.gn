@@ -24,6 +24,7 @@ source_set("unit_tests") {
   testonly = true
 
   deps = [
+    "external_storage:unit_tests",
     "restriction_schedule:unit_tests",
     "weekly_time:unit_tests",
     "weekly_time:unit_tests_checked",
