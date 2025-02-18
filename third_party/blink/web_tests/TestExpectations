@@ -66,6 +66,8 @@ crbug.com/395915411 [ Mac14-arm64 ] virtual/gpu-rasterization/external/wpt/css/c
 # Reftest failures from MSAA vs. analytic AA code paths
 crbug.com/395914611 [ Mac14-arm64 ] external/wpt/css/filter-effects/backdrop-filter-clip-rect-2.html [ Failure ]
 crbug.com/395914611 [ Mac14-arm64 ] external/wpt/css/filter-effects/backdrop-filter-transform.html [ Failure ]
+# YUV edge sampling bug
+crbug.com/329041548 [ Mac14-arm64 ] media/video-colorspace-yuv422.html [ Failure ]
 
 # *** END Graphite suppressions ***
 
