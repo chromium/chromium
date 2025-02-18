@@ -107,9 +107,7 @@ base::ScopedClosureRunner CreateSplashScreen() {
 
   ui_initialized_event.Wait();
   return base::ScopedClosureRunner(base::BindOnce(
-      [](HWND splash_hwnd) {
-        ::SendMessage(splash_hwnd, WM_CLOSE, 0, 0);
-      },
+      [](HWND splash_hwnd) { ::SendMessage(splash_hwnd, WM_CLOSE, 0, 0); },
       splash_hwnd));
 }
 
@@ -142,7 +140,8 @@ void SendPing(int exit_code, int extra_code) {
                         {
                             .event_type =
                                 update_client::protocol_request::kEventInstall,
-                            .result = 0,
+                            .result = update_client::protocol_request::
+                                kEventResultError,
                             .error_code = exit_code,
                             .extra_code1 = extra_code,
                         },

@@ -337,7 +337,9 @@ TEST_P(PingManagerTest, SendPing) {
               return nullptr;
             }),
         ping_manager_, base::DoNothing())
-        ->SendPing(crx_component, {.event_type = 4, .result = 1},
+        ->SendPing(crx_component,
+                   {.event_type = protocol_request::kEventUninstall,
+                    .result = protocol_request::kEventResultSuccess},
                    base::BindLambdaForTesting([&](Error) { Quit(); }));
     RunThreads();
 
@@ -402,7 +404,7 @@ TEST_P(PingManagerTest, SendPing) {
         ->SendPing(crx_component,
                    {
                        .event_type = protocol_request::kEventAppCommandComplete,
-                       .result = false,
+                       .result = protocol_request::kEventResultError,
                        .error_code = -11,
                        .extra_code1 = 101,
                        .app_command_id = "appcommandid1",
