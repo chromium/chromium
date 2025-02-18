@@ -5,31 +5,43 @@
 """Script to extract edits from clang spanification tool output.
 
 The edits have the following format:
-    ...
-    e{lhs_node1}@{rhs_node2}           # Edge from node 1 to node 2.
-    e{lhs_node2}@{rhs_node3}           # Edge from node 2 to node 3.
-    e{lhs_node3}@{rhs_node4}           # Edge from node 3 to node 4.
-    ...
-    s{node_1}                          # Source node of the graph that triggers
-                                       # a rewrite (i.e. buffer usage)
-    ...
-    t{node_4}                          # Sink node. A rewrite from a source
-                                       # requires the ultimate end nodes to be
-                                       # sink. They represent nodes we know can
-                                       # be rewrite because the buffer's size
-                                       # is known.
-    ...
-    f{lhs_key}@{rhs_key}@{replacement} # Span frontier replacement applied if
-                                       # lhs_key is not rewritten but rhs_key
-                                       # is.
-    ...
-Where lhs_node, rhs_node, and node_n represent a node's text representation
-generated using the spanification tool's Node::ToString() function.
+```
+  e lhs_node1 rhs_node2           # Edge from node 1 to node 2.
+  e lhs_node2 rhs_node3           # Edge from node 2 to node 3.
+  e lhs_node3 rhs_node4           # Edge from node 3 to node 4.
+  ...
+  s node_1                        # Source node of the graph that triggers a
+                                  # rewrite (i.e. buffer usage)
+  ...
+  i node_4                        # Sink node. A rewrite from a source
+                                  # requires the ultimate end nodes to be
+                                  # sink. They represent nodes we know can
+                                  # be rewrite because the buffer's size
+                                  # is known.
+  ...
+  f lhs_node rhs_node replacement # Span frontier replacement applied if
+                                  # lhs_node is not rewritten but rhs_node
+                                  # is.
+  ...
+  r node_1 replacement            # A replacement associated with a node.
+```
 
-A node has the following format:
-is_dependent,(\,replacement)+
+Where all the `*node*` are abstract ID that represents a node in the graph.
 
-is_dependent: 0 or 1
+Real example:
+```
+  s 0008244:DBKYJas7
+  s 0008303:GWkNbhQ4
+  e 0001450:8-AxbSn3 0008303:GWkNbhQ4
+  e 0001518:BUQKDaXe 0008244:DBKYJas7
+  e 0001518:L97i_bwg 0008303:GWkNbhQ4
+  f 0001450:8-AxbSn3 0008303:GWkNbhQ4 r:::../../base/memory/shared_memory_mapping.h:::8684:::0:::.data()
+  f 0001518:BUQKDaXe 0008244:DBKYJas7 r:::../../base/memory/shared_memory_mapping.h:::8535:::15:::(data() + size()).data()
+  f 0001518:L97i_bwg 0008303:GWkNbhQ4 r:::../../base/memory/shared_memory_mapping.h:::8686:::15:::(data() + size()).data()
+  r 0001518:BUQKDaXe include-user-header:::../../base/containers/checked_iterators.h:::-1:::-1:::base/containers/span.h
+  r 0001518:BUQKDaXe r:::../../base/containers/checked_iterators.h:::1518:::9:::base::span<const unsigned char>
+  r 0001946:gKWdIpwv r:::../../base/containers/checked_iterators.h:::1946:::9:::base::span<const unsigned char>
+```
 
 extract_edits.py takes input that is concatenated from multiple tool
 invocations and extract just the edits with the following steps:
@@ -84,12 +96,9 @@ class Node:
     # Mapping in between the node's key and the node.
     key_to_node = dict()
 
-    def __init__(self, is_dependent, *replacements) -> None:
-        self.replacements = replacements
-        for replacement in replacements:
-            assert_valid_replacement(replacement)
-
-        self.is_dependent = is_dependent
+    def __init__(self, key) -> None:
+        self.key = key
+        self.replacements = set()
 
         # Neighbors of the node in the graph. The graph is directed,
         # flowing from lhs to rhs.
@@ -113,61 +122,33 @@ class Node:
         # the main function.
         self.component = None
 
-    # The key of the node is the first replacement.
-    def key(self) -> str:
-        return self.replacements[0]
-
-    def __eq__(self, other):
-        if isinstance(other, Node):
-            return self.key() == other.key()
-        return False
-
-    def __hash__(self) -> int:
-        return hash(self.key())
+    def add_replacement(self, replacement: str):
+        assert_valid_replacement(replacement)
+        self.replacements.add(replacement)
 
     # Static method to get a node from a replacement key.
     @classmethod
-    def from_key(cls: type, replacement: str):
-        return cls.key_to_node.get(replacement)
+    def from_key(cls: type, key: str):
+        # Deduplicate nodes, as they will appear multiple times in the input.
+        node = Node.key_to_node.get(key)
+        if node is not None:
+            return node
 
-    # Static method to create a node from its string representation. This
-    # deduplicate nodes by storing them in a dictionary.
-    @classmethod
-    def get_or_create(cls: type, txt: str):
-        x = txt.split('\\,')
-
-        # Expect at least 2 elements that correspond to the following node
-        # attributes:
-        # - is_dependent
-        # - replacements+
-        assert len(x) >= 2, txt
-
-        # Value are escaped to avoid conflicts with the separator. Unescape
-        # them.
-        x = [urllib.parse.unquote(y) for y in x]
-
-        # `./apply-edits.py` expects `\n` to be escaped.
-        x = [y.replace('\n', '\0') for y in x]
-
-        node = Node(*x)
-
-        # Deduplicate nodes, as they might appear multiple times in the input.
-        if (Node.key_to_node.get(node.key()) is None):
-            Node.key_to_node[node.key()] = node
-
-        return Node.key_to_node[node.key()]
+        node = Node(key)
+        Node.key_to_node[key] = node
+        return node
 
     def __repr__(self) -> str:
         result = [
             f"Node {hash(self)} {{",
-            f"  key: {self.key()}",
+            f"  key: {self.key}",
             f"  size_info_available: {self.size_info_available}",
             f"  neighbors_directed: {pprint.pformat([hash(n) for n in self.neighbors_directed], indent=4)}",
             "}",
         ]
         return "\n".join(result)
 
-    # This is not parsable by get_or_create but is useful for debugging the
+    # This is not parsable by from_key but is useful for debugging the
     # graph of nodes.
     def to_debug_string(self) -> str:
         return repr(self)
@@ -191,9 +172,8 @@ def DFS(node: Node):
         return
     node.visited = True
 
-    if not node.key().endswith('<empty>'):
-        for replacement in node.replacements:
-            node.component.changes.add(replacement)
+    for replacement in node.replacements:
+        node.component.changes.add(replacement)
 
     for neighbour in node.neighbors_directed:
         DFS(neighbour)
@@ -277,33 +257,39 @@ def main():
         line = line.rstrip('\n\r')
 
         # The first character of the line denotes the type of the line:
+        # - 'r': Replacement associated with a node.
         # - 'e': Edge in between two nodes.
         # - 's': Source node of the graph triggering the rewrite.
         # - 'f': Span frontier change.
         # - 'i': Sink node. A rewrite from a source requires the ultimate end
         #        nodes to be sink. They represent nodes we know can be rewrite
         #        because the buffer's size is known.
-        assert line[0] in ['e', 's', 'i', 'f'], "Unknown line type: " +\
+        assert line[0] in ['r', 'e', 's', 'i', 'f'], "Unknown line type: " +\
                line[0] + " in line: " + line
+
+        # Replacement associated with a node:
+        if line[0] == 'r':
+            (_, key, replacement) = line.split(' ', 2)
+            Node.from_key(key).add_replacement(replacement)
+            continue
 
         # Sink node:
         if line[0] == 'i':
-            assert_valid_replacement(line[1:])
-            sinks.add(line[1:])
+            (_, key) = line.split(' ')
+            sinks.add(key)
             continue
 
         # Source node:
         if line[0] == 's':
-            assert_valid_replacement(line[1:])
-            sources.add(line[1:])
+            (_, key) = line.split(' ')
+            sources.add(key)
             continue
 
         # Edge in between two nodes:
         if line[0] == 'e':
-            nodes = line[1:].split('@')
-            assert len(nodes) == 2, "Invalid edge: " + line
-            lhs = Node.get_or_create(nodes[0])
-            rhs = Node.get_or_create(nodes[1])
+            (_, lhs_key, rhs_key) = line.split(' ')
+            lhs = Node.from_key(lhs_key)
+            rhs = Node.from_key(rhs_key)
 
             # Directed edge:
             lhs.neighbors_directed.add(rhs)
@@ -315,34 +301,19 @@ def main():
 
         # Span frontier change:
         if line[0] == 'f':
-            frontiers.add(line[1:])
+            frontiers.add(line)
             continue
 
         assert False, "Unreachable code"
 
     # Mark the sink nodes as rewritable.
     for sink in sinks:
-        sink_node = Node.from_key(sink)
-        if sink_node is None:
-            # TODO: Create the sink when it's not found, or add an assertion if
-            # this case doesn't happen.
-            print(f"Sink node not found: {sink}", file=sys.stderr)
-            continue
-        sink_node.size_info_available = True
+        Node.from_key(sink).size_info_available = True
 
     # Mark the source nodes:
     source_nodes = []
     for source in sources:
         source_node = Node.from_key(source)
-        # When using templates, it is possible the source isn't part of any
-        # edges. In this case, it can't be rewritten, because we don't know
-        # if its size info is available.
-        #
-        # This is a limitation of the current implementation. We could improve
-        # this by adding a new line that indicates whether the node's size
-        # information is available. It shouldn't be part of the edges.
-        if source_node is None:
-            continue
         source_nodes.append(source_node)
 
         # Determine whether size information is available from this source.
@@ -372,20 +343,10 @@ def main():
         if node.size_info_available:
             DFS(node)
 
-    # Iterate over the dependent nodes and then check if their only neighbor was
-    # visited. Visited nodes here are nodes who's type was rewritten to span.
-    # In that case, the dependent expression needs to be adapted/rewritten.
-    for node in Node.all():
-        if node.is_dependent == '1':
-            neighbor = list(node.neighbors_directed)[0]
-            if neighbor.visited:
-                for replacement in node.replacements:
-                    neighbor.component.changes.add(replacement)
-
     # At the edge in between rewritten and non-rewritten nodes, we need
     # to add a call to `.data()` to access the pointer from the span:
     for frontier in frontiers:
-        (lhs_key, rhs_key, replacement) = frontier.split('@')
+        (_, lhs_key, rhs_key, replacement) = frontier.split(' ', 3)
         lhs_node = Node.from_key(lhs_key)
         rhs_node = Node.from_key(rhs_key)
 

@@ -47,9 +47,6 @@ void DumpMatchResult(const MatchFinder::MatchResult& result) {
   }
 }
 
-// Special keywords:
-constexpr char kEmptyKeyword[] = "<empty>";
-
 const char kBaseSpanIncludePath[] = "base/containers/span.h";
 
 // Include path that needs to be added to all the files where
@@ -169,60 +166,123 @@ AST_MATCHER(clang::ArraySubscriptExpr, isSafeArraySubscript) {
   return true;
 }
 
-struct Node {
-  // A replacement has one of following format:
-  // - r:::<file path>:::<offset>:::<length>:::<replacement text>
-  // - include-user-header:::<file path>:::-1:::-1:::<include text>
-  // - include-system-header:::<file path>:::-1:::-1:::<include text>
-  //
-  // The first replacement must uniquely identify this node. The rest of the
-  // replacements are additional information that is needed to apply the
-  // replacement.
-  std::vector<std::string> replacements;
+// Convert a number to a string with leading zeros. This is useful to ensure
+// that the alphabetical order of the strings is the same as the numerical
+// order.
+std::string ToStringWithPadding(size_t value, size_t padding) {
+  std::string str = std::to_string(value);
+  assert(str.size() <= padding);
+  return std::string(padding - str.size(), '0') + str;
+}
 
-  // Dependent nodes are special nodes having a single neighbor and that need to
-  // be rewritten iff their only neighbor is. These nodes include (among
-  // others):
-  //  1. Dereference nodes: If the expression we are dereferencing is rewritten
-  //     to base::span, the dereference expression needs to be adapted as well.
-  //  2. Nodes to replace unary arithmetic operations
-  //  3. Nodes to replace binary arithmetic operations
-  //  4. Additional replacement Nodes: When a replacement is split in two, the
-  //     second node is marked as a dependent node on the first since both
-  //     replacements are needed together. See the `additional_replacement`
-  //     field description for more details.
-  bool is_dependent = false;
-
-  // Nodes are uniquely identified by their first replacement.
-  const std::string Key() const { return replacements[0]; }
-
-  bool operator==(const Node& other) const { return Key() == other.Key(); }
-  bool operator<(const Node& other) const { return Key() < other.Key(); }
-
-  // The resulting string follows the following format:
-  // {is_dependent,(\,replacement)+}
-  // where the booleans are represented as 0 or 1.
-  std::string ToString() const {
-    std::string replacements_str;
-    for (const auto& replacement : replacements) {
-      replacements_str += llvm::formatv("\\,{}", replacement);
-    }
-
-    return llvm::formatv("{0:d}{1}", is_dependent, replacements_str);
+// A simple base64 hash function.
+std::string HashBase64(const std::string& input, size_t output_size = 4) {
+  std::hash<std::string> hasher;
+  size_t hash = hasher(input);
+  constexpr std::array<char, 64> charset = {
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
+      'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+      'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c',
+      'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+      'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '-', '_',
+  };
+  std::string output(output_size, '0');
+  for (size_t i = 0; i < output.size(); i++) {
+    output[i] = charset[hash % charset.size()];
+    hash /= charset.size();
   }
-};
+  return output;
+}
 
-// Emits an edge between two nodes.
-void EmitEdge(const Node& lhs, const Node& rhs) {
-  llvm::outs() << llvm::formatv("e{0}@{1}\n", lhs.ToString(), rhs.ToString());
+// An identifier for a node.
+//
+// Important properties:
+//   - The same range in a file, but processed from two different compile units
+//     must have the same key. This is useful to combine rewrites from different
+//     compile units.
+//   - Sorting nodes alphabetically must preserve the order of the ranges in
+//     the file. This is useful to associate the function's argument using their
+//     alphabetical order.
+//
+// `human_readable`
+// ----------------
+// It is a debugging flag that makes the node key easier to read for debugging
+// purposes. It can potentially be useful for external debugging tools to
+// visualize the graph. However, it increase the output size by 25%.
+//
+//                              offset  hash
+// Example:                     ------- --------
+//  - human_readable = false => 0000426:NrcSLRGt
+//  - human_readable = true  => 0000426:M4TJ:main.cc:11:8:3
+//                              ------- ---- ------- -- - -
+//                              offset  hash filename | | `length
+//                                                    | `- column
+//                                                    `--- line
+template <bool human_readable = false /* Tweak this to debug*/>
+std::string NodeKeyFromRange(const clang::SourceRange& range,
+                             const clang::SourceManager& sources,
+                             const std::string& optional_seed = "") {
+  clang::tooling::Replacement replacement(
+      sources, clang::CharSourceRange::getCharRange(range), "");
+  llvm::StringRef path = replacement.getFilePath();
+  llvm::StringRef file_name = llvm::sys::path::filename(path);
+
+  // Note that the largest file is 7.2Mbytes long. So every offsets can be
+  // represented using 7 digits. `ToStringWithPadding` ensures that the
+  // alphabetical order of the nodes is the same as the order of the ranges in
+  // the file.
+  if constexpr (!human_readable) {
+    return llvm::formatv(
+        "{0}:{1}", ToStringWithPadding(replacement.getOffset(), 7),
+        HashBase64(NodeKeyFromRange<true>(range, sources, optional_seed), 8));
+  }
+
+  return llvm::formatv("{0}:{1}:{2}:{3}:{4}:{5}",
+                       ToStringWithPadding(replacement.getOffset(), 7),
+                       HashBase64(path.str() + optional_seed), file_name,
+                       sources.getSpellingLineNumber(range.getBegin()),
+                       sources.getSpellingColumnNumber(range.getBegin()),
+                       replacement.getLength());
+}
+
+template <typename T>
+std::string NodeKey(const T* t, const clang::SourceManager& sources) {
+  return NodeKeyFromRange(t->getSourceRange(), sources);
+}
+
+std::string GetRHS(const MatchFinder::MatchResult& result);
+std::string GetLHS(const MatchFinder::MatchResult& result);
+
+// Emit a generic instruction to the output stream. This removes duplicates.
+void Emit(const std::string& line) {
+  static std::set<std::string> emitted;
+  if (emitted.count(line) == 0) {
+    emitted.insert(line);
+    llvm::outs() << line;
+  }
+}
+
+// Associate a change with a node.
+// A replacement has one of following format:
+// - r:::<file path>:::<offset>:::<length>:::<replacement text>
+// - include-user-header:::<file path>:::-1:::-1:::<include text>
+// - include-system-header:::<file path>:::-1:::-1:::<include text>
+//
+// It is associated with a "Node", which is a unique identifier.
+void EmitReplacement(const std::string& node, const std::string& replacement) {
+  Emit(llvm::formatv("r {0} {1}\n", node, replacement));
+}
+
+void EmitEdge(const std::string& lhs, const std::string& rhs) {
+  Emit(llvm::formatv("e {0} {1}\n", lhs, rhs));
 }
 
 // Emits a source node.
 //
 // A source node is a node that triggers the rewrite. All rewrites will start
 // from sources.
-void EmitSource(const std::string& key) {
-  llvm::outs() << llvm::formatv("s{0}\n", key);
+void EmitSource(const std::string& node) {
+  Emit(llvm::formatv("s {0}\n", node));
 }
 
 // Emits a sink node.
@@ -237,8 +297,8 @@ void EmitSource(const std::string& key) {
 //
 // A rewrite is applied from a source if all the reachable end nodes are
 // sinks.
-void EmitSink(const std::string& key) {
-  llvm::outs() << llvm::formatv("i{0}\n", key);
+void EmitSink(const std::string& node) {
+  Emit(llvm::formatv("i {0}\n", node));
 }
 
 // Emit `replacement` if `rhs_key` is rewritten, but `lhs_key` is not.
@@ -247,8 +307,7 @@ void EmitSink(const std::string& key) {
 void EmitFrontier(const std::string& lhs_key,
                   const std::string& rhs_key,
                   const std::string& replacement) {
-  llvm::outs() << llvm::formatv("f{0}@{1}@{2}\n", lhs_key, rhs_key,
-                                replacement);
+  Emit(llvm::formatv("f {0} {1} {2}\n", lhs_key, rhs_key, replacement));
 }
 
 static std::string GetReplacementDirective(
@@ -437,8 +496,9 @@ static void maybeUpdateSourceRangeIfInMacro(
   range = clang::SourceRange{correct_end};
 }
 
-static Node getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
-                                      const MatchFinder::MatchResult& result) {
+static std::string getNodeFromPointerTypeLoc(
+    const clang::PointerTypeLoc* type_loc,
+    const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -455,52 +515,44 @@ static Node getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
           .str();
   initial_text.pop_back();
   std::string replacement_text = "base::span<" + initial_text + ">";
-  Node n;
-  n.replacements = {
-      GetReplacementDirective(replacement_range, replacement_text,
-                              source_manager),
-      GetIncludeDirective(replacement_range, source_manager),
-  };
-  return n;
+
+  const std::string key = NodeKey(type_loc, source_manager);
+  EmitReplacement(key,
+                  GetReplacementDirective(replacement_range, replacement_text,
+                                          source_manager));
+  EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager));
+  return key;
 }
 
-// Return a placeholder node representing the array variable. This is connected
-// to every replacements applied to this variable:
+// Return node key representing the array variable. Multiple replacements are
+// applied to this node:
 // - `RewriteUnsafeArray` - Rewrite type of array.
 // - `RewriteArraySizeof` - Rewrite sizeof(array).
 // - `AppendDataCall`     - Append .data() when passed to an external function.
-static Node ArrayVariableProxyNode(const MatchFinder::MatchResult& result) {
+static std::string ArrayVariableNode(const MatchFinder::MatchResult& result) {
   const clang::VarDecl* array_variable =
       result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
-  const clang::SourceManager& source_manager = *result.SourceManager;
-  auto replacement_range = clang::SourceRange(array_variable->getBeginLoc(),
-                                              array_variable->getBeginLoc());
-  Node n;
-  n.replacements = {
-      GetReplacementDirective(replacement_range, "", source_manager),
-  };
-  return n;
+  return NodeKey(array_variable, *result.SourceManager);
 }
 
-static Node getNodeFromRawPtrTypeLoc(
+static std::string getNodeFromRawPtrTypeLoc(
     const clang::TemplateSpecializationTypeLoc* raw_ptr_type_loc,
     const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   auto replacement_range = clang::SourceRange(raw_ptr_type_loc->getBeginLoc(),
                                               raw_ptr_type_loc->getLAngleLoc());
 
-  Node n;
-  n.replacements = {
-      GetReplacementDirective(replacement_range, "base::raw_span",
-                              source_manager),
-      GetIncludeDirective(replacement_range, source_manager,
-                          kBaseRawSpanIncludePath),
-  };
-  return n;
+  const std::string key = NodeKey(raw_ptr_type_loc, source_manager);
+  EmitReplacement(key,
+                  GetReplacementDirective(replacement_range, "base::raw_span",
+                                          source_manager));
+  EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager,
+                                           kBaseRawSpanIncludePath));
+  return key;
 }
 
-static Node getNodeFromDecl(const clang::DeclaratorDecl* decl,
-                            const MatchFinder::MatchResult& result) {
+static std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
+                                   const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
@@ -563,17 +615,23 @@ static Node getNodeFromDecl(const clang::DeclaratorDecl* decl,
     }
   }
 
-  Node n;
-  n.replacements = {
-      GetReplacementDirective(replacement_range, replacement_text,
-                              source_manager),
-      GetIncludeDirective(replacement_range, source_manager),
-  };
-  return n;
+  // Since the `type` might be clang deduced type, this node is keyed by the
+  // type because it could be different depending on the context. This
+  // effectively prevents deduced types from being rewritten.
+  // See test: 'span-template-original.cc' for an example.
+  const std::string key =
+      NodeKeyFromRange(replacement_range, source_manager, type);
+  EmitReplacement(key,
+                  GetReplacementDirective(replacement_range, replacement_text,
+                                          source_manager));
+  EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager));
+
+  return key;
 }
 
-static Node getNodeFromDerefExpr(const clang::Expr* deref_expr,
-                                 const MatchFinder::MatchResult& result) {
+static void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
+  const clang::Expr* deref_expr =
+      result.Nodes.getNodeAs<clang::Expr>("deref_expr");
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -591,12 +649,9 @@ static Node getNodeFromDerefExpr(const clang::Expr* deref_expr,
     replacement_text = "(" + initial_text.substr(1) + ")[0]";
   }
 
-  Node n;
-  n.replacements = {
-      GetReplacementDirective(source_range, replacement_text, source_manager),
-  };
-  n.is_dependent = true;
-  return n;
+  EmitReplacement(
+      GetRHS(result),
+      GetReplacementDirective(source_range, replacement_text, source_manager));
 }
 
 // Erases the member call expression. For example:
@@ -610,16 +665,15 @@ static Node getNodeFromDerefExpr(const clang::Expr* deref_expr,
 //
 // This is used to avoid decaying a container / raw_ptr to a pointer when the
 // lhs expression is rewritten to a base::span.
-static Node EraseMemberCall(const clang::MemberExpr* member_expr,
-                            const clang::SourceManager& source_manager) {
-  Node node;
-
+void EraseMemberCall(const std::string& node,
+                     const clang::MemberExpr* member_expr,
+                     const clang::SourceManager& source_manager) {
   // Add '*' before the member call, if needed.
   if (member_expr->isArrow()) {
     clang::SourceRange replacement_range(member_expr->getBase()->getBeginLoc(),
                                          member_expr->getBeginLoc());
-    node.replacements.push_back(
-        GetReplacementDirective(replacement_range, "*", source_manager));
+    EmitReplacement(
+        node, GetReplacementDirective(replacement_range, "*", source_manager));
   }
 
   // Remove the member call: `->call()` or `.call()`.
@@ -629,18 +683,13 @@ static Node EraseMemberCall(const clang::MemberExpr* member_expr,
             member_expr->isArrow() ? -2 : -1),
         member_expr->getMemberLoc().getLocWithOffset(
             member_expr->getMemberDecl()->getName().size() + 2));
-    node.replacements.push_back(
-        GetReplacementDirective(replacement_range, "", source_manager));
+    EmitReplacement(
+        node, GetReplacementDirective(replacement_range, "", source_manager));
   }
-
-  // Add the include directive:
-  node.replacements.push_back(
-      GetIncludeDirective(member_expr->getSourceRange(), source_manager));
-  return node;
 }
 
-// Append `.data()` to the matched expression.
-static Node AppendDataCall(const MatchFinder::MatchResult& result) {
+// Return a replacement that appends `.data()` to the matched expression.
+std::string AppendDataCall(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -652,41 +701,31 @@ static Node AppendDataCall(const MatchFinder::MatchResult& result) {
           .str();
   std::string replacement_text =
       initial_text.empty() ? ".data()" : "(" + initial_text + ").data()";
-  Node n;
-  n.replacements = {
-      GetReplacementDirective(rep_range, replacement_text, source_manager),
-  };
-  n.is_dependent = true;
-  return n;
+  return GetReplacementDirective(rep_range, replacement_text, source_manager);
 }
 
-static Node getNodeFromSizeExpr(const clang::Expr* size_expr,
-                                const MatchFinder::MatchResult& result) {
+static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
+                                       const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
-  std::string replacement = kEmptyKeyword;
-  clang::SourceRange replacement_range;
+  const std::string key = NodeKey(size_expr, source_manager);
+
+  auto replacement_range =
+      clang::SourceRange(size_expr->getSourceRange().getBegin(),
+                         size_expr->getSourceRange().getBegin());
   if (const auto* nullptr_expr =
           result.Nodes.getNodeAs<clang::CXXNullPtrLiteralExpr>(
               "nullptr_expr")) {
-    replacement = "{}";
     // The hardcoded offset corresponds to the length of "nullptr" keyword.
-    replacement_range = {nullptr_expr->getBeginLoc(),
-                         nullptr_expr->getBeginLoc().getLocWithOffset(7)};
-  } else {
-    // Generate empty insertion just to keep track of the node's loc;
-    replacement_range =
-        clang::SourceRange(size_expr->getSourceRange().getBegin(),
-                           size_expr->getSourceRange().getBegin());
+    clang::SourceRange nullptr_range = {
+        nullptr_expr->getBeginLoc(),
+        nullptr_expr->getBeginLoc().getLocWithOffset(7)};
+    EmitReplacement(
+        key, GetReplacementDirective(nullptr_range, "{}", source_manager));
   }
 
-  Node n;
-  n.replacements = {
-      GetReplacementDirective(replacement_range, replacement, source_manager),
-      GetIncludeDirective(replacement_range, source_manager),
-  };
-
-  EmitSink(n.Key());  // The size of this node is known.
-  return n;
+  EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager));
+  EmitSink(key);
+  return key;
 }
 
 // Rewrite:
@@ -728,12 +767,7 @@ void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
   std::string replacement_directive = GetReplacementDirective(
       replacement_range, std::move(replacement_text), source_manager);
 
-  Node node;
-  node.replacements = {replacement_directive};
-  node.is_dependent = true;
-
-  Node proxy = ArrayVariableProxyNode(result);
-  EmitEdge(node, proxy);
+  EmitReplacement(ArrayVariableNode(result), replacement_directive);
 }
 
 // Add `.data()` at the frontier of a span change. This is applied if the node
@@ -1144,6 +1178,14 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 void RewriteUnsafeArray(const MatchFinder::MatchResult& result) {
+  const std::string key = ArrayVariableNode(result);
+
+  // The array is accessed unsafely. So, it's a source.
+  EmitSource(key);
+  // From its type declaration, the array size is know, it can be rewritten. So
+  // it's a sink.
+  EmitSink(key);
+
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
@@ -1289,15 +1331,18 @@ void RewriteUnsafeArray(const MatchFinder::MatchResult& result) {
                                   source_manager, ast_context.getLangOpts(),
                                   ast_context.getTargetInfo())
               .getLocWithOffset(1);  // The last closing quote
-      additional_replacement = GetReplacementDirective(
-          clang::SourceRange(end_of_string_literal), "}", source_manager);
+      EmitReplacement(key, GetReplacementDirective(
+                               clang::SourceRange(end_of_string_literal), "}",
+                               source_manager));
     }
   } else if (init_list_expr) {
     auto replacements = RewriteStdArrayWithInitList(
         array_type, element_type_as_string, array_variable_as_string,
         array_size_as_string, init_list_expr, source_manager, ast_context);
     replacement_text = replacements.first;
-    additional_replacement = replacements.second;
+    if (!replacements.second.empty()) {
+      EmitReplacement(key, replacements.second);
+    }
   } else {
     replacement_text =
         llvm::formatv("std::array<{0}, {1}> {2}", element_type_as_string,
@@ -1306,34 +1351,18 @@ void RewriteUnsafeArray(const MatchFinder::MatchResult& result) {
   replacement_text =
       class_definition + qualifier_string.str() + replacement_text;
 
-  Node n;
-  n.replacements = {
-      GetReplacementDirective(replacement_range, replacement_text,
-                              source_manager),
-      GetIncludeDirective(replacement_range, source_manager, include_path,
-                          /*is_system_include_header=*/true),
-  };
-  if (!additional_replacement.empty()) {
-    n.replacements.push_back(additional_replacement);
-  }
-
-  // An unsafe c-style array access is both a sink and a source: The access is
-  // unsafe we would like to rewrite, and we can rewrite it, because its size is
-  // directly known.
-  EmitSink(n.Key());
-  EmitSource(n.Key());
-
-  // All the replacements are tied to a "proxy" node, which is used to represent
-  // the array variable. This is used to create additional replacements like
-  // adding `.data()` at the frontier of external calls and/or modify
-  // sizeof(array) expressions.
-  EmitEdge(n, ArrayVariableProxyNode(result));
+  EmitReplacement(key,
+                  GetReplacementDirective(replacement_range, replacement_text,
+                                          source_manager));
+  EmitReplacement(
+      key, GetIncludeDirective(replacement_range, source_manager, include_path,
+                               /*is_system_include_header=*/true));
 }
 
 // Extracts the lhs node from the match result.
 //
 // This is only used for spanification, not for rewriting std::array.
-Node GetLHS(const MatchFinder::MatchResult& result) {
+std::string GetLHS(const MatchFinder::MatchResult& result) {
   if (auto* type_loc =
           result.Nodes.getNodeAs<clang::PointerTypeLoc>("lhs_type_loc")) {
     return getNodeFromPointerTypeLoc(type_loc, result);
@@ -1350,10 +1379,6 @@ Node GetLHS(const MatchFinder::MatchResult& result) {
     return getNodeFromDecl(lhs_begin, result);
   }
 
-  if (auto* deref_op = result.Nodes.getNodeAs<clang::Expr>("deref_expr")) {
-    return getNodeFromDerefExpr(deref_op, result);
-  }
-
   // Not supposed to get here.
   llvm::errs() << "\n"
                   "Error: getLHS() encountered an unexpected match.\n"
@@ -1361,7 +1386,6 @@ Node GetLHS(const MatchFinder::MatchResult& result) {
                   "  - lhs_type_loc\n"
                   "  - lhs_raw_ptr_type_loc\n"
                   "  - lhs_begin\n"
-                  "  - deref_expr\n"
                   "\n";
   DumpMatchResult(result);
   assert(false && "Unexpected match in getLHS()");
@@ -1370,7 +1394,7 @@ Node GetLHS(const MatchFinder::MatchResult& result) {
 // Extracts the rhs node from the match result.
 //
 // This is only used for spanification, not for rewriting std::array.
-Node GetRHS(const MatchFinder::MatchResult& result) {
+std::string GetRHS(const MatchFinder::MatchResult& result) {
   if (auto* type_loc =
           result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
     return getNodeFromPointerTypeLoc(type_loc, result);
@@ -1391,10 +1415,13 @@ Node GetRHS(const MatchFinder::MatchResult& result) {
     clang::SourceManager& source_manager = *result.SourceManager;
     const clang::MemberExpr* data_member_expr =
         result.Nodes.getNodeAs<clang::MemberExpr>("data_member_expr");
-    Node erase = EraseMemberCall(data_member_expr, source_manager);
-    EmitSink(erase.Key());  // This node can be rewritten, because the span can
-                            // be created from the container.
-    return erase;
+    // Create a node representing the member .data() call.
+    // This node can be rewritten (e.g. it's a sink), from the span, by removing
+    // the `.data()` call.
+    const std::string key = NodeKey(data_member_expr, source_manager);
+    EmitSink(key);  // This node can be rewritten, because the span can.
+    EraseMemberCall(key, data_member_expr, source_manager);
+    return key;
   }
 
   if (const clang::Expr* size_expr =
@@ -1419,12 +1446,11 @@ Node GetRHS(const MatchFinder::MatchResult& result) {
 // Called when it exist a dependency in between `lhs` and `rhs` nodes. To apply
 // the rewrite of `lhs`, the rewrite of `rhs` is required.
 void MatchAdjacency(const MatchFinder::MatchResult& result) {
-  Node lhs = GetLHS(result);
-  Node rhs = GetRHS(result);
+  std::string lhs = GetLHS(result);
+  std::string rhs = GetRHS(result);
 
-  if (result.Nodes.getNodeAs<clang::Expr>("span_frontier") &&
-      !lhs.is_dependent) {
-    AddSpanFrontierChange(lhs.Key(), rhs.Key(), result);
+  if (result.Nodes.getNodeAs<clang::Expr>("span_frontier")) {
+    AddSpanFrontierChange(lhs, rhs, result);
   }
 
   EmitEdge(lhs, rhs);
@@ -1453,7 +1479,7 @@ void MatchAdjacency(const MatchFinder::MatchResult& result) {
 class FunctionSignatureNodes : public MatchFinder::MatchCallback {
  public:
   explicit FunctionSignatureNodes(
-      std::map<std::string, std::set<Node>>& sig_nodes,
+      std::map<std::string, std::set<std::string>>& sig_nodes,
       std::vector<std::pair<std::string, std::string>>& sig_pairs)
       : fct_sig_nodes_(sig_nodes), fct_sig_pairs_(sig_pairs) {}
 
@@ -1461,26 +1487,7 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
   FunctionSignatureNodes& operator=(const FunctionSignatureNodes&) = delete;
 
  private:
-  // Key here means a unique string generated from a function signature
-  std::string GetKey(const clang::FunctionDecl* fct_decl,
-                     const clang::SourceManager& source_manager) {
-    auto name = fct_decl->getNameInfo().getName().getAsString();
-    clang::SourceLocation start_loc = fct_decl->getBeginLoc();
-    // This is done here to get the spelling loc of a functionDecl. This is
-    // needed to handle cases where the function is in a Macro Expansion.
-    clang::SourceRange replacement_range(source_manager.getFileLoc(start_loc),
-                                         source_manager.getFileLoc(start_loc));
-    clang::tooling::Replacement replacement(
-        source_manager, clang::CharSourceRange::getCharRange(replacement_range),
-        name.c_str());
-    llvm::StringRef file_path = replacement.getFilePath();
-
-    return llvm::formatv("r:::{0}:::{1}:::{2}:::{3}", file_path,
-                         replacement.getOffset(), replacement.getLength(),
-                         name.c_str());
-  }
-
-  Node getNodeFromMatchResult(const MatchFinder::MatchResult& result) {
+  std::string getNodeFromMatchResult(const MatchFinder::MatchResult& result) {
     if (auto* type_loc =
             result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
       return getNodeFromPointerTypeLoc(type_loc, result);
@@ -1520,7 +1527,7 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
     const clang::CXXMethodDecl* method_decl =
         result.Nodes.getNodeAs<clang::CXXMethodDecl>("fct_decl");
 
-    const std::string current_key = GetKey(fct_decl, source_manager);
+    const std::string current_key = NodeKey(fct_decl, source_manager);
 
     // Function related by separate declaration and definition:
     {
@@ -1529,7 +1536,7 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
         // TODO(356666773): The `previous_decl` might be part of third_party/.
         // Then it won't be matched by the matcher. So only one of the pair
         // would have a node.
-        const std::string previous_key = GetKey(previous_decl, source_manager);
+        const std::string previous_key = NodeKey(previous_decl, source_manager);
         fct_sig_pairs_.push_back({
             current_key,
             previous_key,
@@ -1540,7 +1547,7 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
     // Function related by overriding:
     if (method_decl) {
       for (auto* m : method_decl->overridden_methods()) {
-        const std::string previous_key = GetKey(m, source_manager);
+        const std::string previous_key = NodeKey(m, source_manager);
         fct_sig_pairs_.push_back({
             current_key,
             previous_key,
@@ -1548,7 +1555,7 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
       }
     }
 
-    Node n = getNodeFromMatchResult(result);
+    std::string n = getNodeFromMatchResult(result);
     fct_sig_nodes_[current_key].insert(n);
   }
 
@@ -1557,22 +1564,17 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
   // Note: `RTNode` represents a function return type node.
   // In order to avoid relying on the order with which nodes are matched in
   // the AST, and to guarantee that nodes are stored in the file declaration
-  // order, we use a `std::set<Node>` which sorts Nodes based on the replacement
-  // directive which contains the file offset of a given node.
-  // Note that a replacement directive has the following format:
-  // `r:::<file path>:::<offset>:::<length>:::<replacement text>`
-  // The order is important because at the end of a tool run on a
+  // order, we use a `std::set<std::string>` which sorts Nodes based on their
+  // keys. Node that keys are properly ordered to reflect the order in the
+  // file. This property is important, because at the end of a tool run on a
   // translationUnit, for each pair of function signatures, we iterate
   // concurrently through the two sets of Nodes creating edges between nodes
   // that appear at the same index.
-  // EmitEdge(first function's node1, second function's node1)
-  // EmitEdge(first function's node2, second function's node2)
-  // and so on...
-  std::map<std::string, std::set<Node>>& fct_sig_nodes_;
+  std::map<std::string, std::set<std::string>>& fct_sig_nodes_;
 
   // Map related function signatures to each other, this is needed for
-  // functions
-  // with separate definition and declaration, and for overridden functions.
+  // functions with separate definition and declaration, and for overridden
+  // functions.
   std::vector<std::pair<std::string, std::string>>& fct_sig_pairs_;
 };
 
@@ -1591,7 +1593,7 @@ class Spanifier {
  public:
   explicit Spanifier(
       MatchFinder& finder,
-      std::map<std::string, std::set<Node>>& sig_nodes,
+      std::map<std::string, std::set<std::string>>& sig_nodes,
       std::vector<std::pair<std::string, std::string>>& sig_pairs)
       : match_finder_(finder), fct_sig_nodes_(sig_nodes, sig_pairs) {
     auto exclusions = anyOf(
@@ -1779,7 +1781,7 @@ class Spanifier {
                 anyOf(hasOverloadedOperatorName("[]"), hasOperatorName("++")),
                 hasArgument(0, lhs_expr_variations))))));
     Match(unsafe_buffer_access_from_ptr, [](const auto& result) {
-      EmitSource(GetLHS(result).Key());  // Declare unsafe buffer access.
+      EmitSource(GetLHS(result));  // Declare unsafe buffer access.
     });
 
     auto array_variable =
@@ -1812,7 +1814,7 @@ class Spanifier {
                        hasArgument(0, rhs_exprs_without_size_nodes))),
              unless(raw_ptr_plugin::isInMacroLocation()))
             .bind("deref_expr"));
-    Match(deref_expression, MatchAdjacency);
+    Match(deref_expression, DecaySpanToPointer);
 
     auto rhs_expr_variations_ignoring_non_spelled_nodes = traverse(
         clang::TK_IgnoreUnlessSpelledInSource, expr(rhs_expr_variations));
@@ -1840,13 +1842,9 @@ class Spanifier {
                              rhs_expr_variations_ignoring_non_spelled_nodes))),
         raw_ptr_op_bool));
     Match(boolean_op, [](const MatchFinder::MatchResult& result) {
-      Node node;
-      node.is_dependent = true;
-      node.replacements = {
-          GetReplacementDirective(getSourceRange(result), ".size()",
-                                  *result.SourceManager),
-      };
-      EmitEdge(node, GetRHS(result));
+      EmitReplacement(GetRHS(result),
+                      GetReplacementDirective(getSourceRange(result), ".size()",
+                                              *result.SourceManager));
     });
 
     // This is needed to remove the `.get()` call on raw_ptr from rewritten
@@ -1860,12 +1858,10 @@ class Spanifier {
             has(memberExpr(has(rhs_expr)).bind("get_member_expr"))));
     Match(raw_ptr_get_call, [](const MatchFinder::MatchResult& result) {
       clang::SourceManager& source_manager = *result.SourceManager;
-      Node erase_get_call = EraseMemberCall(
+      EraseMemberCall(
+          GetRHS(result),
           result.Nodes.getNodeAs<clang::MemberExpr>("get_member_expr"),
           source_manager);
-      erase_get_call.is_dependent = true;
-
-      EmitEdge(erase_get_call, GetRHS(result));
     });
 
     // When passing now-span buffers to third_party functions as parameters, we
@@ -1883,7 +1879,7 @@ class Spanifier {
                               size_node_matcher))),
                      parmVarDecl())));
     Match(buffer_to_external_func, [](const MatchFinder::MatchResult& result) {
-      EmitEdge(AppendDataCall(result), GetRHS(result));
+      EmitReplacement(GetRHS(result), AppendDataCall(result));
     });
 
     // When passing c-style arrays to third_party functions as parameters, we
@@ -1907,7 +1903,7 @@ class Spanifier {
                      expr(declRefExpr(to(array_variable)).bind("rhs_expr")),
                      parmVarDecl())));
     Match(passing_a_c_array_to_external_functions_etc, [](const auto& result) {
-      EmitEdge(AppendDataCall(result), ArrayVariableProxyNode(result));
+      EmitReplacement(ArrayVariableNode(result), AppendDataCall(result));
     });
 
     // Handles assignment:
@@ -2136,7 +2132,7 @@ int main(int argc, const char* argv[]) {
   // Map a function signature, which is modeled as a string representing file
   // location, to it's graph nodes (RTNode and ParmVarDecl nodes).
   // RTNode represents a function return type.
-  std::map<std::string, std::set<Node>> fct_sig_nodes;
+  std::map<std::string, std::set<std::string>> fct_sig_nodes;
   // Map related function signatures to each other, this is needed for functions
   // with separate definition and declaration, and for overridden functions.
   std::vector<std::pair<std::string, std::string>> fct_sig_pairs;
