@@ -5,13 +5,19 @@
 #include "content/browser/dips/btm_short_visit_observer.h"
 
 #include <cstdint>
+#include <optional>
 
+#include "base/functional/bind.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "content/browser/dips/dips_service_impl.h"
+#include "content/browser/dips/dips_state.h"
+#include "content/browser/dips/dips_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -77,6 +83,46 @@ void BtmShortVisitObserver::DidStartNavigation(
   NavigationState::CreateForNavigationHandle(*navigation_handle, clock_->Now());
 }
 
+namespace {
+
+// Returns the latest time of the two ranges (or nullopt if both are null).
+std::optional<base::Time> LastEvent(TimestampRange rng1, TimestampRange rng2) {
+  if (rng1.has_value()) {
+    if (rng2.has_value()) {
+      return std::max(rng1->second, rng2->second);
+    } else {
+      return rng1->second;
+    }
+  } else {
+    if (rng2.has_value()) {
+      return rng2->second;
+    } else {
+      return std::nullopt;
+    }
+  }
+}
+
+void EmitShortVisit(ukm::builders::BTM_ShortVisit event,
+                    base::Time now,
+                    std::optional<BtmState> btm_state) {
+  if (!btm_state.has_value()) {
+    // No BtmService.
+    event.SetTimeSinceLastInteraction(-2);
+  } else if (std::optional<base::Time> last_interaction =
+                 LastEvent(btm_state->user_activation_times(),
+                           btm_state->web_authn_assertion_times())) {
+    const int64_t ms = (now - *last_interaction).InMillisecondsRoundedUp();
+    event.SetTimeSinceLastInteraction(
+        ms >= 0 ? ukm::GetSemanticBucketMinForDurationTiming(ms) : -3);
+  } else {
+    // No previous interaction.
+    event.SetTimeSinceLastInteraction(-1);
+  }
+  event.Record(ukm::UkmRecorder::Get());
+}
+
+}  // namespace
+
 void BtmShortVisitObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -104,18 +150,26 @@ void BtmShortVisitObserver::DidFinishNavigation(
         const bool next_site_same = visit_site == next_site;
 
         if (!prev_site_same || !next_site_same) {
-          ukm::builders::BTM_ShortVisit(page_source_id_)
-              .SetVisitDuration(visit_seconds)
+          ukm::builders::BTM_ShortVisit event(page_source_id_);
+          event.SetVisitDuration(visit_seconds)
               .SetExitWasRendererInitiated(
                   navigation_handle->IsRendererInitiated())
               .SetExitHadUserGesture(navigation_handle->HasUserGesture())
               .SetExitPageTransition(navigation_handle->GetPageTransition())
               // TODO: .SetSiteEngagement()
-              // TODO: .SetTimeSinceLastInteraction()
               .SetPreviousSiteSame(prev_site_same)
               .SetNextSiteSame(next_site_same)
-              .SetPreviousAndNextSiteSame(prev_site_ == next_site)
-              .Record(ukm::UkmRecorder::Get());
+              .SetPreviousAndNextSiteSame(prev_site_ == next_site);
+          if (auto* btm =
+                  BtmServiceImpl::Get(web_contents()->GetBrowserContext())) {
+            btm->storage()
+                ->AsyncCall(&BtmStorage::Read)
+                .WithArgs(visit_url)
+                .Then(base::BindOnce(&EmitShortVisit, std::move(event),
+                                     clock_->Now()));
+          } else {
+            EmitShortVisit(std::move(event), clock_->Now(), std::nullopt);
+          }
         }
       }
     }
