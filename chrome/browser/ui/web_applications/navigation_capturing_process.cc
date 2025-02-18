@@ -28,8 +28,9 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -180,6 +181,19 @@ std::unique_ptr<NavigationCapturingProcess>
 NavigationCapturingProcess::MaybeHandleAppNavigation(
     const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // System Web Apps should not be going through the navigation capturing
+  // process.
+  const std::optional<ash::SystemWebAppType> capturing_system_app_type =
+      ash::GetCapturingSystemAppForURL(profile, params.url);
+  if (capturing_system_app_type.has_value() && params.browser &&
+      ash::IsBrowserForSystemWebApp(params.browser,
+                                    capturing_system_app_type.value())) {
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   if (!AreWebAppsUserInstallable(profile) ||
       Browser::GetCreationStatusForProfile(profile) !=
           Browser::CreationStatus::kOk ||
