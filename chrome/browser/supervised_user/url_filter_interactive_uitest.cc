@@ -7,8 +7,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/browser_user.h"
@@ -26,6 +28,11 @@ namespace {
 static constexpr std::string_view kPermissionRequestUrl =
     "https://families.google.com/u/0/manage/family/";
 
+// Aria label of the approval button, customizable in the PACP soy resources.
+static constexpr std::string_view kLocalApprovalButtonAriaLabel = "Approve";
+// Password selector for the parent password field in the PACP dialog.
+static constexpr std::string_view kPacpPasswordInputSelector = "type=password";
+
 // All tests in this unit are subject to flakiness because they interact with a
 // system that can be externally modified during execution.
 // TODO(b/301587955): Fix placement of supervised_user/e2e test files and their
@@ -41,7 +48,8 @@ class UrlFilterUiTest
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers},
+        {supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
+         supervised_user::kLocalWebApprovals},
         /*disabled_features=*/{});
 #endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   }
@@ -76,6 +84,10 @@ class UrlFilterUiTest
     return ElementHasAppeared({"#frame-blocked #remote-approvals-button"});
   }
 
+  StateChange LocalApprovalButtonAppeared() {
+    return ElementHasAppeared({"#frame-blocked #local-approvals-button"});
+  }
+
   StateChange ReauthenticationInterstitialNextButtonAppeared() {
     return ElementHasAppeared({".supervised-user-verify #primary-button"});
   }
@@ -86,6 +98,21 @@ class UrlFilterUiTest
 
   StateChange ParentPasswordEntryAppeared() {
     return ElementHasAppeared({"#password"});
+  }
+
+  StateChange PacpApprovalButtonAppeared() {
+    return ElementHasAppeared({base::StringPrintf(
+        "button[aria-label='%s']", kLocalApprovalButtonAriaLabel)});
+  }
+
+  StateChange PacpPasswordFieldAppeared() {
+    return ElementHasAppeared({"[type='password']"});
+  }
+
+  auto WaitForPacpDialogToAppear(ui::ElementIdentifier kPacpDialogId) {
+    return Steps(
+        WaitForStateChange(kPacpDialogId, PacpApprovalButtonAppeared()),
+        WaitForStateChange(kPacpDialogId, PacpPasswordFieldAppeared()));
   }
 
   // Clicks the approval request button for a pending request on Family Link.
@@ -110,12 +137,30 @@ class UrlFilterUiTest
                              R"js( (button) => { button.click(); } )js"));
   }
 
+  // Clicks the local approval request button on the supervised user
+  // interstitial.
+  auto ChildRequestsLocalApproval(ui::ElementIdentifier kChildTab) {
+    return Steps(ExecuteJsAt(kChildTab,
+                             {"#frame-blocked #local-approvals-button"},
+                             R"js( (button) => { button.click(); } )js"));
+  }
+
   // Clicks the 'Next' button on the supervised user re-authentication
   // interstitial.
   auto ChildProceedsToSignIn(ui::ElementIdentifier kChildTab) {
     return Steps(ExecuteJsAt(kChildTab,
                              {".supervised-user-verify #primary-button"},
                              R"js( (button) => { button.click(); } )js"));
+  }
+
+  // Clicks the approval button on the PACP dialog.
+  auto UserClicksPacpApprovalButton(ui::ElementIdentifier kPacpDialogId) {
+    return Steps(
+        ExecuteJsAt(kPacpDialogId,
+                    {base::StringPrintf("button[aria-label='%s']",
+                                        kLocalApprovalButtonAriaLabel)},
+                    R"js( (approve_button) => { approve_button.click(); } )js",
+                    ExecuteJsMode::kFireAndForget));
   }
 
   // Performs a child sign-in from the UI that is opened by the
@@ -134,7 +179,9 @@ class UrlFilterUiTest
                            ParentPasswordEntryAppeared()),
         Log("Sign-in page is ready"),
         // Fill-in the password field.
-        ExecuteJsAt(kChildSignInElementId, {"#password input[type=password]"},
+        ExecuteJsAt(kChildSignInElementId,
+                    {base::StringPrintf("#password input[%s]",
+                                        kPacpPasswordInputSelector)},
                     base::StringPrintf(
                         R"js( (entry) => { entry.value = "%s"; } )js",
                         std::string(child().GetAccountPassword()).c_str())),
@@ -312,6 +359,60 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DesktopLocalWebApprovalGranted) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPacpViewElementId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
+                                      kResetStateObserverId);
+
+  base::HistogramTester histogram_tester;
+
+  // Child activity is happening in this tab.
+  int tab_index = 0;
+  GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
+
+  TurnOnSync();
+  RunTestSequence(InAnyContext(Steps(
+      WaitForStateSeeding(kResetStateObserverId, child(),
+                          FamilyLinkSettingsState::Reset()),
+      // Supervised user navigates to inappropriate page and is blocked.
+      InstrumentTab(kChildElementId, tab_index, &child().browser()),
+      NavigateWebContents(kChildElementId, mature_site_url),
+      Log("When child is shown the interstitial"),
+      // The user clicks the local approval button.
+      WaitForStateChange(kChildElementId, LocalApprovalButtonAppeared()),
+      ChildRequestsLocalApproval(kChildElementId),
+      Log("When child requests local web approval"),
+      // The PACP dialog appears.
+      WaitForShow(kLocalWebParentApprovalDialogId),
+      InstrumentNonTabWebView(kPacpViewElementId,
+                              kLocalWebParentApprovalDialogId),
+      WaitForPacpDialogToAppear(kPacpViewElementId),
+      Log("When parent approval dialog opens"),
+      // The parent provides their password.
+      ExecuteJsAt(
+          kPacpViewElementId,
+          {base::StringPrintf("[%s]", kPacpPasswordInputSelector)},
+          base::StringPrintf(
+              R"js( (entry) => { entry.value = "%s"; } )js",
+              std::string(head_of_household().GetAccountPassword()).c_str())),
+      // The parent clicks the approval button on the dialog.
+      UserClicksPacpApprovalButton(kPacpViewElementId),
+      Log("When parent approves the request in the dialog"),
+      WaitForHide(kLocalWebParentApprovalDialogId),
+      Log("Then the parent approval dialog closes"),
+      // The page gets unblocked.
+      WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")),
+      Log("Then the child gets unblocked"), Do([&]() {
+        histogram_tester.ExpectBucketCount(
+            "FamilyLinkUser.LocalWebApprovalResult",
+            supervised_user::LocalApprovalResult::kApproved, 1);
+        histogram_tester.ExpectTotalCount(
+            "FamilyLinkUser.LocalWebApprovalResult", 1);
+      }),
+      Log("Then the approval metrics are recorded"), )));
+}
+
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ChildInPendingStateCanReauthAndRequestApproval) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
