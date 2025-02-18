@@ -189,13 +189,16 @@ void AndroidStateTransferHandler::EmitPendingTransfersHistogram() {
 
 void AndroidStateTransferHandler::HandleTouchEvent(
     base::android::ScopedInputEvent input_event) {
-  CHECK(state_for_curr_sequence_.has_value() &&
+  CHECK(state_for_curr_sequence_.has_value());
+  const int action = AMotionEvent_getAction(input_event.a_input_event()) &
+                     AMOTION_EVENT_ACTION_MASK;
+  // Due to an Android platform bug b/395610162, we see some motion events have
+  // different down time than the rest of the sequence.
+  CHECK(action == AMOTION_EVENT_ACTION_MOVE ||
         GetEventDowntime(input_event) ==
             state_for_curr_sequence_->transfer_state->down_time_ms);
 
   if (!state_for_curr_sequence_->rir_support) {
-    const int action = AMotionEvent_getAction(input_event.a_input_event()) &
-                       AMOTION_EVENT_ACTION_MASK;
     if (action == AMOTION_EVENT_ACTION_CANCEL ||
         action == AMOTION_EVENT_ACTION_UP) {
       state_for_curr_sequence_.reset();
