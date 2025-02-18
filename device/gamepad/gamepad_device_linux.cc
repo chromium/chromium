@@ -16,6 +16,7 @@
 #include <linux/joystick.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 
@@ -255,7 +256,6 @@ GamepadDeviceLinux::GamepadDeviceLinux(
     const std::string& syspath_prefix,
     scoped_refptr<base::SequencedTaskRunner> dbus_runner)
     : syspath_prefix_(syspath_prefix),
-      button_indices_used_(Gamepad::kButtonsLengthCap, false),
       dbus_runner_(dbus_runner),
       polling_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
@@ -533,7 +533,7 @@ void GamepadDeviceLinux::CloseJoydevNode() {
   gamepad_id_ = GamepadId::kUnknownGamepad;
 
   // Button indices must be recomputed once the joydev node is closed.
-  button_indices_used_.clear();
+  std::ranges::fill(button_indices_used_, false);
   special_button_map_.clear();
   evdev_special_keys_initialized_ = false;
 }
