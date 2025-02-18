@@ -95,6 +95,8 @@ class WallpaperFetcher {
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = original_url_;
     resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(original_url_);
     simple_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), traffic_annotation);
     network::mojom::URLLoaderFactory* loader_factory =
