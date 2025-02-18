@@ -107,6 +107,11 @@ class WebStateID;
 // Deletes the shared group in `tabGroupItem`.
 - (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem;
 
+// Completes the final removal of the last tab from its shared group. The last
+// tab is temporarily saved until this function is triggered upon user
+// confirmation.
+- (void)closeSavedTabFromGroup:(TabGroupItem*)tabGroupItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_H_
