@@ -1063,6 +1063,12 @@ bool TaskManagerTableModel::IsTaskFirstInGroup(size_t row_index) const {
 
 bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
     TaskId task_id) const {
+  // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
+  // Used for backward compatibility with the prod. task manager.
+  if (display_category_ == DisplayCategory::kAll) {
+    return true;
+  }
+
   const TaskId root = observed_task_manager()->GetRootTaskId(task_id);
   const Task::Type type = observed_task_manager()->GetType(root);
   const Task::SubType subtype = observed_task_manager()->GetSubType(root);
@@ -1081,6 +1087,12 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
                observed_task_manager()->GetProcessId(task_id));
   }
 
+  // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
+  // Used for backward compatibility with the prod. task manager.
+  if (display_category_ == DisplayCategory::kAll) {
+    return true;
+  }
+
   // Keep any TaskId iff the task that spawned it (root node) has a type that
   // matches the current category.
   const TaskId root = observed_task_manager()->GetRootTaskId(task_id);
@@ -1092,8 +1104,6 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
       return ShouldKeepTaskForTabsAndExtensions(type, subtype);
     case DisplayCategory::kSystem:
       return ShouldKeepTaskForSystem(type, subtype);
-    case DisplayCategory::kAll:
-      return true;
     default:
       NOTREACHED();
   }
