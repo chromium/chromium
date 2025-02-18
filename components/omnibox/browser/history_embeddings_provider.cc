@@ -71,9 +71,11 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  input_ = input;
-  starter_pack_engine_ = AutocompleteInput::AdjustInputForStarterPackEngines(
-      client()->GetTemplateURLService(), &input_);
+  const auto [adjusted_input, starter_pack_engine] =
+      AdjustInputForStarterPackKeyword(input,
+                                       client()->GetTemplateURLService());
+  input_ = adjusted_input;
+  starter_pack_engine_ = starter_pack_engine;
 
   int num_terms =
       history_embeddings::CountWords(base::UTF16ToUTF8(input_.text()));
