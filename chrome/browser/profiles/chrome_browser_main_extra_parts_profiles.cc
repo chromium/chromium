@@ -113,7 +113,7 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
-#endif  //  BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#endif
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -377,7 +377,7 @@
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 #include "extensions/browser/extensions_browser_client.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "apps/browser_context_keyed_service_factories.h"
@@ -394,8 +394,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_extension_api_browser_context_keyed_service_factories.h"
 #include "chrome/browser/extensions/api/chromeos_api_browser_context_keyed_service_factories.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif
+#endif
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
@@ -404,7 +404,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
+#endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -525,7 +525,7 @@
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_PDF)
+#endif
 
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/net/nss_service_factory.h"
@@ -546,32 +546,30 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/bound_session_credentials/dice_bound_session_cookie_service_factory.h"
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif
+#endif
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 #include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#endif
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#endif
+#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
+#endif
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
   main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsProfiles>());
@@ -618,7 +616,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::EnsureBrowserContextKeyedServiceFactoriesBuilt();
   chromeos_extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif
   extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #elif BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   chrome_extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
@@ -732,8 +730,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   BoundSessionCookieRefreshServiceFactory::GetInstance();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DiceBoundSessionCookieServiceFactory::GetInstance();
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   browser_switcher::BrowserSwitcherServiceFactory::GetInstance();
 #endif
@@ -778,7 +776,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::CertificateProvisioningServiceFactory::GetInstance();
   client_certificates::CertificateStoreFactory::GetInstance();
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+#endif
   ClientHintsFactory::GetInstance();
   ClipboardRestrictionServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -787,7 +785,7 @@ void ChromeBrowserMainExtraPartsProfiles::
           IsMicrosoftOneDriveIntegrationForEnterpriseEnabled()) {
     chromeos::cloud_storage::OneDrivePrefObserverFactory::GetInstance();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif
   collaboration::CollaborationServiceFactory::GetInstance();
   collaboration::messaging::MessagingBackendServiceFactory::GetInstance();
   commerce::ShoppingServiceFactory::GetInstance();
@@ -909,7 +907,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (ash::features::IsFloatingSsoAllowed()) {
     ash::floating_sso::FloatingSsoServiceFactory::GetInstance();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif
   FontPrefChangeNotifierFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS)
   GAIAInfoUpdateServiceFactory::GetInstance();
@@ -921,7 +919,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (GlicEnabling::IsEnabledByFlags()) {
     glic::GlicKeyedServiceFactory::GetInstance();
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   GlobalErrorServiceFactory::GetInstance();
 #endif
@@ -1010,7 +1008,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   NavigationPredictorKeyedServiceFactory::GetInstance();
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   net::ServerCertificateDatabaseServiceFactory::GetInstance();
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#endif
   PreloadingModelKeyedServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   NearbySharingServiceFactory::GetInstance();
@@ -1028,9 +1026,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
     NotificationPermissionsReviewServiceFactory::GetInstance();
   }
-#else   // BUILDFLAG(IS_ANDROID)
+#else
   NotificationPermissionsReviewServiceFactory::GetInstance();
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif
   NotificationsEngagementServiceFactory::GetInstance();
   NotifierStateTrackerFactory::GetInstance();
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -1054,7 +1052,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   on_device_translation::ServiceControllerManagerFactory::GetInstance();
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#endif
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelServiceFactory::GetInstance();
 #endif
@@ -1226,7 +1224,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #if BUILDFLAG(ENABLE_PDF)
   screen_ai::PdfOcrControllerFactory::GetInstance();
-#endif  // BUILDFLAG(ENABLE_PDF)
+#endif
   screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1347,9 +1345,9 @@ void ChromeBrowserMainExtraPartsProfiles::
           safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
     UnusedSitePermissionsServiceFactory::GetInstance();
   }
-#else   // BUILDFLAG(IS_ANDROID)
+#else
   UnusedSitePermissionsServiceFactory::GetInstance();
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif
   UrlLanguageHistogramFactory::GetInstance();
   UsbChooserContextFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
@@ -1379,8 +1377,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
     tab_groups::CollaborationMessagingObserverFactory::GetInstance();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
+#endif
 }
 
 void ChromeBrowserMainExtraPartsProfiles::PreProfileInit() {
