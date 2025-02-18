@@ -95,8 +95,7 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // If shown and resizing the renderer, returns the height of the virtual
   // keyboard in device pixels. Otherwise, returns 0. Always 0 in a
   // non-outermost main frame.
-  // TODO(chrishtr): rename to virtual_keyboard_resize_height_device_px.
-  int virtual_keyboard_resize_height_physical_px = 0;
+  int virtual_keyboard_resize_height_device_px = 0;
 
   // Whether or not the focused node should be scrolled into view after the
   // resize.

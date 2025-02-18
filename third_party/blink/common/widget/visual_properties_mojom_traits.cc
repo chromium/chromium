@@ -46,8 +46,8 @@ bool StructTraits<
   out->cursor_accessibility_scale_factor =
       data.cursor_accessibility_scale_factor();
   out->is_pinch_gesture_active = data.is_pinch_gesture_active();
-  out->virtual_keyboard_resize_height_physical_px =
-      data.virtual_keyboard_resize_height_physical_px();
+  out->virtual_keyboard_resize_height_device_px =
+      data.virtual_keyboard_resize_height_device_px();
   return true;
 }
 
