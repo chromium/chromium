@@ -317,6 +317,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // policy.
   TemplateURL* GetEnterpriseSearchAggregatorEngine() const;
 
+  // Returns the `require_shortcut` policy field from the current preferences.
+  bool IsShortcutRequiredForSearchAggregator();
+
 #if BUILDFLAG(IS_ANDROID)
   // Returns the list prepopulated template URLs for `country_code`.
   // `country_code` is a two-character uppercase ISO 3166-1 country code.

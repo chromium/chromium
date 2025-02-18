@@ -58,7 +58,6 @@ class AutocompleteControllerTest : public testing::Test {
                ->image_dominant_color.empty();
   }
 
-
   FakeAutocompleteProviderClient* provider_client() {
     return static_cast<FakeAutocompleteProviderClient*>(
         controller_.autocomplete_provider_client());
@@ -2105,6 +2104,9 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_LensSearchbox) {
   }
 }
 
+// The EnterpriseSearchAggregatorProvider is only run on desktop.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 TEST_F(AutocompleteControllerTest,
        ShouldRunProvider_EnterpriseSearchAggregator) {
   // Populate template URL service.
@@ -2149,6 +2151,12 @@ TEST_F(AutocompleteControllerTest,
   EXPECT_FALSE(controller_.ShouldRunProvider(document_provider.get()));
 
   scoped_config.Get().require_shortcut = true;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().shortcut = "siteSearch";
+  scoped_config.Get().name = "scoped";
+  scoped_config.Get().search_url = "siteSearch/{searchTerms}";
+  scoped_config.Get().suggest_url = "siteSearch";
+
   EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
   EXPECT_TRUE(controller_.ShouldRunProvider(document_provider.get()));
 
@@ -2188,6 +2196,8 @@ TEST_F(AutocompleteControllerTest,
         << AutocompleteProvider::TypeToString(provider->type());
   }
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+       // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
