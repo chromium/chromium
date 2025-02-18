@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_tab_data.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -254,10 +255,7 @@ TEST_F(GlicMetricsTest, ImpressionAfterFre) {
           features::kTabstripComboButton,
       },
       {});
-  profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
-  profile_.GetPrefs()->SetInteger(
-      prefs::kGlicSettingsPolicy,
-      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  ForceSigninAndModelExecutionCapability(&profile_);
 
   task_environment_.FastForwardBy(base::Minutes(16));
   histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Impression", 1);

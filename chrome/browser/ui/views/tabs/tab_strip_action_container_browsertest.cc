@@ -54,7 +54,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
     glic_test_environment_ =
         std::make_unique<glic::GlicTestEnvironment>(browser()->profile());
-    glic::ForceSigninAndModelExecutionCapability(browser()->profile());
 #endif
   }
 

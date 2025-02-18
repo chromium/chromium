@@ -72,17 +72,6 @@ class GuestUtilBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-
-    // A signed-in user is required for chrome://glic.
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
-    CoreAccountInfo account_info = SetPrimaryAccount(
-        identity_manager, "foo@gmail.com", signin::ConsentLevel::kSync);
-    // TODO(cuianthony): Move this logic to glic_test_util.h after
-    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
-    PrefService* prefs = InProcessBrowserTest::browser()->profile()->GetPrefs();
-    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
-
     glic_test_environment_ =
         std::make_unique<glic::GlicTestEnvironment>(browser()->profile());
   }

@@ -6935,6 +6935,7 @@ test("unit_tests") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/glic:test_support",
       "//chrome/browser/glic:unit_tests",
       "//chrome/browser/glic/launcher:unit_tests",
     ]
