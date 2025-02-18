@@ -6,6 +6,7 @@
     "is_debug": false,
     "target_cpu": "x64",
     "target_os": "fuchsia",
+    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
   }
