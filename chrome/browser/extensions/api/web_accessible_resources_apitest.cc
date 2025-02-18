@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   static constexpr char kScriptTemplate[] = R"(
     // Verify that web accessible resource can be fetched.
     async function run(isAllowed, filename) {
-      return new Promise(async resolve => {
+      return new Promise(async (resolve, reject) => {
         const url = `chrome-extension://%s/${filename}`;
 
         // Fetch and verify the contents of fetched web accessible resources.
