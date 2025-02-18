@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
+#include "ui/views/widget/widget.h"
 
 namespace content {
 class WebContents;
@@ -59,6 +60,10 @@ class SupervisedUserWebContentHandlerImpl
   // Aborts the local web approval flow with an Error result and closes any open
   // parent approval dialog.
   void AbortUrlApprovalDialog();
+
+  // Stops WebContents observation by the `dialog_web_contents_observer_`
+  // and resets the unique pointer.
+  void ResetDialogResultContentObserver();
 
   std::unique_ptr<ParentAccessDialogResultObserver>
       dialog_web_contents_observer_;

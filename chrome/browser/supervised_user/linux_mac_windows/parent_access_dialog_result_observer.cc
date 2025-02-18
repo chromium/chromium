@@ -26,10 +26,24 @@ ParentAccessDialogResultObserver::ParentAccessDialogResultObserver(
     : content::WebContentsObserver(web_contents),
       url_approval_result_callback_(std::move(url_approval_result_callback)) {}
 
-ParentAccessDialogResultObserver::~ParentAccessDialogResultObserver() = default;
+ParentAccessDialogResultObserver::~ParentAccessDialogResultObserver() {
+  // url_approval_result_callback_ might have been executed on
+  // `DidFinishNavigation` if a response has been received from PACP.
+  if (!url_approval_result_callback_.is_null()) {
+    std::move(url_approval_result_callback_)
+        // If there is not result set, then the dialog must have been closed
+        // through a cancellation action (Close button, Escape press,
+        // interstitial destruction).
+        .Run(result_.value_or(supervised_user::LocalApprovalResult::kCanceled));
+  }
+}
 
 void ParentAccessDialogResultObserver::StopObserving() {
   Observe(nullptr);
+}
+
+void ParentAccessDialogResultObserver::SetResultToError() {
+  result_ = supervised_user::LocalApprovalResult::kError;
 }
 
 void ParentAccessDialogResultObserver::DidStartNavigation(
@@ -87,6 +101,4 @@ void ParentAccessDialogResultObserver::DidFinishNavigation(
   }
   CHECK(!url_approval_result_callback_.is_null());
   std::move(url_approval_result_callback_).Run(result_.value());
-  result_ = std::nullopt;
-  url_approval_result_callback_.Reset();
 }

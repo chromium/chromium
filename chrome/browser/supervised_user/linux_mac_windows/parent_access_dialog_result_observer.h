@@ -20,6 +20,8 @@ class ParentAccessDialogResultObserver : public content::WebContentsObserver {
   ParentAccessDialogResultObserver(
       content::WebContents* web_contents,
       LocalApprovalResultCallback url_approval_result_callback);
+  // The destructor records metrics on the approval's outcome for certain
+  // outcomes (cancellations, error cases).
   ~ParentAccessDialogResultObserver() override;
   ParentAccessDialogResultObserver(const ParentAccessDialogResultObserver&) =
       delete;
@@ -27,6 +29,10 @@ class ParentAccessDialogResultObserver : public content::WebContentsObserver {
       const ParentAccessDialogResultObserver&) = delete;
 
   void StopObserving();
+
+  // Helper that sets the results to Error, in case we fail to load
+  // and observe the content from the PACP widget.
+  void SetResultToError();
 
  private:
   // WebContentsObserver overrides:
