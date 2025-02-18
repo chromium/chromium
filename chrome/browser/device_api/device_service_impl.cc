@@ -9,7 +9,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/policy/policy_util.h"

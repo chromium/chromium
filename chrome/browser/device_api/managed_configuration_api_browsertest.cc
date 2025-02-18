@@ -11,7 +11,6 @@
 #include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,7 +28,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #endif
 
@@ -290,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Test the API behavior in the Guest Session.
 class ManagedConfigurationAPIGuestTest
@@ -345,4 +344,4 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIGuestTest, Disabled) {
                         "managed apps.\"\n")));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

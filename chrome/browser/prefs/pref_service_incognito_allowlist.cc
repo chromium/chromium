@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -19,16 +18,16 @@
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
 // List of keys that can be changed in the user prefs file by the incognito
 // profile.
 const char* const kPersistentPrefNames[] = {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Accessibility preferences should be persisted if they are changed in
     // incognito mode.
     ash::prefs::kAccessibilityLargeCursorEnabled,
@@ -140,7 +139,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kShouldAlwaysShowAccessibilityMenu,
     ash::prefs::kAccessibilityDisableTrackpadEnabled,
     ash::prefs::kAccessibilityDisableTrackpadMode,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
     kAnimationPolicyAllowed,
     kAnimationPolicyOnce,
