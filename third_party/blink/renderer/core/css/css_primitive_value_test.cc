@@ -361,7 +361,7 @@ TEST_F(CSSPrimitiveValueTest, ContainerProgressTreeScope) {
   ScopedCSSProgressNotationForTest scoped_feature(true);
   const CSSValue* value = css_test_helpers::ParseValue(
       GetDocument(), "<number>",
-      "container-progress(width of my-container from 0px to 1px)");
+      "container-progress(width of my-container, 0px, 1px)");
   ASSERT_TRUE(value);
 
   const CSSValue& scoped_value = value->EnsureScopedValue(&GetDocument());
