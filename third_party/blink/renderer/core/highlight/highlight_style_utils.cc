@@ -104,7 +104,7 @@ Color ForcedBackgroundColor(PseudoId pseudo,
 
 // Returns the forced background color if |property| is ‘background-color’,
 // or the forced foreground color for all other properties (e.g. ‘color’,
-// ‘text-decoration-color’, ‘-webkit-text-fill-color’).
+// ‘text-decoration-color’).
 Color ForcedColor(const ComputedStyle& originating_style,
                   const ComputedStyle* pseudo_style,
                   PseudoId pseudo,
@@ -191,7 +191,7 @@ Color DefaultBackgroundColor(
 
 // Returns the UA default highlight color for a paired cascade |property|,
 // that is, ‘color’ or ‘background-color’. Paired cascade only applies to those
-// properties, not ‘-webkit-text-fill-color’ or ‘-webkit-text-stroke-color’.
+// properties.
 std::optional<Color> DefaultHighlightColor(
     const Document& document,
     const ComputedStyle& originating_style,
@@ -507,15 +507,6 @@ HighlightStyleUtils::HighlightPaintingStyle(
       colors_from_previous_layer.Put(HighlightColorProperty::kEmphasisColor);
     }
 
-    maybe_color = MaybeResolveColor(
-        document, originating_style, pseudo_style, pseudo,
-        GetCSSPropertyWebkitTextStrokeColor(), search_text_is_active_match);
-    if (maybe_color) {
-      highlight_style.stroke_color = maybe_color.value();
-    } else {
-      colors_from_previous_layer.Put(HighlightColorProperty::kStrokeColor);
-    }
-
     maybe_color = MaybeResolveColor(document, originating_style, pseudo_style,
                                     pseudo, GetCSSPropertyTextDecorationColor(),
                                     search_text_is_active_match);
@@ -591,10 +582,6 @@ void HighlightStyleUtils::ResolveColorsFromPreviousLayer(
   if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kFillColor)) {
     text_style.style.fill_color = previous_layer_style.style.current_color;
-  }
-  if (text_style.properties_using_current_color.Has(
-          HighlightColorProperty::kStrokeColor)) {
-    text_style.style.stroke_color = previous_layer_style.style.current_color;
   }
   if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kEmphasisColor)) {

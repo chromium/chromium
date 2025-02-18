@@ -240,8 +240,6 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kFillColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
-      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
-  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
 #if BUILDFLAG(IS_MAC)
   // Mac does not have default selection in tests
@@ -258,8 +256,6 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kFillColor));
-  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
-      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
@@ -291,7 +287,6 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
         ::highlight(highlight1) {
           text-decoration-line: underline;
           text-decoration-color: red;
-          -webkit-text-fill-color: blue;
         }
       </style>
       <div id="div">Some text</div>
@@ -327,10 +322,8 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
 
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
-  EXPECT_FALSE(highlight_paint_style.properties_using_current_color.Has(
-      HighlightStyleUtils::HighlightColorProperty::kFillColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
-      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
+      HighlightStyleUtils::HighlightColorProperty::kFillColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
   EXPECT_FALSE(highlight_paint_style.properties_using_current_color.Has(

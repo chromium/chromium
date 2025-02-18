@@ -406,7 +406,6 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   HighlightStyleUtils::HighlightColorPropertySet bar_current_colors{
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor,
       HighlightStyleUtils::HighlightColorProperty::kFillColor,
-      HighlightStyleUtils::HighlightColorProperty::kStrokeColor,
       HighlightStyleUtils::HighlightColorProperty::kEmphasisColor,
       HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor,
       HighlightStyleUtils::HighlightColorProperty::kTextDecorationColor,
@@ -429,7 +428,6 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   HighlightStyleUtils::HighlightColorPropertySet target_current_colors{
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor,
       HighlightStyleUtils::HighlightColorProperty::kFillColor,
-      HighlightStyleUtils::HighlightColorProperty::kStrokeColor,
       HighlightStyleUtils::HighlightColorProperty::kEmphasisColor,
       HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor,
       HighlightStyleUtils::HighlightColorProperty::kTextDecorationColor,
