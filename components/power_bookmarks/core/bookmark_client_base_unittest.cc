@@ -59,9 +59,11 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override {}
 
-  void DecodeAccountBookmarkSyncMetadata(
+  DecodeAccountBookmarkSyncMetadataResult DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
-      const base::RepeatingClosure& schedule_save_closure) override {}
+      const base::RepeatingClosure& schedule_save_closure) override {
+    return DecodeAccountBookmarkSyncMetadataResult::kSuccess;
+  }
 
   void OnBookmarkNodeRemovedUndoable(
       const bookmarks::BookmarkNode* parent,

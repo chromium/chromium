@@ -1833,8 +1833,9 @@ TEST_F(BookmarkDataTypeProcessorTest,
                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
-TEST_F(BookmarkDataTypeProcessorTest,
-       ShouldWipeBookmarksIfMetadataClearedWhileStoppedUponModelReadyToSync) {
+TEST_F(
+    BookmarkDataTypeProcessorTest,
+    ShouldNotTrackMetadataIfMetadataClearedWhileStoppedUponModelReadyToSync) {
   ResetDataTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
 
   base::HistogramTester histogram_tester;
@@ -1882,11 +1883,6 @@ TEST_F(BookmarkDataTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.DelayedClear", 1);
-
-  // Local bookmarks should have been deleted.
-  EXPECT_TRUE(bookmark_model()
-                  ->underlying_model()
-                  ->HasNoUserCreatedBookmarksOrFolders());
 }
 
 TEST_F(BookmarkDataTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
