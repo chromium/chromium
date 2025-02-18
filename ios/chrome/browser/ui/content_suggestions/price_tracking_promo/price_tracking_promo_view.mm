@@ -139,20 +139,30 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
 }
 
 - (void)addConstraintsForProductImage {
-  [NSLayoutConstraint activateConstraints:@[
-    [_productImage.heightAnchor
-        constraintEqualToConstant:kProductImageWidthHeight],
-    [_productImage.widthAnchor
-        constraintEqualToAnchor:_productImage.heightAnchor],
-    [_productImageView.heightAnchor
-        constraintEqualToConstant:kProductImageWidthHeight],
-    [_productImageView.widthAnchor
-        constraintEqualToAnchor:_productImageView.heightAnchor],
-    [_gradientOverlay.heightAnchor
-        constraintEqualToConstant:kProductImageWidthHeight],
-    [_gradientOverlay.widthAnchor
-        constraintEqualToAnchor:_gradientOverlay.heightAnchor],
-  ]];
+  NSMutableArray<NSLayoutConstraint*>* constraints = [[NSMutableArray alloc]
+      initWithObjects:[_productImage.heightAnchor
+                          constraintEqualToConstant:kProductImageWidthHeight],
+                      [_productImage.widthAnchor
+                          constraintEqualToAnchor:_productImage.heightAnchor],
+                      nil];
+  if (_productImageView) {
+    [constraints addObjectsFromArray:@[
+      [_productImageView.heightAnchor
+          constraintEqualToConstant:kProductImageWidthHeight],
+      [_productImageView.widthAnchor
+          constraintEqualToAnchor:_productImageView.heightAnchor]
+    ]];
+  }
+
+  if (_gradientOverlay) {
+    [constraints addObjectsFromArray:@[
+      [_gradientOverlay.heightAnchor
+          constraintEqualToConstant:kProductImageWidthHeight],
+      [_gradientOverlay.widthAnchor
+          constraintEqualToAnchor:_gradientOverlay.heightAnchor]
+    ]];
+  }
+  [NSLayoutConstraint activateConstraints:constraints];
 }
 
 - (void)addConstraintsForFavicon {
@@ -376,6 +386,10 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
 
 - (NSString*)allowLabelTextForTesting {
   return [self->_allowButton.configuration.attributedTitle string];
+}
+
+- (void)addConstraintsForProductImageForTesting {
+  [self addConstraintsForProductImage];
 }
 
 @end
