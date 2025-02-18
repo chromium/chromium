@@ -166,11 +166,6 @@ bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
   return VerifySubsamplesMatchSize(subsamples, buffer.size());
 }
 
-base::span<const uint8_t> DecoderBuffer::AsSpan() const {
-  DCHECK(!end_of_stream());
-  return external_memory_ ? external_memory_->Span() : data_;
-}
-
 void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {
   DCHECK(!end_of_stream());
   if (!side_data_ && discard_padding == DiscardPadding()) {

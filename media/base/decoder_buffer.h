@@ -177,10 +177,6 @@ class MEDIA_EXPORT DecoderBuffer
     return data_.data();
   }
 
-  // TODO(crbug.com/373790934): This is unnecessary; this type can be implicitly
-  // converted to a span<const uint8_t>.
-  base::span<const uint8_t> AsSpan() const;
-
   // The number of bytes in the buffer.
   size_t size() const {
     DCHECK(!end_of_stream());
