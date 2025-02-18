@@ -175,7 +175,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   auto home_action = side_panel::customize_chrome::mojom::Action::New(
       MojoActionForChromeAction(kActionHome).value(),
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME)),
-      prefs()->GetBoolean(prefs::kShowHomeButton),
+      prefs()->GetBoolean(prefs::kShowHomeButton), false,
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
           ui::ImageModel::FromVectorIcon(kNavigateHomeChromeRefreshIcon,
@@ -186,7 +186,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   auto forward_action = side_panel::customize_chrome::mojom::Action::New(
       MojoActionForChromeAction(kActionForward).value(),
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD)),
-      prefs()->GetBoolean(prefs::kShowForwardButton),
+      prefs()->GetBoolean(prefs::kShowForwardButton), false,
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
           ui::ImageModel::FromVectorIcon(
@@ -225,10 +225,14 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
                       action_item->GetImage().GetVectorIcon().icon_size())
                 : original_icon;
 
+        bool has_enterprise_controlled_pinned_state =
+            action_item->GetProperty(actions::kActionItemPinnableKey) ==
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kEnterpriseControlled);
         auto mojo_action = side_panel::customize_chrome::mojom::Action::New(
             MojoActionForChromeAction(id).value(),
             base::UTF16ToUTF8(action_item->GetText()), model_->Contains(id),
-            category,
+            has_enterprise_controlled_pinned_state, category,
             GURL(webui::EncodePNGAndMakeDataURI(
                 recolored_icon.Rasterize(provider), scale_factor)));
         actions.push_back(std::move(mojo_action));

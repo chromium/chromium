@@ -48,6 +48,8 @@ struct Action {
   string display_name;
   // Whether the action is currently pinned to the toolbar.
   bool pinned;
+  // Whether the action's pinned state is currently enterprise controlled.
+  bool has_enterprise_controlled_pinned_state;
   // The category the action belongs to.
   CategoryId category;
   // The icon to display for this action, encoded as a data scheme URL.

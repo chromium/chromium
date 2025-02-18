@@ -406,7 +406,9 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
 
   OnViewChangedImpl(action_item);
   action_view_->SetIsPinnable(
-      action_item->GetProperty(actions::kActionItemPinnableKey));
+      action_item->GetProperty(actions::kActionItemPinnableKey) ==
+      std::underlying_type_t<actions::ActionPinnableState>(
+          actions::ActionPinnableState::kPinnable));
   action_view_->SetIsActionShowingBubble(action_item->GetIsShowingBubble());
 }
 

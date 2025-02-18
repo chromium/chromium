@@ -89,7 +89,9 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
       .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
           l10n_util::GetStringUTF16(tooltip_id)))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
-      .SetProperty(actions::kActionItemPinnableKey, true);
+      .SetProperty(actions::kActionItemPinnableKey,
+                   std::underlying_type_t<actions::ActionPinnableState>(
+                       actions::ActionPinnableState::kPinnable));
 }
 
 actions::StatefulImageActionItem::StatefulImageActionItemBuilder
@@ -107,7 +109,9 @@ StatefulChromeMenuAction(actions::ActionItem::InvokeActionCallback callback,
           l10n_util::GetStringUTF16(tooltip_id)))
       .SetImage(image)
       .SetStatefulImage(image)
-      .SetProperty(actions::kActionItemPinnableKey, true);
+      .SetProperty(actions::kActionItemPinnableKey,
+                   std::underlying_type_t<actions::ActionPinnableState>(
+                       actions::ActionPinnableState::kPinnable));
 }
 
 actions::ActionItem::ActionItemBuilder SidePanelAction(
@@ -118,13 +122,18 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
     actions::ActionId action_id,
     Browser* browser,
     bool is_pinnable) {
+  auto pinnable_state =
+      is_pinnable ? std::underlying_type_t<actions::ActionPinnableState>(
+                        actions::ActionPinnableState::kPinnable)
+                  : std::underlying_type_t<actions::ActionPinnableState>(
+                        actions::ActionPinnableState::kNotPinnable);
   return actions::ActionItem::Builder(CreateToggleSidePanelActionCallback(
                                           SidePanelEntryKey(id), browser))
       .SetActionId(action_id)
       .SetText(l10n_util::GetStringUTF16(title_id))
       .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
-      .SetProperty(actions::kActionItemPinnableKey, is_pinnable);
+      .SetProperty(actions::kActionItemPinnableKey, pinnable_state);
 }
 }  // namespace
 
@@ -240,7 +249,9 @@ void BrowserActions::InitializeBrowserActions() {
                 IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP))
             .SetImage(ui::ImageModel::FromVectorIcon(
                 icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-            .SetProperty(actions::kActionItemPinnableKey, true)
+            .SetProperty(actions::kActionItemPinnableKey,
+                         std::underlying_type_t<actions::ActionPinnableState>(
+                             actions::ActionPinnableState::kPinnable))
             .Build());
   }
 

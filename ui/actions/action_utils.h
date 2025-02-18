@@ -9,18 +9,24 @@
 
 namespace actions {
 
+class ActionItem;
+
 template <typename A>
-bool IsActionItemClass(
-    actions::ActionItem* action_item) {
-  return ui::metadata::IsClass<A, actions::ActionItem>(action_item);
+bool IsActionItemClass(ActionItem* action_item) {
+  return ui::metadata::IsClass<A, ActionItem>(action_item);
 }
 
 template <typename A>
-std::unique_ptr<A> ToActionItemClass(
-    std::unique_ptr<actions::ActionItem> action_item) {
+std::unique_ptr<A> ToActionItemClass(std::unique_ptr<ActionItem> action_item) {
   CHECK(IsActionItemClass<A>(action_item.get()));
   return std::unique_ptr<A>(static_cast<A*>(action_item.release()));
 }
+
+enum class ActionPinnableState {
+  kNotPinnable = 0,
+  kPinnable = 1,
+  kEnterpriseControlled = 2,
+};
 
 }  // namespace actions
 

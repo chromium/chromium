@@ -37,19 +37,38 @@ export function getHtml(this: ToolbarElement) {
               this.actions_.map(
                   (action) => action.category === category.id ?
                       html`
-      <div
-        class="toggle-container choose-icons-row"
-        @click="${this.getActionToggleHandler_(action.id, !action.pinned)}"
-      >
-        <img class="toggle-icon" src="${action.iconUrl.url}"
-            aria-hidden="true"></img>
-        <div class="toggle-title">${action.displayName}</div>
-        <cr-toggle @change="${
-                          this.getActionToggleHandler_(
-                              action.id, !action.pinned)}"
-            ?checked="${action.pinned}" aria-label="${
-                          action.displayName}"></cr-toggle>
-      </div>
+      ${
+                          !action.hasEnterpriseControlledPinnedState ?
+                              html`
+        <div
+          class="toggle-container choose-icons-row-container choose-icons-row"
+          @click="${this.getActionToggleHandler_(action.id, !action.pinned)}"
+        >
+          <img class="toggle-icon" src="${action.iconUrl.url}"
+              aria-hidden="true"></img>
+          <div class="toggle-title">${action.displayName}</div>
+          <cr-toggle @change="${
+                                  this.getActionToggleHandler_(
+                                      action.id, !action.pinned)}"
+              ?checked="${action.pinned}" aria-label="${
+                                  action.displayName}"></cr-toggle>
+        </div>
+      ` :
+                              html`
+        <div class="choose-icons-row-container choose-icons-row">
+          <img class="toggle-icon" src="${action.iconUrl.url}"
+              aria-hidden="true"></img>
+          <div class="toggle-title">${action.displayName}</div>
+          <div class="enterprise-enabled-text"
+              aria-label="$i18n{managedA11yLabel}">
+            $i18n{enterpriseEnabledLabel}
+          </div>
+          <img class="toggle-icon" src="icons/domain.svg"
+              aria-label="$i18n{managedA11yLabel}"
+              title="$i18n{managedA11yLabel}">
+          </img>
+        </div>
+      `}
     ` :
                       '')}
     ${

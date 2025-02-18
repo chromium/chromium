@@ -11,7 +11,11 @@
 #include <string_view>
 
 #include "base/no_destructor.h"
+#include "ui/actions/action_utils.h"
+#include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(actions::ActionPinnableState)
 namespace actions {
 
 namespace {
@@ -31,7 +35,10 @@ std::optional<GlobalActionManager>& GetGlobalManager() {
 
 }  // namespace
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionItemPinnableKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<ActionPinnableState>,
+                             kActionItemPinnableKey,
+                             std::underlying_type_t<ActionPinnableState>(
+                                 ActionPinnableState::kNotPinnable))
 
 ActionList::ActionList(Delegate* delegate) : delegate_(delegate) {}
 

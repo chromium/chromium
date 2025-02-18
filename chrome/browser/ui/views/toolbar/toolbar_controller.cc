@@ -237,7 +237,9 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
     if (root_item) {
       for (const auto& item : root_item->GetChildren().children()) {
         auto id = item->GetActionId();
-        if (item->GetProperty(actions::kActionItemPinnableKey) &&
+        if (item->GetProperty(actions::kActionItemPinnableKey) ==
+                std::underlying_type_t<actions::ActionPinnableState>(
+                    actions::ActionPinnableState::kPinnable) &&
             id.has_value()) {
           elements.emplace_back(id.value());
         }

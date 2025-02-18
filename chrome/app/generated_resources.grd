@@ -8375,6 +8375,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL" desc="Label for the description of the functionality of the section of Customize Chrome for selecting toolbar icons.">
         Choose what buttons show in the toolbar
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_ENTERPRISE_ENABLED_LABEL" desc="Label for the enterprise icon seen when a user cannot toggle a toolbar icon's pinned state due to an enterprise policy.">
+        Enabled
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_REORDER_TIP_LABEL" desc="Label for the tip informing users of how they can reorder buttons that they have pinned to the toolbar.">
         To rearrange buttons on the toolbar, drag them
       </message>

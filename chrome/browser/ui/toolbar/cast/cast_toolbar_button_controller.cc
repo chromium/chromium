@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -191,7 +192,28 @@ CastToolbarButtonController::CastToolbarButtonController(
 void CastToolbarButtonController::MaybeToggleIconVisibility() {
   if (features::IsToolbarPinningEnabled() &&
       base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    // Pin media router if it should be pinned based on enterprise policy.
+    if (IsActionShownByPolicy(profile_)) {
+      PinnedToolbarActionsModel* const actions_model =
+          PinnedToolbarActionsModel::Get(profile_);
+      actions_model->UpdatePinnedState(kActionRouteMedia, true);
+    }
     for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+      auto* action_item = actions::ActionManager::Get().FindAction(
+          kActionRouteMedia, browser->browser_actions()->root_action_item());
+      // Update the action item's pinnable state based on the enterprise policy.
+      if (IsActionShownByPolicy(profile_)) {
+        action_item->SetProperty(
+            actions::kActionItemPinnableKey,
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kEnterpriseControlled));
+      } else {
+        action_item->SetProperty(
+            actions::kActionItemPinnableKey,
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kPinnable));
+      }
+      // Update the toolbar button's visibility.
       if (auto* container = BrowserView::GetBrowserViewForBrowser(browser)
                                 ->toolbar()
                                 ->pinned_toolbar_actions_container()) {
