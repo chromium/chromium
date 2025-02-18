@@ -9,8 +9,8 @@ import android.view.View;
 
 import androidx.lifecycle.LifecycleOwner;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;

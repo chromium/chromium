@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync;
+package org.chromium.chrome.browser.sync.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,7 +14,7 @@ import androidx.annotation.PluralsRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.sync.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
