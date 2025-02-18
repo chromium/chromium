@@ -81,13 +81,6 @@ const char kDeprecationDialogQueryString[] = "showDeletionDialog";
 // Should match with kChromeUIAppsWithForceInstalledDeprecationDialogURL.
 const char kForceInstallDialogQueryString[] = "showForceInstallDialog";
 
-// The Youtube app is incorrectly hardcoded to be a 'bookmark app'. However, it
-// is a platform app.
-// TODO(crbug.com/40124309): Remove this hack once the youtube app is fixed.
-bool IsYoutubeExtension(const std::string& extension_id) {
-  return extension_id == extension_misc::kYoutubeAppId;
-}
-
 }  // namespace
 
 AppHomePageHandler::AppHomePageHandler(
@@ -188,8 +181,7 @@ void AppHomePageHandler::LaunchAppInternal(
           app_id,
           {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
            web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) &&
-      !IsYoutubeExtension(app_id)) {
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     type = extensions::Manifest::Type::TYPE_HOSTED_APP;
     full_launch_url = registrar.GetAppStartUrl(app_id);
     launch_container = web_app::ConvertDisplayModeToAppLaunchContainer(
@@ -442,9 +434,6 @@ void AppHomePageHandler::FillWebAppInfoList(
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
 
   for (const webapps::AppId& web_app_id : registrar.GetAppIds()) {
-    if (IsYoutubeExtension(web_app_id)) {
-      continue;
-    }
     result->emplace_back(CreateAppInfoPtrFromWebApp(web_app_id));
   }
 }
@@ -678,8 +667,7 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
           app_id,
           {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
            web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) &&
-      !IsYoutubeExtension(app_id)) {
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     UninstallWebApp(app_id);
     return;
   }
@@ -696,8 +684,7 @@ void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
           app_id,
           {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
            web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) &&
-      !IsYoutubeExtension(app_id)) {
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     ShowWebAppSettings(app_id);
     return;
   }
@@ -720,8 +707,7 @@ void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
           app_id,
           {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
            web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) &&
-      !IsYoutubeExtension(app_id)) {
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     CreateWebAppShortcut(app_id, std::move(callback));
     return;
   }
