@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -23,7 +24,7 @@ namespace {
 using ::network::mojom::AttributionReportingEligibility;
 
 ScopedNullExecutionContext MakeExecutionContext(bool has_permission) {
-  ParsedPermissionsPolicy parsed_policy;
+  network::ParsedPermissionsPolicy parsed_policy;
 
   if (has_permission) {
     AllowFeatureEverywhere(

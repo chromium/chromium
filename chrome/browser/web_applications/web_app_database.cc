@@ -60,9 +60,9 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
@@ -1594,11 +1594,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.permissions_policy_size()) {
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
     const auto& name_to_feature_map =
         blink::GetPermissionsPolicyNameToFeatureMap();
     for (const auto& decl_proto : local_data.permissions_policy()) {
-      blink::ParsedPermissionsPolicyDeclaration decl;
+      network::ParsedPermissionsPolicyDeclaration decl;
       const auto feature_enum = name_to_feature_map.find(decl_proto.feature());
       if (feature_enum == name_to_feature_map.end())
         continue;

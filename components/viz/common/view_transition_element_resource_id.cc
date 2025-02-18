@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace viz {
 
@@ -37,6 +38,11 @@ std::string ViewTransitionElementResourceId::ToString() const {
   return base::StringPrintf(
       "ViewTransitionElementResourceId : %u [transition: %s]", local_id_,
       transition_token_ ? transition_token_->ToString().c_str() : "invalid");
+}
+
+bool ViewTransitionElementResourceId::MatchesToken(
+    const base::flat_set<blink::ViewTransitionToken>& tokens) const {
+  return transition_token_ ? tokens.contains(*transition_token_) : false;
 }
 
 }  // namespace viz

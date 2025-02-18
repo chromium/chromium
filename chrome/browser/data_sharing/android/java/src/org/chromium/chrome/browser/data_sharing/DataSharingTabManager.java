@@ -497,6 +497,12 @@ public class DataSharingTabManager {
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
                                 R.string.collaboration_learn_about_shared_groups)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.JOIN_GROUP_IS_FULL_ERROR_TITLE,
+                                R.string.collaboration_group_is_full_error_dialog_header)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.JOIN_GROUP_IS_FULL_ERROR_BODY,
+                                R.string.collaboration_group_is_full_error_dialog_body)
                         .build();
 
         String tabGroupName = previewTabGroupData.title;
@@ -989,6 +995,10 @@ public class DataSharingTabManager {
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.STOP_SHARING_MESSAGE,
                                 R.string.collaboration_owner_stop_sharing_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey
+                                        .LET_ANYONE_JOIN_GROUP_WHEN_FULL_DESCRIPTION,
+                                R.string.collaboration_group_is_full_description)
                         .build();
 
         DataSharingManageUiConfig.ManageCallback manageCallback =

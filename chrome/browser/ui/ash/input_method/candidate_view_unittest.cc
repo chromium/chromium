@@ -192,7 +192,7 @@ TEST_F(CandidateViewTest, SetEntryChangesAccessibleName) {
 }
 
 TEST_F(CandidateViewTest, SetEntryNotifiesAccessibilityEvent) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   CandidateView* view = GetCandidateAt(1);
 
   // Calling SetEntry affects the accessible name, so it should notify twice:

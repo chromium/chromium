@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
 
   // SetupMenu leaves the mouse position where the first menu item will be
   // when we run the menu.
-  AXEventCounter ax_counter(views::AXEventManager::Get());
+  AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 0);
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   MenuDelegate menu_delegate;
   auto menu_item_owning = std::make_unique<MenuItemView>(&menu_delegate);
   MenuItemView* menu_item = menu_item_owning.get();
-  AXEventCounter ax_counter(views::AXEventManager::Get());
+  AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 0);

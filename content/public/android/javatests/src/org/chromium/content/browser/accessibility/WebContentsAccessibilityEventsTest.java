@@ -1068,6 +1068,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/384959329")
     public void test_selectSelectedAddRemove() {
         performTest("select-selected-add-remove.html", EMPTY_EXPECTATIONS_FILE);
     }

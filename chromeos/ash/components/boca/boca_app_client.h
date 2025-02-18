@@ -50,6 +50,8 @@ class BocaAppClient : public signin::IdentityManager::Observer {
   // device policy.
   virtual std::string GetDeviceId();
 
+  virtual std::string GetSchoolToolsServerBaseUrl();
+
   // IdentityManager overrides.
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;

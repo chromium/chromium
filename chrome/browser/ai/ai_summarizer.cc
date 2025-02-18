@@ -14,7 +14,7 @@
 
 namespace {
 
-optimization_guide::proto::SummarizerOutputType ToProtoOutputType(
+optimization_guide::proto::SummarizerOutputType ToProtoType(
     blink::mojom::AISummarizerType type) {
   switch (type) {
     case blink::mojom::AISummarizerType::kTLDR:
@@ -28,7 +28,7 @@ optimization_guide::proto::SummarizerOutputType ToProtoOutputType(
   }
 }
 
-optimization_guide::proto::SummarizerOutputFormat ToProtoOutputFormat(
+optimization_guide::proto::SummarizerOutputFormat ToProtoFormat(
     blink::mojom::AISummarizerFormat format) {
   switch (format) {
     case blink::mojom::AISummarizerFormat::kPlainText:
@@ -38,7 +38,7 @@ optimization_guide::proto::SummarizerOutputFormat ToProtoOutputFormat(
   }
 }
 
-optimization_guide::proto::SummarizerOutputLength ToProtoOutputLength(
+optimization_guide::proto::SummarizerOutputLength ToProtoLength(
     blink::mojom::AISummarizerLength length) {
   switch (length) {
     case blink::mojom::AISummarizerLength::kShort:
@@ -71,6 +71,35 @@ AISummarizer::~AISummarizer() {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
+}
+
+// static
+std::unique_ptr<optimization_guide::proto::SummarizeOptions>
+AISummarizer::ToProtoOptions(
+    const blink::mojom::AISummarizerCreateOptionsPtr& options) {
+  auto proto_options =
+      std::make_unique<optimization_guide::proto::SummarizeOptions>();
+  proto_options->set_output_type(ToProtoType(options->type));
+  proto_options->set_output_format(ToProtoFormat(options->format));
+  proto_options->set_output_length(ToProtoLength(options->length));
+  return proto_options;
+}
+
+// static
+std::string AISummarizer::CombineContexts(const std::string& shared_context,
+                                          const std::string& context) {
+  std::string final_context = shared_context;
+  if (!context.empty()) {
+    if (!final_context.empty()) {
+      final_context = final_context + " " + context;
+    } else {
+      final_context = context;
+    }
+  }
+  if (!final_context.empty()) {
+    final_context += "\n";
+  }
+  return final_context;
 }
 
 void AISummarizer::ModelExecutionCallback(
@@ -117,23 +146,9 @@ void AISummarizer::Summarize(
       responder_set_.Add(std::move(pending_responder));
   optimization_guide::proto::SummarizeRequest request;
   request.set_article(input);
-  request.mutable_options()->set_output_type(ToProtoOutputType(options_->type));
-  request.mutable_options()->set_output_format(
-      ToProtoOutputFormat(options_->format));
-  request.mutable_options()->set_output_length(
-      ToProtoOutputLength(options_->length));
-  std::string final_context = options_->shared_context.value_or("");
-  if (!context.empty()) {
-    if (!final_context.empty()) {
-      final_context = final_context + " " + context;
-    } else {
-      final_context = context;
-    }
-  }
-  if (!final_context.empty()) {
-    final_context += "\n";
-  }
-  request.set_context(final_context);
+  request.set_allocated_options(ToProtoOptions(options_).release());
+  request.set_context(
+      CombineContexts(options_->shared_context.value_or(""), context));
   summarize_session_->ExecuteModel(
       request,
       base::BindRepeating(&AISummarizer::ModelExecutionCallback,

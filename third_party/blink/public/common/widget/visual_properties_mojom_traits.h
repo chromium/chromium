@@ -95,9 +95,9 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.css_zoom_factor;
   }
 
-  static int virtual_keyboard_resize_height_physical_px(
+  static int virtual_keyboard_resize_height_device_px(
       const blink::VisualProperties& r) {
-    return r.virtual_keyboard_resize_height_physical_px;
+    return r.virtual_keyboard_resize_height_device_px;
   }
 
   static double page_scale_factor(const blink::VisualProperties& r) {

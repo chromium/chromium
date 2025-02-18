@@ -245,7 +245,8 @@ class LinkerDriver(object):
         for driver_action in self._pre_actions:
             (pre_name, pre_action) = driver_action
             if sub_arg.startswith(pre_name):
-                assert pre_name not in self._linker_driver_pre_actions
+                assert pre_name not in self._linker_driver_pre_actions, \
+                    f"Name '{pre_name}' found in linker driver pre actions"
                 self._linker_driver_pre_actions[pre_name] = \
                     lambda: pre_action(sub_arg[len(pre_name):])
                 # same sub_arg may be used in actions.
@@ -255,7 +256,8 @@ class LinkerDriver(object):
         for driver_action in self._actions:
             (name, action) = driver_action
             if sub_arg.startswith(name):
-                assert name not in self._linker_driver_actions
+                assert name not in self._linker_driver_actions, \
+                    f"Name '{name}' found in linker driver actions"
                 self._linker_driver_actions[name] = \
                         lambda: action(sub_arg[len(name):])
                 return

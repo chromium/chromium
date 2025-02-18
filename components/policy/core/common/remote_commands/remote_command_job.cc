@@ -10,7 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
-#include "device_management_backend.pb.h"
+#include "components/policy/core/common/policy_logger.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
 
@@ -94,23 +95,25 @@ bool RemoteCommandJob::Init(
     // transmitted over the network.
     issued_time_ = now - base::Milliseconds(command.age_of_command());
   } else {
-    SYSLOG(WARNING) << "No age_of_command provided by server for command "
-                    << unique_id_ << ".";
+    LOG_POLICY(WARNING, REMOTE_COMMANDS)
+        << "No age_of_command provided by server for command " << unique_id_
+        << ".";
     // Otherwise, assuming the command was issued just now.
     issued_time_ = now;
   }
 
   if (!ParseCommandPayload(command.payload())) {
     // payload may contain crypto key, thus only enabled for debugging mode.
-    SYSLOG(ERROR) << "Unable to parse command payload for type "
-                  << command.type();
-    DLOG(ERROR) << "Command payload: " << command.payload();
+    LOG_POLICY(ERROR, REMOTE_COMMANDS)
+        << "Unable to parse command payload for type " << command.type();
+    VLOG_POLICY(2, REMOTE_COMMANDS) << "Command payload: " << command.payload();
     return false;
   }
 
-  SYSLOG(INFO) << "Remote command type " << ToString(command.type()) << " ("
-               << command.type() << ")"
-               << " with id " << command.command_id() << " initialized.";
+  LOG_POLICY(INFO, REMOTE_COMMANDS)
+      << "Remote command type " << ToString(command.type()) << " ("
+      << command.type() << ")"
+      << " with id " << command.command_id() << " initialized.";
 
   status_ = NOT_STARTED;
   return true;
@@ -122,16 +125,17 @@ bool RemoteCommandJob::Run(base::Time now,
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (status_ == INVALID) {
-    SYSLOG(ERROR) << "Remote command " << unique_id_ << " is invalid.";
+    LOG_POLICY(ERROR, REMOTE_COMMANDS)
+        << "Remote command " << unique_id_ << " is invalid.";
     return false;
   }
 
   DCHECK_EQ(NOT_STARTED, status_);
 
   if (IsExpired(now_ticks)) {
-    SYSLOG(ERROR) << "Remote command " << unique_id_
-                  << " expired (it was issued " << now_ticks - issued_time_
-                  << " ago).";
+    LOG_POLICY(ERROR, REMOTE_COMMANDS)
+        << "Remote command " << unique_id_ << " expired (it was issued "
+        << now_ticks - issued_time_ << " ago).";
     status_ = EXPIRED;
     return false;
   }

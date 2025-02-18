@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -33,6 +32,7 @@
 #include "cc/trees/property_tree.h"
 #include "cc/trees/swap_promise.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace base {
@@ -802,6 +802,11 @@ class CC_EXPORT LayerTreeImpl {
   // Returns true if there is a pending ViewTransition save request to cache
   // output of the current frame.
   bool HasViewTransitionSaveRequest() const;
+
+  // Returns a set of all view transition tokens that are currently in the
+  // capture phase.
+  base::flat_set<blink::ViewTransitionToken> GetCaptureViewTransitionTokens()
+      const;
 
   void UpdateAllScrollbarGeometriesForTesting() {
     UpdateAllScrollbarGeometries();

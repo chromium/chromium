@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -860,8 +861,9 @@ struct BoxBorderPainter::ComplexBorderInfo {
     // Finally, build the opacity group structures.
     BuildOpacityGroups(border_painter, sorted_sides);
 
-    if (border_painter.is_rounded_)
+    if (border_painter.is_rounded_) {
       rounded_border_path.AddRoundedRect(border_painter.outer_);
+    }
   }
 
   Vector<OpacityGroup, 4> opacity_groups;
@@ -934,8 +936,10 @@ void BoxBorderPainter::DrawDoubleBorder() const {
 }
 
 bool BoxBorderPainter::PaintBorderFastPath() const {
-  if (!is_uniform_color_ || !is_uniform_style_ || !inner_.IsRenderable())
+  if (!is_uniform_color_ || !is_uniform_style_ || !inner_.IsRenderable() ||
+      !inner_.HasSimpleRoundedCurvature()) {
     return false;
+  }
 
   if (FirstEdge().BorderStyle() != EBorderStyle::kSolid &&
       FirstEdge().BorderStyle() != EBorderStyle::kDouble)
@@ -1250,6 +1254,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
     case BoxSide::kTop: {
       bool use_path =
           is_rounded_ && (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
+                          !inner_.HasSimpleRoundedCurvature() ||
                           BorderWillArcInnerEdge(inner_.GetRadii().TopLeft(),
                                                  inner_.GetRadii().TopRight()));
       if (use_path) {
@@ -1265,6 +1270,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
     case BoxSide::kBottom: {
       bool use_path = is_rounded_ &&
                       (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
+                       !inner_.HasSimpleRoundedCurvature() ||
                        BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
                                               inner_.GetRadii().BottomRight()));
       if (use_path) {
@@ -1280,6 +1286,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
     case BoxSide::kLeft: {
       bool use_path =
           is_rounded_ && (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
+                          !inner_.HasSimpleRoundedCurvature() ||
                           BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
                                                  inner_.GetRadii().TopLeft()));
       if (use_path) {
@@ -1295,6 +1302,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
     case BoxSide::kRight: {
       bool use_path = is_rounded_ &&
                       (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
+                       !inner_.HasSimpleRoundedCurvature() ||
                        BorderWillArcInnerEdge(inner_.GetRadii().BottomRight(),
                                               inner_.GetRadii().TopRight()));
       if (use_path) {

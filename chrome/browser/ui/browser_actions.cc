@@ -21,11 +21,13 @@
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_action_prefs_listener.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -51,6 +53,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
@@ -86,7 +89,9 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
       .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
           l10n_util::GetStringUTF16(tooltip_id)))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
-      .SetProperty(actions::kActionItemPinnableKey, true);
+      .SetProperty(actions::kActionItemPinnableKey,
+                   std::underlying_type_t<actions::ActionPinnableState>(
+                       actions::ActionPinnableState::kPinnable));
 }
 
 actions::StatefulImageActionItem::StatefulImageActionItemBuilder
@@ -104,7 +109,9 @@ StatefulChromeMenuAction(actions::ActionItem::InvokeActionCallback callback,
           l10n_util::GetStringUTF16(tooltip_id)))
       .SetImage(image)
       .SetStatefulImage(image)
-      .SetProperty(actions::kActionItemPinnableKey, true);
+      .SetProperty(actions::kActionItemPinnableKey,
+                   std::underlying_type_t<actions::ActionPinnableState>(
+                       actions::ActionPinnableState::kPinnable));
 }
 
 actions::ActionItem::ActionItemBuilder SidePanelAction(
@@ -115,13 +122,18 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
     actions::ActionId action_id,
     Browser* browser,
     bool is_pinnable) {
+  auto pinnable_state =
+      is_pinnable ? std::underlying_type_t<actions::ActionPinnableState>(
+                        actions::ActionPinnableState::kPinnable)
+                  : std::underlying_type_t<actions::ActionPinnableState>(
+                        actions::ActionPinnableState::kNotPinnable);
   return actions::ActionItem::Builder(CreateToggleSidePanelActionCallback(
                                           SidePanelEntryKey(id), browser))
       .SetActionId(action_id)
       .SetText(l10n_util::GetStringUTF16(title_id))
       .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
-      .SetProperty(actions::kActionItemPinnableKey, is_pinnable);
+      .SetProperty(actions::kActionItemPinnableKey, pinnable_state);
 }
 }  // namespace
 
@@ -237,7 +249,9 @@ void BrowserActions::InitializeBrowserActions() {
                 IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP))
             .SetImage(ui::ImageModel::FromVectorIcon(
                 icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-            .SetProperty(actions::kActionItemPinnableKey, true)
+            .SetProperty(actions::kActionItemPinnableKey,
+                         std::underlying_type_t<actions::ActionPinnableState>(
+                             actions::ActionPinnableState::kPinnable))
             .Build());
   }
 
@@ -444,7 +458,7 @@ void BrowserActions::InitializeBrowserActions() {
 
     if (IsChromeLabsEnabled() &&
         !web_app::AppBrowserController::IsWebApp(browser)) {
-      // TODO(b/354758327): Update `ShouldShowChromeLabsUI()` to not require
+      // TODO(354758327): Update `ShouldShowChromeLabsUI()` to not require
       // `model` as a parameter, then use to set visibility of action item.
       root_action_item_->AddChild(
           ChromeMenuAction(base::BindRepeating(
@@ -486,6 +500,31 @@ void BrowserActions::InitializeBrowserActions() {
             kActionShowPasswordsBubbleOrPage, IDS_VIEW_PASSWORDS,
             IDS_VIEW_PASSWORDS, vector_icons::kPasswordManagerIcon)
             .SetEnabled(!is_guest_session)
+            .Build());
+
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  // TODO(396720194): simplify ptr const to non ptr const for clarity.
+                  content::WebContents* const web_contents =
+                      browser->tab_strip_model()->GetActiveWebContents();
+                  const GURL& url = chrome::GetURLToBookmark(web_contents);
+                  IntentPickerTabHelper* intent_picker_tab_helper =
+                      IntentPickerTabHelper::FromWebContents(web_contents);
+                  CHECK(intent_picker_tab_helper);
+                  intent_picker_tab_helper->ShowIntentPickerBubbleOrLaunchApp(
+                      url);
+                },
+                base::Unretained(browser)))
+            .SetActionId(kActionShowIntentPicker)
+            .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON)))
+            .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON)))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                kOpenInNewChromeRefreshIcon, ui::kColorIcon))
             .Build());
 
     root_action_item_->AddChild(
@@ -560,6 +599,22 @@ void BrowserActions::InitializeBrowserActions() {
 
     AddListeners();
   }
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                web_app::ShowPwaInstallDialog(browser);
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionInstallPwa)
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kInstallDesktopChromeRefreshIcon, ui::kColorIcon))
+          .SetProperty(actions::kActionItemPinnableKey, false)
+          // Text and TooltipText are not populated yet because they are
+          // dynamic. They depend on the current tab WebContents.
+          .Build());
 
   // Actions that do not directly show up in chrome UI.
   root_action_item_->AddChild(

@@ -131,10 +131,8 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  auto adjusted_input = input;
-  const auto* template_url =
-      AutocompleteInput::AdjustInputForStarterPackEngines(
-          client_->GetTemplateURLService(), &adjusted_input);
+  const auto [adjusted_input, template_url] =
+      AdjustInputForStarterPackKeyword(input, client_->GetTemplateURLService());
 
   if (!ShouldRunProvider(client_, input, adjusted_input)) {
     return;

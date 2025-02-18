@@ -23,7 +23,6 @@ class Clock;
 
 namespace content {
 
-class NavigationEntry;
 class BrowserContext;
 class SiteInstance;
 class StoragePartition;
@@ -63,9 +62,14 @@ class HostZoomMap {
 
   typedef std::vector<ZoomLevelChange> ZoomLevelVector;
 
-  // Extracts the URL from NavigationEntry, substituting the error page
-  // URL in the event that the error page is showing.
-  CONTENT_EXPORT static GURL GetURLFromEntry(NavigationEntry* entry);
+  // Gets the last committed URL for the RenderFrameHost, or
+  // kUnreachableWebDataURL if it's on an error page.
+  CONTENT_EXPORT static GURL GetURLForRenderFrameHost(
+      GlobalRenderFrameHostId rfh_id);
+
+  // Gets the last committed URL for the WebContent's primary main frame
+  // RenderFrameHost, or kUnreachableWebDataURL if it's on an error page.
+  CONTENT_EXPORT static GURL GetURLForWebContents(WebContents* web_contents);
 
   CONTENT_EXPORT static HostZoomMap* GetDefaultForBrowserContext(
       BrowserContext* browser_context);

@@ -64,7 +64,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
@@ -456,7 +456,7 @@ TEST_F(PopupViewViewsTest, ShowViewWithOnlyFooterItemsShouldNotCrash) {
 }
 
 TEST_F(PopupViewViewsTest, AccessibilitySelectedEvent) {
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   CreateAndShowView({SuggestionType::kAutocompleteEntry,
                      SuggestionType::kSeparator,
                      SuggestionType::kManageAddress});
@@ -1991,7 +1991,7 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
 }
 
 TEST_F(PopupViewViewsTest, AutofillAiLoadingOnShowA11yFocus) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
@@ -2004,7 +2004,7 @@ TEST_F(PopupViewViewsTest, AutofillAiLoadingOnShowA11yFocus) {
 }
 
 TEST_F(PopupViewViewsTest, AutofillAiLoadingOnSuggestionsChangedA11yFocus) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   CreateAndShowView({SuggestionType::kFillAutofillAi});
   UpdateSuggestions({SuggestionType::kAutofillAiLoadingState});
 
@@ -2018,7 +2018,7 @@ TEST_F(PopupViewViewsTest, AutofillAiLoadingOnSuggestionsChangedA11yFocus) {
 }
 
 TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   CreateAndShowView({SuggestionType::kMixedFormMessage});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());

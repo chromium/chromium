@@ -1703,10 +1703,6 @@ crbug.com/987138 [ Linux ] media/controls/doubletap-to-jump-forwards.html [ Pass
 crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
 
-# crbug.com/1218716: These fail when TrustTokenOriginTrial is enabled.
-crbug.com/1218716 external/wpt/feature-policy/experimental-features/trust-token-redemption-default-feature-policy.tentative.https.sub.html [ Failure ]
-crbug.com/1218716 external/wpt/feature-policy/experimental-features/trust-token-redemption-supported-by-feature-policy.tentative.html [ Failure ]
-
 # Sheriff 2020-02-06
 
 crbug.com/909597 external/wpt/css/css-ui/text-overflow-ruby.html [ Failure ]
@@ -2374,32 +2370,6 @@ crbug.com/825270 external/wpt/payment-request/delegate-request.https.sub.html [ 
 # css-borders-4 corner shaping
 crbug.com/330758166 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-001.html [ Failure ]
 crbug.com/330758166 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-002.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-002.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-003.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-004.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-bottom-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-bottom-left-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-bottom-right-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-bottom-right-002.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-left-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-right-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-left-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-left-002.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-left-bottom-right-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-left-bottom-right-002.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-left-bottom-right-003.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-right-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-right-bottom-left-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-right-bottom-left-002.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-top-right-bottom-left-003.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-bottom-left-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-bottom-right-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-bottom-right-002.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-top-left-001.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-top-left-002.html [ Failure ]
-crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-top-right-001.html [ Failure ]
 
 ### external/wpt/css/CSS2/tables/
 crbug.com/958381 external/wpt/css/CSS2/tables/column-visibility-004.xht [ Failure ]
@@ -5033,11 +5003,6 @@ crbug.com/1029941 [ Win ] external/wpt/css/css-paint-api/background-image-alpha.
 # Failing document policy tests
 crbug.com/993790 external/wpt/document-policy/required-policy/separate-document-policies.html [ Failure ]
 
-# Skipping because of unimplemented behaviour
-crbug.com/965495 external/wpt/feature-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Timeout ]
-crbug.com/965495 external/wpt/permissions-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Timeout ]
-
-crbug.com/834302 external/wpt/permissions-policy/permissions-policy-opaque-origin.https.html [ Failure ]
 
 # Sheriff 2019-12-27
 crbug.com/1038091 virtual/gpu-rasterization/images/jpeg-yuv-image-decoding.html [ Failure Pass ]
@@ -5283,14 +5248,6 @@ crbug.com/1136687 external/wpt/pointerevents/pointerlock/pointerevent_pointerloc
 
 crbug.com/1137228 [ Mac ] external/wpt/infrastructure/testdriver/click_iframe_crossorigin.sub.html [ Failure Pass ]
 crbug.com/1137228 [ Win ] external/wpt/infrastructure/testdriver/click_iframe_crossorigin.sub.html [ Failure Pass ]
-
-# Rename document.featurePolicy to document.permissionsPolicy
-crbug.com/1123116 external/wpt/permissions-policy/payment-supported-by-permissions-policy.tentative.html [ Failure ]
-crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-all.https.sub.html [ Failure ]
-crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-self.https.sub.html [ Failure ]
-crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some-override.https.sub.html [ Failure ]
-crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some.https.sub.html [ Failure ]
-crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-disallowed-for-all.https.sub.html [ Failure ]
 
 crbug.com/1159445 [ Mac ] paint/invalidation/repaint-overlay/layers-overlay.html [ Failure ]
 
@@ -9048,7 +9005,6 @@ crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-cross-o
 crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-cross-site-sibling-iframes.sub.https.window.html [ Failure ]
 crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Timeout ]
 crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-no-storage-access.sub.https.window.html [ Timeout ]
-crbug.com/366530634 external/wpt/storage-access-api/storage-access-beyond-cookies.SharedWorker.sub.https.window.html [ Failure ]
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-headers.tentative.https.sub.window.html [ Failure Timeout ]
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-permission.sub.https.window.html [ Timeout ]
 
@@ -9148,6 +9104,9 @@ crbug.com/391728750 [ Linux ] external/wpt/ai/translator/translator_translate.te
 
 #Gardener 2025-02-12
 crbug.com/392640451 [ Win11 ] editing/pasteboard/4947130.html [ Failure Pass ]
+
+crbug.com/394287937 http/tests/devtools/components/cookies-table.js [ Failure Pass ]
+
 crbug.com/392640451 [ Win11-arm64 ] editing/pasteboard/4947130.html [ Failure Pass ]
 
 #Gardener 2025-02-14

@@ -198,10 +198,8 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
                 optimization_guide::OptimizationGuideModelExecutor::Session>
                     session) override {
     if (!session) {
-      // TODO(crbug.com/357967382): Return an error enum and throw a clear
-      // exception from the blink side.
-      client_remote_->OnResult(
-          mojo::PendingRemote<ContextBoundObjectReceiverInterface>());
+      client_remote_->OnError(
+          blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
       return;
     }
     mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
@@ -283,17 +281,16 @@ AIManager::CreateLanguageModelInternal(
              const std::optional<const AILanguageModel::Context>& context,
              AIManager& ai_manager,
              base::OnceCallback<void(
-                 base::expected<
-                     std::unique_ptr<AILanguageModel>,
-                     blink::mojom::AIManagerCreateLanguageModelError>)>
+                 base::expected<std::unique_ptr<AILanguageModel>,
+                                blink::mojom::AIManagerCreateClientError>)>
                  callback,
              std::unique_ptr<
                  optimization_guide::OptimizationGuideModelExecutor::Session>
                  session) {
             if (!session) {
-              std::move(callback).Run(base::unexpected(
-                  blink::mojom::AIManagerCreateLanguageModelError::
-                      kUnableToCalculateTokenSize));
+              std::move(callback).Run(
+                  base::unexpected(blink::mojom::AIManagerCreateClientError::
+                                       kUnableToCalculateTokenSize));
               return;
             }
 
@@ -321,7 +318,7 @@ void AIManager::CreateLanguageModel(
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(client));
     client_remote->OnError(
-        blink::mojom::AIManagerCreateLanguageModelError::kUnsupportedLanguage);
+        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
 
@@ -362,8 +359,7 @@ void AIManager::CreateLanguageModel(
                          client_remote,
                      base::expected<
                          mojo::PendingRemote<blink::mojom::AILanguageModel>,
-                         blink::mojom::AIManagerCreateLanguageModelError>
-                         remote,
+                         blink::mojom::AIManagerCreateClientError> remote,
                      blink::mojom::AILanguageModelInstanceInfoPtr info) {
                     if (remote.has_value()) {
                       client_remote->OnResult(std::move(remote.value()),
@@ -420,7 +416,8 @@ void AIManager::CreateSummarizer(
                                        options->output_language)) {
     mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
         std::move(client));
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AISummarizer>());
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
   CreateContextBoundObjectTask<AISummarizer, blink::mojom::AISummarizer,
@@ -501,7 +498,8 @@ void AIManager::CreateWriter(
                                        options->output_language)) {
     mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
         std::move(client));
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIWriter>());
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
@@ -536,7 +534,8 @@ void AIManager::CreateRewriter(
                                        options->output_language)) {
     mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
         std::move(client));
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,

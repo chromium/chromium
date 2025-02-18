@@ -115,7 +115,7 @@ class BocaManagerTest : public testing::Test {
             /*gcm_driver=*/&fake_gcm_driver_,
             /*instance_id_driver=*/&mock_instance_id_driver_,
             AccountId::FromUserEmail(kTestEmail), boca_session_manager_.get(),
-            session_client_impl_.get());
+            session_client_impl_.get(), "https://test");
   }
 
   boca::BabelOrcaManager::ControllerFactory GetBabelOrcaControllerFactory() {

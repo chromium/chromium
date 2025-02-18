@@ -13,8 +13,6 @@ namespace storage::features {
 COMPONENT_EXPORT(STORAGE_BROWSER)
 BASE_DECLARE_FEATURE(kIncognitoFileSystemContextForTesting);
 
-COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kDisableSyncableQuota);
-
 }  // namespace storage::features
 
 #endif  // STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_FEATURES_H_

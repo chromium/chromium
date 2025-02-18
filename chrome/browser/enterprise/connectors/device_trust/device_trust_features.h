@@ -31,6 +31,13 @@ BASE_DECLARE_FEATURE(kDTCKeyRotationUploadedBySharedAPIEnabled);
 // rotation/creation.
 bool IsDTCKeyRotationUploadedBySharedAPI();
 
+// Controls whether the AntiVirus signal will be added to the signals payload
+// collected by DTC.
+BASE_DECLARE_FEATURE(kDTCAntivirusSignalEnabled);
+
+// Return true if `kDTCAntiVirusSignalEnabled` is enabled.
+bool IsDTCAntivirusSignalEnabled();
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_FEATURES_H_

@@ -317,6 +317,49 @@ static bool ConsumeInternalAutoBase(
   return stream.AtEnd();
 }
 
+static bool IsCustomFunction(const CSSParserToken& token) {
+  return RuntimeEnabledFeatures::CSSFunctionsEnabled() &&
+         token.GetType() == kFunctionToken &&
+         CSSVariableParser::IsValidVariableName(token.Value());
+}
+
+static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
+                                  bool& has_references,
+                                  bool& has_font_units,
+                                  bool& has_root_font_units,
+                                  bool& has_line_height_units,
+                                  const CSSParserContext& context) {
+  CSSParserTokenStream::BlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  // Consume the arguments.
+  while (!stream.AtEnd()) {
+    // TODO(crbug.com/390205875): Handle {}-wrapped values.
+    // https://drafts.csswg.org/css-values-5/#component-function-commas
+    if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                              /*comma_ends_declaration=*/true, has_references,
+                              has_font_units, has_root_font_units,
+                              has_line_height_units, context)) {
+      return false;
+    }
+    if (stream.Peek().GetType() == kCommaToken) {
+      stream.ConsumeIncludingWhitespace();  // kCommaToken
+      if (stream.AtEnd() || stream.Peek().GetType() == kCommaToken) {
+        // Empty values are not allowed. (ConsumeUnparsedValue returns true
+        // in that case.)
+        return false;
+      }
+      continue;
+    } else if (stream.AtEnd()) {
+      // No further arguments.
+      break;
+    }
+    // Unexpected token, e.g. '!'.
+    return false;
+  }
+  return true;
+}
+
 // Utility function for ConsumeUnparsedDeclaration().
 // Checks if a token sequence is a valid <declaration-value> [1],
 // with the additional restriction that any var()/env() functions (if present)
@@ -377,21 +420,25 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
     // Save this, since we'll change it below.
     const bool at_top_level = block_stack_size == 0;
 
-    // First check if this is a valid variable reference, then handle the next
-    // token accordingly.
+    // First check if this is a valid substitution function (e.g. var(),
+    // then handle the next token accordingly.
     if (token.GetBlockType() == CSSParserToken::kBlockStart) {
       // A block may have both var and env references. They can also be nested
       // and used as fallbacks.
       switch (token.FunctionId()) {
         case CSSValueID::kInvalid:
-          // Not a built-in function, but it might be a user-defined
+          // Not a built-in function, but it might be an author-defined
           // CSS function (e.g. --foo()).
-          if (RuntimeEnabledFeatures::CSSFunctionsEnabled() &&
-              token.GetType() == kFunctionToken &&
-              CSSVariableParser::IsValidVariableName(token.Value())) {
-            has_references = true;
+          if (!IsCustomFunction(token)) {
+            break;
           }
-          break;
+          if (!ConsumeCustomFunction(stream, has_references, has_font_units,
+                                     has_root_font_units, has_line_height_units,
+                                     context)) {
+            error = true;
+          }
+          has_references = true;
+          continue;
         case CSSValueID::kVar:
           if (!ConsumeVariableReference(stream, has_references, has_font_units,
                                         has_root_font_units,

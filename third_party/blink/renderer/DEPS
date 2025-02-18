@@ -97,6 +97,7 @@ include_rules = [
     "+partition_alloc/oom.h",
     "+partition_alloc/partition_alloc.h",
     "+services/network/public/mojom",
+    "+services/network/public/cpp/permissions_policy",
     "+skia/ext",
     "+testing/gmock/include/gmock",
     "+testing/gtest/include/gtest",

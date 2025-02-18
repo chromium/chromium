@@ -12,14 +12,14 @@ struct ConfigureQuickActionsWidgetEntry: TimelineEntry {
   let useColorLensAndVoiceIcons: Bool
   let isPreview: Bool
   let avatar: Image?
-  let gaiaID: String
+  let gaiaID: String?
 }
 
 struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
     ConfigureQuickActionsWidgetEntry(
       date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil,
-      gaiaID: "")
+      gaiaID: nil)
   }
 
   func getSnapshot(
@@ -32,7 +32,7 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
       useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
       isPreview: context.isPreview,
       avatar: nil,
-      gaiaID: ""
+      gaiaID: nil
     )
     completion(entry)
   }
@@ -47,7 +47,7 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
       useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
       isPreview: context.isPreview,
       avatar: nil,
-      gaiaID: ""
+      gaiaID: nil
     )
     let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
     let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -111,7 +111,7 @@ struct QuickActionsWidget: Widget {
     func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
       ConfigureQuickActionsWidgetEntry(
         date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true,
-        avatar: nil, gaiaID: ""
+        avatar: nil, gaiaID: nil
       )
     }
 
@@ -119,7 +119,7 @@ struct QuickActionsWidget: Widget {
       -> ConfigureQuickActionsWidgetEntry
     {
       let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
-      let gaiaID = configuration.gaiaForAccount(account: configuration.profile)
+      let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
@@ -135,7 +135,7 @@ struct QuickActionsWidget: Widget {
       ConfigureQuickActionsWidgetEntry
     > {
       let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
-      let gaiaID = configuration.gaiaForAccount(account: configuration.profile)
+      let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),

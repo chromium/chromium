@@ -1146,8 +1146,7 @@ bool AutocompleteController::ShouldRunProvider(
   bool should_run_search_aggregator_provider =
       template_url_service_ &&
       template_url_service_->GetEnterpriseSearchAggregatorEngine() &&
-      !omnibox_feature_configs::SearchAggregatorProvider::Get()
-           .require_shortcut;
+      !template_url_service_->IsShortcutRequiredForSearchAggregator();
 
   switch (provider->type()) {
     case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:

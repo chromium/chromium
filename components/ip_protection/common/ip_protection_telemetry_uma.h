@@ -44,6 +44,7 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void TokenSpendRate(ProxyLayer, int) override;
   void TokenExpirationRate(ProxyLayer, int) override;
   void MdlEstimatedMemoryUsage(size_t) override;
+  void MdlEstimatedDiskUsage(int64_t) override;
   void AndroidAuthClientCreationTime(base::TimeDelta duration) override;
   void AndroidAuthClientGetInitialDataTime(base::TimeDelta duration) override;
   void AndroidAuthClientAuthAndSignTime(base::TimeDelta duration) override;

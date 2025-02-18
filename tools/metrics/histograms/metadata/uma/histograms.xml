@@ -564,6 +564,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.MetricsService.PushPendingLogsToPersistentStorageReason"
+    enum="MetricsLogCreateReason" expires_after="2025-08-03">
+  <owner>hiramahmood@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>Logs the trigger source of a manual metrics log upload.</summary>
+</histogram>
+
 <histogram name="UMA.MetricsService.SnapshotDeltasTime" units="ms"
     expires_after="2025-07-06">
   <owner>lucnguyen@google.com</owner>

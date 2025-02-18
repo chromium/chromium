@@ -39,7 +39,6 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
@@ -56,7 +55,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -416,36 +414,6 @@ void GetTabDataForModelPrototyping(
   concurrent.CreateCallback().Run(std::move(data));
 }
 
-void GetFormsPredictionsDataForModelPrototyping(
-    content::WebContents* web_contents,
-    AiDataKeyedService::AiDataCallback continue_callback) {
-  AiDataKeyedService::AiData data =
-      std::make_optional<AiDataKeyedService::BrowserData>();
-  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
-      web_contents->GetOutermostWebContents());
-  if (!tab) {
-    std::move(continue_callback).Run(std::move(data));
-    return;
-  }
-  ChromeAutofillAiClient* client =
-      tab->GetTabFeatures()->chrome_autofill_ai_client();
-  if (!client) {
-    std::move(continue_callback).Run(std::move(data));
-    return;
-  }
-  if (std::optional<optimization_guide::proto::FormsPredictionsRequest>
-          request = client->GetModelExecutor()->GetLatestRequest();
-      request) {
-    *data->mutable_forms_predictions_request() = *request;
-  }
-  if (std::optional<optimization_guide::proto::FormsPredictionsResponse>
-          response = client->GetModelExecutor()->GetLatestResponse();
-      response) {
-    *data->mutable_forms_predictions_response() = *response;
-  }
-  std::move(continue_callback).Run(std::move(data));
-}
-
 void GetFormDataByFieldGlobalIdForModelPrototyping(
     content::WebContents* web_contents,
     const optimization_guide::proto::AutofillFieldGlobalId& global_id_proto,
@@ -575,7 +543,6 @@ CreateDefaultPageContextSpecifier(int dom_node_id) {
   page_context_specifier->set_tab_screenshot(true);
   page_context_specifier->set_ax_tree(true);
   page_context_specifier->set_pdf_data(true);
-  page_context_specifier->set_forms_prediction(true);
   return page_context_specifier;
 }
 
@@ -643,10 +610,6 @@ void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
             : 0;
     GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents,
                                   concurrent);
-  }
-  if (page_context_specifier.forms_prediction()) {
-    GetFormsPredictionsDataForModelPrototyping(web_contents,
-                                               concurrent.CreateCallback());
   }
   if (page_context_specifier.has_field_global_id()) {
     GetFormDataByFieldGlobalIdForModelPrototyping(

@@ -318,7 +318,6 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
     const base::RepeatingClosure& schedule_save_closure,
     BookmarkModelView* model) {
   DCHECK(model);
-  DCHECK(model->loaded());
   DCHECK(!bookmark_model_);
   DCHECK(!bookmark_tracker_);
   DCHECK(!bookmark_model_observer_);
@@ -364,10 +363,6 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
       // properly, e.g. auth error).
       schedule_save_closure_.Run();
     }
-  }
-
-  if (!bookmark_tracker_) {
-    TriggerWipeModelUponSyncDisabledBehavior();
   }
 
   ConnectIfReady();

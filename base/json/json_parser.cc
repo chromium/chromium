@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/json/json_parser.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/json/json_reader.h"
@@ -204,7 +200,7 @@ std::optional<std::string_view> JSONParser::PeekChars(size_t count) {
   // restructured the code so that we only stored the remaining data, that
   // would avoid this, but it would prevent rewinding (the places in this file
   // which look at `input_[index_ - 1]`.)
-  return std::string_view(input_.data() + index_, count);
+  return UNSAFE_BUFFERS(std::string_view(input_.data() + index_, count));
 }
 
 std::optional<char> JSONParser::PeekChar() {
@@ -233,7 +229,8 @@ std::optional<char> JSONParser::ConsumeChar() {
 
 const char* JSONParser::pos() {
   CHECK_LE(index_, input_.length());
-  return input_.data() + index_;
+  // SAFETY: Checked above.
+  return UNSAFE_BUFFERS(input_.data() + index_);
 }
 
 JSONParser::Token JSONParser::GetNextToken() {

@@ -4084,8 +4084,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("ignored-selection.html"));
 }
 
+// Times out on android: https://issues.chromium.org/issues/384959329
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityLabelWithSelectedOption \
+  DISABLED_AccessibilityLabelWithSelectedOption
+#else
+#define MAYBE_AccessibilityLabelWithSelectedOption \
+  AccessibilityLabelWithSelectedOption
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityLabelWithSelectedOption) {
+                       MAYBE_AccessibilityLabelWithSelectedOption) {
   RunHtmlTest(FILE_PATH_LITERAL("label-with-selected-option.html"));
 }
 

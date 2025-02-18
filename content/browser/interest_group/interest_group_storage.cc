@@ -3111,7 +3111,6 @@ bool UpgradeDB(sql::Database& db,
         // Conversion is a no-op, just bookkeeping for a proto change.
         [[fallthrough]];
       case 31:
-        vacuum_db_post_upgrade = true;
         if (!UpgradeV31SchemaToV32(db, meta_table)) {
           return false;
         }

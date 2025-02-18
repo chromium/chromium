@@ -597,7 +597,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Sets the device color space for testing.
   void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
 
-  // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
+  // Converts from DIPs to Blink coordinate space (ie. Viewport/Device
   // pixels).
   gfx::Size DIPsToCeiledBlinkSpace(const gfx::Size& size);
 
@@ -1099,8 +1099,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   std::optional<gfx::Size> size_;
 
   // The amount the top-most widget has been resized by the virtual keyboard,
-  // in physical pixels.
-  int virtual_keyboard_resize_height_physical_px_ = 0;
+  // in device pixels.
+  int virtual_keyboard_resize_height_device_px_ = 0;
 
   static bool ignore_input_events_;
 

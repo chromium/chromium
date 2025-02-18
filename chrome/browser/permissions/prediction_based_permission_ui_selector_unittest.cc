@@ -264,7 +264,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
                 permissions::RequestType::kGeolocation));
 
 #if !BUILDFLAG(IS_ANDROID)
-  // All CPSS related flags enabled + the one for using the on-device genai
+  // All CPSS related flags enabled + the one for using the on-device AI
   // model.
   feature_list_->Reset();
   feature_list_->InitWithFeatures(
@@ -276,11 +276,11 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
           features::kQuietNotificationPrompts,
       },
       /*disabled_features=*/{});
-  // Use on-device genai model.
-  EXPECT_EQ(PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE,
+  // Use on-device AI model.
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE,
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
 #endif

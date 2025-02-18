@@ -1253,6 +1253,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.12.0 -> 1.13.0"
 
+[[audits.equivalent]]
+who = "Jonathan Hao <phao@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.1 -> 1.0.2"
+notes = "No changes to any .rs files or Rust code."
+
 [[audits.fdeflate]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
@@ -2010,6 +2016,12 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.8.2 -> 0.8.3"
 
+[[audits.miniz_oxide]]
+who = "Jonathan Hao <phao@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.8.3 -> 0.8.4"
+notes = "No big changes. Replaces some array with Box and other minor changes."
+
 [[audits.nom]]
 who = "danakj@chromium.org"
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-1"]
@@ -2255,6 +2267,12 @@ delta = "0.12.6 -> 0.13.3"
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.13.3 -> 0.13.4"
+notes = "No code changes in this delta."
+
+[[audits.prost-derive]]
+who = "Jonathan Hao <phao@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.4 -> 0.13.5"
 notes = "No code changes in this delta."
 
 [[audits.qr_code]]

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -248,10 +249,14 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   if (uses_layer_lists_) {
     property_tree_delegate_ =
         std::make_unique<ui::CompositorPropertyTreeDelegate>();
+    property_tree_delegate_->set_compositor(this);
     params.property_tree_delegate = property_tree_delegate_.get();
   }
 
   host_ = cc::LayerTreeHost::CreateSingleThreaded(this, std::move(params));
+  if (uses_layer_lists_) {
+    property_trees_.emplace(*host_);
+  }
 
   const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate =
       host_->GetDelegateForInput();
@@ -307,6 +312,12 @@ Compositor::~Compositor() {
 
   if (animation_timeline_)
     animation_host_->RemoveAnimationTimeline(animation_timeline_.get());
+
+  if (uses_layer_lists_) {
+    // Delete references to the host_ before it is destroyed.
+    property_tree_delegate_->set_compositor(nullptr);
+    property_trees_.reset();
+  }
 
   // Stop all outstanding draws before telling the ContextFactory to tear
   // down any contexts that the |host_| may rely upon.
@@ -1058,6 +1069,12 @@ void Compositor::RemoveScopedKeepSurfaceAlive(
   CHECK(pending_surface_copies_.find(scoped_keep_surface_alive_id) !=
         pending_surface_copies_.end());
   pending_surface_copies_.erase(scoped_keep_surface_alive_id);
+}
+
+void Compositor::CheckPropertyTrees() const {
+  DCHECK(property_trees_.has_value());
+  // TODO(crbug.com/389771428): Make this work.
+  // DCHECK_EQ(property_trees_.value(), *host_->property_trees());
 }
 
 }  // namespace ui

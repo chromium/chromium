@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 
 namespace mojo {
@@ -41,6 +42,41 @@ class COMPONENT_EXPORT(NETWORK_CPP)
 
   static bool Read(network::mojom::OriginWithPossibleWildcardsDataView in,
                    network::OriginWithPossibleWildcards* out);
+};
+
+template <>
+class COMPONENT_EXPORT(NETWORK_CPP)
+    StructTraits<network::mojom::ParsedPermissionsPolicyDeclarationDataView,
+                 network::ParsedPermissionsPolicyDeclaration> {
+ public:
+  static network::mojom::PermissionsPolicyFeature feature(
+      const network::ParsedPermissionsPolicyDeclaration& policy) {
+    return policy.feature;
+  }
+  static const std::vector<network::OriginWithPossibleWildcards>&
+  allowed_origins(const network::ParsedPermissionsPolicyDeclaration& policy) {
+    return policy.allowed_origins;
+  }
+  static const std::optional<url::Origin>& self_if_matches(
+      const network::ParsedPermissionsPolicyDeclaration& policy) {
+    return policy.self_if_matches;
+  }
+  static bool matches_all_origins(
+      const network::ParsedPermissionsPolicyDeclaration& policy) {
+    return policy.matches_all_origins;
+  }
+  static bool matches_opaque_src(
+      const network::ParsedPermissionsPolicyDeclaration& policy) {
+    return policy.matches_opaque_src;
+  }
+  static const std::optional<std::string>& reporting_endpoint(
+      const network::ParsedPermissionsPolicyDeclaration& policy) {
+    return policy.reporting_endpoint;
+  }
+
+  static bool Read(
+      network::mojom::ParsedPermissionsPolicyDeclarationDataView in,
+      network::ParsedPermissionsPolicyDeclaration* out);
 };
 
 }  // namespace mojo

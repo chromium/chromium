@@ -165,8 +165,7 @@ ScriptedIdleTaskController::DecrementOnDelete::DecrementOnDelete(
 
 ScriptedIdleTaskController::DecrementOnDelete::~DecrementOnDelete() {
   if (counter_) {
-    CHECK_GT(counter_->data, 0u, base::NotFatalUntil::M136);
-    --counter_->data;
+    DecrementNow();
   }
 }
 
@@ -175,6 +174,13 @@ ScriptedIdleTaskController::DecrementOnDelete::DecrementOnDelete(
 ScriptedIdleTaskController::DecrementOnDelete&
 ScriptedIdleTaskController::DecrementOnDelete::operator=(DecrementOnDelete&&) =
     default;
+
+void ScriptedIdleTaskController::DecrementOnDelete::DecrementNow() {
+  CHECK(counter_, base::NotFatalUntil::M136);
+  CHECK_GT(counter_->data, 0u, base::NotFatalUntil::M136);
+  --counter_->data;
+  counter_.reset();
+}
 
 void ScriptedIdleTaskController::PostSchedulerIdleAndTimeoutTasks(
     CallbackId id,
@@ -250,6 +256,14 @@ void ScriptedIdleTaskController::SchedulerIdleTask(
     DecrementOnDelete decrement_on_delete,
     base::TimeTicks deadline) {
   CHECK_GT(num_scheduler_idle_tasks_->data, 0u, base::NotFatalUntil::M136);
+
+  // Consume `decrement_on_delete` before running the task, to maintain the
+  // invariant that `num_scheduler_idle_tasks_` <= `idle_tasks_.size()` after
+  // invoking `RemoveCancelledIdleTasks()` on the scheduler, even if the idle
+  // task cancels itself (without this, an idle task that cancels itself would
+  // be counted in `num_scheduler_idle_tasks_` while running, but not in
+  // `idle_tasks_.size()`.
+  decrement_on_delete.DecrementNow();
 
   if (!idle_tasks_.Contains(id)) {
     return;

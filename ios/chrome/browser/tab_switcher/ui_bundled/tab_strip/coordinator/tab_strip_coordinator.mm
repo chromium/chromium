@@ -293,6 +293,7 @@
 
       case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
       case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+        [weakSelf replaceLastTabByNewTabInGroup:tabGroupItem];
         break;
     }
   };
@@ -431,6 +432,17 @@
       NOTREACHED();
   }
 
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
+}
+
+// Helper method to open a new tab when the last tab of a shared group is
+// closed. By doing that, the user is keeping the group instead of deleting it.
+- (void)replaceLastTabByNewTabInGroup:(TabGroupItem*)tabGroupItem {
+  if (tabGroupItem) {
+    [_mediator addNewTabInGroup:tabGroupItem];
+    [_mediator closeSavedTabFromGroup:tabGroupItem];
+  }
   [_tabGroupConfirmationCoordinator stop];
   _tabGroupConfirmationCoordinator = nil;
 }

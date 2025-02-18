@@ -22,6 +22,8 @@ AutofillSaveCardDelegate::AutofillSaveCardDelegate(
 AutofillSaveCardDelegate::~AutofillSaveCardDelegate() = default;
 
 void AutofillSaveCardDelegate::OnUiShown() {
+  // TODO(crbug.com/394337666): Remove logging `AutofillMetrics::InfoBarMetric`
+  // for iOS.
   LogInfoBarAction(AutofillMetrics::INFOBAR_SHOWN);
 }
 

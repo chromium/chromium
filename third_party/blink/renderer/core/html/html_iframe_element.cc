@@ -26,6 +26,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
@@ -436,9 +437,10 @@ DocumentPolicyFeatureState HTMLIFrameElement::ConstructRequiredPolicy() const {
   return new_required_policy.feature_state;
 }
 
-ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
+network::ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy()
+    const {
   if (!GetExecutionContext()) {
-    return ParsedPermissionsPolicy();
+    return network::ParsedPermissionsPolicy();
   }
 
   scoped_refptr<const SecurityOrigin> src_origin =
@@ -449,7 +451,7 @@ ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   PolicyParserMessageBuffer logger;
 
   // Start with the allow attribute
-  ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(allow_, self_origin, src_origin,
                                               logger, GetExecutionContext());
 
@@ -664,7 +666,8 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
   scoped_refptr<const SecurityOrigin> src_origin =
       GetOriginForPermissionsPolicy();
   url::Origin src = src_origin->ToUrlOrigin();
-  ParsedPermissionsPolicy container_policy = ConstructContainerPolicy();
+  network::ParsedPermissionsPolicy container_policy =
+      ConstructContainerPolicy();
   auto& security_context = GetExecutionContext()->GetSecurityContext();
   for (const auto& feature_desc : GetPermissionsPolicyFeatureList(src)) {
     network::mojom::PermissionsPolicyFeature feature = feature_desc.first;

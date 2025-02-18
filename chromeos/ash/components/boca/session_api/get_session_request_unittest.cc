@@ -293,7 +293,8 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request->set_device_id("000");
@@ -394,7 +395,8 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), false, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/false, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request->set_device_id("000");
@@ -463,7 +465,8 @@ TEST_F(GetSessionRequestTest, CreateSessionWithDefaultInputAndSucceed) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/true, gaia_id,
                                           future.GetCallback());
   request->set_device_id("000");
   request->OverrideURLForTesting(test_server_.base_url().spec());
@@ -523,7 +526,8 @@ TEST_F(GetSessionRequestTest, CreateSessionWithEmptyInputAndSucceed) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request->set_device_id("000");
@@ -550,7 +554,8 @@ TEST_F(GetSessionRequestTest, CreateSessionWithFailedResponse) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request->set_device_id("000");

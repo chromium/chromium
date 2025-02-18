@@ -920,7 +920,7 @@ TEST_F(CalendarViewTest, FocusReturnsToTodaysDate) {
 }
 
 TEST_F(CalendarViewTest, OpenListAndCloseListFireAccessibilityEvents) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   CreateCalendarView();
   auto* focus_manager = calendar_view()->GetFocusManager();
   const auto* todays_date_cell_view = focus_manager->GetFocusedView();

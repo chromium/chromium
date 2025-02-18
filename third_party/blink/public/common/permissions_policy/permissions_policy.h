@@ -11,10 +11,10 @@
 
 #include "base/memory/raw_ref.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "url/origin.h"
@@ -113,9 +113,9 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     Allowlist(const Allowlist& rhs);
     ~Allowlist();
 
-    // Extracts an Allowlist from a ParsedPermissionsPolicyDeclaration.
+    // Extracts an Allowlist from a network::ParsedPermissionsPolicyDeclaration.
     static Allowlist FromDeclaration(
-        const ParsedPermissionsPolicyDeclaration& parsed_declaration);
+        const network::ParsedPermissionsPolicyDeclaration& parsed_declaration);
 
     // Adds a single origin with possible wildcards to the allowlist.
     void Add(const network::OriginWithPossibleWildcards& origin);
@@ -175,8 +175,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
-      const ParsedPermissionsPolicy& header_policy,
-      const ParsedPermissionsPolicy& container_policy,
+      const network::ParsedPermissionsPolicy& header_policy,
+      const network::ParsedPermissionsPolicy& container_policy,
       const url::Origin& origin,
       bool headerless = false);
 
@@ -187,8 +187,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // allowed, but only a specific list of permissions are allowed to be enabled.
   static std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
       const PermissionsPolicy* parent_policy,
-      const ParsedPermissionsPolicy& header_policy,
-      const ParsedPermissionsPolicy& container_policy,
+      const network::ParsedPermissionsPolicy& header_policy,
+      const network::ParsedPermissionsPolicy& container_policy,
       const url::Origin& subframe_origin);
 
   // Creates a fixed PermissionsPolicy for a fenced frame. Only the permissions
@@ -197,7 +197,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // cross-channel communication.
   static std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
-      const ParsedPermissionsPolicy& header_policy,
+      const network::ParsedPermissionsPolicy& header_policy,
       base::span<const network::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);
 
@@ -205,8 +205,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // supplied, it will be used first and the `parsed_policy` may further
   // restrict the policy.
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
-      const ParsedPermissionsPolicy& parsed_policy,
-      const std::optional<ParsedPermissionsPolicy>& base_policy,
+      const network::ParsedPermissionsPolicy& parsed_policy,
+      const std::optional<network::ParsedPermissionsPolicy>& base_policy,
       const url::Origin& origin);
 
   // Returns the inherited policy of the given feature.
@@ -215,7 +215,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const PermissionsPolicy* parent_policy,
       std::pair<network::mojom::PermissionsPolicyFeature,
                 PermissionsPolicyFeatureDefault> feature,
-      const ParsedPermissionsPolicy& container_policy);
+      const network::ParsedPermissionsPolicy& container_policy);
 
   // Various URLs that cannot supply Permissions-Policy headers are treated
   // specially. See
@@ -261,7 +261,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // TODO(https://crbug.com/40208054): Replace w/ generic HTML policy
   // modification.
   std::unique_ptr<PermissionsPolicy> WithClientHints(
-      const ParsedPermissionsPolicy& parsed_header) const;
+      const network::ParsedPermissionsPolicy& parsed_header) const;
 
   const url::Origin& GetOriginForTest() const { return origin_; }
   const std::map<network::mojom::PermissionsPolicyFeature, Allowlist>&
@@ -292,7 +292,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // Creates the allowlists and and reporting endpoints from the parsed
   // Permissions-Policy HTTP header. Unrecognized features will be ignored.
   static AllowlistsAndReportingEndpoints CreateAllowlistsAndReportingEndpoints(
-      const ParsedPermissionsPolicy& parsed_header);
+      const network::ParsedPermissionsPolicy& parsed_header);
 
   // Merges |base_policy| with |second_policy|. For each feature, if
   // |base_policy| allows all domains then the |second_policy| overrides it if
@@ -302,8 +302,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // This is used e.g. for merging the policy in an isolated app manifest with
   // a policy received in an HTTP header.
   static AllowlistsAndReportingEndpoints CombinePolicies(
-      const ParsedPermissionsPolicy& base_policy,
-      const ParsedPermissionsPolicy& second_policy);
+      const network::ParsedPermissionsPolicy& base_policy,
+      const network::ParsedPermissionsPolicy& second_policy);
 
   PermissionsPolicy(
       url::Origin origin,
@@ -313,29 +313,29 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       bool headerless = false);
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
-      const ParsedPermissionsPolicy& header_policy,
-      const ParsedPermissionsPolicy& container_policy,
+      const network::ParsedPermissionsPolicy& header_policy,
+      const network::ParsedPermissionsPolicy& container_policy,
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features,
       bool headerless = false);
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
-      const ParsedPermissionsPolicy& parsed_policy,
-      const std::optional<ParsedPermissionsPolicy>&
+      const network::ParsedPermissionsPolicy& parsed_policy,
+      const std::optional<network::ParsedPermissionsPolicy>&
           parsed_policy_for_isolated_app,
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 
   static std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
       const PermissionsPolicy* parent_policy,
-      const ParsedPermissionsPolicy& header_policy,
-      const ParsedPermissionsPolicy& container_policy,
+      const network::ParsedPermissionsPolicy& header_policy,
+      const network::ParsedPermissionsPolicy& container_policy,
       const url::Origin& subframe_origin,
       const PermissionsPolicyFeatureList& features);
 
   static std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
-      const ParsedPermissionsPolicy& header_policy,
+      const network::ParsedPermissionsPolicy& header_policy,
       const PermissionsPolicyFeatureList& features,
       base::span<const network::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);

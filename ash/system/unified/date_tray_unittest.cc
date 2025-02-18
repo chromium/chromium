@@ -661,7 +661,7 @@ TEST_P(DateTrayTest, AccessibleName) {
                 base::kKeepAmPm)));
   }
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   // Mock changing the current time, in order to test that the tray's accessible
   // name will be updated.

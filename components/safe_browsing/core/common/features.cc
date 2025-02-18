@@ -234,6 +234,15 @@ BASE_FEATURE(kLocalListsUseSBv5,
              "SafeBrowsingLocalListsUseSBv5",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMaliciousApkDownloadCheck,
+             "MaliciousApkDownloadCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly{
+    &kMaliciousApkDownloadCheck, "telemetry_only", /*default_value=*/false};
+#endif
+
 BASE_FEATURE(kOnDeviceNotificationContentDetectionModel,
              "OnDeviceNotificationContentDetectionModel",
              base::FEATURE_DISABLED_BY_DEFAULT);

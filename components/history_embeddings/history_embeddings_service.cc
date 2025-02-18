@@ -589,6 +589,11 @@ void HistoryEmbeddingsService::OnHistoryDeletions(
 
 void HistoryEmbeddingsService::EmbedderMetadataUpdated(
     passage_embeddings::EmbedderMetadata metadata) {
+  if (embedder_metadata_.IsValid()) {
+    // TODO(crbug.com/396684224): Handle runtime model changes. For now the
+    //  code expects them to remain constant and only processes metadata once.
+    return;
+  }
   embedder_metadata_ = metadata;
   subscription_ = os_crypt_async_->GetInstance(
       base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,

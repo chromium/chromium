@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -162,6 +163,8 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
                            "Example");
   local_state()->SetDict(prefs::kIosPreRestoreAccountInfo,
                          dict_example.Clone());
+  local_state()->SetBoolean(
+      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, true);
 
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
@@ -176,6 +179,10 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
             "Example");
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
+  EXPECT_TRUE(local_state()->GetBoolean(
+      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
 
   EXPECT_EQ(pref_service()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
             0ul);
@@ -203,4 +210,8 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
             dict_example);
   EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
             0ul);
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
+  EXPECT_FALSE(local_state()->GetBoolean(
+      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
 }

@@ -371,9 +371,18 @@ void PageInfoCookiesContentView::SetRwsCookiesInfo(
     rws_button_->SetVisible(true);
 
     const std::u16string rws_button_title =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TITLE);
-    const std::u16string rws_button_subtitle = l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE, rws_info->owner_name);
+        base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi)
+            ? l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_ENHANCED_BUTTON_TITLE)
+            : l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TITLE);
+    const std::u16string rws_button_subtitle =
+        base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi)
+            ? l10n_util::GetStringFUTF16(
+                  IDS_PAGE_INFO_RWS_ENHANCED_BUTTON_SUBTITLE,
+                  rws_info->owner_name)
+            : l10n_util::GetStringFUTF16(IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE,
+                                         rws_info->owner_name);
 
     // Update the text displaying the name of RWS owner.
     rws_button_->SetTitleText(rws_button_title);

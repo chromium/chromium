@@ -471,6 +471,10 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
   base::UmaHistogramEnumeration("Storage.SharedStorage.Worklet.DestroyedStatus",
                                 destroyed_status_);
 
+  base::UmaHistogramBoolean(
+      "Storage.SharedStorage.Worklet.NavigatorLocksInvoked",
+      navigator_locks_invoked_);
+
   base::TimeDelta elapsed_time_since_creation =
       base::TimeTicks::Now() - creation_time_;
   if (pending_operations_count_ > 0 ||
@@ -1249,6 +1253,8 @@ void SharedStorageWorkletHost::GetLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   shared_storage_runtime_manager_->lock_manager().BindLockManager(
       shared_storage_origin_, std::move(receiver));
+
+  navigator_locks_invoked_ = true;
 }
 
 void SharedStorageWorkletHost::ReportNoBinderForInterface(

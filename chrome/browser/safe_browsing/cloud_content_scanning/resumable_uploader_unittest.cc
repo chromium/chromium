@@ -1,12 +1,11 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "net/http/http_status_code.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
 #endif
-
-#include "chrome/browser/safe_browsing/cloud_content_scanning/resumable_uploader.h"
 
 #include <memory>
 
@@ -19,8 +18,11 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/test/uploader_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/resumable_uploader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -556,5 +558,100 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
       /*sample=*/net::HTTP_UNAUTHORIZED,
       /*expected_bucket_count=*/1);
 }
+
+struct AsyncUploadResult {
+  std::string intermediate_header;
+  bool success;
+  net::HttpStatusCode response_code;
+  std::string response_data;
+};
+
+const AsyncUploadResult kTestCases[] = {
+    {.intermediate_header = "bad-intermediate-header",
+     .success = false,
+     .response_code = net::HTTP_OK,
+     .response_data = ""},
+    // The empty string is a valid base64 string
+    {.intermediate_header = "",
+     .success = true,
+     .response_code = net::HTTP_OK,
+     .response_data = ""},
+    {.intermediate_header = "",
+     .success = false,
+     .response_code = net::HTTP_UNAUTHORIZED,
+     .response_data = "metadata_response"}};
+
+class ResumableUploadSendContentAsyncTest
+    : public ResumableUploadRequestTest,
+      public testing::WithParamInterface<std::tuple<bool, AsyncUploadResult>> {
+ public:
+  ResumableUploadSendContentAsyncTest() {
+    feature_list_.InitWithFeatures(
+        {enterprise_connectors::kEnableAsyncUploadAfterVerdict},
+        /*disabled_features=*/{});
+  }
+
+  bool is_file_request() { return std::get<0>(GetParam()); }
+
+  const AsyncUploadResult& get_upload_result() {
+    return std::get<1>(GetParam());
+  }
+
+  std::unique_ptr<MockResumableUploadRequest> CreateRequest(
+      ConnectorUploadRequest::Callback callback) {
+    return is_file_request()
+               ? CreateFileRequest("file content",
+                                   BinaryUploadService::Result::SUCCESS,
+                                   std::move(callback))
+               : CreatePageRequest("page content",
+                                   BinaryUploadService::Result::SUCCESS,
+                                   std::move(callback));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(ResumableUploadSendContentAsyncTest, FinishesRequestOnMetadataUpload) {
+  base::RunLoop run_loop;
+
+  std::unique_ptr<MockResumableUploadRequest> mock_request =
+      CreateRequest(base::BindLambdaForTesting(
+          [this, &run_loop](bool success, int http_status,
+                            const std::string& response_data) {
+            EXPECT_EQ(get_upload_result().success, success);
+            EXPECT_EQ(get_upload_result().response_code, http_status);
+            EXPECT_EQ(get_upload_result().response_data, response_data);
+            run_loop.Quit();
+          }));
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(get_upload_result().response_code);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          metadata_response_head->headers->AddHeader(
+              "X-Goog-Upload-Header-Cep-Response",
+              get_upload_result().intermediate_header);
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else {
+          NOTREACHED();
+        }
+      }));
+
+  mock_request->Start();
+  run_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ResumableUploadSendContentAsyncTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::ValuesIn(kTestCases)));
 
 }  // namespace safe_browsing

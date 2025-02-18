@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/location.h"
 
 #include "base/compiler_specific.h"
@@ -25,7 +20,7 @@ namespace {
 // Returns the length of the given null terminated c-string.
 constexpr size_t StrLen(const char* str) {
   size_t str_len = 0;
-  for (str_len = 0; str[str_len] != '\0'; ++str_len)
+  for (str_len = 0; UNSAFE_TODO(str[str_len]) != '\0'; ++str_len)
     ;
   return str_len;
 }
@@ -63,7 +58,7 @@ constexpr bool StrEndsWith(const char* name,
     return false;
   }
   for (size_t i = 0; i < expected_len; ++i) {
-    if (name[i + prefix_len] != expected[i]) {
+    if (UNSAFE_TODO(name[i + prefix_len] != expected[i])) {
       return false;
     }
   }
@@ -135,15 +130,15 @@ void Location::WriteIntoTrace(perfetto::TracedValue context) const {
 NOINLINE Location Location::Current(const char* function_name,
                                     const char* file_name,
                                     int line_number) {
-  return Location(function_name, file_name + kStrippedPrefixLength, line_number,
-                  RETURN_ADDRESS());
+  return Location(function_name, UNSAFE_TODO(file_name + kStrippedPrefixLength),
+                  line_number, RETURN_ADDRESS());
 }
 
 // static
 NOINLINE Location Location::CurrentWithoutFunctionName(const char* file_name,
                                                        int line_number) {
-  return Location(nullptr, file_name + kStrippedPrefixLength, line_number,
-                  RETURN_ADDRESS());
+  return Location(nullptr, UNSAFE_TODO(file_name + kStrippedPrefixLength),
+                  line_number, RETURN_ADDRESS());
 }
 
 //------------------------------------------------------------------------------

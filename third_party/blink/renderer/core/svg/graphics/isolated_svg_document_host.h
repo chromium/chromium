@@ -37,6 +37,7 @@
 namespace blink {
 
 class AgentGroupScheduler;
+struct ColorProviderColorMaps;
 class IsolatedSVGChromeClient;
 class LocalFrame;
 class Page;
@@ -57,7 +58,8 @@ class IsolatedSVGDocumentHost final
                           AgentGroupScheduler&,
                           scoped_refptr<const SharedBuffer>,
                           base::OnceClosure async_load_callback,
-                          const Settings*,
+                          const Settings* inherited_settings,
+                          const ColorProviderColorMaps* inherited_color_maps,
                           ProcessingMode);
   ~IsolatedSVGDocumentHost();
 

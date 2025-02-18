@@ -21,7 +21,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
@@ -217,7 +217,7 @@ void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
     return;
   }
 
-  AXEventManager::Get()->NotifyViewEvent(view_, event_type);
+  AXUpdateNotifier::Get()->NotifyViewEvent(view_, event_type);
 
   if (send_native_event && widget) {
     FireNativeEvent(event_type);

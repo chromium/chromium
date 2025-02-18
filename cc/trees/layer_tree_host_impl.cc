@@ -1365,7 +1365,13 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // crbug.com/805673.
   active_tree_->ResetHandleVisibilityChanged();
 
+  frame->has_view_transition_save_directive =
+      active_tree_->HasViewTransitionSaveRequest();
+
   base::flat_set<viz::ViewTransitionElementResourceId> known_resource_ids;
+  base::flat_set<blink::ViewTransitionToken> capture_view_transition_tokens =
+      active_tree()->GetCaptureViewTransitionTokens();
+
   // Create the render passes in dependency order.
   size_t render_surface_list_size = frame->render_surface_list->size();
   for (size_t i = 0; i < render_surface_list_size; ++i) {
@@ -1378,17 +1384,25 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     const bool should_draw_into_render_pass =
         is_root_surface || render_surface->contributes_to_drawn_surface() ||
         render_surface->CopyOfOutputRequired();
-    if (should_draw_into_render_pass)
-      frame->render_passes.push_back(render_surface->CreateRenderPass());
-    if (render_surface->OwningEffectNode()
-            ->view_transition_element_resource_id.IsValid()) {
-      known_resource_ids.insert(render_surface->OwningEffectNode()
-                                    ->view_transition_element_resource_id);
+    const auto& view_transition_element_resource_id =
+        render_surface->ViewTransitionElementResourceId();
+    if (should_draw_into_render_pass) {
+      // Create a capture render pass if we're in the capture phase for this
+      // render surface.
+      if (view_transition_element_resource_id.MatchesToken(
+              capture_view_transition_tokens)) {
+        frame->render_passes.push_back(
+            render_surface->CreateViewTransitionCaptureRenderPass(
+                capture_view_transition_tokens));
+      }
+
+      frame->render_passes.push_back(
+          render_surface->CreateRenderPass(capture_view_transition_tokens));
+    }
+    if (view_transition_element_resource_id.IsValid()) {
+      known_resource_ids.insert(view_transition_element_resource_id);
     }
   }
-
-  frame->has_view_transition_save_directive =
-      active_tree_->HasViewTransitionSaveRequest();
 
   // When we are displaying the HUD, change the root damage rect to cover the
   // entire root surface. This will disable partial-swap/scissor optimizations
@@ -1416,8 +1430,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // texture suddenly appearing in the future.
   DrawResult draw_result = DrawResult::kSuccess;
 
-  const AppendQuadsContext context = {GetDrawMode(), {}, false};
-
   int num_missing_tiles = 0;
   CHECK(!frame->checkerboarded_needs_raster);
   CHECK(!frame->checkerboarded_needs_record);
@@ -1435,11 +1447,28 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     throttle_decider_.Prepare();
 
   if (!use_layer_context_for_display_) {
+    const auto& context = AppendQuadsContext{
+        GetDrawMode(), std::move(capture_view_transition_tokens),
+        /* for_view_transition_capture= */ false};
+    const auto& view_transition_capture_context = AppendQuadsContext{
+        context.draw_mode, context.capture_view_transition_tokens,
+        /* for_view_transition_capture= */ true};
+
     for (EffectTreeLayerListIterator it(active_tree());
          it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
-      auto target_render_pass_id = it.target_render_surface()->render_pass_id();
-      viz::CompositorRenderPass* target_render_pass =
-          FindRenderPassById(frame->render_passes, target_render_pass_id);
+      RenderSurfaceImpl* target_render_surface = it.target_render_surface();
+
+      viz::CompositorRenderPass* target_render_pass = FindRenderPassById(
+          frame->render_passes, target_render_surface->render_pass_id());
+
+      viz::CompositorRenderPass* view_transition_capture_render_pass =
+          target_render_surface->ViewTransitionElementResourceId().MatchesToken(
+              view_transition_capture_context.capture_view_transition_tokens)
+              ? FindRenderPassById(
+                    frame->render_passes,
+                    it.target_render_surface()
+                        ->view_transition_capture_render_pass_id())
+              : nullptr;
 
       AppendQuadsData append_quads_data;
 
@@ -1463,6 +1492,12 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         if (render_surface->contributes_to_drawn_surface()) {
           render_surface->AppendQuads(context, target_render_pass,
                                       &append_quads_data);
+          if (view_transition_capture_render_pass) {
+            AppendQuadsData data;
+            render_surface->AppendQuads(view_transition_capture_context,
+                                        view_transition_capture_render_pass,
+                                        &data);
+          }
         }
       } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
         LayerImpl* layer = it.current_layer();
@@ -1486,6 +1521,11 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
           }
           layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
           layer->AppendQuads(context, target_render_pass, &append_quads_data);
+          if (view_transition_capture_render_pass) {
+            AppendQuadsData data;
+            layer->AppendQuads(view_transition_capture_context,
+                               view_transition_capture_render_pass, &data);
+          }
         } else {
           if (settings_.enable_compositing_based_throttling) {
             throttle_decider_.ProcessLayerNotToDraw(layer);
@@ -3032,6 +3072,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
 
   ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
+  const auto& capture_view_transition_tokens =
+      active_tree_->GetCaptureViewTransitionTokens();
   for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
     const auto& view_transition_element_resource_id =
         render_surface->OwningEffectNode()->view_transition_element_resource_id;
@@ -3048,8 +3090,14 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         << view_transition_element_map[view_transition_element_resource_id]
                .GetUnsafeValue();
 
-    view_transition_element_map[view_transition_element_resource_id] =
-        render_surface->render_pass_id();
+    if (view_transition_element_resource_id.MatchesToken(
+            capture_view_transition_tokens)) {
+      view_transition_element_map[view_transition_element_resource_id] =
+          render_surface->view_transition_capture_render_pass_id();
+    } else {
+      view_transition_element_map[view_transition_element_resource_id] =
+          render_surface->render_pass_id();
+    }
   }
 
   auto display_color_spaces = GetDisplayColorSpaces();

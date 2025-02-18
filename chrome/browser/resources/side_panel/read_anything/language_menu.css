@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
  #languageMenu::part(dialog) {
-  --scroll-border-color: var(--color-side-panel-dialog-divider);
+  --cr-scrollable-border-color: var(--color-side-panel-dialog-divider);
   background: var(--color-side-panel-content-background);
   height: fit-content;
   width: 275px;

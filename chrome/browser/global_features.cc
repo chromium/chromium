@@ -65,7 +65,7 @@ void GlobalFeatures::Init() {
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledByFlags()) {
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
     glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
     glic_background_mode_manager_ =
         std::make_unique<glic::GlicBackgroundModeManager>(

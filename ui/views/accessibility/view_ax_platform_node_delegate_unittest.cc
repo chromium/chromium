@@ -41,8 +41,8 @@
 #if defined(USE_AURA)
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
-#include "ui/views/accessibility/ax_event_manager.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/ax_widget_obj_wrapper.h"
 #endif
 
@@ -64,18 +64,18 @@ BEGIN_METADATA(TestButton)
 END_METADATA
 
 #if defined(USE_AURA)
-class TestAXEventObserver : public AXEventObserver {
+class TestAXEventObserver : public AXUpdateObserver {
  public:
   explicit TestAXEventObserver(AXAuraObjCache* cache) : cache_(cache) {
-    AXEventManager::Get()->AddObserver(this);
+    AXUpdateNotifier::Get()->AddObserver(this);
   }
   TestAXEventObserver(const TestAXEventObserver&) = delete;
   TestAXEventObserver& operator=(const TestAXEventObserver&) = delete;
   ~TestAXEventObserver() override {
-    AXEventManager::Get()->RemoveObserver(this);
+    AXUpdateNotifier::Get()->RemoveObserver(this);
   }
 
-  // AXEventObserver:
+  // AXUpdateObserver:
   void OnViewEvent(View* view, ax::mojom::Event event_type) override {
     std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>> out_children;
     AXAuraObjWrapper* ax_obj = cache_->GetOrCreate(view->GetWidget());

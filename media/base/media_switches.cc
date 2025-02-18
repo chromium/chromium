@@ -840,6 +840,13 @@ BASE_FEATURE(kOnDeviceWebSpeech,
 // Enables the Live Caption feature on supported devices.
 BASE_FEATURE(kLiveCaption, "LiveCaption", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Logs a DumpWithoutCrashing() call each time the Speech On-Device API (SODA)
+// fails to load. Used to diagnose issues when rolling out new versions of the
+// SODA library.
+BASE_FEATURE(kLogSodaLoadFailures,
+             "kLogSodaLoadFailures",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether a "Share this tab instead" button should be shown for
 // getDisplayMedia captures. Note: This flag does not control if the "Share this
 // tab instead" button is shown for chrome.desktopCapture captures.

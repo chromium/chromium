@@ -27,6 +27,7 @@ using StudentHeartbeatCallback = base::OnceCallback<void(
 class StudentHeartbeatRequest : public google_apis::UrlFetchRequestBase {
  public:
   StudentHeartbeatRequest(google_apis::RequestSender* sender,
+                          std::string url_base,
                           const std::string& session_id,
                           const GaiaId gaia_id,
                           const std::string& device_id,

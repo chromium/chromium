@@ -78,7 +78,7 @@ class CloneLanguageModelClient
     Cleanup();
   }
 
-  void OnError(mojom::blink::AIManagerCreateLanguageModelError error) override {
+  void OnError(mojom::blink::AIManagerCreateClientError error) override {
     if (!GetResolver()) {
       return;
     }

@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -35,6 +37,8 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.url.GURL;
 import org.chromium.url.mojom.Url;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -55,6 +59,25 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
 
     @VisibleForTesting
     public static final String INSTANT_APP_HOLDBACK_ID_STRING = "instantapp:holdback";
+
+    // These values are persisted to histograms. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({
+        RelatedAppType.REGULAR_APP,
+        RelatedAppType.INSTANT_APP,
+        RelatedAppType.OWN_WEBAPK,
+        RelatedAppType.OTHER_WEBAPK,
+        RelatedAppType.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface RelatedAppType {
+        int OTHER = 0;
+        int REGULAR_APP = 1;
+        int INSTANT_APP = 2;
+        int OWN_WEBAPK = 3;
+        int OTHER_WEBAPK = 4;
+        int COUNT = 5;
+    }
 
     // The delay, in ms, of the most recent invocation of FilterInstalledApps_Response.
     int mLastDelayForTesting;
@@ -147,6 +170,8 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         }
     }
 
+    // I have no idea why the RelatedAppType intdef is complaining, and cannot figure it out.
+    @SuppressWarnings("WrongConstant")
     @Override
     @UiThread
     public void filterInstalledApps(
@@ -167,26 +192,34 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             RelatedApplication app = relatedApps[i];
             int taskIdx = i;
 
+            @RelatedAppType int relatedAppType;
             if (isInstantNativeApp(app)) {
+                relatedAppType = RelatedAppType.INSTANT_APP;
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
                         () -> checkInstantApp(resultHolder, taskIdx, app, frameUrl));
             } else if (isRegularNativeApp(app)) {
+                relatedAppType = RelatedAppType.REGULAR_APP;
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
                         () -> checkPlayApp(resultHolder, taskIdx, app, frameUrl));
             } else if (isWebApk(app) && app.url.equals(manifestUrl.url)) {
+                relatedAppType = RelatedAppType.OWN_WEBAPK;
                 // The website wants to check whether its own WebAPK is installed.
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
                         () -> checkWebApkInstalled(resultHolder, taskIdx, app));
             } else if (isWebApk(app)) {
+                relatedAppType = RelatedAppType.OTHER_WEBAPK;
                 // The website wants to check whether another WebAPK is installed.
                 checkWebApk(resultHolder, taskIdx, app, manifestUrl);
             } else {
+                relatedAppType = RelatedAppType.OTHER;
                 // The app did not match any category.
                 resultHolder.onResult(null, taskIdx, 0);
             }
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.InstalledApp.RelatedAppType", relatedAppType, RelatedAppType.COUNT);
         }
     }
 

@@ -202,7 +202,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator addItemWithTitle:settingsTitle
                                action:^{
-                                 [weakSelf openSettings];
+                                 [weakSelf openIOSNotificationSettings];
                                }
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
@@ -248,7 +248,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 }
 
 // Opens the iOS settings app to the app's Notification permissions.
-- (void)openSettings {
+- (void)openIOSNotificationSettings {
   __weak __typeof(self) weakSelf = self;
 
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];

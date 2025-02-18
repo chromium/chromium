@@ -208,6 +208,10 @@ BASE_FEATURE(kThrottleMainFrameTo60Hz,
              "ThrottleMainFrameTo60Hz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kViewTransitionCaptureAndDisplay,
+             "ViewTransitionCaptureAndDisplay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, this flag stops the export of most of the
 // UKMs calculated by the DroppedFrameCounter.
 BASE_FEATURE(kStopExportDFCMetrics,

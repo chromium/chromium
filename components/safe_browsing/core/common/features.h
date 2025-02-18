@@ -224,6 +224,17 @@ BASE_DECLARE_FEATURE(kLocalIpAddressInEvents);
 // how often the checks are triggered (they are still not in real time).
 BASE_DECLARE_FEATURE(kLocalListsUseSBv5);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables ClientDownloadRequests for APK downloads on Android.
+BASE_DECLARE_FEATURE(kMaliciousApkDownloadCheck);
+
+// If true, then ClientDownloadRequests for APK downloads on Android are
+// telemetry-only, and only for Enhanced Protection users. If false (default),
+// then ClientDownloadRequests for APK downloads on Android are active for all
+// Safe Browsing-enabled users, and may show warnings.
+extern const base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly;
+#endif
+
 // Killswitch for fetching and executing the notification content detection
 // model. This also gates logging metrics related to this model.
 BASE_DECLARE_FEATURE(kOnDeviceNotificationContentDetectionModel);

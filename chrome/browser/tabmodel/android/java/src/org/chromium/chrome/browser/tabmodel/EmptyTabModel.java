@@ -148,9 +148,6 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void cancelTabClosure(int tabId) {}
 
     @Override
-    public void notifyAllTabsClosureUndone() {}
-
-    @Override
     public boolean supportsPendingClosures() {
         return false;
     }

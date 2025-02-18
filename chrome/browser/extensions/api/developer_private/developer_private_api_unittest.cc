@@ -3340,8 +3340,12 @@ class DeveloperPrivateApiWithMV2DeprecationWarningUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:
   DeveloperPrivateApiWithMV2DeprecationWarningUnitTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionManifestV2DeprecationWarning);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{extensions_features::
+                                  kExtensionManifestV2DeprecationWarning},
+        /*disabled_features=*/{
+            extensions_features::kExtensionManifestV2Disabled,
+            extensions_features::kExtensionManifestV2Unsupported});
   }
 
  private:

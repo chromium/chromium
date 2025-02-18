@@ -48,6 +48,7 @@ const std::string kApplicationLocale = "en-US";
 const GaiaId::Literal kGaiaId("gaia-id");
 const std::string kSessionId = "session_id";
 const std::string kEmail = "test@school.edu";
+constexpr char kTestSTUrl[] = "https://test";
 
 class BabelOrcaConsumerTest : public testing::Test {
  protected:
@@ -78,7 +79,7 @@ class BabelOrcaConsumerTest : public testing::Test {
 
     consumer_ = std::make_unique<BabelOrcaConsumer>(
         url_loader_factory_.GetSafeWeakWrapper(),
-        identity_test_env_.identity_manager(), kGaiaId,
+        identity_test_env_.identity_manager(), kGaiaId, kTestSTUrl,
         std::move(caption_controller), &token_manager_,
         request_data_provider_.get(),
         base::BindLambdaForTesting(
@@ -96,9 +97,8 @@ class BabelOrcaConsumerTest : public testing::Test {
   }
 
   std::string url() {
-    return base::StrCat(
-        {boca::kSchoolToolsApiBaseUrl,
-         base::ReplaceStringPlaceholders(boca::kJoinTachyonGroupUrlTemplate,
+    return base::StrCat({kTestSTUrl, base::ReplaceStringPlaceholders(
+                                         boca::kJoinTachyonGroupUrlTemplate,
                                          {kGaiaId.ToString(), kSessionId},
                                          /*=offsets*/ nullptr)});
   }

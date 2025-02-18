@@ -215,16 +215,21 @@ BASE_FEATURE(kBocaOnTaskPod,
              "BocaOnTaskPod",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables Boca student heartbeat interval on ChromeOS.
+// Enables or disables Boca sending student heartbeat requests on ChromeOS.
 BASE_FEATURE(kBocaStudentHeartbeat,
              "kBocaStudentHeartbeat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables Boca student heartbeat custom interval on ChromeOS.
+BASE_FEATURE(kBocaStudentHeartbeatCustomInterval,
+             "kBocaStudentHeartbeatCustomInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Time interval to do student heartbeat
 constexpr base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds{
-        &kBocaStudentHeartbeat, "StudentHeartbeatPeriodicJobIntervalInSeconds",
-        base::Seconds(60)};
+        &kBocaStudentHeartbeatCustomInterval,
+        "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(60)};
 
 // Enables or disables Boca extension consumer experience on ChromeOS.
 BASE_FEATURE(kBocaExtensionConsumer,
@@ -2711,6 +2716,12 @@ BASE_FEATURE(kSunfishFeature,
              "SunfishFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Changes the Sunfish feature to use the Lens Web API instead of the
+// Chromnient-like query.
+BASE_FEATURE(kSunfishLensWeb,
+             "SunfishLensWeb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable the suspend state machine to better handle suspend accelerators.
 BASE_FEATURE(kSuspendStateMachine,
              "SuspendStateMachine",
@@ -3366,6 +3377,10 @@ bool IsBocaOnTaskPodEnabled() {
 
 bool IsBocaStudentHeartbeatEnabled() {
   return base::FeatureList::IsEnabled(kBocaStudentHeartbeat);
+}
+
+bool IsBocaStudentHeartbeatCustomIntervalEnabled() {
+  return base::FeatureList::IsEnabled(kBocaStudentHeartbeatCustomInterval);
 }
 
 bool IsBocaSpotlightEnabled() {
@@ -4424,6 +4439,11 @@ bool IsShowSharingUserInLauncherContinueSectionEnabled() {
 
 bool IsSunfishFeatureEnabled() {
   return base::FeatureList::IsEnabled(kSunfishFeature);
+}
+
+bool IsSunfishLensWebEnabled() {
+  return IsSunfishFeatureEnabled() &&
+         base::FeatureList::IsEnabled(kSunfishLensWeb);
 }
 
 bool IsSuspendStateMachineEnabled() {

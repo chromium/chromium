@@ -78,6 +78,11 @@ void PrivacySandboxDialogHandler::RegisterMessages() {
       base::BindRepeating(&PrivacySandboxDialogHandler::
                               HandleShouldShowPrivacySandboxPrivacyPolicy,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "shouldShowAdTopicsContentParity",
+      base::BindRepeating(
+          &PrivacySandboxDialogHandler::HandleShouldShowAdTopicsContentParity,
+          base::Unretained(this)));
 }
 
 void PrivacySandboxDialogHandler::HandleShouldShowPrivacySandboxPrivacyPolicy(
@@ -103,6 +108,14 @@ void PrivacySandboxDialogHandler::HandleRecordPrivacyPolicyLoadTime(
   base::UmaHistogramTimes(
       "PrivacySandbox.PrivacyPolicy.LoadingTime",
       base::Milliseconds(privacy_policy_page_load_duration));
+}
+
+void PrivacySandboxDialogHandler::HandleShouldShowAdTopicsContentParity(
+    const base::Value::List& args) {
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      args[0], base::FeatureList::IsEnabled(
+                   privacy_sandbox::kPrivacySandboxAdTopicsContentParity));
 }
 
 void PrivacySandboxDialogHandler::OnJavascriptAllowed() {

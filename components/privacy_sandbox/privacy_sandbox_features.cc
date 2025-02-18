@@ -265,7 +265,7 @@ const base::FeatureParam<double>
 
 const base::FeatureParam<double>
     kPrivacySandboxCctAdsNoticeSurveyDeclineConsentTriggerRate{
-        &kPrivacySandboxCctAdsNoticeSurvey, "decline-trigger-rate", 0.0};
+        &kPrivacySandboxCctAdsNoticeSurvey, "declined-trigger-rate", 0.0};
 
 const base::FeatureParam<std::string> kPrivacySandboxCctAdsNoticeSurveyAppId{
     &kPrivacySandboxCctAdsNoticeSurvey, "survey-app-id", ""};

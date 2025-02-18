@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,14 +33,15 @@ public class BookmarkBarCoordinator {
      * Constructs the bookmark bar coordinator.
      *
      * @param activity the activity which is hosting the bookmark bar.
-     * @param browserControlsManager the manager for browser control positioning/visibility.
+     * @param browserControlsStateProvider the state provider for browser control
+     *     positioning/visibility.
      * @param heightChangeCallback a callback to notify of bookmark bar height change events.
      * @param profileSupplier the supplier for the currently active profile.
      * @param viewStub the stub used to inflate the bookmark bar.
      */
     public BookmarkBarCoordinator(
             @NonNull Activity activity,
-            @NonNull BrowserControlsManager browserControlsManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Callback<Integer> heightChangeCallback,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ViewStub viewStub) {
@@ -76,7 +77,7 @@ public class BookmarkBarCoordinator {
                 new BookmarkBarMediator(
                         activity,
                         allBookmarksButtonModel,
-                        browserControlsManager,
+                        browserControlsStateProvider,
                         heightChangeCallback,
                         itemsModel,
                         itemsLayoutManager.getItemsOverflowSupplier(),

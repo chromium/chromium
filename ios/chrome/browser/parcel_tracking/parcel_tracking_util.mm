@@ -27,24 +27,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 
-namespace {
-const CGFloat parcelLimit = 5;
-}  // namespace
-
-bool IsUserEligibleParcelTrackingOptInPrompt(
-    PrefService* pref_service,
-    commerce::ShoppingService* shopping_service) {
-  return IsIOSParcelTrackingEnabled() &&
-         !IsParcelTrackingDisabled(
-             IsHomeCustomizationEnabled()
-                 ? pref_service
-                 : GetApplicationContext()->GetLocalState()) &&
-         !pref_service->GetBoolean(
-             prefs::kIosParcelTrackingOptInPromptDisplayLimitMet) &&
-         commerce::IsParcelTrackingEligible(
-             shopping_service->GetAccountChecker());
-}
-
 std::vector<std::pair<commerce::ParcelIdentifier::Carrier, std::string>>
 ConvertCustomTextCheckingResult(NSArray<CustomTextCheckingResult*>* result) {
   std::vector<std::pair<commerce::ParcelIdentifier::Carrier, std::string>>
@@ -88,41 +70,4 @@ void TrackParcels(
             }
           },
           display_infobar, parcel_tracking_commands_handler, parcels, source));
-}
-
-void FilterParcelsAndShowParcelTrackingUI(
-    commerce::ShoppingService* shopping_service,
-    NSArray<CustomTextCheckingResult*>* parcels,
-    id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler) {
-  shopping_service->GetAllParcelStatuses(base::BindOnce(
-      [](id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler,
-         NSArray<CustomTextCheckingResult*>* parcels, bool success,
-         std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>
-             statuses) {
-        NSMutableSet* parcel_numbers = [NSMutableSet
-            setWithArray:[parcels valueForKeyPath:@"carrierNumber"]];
-        // Remove the tracking numbers of already tracked parcels from
-        // parcel_numbers array.
-        for (commerce::ParcelTrackingStatus status : *statuses) {
-          NSString* tracking_id = base::SysUTF8ToNSString(status.tracking_id);
-          if ([parcel_numbers containsObject:tracking_id]) {
-            [parcel_numbers removeObject:tracking_id];
-          }
-        }
-        // Add the remaining parcels to filtered_parcels array.
-        NSMutableArray<CustomTextCheckingResult*>* filtered_parcels =
-            [[NSMutableArray alloc] init];
-        for (CustomTextCheckingResult* parcel : parcels) {
-          if ([parcel_numbers containsObject:parcel.carrierNumber]) {
-            [filtered_parcels addObject:parcel];
-          }
-        }
-        // Only track or offer to track when number of packages is less than 6.
-        if (filtered_parcels.count > 0 &&
-            filtered_parcels.count <= parcelLimit) {
-          [parcel_tracking_commands_handler
-              showTrackingForFilteredParcels:filtered_parcels];
-        }
-      },
-      parcel_tracking_commands_handler, parcels));
 }

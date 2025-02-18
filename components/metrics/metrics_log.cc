@@ -338,6 +338,12 @@ void MetricsLog::AssignFinalizedRecordId(PrefService* local_state) {
       IncrementAndUpdate(local_state, prefs::kMetricsLogFinalizedRecordId));
 }
 
+void MetricsLog::SetLogCreationType(
+    ChromeUserMetricsExtension::LogType log_type) {
+  CHECK(!uma_proto_.has_log_type());
+  uma_proto_.set_log_type(log_type);
+}
+
 void MetricsLog::AssignRecordId(PrefService* local_state) {
   DCHECK(!uma_proto_.has_record_id());
   uma_proto_.set_record_id(

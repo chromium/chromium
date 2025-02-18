@@ -335,9 +335,28 @@ const char kDeferRendererTasksAfterInputDescription[] =
     "events, e.g. keypress, until after the subsequent frame. The associated "
     "policy controls which tasks types can be deferred.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kDevToolsAutomaticWorkspaceFoldersName[] =
+    "DevTools Project Settings";
+const char kDevToolsAutomaticWorkspaceFoldersDescription[] =
+    "If enabled, DevTools will try to fetch project settings in the "
+    "form of a `com.chrome.devtools.json` file from a well-known URI "
+    "on local debugging targets.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const char kDevToolsPrivacyUIName[] = "DevTools Privacy UI";
 const char kDevToolsPrivacyUIDescription[] =
     "Enables the Privacy UI in the current 'Security' panel in DevTools.";
+
+#if !BUILDFLAG(IS_ANDROID)
+const char kDevToolsProjectSettingsName[] =
+    "DevTools Automatic Workspace Folders";
+const char kDevToolsProjectSettingsDescription[] =
+    "When this and the DevTools Project Settings flags are turned on, DevTools "
+    "will automatically add workspace folders based on a workspace "
+    "configuration "
+    "in the project settings.";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =
@@ -2989,7 +3008,7 @@ const char kCrosSystemLevelPermissionBlockedWarningsDescription[] =
 
 const char kPermissionsAIv1Name[] = "PermissionsAI";
 const char kPermissionsAIv1Description[] =
-    "Use the Permission Predictions Service and Gemini Nano v2 to surface "
+    "Use the Permission Predictions Service and the AIv1 model to surface "
     "permission requests using a quieter UI when the likelihood of the user "
     "granting the permission is predicted to be low. Requires `Make Searches "
     "and Browsing Better` to be enabled.";
@@ -4518,6 +4537,10 @@ const char kMagicStackAndroidName[] = "Magic Stack Android";
 const char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "
     "NTPs on Android.";
+
+const char kMaliciousApkDownloadCheckName[] = "Malicious APK download check";
+const char kMaliciousApkDownloadCheckDescription[] =
+    "Check APK downloads on Android for malware.";
 
 const char kMayLaunchUrlUsesSeparateStoragePartitionName[] =
     "MayLaunchUrl Uses Separate Storage Partition";
@@ -6350,12 +6373,6 @@ const char kEnableEdgeDetectionDescription[] =
 const char kEnableFastTouchpadClickName[] = "Enable Fast Touchpad Click";
 const char kEnableFastTouchpadClickDescription[] =
     "If enabled, reduce the time after touchpad click before cursor can move.";
-
-const char kEnableRemoveStalePolicyPinnedAppsFromShelfName[] =
-    "Enable removing stale policy-pinned apps from shelf.";
-const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[] =
-    "If enabled, allows the system to remove apps that were once pinned to the "
-    "shelf by PinnedLauncherApps policy but are no longer listed in it.";
 
 const char kEnableSeamlessRefreshRateSwitchingName[] =
     "Seamless Refresh Rate Switching";

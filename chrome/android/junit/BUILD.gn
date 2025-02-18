@@ -162,6 +162,7 @@ if (is_android) {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/single_tab/android:java",
     "//chrome/browser/sync/android:java",
+    "//chrome/browser/sync/android:ui_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tab_group_sync:features_java",
@@ -1017,7 +1018,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/sync/LocalDataDescriptionTest.java",
       "src/org/chromium/chrome/browser/sync/SyncErrorNotifierTest.java",
       "src/org/chromium/chrome/browser/sync/ui/SyncErrorMessageImpressionTrackerTest.java",
-      "src/org/chromium/chrome/browser/sync/ui/bookmark_batch_upload_card/BookmarkBatchUploadCardMediatorTest.java",
     ]
 
     deps = chrome_junit_tests_deps

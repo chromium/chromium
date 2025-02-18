@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTY_H_
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -166,7 +162,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   }
   const CSSProperty* GetVisitedProperty() const {
     CSSPropertyID visited_id = static_cast<CSSPropertyID>(
-        kPropertyVisitedIDs[static_cast<unsigned>(property_id_)]);
+        UNSAFE_TODO(kPropertyVisitedIDs[static_cast<unsigned>(property_id_)]));
     if (visited_id == CSSPropertyID::kInvalid) {
       return nullptr;
     } else {
@@ -174,8 +170,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     }
   }
   const CSSProperty* GetUnvisitedProperty() const {
-    CSSPropertyID unvisited_id = static_cast<CSSPropertyID>(
-        kPropertyUnvisitedIDs[static_cast<unsigned>(property_id_)]);
+    CSSPropertyID unvisited_id = static_cast<CSSPropertyID>(UNSAFE_TODO(
+        kPropertyUnvisitedIDs[static_cast<unsigned>(property_id_)]));
     if (unvisited_id == CSSPropertyID::kInvalid) {
       return nullptr;
     } else {

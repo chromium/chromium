@@ -37,9 +37,7 @@ class SignalsAggregator : public KeyedService {
   // Will asynchronously collect signals whose names are specified in the
   // `request` object. Uses the current context (browser management and current
   // user) to evaluation signal collection permissions. Invokes `callback` with
-  // the collected signals. Currently only supports the collection of one signal
-  // (only one entry in `request.signal_names`) for simplicity as no current use
-  // case requires supporting the collection of multiple signals in one request.
+  // the collected signals.
   virtual void GetSignals(const SignalsAggregationRequest& request,
                           GetSignalsCallback callback) = 0;
 };

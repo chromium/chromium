@@ -653,6 +653,9 @@ BASE_FEATURE(kIPHiOSDefaultBrowserBannerPromoFeature,
 BASE_FEATURE(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,
              "IPH_iOSReminderNotificationsOverflowMenuBubbleFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
+             "IPH_iOSReminderNotificationsOverflowMenuNewBadgeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

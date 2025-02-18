@@ -11,9 +11,9 @@ import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.artifacts.ResolvedModuleVersion
 import org.gradle.api.artifacts.component.ComponentIdentifier
-import org.gradle.api.artifacts.component.ModuleComponentSelector
 import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.result.DependencyResult
+import org.gradle.api.artifacts.result.ResolvedDependencyResult
 import org.gradle.api.logging.Logger
 
 /**
@@ -288,9 +288,9 @@ class ChromiumDepGraph {
         return makeModuleIdInner(componentId.group, componentId.module, componentId.version)
     }
 
-    static String makeModuleId(DependencyResult dependency) {
-        ModuleComponentSelector selector = dependency.requested
-        return makeModuleIdInner(selector.group, selector.module, selector.version)
+    static String makeModuleId(ResolvedDependencyResult dependency) {
+        ComponentIdentifier componentId = dependency.selected.id
+        return makeModuleIdInner(componentId.group, componentId.module, componentId.version)
     }
 
     void collectDependencies() {
@@ -313,7 +313,14 @@ class ChromiumDepGraph {
                     resolvedDeps[configName] = [] as SortedSet
                 }
                 configuration.incoming.resolutionResult.allDependencies { DependencyResult it ->
-                    resolvedDeps[configName] += makeModuleId(it)
+                    if (it instanceof ResolvedDependencyResult) {
+                        resolvedDeps[configName] += makeModuleId(it)
+                    } else {
+                        // We don't currently have any unresolved deps, though it is a potential return type of
+                        // ResolutionResult#allDependencies, see:
+                        // https://docs.gradle.org/current/javadoc/org/gradle/api/artifacts/result/ResolutionResult.html#getAllDependencies()
+                        logger.warn("Unresolved ${it.from} -> ${it.requested}")
+                    }
                 }
             }
         }
@@ -347,10 +354,6 @@ class ChromiumDepGraph {
         }
 
         (resolvedDeps['compile'] + resolvedDeps['compileLatest']).each { id ->
-            // TODO(https://crbug.com/394878886): Fix this if possible.
-            if (id == 'com_google_guava_guava') {
-                return
-            }
             DependencyDescription dep = dependencies.get(id)
             assert dep: "No dependency collected for artifact ${id}"
             dep.supportsAndroid = true

@@ -66,14 +66,16 @@ SaveAutofillAiDataController* SaveAutofillAiDataController::GetOrCreate(
 }
 
 void SaveAutofillAiDataControllerImpl::OfferSave(
-    autofill::EntityInstance autofill_ai_data,
+    autofill::EntityInstance new_entity,
+    std::optional<autofill::EntityInstance> old_entity,
     AutofillAiClient::SavePromptAcceptanceCallback
         save_prompt_acceptance_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
     return;
   }
-  autofill_ai_data_ = std::move(autofill_ai_data);
+  new_entity_ = std::move(new_entity);
+  old_entity_ = std::move(old_entity);
   save_prompt_acceptance_callback_ = std::move(save_prompt_acceptance_callback);
   DoShowBubble();
 }
@@ -83,22 +85,43 @@ void SaveAutofillAiDataControllerImpl::OnSaveButtonClicked() {
 }
 
 std::u16string SaveAutofillAiDataControllerImpl::GetDialogTitle() const {
-  switch (autofill_ai_data_->type().name()) {
-    case autofill::EntityTypeName::kVehicle:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
-    case autofill::EntityTypeName::kPassport:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
+  const bool is_update = old_entity_.has_value();
+  if (!is_update) {
+    switch (new_entity_->type().name()) {
+      case autofill::EntityTypeName::kVehicle:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
+      case autofill::EntityTypeName::kPassport:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
 
-    case autofill::EntityTypeName::kDriversLicense:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
+      case autofill::EntityTypeName::kDriversLicense:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
 
-    case autofill::EntityTypeName::kLoyaltyCard:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SAVE_LOYALTY_CARD_ENTITY_DIALOG_TITLE);
+      case autofill::EntityTypeName::kLoyaltyCard:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_SAVE_LOYALTY_CARD_ENTITY_DIALOG_TITLE);
+    }
+  } else {
+    switch (new_entity_->type().name()) {
+      case autofill::EntityTypeName::kVehicle:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE);
+      case autofill::EntityTypeName::kPassport:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE);
+
+      case autofill::EntityTypeName::kDriversLicense:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
+
+      case autofill::EntityTypeName::kLoyaltyCard:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_UPDATE_LOYALTY_CARD_ENTITY_DIALOG_TITLE);
+    }
   }
+
   NOTREACHED();
 }
 
@@ -112,7 +135,7 @@ void SaveAutofillAiDataControllerImpl::OnBubbleClosed(
             {/*did_user_interact=*/
              GetUserInteractionFromAutofillAiBubbleClosedReason(closed_reason),
              /*entity=*/closed_reason == AutofillAiBubbleClosedReason::kAccepted
-                 ? std::exchange(autofill_ai_data_, std::nullopt)
+                 ? std::exchange(new_entity_, std::nullopt)
                  : std::nullopt});
   }
 }
@@ -137,7 +160,7 @@ SaveAutofillAiDataControllerImpl::GetWeakPtr() {
 
 base::optional_ref<const autofill::EntityInstance>
 SaveAutofillAiDataControllerImpl::GetAutofillAiData() const {
-  return autofill_ai_data_;
+  return new_entity_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveAutofillAiDataControllerImpl);

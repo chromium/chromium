@@ -44,7 +44,7 @@ class AILanguageModel : public AIContextBoundObject,
   using PromptApiMetadata = optimization_guide::proto::PromptApiMetadata;
   using CreateLanguageModelCallback = base::OnceCallback<void(
       base::expected<mojo::PendingRemote<blink::mojom::AILanguageModel>,
-                     blink::mojom::AIManagerCreateLanguageModelError>,
+                     blink::mojom::AIManagerCreateClientError>,
       blink::mojom::AILanguageModelInstanceInfoPtr)>;
 
   // The minimum version of the model execution config for prompt API that
@@ -68,9 +68,7 @@ class AILanguageModel : public AIContextBoundObject,
       uint32_t tokens = 0;
     };
 
-    Context(uint32_t max_tokens,
-            ContextItem initial_prompts,
-            bool use_prompt_api_proto);
+    Context(uint32_t max_tokens, ContextItem initial_prompts);
     Context(const Context&);
     ~Context();
 
@@ -96,8 +94,7 @@ class AILanguageModel : public AIContextBoundObject,
     SpaceReservationResult AddContextItem(ContextItem context_item);
 
     // Combines the initial prompts and all current items into a request.
-    // The type of request produced is either PromptApiRequest or StringValue,
-    // depending on use_prompt_api_proto = true.
+    // The type of request produced is a PromptApiRequest.
     std::unique_ptr<google::protobuf::MessageLite> MakeRequest();
 
     // Either returns it's argument wrapped in unique_ptr, or converts it to a
@@ -112,15 +109,12 @@ class AILanguageModel : public AIContextBoundObject,
 
     uint32_t max_tokens() const { return max_tokens_; }
     uint32_t current_tokens() const { return current_tokens_; }
-    bool use_prompt_api_proto() const { return use_prompt_api_proto_; }
 
    private:
     uint32_t max_tokens_;
     uint32_t current_tokens_ = 0;
     ContextItem initial_prompts_;
     std::deque<ContextItem> context_items_;
-    // Whether this should use PromptApiRequest or StringValue as request type.
-    bool use_prompt_api_proto_;
   };
 
   AILanguageModel(

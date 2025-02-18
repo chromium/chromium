@@ -95,9 +95,12 @@ class AutofillAiClient {
   virtual autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormGlobalId& form_id) = 0;
 
-  // Shows a bubble asking whether the user wants to save Autofill AI data.
+  // Shows a bubble asking whether the user wants to save or update Autofill AI
+  // data. `old_entity` is present in the update cases. It is used to give users
+  // a better understanding of what was updated.
   virtual void ShowSaveAutofillAiBubble(
-      autofill::EntityInstance entity,
+      autofill::EntityInstance new_entity,
+      std::optional<autofill::EntityInstance> old_entity,
       SavePromptAcceptanceCallback save_prompt_acceptance_callback) = 0;
 };
 

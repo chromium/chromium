@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/metrics/persistent_memory_allocator.h"
 
 #include <assert.h>
@@ -17,6 +12,7 @@
 #include <string_view>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -397,8 +393,8 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
     // This block is only executed when a completely new memory segment is
     // being initialized. It's unshared and single-threaded...
     volatile BlockHeader* const first_block =
-        reinterpret_cast<volatile BlockHeader*>(mem_base_ +
-                                                sizeof(SharedMetadata));
+        UNSAFE_TODO(reinterpret_cast<volatile BlockHeader*>(
+            mem_base_ + sizeof(SharedMetadata)));
     if (shared_meta()->cookie != 0 || shared_meta()->size != 0 ||
         shared_meta()->version != 0 ||
         shared_meta()->freeptr.load(std::memory_order_relaxed) != 0 ||
@@ -591,13 +587,13 @@ bool PersistentMemoryAllocator::ChangeType(Reference ref,
     // using memset because (a) it supports "volatile" and (b) it creates a
     // reliable pattern upon which other threads may rely.
     volatile std::atomic<int>* data =
-        reinterpret_cast<volatile std::atomic<int>*>(
-            reinterpret_cast<volatile char*>(block) + sizeof(BlockHeader));
+        UNSAFE_TODO(reinterpret_cast<volatile std::atomic<int>*>(
+            reinterpret_cast<volatile char*>(block) + sizeof(BlockHeader)));
     const uint32_t words = (block->size - sizeof(BlockHeader)) / sizeof(int);
     DCHECK_EQ(0U, (block->size - sizeof(BlockHeader)) % sizeof(int));
     for (uint32_t i = 0; i < words; ++i) {
       data->store(0, std::memory_order_release);
-      ++data;
+      UNSAFE_TODO(++data);
     }
 
     // If the destination type is "transitioning" then skip the final exchange.
@@ -628,7 +624,8 @@ std::string_view PersistentMemoryAllocator::StringViewAt(const void* object,
   if (!object || offset >= alloc_size) {
     return "";
   }
-  const char* const cstr = static_cast<const char*>(object) + offset;
+  const char* const cstr =
+      UNSAFE_TODO(static_cast<const char*>(object) + offset);
   return std::string_view(cstr, strnlen(cstr, alloc_size - offset - 1));
 }
 
@@ -775,13 +772,14 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
     // leading to a SIGBUS (or Windows equivalent) at some arbitrary location
     // in the code. This should concentrate all those failures into this
     // location for easy tracking and, eventually, proper handling.
-    volatile char* mem_end = reinterpret_cast<volatile char*>(block) + size;
+    volatile char* mem_end =
+        UNSAFE_TODO(reinterpret_cast<volatile char*>(block) + size);
     volatile char* mem_begin = reinterpret_cast<volatile char*>(
         (reinterpret_cast<uintptr_t>(block) + sizeof(BlockHeader) +
          (vm_page_size_ - 1)) &
         ~static_cast<uintptr_t>(vm_page_size_ - 1));
     for (volatile char* memory = mem_begin; memory < mem_end;
-         memory += vm_page_size_) {
+         UNSAFE_TODO(memory += vm_page_size_)) {
       // It's required that a memory segment start as all zeros and thus the
       // newly allocated block is all zeros at this point. Thus, writing a
       // zero to it allows testing that the memory exists without actually
@@ -928,7 +926,8 @@ PersistentMemoryAllocator::GetBlock(Reference ref,
 
   // Handle special cases.
   if (ref == kReferenceQueue && queue_ok) {
-    return reinterpret_cast<const volatile BlockHeader*>(mem_base_ + ref);
+    return UNSAFE_TODO(
+        reinterpret_cast<const volatile BlockHeader*>(mem_base_ + ref));
   }
 
   // Validation of parameters.
@@ -948,7 +947,7 @@ PersistentMemoryAllocator::GetBlock(Reference ref,
   }
 
   const volatile BlockHeader* const block =
-      reinterpret_cast<volatile BlockHeader*>(mem_base_ + ref);
+      UNSAFE_TODO(reinterpret_cast<volatile BlockHeader*>(mem_base_ + ref));
 
   // Validation of referenced block-header.
   if (!free_ok) {
@@ -1009,7 +1008,8 @@ const volatile void* PersistentMemoryAllocator::GetBlockData(
   if (!block) {
     return nullptr;
   }
-  return reinterpret_cast<const volatile char*>(block) + sizeof(BlockHeader);
+  return UNSAFE_TODO(reinterpret_cast<const volatile char*>(block) +
+                     sizeof(BlockHeader));
 }
 
 void PersistentMemoryAllocator::UpdateTrackingHistograms() {
@@ -1226,7 +1226,7 @@ void FilePersistentMemoryAllocator::Cache() {
   // in that range can be read. Keep within the used space. The `volatile`
   // keyword makes it so the compiler can't make assumptions about what is
   // in a given memory location and thus possibly avoid the read.
-  const volatile char* mem_end = mem_base_ + used();
+  const volatile char* mem_end = UNSAFE_TODO(mem_base_ + used());
   const volatile char* mem_begin = mem_base_;
 
   // Iterate over the memory a page at a time, reading the first byte of
@@ -1234,7 +1234,7 @@ void FilePersistentMemoryAllocator::Cache() {
   // can't omit the read.
   int total = 0;
   for (const volatile char* memory = mem_begin; memory < mem_end;
-       memory += vm_page_size_) {
+       UNSAFE_TODO(memory += vm_page_size_)) {
     total += *memory;
   }
 
@@ -1336,7 +1336,7 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
   uint8_t* mem = allocator_->GetAsArray<uint8_t>(ref, type_, size_);
   if (mem) {
     // This is the success path.
-    return span(mem + offset_, size_ - offset_);
+    return UNSAFE_TODO(span(mem + offset_, size_ - offset_));
   }
 
   // TODO(crbug.com/40064026) Under normal circumstances, this should not be

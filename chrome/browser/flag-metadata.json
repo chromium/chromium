@@ -1963,9 +1963,19 @@
     "expiry_milestone": 140
   },
   {
+    "name": "devtools-automatic-workspace-folders",
+    "owners": [ "bmeurer@chromium.org", "alexrudenko@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "devtools-privacy-ui",
     "owners": [ "jalonthomas@chromium.com", "shuuran@chromium.org", "masnoble@chromium.com" ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "devtools-project-settings",
+    "owners": [ "bmeurer@chromium.org" ],
+    "expiry_milestone": 140
   },
   {
     "name": "direct-sockets-in-service-workers",
@@ -3693,11 +3703,6 @@
     // This flag is used by network administrators to debug
     // network issues related to QUIC. It must not be removed.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-remove-stale-policy-pinned-apps-from-shelf",
-    "owners": [ "greengrape@google.com" ],
-    "expiry_milestone": 125
   },
   {
     "name": "enable-render-pass-drawn-rect",
@@ -5818,6 +5823,11 @@
     "name": "main-thread-compositing-priority",
     "owners": [ "youssefesmat@chromium.org", "baseos-perf@google.com"],
     "expiry_milestone": 120
+  },
+  {
+    "name": "malicious-apk-download-check",
+    "owners": [ "chlily@chromium.org", "//components/safe_browsing/OWNERS"],
+    "expiry_milestone": 140
   },
   {
     "name": "managed-profile-creation-updated-screen",

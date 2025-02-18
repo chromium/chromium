@@ -19,17 +19,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_H_
 
 #include <limits>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -249,10 +245,10 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   // Partial subset of the CSSSelector API.
   const CSSSelector* FirstSelector() const { return SelectorArray(); }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
-    return SelectorArray()[index];
+    return UNSAFE_TODO(SelectorArray()[index]);
   }
   CSSSelector& MutableSelectorAt(wtf_size_t index) {
-    return SelectorArray()[index];
+    return UNSAFE_TODO(SelectorArray()[index]);
   }
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
     return static_cast<wtf_size_t>(&selector - FirstSelector());
@@ -275,7 +271,8 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   StyleRule* Copy() const {
     const CSSSelector* selector_array = SelectorArray();
     size_t flattened_size = 1;
-    while (!selector_array[flattened_size - 1].IsLastInSelectorList()) {
+    while (!UNSAFE_TODO(selector_array[flattened_size - 1])
+                .IsLastInSelectorList()) {
       ++flattened_size;
     }
     return MakeGarbageCollected<StyleRule>(
@@ -309,7 +306,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
     child_rules_->insert(index, rule);
   }
   void WrapperRemoveRule(unsigned index) {
-    child_rules_->erase(child_rules_->begin() + index);
+    child_rules_->erase(UNSAFE_TODO(child_rules_->begin() + index));
   }
 
  private:
@@ -318,8 +315,9 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   bool HasParsedProperties() const;
 
   CSSSelector* SelectorArray() {
-    return reinterpret_cast<CSSSelector*>(base::bits::AlignUp(
-        reinterpret_cast<uint8_t*>(this + 1), alignof(CSSSelector)));
+    return reinterpret_cast<CSSSelector*>(
+        base::bits::AlignUp(UNSAFE_TODO(reinterpret_cast<uint8_t*>(this + 1)),
+                            alignof(CSSSelector)));
   }
   const CSSSelector* SelectorArray() const {
     return const_cast<StyleRule*>(this)->SelectorArray();

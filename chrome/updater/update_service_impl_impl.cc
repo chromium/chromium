@@ -1388,8 +1388,12 @@ void UpdateServiceImplImpl::RunInstallerImpl(
               update_client->SendPing(
                   install_data,
                   {.event_type = update_client::protocol_request::kEventInstall,
-                   .result = result.result.category_ ==
-                             update_client::ErrorCategory::kNone,
+                   .result =
+                       result.result.category_ ==
+                               update_client::ErrorCategory::kNone
+                           ? update_client::protocol_request::
+                                 kEventResultSuccess
+                           : update_client::protocol_request::kEventResultError,
                    .error_category = result.result.category_,
                    .error_code = result.result.code_,
                    .extra_code1 = result.result.extra_},

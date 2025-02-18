@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -59,7 +60,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
   // Build vector of client hint permission policies to update.
   auto* const current_policy =
       local_dom_window->GetSecurityContext().GetPermissionsPolicy();
-  ParsedPermissionsPolicy container_policy;
+  network::ParsedPermissionsPolicy container_policy;
   for (const auto& pair : parsed_ch.map) {
     const auto& policy_name = GetClientHintToPolicyFeatureMap().at(pair.first);
 
@@ -75,7 +76,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
         origin_set.insert(*origin_with_possible_wildcards);
       }
     }
-    auto declaration = ParsedPermissionsPolicyDeclaration(
+    auto declaration = network::ParsedPermissionsPolicyDeclaration(
         policy_name,
         std::vector<network::OriginWithPossibleWildcards>(origin_set.begin(),
                                                           origin_set.end()),
@@ -91,7 +92,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
 }
 
 void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
-    ParsedPermissionsPolicy& container_policy,
+    network::ParsedPermissionsPolicy& container_policy,
     LocalDOMWindow* local_dom_window) {
   if (!local_dom_window ||
       !local_dom_window->GetSecurityContext().GetPermissionsPolicy()) {
@@ -102,7 +103,7 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
   // break the container_policy vector into a map. We keep only the first policy
   // seen for each feature per PermissionsPolicy::InheritedValueForFeature.
   std::map<network::mojom::PermissionsPolicyFeature,
-           ParsedPermissionsPolicyDeclaration>
+           network::ParsedPermissionsPolicyDeclaration>
       feature_to_container_policy;
   for (const auto& candidate_policy : container_policy) {
     if (!base::Contains(feature_to_container_policy,
@@ -128,7 +129,8 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
     // If the container policy already has a parsed policy for the client hint
     // then use the first instance found and remove the others since that's
     // what `PermissionsPolicy::InheritedValueForFeature` pays attention to.
-    ParsedPermissionsPolicyDeclaration merged_policy(feature_and_hint.first);
+    network::ParsedPermissionsPolicyDeclaration merged_policy(
+        feature_and_hint.first);
     auto it = feature_to_container_policy.find(feature_and_hint.first);
     if (it != feature_to_container_policy.end()) {
       merged_policy = it->second;

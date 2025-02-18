@@ -10,6 +10,7 @@
 #import "components/collaboration/public/messaging/util.h"
 #import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/collaboration/test_support/mock_messaging_backend_service.h"
+#import "components/data_sharing/test_support/mock_data_sharing_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/types.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
@@ -48,6 +49,7 @@ using collaboration::messaging::PersistentNotificationType;
 using collaboration::messaging::TabGroupMessageMetadata;
 
 using tab_groups::MockTabGroupSyncService;
+using tab_groups::SharingState;
 using ::testing::_;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -122,6 +124,8 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
         std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
     collaboration_service_ = std::make_unique<MockCollaborationService>();
     messaging_service_ = std::make_unique<MockMessagingBackendService>();
+    data_sharing_service_ = std::make_unique<
+        ::testing::NiceMock<data_sharing::MockDataSharingService>>();
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -135,6 +139,7 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<MockCollaborationService> collaboration_service_;
   std::unique_ptr<MockMessagingBackendService> messaging_service_;
+  std::unique_ptr<data_sharing::MockDataSharingService> data_sharing_service_;
 };
 
 // Tests that the service observation starts and stops when the mediator is
@@ -149,6 +154,7 @@ TEST_F(TabGroupsPanelMediatorTest, StartStopObserving_Released) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -171,6 +177,7 @@ TEST_F(TabGroupsPanelMediatorTest, StartStopObserving_Disconnect) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -190,6 +197,7 @@ TEST_F(TabGroupsPanelMediatorTest, RecordUMAWhenSelected) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -218,6 +226,7 @@ TEST_F(TabGroupsPanelMediatorTest, NotSelected_NoToolbarsDelegateOrConfig) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -240,6 +249,7 @@ TEST_F(TabGroupsPanelMediatorTest, DisabledByPolicy_DisabledToolbarsConfig) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:YES
@@ -283,6 +293,7 @@ TEST_F(TabGroupsPanelMediatorTest,
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -333,6 +344,7 @@ TEST_F(TabGroupsPanelMediatorTest,
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -376,6 +388,7 @@ TEST_F(TabGroupsPanelMediatorTest,
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -411,6 +424,7 @@ TEST_F(TabGroupsPanelMediatorTest,
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -450,6 +464,7 @@ TEST_F(TabGroupsPanelMediatorTest,
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -488,6 +503,7 @@ TEST_F(TabGroupsPanelMediatorTest,
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -528,6 +544,7 @@ TEST_F(TabGroupsPanelMediatorTest, PopulatesSortedGroups) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -564,6 +581,7 @@ TEST_F(TabGroupsPanelMediatorTest, UpdateGroup) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -599,6 +617,7 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteRemoteGroup) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -609,8 +628,9 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteRemoteGroup) {
   sync_service->AddGroup(group);
   EXPECT_TRUE(sync_service->GetGroup(group.saved_guid()).has_value());
 
-  TabGroupsPanelItem* item =
-      [[TabGroupsPanelItem alloc] initWithSavedTabGroupID:group.saved_guid()];
+  TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc]
+      initWithSavedTabGroupID:group.saved_guid()
+                 sharingState:SharingState::kSharedAndOwned];
   [mediator deleteSyncedTabGroup:item.savedTabGroupID];
 
   EXPECT_FALSE(sync_service->GetGroup(group.saved_guid()).has_value());
@@ -625,6 +645,7 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -650,8 +671,9 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
   EXPECT_EQ(1u, browser_->GetWebStateList()->GetGroups().size());
   EXPECT_EQ(1, browser_->GetWebStateList()->count());
 
-  TabGroupsPanelItem* item =
-      [[TabGroupsPanelItem alloc] initWithSavedTabGroupID:group.saved_guid()];
+  TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc]
+      initWithSavedTabGroupID:group.saved_guid()
+                 sharingState:SharingState::kNotShared];
   [mediator deleteSyncedTabGroup:item.savedTabGroupID];
 
   // Check if the number of groups and tabs is 0.
@@ -668,6 +690,7 @@ TEST_F(TabGroupsPanelMediatorTest, FacePileViewControllerForItem) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -678,8 +701,9 @@ TEST_F(TabGroupsPanelMediatorTest, FacePileViewControllerForItem) {
   group.SetLocalGroupId(tab_groups::TabGroupId::GenerateNew());
   sync_service->AddGroup(group);
   EXPECT_TRUE(sync_service->GetGroup(group.saved_guid()).has_value());
-  TabGroupsPanelItem* item =
-      [[TabGroupsPanelItem alloc] initWithSavedTabGroupID:group.saved_guid()];
+  TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc]
+      initWithSavedTabGroupID:group.saved_guid()
+                 sharingState:SharingState::kSharedAndOwned];
 
   EXPECT_FALSE([mediator facePileViewControllerForItem:item]);
 
@@ -710,6 +734,7 @@ TEST_F(TabGroupsPanelMediatorTest, DisplayNotificationItem) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -760,6 +785,7 @@ TEST_F(TabGroupsPanelMediatorTest, HideNotificationItem) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -826,6 +852,7 @@ TEST_F(TabGroupsPanelMediatorTest, DisplayNotificationItemForTwoGroups) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -880,6 +907,7 @@ TEST_F(TabGroupsPanelMediatorTest, DisplayAggregateNotificationItem) {
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -938,6 +966,7 @@ TEST_F(TabGroupsPanelMediatorTest,
                   shareKitService:share_kit_service_.get()
              collaborationService:collaboration_service_.get()
                  messagingService:messaging_service_.get()
+               dataSharingService:data_sharing_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO

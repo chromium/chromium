@@ -2166,11 +2166,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
                         WebFeature::kFedCmDomainHint);
     }
 
-    if (!provider->hasConfigURL()) {
-      resolver->RejectWithTypeError("Missing the provider's configURL.");
-      return;
-    }
-
     mojom::blink::IdentityProviderRequestOptionsPtr identity_provider;
     {
       // It is possible that serializing the custom parameters to JSON fails

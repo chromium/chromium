@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -45,7 +44,7 @@ class BookmarkBarMediator
 
     private final Activity mActivity;
     private final PropertyModel mAllBookmarksButtonModel;
-    private final BrowserControlsManager mBrowserControlsManager;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Callback<Integer> mHeightChangeCallback;
     private final ObservableSupplierImpl<Integer> mHeightSupplier;
     private final ModelList mItemsModel;
@@ -63,7 +62,8 @@ class BookmarkBarMediator
      *
      * @param activity the activity which is hosting the bookmark bar.
      * @param allBookmarksButtonModel the model for the 'All Bookmarks' button.
-     * @param browserControlsManager the manager for browser control positioning/visibility.
+     * @param browserControlsStateProvider the state provider for browser control
+     *     positioning/visibility.
      * @param heightChangeCallback a callback to notify of bookmark bar height change events.
      * @param itemsModel the model for the items which are rendered within the bookmark bar.
      * @param itemsOverflowSupplier the supplier for the current state of items overflow.
@@ -73,7 +73,7 @@ class BookmarkBarMediator
     public BookmarkBarMediator(
             @NonNull Activity activity,
             @NonNull PropertyModel allBookmarksButtonModel,
-            @NonNull BrowserControlsManager browserControlsManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Callback<Integer> heightChangeCallback,
             @NonNull ModelList itemsModel,
             @NonNull ObservableSupplier<Boolean> itemsOverflowSupplier,
@@ -96,8 +96,8 @@ class BookmarkBarMediator
                 BookmarkBarButtonProperties.TITLE,
                 mActivity.getString(R.string.bookmark_bar_all_bookmarks_button_title));
 
-        mBrowserControlsManager = browserControlsManager;
-        mBrowserControlsManager.addObserver(this);
+        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mBrowserControlsStateProvider.addObserver(this);
 
         // NOTE: Height will be updated when binding the `HEIGHT_CHANGE_CALLBACK` property.
         mHeightSupplier = new ObservableSupplierImpl<Integer>(0);
@@ -127,7 +127,7 @@ class BookmarkBarMediator
     /** Destroys the bookmark bar mediator. */
     public void destroy() {
         mAllBookmarksButtonModel.set(BookmarkBarButtonProperties.CLICK_CALLBACK, null);
-        mBrowserControlsManager.removeObserver(this);
+        mBrowserControlsStateProvider.removeObserver(this);
         mHeightSupplier.removeObserver(mHeightChangeCallback);
         mItemsOverflowSupplier.removeObserver(mItemsOverflowSupplierObserver);
 
@@ -353,12 +353,14 @@ class BookmarkBarMediator
         // top browser controls.
         mModel.set(
                 BookmarkBarProperties.TOP_MARGIN,
-                mBrowserControlsManager.getTopControlsHeight() - mHeightSupplier.get());
+                mBrowserControlsStateProvider.getTopControlsHeight() - mHeightSupplier.get());
     }
 
     private void updateVisibility() {
         mModel.set(
                 BookmarkBarProperties.VISIBILITY,
-                mBrowserControlsManager.getTopControlOffset() == 0 ? View.VISIBLE : View.GONE);
+                mBrowserControlsStateProvider.getTopControlOffset() == 0
+                        ? View.VISIBLE
+                        : View.GONE);
     }
 }

@@ -895,6 +895,13 @@ TemplateURL* TemplateURLService::GetEnterpriseSearchAggregatorEngine() const {
   return it == enterprise_search_keyword_to_turl_.end() ? nullptr : it->second;
 }
 
+bool TemplateURLService::IsShortcutRequiredForSearchAggregator() {
+  if (!enterprise_search_manager_) {
+    return true;
+  }
+  return enterprise_search_manager_->GetRequireShortcutValue();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TemplateURLService::OwnedTemplateURLDataVector
 TemplateURLService::GetTemplateURLsForCountry(const std::string& country_code) {

@@ -293,6 +293,8 @@ message PageContextSpecifier {
   bool pdf_data = 6;
 
   // Whether to collect the last FormsPredictions request and response.
+  // Note: This flag is currently ignored while another AutofillAi iteration
+  // is under development.
   bool forms_prediction = 7;
 
   // Whether to collect the annotated page content.

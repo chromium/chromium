@@ -30,6 +30,7 @@ using JoinSessionCallback =
 class JoinSessionRequest : public google_apis::UrlFetchRequestBase {
  public:
   JoinSessionRequest(google_apis::RequestSender* sender,
+                     std::string url_base,
                      ::boca::UserIdentity user,
                      std::string device_id,
                      std::string join_code,

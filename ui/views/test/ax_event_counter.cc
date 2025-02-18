@@ -12,7 +12,7 @@
 
 namespace views::test {
 
-AXEventCounter::AXEventCounter(views::AXEventManager* event_manager) {
+AXEventCounter::AXEventCounter(views::AXUpdateNotifier* event_manager) {
   tree_observation_.Observe(event_manager);
 }
 

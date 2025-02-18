@@ -52,6 +52,10 @@
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
 
+  delegate->LogSaveCreditCardInfoBarResultMetric(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kAccepted,
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+
   // Display the modal (thus the ToS) if the card will be uploaded, this is a
   // legal requirement and shouldn't be changed.
   if (delegate->is_for_upload()) {

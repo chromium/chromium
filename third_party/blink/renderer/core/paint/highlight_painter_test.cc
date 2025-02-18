@@ -132,57 +132,6 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
   )HTML"));
   expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
-  // ‘-webkit-text-fill-color’
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { color: blue; -webkit-text-fill-color: green; }
-      ::spelling-error { /* -webkit-text-fill-color = blue */ }
-  )HTML"));
-  expect(HighlightPainter::kOverlay, __LINE__);
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { color: blue; -webkit-text-fill-color: green; }
-      ::spelling-error { -webkit-text-fill-color: red; }
-  )HTML"));
-  expect(HighlightPainter::kOverlay, __LINE__);
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { color: blue; -webkit-text-fill-color: green; }
-      ::spelling-error { -webkit-text-fill-color: green; }
-  )HTML"));
-  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
-
-  // ‘-webkit-text-stroke-color’
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { color: blue; -webkit-text-stroke-color: green; }
-      ::spelling-error { /* -webkit-text-stroke-color = blue */ }
-  )HTML"));
-  expect(HighlightPainter::kOverlay, __LINE__);
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { color: blue; -webkit-text-stroke-color: green; }
-      ::spelling-error { -webkit-text-stroke-color: red; }
-  )HTML"));
-  expect(HighlightPainter::kOverlay, __LINE__);
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { color: blue; -webkit-text-stroke-color: green; }
-      ::spelling-error { -webkit-text-stroke-color: green; }
-  )HTML"));
-  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
-
-  // ‘-webkit-text-stroke-width’
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { -webkit-text-stroke-width: 1px; }
-      ::spelling-error { /* -webkit-text-stroke-width = 0 */ }
-  )HTML"));
-  expect(HighlightPainter::kOverlay, __LINE__);
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { -webkit-text-stroke-width: 1px; }
-      ::spelling-error { -webkit-text-stroke-width: 2px; }
-  )HTML"));
-  expect(HighlightPainter::kOverlay, __LINE__);
-  GetDocument().Markers().AddSpellingMarker(test(R"HTML(
-      body { -webkit-text-stroke-width: 1px; }
-      ::spelling-error { -webkit-text-stroke-width: 1px; }
-  )HTML"));
-  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
-
   // ‘background-color’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       ::spelling-error { background-color: red; }

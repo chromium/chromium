@@ -31,4 +31,12 @@ bool IsDTCKeyRotationUploadedBySharedAPI() {
       kDTCKeyRotationUploadedBySharedAPIEnabled);
 }
 
+BASE_FEATURE(kDTCAntivirusSignalEnabled,
+             "DTCAntivirusSignalEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDTCAntivirusSignalEnabled() {
+  return base::FeatureList::IsEnabled(kDTCAntivirusSignalEnabled);
+}
+
 }  // namespace enterprise_connectors

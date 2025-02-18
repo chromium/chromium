@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
@@ -25,11 +26,11 @@ CORE_EXPORT const Vector<String> GetAvailableFeatures(ExecutionContext*);
 
 // PermissionsPolicyParser is a collection of methods which are used to convert
 // Permissions Policy declarations, in headers and iframe attributes, into
-// ParsedPermissionsPolicy structs. This class encapsulates all of the logic for
-// parsing feature names, origin lists, and threshold values.
-// Note that code outside of /renderer/ should not be parsing policy directives
-// from strings, but if necessary, should be constructing
-// ParsedPermissionsPolicy structs directly.
+// network::ParsedPermissionsPolicy structs. This class encapsulates all of the
+// logic for parsing feature names, origin lists, and threshold values. Note
+// that code outside of /renderer/ should not be parsing policy directives from
+// strings, but if necessary, should be constructing
+// network::ParsedPermissionsPolicy structs directly.
 class CORE_EXPORT PermissionsPolicyParser {
   STATIC_ONLY(PermissionsPolicyParser);
 
@@ -55,7 +56,7 @@ class CORE_EXPORT PermissionsPolicyParser {
   // ExecutionContext is used to determine if any origin trials affect the
   // parsing. Example of a permissions policy string:
   //     "vibrate a.com b.com; fullscreen 'none'; payment 'self', payment *".
-  static ParsedPermissionsPolicy ParseHeader(
+  static network::ParsedPermissionsPolicy ParseHeader(
       const String& feature_policy_header,
       const String& permission_policy_header,
       scoped_refptr<const SecurityOrigin>,
@@ -68,22 +69,22 @@ class CORE_EXPORT PermissionsPolicyParser {
   // features are filtered out. Example of a
   // permissions policy string:
   //     "vibrate a.com 'src'; fullscreen 'none'; payment 'self', payment *".
-  static ParsedPermissionsPolicy ParseAttribute(
+  static network::ParsedPermissionsPolicy ParseAttribute(
       const String& policy,
       scoped_refptr<const SecurityOrigin> self_origin,
       scoped_refptr<const SecurityOrigin> src_origin,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* = nullptr);
 
-  // Converts a PermissionsPolicy::Node into a ParsedPermissionsPolicy
+  // Converts a PermissionsPolicy::Node into a network::ParsedPermissionsPolicy
   // Unrecognized features are filtered out.
-  static ParsedPermissionsPolicy ParsePolicyFromNode(
+  static network::ParsedPermissionsPolicy ParsePolicyFromNode(
       Node&,
       scoped_refptr<const SecurityOrigin>,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* = nullptr);
 
-  static ParsedPermissionsPolicy ParseFeaturePolicyForTest(
+  static network::ParsedPermissionsPolicy ParseFeaturePolicyForTest(
       const String& policy,
       scoped_refptr<const SecurityOrigin> self_origin,
       scoped_refptr<const SecurityOrigin> src_origin,
@@ -91,7 +92,7 @@ class CORE_EXPORT PermissionsPolicyParser {
       const FeatureNameMap& feature_names,
       ExecutionContext* = nullptr);
 
-  static ParsedPermissionsPolicy ParsePermissionsPolicyForTest(
+  static network::ParsedPermissionsPolicy ParsePermissionsPolicyForTest(
       const String& policy,
       scoped_refptr<const SecurityOrigin> self_origin,
       scoped_refptr<const SecurityOrigin> src_origin,
@@ -102,32 +103,32 @@ class CORE_EXPORT PermissionsPolicyParser {
 
 // Returns true iff any declaration in the policy is for the given feature.
 CORE_EXPORT bool IsFeatureDeclared(network::mojom::PermissionsPolicyFeature,
-                                   const ParsedPermissionsPolicy&);
+                                   const network::ParsedPermissionsPolicy&);
 
 // Removes any declaration in the policy for the given feature. Returns true if
 // the policy was modified.
 CORE_EXPORT bool RemoveFeatureIfPresent(
     network::mojom::PermissionsPolicyFeature,
-    ParsedPermissionsPolicy&);
+    network::ParsedPermissionsPolicy&);
 
 // If no declaration in the policy exists already for the feature, adds a
 // declaration which disallows the feature in all origins. Returns true if the
 // policy was modified.
 CORE_EXPORT bool DisallowFeatureIfNotPresent(
     network::mojom::PermissionsPolicyFeature,
-    ParsedPermissionsPolicy&);
+    network::ParsedPermissionsPolicy&);
 
 // If no declaration in the policy exists already for the feature, adds a
 // declaration which allows the feature in all origins. Returns true if the
 // policy was modified.
 CORE_EXPORT bool AllowFeatureEverywhereIfNotPresent(
     network::mojom::PermissionsPolicyFeature,
-    ParsedPermissionsPolicy&);
+    network::ParsedPermissionsPolicy&);
 
 // Replaces any existing declarations in the policy for the given feature with
 // a declaration which disallows the feature in all origins.
 CORE_EXPORT void DisallowFeature(network::mojom::PermissionsPolicyFeature,
-                                 ParsedPermissionsPolicy&);
+                                 network::ParsedPermissionsPolicy&);
 
 // Returns true iff the feature should not be exposed to script.
 CORE_EXPORT bool IsFeatureForMeasurementOnly(
@@ -137,7 +138,7 @@ CORE_EXPORT bool IsFeatureForMeasurementOnly(
 // a declaration which allows the feature in all origins.
 CORE_EXPORT void AllowFeatureEverywhere(
     network::mojom::PermissionsPolicyFeature,
-    ParsedPermissionsPolicy&);
+    network::ParsedPermissionsPolicy&);
 
 CORE_EXPORT const String
 GetNameForFeature(network::mojom::PermissionsPolicyFeature,

@@ -756,7 +756,7 @@ TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsActionButtons) {
 }
 
 TEST_F(NotificationViewTest, UpdateFiresAccessibilityEvents) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
 
   // Setting the title does not result in a text-changed accessibility event

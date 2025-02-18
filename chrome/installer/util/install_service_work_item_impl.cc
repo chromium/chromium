@@ -506,17 +506,7 @@ bool InstallServiceWorkItemImpl::SetServiceName(
 }
 
 std::wstring InstallServiceWorkItemImpl::GetCurrentServiceName() const {
-  base::win::RegKey key;
-
-  auto result = key.Open(HKEY_LOCAL_MACHINE, registry_path_.c_str(),
-                         KEY_QUERY_VALUE | KEY_WOW64_32KEY);
-  if (result != ERROR_SUCCESS)
-    return service_name_;
-
-  std::wstring versioned_service_name;
-  key.ReadValue(service_name_.c_str(), &versioned_service_name);
-  return versioned_service_name.empty() ? service_name_
-                                        : versioned_service_name;
+  return GetCurrentServiceName(service_name_, registry_path_);
 }
 
 std::wstring InstallServiceWorkItemImpl::GetCurrentServiceDisplayName() const {
@@ -547,6 +537,22 @@ bool InstallServiceWorkItemImpl::IsComServiceInstalled(const GUID& clsid) {
   return base::win::RegKey(HKEY_LOCAL_MACHINE, appid_reg_path.c_str(),
                            KEY_QUERY_VALUE)
       .HasValue(L"LocalService");
+}
+
+// static
+std::wstring InstallServiceWorkItemImpl::GetCurrentServiceName(
+    base::wcstring_view service_name,
+    base::wcstring_view registry_path) {
+  if (std::wstring versioned_service_name;
+      base::win::RegKey(HKEY_LOCAL_MACHINE, registry_path.c_str(),
+                        KEY_QUERY_VALUE | KEY_WOW64_32KEY)
+              .ReadValue(service_name.c_str(), &versioned_service_name) ==
+          ERROR_SUCCESS &&
+      !versioned_service_name.empty()) {
+    return versioned_service_name;
+  }
+
+  return std::wstring(service_name);
 }
 
 std::wstring InstallServiceWorkItemImpl::GetCurrentServiceDescription() const {

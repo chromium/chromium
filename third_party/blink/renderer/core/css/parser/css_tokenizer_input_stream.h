@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_TOKENIZER_INPUT_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_TOKENIZER_INPUT_STREAM_H_
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -65,13 +61,13 @@ class CSSTokenizerInputStream {
     if (string_.Is8Bit()) {
       const LChar* characters8 = string_.Characters8();
       while ((offset_ + offset) < string_length_ &&
-             characterPredicate(characters8[offset_ + offset])) {
+             characterPredicate(UNSAFE_TODO(characters8[offset_ + offset]))) {
         ++offset;
       }
     } else {
       const UChar* characters16 = string_.Characters16();
       while ((offset_ + offset) < string_length_ &&
-             characterPredicate(characters16[offset_ + offset])) {
+             characterPredicate(UNSAFE_TODO(characters16[offset_ + offset]))) {
         ++offset;
       }
     }

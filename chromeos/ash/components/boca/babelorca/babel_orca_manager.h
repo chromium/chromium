@@ -75,6 +75,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       const GaiaId& gaia_id,
+      std::string school_tools_url_base,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
       PrefService* pref_service,
       const std::string& application_locale);

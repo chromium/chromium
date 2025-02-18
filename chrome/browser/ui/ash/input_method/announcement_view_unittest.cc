@@ -37,7 +37,7 @@ class AnnouncementViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(AnnouncementViewTest, MakesAnnouncement) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
   announcement_view_->Announce(u"test");
   task_environment()->FastForwardBy(base::Milliseconds(200));

@@ -9,12 +9,13 @@ implemented_in="chrome/browser/extensions/api/printing/printing_api.h"]
 namespace printing {
   dictionary SubmitJobRequest {
     // The print job to be submitted.
-    // The only supported content type is "application/pdf", and the
+    // Supported content types are "application/pdf" and "image/png". The
     // <a href="https://developers.google.com/cloud-print/docs/cdd#cjt">Cloud Job Ticket</a>
     // shouldn't include <code>FitToPageTicketItem</code>,
-    // <code>PageRangeTicketItem</code>, <code>ReverseOrderTicketItem</code>
-    // and <code>VendorTicketItem</code> fields since they are
-    // irrelevant for native printing. All other fields must be present.
+    // <code>PageRangeTicketItem</code> and <code>ReverseOrderTicketItem</code>
+    // fields since they are irrelevant for native printing.
+    // <code>VendorTicketItem</code> is optional. All other fields must be
+    // present.
     printerProvider.PrintJob job;
 
     // Used internally to store the blob uuid after parameter customization and

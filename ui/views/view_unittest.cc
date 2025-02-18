@@ -568,7 +568,7 @@ TEST_F(ViewTest, ViewAccessibilityReadyToNotifyEvents) {
 }
 
 TEST_F(ViewTest, ReadyToSendAccessibilityEvents) {
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   auto view1 = std::make_unique<TestView>();
   view1->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
   view1->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
@@ -986,7 +986,7 @@ TEST_F(ViewTest, InisibleLeafInVisibleSubtreeTurnedVisible) {
 }
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescription) {
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   auto v = std::make_unique<A11yTestView>(ax::mojom::Role::kButton, u"Name",
                                           u"Description");
   ui::AXNodeData data = ui::AXNodeData();
@@ -1029,7 +1029,7 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescription) {
 }
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescriptionDetailed) {
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   auto v = std::make_unique<A11yTestView>(
       ax::mojom::Role::kButton, u"Name", u"Description",
       /*role_description*/ u"", ax::mojom::NameFrom::kContents,
@@ -1073,7 +1073,7 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescriptionDetailed) {
 }
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleRolenameNameDescription) {
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   auto v = std::make_unique<A11yTestView>(ax::mojom::Role::kButton, u"Name",
                                           u"Description", u"Super Button");
   ui::AXNodeData data = ui::AXNodeData();

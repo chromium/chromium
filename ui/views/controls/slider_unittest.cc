@@ -310,7 +310,7 @@ TEST_P(SliderTest, AccessibleValue) {
 // Checks the pending value update when the slider is invisible and becomes
 // visible again.
 TEST_P(SliderTest, SliderPendingValueUpdate) {
-  test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   // Initially, the slider should be visible.
@@ -486,7 +486,7 @@ TEST_P(SliderTest, SliderListenerEventsForMultiFingerScrollGesture) {
 // Verifies the correct SliderListener events are raised for an accessible
 // slider.
 TEST_P(SliderTest, SliderRaisesA11yEvents) {
-  test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   // First, detach/reattach the slider without setting value.

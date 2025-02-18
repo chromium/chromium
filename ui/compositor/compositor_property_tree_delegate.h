@@ -26,6 +26,8 @@ struct ViewportPropertyIds;
 
 namespace ui {
 
+class Compositor;
+
 // TODO(crbug.com/389771428): This class exists to gradually move the
 // Compositor from using the cc::Compositor in legacy layer tree mode
 // to using it in property tree / layer list mode. This class should be
@@ -51,6 +53,8 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
   CompositorPropertyTreeDelegate& operator=(
       const CompositorPropertyTreeDelegate&) = delete;
   ~CompositorPropertyTreeDelegate() override = default;
+
+  void set_compositor(Compositor* compositor) { compositor_ = compositor; }
 
   void SetObserverForTesting(Observer*);
 
@@ -81,6 +85,7 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
                                  const gfx::Transform& transform) override;
 
  private:
+  raw_ptr<Compositor> compositor_ = nullptr;
   raw_ptr<Observer> observer_ = nullptr;
 };
 

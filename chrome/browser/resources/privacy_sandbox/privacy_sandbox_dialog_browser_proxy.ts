@@ -59,6 +59,10 @@ export class PrivacySandboxDialogBrowserProxy {
     return sendWithPromise('shouldShowPrivacySandboxPrivacyPolicy');
   }
 
+  shouldShowAdTopicsContentParity() {
+    return sendWithPromise('shouldShowAdTopicsContentParity');
+  }
+
   static getInstance(): PrivacySandboxDialogBrowserProxy {
     return instance || (instance = new PrivacySandboxDialogBrowserProxy());
   }

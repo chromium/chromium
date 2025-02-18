@@ -658,7 +658,8 @@ class WebAuthnWindowsAutofillIntegrationTest
                                                "Flandre Scarlet");
     device::PublicKeyCredentialRpEntity rp(kRpId);
     fake_webauthn_api_->InjectDiscoverableCredential(
-        kCredentialID1, std::move(rp), std::move(user));
+        kCredentialID1, std::move(rp), std::move(user),
+        /*provider_name=*/std::nullopt);
 
     win_webauthn_api_override_ =
         std::make_unique<device::WinWebAuthnApi::ScopedOverride>(
@@ -698,7 +699,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnWindowsAutofillIntegrationTest,
                                              "Sakuya Izayoi");
   device::PublicKeyCredentialRpEntity rp(kRpId);
   fake_webauthn_api_->InjectDiscoverableCredential(
-      kCredentialID2, std::move(rp), std::move(user));
+      kCredentialID2, std::move(rp), std::move(user),
+      /*provider_name=*/std::nullopt);
   RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 

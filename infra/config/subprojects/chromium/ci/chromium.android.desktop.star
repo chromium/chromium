@@ -261,6 +261,7 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
                 ],
+                ci_only = True,
                 swarming = targets.swarming(
                     shards = 10,
                 ),
@@ -270,11 +271,16 @@ ci.thin_tester(
                     # https://crbug.com/392649074
                     "--gtest_filter=-org.chromium.chrome.browser.ui.appmenu.AppMenuTest.testShowAppMenu_AnchorTop",
                 ],
+                ci_only = True,
+            ),
+            "extensions_unittests": targets.mixin(
+                ci_only = True,
             ),
             "unit_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.unit_tests.filter",
                 ],
+                ci_only = True,
             ),
         },
     ),

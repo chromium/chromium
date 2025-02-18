@@ -21,10 +21,10 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_web_contents.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -55,12 +55,12 @@ class AttributionSuitableContextTest : public RenderViewHostTestHarness {
     return scoped_feature_list_;
   }
 
-  blink::ParsedPermissionsPolicy RestrictivePermissionsPolicy(
+  network::ParsedPermissionsPolicy RestrictivePermissionsPolicy(
       const GURL& allowed_url) {
     const auto origin = network::OriginWithPossibleWildcards::FromOrigin(
         url::Origin::Create(allowed_url));
     CHECK(origin.has_value());
-    return {blink::ParsedPermissionsPolicyDeclaration(
+    return {network::ParsedPermissionsPolicyDeclaration(
         network::mojom::PermissionsPolicyFeature::kAttributionReporting,
         /*allowed_origins=*/{origin.value()},
         /*self_if_matches=*/std::nullopt,

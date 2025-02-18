@@ -16,15 +16,18 @@
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/collaboration/public/messaging/util.h"
+#import "components/data_sharing/public/data_sharing_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/string_utils.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_observer_bridge.h"
 #import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -43,7 +46,12 @@
 #import "ui/gfx/favicon_size.h"
 #import "ui/gfx/image/image.h"
 
+using ScopedDataSharingSyncObservation =
+    base::ScopedObservation<data_sharing::DataSharingService,
+                            data_sharing::DataSharingService::Observer>;
+
 using collaboration::messaging::TabGroupMessageMetadata;
+using tab_groups::SharingState;
 using tab_groups::utils::GetLocalTabGroupInfo;
 using tab_groups::utils::LocalTabGroupInfo;
 
@@ -76,21 +84,6 @@ TabGroupsPanelItem* CreateNotificationItem(
   return [[TabGroupsPanelItem alloc] initWithNotificationText:text];
 }
 
-// Converts a vector of `SavedTabGroup`s into an array of `TabGroupsPanelItem`s.
-NSArray<TabGroupsPanelItem*>* CreateTabGroupItems(
-    std::vector<tab_groups::SavedTabGroup> groups) {
-  // Sort groups by creation date.
-  std::sort(groups.begin(), groups.end(), CompareGroupByCreationDate);
-
-  NSMutableArray<TabGroupsPanelItem*>* items = [[NSMutableArray alloc] init];
-  for (const auto& group : groups) {
-    TabGroupsPanelItem* item =
-        [[TabGroupsPanelItem alloc] initWithSavedTabGroupID:group.saved_guid()];
-    [items addObject:item];
-  }
-  return items;
-}
-
 // Returns a user-friendly localized string representing the duration since the
 // creation date.
 NSString* CreationText(base::Time creation_date) {
@@ -100,7 +93,8 @@ NSString* CreationText(base::Time creation_date) {
 
 }  // namespace
 
-@interface TabGroupsPanelMediator () <MessagingBackendServiceObserving,
+@interface TabGroupsPanelMediator () <DataSharingServiceObserverDelegate,
+                                      MessagingBackendServiceObserving,
                                       TabGridToolbarsGridDelegate,
                                       TabGroupSyncServiceObserverDelegate>
 @end
@@ -114,12 +108,19 @@ NSString* CreationText(base::Time creation_date) {
   raw_ptr<collaboration::CollaborationService> _collaborationService;
   // The service to get activity messages for shared tab groups.
   raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
+  // The data sharing service for shared tab groups.
+  raw_ptr<data_sharing::DataSharingService> _dataSharingService;
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
   std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
   // The bridge between the C++ MessagingBackendService observer and this
   // Objective-C class.
   std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
+  // The bridge between the C++ DataSharingService observer and this Objective-C
+  // class.
+  std::unique_ptr<DataSharingServiceObserverBridge> _dataSharingServiceObserver;
+  std::unique_ptr<ScopedDataSharingSyncObservation>
+      _scopedDataSharingServiceObservation;
   // Whether the service was fully initialized.
   bool _tabGroupSyncServiceInitialized;
   // The regular WebStateList, to check if there are tabs to go back to when
@@ -144,6 +145,8 @@ NSString* CreationText(base::Time creation_date) {
                messagingService:
                    (collaboration::messaging::MessagingBackendService*)
                        messagingService
+             dataSharingService:
+                 (data_sharing::DataSharingService*)dataSharingService
             regularWebStateList:(WebStateList*)regularWebStateList
                   faviconLoader:(FaviconLoader*)faviconLoader
                disabledByPolicy:(BOOL)disabled
@@ -154,6 +157,7 @@ NSString* CreationText(base::Time creation_date) {
     _shareKitService = shareKitService;
     _collaborationService = collaborationService;
     _messagingService = messagingService;
+    _dataSharingService = dataSharingService;
     _syncServiceObserver =
         std::make_unique<TabGroupSyncServiceObserverBridge>(self);
     _scopedSyncServiceObservation =
@@ -165,6 +169,14 @@ NSString* CreationText(base::Time creation_date) {
           std::make_unique<MessagingBackendServiceBridge>(self);
       _messagingService->AddPersistentMessageObserver(
           _messagingBackendServiceBridge.get());
+    }
+    if (dataSharingService) {
+      _dataSharingServiceObserver =
+          std::make_unique<DataSharingServiceObserverBridge>(self);
+      _scopedDataSharingServiceObservation =
+          std::make_unique<ScopedDataSharingSyncObservation>(
+              _dataSharingServiceObserver.get());
+      _scopedDataSharingServiceObservation->Observe(_dataSharingService);
     }
     _regularWebStateList = regularWebStateList->AsWeakPtr();
     _isDisabled = disabled;
@@ -211,12 +223,15 @@ NSString* CreationText(base::Time creation_date) {
     _messagingBackendServiceBridge.reset();
     _messagingService = nullptr;
   }
+  _scopedDataSharingServiceObservation.reset();
+  _dataSharingServiceObserver.reset();
   _consumer = nil;
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
   _shareKitService = nullptr;
   _collaborationService = nullptr;
+  _dataSharingService = nullptr;
   _regularWebStateList = nullptr;
   _faviconsGridConfigurator = nullptr;
 }
@@ -239,6 +254,30 @@ NSString* CreationText(base::Time creation_date) {
   CHECK(_messagingService);
   CHECK(_messagingService->IsInitialized());
   [self populateItemsFromServices];
+}
+
+#pragma mark DataSharingServiceObserverDelegate
+
+- (void)dataSharingServiceDidAddGroup:(const data_sharing::GroupData&)groupData
+                               atTime:(base::Time)eventTime {
+  [self reconfigureGroupForGroupId:groupData.group_token.group_id];
+}
+
+- (void)dataSharingServiceDidRemoveGroup:(const data_sharing::GroupId&)groupId
+                                  atTime:(base::Time)eventTime {
+  [self reconfigureGroupForGroupId:groupId];
+}
+
+- (void)dataSharingServiceDidAddMember:(const GaiaId&)memberId
+                               toGroup:(const data_sharing::GroupId&)groupId
+                                atTime:(base::Time)eventTime {
+  [self reconfigureGroupForGroupId:groupId];
+}
+
+- (void)dataSharingServiceDidRemoveMember:(const GaiaId&)memberId
+                                  toGroup:(const data_sharing::GroupId&)groupId
+                                   atTime:(base::Time)eventTime {
+  [self reconfigureGroupForGroupId:groupId];
 }
 
 #pragma mark TabGridPageMutator
@@ -455,20 +494,78 @@ NSString* CreationText(base::Time creation_date) {
       messages = _messagingService->GetMessages(
           collaboration::messaging::PersistentNotificationType::TOMBSTONED);
     }
-    NSArray<TabGroupsPanelItem*>* tabGroupItems =
-        CreateTabGroupItems(_tabGroupSyncService->GetAllGroups());
+    NSArray<TabGroupsPanelItem*>* tabGroupItems = [self createTabGroupItems];
     [_consumer populateNotificationItem:CreateNotificationItem(messages)
                           tabGroupItems:tabGroupItems];
   }
 }
 
+// Tells the consumer to reconfigure the group that matches the given `groupId`.
+- (void)reconfigureGroupForGroupId:(const data_sharing::GroupId&)groupId {
+  if (!_tabGroupSyncServiceInitialized) {
+    return;
+  }
+
+  tab_groups::CollaborationId collaborationId =
+      tab_groups::CollaborationId(groupId.value());
+  std::vector<tab_groups::SavedTabGroup> groups =
+      _tabGroupSyncService->GetAllGroups();
+
+  // Find the matching group and reconfigure the item.
+  for (const auto& group : groups) {
+    if (!group.collaboration_id().has_value() ||
+        group.collaboration_id().value() != collaborationId) {
+      continue;
+    }
+    [self reconfigureGroup:group];
+    break;
+  }
+}
+
 // Tells the consumer to reload the given group.
 - (void)reconfigureGroup:(const tab_groups::SavedTabGroup&)group {
-  if (_tabGroupSyncServiceInitialized) {
-    TabGroupsPanelItem* item =
-        [[TabGroupsPanelItem alloc] initWithSavedTabGroupID:group.saved_guid()];
-    [_consumer reconfigureItem:item];
+  if (!_tabGroupSyncServiceInitialized) {
+    return;
   }
+  TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc]
+      initWithSavedTabGroupID:group.saved_guid()
+                 sharingState:[self sharingStateForGroup:group]];
+  [_consumer reconfigureItem:item];
+}
+
+// Returns an array of `TabGroupsPanelItem`.
+- (NSArray<TabGroupsPanelItem*>*)createTabGroupItems {
+  std::vector<tab_groups::SavedTabGroup> groups =
+      _tabGroupSyncService->GetAllGroups();
+  // Sort groups by creation date.
+  std::sort(groups.begin(), groups.end(), CompareGroupByCreationDate);
+
+  NSMutableArray<TabGroupsPanelItem*>* items = [[NSMutableArray alloc] init];
+  for (const auto& group : groups) {
+    TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc]
+        initWithSavedTabGroupID:group.saved_guid()
+                   sharingState:[self sharingStateForGroup:group]];
+    [items addObject:item];
+  }
+  return items;
+}
+
+// Returns the `SharingState` for the given `group`.
+- (SharingState)sharingStateForGroup:(const tab_groups::SavedTabGroup&)group {
+  BOOL isSharedTabGroupSupported =
+      _shareKitService && _shareKitService->IsSupported();
+
+  if (!isSharedTabGroupSupported || !group.collaboration_id().has_value()) {
+    return SharingState::kNotShared;
+  }
+
+  data_sharing::GroupId groupId =
+      data_sharing::GroupId(group.collaboration_id().value().value());
+  data_sharing::MemberRole userRole =
+      _collaborationService->GetCurrentUserRoleForGroup(groupId);
+  return userRole == data_sharing::MemberRole::kOwner
+             ? SharingState::kSharedAndOwned
+             : SharingState::kShared;
 }
 
 @end

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] When the policy is enabled, 'autofocus' and scripted focus do focus the document.
+  assert_true: 'autofocus' should work. expected true got false
+Harness: the test ran to completion.
+

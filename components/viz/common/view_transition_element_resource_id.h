@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -55,6 +56,9 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
     }
     return base::HashInts(token_hash, local_id_);
   }
+
+  bool MatchesToken(
+      const base::flat_set<blink::ViewTransitionToken>& tokens) const;
 
  private:
   // Refers to a specific view transition - globally unique.

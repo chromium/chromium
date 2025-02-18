@@ -30,7 +30,9 @@
 #include "ui/events/platform/wayland/wayland_event_watcher.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -96,13 +98,6 @@ gfx::Point GetOriginInScreen(WaylandWindow* target) {
     parent = static_cast<WaylandWindow*>(parent->GetParentTarget());
   }
   return origin;
-}
-
-gfx::Point GetLocationInScreen(LocatedEvent* event) {
-  auto* root_window =
-      static_cast<WaylandWindow*>(GetRootTarget(event->target()));
-  return event->root_location() +
-         root_window->GetBoundsInDIP().origin().OffsetFromOrigin();
 }
 
 void SetRootLocation(LocatedEvent* event) {
@@ -645,13 +640,21 @@ void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
                                                    EventTarget* target) {
   Event::DispatcherApi(event).set_target(target);
   if (event->IsLocatedEvent()) {
-    SetRootLocation(event->AsLocatedEvent());
+    auto* located_event = event->AsLocatedEvent();
+    SetRootLocation(located_event);
     auto* cursor_position = connection_->wayland_cursor_position();
     // TODO(crbug.com/40934709): Touch event should not update the cursor
     // position.
     if (cursor_position) {
+      auto* root_window = static_cast<WaylandWindow*>(GetRootTarget(target));
+      // GetBoundsInDIP's origin is in UI DIP coordinates, cursor position
+      // tracker stores Wayland DIP coordinates, so it must be ui-scaled.
+      auto root_origin_wl_dip =
+          gfx::ScaleToRoundedPoint(root_window->GetBoundsInDIP().origin(),
+                                   root_window->applied_state().ui_scale);
       cursor_position->OnCursorPositionChanged(
-          GetLocationInScreen(event->AsLocatedEvent()));
+          located_event->root_location() +
+          root_origin_wl_dip.OffsetFromOrigin());
     }
   }
   DispatchEvent(event);

@@ -14,6 +14,7 @@
 #include "content/browser/security/coop/coop_related_group.h"
 #include "content/browser/site_instance_group.h"
 #include "content/public/browser/browsing_instance_id.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -218,7 +219,7 @@ class CONTENT_EXPORT BrowsingContextState
   // or permissions policy.
   bool UpdateFramePolicyHeaders(
       network::mojom::WebSandboxFlags sandbox_flags,
-      const blink::ParsedPermissionsPolicy& parsed_header);
+      const network::ParsedPermissionsPolicy& parsed_header);
 
   // Notify all of the proxies about the updated FramePolicy, excluding the
   // parent, as it will already know.

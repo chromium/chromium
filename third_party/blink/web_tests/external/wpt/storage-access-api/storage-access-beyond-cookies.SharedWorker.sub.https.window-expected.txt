@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify StorageAccessAPIBeyondCookies for Shared Worker
+  assert_equals: Worker should already have been opened and only see SameSite=None cookies expected "ReadOnLoad:None,ReadOnFetch:None,ConnectionsMade:2" but got "ReadOnLoad:None,ReadOnFetch:,ConnectionsMade:2"
+Harness: the test ran to completion.
+

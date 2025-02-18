@@ -764,7 +764,7 @@ void WebFrameTestProxy::DidClearWindowObject() {
 void WebFrameTestProxy::DidCommitNavigation(
     blink::WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
-    const blink::ParsedPermissionsPolicy& permissions_policy_header,
+    const network::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   if (should_block_parsing_in_next_commit_) {
     should_block_parsing_in_next_commit_ = false;

@@ -46,6 +46,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       GaiaId gaia_id,
+      std::string school_tools_base_url,
       std::unique_ptr<CaptionController> caption_controller,
       std::unique_ptr<BabelOrcaCaptionTranslator> translator,
       PrefService* pref_service,
@@ -56,6 +57,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       const GaiaId& gaia_id,
+      std::string school_tools_base_url,
       std::unique_ptr<CaptionController> caption_controller,
       TokenManager* tachyon_oauth_token_manager,
       TachyonRequestDataProvider* tachyon_request_data_provider,
@@ -97,6 +99,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const GaiaId gaia_id_;
+  const std::string school_tools_base_url_;
   const std::unique_ptr<CaptionController> caption_controller_;
   const raw_ptr<TokenManager> tachyon_oauth_token_manager_;
   const raw_ptr<TachyonRequestDataProvider> tachyon_request_data_provider_;

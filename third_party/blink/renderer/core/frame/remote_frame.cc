@@ -6,6 +6,7 @@
 
 #include "base/types/optional_util.h"
 #include "cc/layers/surface_layer.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -514,7 +515,7 @@ void RemoteFrame::DidChangeVisibleToHitTesting() {
 }
 
 void RemoteFrame::SetReplicatedPermissionsPolicyHeader(
-    const ParsedPermissionsPolicy& parsed_header) {
+    const network::ParsedPermissionsPolicy& parsed_header) {
   permissions_policy_header_ = parsed_header;
   ApplyReplicatedPermissionsPolicyHeader();
 }
@@ -762,18 +763,18 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
 // this proxy ever parents a local frame.
 void RemoteFrame::DidSetFramePolicyHeaders(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
-    const WTF::Vector<ParsedPermissionsPolicyDeclaration>&
+    const WTF::Vector<network::ParsedPermissionsPolicyDeclaration>&
         parsed_permissions_policy) {
   TRACE_EVENT("navigation", "RemoteFrame::DidSetFramePolicyHeaders");
 
   SetReplicatedSandboxFlags(sandbox_flags);
-  // Convert from WTF::Vector<ParsedPermissionsPolicyDeclaration>
-  // to std::vector<ParsedPermissionsPolicyDeclaration>, since
-  // ParsedPermissionsPolicy is an alias for the later.
+  // Convert from WTF::Vector<network::ParsedPermissionsPolicyDeclaration>
+  // to std::vector<network::ParsedPermissionsPolicyDeclaration>, since
+  // network::ParsedPermissionsPolicy is an alias for the later.
   //
   // TODO(crbug.com/1047273): Remove this conversion by switching
-  // ParsedPermissionsPolicy to operate over Vector
-  ParsedPermissionsPolicy parsed_permissions_policy_copy(
+  // network::ParsedPermissionsPolicy to operate over Vector
+  network::ParsedPermissionsPolicy parsed_permissions_policy_copy(
       parsed_permissions_policy.size());
   for (wtf_size_t i = 0; i < parsed_permissions_policy.size(); ++i)
     parsed_permissions_policy_copy[i] = parsed_permissions_policy[i];
@@ -934,7 +935,7 @@ void RemoteFrame::ApplyReplicatedPermissionsPolicyHeader() {
     parent_permissions_policy =
         parent_frame->GetSecurityContext()->GetPermissionsPolicy();
   }
-  ParsedPermissionsPolicy container_policy;
+  network::ParsedPermissionsPolicy container_policy;
   if (Owner())
     container_policy = Owner()->GetFramePolicy().container_policy;
   security_context_.InitializePermissionsPolicy(

@@ -1134,6 +1134,8 @@ void AdjustLayerDrawPropertiesForPixelAlignmentOffset(
 void ComputeInitialRenderSurfaceList(
     LayerTreeImpl* layer_tree_impl,
     PropertyTrees* property_trees,
+    const base::flat_set<blink::ViewTransitionToken>&
+        capture_view_transition_tokens,
     RenderSurfaceList* render_surface_list,
     std::map<viz::ViewTransitionElementResourceId,
              ViewTransitionContentLayerImpl*>& view_transition_content_layers) {
@@ -1205,9 +1207,12 @@ void ComputeInitialRenderSurfaceList(
     layer->set_contributes_to_drawn_render_surface(true);
 
     // The layer contributes its drawable content rect to its render target.
-    render_target->AccumulateContentRectFromContributingLayer(layer);
+    render_target->AccumulateContentRectFromContributingLayer(
+        layer, capture_view_transition_tokens);
     render_target->increment_num_contributors();
-    if (!layer->ViewTransitionResourceId().IsValid()) {
+    if (!layer->ViewTransitionResourceId().IsValid() ||
+        layer->ViewTransitionResourceId().MatchesToken(
+            capture_view_transition_tokens)) {
       continue;
     }
     auto* view_transition_content_layer =
@@ -1220,6 +1225,8 @@ void ComputeInitialRenderSurfaceList(
 }
 
 void ComputeSurfaceContentRects(
+    const base::flat_set<blink::ViewTransitionToken>&
+        capture_view_transition_tokens,
     PropertyTrees* property_trees,
     RenderSurfaceList* render_surface_list,
     int max_texture_size,
@@ -1248,7 +1255,7 @@ void ComputeSurfaceContentRects(
     RenderSurfaceImpl* render_target = render_surface->render_target();
     DCHECK(render_target->is_render_surface_list_member());
     render_target->AccumulateContentRectFromContributingRenderSurface(
-        render_surface);
+        render_surface, capture_view_transition_tokens);
     render_target->increment_num_contributors();
 
     // Collect the content rects for view transition capture surfaces, and
@@ -1261,16 +1268,22 @@ void ComputeSurfaceContentRects(
       continue;
     }
 
-    auto unscaled_content_rect =
-        render_surface->SurfaceScale().InverseOrIdentity().MapRect(
-            render_surface->content_rect());
+    // We use the view_transition_capture_content_rect if we're in the capture
+    // phase and content_rect otherwise, which is important for live captures.
+    const auto& output_rect =
+        render_surface->ViewTransitionElementResourceId().MatchesToken(
+            capture_view_transition_tokens)
+            ? render_surface->view_transition_capture_content_rect()
+            : render_surface->content_rect();
+    auto unscaled_output_rect =
+        render_surface->SurfaceScale().InverseOrIdentity().MapRect(output_rect);
 
     view_transition_content_rects.emplace_back(
-        view_transition_id, gfx::RectF(unscaled_content_rect));
+        view_transition_id, gfx::RectF(unscaled_output_rect));
 
     if (view_transition_content_layers.contains(view_transition_id)) {
       view_transition_content_layers.at(view_transition_id)
-          ->SetOriginatingSurfaceContentRect(unscaled_content_rect);
+          ->SetOriginatingSurfaceContentRect(unscaled_output_rect);
     }
   }
 }
@@ -1344,11 +1357,14 @@ void CalculateRenderSurfaceLayerList(LayerTreeImpl* layer_tree_impl,
   // First compute a list that might include surfaces that later turn out to
   // have an empty content rect. After surface content rects are computed,
   // produce a final list that omits empty surfaces.
-  ComputeInitialRenderSurfaceList(layer_tree_impl, property_trees,
-                                  &initial_render_surface_list,
-                                  view_transition_content_layers);
-  ComputeSurfaceContentRects(property_trees, &initial_render_surface_list,
-                             max_texture_size, view_transition_content_layers,
+  const auto& capture_view_transition_tokens =
+      layer_tree_impl->GetCaptureViewTransitionTokens();
+  ComputeInitialRenderSurfaceList(
+      layer_tree_impl, property_trees, capture_view_transition_tokens,
+      &initial_render_surface_list, view_transition_content_layers);
+  ComputeSurfaceContentRects(capture_view_transition_tokens, property_trees,
+                             &initial_render_surface_list, max_texture_size,
+                             view_transition_content_layers,
                              view_transition_content_rects);
   ComputeListOfNonEmptySurfaces(layer_tree_impl, property_trees,
                                 &initial_render_surface_list,

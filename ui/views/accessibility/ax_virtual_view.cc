@@ -22,7 +22,7 @@
 #include "ui/base/layout.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/view.h"
@@ -246,7 +246,7 @@ void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
   ax_platform_node_->NotifyAccessibilityEvent(event_type);
 
   // This is used on platforms that don't have a native accessibility API.
-  AXEventManager::Get()->NotifyVirtualViewEvent(this, event_type);
+  AXUpdateNotifier::Get()->NotifyVirtualViewEvent(this, event_type);
 }
 
 // ui::AXPlatformNodeDelegate

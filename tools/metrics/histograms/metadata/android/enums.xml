@@ -1450,6 +1450,14 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Used on Search Suggestion in both contexts"/>
 </enum>
 
+<enum name="RelatedAppType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Regular app"/>
+  <int value="2" label="Instant app"/>
+  <int value="3" label="WebApk owned by the caller"/>
+  <int value="4" label="Other WebApk"/>
+</enum>
+
 <enum name="RestoreTabsOnFREDeviceRestoredFrom">
   <int value="0" label="User restored tabs from the default selected device"/>
   <int value="1"

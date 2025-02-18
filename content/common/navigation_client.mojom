@@ -25,7 +25,7 @@ import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
@@ -128,7 +128,7 @@ struct DidCommitProvisionalLoadParams {
   // https://w3c.github.io/webappsec-permissions-policy/#permissions-policy-http-header-field
   // Note: For backward compatibility, this field also contains
   // 'Feature-Policy' headers applied to the document.
-  array<blink.mojom.ParsedPermissionsPolicyDeclaration>
+  array<network.mojom.ParsedPermissionsPolicyDeclaration>
     permissions_policy_header;
 
   // The 'Document-Policy' headers applied to the document.
@@ -339,7 +339,7 @@ interface NavigationClient {
       blink.mojom.DocumentToken document_token,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
       mojo_base.mojom.Uuid base_auction_nonce,
-      array<blink.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,
+      array<network.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host_for_background,

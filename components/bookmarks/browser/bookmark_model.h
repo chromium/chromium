@@ -501,12 +501,18 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   // Removes a child under `parent` at position `index` and notifies its
   // observers. `is_undoable` determines whether the deletion should be
-  // propagated via BookmarkClient to the undo stack.
+  // propagated via BookmarkClient to the undo stack. `notify_observers`
+  // determines whether observers are notified about the removal.
   void RemoveChildAt(const BookmarkNode* parent,
                      size_t index,
                      const base::Location& location,
                      std::optional<metrics::BookmarkEditSource> source,
-                     bool is_undoable);
+                     bool is_undoable,
+                     bool notify_observers);
+
+  // Private counterpart of `RemoveAccountPermanentFolders()` that allows
+  // controlling whether observers are notified.
+  void RemoveAccountPermanentFoldersImpl(bool notify_observers);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.

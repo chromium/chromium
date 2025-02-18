@@ -78,19 +78,6 @@ struct AILanguageModelAvailabilityOptions {
   array<AILanguageCode>? expected_input_languages;
 };
 
-enum AIManagerCreateLanguageModelError {
-  // The underlying service fails to create the on-device session.
-  kUnableToCreateSession = 0,
-  // The manager is unable to calculate the token size of the initial prompt.
-  kUnableToCalculateTokenSize = 1,
-  // The initial prompt is too large to fit in the context.
-  kInitialPromptsTooLarge = 2,
-  // The expected language is not supported.
-  kUnsupportedLanguage = 3,
-
-  // Append new line here
-};
-
 // The client interface that receives an AILanguageModel or errors from an
 // AIManager.
 interface AIManagerCreateLanguageModelClient {
@@ -104,7 +91,7 @@ interface AIManagerCreateLanguageModelClient {
     AILanguageModelInstanceInfo info
   );
   // Called when the manager cannot create an AILanguageModel.
-  OnError(AIManagerCreateLanguageModelError error);
+  OnError(AIManagerCreateClientError error);
 };
 
 // The client interface that receives the number of tokens counted by the

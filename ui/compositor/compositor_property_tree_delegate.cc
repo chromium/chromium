@@ -11,6 +11,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/property_tree_builder.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -27,6 +28,10 @@ void CompositorPropertyTreeDelegate::UpdatePropertyTreesIfNeeded() {
   TRACE_EVENT0("ui",
                "CompositorPropertyTreeDelegate::UpdatePropertyTreesIfNeeded");
   cc::PropertyTreeBuilder::BuildPropertyTrees(host());
+
+  DCHECK(compositor_);
+  compositor_->CheckPropertyTrees();
+
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                        "CompositorPropertyTreeDelegate::"
                        "UpdatePropertyTreesIfNeeded_BuiltPropertyTrees",

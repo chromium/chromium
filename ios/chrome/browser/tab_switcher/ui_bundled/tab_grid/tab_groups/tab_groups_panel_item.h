@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/uuid.h"
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
 
 // Different types of items identified by a TabGroupsPanelItem.
 enum class TabGroupsPanelItemType : NSUInteger {
@@ -27,9 +28,13 @@ enum class TabGroupsPanelItemType : NSUInteger {
 // The saved group's ID, when `type` is `kSavedTabGroup`.
 @property(nonatomic, readonly) base::Uuid savedTabGroupID;
 
+// The sharing state of the item, when type is `kSavedTabGroup`.
+@property(nonatomic, readonly) tab_groups::SharingState sharingState;
+
 - (instancetype)initWithNotificationText:(NSString*)text
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithSavedTabGroupID:(base::Uuid)savedTabGroupID
+                           sharingState:(tab_groups::SharingState)sharingState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -33,6 +33,11 @@ inline constexpr int kEventUpdate = 3;
 inline constexpr int kEventUninstall = 4;
 inline constexpr int kEventDownload = 14;
 
+// Event result codes as described in //docs/updater/protocol_3_1.md.
+inline constexpr int kEventResultError = 0;
+inline constexpr int kEventResultSuccess = 1;
+inline constexpr int kEventResultCancelled = 4;
+
 // App Command Events.
 inline constexpr int kEventAppCommandComplete = 41;
 

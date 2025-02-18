@@ -11,8 +11,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -90,7 +90,7 @@ CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     FrameTreeNode*,
-    const blink::ParsedPermissionsPolicy&,
+    const network::ParsedPermissionsPolicy&,
     const std::optional<GURL>& request_url = std::nullopt);
 
 // Adds client hints headers for a prefetch navigation that is not associated

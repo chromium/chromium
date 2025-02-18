@@ -6515,7 +6515,8 @@
                     ],
                     "min_os_version": "16151.0.0",
                     "hardware_classes": [
-                        "brya"
+                        "brya",
+                        "corsola"
                     ]
                 }
             ]
@@ -7182,6 +7183,31 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CursiveManagedStylusPreinstall"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CustomizableSelect": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CustomizableSelect"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CustomizableSelect"
                     ]
                 }
             ]
@@ -8278,6 +8304,25 @@
             ]
         }
     ],
+    "DisableParkableStrings": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CompressParkableStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableSystemBlur": [
         {
             "platforms": [
@@ -8756,21 +8801,6 @@
             ]
         }
     ],
-    "EnableADPFSetThreads": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableADPFSetThreads"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableASWebAuthenticationSession": [
         {
             "platforms": [
@@ -9001,21 +9031,6 @@
                     "enable_features": [
                         "AckOnSurfaceActivationWhenInteractive",
                         "DrawImmediatelyWhenInteractive"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableInteractiveOnlyADPFRenderer": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableInteractiveOnlyADPFRenderer"
                     ]
                 }
             ]
@@ -12524,6 +12539,25 @@
             ]
         }
     ],
+    "IPProtectionMdlImpl": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "enable_features": [
+                        "MaskedDomainListFlatbufferImpl"
+                    ]
+                }
+            ]
+        }
+    ],
     "IPProtectionPhase0": [
         {
             "platforms": [
@@ -12766,6 +12800,31 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InlineFullscreenPerfExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "InputClosesSelect": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InputClosesSelect"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "InputClosesSelect"
                     ]
                 }
             ]
@@ -18011,7 +18070,7 @@
                     "name": "Enabled",
                     "params": {
                         "accepted-trigger-rate": "1.0",
-                        "decline-trigger-rate": "1.0",
+                        "declined-trigger-rate": "1.0",
                         "eea-accepted-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
                         "eea-control-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
                         "eea-declined-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
@@ -22981,6 +23040,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableStartupImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
+    "StopExportDFCMetricsExperiment": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StopExportDFCMetrics"
                     ]
                 }
             ]

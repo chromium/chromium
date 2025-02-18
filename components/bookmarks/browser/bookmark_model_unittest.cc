@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -2534,6 +2535,49 @@ TEST(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
   EXPECT_EQ(nullptr, model.account_mobile_node());
 
   EXPECT_EQ(sync_metadata_str, client_ptr->account_bookmark_sync_metadata());
+}
+
+TEST(BookmarkModelLoadTest, RemoveAccountPermanentFoldersUponMetadataDecoding) {
+  base::test::ScopedFeatureList features{
+      syncer::kSyncEnableBookmarksInTransportMode};
+
+  // Create a model with account bookmarks.
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  {
+    auto model =
+        std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+    model->Load(tmp_dir.GetPath());
+    test::WaitForBookmarkModelToLoad(model.get());
+    model->CreateAccountPermanentFolders();
+
+    // This is necessary to ensure the save completes.
+    task_environment.FastForwardUntilNoTasksRemain();
+  }
+
+  testing::StrictMock<MockBookmarkModelObserver> observer;
+  EXPECT_CALL(observer, BookmarkModelLoaded);
+
+  // Load the model from disk, but pretend that the client responded with
+  // `kMustRemoveAccountPermanentFolders` when decoding account sync metadata.
+  auto client = std::make_unique<TestBookmarkClient>();
+  client->SetDecodeAccountBookmarkSyncMetadataResult(
+      BookmarkClient::DecodeAccountBookmarkSyncMetadataResult::
+          kMustRemoveAccountPermanentFolders);
+  BookmarkModel model(std::move(client));
+  base::ScopedObservation<BookmarkModel, BookmarkModelObserver> observation(
+      &observer);
+  observation.Observe(&model);
+
+  model.Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(&model);
+
+  EXPECT_EQ(nullptr, model.account_bookmark_bar_node());
+  EXPECT_EQ(nullptr, model.account_other_node());
+  EXPECT_EQ(nullptr, model.account_mobile_node());
 }
 
 // Verifies the TitledUrlIndex is properly loaded.

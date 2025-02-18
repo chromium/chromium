@@ -26,6 +26,7 @@ using UpdateStudentActivitiesCallback = base::OnceCallback<void(
 class UpdateStudentActivitiesRequest : public google_apis::UrlFetchRequestBase {
  public:
   UpdateStudentActivitiesRequest(google_apis::RequestSender* sender,
+                                 std::string base_url,
                                  std::string session_id,
                                  GaiaId gaia_id,
                                  std::string device_id,

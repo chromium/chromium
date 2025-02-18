@@ -17,7 +17,7 @@ class OptimizationGuideKeyedService;
 namespace permissions {
 
 class PredictionModelHandler;
-class GenAiModelHandler;
+class PermissionsAiHandler;
 
 class PredictionModelHandlerProvider : public KeyedService {
  public:
@@ -29,14 +29,14 @@ class PredictionModelHandlerProvider : public KeyedService {
   PredictionModelHandlerProvider& operator=(
       const PredictionModelHandlerProvider&) = delete;
 
-  GenAiModelHandler* GetGenAiModelHandler();
+  PermissionsAiHandler* GetPermissionsAiHandler();
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   PredictionModelHandler* GetPredictionModelHandler(RequestType request_type);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
  private:
-  std::unique_ptr<GenAiModelHandler> genai_model_handler_;
+  std::unique_ptr<PermissionsAiHandler> permissions_ai_handler_;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<PredictionModelHandler>
       notification_prediction_model_handler_;

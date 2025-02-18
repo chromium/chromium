@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -17,7 +16,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_quota_client.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -40,7 +38,7 @@ using storage::SandboxFileSystemTestHelper;
 
 namespace sync_file_system {
 
-class SyncableFileSystemTest : public testing::TestWithParam<bool> {
+class SyncableFileSystemTest : public testing::Test {
  public:
   SyncableFileSystemTest()
       : in_memory_env_(leveldb_chrome::NewMemEnv("SyncableFileSystemTest")),
@@ -53,13 +51,6 @@ class SyncableFileSystemTest : public testing::TestWithParam<bool> {
   SyncableFileSystemTest& operator=(const SyncableFileSystemTest&) = delete;
 
   void SetUp() override {
-    if (syncable_quota_disabled()) {
-      feature_list_.InitAndEnableFeature(
-          storage::features::kDisableSyncableQuota);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          storage::features::kDisableSyncableQuota);
-    }
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     file_system_.SetUp();
     quota_client_ = std::make_unique<storage::FileSystemQuotaClient>(
@@ -89,8 +80,6 @@ class SyncableFileSystemTest : public testing::TestWithParam<bool> {
   }
 
  protected:
-  bool syncable_quota_disabled() const { return GetParam(); }
-
   void VerifyAndClearChange(const FileSystemURL& url,
                             const FileChange& expected_change) {
     SCOPED_TRACE(testing::Message() << url.DebugString() <<
@@ -160,14 +149,13 @@ class SyncableFileSystemTest : public testing::TestWithParam<bool> {
   CannedSyncableFileSystem file_system_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
   base::WeakPtrFactory<SyncableFileSystemTest> weak_factory_{this};
 };
 
 // Brief combined testing. Just see if all the sandbox feature works.
-TEST_P(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
+TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   // Opens a syncable file system.
   EXPECT_EQ(base::File::FILE_OK, file_system_.OpenFileSystem());
 
@@ -189,73 +177,36 @@ TEST_P(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   ASSERT_OK_AND_ASSIGN(
       auto temp_bucket,
       GetOrCreateBucket(storage::kDefaultBucketName, StorageType::kTemporary));
-  ASSERT_OK_AND_ASSIGN(
-      auto sync_bucket,
-      GetOrCreateBucket(storage::kDefaultBucketName, StorageType::kSyncable));
 
-  if (syncable_quota_disabled()) {
-    // When syncable quota is disabled, changes in the syncable files should be
-    // reflected in the temporary bucket.
-    int64_t temp_usage = GetBucketUsage(temp_bucket);
-    EXPECT_GT(temp_usage, 0);
+  // Changes in the syncable files should be reflected in the temporary bucket.
+  int64_t temp_usage = GetBucketUsage(temp_bucket);
+  EXPECT_GT(temp_usage, 0);
 
-    // Truncating existing syncable file should update usage for the temporary
-    // bucket.
-    const int64_t kFileSizeToExtend = 333;
-    storage::AsyncFileTestHelper::TruncateFile(file_system_context(), sync_url,
-                                               kFileSizeToExtend);
-    int64_t new_temp_usage = GetBucketUsage(temp_bucket);
-    EXPECT_EQ(kFileSizeToExtend, new_temp_usage - temp_usage);
+  // Truncating existing syncable file should update usage for the temporary
+  // bucket.
+  const int64_t kFileSizeToExtend = 333;
+  storage::AsyncFileTestHelper::TruncateFile(file_system_context(), sync_url,
+                                             kFileSizeToExtend);
+  int64_t new_temp_usage = GetBucketUsage(temp_bucket);
+  EXPECT_EQ(kFileSizeToExtend, new_temp_usage - temp_usage);
 
-    // Shrinking the quota to the current usage for temporary quota storage,
-    // should make extending the file further fail.
-    file_system_.quota_manager()->SetQuota(
-        storage_key(), StorageType::kTemporary, new_temp_usage);
+  // Shrinking the quota to the current usage for temporary quota storage,
+  // should make extending the file further fail.
+  file_system_.quota_manager()->SetQuota(storage_key(), StorageType::kTemporary,
+                                         new_temp_usage);
 
-    EXPECT_EQ(base::File::FILE_ERROR_NO_SPACE,
-              storage::AsyncFileTestHelper::TruncateFile(
-                  file_system_context(), sync_url, kFileSizeToExtend + 1));
-    temp_usage = new_temp_usage;
-    new_temp_usage = GetBucketUsage(temp_bucket);
-    EXPECT_EQ(new_temp_usage, temp_usage);
+  EXPECT_EQ(base::File::FILE_ERROR_NO_SPACE,
+            storage::AsyncFileTestHelper::TruncateFile(
+                file_system_context(), sync_url, kFileSizeToExtend + 1));
+  temp_usage = new_temp_usage;
+  new_temp_usage = GetBucketUsage(temp_bucket);
+  EXPECT_EQ(new_temp_usage, temp_usage);
 
-    // Must delete both file types to delete all temporary bucket storage.
-    DeleteFileSystem(storage::kFileSystemTypeTemporary);
-    EXPECT_GT(GetBucketUsage(temp_bucket), 0);
-    DeleteFileSystem(storage::kFileSystemTypeSyncable);
-    EXPECT_EQ(GetBucketUsage(temp_bucket), 0);
-  } else {
-    // Changes in the syncable files should be reflected in the syncable bucket.
-    int64_t temp_usage = GetBucketUsage(temp_bucket);
-    int64_t sync_usage = GetBucketUsage(sync_bucket);
-    EXPECT_GT(temp_usage, 0);
-    EXPECT_GT(sync_usage, 0);
-
-    // Truncating existing syncable file should update usage for the syncable
-    // bucket.
-    const int64_t kFileSizeToExtend = 333;
-    storage::AsyncFileTestHelper::TruncateFile(file_system_context(), sync_url,
-                                               kFileSizeToExtend);
-
-    int64_t new_sync_usage = GetBucketUsage(sync_bucket);
-    EXPECT_EQ(kFileSizeToExtend, new_sync_usage - sync_usage);
-
-    // Shrinking the quota to the current usage for syncable quota storage,
-    // should make extending the file further fail.
-    file_system_.quota_manager()->SetQuota(
-        storage_key(), StorageType::kSyncable, new_sync_usage);
-    EXPECT_EQ(base::File::FILE_ERROR_NO_SPACE,
-              storage::AsyncFileTestHelper::TruncateFile(
-                  file_system_context(), sync_url, kFileSizeToExtend + 1));
-    sync_usage = new_sync_usage;
-    new_sync_usage = GetBucketUsage(sync_bucket);
-    EXPECT_EQ(new_sync_usage, sync_usage);
-
-    // Deleting just syncable files should make usage for the bucket 0.
-    DeleteFileSystem(storage::kFileSystemTypeSyncable);
-    sync_usage = GetBucketUsage(sync_bucket);
-    EXPECT_EQ(sync_usage, 0);
-  }
+  // Must delete both file types to delete all temporary bucket storage.
+  DeleteFileSystem(storage::kFileSystemTypeTemporary);
+  EXPECT_GT(GetBucketUsage(temp_bucket), 0);
+  DeleteFileSystem(storage::kFileSystemTypeSyncable);
+  EXPECT_EQ(GetBucketUsage(temp_bucket), 0);
 
   // Restore the system default quota.
   file_system_.quota_manager()->SetQuota(
@@ -263,7 +214,7 @@ TEST_P(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
       QuotaManager::kSyncableStorageDefaultStorageKeyQuota);
 }
 
-TEST_P(SyncableFileSystemTest, BucketDeletion) {
+TEST_F(SyncableFileSystemTest, BucketDeletion) {
   EXPECT_EQ(base::File::FILE_OK, file_system_.OpenFileSystem());
 
   // Create files for kFileSystemTypeSyncable.
@@ -281,47 +232,22 @@ TEST_P(SyncableFileSystemTest, BucketDeletion) {
   ASSERT_OK_AND_ASSIGN(
       auto temp_bucket,
       GetOrCreateBucket(storage::kDefaultBucketName, StorageType::kTemporary));
-  ASSERT_OK_AND_ASSIGN(
-      auto sync_bucket,
-      GetOrCreateBucket(storage::kDefaultBucketName, StorageType::kSyncable));
 
-  if (syncable_quota_disabled()) {
-    EXPECT_GT(GetBucketUsage(temp_bucket), 0);
+  EXPECT_GT(GetBucketUsage(temp_bucket), 0);
 
-    // Deleting the temporary bucket is enough to delete files for both
-    // kFileSystemTypeTemporary and kFileSystemTypeSyncable.
-    DeleteBucketData(temp_bucket);
-    EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
-        file_system_context(), temp_url,
-        storage::AsyncFileTestHelper::kDontCheckSize));
-    EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
-        file_system_context(), sync_url,
-        storage::AsyncFileTestHelper::kDontCheckSize));
-  } else {
-    EXPECT_GT(GetBucketUsage(temp_bucket), 0);
-    EXPECT_GT(GetBucketUsage(sync_bucket), 0);
-
-    // Deleting the temporary bucket only deletes files for
-    // kFileSystemTypeTemporary.
-    DeleteBucketData(temp_bucket);
-    EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
-        file_system_context(), temp_url,
-        storage::AsyncFileTestHelper::kDontCheckSize));
-    EXPECT_TRUE(storage::AsyncFileTestHelper::FileExists(
-        file_system_context(), sync_url,
-        storage::AsyncFileTestHelper::kDontCheckSize));
-
-    // Deleting the syncable bucket only deletes files for
-    // kFileSystemTypeSyncable.
-    DeleteBucketData(sync_bucket);
-    EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
-        file_system_context(), sync_url,
-        storage::AsyncFileTestHelper::kDontCheckSize));
-  }
+  // Deleting the temporary bucket is enough to delete files for both
+  // kFileSystemTypeTemporary and kFileSystemTypeSyncable.
+  DeleteBucketData(temp_bucket);
+  EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context(), temp_url,
+      storage::AsyncFileTestHelper::kDontCheckSize));
+  EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context(), sync_url,
+      storage::AsyncFileTestHelper::kDontCheckSize));
 }
 
 // Combined testing with LocalFileChangeTracker.
-TEST_P(SyncableFileSystemTest, ChangeTrackerSimple) {
+TEST_F(SyncableFileSystemTest, ChangeTrackerSimple) {
   EXPECT_EQ(base::File::FILE_OK, file_system_.OpenFileSystem());
 
   const auto path0 = URL(storage::kFileSystemTypeSyncable, "dir a");
@@ -386,9 +312,5 @@ TEST_P(SyncableFileSystemTest, ChangeTrackerSimple) {
                        FileChange(FileChange::FILE_CHANGE_DELETE,
                                   sync_file_system::SYNC_FILE_TYPE_FILE));
 }
-
-INSTANTIATE_TEST_SUITE_P(SyncableFileSystemTests,
-                         SyncableFileSystemTest,
-                         testing::Bool());
 
 }  // namespace sync_file_system

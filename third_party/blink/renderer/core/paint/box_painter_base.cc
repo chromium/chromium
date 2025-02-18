@@ -902,6 +902,10 @@ inline bool PaintFastBottomLayer(const Document& document,
                                  const BackgroundImageGeometry& geometry,
                                  Image* image,
                                  SkBlendMode composite_op) {
+  // TODO(crbug.com/397377466) support fast-path for non-round curves
+  if (!border_rect.HasSimpleRoundedCurvature()) {
+    return false;
+  }
   // Compute the destination rect for painting the color here because we may
   // need it for computing the image painting rect for optimization.
   FloatRoundedRect color_border =

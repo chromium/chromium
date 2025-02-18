@@ -151,14 +151,16 @@ void HandleInconsistentAppsTask::SendOverinstallPings(
           [](const update_client::CrxComponent& ping_data,
              base::OnceClosure callback) {
             update_client::UpdateClientFactory(CreatePingConfigurator())
-                ->SendPing(ping_data,
-                           {.event_type =
-                                update_client::protocol_request::kEventInstall},
-                           base::BindOnce([](update_client::Error error) {
-                             VLOG_IF(1, error != update_client::Error::NONE)
-                                 << "Failed to send overinstall ping: "
-                                 << error;
-                           }).Then(std::move(callback)));
+                ->SendPing(
+                    ping_data,
+                    {.event_type =
+                         update_client::protocol_request::kEventInstall,
+                     .result =
+                         update_client::protocol_request::kEventResultSuccess},
+                    base::BindOnce([](update_client::Error error) {
+                      VLOG_IF(1, error != update_client::Error::NONE)
+                          << "Failed to send overinstall ping: " << error;
+                    }).Then(std::move(callback)));
           },
           ping_data,
           base::BindPostTaskToCurrentDefault(

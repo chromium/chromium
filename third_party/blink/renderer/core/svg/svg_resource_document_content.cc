@@ -140,7 +140,8 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
       *chrome_client, *agent_group_scheduler_, std::move(data),
       WTF::BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
                     WrapWeakPersistent(this)),
-      nullptr, IsolatedSVGDocumentHost::ProcessingMode::kStatic);
+      /* inherited_settings */ nullptr, /* inherited_color_maps */ nullptr,
+      IsolatedSVGDocumentHost::ProcessingMode::kStatic);
   // If IsLoaded() returns true then the document load completed synchronously,
   // so we can check if we have a usable document and notify our listeners. If
   // not, then we need to wait for the async load completion callback.

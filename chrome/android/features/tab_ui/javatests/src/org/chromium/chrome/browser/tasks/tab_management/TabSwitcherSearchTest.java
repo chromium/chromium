@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
 import static org.chromium.ui.base.DeviceFormFactor.PHONE;
 import static org.chromium.ui.base.DeviceFormFactor.TABLET;
@@ -41,12 +42,16 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.ActivityFinisher;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
+import org.chromium.chrome.browser.history.HistoryItem;
+import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -64,6 +69,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /** Tests for search in the tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -339,6 +345,35 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_press_enter_to_search/true")
+    public void testTypedSuggestions_OpenSuggestionWithEnter() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        List<String> urlsToOpen =
+                Arrays.asList(
+                        "/chrome/test/data/android/navigate/one.html",
+                        "/chrome/test/data/android/test.html");
+        TabSwitcherSearchStation tabSwitcherSearchStation =
+                TabSwitcherSearchTestUtils.openUrls(
+                                mTestServer, mInitialPage, urlsToOpen, /* incognito= */ false)
+                        .openRegularTabSwitcher()
+                        .openTabSwitcherSearch();
+        tabSwitcherSearchStation.typeInOmnibox("one.html");
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(0, "One");
+        tabSwitcherSearchStation.pressEnter();
+
+        CriteriaHelper.pollUiThread(
+                () -> ActivityState.RESUMED == ApplicationStatus.getStateForActivity(cta));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ActivityState.DESTROYED
+                                == ApplicationStatus.getStateForActivity(
+                                        tabSwitcherSearchStation.getActivity()));
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
+    }
+
+    @Test
+    @MediumTest
     public void testTypedSuggestions_Incognito() {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchStation tabSwitcherSearchStation =
@@ -448,7 +483,7 @@ public class TabSwitcherSearchTest {
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_history_provider/true")
     // TODO(crbug.com/394401463): Add some PT station for searching history.
-    public void testHistorySuggestions() {
+    public void testHistorySuggestions() throws TimeoutException {
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mInitialPage
                         .openNewTabFast()
@@ -458,7 +493,44 @@ public class TabSwitcherSearchTest {
                                 mTestServer.getURL("/chrome/test/data/android/test.html"))
                         .openRegularTabSwitcher()
                         .openTabSwitcherSearch();
-        tabSwitcherSearchStation.typeInOmnibox("one.html");
+
+        CallbackHelper helper = new CallbackHelper();
+        BrowsingHistoryBridge historyBridge =
+                runOnUiThreadBlocking(
+                        () ->
+                                new BrowsingHistoryBridge(
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getProfileProviderSupplier()
+                                                .get()
+                                                .getOriginalProfile()));
+        historyBridge.setObserver(
+                new BrowsingHistoryObserver() {
+                    @Override
+                    public void onQueryHistoryComplete(
+                            List<HistoryItem> items, boolean hasMorePotentialMatches) {
+                        if (items.size() > 0) {
+                            for (HistoryItem item : items) {
+                                if (item.getTitle().contains("One")) {
+                                    helper.notifyCalled();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onHistoryDeleted() {}
+
+                    @Override
+                    public void hasOtherFormsOfBrowsingData(boolean hasOtherForms) {}
+
+                    @Override
+                    public void onQueryAppsComplete(List<String> items) {}
+                });
+        runOnUiThreadBlocking(() -> historyBridge.queryHistory("one.html", /* appId= */ null));
+        helper.waitForNext();
+
+        tabSwitcherSearchStation.typeInOmnibox("One");
         tabSwitcherSearchStation.waitForSectionAtIndexWithText(0, "History");
         tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(1, "One");
     }

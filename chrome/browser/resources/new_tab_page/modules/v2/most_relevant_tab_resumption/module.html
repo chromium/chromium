@@ -14,7 +14,8 @@
     <a class="url-visit" href="${item.url.url}"
         @click="${this.onUrlVisitClick_}" data-index="${index}">
       <div id="hoverLayer"></div>
-      <page-favicon class="icon" .url="${item.url}" size="24"
+      <page-favicon class="icon" .fallbackToHost="${this.fallbackToHost_}"
+                    .url="${item.url}" size="24"
                     .isKnownToSync="${this.useIsKnownToSync_ &&
                     item.isKnownToSync}">
       </page-favicon>

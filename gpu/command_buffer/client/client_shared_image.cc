@@ -321,7 +321,21 @@ ClientSharedImage::ClientSharedImage(
       creation_sync_token_(exported_si.creation_sync_token_),
       sii_holder_(std::move(sii_holder)),
       texture_target_(exported_si.texture_target_) {
-  // TODO(crbug.com/391788839): Create GpuMemoryBuffer from handle.
+  if (exported_si.buffer_handle_) {
+#if BUILDFLAG(IS_WIN)
+    gpu_memory_buffer_manager_ =
+        std::make_unique<HelperGpuMemoryBufferManager>(this);
+#else
+    gpu_memory_buffer_manager_ = nullptr;
+#endif
+    gpu_memory_buffer_ =
+        GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
+            std::move(*exported_si.buffer_handle_), metadata_.size,
+            viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+                metadata_.format),
+            *exported_si.buffer_usage_, base::DoNothing(),
+            gpu_memory_buffer_manager_.get());
+  }
   CHECK(!mailbox_.IsZero());
   CHECK(sii_holder_);
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -334,7 +348,21 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
       metadata_(exported_si.metadata_),
       creation_sync_token_(exported_si.creation_sync_token_),
       texture_target_(exported_si.texture_target_) {
-  // TODO(crbug.com/391788839): Create GpuMemoryBuffer from handle.
+  if (exported_si.buffer_handle_) {
+#if BUILDFLAG(IS_WIN)
+    gpu_memory_buffer_manager_ =
+        std::make_unique<HelperGpuMemoryBufferManager>(this);
+#else
+    gpu_memory_buffer_manager_ = nullptr;
+#endif
+    gpu_memory_buffer_ =
+        GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
+            std::move(*exported_si.buffer_handle_), metadata_.size,
+            viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+                metadata_.format),
+            *exported_si.buffer_usage_, base::DoNothing(),
+            gpu_memory_buffer_manager_.get());
+  }
   CHECK(!mailbox_.IsZero());
 #if !BUILDFLAG(IS_FUCHSIA)
   CHECK(texture_target_);

@@ -2410,7 +2410,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Kcer.Error" enum="KcerError"
-    expires_after="2025-04-01">
+    expires_after="2025-10-01">
   <owner>miersh@google.com</owner>
   <owner>chromeos-commercial-networking@google.com</owner>
   <summary>Tracks errors from the Kcer component.</summary>

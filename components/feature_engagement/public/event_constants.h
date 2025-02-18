@@ -287,6 +287,11 @@ extern const char kIOSTabReminderScheduled[];
 // The Reminder Notifications Overflow Menu Bubble IPH was triggered.
 extern const char kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger[];
 
+// The user tapped the "Set a Reminder" item in the overflow menu.
+extern const char kIOSOverflowMenuSetTabReminderTapped[];
+
+// The Reminder Notifications Overflow Menu New Badge IPH was triggered.
+extern const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[];
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

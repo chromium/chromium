@@ -1766,13 +1766,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void allTabsClosureUndone() {
-        for (TabModelObserver observer : mFilteredObservers) {
-            observer.allTabsClosureUndone();
-        }
-    }
-
-    @Override
     public void allTabsClosureCommitted(boolean isIncognito) {
         for (TabModelObserver observer : mFilteredObservers) {
             observer.allTabsClosureCommitted(isIncognito);

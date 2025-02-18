@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_H_
 
@@ -32,6 +27,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -451,11 +447,14 @@ class CORE_EXPORT CSSSelector {
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.
+  // SAFETY: Performance-sensitive. Trusts that SetLastInComplexSelector()
+  // has been called on the last element in the array to prevent an OOB
+  // access from occurring.
   const CSSSelector* NextSimpleSelector() const {
-    return IsLastInComplexSelector() ? nullptr : this + 1;
+    return IsLastInComplexSelector() ? nullptr : UNSAFE_BUFFERS(this + 1);
   }
   CSSSelector* NextSimpleSelector() {
-    return IsLastInComplexSelector() ? nullptr : this + 1;
+    return IsLastInComplexSelector() ? nullptr : UNSAFE_BUFFERS(this + 1);
   }
 
   static const AtomicString& UniversalSelectorAtom() { return g_null_atom; }

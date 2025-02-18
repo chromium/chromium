@@ -2243,12 +2243,9 @@ void WebContentsImpl::UpdateZoomIfNecessary(const std::string& scheme,
                                             RenderFrameHostImpl* rfh) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateZoomIfNecessary",
                         "scheme", scheme, "host", host);
-  NavigationEntry* entry = rfh->GetController().GetLastCommittedEntry();
-  if (!entry) {
-    return;
-  }
 
-  GURL url = HostZoomMap::GetURLFromEntry(entry);
+  // The following code expects that rfh has its own independent zoom.
+  GURL url = HostZoomMap::GetURLForRenderFrameHost(rfh->GetGlobalId());
   if (host != net::GetHostOrSpecFromURL(url) ||
       (!scheme.empty() && !url.SchemeIs(scheme))) {
     return;
@@ -3738,7 +3735,7 @@ void WebContentsImpl::OnVibrate(RenderFrameHostImpl* rfh) {
   observers_.NotifyObservers(&WebContentsObserver::VibrationRequested);
 }
 
-std::optional<blink::ParsedPermissionsPolicy>
+std::optional<network::ParsedPermissionsPolicy>
 WebContentsImpl::GetPermissionsPolicyForIsolatedWebApp(
     RenderFrameHostImpl* source) {
   WebExposedIsolationInfo weii =

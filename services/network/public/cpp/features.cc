@@ -148,6 +148,13 @@ BASE_FEATURE_PARAM(std::string,
                    /*name=*/"MaskedDomainListExperimentalVersion",
                    /*default_value=*/"");
 
+// When enabled, if the MaskedDomainList is used at all, it will use the
+// flatbuffer implementation (the `MaskedDomainList` class) instead of the
+// `UrlMatcherWithBypass` implementation.
+BASE_FEATURE(kMaskedDomainListFlatbufferImpl,
+             "MaskedDomainListFlatbufferImpl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If this feature is enabled, the mDNS responder service responds to queries
 // for TXT records associated with
 // "Generated-Names._mdns_name_generator._udp.local" with a list of generated

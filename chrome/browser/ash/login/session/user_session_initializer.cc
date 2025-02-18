@@ -395,6 +395,10 @@ void UserSessionInitializer::OnProfileWillBeDestroyed(Profile* profile) {
   primary_profile_observer_.Reset();
   primary_profile_ = nullptr;
 
+  // CrosSafetyService depends on profile and should shutdown before profile
+  // being destroyed.
+  cros_safety_service_.reset();
+
   if (NetworkCertLoader::IsInitialized() &&
       base::SysInfo::IsRunningOnChromeOS() &&
       base::FeatureList::IsEnabled(

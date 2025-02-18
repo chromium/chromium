@@ -41,11 +41,11 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -649,7 +649,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   std::unique_ptr<PolicyContainer> policy_container_;
 
   // The permissions policy to be applied to the window at initialization time.
-  const std::optional<ParsedPermissionsPolicy> initial_permissions_policy_;
+  const std::optional<network::ParsedPermissionsPolicy>
+      initial_permissions_policy_;
 
   // These fields are copied from WebNavigationParams, see there for definition.
   DocumentToken token_;

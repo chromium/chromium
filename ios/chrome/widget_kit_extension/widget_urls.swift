@@ -46,8 +46,8 @@ struct WidgetConstants {
 }
 
 // Returns the destination URL appending the gaiaID if available.
-func destinationURL(url: URL, gaia: String) -> URL {
-  if gaia.isEmpty {
+func destinationURL(url: URL, gaia: String? = nil) -> URL {
+  if gaia == nil {
     return url
   }
   guard var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {

@@ -152,6 +152,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".InitialEnrollment" summary="Initial Enrollment Exchange"/>
 </variants>
 
+<variants name="EnterpriseSignals">
+  <variant name="AntiVirus" summary="antivirus"/>
+  <variant name="FileSystemInfo" summary="file system information"/>
+  <variant name="Hotfixes" summary="hotfixes"/>
+  <variant name="SystemSettings" summary="system settings"/>
+</variants>
+
 <variants name="IdentityType">
   <variant name="Dasher-based" summary="google-backed 3P identity"/>
   <variant name="Dasherless" summary="non-google-backed 3P identity"/>
@@ -898,12 +905,7 @@ chromium-metrics-reviews@google.com.
     Captures the actual error whenever a {Signal} signal collection request
     failed with a {ErrorType} error.
   </summary>
-  <token key="Signal">
-    <variant name="AntiVirus" summary="AntiVirus with a top-level error"/>
-    <variant name="FileSystemInfo" summary="file system information"/>
-    <variant name="Hotfixes" summary="Hotfixes"/>
-    <variant name="SystemSettings" summary="system settings"/>
-  </token>
+  <token key="Signal" variants="EnterpriseSignals"/>
   <token key="ErrorType">
     <variant name="CollectionLevel" summary="collection-level"/>
     <variant name="TopLevel" summary="top-level"/>
@@ -925,6 +927,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.Collection.SignalsCount"
+    units="signals" expires_after="2026-02-10">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the number of signals requested to be collected in one request.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceSignals.Collection.Success.{Signal}.Items"
     units="items" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
@@ -934,12 +945,7 @@ chromium-metrics-reviews@google.com.
     response. Recorded only when the collection request was successful and the
     signal value represents a collection.
   </summary>
-  <token key="Signal">
-    <variant name="AntiVirus" summary="AntiVirus"/>
-    <variant name="FileSystemInfo" summary="file system items"/>
-    <variant name="Hotfixes" summary="Hotfixes"/>
-    <variant name="SystemSettings" summary="system settings"/>
-  </token>
+  <token key="Signal" variants="EnterpriseSignals"/>
 </histogram>
 
 <histogram
@@ -955,12 +961,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Failure" summary="failed"/>
     <variant name="Success" summary="succeeded"/>
   </token>
-  <token key="Signal">
-    <variant name="AntiVirus" summary="AntiVirus"/>
-    <variant name="FileSystemInfo" summary="file system items"/>
-    <variant name="Hotfixes" summary="Hotfixes"/>
-    <variant name="SystemSettings" summary="system settings"/>
-  </token>
+  <token key="Signal" variants="EnterpriseSignals"/>
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.{Signal}.Delta"

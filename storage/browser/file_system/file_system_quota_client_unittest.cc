@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -57,7 +56,7 @@ const StorageType kTemporary = StorageType::kTemporary;
 
 }  // namespace
 
-class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
+class FileSystemQuotaClientTest : public testing::Test {
  public:
   FileSystemQuotaClientTest()
       : special_storage_policy_(
@@ -66,13 +65,6 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
   ~FileSystemQuotaClientTest() override = default;
 
   void SetUp() override {
-    if (syncable_quota_disabled()) {
-      feature_list_.InitAndEnableFeature(
-          storage::features::kDisableSyncableQuota);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          storage::features::kDisableSyncableQuota);
-    }
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
 
     quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
@@ -86,8 +78,6 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
     file_system_context_ = CreateFileSystemContextForTesting(
         quota_manager_proxy_, data_dir_.GetPath());
   }
-
-  bool syncable_quota_disabled() const { return GetParam(); }
 
   struct TestFile {
     bool isDirectory;
@@ -264,7 +254,6 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
  protected:
   scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
 
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir data_dir_;
   base::test::TaskEnvironment task_environment_;
 
@@ -278,7 +267,7 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
   base::WeakPtrFactory<FileSystemQuotaClientTest> weak_factory_{this};
 };
 
-TEST_P(FileSystemQuotaClientTest, NoFileSystemTest) {
+TEST_F(FileSystemQuotaClientTest, NoFileSystemTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
 
   ASSERT_OK_AND_ASSIGN(
@@ -287,7 +276,7 @@ TEST_P(FileSystemQuotaClientTest, NoFileSystemTest) {
   EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
 }
 
-TEST_P(FileSystemQuotaClientTest, NoFileTest) {
+TEST_F(FileSystemQuotaClientTest, NoFileTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
 
   InitializeOriginFiles(quota_client,
@@ -301,7 +290,7 @@ TEST_P(FileSystemQuotaClientTest, NoFileTest) {
   }
 }
 
-TEST_P(FileSystemQuotaClientTest, NonDefaultBucket) {
+TEST_F(FileSystemQuotaClientTest, NonDefaultBucket) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   ASSERT_OK_AND_ASSIGN(
       auto bucket, GetOrCreateBucket(kDummyURL1, "logs_bucket", kTemporary));
@@ -310,7 +299,7 @@ TEST_P(FileSystemQuotaClientTest, NonDefaultBucket) {
   DeleteBucketData(&quota_client, bucket);
 }
 
-TEST_P(FileSystemQuotaClientTest, OneFileTest) {
+TEST_F(FileSystemQuotaClientTest, OneFileTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
 
   const std::vector<TestFile> kFiles = {
@@ -328,7 +317,7 @@ TEST_P(FileSystemQuotaClientTest, OneFileTest) {
   }
 }
 
-TEST_P(FileSystemQuotaClientTest, TwoFilesTest) {
+TEST_F(FileSystemQuotaClientTest, TwoFilesTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const std::vector<TestFile> kFiles = {
       {true, "", 0, kDummyURL1, kFileSystemTypeTemporary},
@@ -347,7 +336,7 @@ TEST_P(FileSystemQuotaClientTest, TwoFilesTest) {
   }
 }
 
-TEST_P(FileSystemQuotaClientTest, EmptyFilesTest) {
+TEST_F(FileSystemQuotaClientTest, EmptyFilesTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const std::vector<TestFile> kFiles = {
       {true, "", 0, kDummyURL1, kFileSystemTypeTemporary},
@@ -366,7 +355,7 @@ TEST_P(FileSystemQuotaClientTest, EmptyFilesTest) {
   }
 }
 
-TEST_P(FileSystemQuotaClientTest, SubDirectoryTest) {
+TEST_F(FileSystemQuotaClientTest, SubDirectoryTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const std::vector<TestFile> kFiles = {
       {true, "", 0, kDummyURL1, kFileSystemTypeTemporary},
@@ -386,7 +375,7 @@ TEST_P(FileSystemQuotaClientTest, SubDirectoryTest) {
   }
 }
 
-TEST_P(FileSystemQuotaClientTest, MultiTypeTest) {
+TEST_F(FileSystemQuotaClientTest, MultiTypeTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const std::vector<TestFile> kFiles = {
       {true, "", 0, kDummyURL1, kFileSystemTypeTemporary},
@@ -415,7 +404,7 @@ TEST_P(FileSystemQuotaClientTest, MultiTypeTest) {
   }
 }
 
-TEST_P(FileSystemQuotaClientTest, MultiDomainTest) {
+TEST_F(FileSystemQuotaClientTest, MultiDomainTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const std::vector<TestFile> kFiles = {
       {true, "", 0, kDummyURL1, kFileSystemTypeTemporary},
@@ -463,7 +452,7 @@ TEST_P(FileSystemQuotaClientTest, MultiDomainTest) {
   }
 }
 
-TEST_P(FileSystemQuotaClientTest, GetUsage_MultipleTasks) {
+TEST_F(FileSystemQuotaClientTest, GetUsage_MultipleTasks) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const std::vector<TestFile> kFiles = {
       {true, "", 0, kDummyURL1, kFileSystemTypeTemporary},
@@ -495,7 +484,7 @@ TEST_P(FileSystemQuotaClientTest, GetUsage_MultipleTasks) {
   EXPECT_EQ(2, additional_callback_count());
 }
 
-TEST_P(FileSystemQuotaClientTest, GetStorageKeysForType) {
+TEST_F(FileSystemQuotaClientTest, GetStorageKeysForType) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   InitializeOriginFiles(
       quota_client, {
@@ -511,7 +500,7 @@ TEST_P(FileSystemQuotaClientTest, GetStorageKeysForType) {
                   StorageKey::CreateFromStringForTesting(kDummyURL3)));
 }
 
-TEST_P(FileSystemQuotaClientTest, DeleteOriginTest) {
+TEST_F(FileSystemQuotaClientTest, DeleteOriginTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const std::vector<TestFile> kFiles = {
       {true, "", 0, "http://foo.com/", kFileSystemTypeTemporary},
@@ -579,9 +568,5 @@ TEST_P(FileSystemQuotaClientTest, DeleteOriginTest) {
                 file_paths_cost_persistent_bar_https,
             GetBucketUsage(quota_client, bar_https_temp_bucket));
 }
-
-INSTANTIATE_TEST_SUITE_P(FileSystemQuotaClientTests,
-                         FileSystemQuotaClientTest,
-                         testing::Bool());
 
 }  // namespace storage

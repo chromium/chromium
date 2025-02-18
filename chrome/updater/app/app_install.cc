@@ -139,7 +139,8 @@ void AppInstall::SendPing(int exit_code, base::OnceClosure callback) {
                         {
                             .event_type =
                                 update_client::protocol_request::kEventInstall,
-                            .result = 0,
+                            .result = update_client::protocol_request::
+                                kEventResultError,
                             .error_code = exit_code,
                         },
                         base::BindOnce(

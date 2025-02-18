@@ -90,7 +90,7 @@
     Manage information
   </message>
 
-  <!-- Save prompt -->
+  <!-- Save/Update prompt -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE" desc="Text displayed on the top of the save autofill with AI dialog.">
     Save your info to autofill
   </message>
@@ -133,17 +133,31 @@
     Go to settings
   </message>
 
-  <!-- Save dialog-->
+  <!-- Save/ Update dialog-->
   <message name="IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a vehicle entity" translateable="false">
-    Save Vehicle?
+    Save vehicle?
   </message>
   <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a driver's license entity" translateable="false">
-    Save Driver's license?
+    Save driver's license?
   </message>
   <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a passport entity" translateable="false">
-    Save Passport?
+    Save passport?
   </message>
   <message name="IDS_AUTOFILL_AI_SAVE_LOYALTY_CARD_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a loyalty card entity" translateable="false">
-    Save Loyalty card?
+    Save loyalty card?
   </message>
+
+  <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a vehicle entity" translateable="false">
+    Update vehicle?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a driver's license entity" translateable="false">
+    Update driver's license?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a passport entity" translateable="false">
+    Update passport?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_LOYALTY_CARD_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a loyalty card entity" translateable="false">
+    Update loyalty card?
+  </message>
+
 </grit-part>

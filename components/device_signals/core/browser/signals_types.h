@@ -73,6 +73,13 @@ struct BaseSignalResponse {
 };
 
 #if BUILDFLAG(IS_WIN)
+// Values representing the overall antivirus software state of a device.
+enum class InstalledAntivirusState {
+  kNone = 0,
+  kDisabled = 1,
+  kEnabled = 2,
+};
+
 struct AntiVirusSignalResponse : BaseSignalResponse {
   AntiVirusSignalResponse();
 
@@ -82,6 +89,8 @@ struct AntiVirusSignalResponse : BaseSignalResponse {
   ~AntiVirusSignalResponse() override;
 
   std::vector<AvProduct> av_products{};
+
+  InstalledAntivirusState antivirus_state{InstalledAntivirusState::kNone};
 };
 
 struct HotfixSignalResponse : BaseSignalResponse {

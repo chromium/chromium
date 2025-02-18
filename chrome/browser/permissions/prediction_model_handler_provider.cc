@@ -9,7 +9,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/permissions/genai_model_handler.h"
+#include "chrome/browser/permissions/permissions_ai_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/request_type.h"
@@ -37,15 +37,16 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
-    genai_model_handler_ =
-        std::make_unique<GenAiModelHandler>(optimization_guide);
+    permissions_ai_handler_ =
+        std::make_unique<PermissionsAiHandler>(optimization_guide);
   }
 }
 
 PredictionModelHandlerProvider::~PredictionModelHandlerProvider() = default;
 
-GenAiModelHandler* PredictionModelHandlerProvider::GetGenAiModelHandler() {
-  return genai_model_handler_.get();
+PermissionsAiHandler*
+PredictionModelHandlerProvider::GetPermissionsAiHandler() {
+  return permissions_ai_handler_.get();
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

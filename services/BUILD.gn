@@ -37,6 +37,11 @@ test("services_unittests") {
     "//services/test:run_all_unittests",
   ]
 
+  fuzztests = [
+    "GetAttributionSupportHeader.IsSupportValid",
+    "SerializeAttributionReportingEligibleHeader.IsEligibleValid",
+  ]
+
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
 
   if (use_blink) {

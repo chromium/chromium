@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/actions/action_id.h"
+#include "ui/actions/action_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -612,7 +613,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionIdMap {
 };
 
 COMPONENT_EXPORT(ACTIONS)
-extern const ui::ClassProperty<bool>* const kActionItemPinnableKey;
+extern const ui::ClassProperty<
+    std::underlying_type_t<ActionPinnableState>>* const kActionItemPinnableKey;
 
 }  // namespace actions
 

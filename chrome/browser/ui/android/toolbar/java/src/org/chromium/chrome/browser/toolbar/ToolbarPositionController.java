@@ -376,6 +376,13 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         int verticalGravity =
                 mCurrentPosition == ControlsPosition.TOP ? Gravity.TOP : Gravity.BOTTOM;
         layoutParams.gravity = Gravity.START | verticalGravity;
+        layoutParams.topMargin =
+                mCurrentPosition == ControlsPosition.BOTTOM
+                        ? mContext.getResources()
+                                .getDimensionPixelSize(
+                                        org.chromium.chrome.browser.toolbar.R.dimen
+                                                .toolbar_hairline_height)
+                        : 0;
     }
 
     @VisibleForTesting

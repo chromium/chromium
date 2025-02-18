@@ -31,6 +31,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,7 +53,7 @@ constexpr const char* kGeolocationPermissionsPolicyActionHistogramName =
     "Permissions.Action.Geolocation.CrossOriginFrame."
     "TopLevelHeaderPolicy";
 
-blink::ParsedPermissionsPolicy CreatePermissionsPolicy(
+network::ParsedPermissionsPolicy CreatePermissionsPolicy(
     network::mojom::PermissionsPolicyFeature feature,
     const std::vector<std::string>& origins,
     bool matches_all_origins = false) {
@@ -137,7 +138,7 @@ class PermissionsDelegationUmaUtilTest
   content::RenderFrameHost* AddChildFrameWithPermissionsPolicy(
       content::RenderFrameHost* parent,
       const char* origin,
-      blink::ParsedPermissionsPolicy policy) {
+      network::ParsedPermissionsPolicy policy) {
     content::RenderFrameHost* result =
         content::RenderFrameHostTester::For(parent)->AppendChildWithPolicy(
             "", policy);
@@ -150,7 +151,7 @@ class PermissionsDelegationUmaUtilTest
   // The permissions policy is invariant and required the page to be
   // refreshed
   void RefreshAndSetPermissionsPolicy(content::RenderFrameHost** rfh,
-                                      blink::ParsedPermissionsPolicy policy) {
+                                      network::ParsedPermissionsPolicy policy) {
     content::RenderFrameHost* current = *rfh;
     auto navigation = content::NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
@@ -770,7 +771,7 @@ TEST_P(PermissionsDelegationUmaUtilTest, TopLevelFrame) {
   base::HistogramTester histograms;
   auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);
   auto feature = PermissionUtil::GetPermissionsPolicyFeature(type);
-  blink::ParsedPermissionsPolicy top_policy;
+  network::ParsedPermissionsPolicy top_policy;
   if (feature.has_value() &&
       (GetParam().matches_all_origins || !GetParam().origins.empty())) {
     top_policy = CreatePermissionsPolicy(
@@ -866,7 +867,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
   base::HistogramTester histograms;
   auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);
   auto feature = PermissionUtil::GetPermissionsPolicyFeature(type);
-  blink::ParsedPermissionsPolicy top_policy;
+  network::ParsedPermissionsPolicy top_policy;
   if (feature.has_value() &&
       (GetParam().matches_all_origins || !GetParam().origins.empty())) {
     top_policy = CreatePermissionsPolicy(
@@ -881,7 +882,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
   }
 
   // Add nested subframes A(B(C))
-  blink::ParsedPermissionsPolicy empty_policy;
+  network::ParsedPermissionsPolicy empty_policy;
   auto* child_frame = AddChildFrameWithPermissionsPolicy(
       main_frame, kCrossOriginFrameUrl,
       feature.has_value()

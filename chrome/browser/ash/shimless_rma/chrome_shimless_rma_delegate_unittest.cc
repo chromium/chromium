@@ -37,9 +37,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "extensions/common/constants.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 
 namespace ash::shimless_rma {
 namespace {
@@ -327,14 +327,14 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
        IWACanHaveAllowlistedPermissionsPolicy) {
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      blink::ParsedPermissionsPolicy{
-          {blink::ParsedPermissionsPolicyDeclaration{
+      network::ParsedPermissionsPolicy{
+          {network::ParsedPermissionsPolicyDeclaration{
                network::mojom::PermissionsPolicyFeature::kCamera},
-           blink::ParsedPermissionsPolicyDeclaration{
+           network::ParsedPermissionsPolicyDeclaration{
                network::mojom::PermissionsPolicyFeature::kFullscreen},
-           blink::ParsedPermissionsPolicyDeclaration{
+           network::ParsedPermissionsPolicyDeclaration{
                network::mojom::PermissionsPolicyFeature::kMicrophone},
-           blink::ParsedPermissionsPolicyDeclaration{
+           network::ParsedPermissionsPolicyDeclaration{
                network::mojom::PermissionsPolicyFeature::kHid}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
@@ -348,10 +348,10 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
        IWACannotHavePermissionsPolicyOutsideAllowlist) {
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      blink::ParsedPermissionsPolicy{
-          blink::ParsedPermissionsPolicyDeclaration{
+      network::ParsedPermissionsPolicy{
+          network::ParsedPermissionsPolicyDeclaration{
               network::mojom::PermissionsPolicyFeature::kCamera},
-          {blink::ParsedPermissionsPolicyDeclaration{
+          {network::ParsedPermissionsPolicyDeclaration{
               network::mojom::PermissionsPolicyFeature::kNotFound}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
@@ -371,8 +371,9 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
       ash::features::kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
 
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      blink::ParsedPermissionsPolicy{{blink::ParsedPermissionsPolicyDeclaration{
-          network::mojom::PermissionsPolicyFeature::kCamera}}});
+      network::ParsedPermissionsPolicy{
+          {network::ParsedPermissionsPolicyDeclaration{
+              network::mojom::PermissionsPolicyFeature::kCamera}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -392,8 +393,9 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
       expected_url_origin.GetURL());
 
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      blink::ParsedPermissionsPolicy{{blink::ParsedPermissionsPolicyDeclaration{
-          network::mojom::PermissionsPolicyFeature::kNotFound}}});
+      network::ParsedPermissionsPolicy{
+          {network::ParsedPermissionsPolicyDeclaration{
+              network::mojom::PermissionsPolicyFeature::kNotFound}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)

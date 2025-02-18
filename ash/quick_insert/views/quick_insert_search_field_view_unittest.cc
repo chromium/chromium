@@ -25,7 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/range/range.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -444,7 +444,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   view->RequestFocus();
   views::View descendant;
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->SetTextfieldActiveDescendant(&descendant);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
@@ -470,7 +470,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   views::View descendant;
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->SetTextfieldActiveDescendant(&descendant);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
@@ -491,7 +491,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   views::View descendant;
   view->SetTextfieldActiveDescendant(&descendant);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->RequestFocus();
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
@@ -518,7 +518,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   view->SetPlaceholderText(u"placeholder");
   views::View descendant;
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->RequestFocus();
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
@@ -545,7 +545,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   views::View descendant1, descendant2;
   view->SetTextfieldActiveDescendant(&descendant1);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->RequestFocus();
   view->SetTextfieldActiveDescendant(&descendant2);
   task_environment()->FastForwardBy(

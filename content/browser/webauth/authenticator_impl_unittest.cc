@@ -117,7 +117,9 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -1127,7 +1129,7 @@ TEST_F(AuthenticatorImplTest,
 
 TEST_F(AuthenticatorImplTest,
        GetClientCapabilities_HybridTransport_BluetoothDisabled) {
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
       network::mojom::PermissionsPolicyFeature::kBluetooth;
   // Simulate navigating to a page with this Permissions Policy.
@@ -8409,7 +8411,8 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI_Incognito) {
   device::PublicKeyCredentialRpEntity rp(kTestRelyingPartyId);
   device::PublicKeyCredentialUserEntity user({1, 2, 3, 4});
   fake_win_webauthn_api_.InjectDiscoverableCredential(
-      /*credential_id=*/{{4, 3, 2, 1}}, std::move(rp), std::move(user));
+      /*credential_id=*/{{4, 3, 2, 1}}, std::move(rp), std::move(user),
+      /*provider_name=*/std::nullopt);
 
   // |SelectAccount| should not be called for conditional UI requests.
   test_client_.delegate_config.expected_accounts = "<invalid>";

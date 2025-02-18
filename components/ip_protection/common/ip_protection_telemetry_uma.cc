@@ -244,6 +244,12 @@ void IpProtectionTelemetryUma::MdlEstimatedMemoryUsage(size_t usage) {
       usage / 1024);
 }
 
+void IpProtectionTelemetryUma::MdlEstimatedDiskUsage(int64_t usage) {
+  base::UmaHistogramMemoryKB("NetworkService.MaskedDomainList.DiskUsageInKB",
+                             // Convert to KB
+                             usage / 1024);
+}
+
 void IpProtectionTelemetryUma::AndroidAuthClientCreationTime(
     base::TimeDelta duration) {
   base::UmaHistogramMediumTimes(

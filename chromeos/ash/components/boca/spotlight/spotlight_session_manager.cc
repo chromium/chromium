@@ -90,7 +90,8 @@ void SpotlightSessionManager::OnConnectionCodeReceived(
 
   CHECK(spotlight_service_);
   spotlight_service_->RegisterScreen(
-      connection_code.value(), kSchoolToolsApiBaseUrl,
+      connection_code.value(),
+      BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
       base::BindOnce(&SpotlightSessionManager::OnRegisterScreenRequestSent,
                      weak_ptr_factory_.GetWeakPtr()));
 }

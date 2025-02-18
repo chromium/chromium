@@ -56,7 +56,7 @@
     }
     if (IsSafetyCheckMagicStackEnabled()) {
       _safetyCheckDisabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:_localState
+          initWithPrefService:_profilePrefs
                      prefName:safety_check_prefs::
                                   kSafetyCheckInMagicStackDisabledPref];
       [_safetyCheckDisabled setObserver:self];

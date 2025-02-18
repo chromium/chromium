@@ -28,10 +28,10 @@
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "url/gurl.h"
@@ -222,7 +222,7 @@ TEST_F(PressureServiceForDedicatedWorkerTest,
 TEST_F(PressureServiceForDedicatedWorkerTest, PermissionsPolicyBlock) {
   // Make compute pressure blocked by permissions policy and it can only be
   // made once on page load, so we refresh the page to simulate that.
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
       network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =
@@ -344,7 +344,7 @@ TEST_F(PressureServiceForSharedWorkerTest, WebContentPressureManagerProxyTest) {
 TEST_F(PressureServiceForSharedWorkerTest, PermissionsPolicyBlock) {
   // Make compute pressure blocked by permissions policy and it can only be
   // made once on page load, so we refresh the page to simulate that.
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
       network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =
@@ -364,7 +364,7 @@ TEST_F(PressureServiceForSharedWorkerTest,
 
   auto web_contents = TestWebContents::Create(browser_context(), nullptr);
   auto* rfh = web_contents->GetPrimaryMainFrame();
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
       network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =

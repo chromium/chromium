@@ -87,8 +87,8 @@ void EchoAIManagerImpl::CreateLanguageModel(
 
   if (options->system_prompt.has_value() &&
       options->system_prompt->size() > kMaxContextSizeInTokens) {
-    client_remote->OnError(blink::mojom::AIManagerCreateLanguageModelError::
-                               kInitialPromptsTooLarge);
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kInitialPromptsTooLarge);
     return;
   }
 

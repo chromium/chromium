@@ -91,6 +91,10 @@ inline constexpr char kDetectAddressesEnabled[] =
 inline constexpr char kDownloadAutoDeletionEnabled[] =
     "ios.download.auto_deletion_enabled";
 
+// The pref tracks whether Auto-deletion's IPH has been shown to the user.
+inline constexpr char kDownloadAutoDeletionIPHShown[] =
+    "ios.download.auto_deletion_iph_shown";
+
 // Number of times the First Follow UI has been shown.
 inline constexpr char kFirstFollowUIShownCount[] =
     "follow.first_follow_ui_modal_count";

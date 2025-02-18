@@ -66,6 +66,7 @@ specific_include_rules = {
   ],
   "remote_frame\.h": [
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
+    "+services/network/public/cpp/permissions_policy/permissions_policy_declaration.h",
   ],
   "remote_frame\.cc": [
     "+ui/base/window_open_disposition.h",

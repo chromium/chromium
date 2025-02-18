@@ -24,8 +24,8 @@
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/accessibility_alert_window.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
-#include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_root_obj_wrapper.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -321,7 +321,7 @@ void ViewsAXManager::DispatchAccessibilityEvents(
 
 ViewsAXManager::ViewsAXManager()
     : cache_(std::make_unique<views::AXAuraObjCache>()) {
-  views::AXEventManager::Get()->AddObserver(this);
+  views::AXUpdateNotifier::Get()->AddObserver(this);
 }
 
 // Never runs because object is leaked.

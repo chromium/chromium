@@ -3,31 +3,36 @@
 // found in the LICENSE file.
 
 import {quoteString} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-export class HistorySearchedLabelElement extends PolymerElement {
+export class HistorySearchedLabelElement extends CrLitElement {
   static get is() {
     return 'history-searched-label';
   }
 
-  static get template() {
-    return null;
+  override render() {
+    return html`<slot></slot>`;
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       // The text to show in this label.
-      title: String,
+      title: {type: String},
 
       // The search term to bold within the title.
-      searchTerm: String,
+      searchTerm: {type: String},
     };
   }
 
   searchTerm: string;
+  override title: string;
 
-  static get observers() {
-    return ['setSearchedTextToBold_(title, searchTerm)'];
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('title') || changedProperties.has('searchTerm')) {
+      this.setSearchedTextToBold_();
+    }
   }
 
   /**

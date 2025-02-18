@@ -54,8 +54,7 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest,
 
   void SetUp() override {
     std::vector<base::test::FeatureRef> features = {
-        chrome_apps::features::kDeprecateSyncFileSystemApis,
-        storage::features::kDisableSyncableQuota};
+        chrome_apps::features::kDeprecateSyncFileSystemApis};
     if (sync_file_system_disabled()) {
       feature_list_.InitWithFeatures(features, {});
     } else {
@@ -181,8 +180,7 @@ IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, DISABLED_GetFileStatuses) {
 }
 
 IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, GetUsageAndQuota) {
-  ASSERT_TRUE(RunExtensionTest("sync_file_system/get_usage_and_quota",
-                               {.custom_arg = GetCustomArg()}))
+  ASSERT_TRUE(RunExtensionTest("sync_file_system/get_usage_and_quota"))
       << message_;
 }
 

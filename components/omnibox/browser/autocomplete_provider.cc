@@ -207,6 +207,23 @@ AutocompleteProvider::~AutocompleteProvider() {
 }
 
 // static
+AutocompleteProvider::AdjustedInputAndStarterPackKeyword
+AutocompleteProvider::AdjustInputForStarterPackKeyword(
+    const AutocompleteInput& input,
+    TemplateURLService* turl_service) {
+  if (input.prefer_keyword()) {
+    AutocompleteInput keyword_input = input;
+    const TemplateURL* template_url =
+        AutocompleteInput::GetSubstitutingTemplateURLForInput(turl_service,
+                                                              &keyword_input);
+    if (template_url && template_url->starter_pack_id() > 0) {
+      return {keyword_input, template_url};
+    }
+  }
+  return {input, nullptr};
+}
+
+// static
 AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
     const AutocompleteInput& input) {
   const std::u16string& input_text = input.text();

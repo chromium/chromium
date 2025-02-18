@@ -108,6 +108,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Discarding.DiscardFrameTree" enum="BooleanSuccess"
+    expires_after="2025-08-10">
+  <owner>tluk@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records whether the FrameTree discard operation succeeded. Emitted
+    immediately after the FrameTree discard operation attempt.
+  </summary>
+</histogram>
+
 <histogram name="Discarding.DiscardingFocusedTab" enum="BooleanFocusedTab"
     expires_after="2025-08-10">
   <owner>kalutes@chromium.org</owner>

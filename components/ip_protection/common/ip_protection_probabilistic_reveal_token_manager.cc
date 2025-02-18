@@ -16,14 +16,14 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 
 namespace ip_protection {
 
 IpProtectionProbabilisticRevealTokenManager::
     IpProtectionProbabilisticRevealTokenManager(
-        std::unique_ptr<IpProtectionIssuerTokenFetcher> fetcher)
+        std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher)
     : fetcher_(std::move(fetcher)), expiration_(base::Time::UnixEpoch()) {
   DCHECK(fetcher_);
   RequestTokens();
@@ -40,14 +40,14 @@ void IpProtectionProbabilisticRevealTokenManager::RequestTokens() {
     // manager a null fetcher.
     return;
   }
-  fetcher_->TryGetIssuerTokens(base::BindOnce(
+  fetcher_->TryGetProbabilisticRevealTokens(base::BindOnce(
       &IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens,
       weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens(
-    std::optional<TryGetIssuerTokensOutcome> outcome,
-    TryGetIssuerTokensResult result) {
+    std::optional<TryGetProbabilisticRevealTokensOutcome> outcome,
+    TryGetProbabilisticRevealTokensResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result.try_again_after.has_value()) {
     // Network error when fetching, re-try at the time fetcher asked. Fetcher
@@ -56,7 +56,7 @@ void IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens(
         FROM_HERE, result.try_again_after.value() - base::Time::Now(), this,
         &IpProtectionProbabilisticRevealTokenManager::RequestTokens);
     return;
-  } else if (result.status != TryGetIssuerTokensStatus::kSuccess) {
+  } else if (result.status != TryGetProbabilisticRevealTokensStatus::kSuccess) {
     // Response returned from server, however it is invalid.
     // This might happen if the PRT issuer server is configured wrong.
     // Fetcher did not specify when to retry. Retry in an hour.
@@ -66,7 +66,7 @@ void IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens(
     return;
   }
   DCHECK(outcome.has_value());
-  auto maybe_crypter = IpProtectionIssuerTokenCrypter::Create(
+  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
       outcome.value().public_key, outcome.value().tokens);
   if (!maybe_crypter.ok()) {
     // Might happen if PRT issuer is misconfigured and public_key or tokens do
@@ -122,7 +122,7 @@ bool IpProtectionProbabilisticRevealTokenManager::IsTokenAvailable() {
   return crypter_ && crypter_->IsTokenAvailable();
 }
 
-std::optional<IssuerToken>
+std::optional<ProbabilisticRevealToken>
 IpProtectionProbabilisticRevealTokenManager::GetToken(
     const std::string& top_level,
     const std::string& third_party) {

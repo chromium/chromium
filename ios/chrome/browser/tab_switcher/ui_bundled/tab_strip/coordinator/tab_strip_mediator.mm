@@ -292,6 +292,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   std::set<tab_groups::LocalTabGroupID> _dirtyGroups;
   // `YES` if a local drag operation is in progress.
   BOOL _localDragInProgress;
+  // Tab to close when user confirm closing action.
+  TabSwitcherItem* _tabToClose;
 }
 
 - (instancetype)
@@ -452,6 +454,25 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
                  sharedTabGroup:tabGroupItem.tabGroup];
+}
+
+- (void)closeSavedTabFromGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  int index = GetWebStateIndex(
+      self.webStateList,
+      WebStateSearchCriteria{
+          .identifier = _tabToClose.identifier,
+          .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned,
+      });
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
+  CHECK_EQ(tabGroupItem.tabGroup,
+           self.webStateList->GetGroupOfWebStateAt(index));
+  self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+  _tabToClose = nil;
 }
 
 #pragma mark - Public properties

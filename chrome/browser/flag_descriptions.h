@@ -228,8 +228,18 @@ extern const char kDemoModeComponentUpdaterTestTagName[];
 extern const char kDemoModeComponentUpdaterTestTagDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kDevToolsAutomaticWorkspaceFoldersName[];
+extern const char kDevToolsAutomaticWorkspaceFoldersDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 extern const char kDevToolsPrivacyUIName[];
 extern const char kDevToolsPrivacyUIDescription[];
+
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kDevToolsProjectSettingsName[];
+extern const char kDevToolsProjectSettingsDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kDisableInstanceLimitName[];
@@ -2657,6 +2667,9 @@ extern const char kLogoPolishAnimationKillSwitchDescription[];
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
 
+extern const char kMaliciousApkDownloadCheckName[];
+extern const char kMaliciousApkDownloadCheckDescription[];
+
 extern const char kMayLaunchUrlUsesSeparateStoragePartitionName[];
 extern const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[];
 
@@ -3720,9 +3733,6 @@ extern const char kEnableFastTouchpadClickDescription[];
 
 extern const char kEnablePalmSuppressionName[];
 extern const char kEnablePalmSuppressionDescription[];
-
-extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfName[];
-extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[];
 
 extern const char kEnableSeamlessRefreshRateSwitchingName[];
 extern const char kEnableSeamlessRefreshRateSwitchingDescription[];

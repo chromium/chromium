@@ -6,4 +6,5 @@ per-file deep_scanning_test_utils*=domfc@chromium.org
 per-file file_opening_job*=domfc@chromium.org
 per-file resumable_uploader*=nancylanxiao@google.com
 
+chlily@chromium.org
 drubery@chromium.org

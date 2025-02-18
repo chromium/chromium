@@ -2172,6 +2172,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/384959329")
     public void test_labelWithSelectedOption() {
         performHtmlTest("label-with-selected-option.html");
     }
@@ -2432,6 +2433,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/384959329")
     public void test_select() {
         performHtmlTest("select.html");
     }

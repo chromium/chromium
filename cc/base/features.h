@@ -211,6 +211,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC);
 // frame production to 60Hz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 
+// A mode of ViewTransition capture that does not display unstyled frame,
+// instead displays the properly constructed frame while at the same doing
+// capture.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionCaptureAndDisplay);
+
 // When enabled, stops the export of most DFCMetrics.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kStopExportDFCMetrics);
 CC_BASE_EXPORT extern bool StopExportDFCMetrics();

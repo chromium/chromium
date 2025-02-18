@@ -27,7 +27,7 @@ bool IsEnabledInAnyLoadedProfile() {
       g_browser_process->profile_manager()->GetLoadedProfiles(),
       [](Profile* profile) {
         return !IsProfileDirectoryMarkedForDeletion(profile->GetPath()) &&
-               GlicEnabling::IsEnabledAndConsentForProfile(profile);
+               glic::GlicEnabling::IsEnabledAndConsentForProfile(profile);
       });
 }
 }  // namespace

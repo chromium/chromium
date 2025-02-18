@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_ai/save_autofill_ai_data_bubble_view.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
@@ -34,6 +36,7 @@ class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
   MOCK_METHOD(void,
               OfferSave,
               (autofill::EntityInstance,
+               std::optional<autofill::EntityInstance>,
                AutofillAiClient::SavePromptAcceptanceCallback),
               (override));
   MOCK_METHOD(base::optional_ref<const autofill::EntityInstance>,

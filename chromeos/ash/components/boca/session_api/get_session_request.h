@@ -26,6 +26,7 @@ class GetSessionRequest : public google_apis::UrlFetchRequestBase {
                      google_apis::ApiErrorCode> result)>;
 
   GetSessionRequest(google_apis::RequestSender* sender,
+                    std::string url_base,
                     bool is_producer,
                     GaiaId gaia_id,
                     Callback callback);

@@ -80,6 +80,8 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskPod);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaStudentHeartbeat);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kBocaStudentHeartbeatCustomInterval);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaSpotlight);
@@ -890,6 +892,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSmartLockSignInRemoved);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSnoopingProtection);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSplitKeyboardRefactor);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSunfishFeature);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSunfishLensWeb);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSuspendStateMachine);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSystemJapanesePhysicalTyping);
@@ -1045,7 +1048,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaConsumerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaExtensionConsumerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskPodEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaStudentHeartbeatEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBocaStudentHeartbeatEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBocaStudentHeartbeatCustomIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaSpotlightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
@@ -1352,6 +1358,7 @@ bool IsShowSharingUserInLauncherContinueSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStoreOwnerKeyInPrivateSlotEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSunfishFeatureEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSunfishLensWebEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSuspendStateMachineEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemNudgeMigrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemTrayShadowEnabled();

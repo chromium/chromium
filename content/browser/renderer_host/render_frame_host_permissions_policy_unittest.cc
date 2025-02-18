@@ -11,6 +11,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-shared.h"
@@ -102,10 +104,10 @@ class RenderFrameHostPermissionsPolicyTest
   }
 
  private:
-  blink::ParsedPermissionsPolicy CreateFPHeader(
+  network::ParsedPermissionsPolicy CreateFPHeader(
       network::mojom::PermissionsPolicyFeature feature,
       const std::vector<std::string>& origins) {
-    blink::ParsedPermissionsPolicy result(1);
+    network::ParsedPermissionsPolicy result(1);
     result[0].feature = feature;
     for (auto const& origin : origins) {
       result[0].allowed_origins.emplace_back(

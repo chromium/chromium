@@ -30,8 +30,10 @@ InvalidationServiceImpl::InvalidationServiceImpl(
     instance_id::InstanceIDDriver* instance_id_driver,
     AccountId account_id,
     BocaSessionManager* boca_session_manager,
-    SessionClientImpl* session_client_impl)
-    : upload_retry_backoff_{&kBackoffPolicy},
+    SessionClientImpl* session_client_impl,
+    std::string base_url)
+    : school_tools_base_url_(std::move(base_url)),
+      upload_retry_backoff_{&kBackoffPolicy},
       account_id_(account_id),
       boca_session_manager_(boca_session_manager),
       session_client_impl_(session_client_impl) {
@@ -75,8 +77,8 @@ void InvalidationServiceImpl::OnFCMRegistrationTokenChanged() {
 
 void InvalidationServiceImpl::UploadToken() {
   auto request = std::make_unique<UploadTokenRequest>(
-      session_client_impl_->sender(), account_id_.GetGaiaId(),
-      fcm_handler_->GetFCMRegistrationToken().value(),
+      session_client_impl_->sender(), school_tools_base_url_,
+      account_id_.GetGaiaId(), fcm_handler_->GetFCMRegistrationToken().value(),
       base::BindOnce(&InvalidationServiceImpl::OnTokenUploaded,
                      weak_factory_.GetWeakPtr()));
   session_client_impl_->UploadToken(std::move(request));

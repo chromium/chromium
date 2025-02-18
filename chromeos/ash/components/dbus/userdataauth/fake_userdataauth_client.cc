@@ -1942,7 +1942,16 @@ void FakeUserDataAuthClient::SetUserDataStorageWriteEnabled(
 void FakeUserDataAuthClient::LockFactorUntilReboot(
     const ::user_data_auth::LockFactorUntilRebootRequest& request,
     LockFactorUntilRebootCallback callback) {
+  RememberRequest<Operation::kLockFactorUntilReboot>(request);
   ::user_data_auth::LockFactorUntilRebootReply reply;
+
+  if (auto error = TakeOperationError(Operation::kLockFactorUntilReboot);
+      cryptohome::HasError(error)) {
+    SetErrorWrapperToReply(reply, error);
+    std::move(callback).Run(reply);
+    return;
+  }
+
   std::move(callback).Run(std::move(reply));
 }
 

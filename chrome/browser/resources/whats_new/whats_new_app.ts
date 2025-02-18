@@ -59,13 +59,7 @@ const kModulePositionsMap: Record<SectionType, ModulePosition[]> = {
   ],
 };
 
-// TODO(crbug.com/342172972): Remove legacy browser command format.
-interface LegacyBrowserCommandData {
-  commandId: number;
-  clickInfo: ClickInfo;
-}
-
-interface BrowserCommandData {
+interface BrowserCommand {
   event: EventType.BROWSER_COMMAND;
   commandId: number;
   clickInfo: ClickInfo;
@@ -162,7 +156,6 @@ interface RestartClickedMetric {
 }
 
 type PageLoadedMetric = VersionPageLoadedMetric|EditionPageLoadedMetric;
-type BrowserCommand = LegacyBrowserCommandData|BrowserCommandData;
 type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
     ExploreMoreCloseMetric|ScrollDepthMetric|TimeOnPageMetric|
     GeneralLinkClickMetric|ModulesRenderedMetric|VideoStartedMetric|
@@ -170,19 +163,6 @@ type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
 
 interface EventData {
   data: BrowserCommand|MetricData;
-}
-
-// Narrow the type of the message data. This is necessary for the
-// legacy message format that does not supply an event name.
-function isBrowserCommand(messageData: BrowserCommand|
-                          MetricData): messageData is BrowserCommand {
-  // TODO(crbug.com/342172972): Remove legacy browser command format checks.
-  if (Object.hasOwn(messageData, 'event')) {
-    return (messageData as BrowserCommandData | MetricData).event ===
-        EventType.BROWSER_COMMAND;
-  } else {
-    return Object.hasOwn(messageData, 'commandId');
-  }
 }
 
 function handleBrowserCommand(messageData: BrowserCommand) {
@@ -453,13 +433,10 @@ export class WhatsNewAppElement extends CrLitElement {
       return;
     }
 
-    if (isBrowserCommand(data)) {
-      handleBrowserCommand(data);
-      return;
-    }
-
-    const {handler} = WhatsNewProxyImpl.getInstance();
     switch (data.event) {
+      case EventType.BROWSER_COMMAND:
+        handleBrowserCommand(data);
+        break;
       case EventType.PAGE_LOADED:
         handlePageLoadMetric(data, this.isAutoOpen_);
         break;
@@ -467,10 +444,10 @@ export class WhatsNewAppElement extends CrLitElement {
         // Ignored.
         break;
       case EventType.EXPLORE_MORE_OPEN:
-        handler.recordExploreMoreToggled(true);
+        WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(true);
         break;
       case EventType.EXPLORE_MORE_CLOSE:
-        handler.recordExploreMoreToggled(false);
+        WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(false);
         break;
       case EventType.SCROLL:
         handleScrollDepthMetric(data);

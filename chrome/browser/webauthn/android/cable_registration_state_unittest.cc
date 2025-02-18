@@ -83,11 +83,6 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
     identity_key_callback_ = std::move(callback);
   }
 
-  void OnCloudMessage(std::vector<uint8_t> serialized,
-                      bool is_make_credential) override {
-    on_cloud_message_called_ = true;
-  }
-
   void RefreshLocalDeviceInfo() override {
     refresh_local_device_info_called_ = true;
   }
@@ -102,7 +97,6 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
   std::string root_secret_;
   raw_ptr<TestRegistration> linking_registration_ = nullptr;
   raw_ptr<TestRegistration> syncing_registration_ = nullptr;
-  bool on_cloud_message_called_ = false;
   bool refresh_local_device_info_called_ = false;
 
   base::OnceCallback<void(bool)> support_callback_;
@@ -173,39 +167,6 @@ TEST_F(CableRegistrationStateTest, HaveDataForSync) {
   EXPECT_TRUE(state_->device_supports_cable());
   EXPECT_TRUE(state_->am_in_work_profile());
   EXPECT_FALSE(state_->link_data_from_play_services().has_value());
-}
-
-TEST_F(CableRegistrationStateTest,
-       DontProcessLinkingEventsBeforeContactIdReady) {
-  state_->Register();
-  EXPECT_FALSE(interface_->on_cloud_message_called_);
-
-  interface_->linking_registration_->contact_id_ = std::nullopt;
-  auto event = std::make_unique<Registration::Event>();
-  event->source = Registration::Type::LINKING;
-  interface_->linking_registration_->on_event_.Run(std::move(event));
-  EXPECT_FALSE(interface_->on_cloud_message_called_);
-
-  interface_->linking_registration_->contact_id_ =
-      TestRegistration::ContactID();
-  std::move(interface_->linking_registration_->on_ready_).Run();
-  EXPECT_TRUE(interface_->on_cloud_message_called_);
-}
-
-TEST_F(CableRegistrationStateTest, SyncEventTooOld) {
-  state_->Register();
-  EXPECT_FALSE(interface_->on_cloud_message_called_);
-
-  for (const bool too_old : {false, true}) {
-    auto event = std::make_unique<Registration::Event>();
-    event->source = Registration::Type::SYNC;
-    const uint64_t now = device::cablev2::sync::IDNow() - (too_old ? 50 : 0);
-    memcpy(event->pairing_id.data(), &now, event->pairing_id.size());
-
-    interface_->on_cloud_message_called_ = false;
-    interface_->syncing_registration_->on_event_.Run(std::move(event));
-    EXPECT_EQ(interface_->on_cloud_message_called_, !too_old);
-  }
 }
 
 }  // namespace

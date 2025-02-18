@@ -155,6 +155,9 @@ class MetricsLog {
   // Assign a unique finalized record id to this log.
   void AssignFinalizedRecordId(PrefService* local_state);
 
+  // Sets the creation source for this log.
+  void SetLogCreationType(ChromeUserMetricsExtension::LogType log_type);
+
   // Assign a unique record id to this log.
   void AssignRecordId(PrefService* local_state);
 

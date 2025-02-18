@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_fre_controller.h"
-#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -127,18 +126,17 @@ ResponseSegmentation GetResponseSegmentation(bool attached,
 
 }  // namespace
 
-GlicMetrics::GlicMetrics(Profile* profile) : profile_(profile) {
+GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
+    : profile_(profile), enabling_(enabling) {
   impression_timer_.Start(
       FROM_HERE, base::Minutes(15),
       base::BindRepeating(&GlicMetrics::OnImpressionTimerFired,
                           base::Unretained(this)));
   source_id_ = ukm::NoURLSourceId();
 
-  is_enabled_ = GlicEnabling::IsEnabledForProfile(profile_);
-  pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(prefs::kGlicSettingsPolicy,
-                      base::BindRepeating(&GlicMetrics::OnEnabledChanged,
-                                          base::Unretained(this)));
+  is_enabled_ = enabling_->IsEnabled();
+  subscriptions_.push_back(enabling_->RegisterEnableChanged(base::BindRepeating(
+      &GlicMetrics::OnEnabledChanged, base::Unretained(this))));
 }
 GlicMetrics::~GlicMetrics() = default;
 
@@ -164,25 +162,29 @@ void GlicMetrics::OnResponseStarted() {
     return;
   }
 
-  response_started_time_ = base::TimeTicks::Now();
-  base::UmaHistogramMediumTimes("Glic.Response.StartTime",
-                                response_started_time_ - input_submitted_time_);
+  base::TimeDelta start_time = base::TimeTicks::Now() - input_submitted_time_;
+  base::UmaHistogramMediumTimes("Glic.Response.StartTime", start_time);
   switch (input_mode_) {
     case mojom::WebClientMode::kUnknown:
-      base::UmaHistogramMediumTimes(
-          "Glic.Response.StartTime.InputMode.Unknown",
-          response_started_time_ - input_submitted_time_);
+      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Unknown",
+                                    start_time);
       break;
     case mojom::WebClientMode::kText:
-      base::UmaHistogramMediumTimes(
-          "Glic.Response.StartTime.InputMode.Text",
-          response_started_time_ - input_submitted_time_);
+      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Text",
+                                    start_time);
       break;
     case mojom::WebClientMode::kAudio:
-      base::UmaHistogramMediumTimes(
-          "Glic.Response.StartTime.InputMode.Audio",
-          response_started_time_ - input_submitted_time_);
+      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Audio",
+                                    start_time);
       break;
+  }
+
+  if (did_request_context_) {
+    base::UmaHistogramMediumTimes("Glic.Response.StartTime.WithContext",
+                                  start_time);
+  } else {
+    base::UmaHistogramMediumTimes("Glic.Response.StartTime.WithoutContext",
+                                  start_time);
   }
   base::RecordAction(base::UserMetricsAction("GlicResponse"));
   ++session_responses_;
@@ -219,7 +221,7 @@ void GlicMetrics::OnResponseStopped() {
 
   // Reset all times.
   input_submitted_time_ = base::TimeTicks();
-  response_started_time_ = base::TimeTicks();
+  did_request_context_ = false;
 }
 
 void GlicMetrics::OnSessionTerminated() {
@@ -267,6 +269,10 @@ void GlicMetrics::SetControllers(GlicWindowController* window_controller,
   tab_manager_ = tab_manager;
 }
 
+void GlicMetrics::DidRequestContextFromFocusedTab() {
+  did_request_context_ = true;
+}
+
 void GlicMetrics::OnImpressionTimerFired() {
   bool passed_fre =
       !window_controller_->fre_controller()->ShouldShowFreDialog();
@@ -294,7 +300,7 @@ ukm::SourceId GlicMetrics::GetSourceId() {
 }
 
 void GlicMetrics::OnEnabledChanged() {
-  bool is_enabled = GlicEnabling::IsEnabledForProfile(profile_);
+  bool is_enabled = enabling_->IsEnabled();
   if (is_enabled == is_enabled_) {
     // No change, early exit.
     return;

@@ -54,12 +54,10 @@ using SyncItem = app_list::AppListSyncableService::SyncItem;
 
 std::unique_ptr<SyncItem> MakeSyncItem(
     const std::string& id,
-    const syncer::StringOrdinal& pin_ordinal,
-    std::optional<bool> is_user_pinned = std::nullopt) {
+    const syncer::StringOrdinal& pin_ordinal) {
   auto item = std::make_unique<SyncItem>(
       id, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item->item_pin_ordinal = pin_ordinal;
-  item->is_user_pinned = is_user_pinned;
   return item;
 }
 
@@ -99,12 +97,10 @@ class AppListSyncableServiceFake : public app_list::AppListSyncableService {
 
   // Adds a new pin if it does not already exist.
   void SetPinPosition(const std::string& app_id,
-                      const syncer::StringOrdinal& item_pin_ordinal,
-                      bool pinned_by_policy) override {
+                      const syncer::StringOrdinal& item_pin_ordinal) override {
     auto it = item_map_.find(app_id);
     if (it == item_map_.end()) {
-      item_map_[app_id] = MakeSyncItem(app_id, item_pin_ordinal,
-                                       /*is_user_pinned=*/!pinned_by_policy);
+      item_map_[app_id] = MakeSyncItem(app_id, item_pin_ordinal);
       return;
     }
     it->second->item_pin_ordinal = item_pin_ordinal;

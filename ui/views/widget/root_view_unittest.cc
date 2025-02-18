@@ -1135,7 +1135,7 @@ TEST_F(RootViewTest, AccessibleNameChangeEvent) {
       ::features::kBlockRootWindowAccessibleNameChangeEvent};
 #endif
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   state.widget()->widget_delegate()->SetTitle(u"Sample Title");
 #if BUILDFLAG(IS_MAC)

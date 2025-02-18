@@ -49,7 +49,10 @@ class SaveAutofillAiDataController {
       content::WebContents* web_contents);
 
   // Shows a save Autofill AI data bubble which the user can accept or decline.
-  virtual void OfferSave(autofill::EntityInstance entity,
+  // `old_entity` is used in the update case to give users an overview of what
+  // was changed.
+  virtual void OfferSave(autofill::EntityInstance new_entity,
+                         std::optional<autofill::EntityInstance> old_entity,
                          AutofillAiClient::SavePromptAcceptanceCallback
                              save_prompt_acceptance_callback) = 0;
 

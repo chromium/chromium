@@ -1302,7 +1302,10 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
             {
                 .event_type =
                     update_client::protocol_request::kEventAppCommandComplete,
-                .result = SUCCEEDED(error_params.error_code),
+                .result =
+                    SUCCEEDED(error_params.error_code)
+                        ? update_client::protocol_request::kEventResultSuccess
+                        : update_client::protocol_request::kEventResultError,
                 .error_code = error_params.error_code,
                 .extra_code1 = error_params.extra_code1,
                 .app_command_id = command_id,

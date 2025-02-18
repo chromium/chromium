@@ -74,6 +74,8 @@ namespace {
 constexpr GaiaId::Literal kGaiaId("123");
 constexpr char kUserEmail[] = "cat@gmail.com";
 constexpr char kWebviewHostName[] = "boca";
+constexpr char kTestDefaultUrl[] = "https://test";
+constexpr char kTestUrlBase[] = "https://test";
 
 mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
   std::vector<mojom::ControlledTabPtr> tabs;
@@ -202,6 +204,7 @@ class MockBocaAppClient : public BocaAppClient {
               GetURLLoaderFactory,
               (),
               (override));
+  MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
 };
 
 class MockSessionManager : public BocaSessionManager {
@@ -280,6 +283,8 @@ class BocaAppPageHandlerTest : public testing::Test {
     EXPECT_CALL(*boca_app_client_, AddSessionManager(_)).Times(1);
     ON_CALL(*boca_app_client_, GetIdentityManager())
         .WillByDefault(Return(nullptr));
+    ON_CALL(*boca_app_client_, GetSchoolToolsServerBaseUrl())
+        .WillByDefault(Return(kTestDefaultUrl));
 
     // Sign in a test user.
     fake_user_manager_->AddGaiaUser(account_id,
@@ -409,7 +414,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId.ToString());
   CreateSessionRequest request(
-      nullptr, teacher, config->session_duration,
+      nullptr, kTestUrlBase, teacher, config->session_duration,
       ::boca::Session::SessionState::Session_SessionState_ACTIVE,
       future.GetCallback());
   EXPECT_CALL(*session_client_impl(), CreateSession(_))
@@ -539,7 +544,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId.ToString());
   CreateSessionRequest request(
-      nullptr, teacher, config->session_duration,
+      nullptr, kTestUrlBase, teacher, config->session_duration,
       ::boca::Session::SessionState::Session_SessionState_ACTIVE,
       future.GetCallback());
   EXPECT_CALL(*session_client_impl(), CreateSession(_))
@@ -579,7 +584,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
+  GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
+                            future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
@@ -711,7 +717,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
       future;
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
-  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
+  GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
+                            future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
@@ -738,7 +745,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithHTTPError) {
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
+  GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
+                            future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         request->callback().Run(
@@ -762,7 +770,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
+  GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
+                            future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke(
           [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
@@ -785,7 +794,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNonActiveSessionTest) {
       future;
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
-  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
+  GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
+                            future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         request->callback().Run(std::make_unique<::boca::Session>());
@@ -810,7 +820,8 @@ TEST_F(BocaAppPageHandlerTest,
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
+  GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
+                            future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
@@ -847,7 +858,7 @@ TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {
 
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId.ToString());
-  UpdateSessionRequest request(nullptr, teacher, session_id,
+  UpdateSessionRequest request(nullptr, kTestUrlBase, teacher, session_id,
                                future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
@@ -883,7 +894,7 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithHTTPFailure) {
 
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId.ToString());
-  UpdateSessionRequest request(nullptr, teacher, session_id,
+  UpdateSessionRequest request(nullptr, kTestUrlBase, teacher, session_id,
                                future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
@@ -949,7 +960,7 @@ TEST_F(BocaAppPageHandlerTest, ExtendSessionDurationSucceed) {
 
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId.ToString());
-  UpdateSessionRequest request(nullptr, teacher, session_id,
+  UpdateSessionRequest request(nullptr, kTestUrlBase, teacher, session_id,
                                future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
@@ -980,8 +991,8 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
       .WillOnce(WithArg<0>(
@@ -1049,8 +1060,8 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithHTTPFailure) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
       .WillOnce(WithArg<0>(
@@ -1112,8 +1123,8 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
       .WillOnce(WithArg<0>(
@@ -1155,8 +1166,8 @@ TEST_F(BocaAppPageHandlerTest,
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_)).Times(0);
 
@@ -1182,8 +1193,8 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
       .WillOnce(WithArg<0>(
@@ -1222,8 +1233,8 @@ TEST_F(BocaAppPageHandlerTest,
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
@@ -1279,8 +1290,8 @@ TEST_F(BocaAppPageHandlerTest,
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
@@ -1336,8 +1347,8 @@ TEST_F(BocaAppPageHandlerTest,
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
@@ -1398,8 +1409,8 @@ TEST_F(BocaAppPageHandlerTest,
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
 
-  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
-                               future.GetCallback());
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
@@ -1528,7 +1539,7 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::RemoveStudentError>> future_1;
 
-  RemoveStudentRequest request(nullptr, kGaiaId, session_id,
+  RemoveStudentRequest request(nullptr, kTestUrlBase, kGaiaId, session_id,
                                future.GetCallback());
 
   const char student_id[] = "4";
@@ -1565,7 +1576,7 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentWithHTTPFailure) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::RemoveStudentError>> future_1;
 
-  RemoveStudentRequest request(nullptr, kGaiaId, session_id,
+  RemoveStudentRequest request(nullptr, kTestUrlBase, kGaiaId, session_id,
                                future.GetCallback());
 
   const char student_id[] = "id";
@@ -1681,8 +1692,8 @@ TEST_F(BocaAppPageHandlerTest, JoinSessionSucceeded) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::SubmitAccessCodeError>> future_1;
 
-  JoinSessionRequest request(nullptr, ::boca::UserIdentity(), "device", "code",
-                             future.GetCallback());
+  JoinSessionRequest request(nullptr, kTestUrlBase, ::boca::UserIdentity(),
+                             "device", "code", future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), JoinSession(_))
       .WillOnce(WithArg<0>(
@@ -1709,8 +1720,8 @@ TEST_F(BocaAppPageHandlerTest, JoinSessionFailed) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::SubmitAccessCodeError>> future_1;
 
-  JoinSessionRequest request(nullptr, ::boca::UserIdentity(), "device", "code",
-                             future.GetCallback());
+  JoinSessionRequest request(nullptr, kTestUrlBase, ::boca::UserIdentity(),
+                             "device", "code", future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), JoinSession(_))
       .WillOnce(WithArg<0>(
@@ -1728,8 +1739,7 @@ TEST_F(BocaAppPageHandlerTest, JoinSessionFailed) {
 
 TEST_F(BocaAppPageHandlerTest, ViewScreenSucceeded) {
   const std::string student_id = "123";
-  EXPECT_CALL(*spotlight_service(),
-              ViewScreen(student_id, kSchoolToolsApiBaseUrl, _))
+  EXPECT_CALL(*spotlight_service(), ViewScreen(student_id, kTestUrlBase, _))
       .WillOnce(WithArg<2>(Invoke(
           [&](auto request) { std::move(request).Run(base::ok(true)); })));
 
@@ -1743,8 +1753,7 @@ TEST_F(BocaAppPageHandlerTest, ViewScreenSucceeded) {
 TEST_F(BocaAppPageHandlerTest, ViewScreenFailed) {
   const std::string student_id = "123";
 
-  EXPECT_CALL(*spotlight_service(),
-              ViewScreen(student_id, kSchoolToolsApiBaseUrl, _))
+  EXPECT_CALL(*spotlight_service(), ViewScreen(student_id, kTestUrlBase, _))
       .WillOnce(WithArg<2>(Invoke([&](auto request) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
@@ -1798,7 +1807,7 @@ TEST_F(BocaAppPageHandlerTest, EndViewScreenSessionSucceeded) {
   EXPECT_CALL(
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
-                            kSchoolToolsApiBaseUrl, _))
+                            kTestUrlBase, _))
       .WillOnce(WithArg<3>(Invoke(
           [&](auto request) { std::move(request).Run(base::ok(true)); })));
 
@@ -1815,7 +1824,7 @@ TEST_F(BocaAppPageHandlerTest, EndViewScreenSessionFailed) {
   EXPECT_CALL(
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
-                            kSchoolToolsApiBaseUrl, _))
+                            kTestUrlBase, _))
       .WillOnce(WithArg<3>(Invoke([&](auto request) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));

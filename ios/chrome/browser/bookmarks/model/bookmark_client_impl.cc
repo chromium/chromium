@@ -155,13 +155,18 @@ void BookmarkClientImpl::DecodeLocalOrSyncableBookmarkSyncMetadata(
           sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model_));
 }
 
-void BookmarkClientImpl::DecodeAccountBookmarkSyncMetadata(
+BookmarkClientImpl::DecodeAccountBookmarkSyncMetadataResult
+BookmarkClientImpl::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
   account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
       metadata_str, schedule_save_closure,
       std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
           model_));
+  return account_bookmark_sync_service_->IsTrackingMetadata()
+             ? DecodeAccountBookmarkSyncMetadataResult::kSuccess
+             : DecodeAccountBookmarkSyncMetadataResult::
+                   kMustRemoveAccountPermanentFolders;
 }
 
 void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(

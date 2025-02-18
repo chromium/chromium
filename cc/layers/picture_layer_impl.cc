@@ -28,7 +28,6 @@
 #include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
-#include "cc/layers/solid_color_layer_impl.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/tiles/tile_manager.h"
 #include "cc/tiles/tiling_set_raster_queue_all.h"
@@ -218,34 +217,8 @@ void PictureLayerImpl::AppendQuads(const AppendQuadsContext& context,
       render_pass->CreateAndAppendSharedQuadState();
 
   if (raster_source_->IsSolidColor()) {
-    // TODO(crbug.com/41468388): This is still hard-coded at 1.0. This has some
-    // history:
-    //  - for crbug.com/769319, the contents scale was allowed to change, to
-    //    avoid blurring on high-dpi screens.
-    //  - for crbug.com/796558, the max device scale was hard-coded back to 1.0
-    //    for single-tile masks, to avoid problems with transforms.
-    // To avoid those transform/scale bugs, this is currently left at 1.0. See
-    // crbug.com/979672 for more context and test links.
-    float max_contents_scale = 1;
-
-    // The downstream CA layers use shared_quad_state to generate resources of
-    // the right size even if it is a solid color picture layer.
-    PopulateScaledSharedQuadState(shared_quad_state, max_contents_scale,
-                                  contents_opaque());
-
-    AppendDebugBorderQuad(render_pass, gfx::Rect(bounds()), shared_quad_state,
-                          append_quads_data);
-
-    gfx::Rect scaled_visible_layer_rect =
-        shared_quad_state->visible_quad_layer_rect;
-    Occlusion occlusion = draw_properties().occlusion_in_content_space;
-
-    EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
-    SolidColorLayerImpl::AppendSolidQuads(
-        render_pass, occlusion, shared_quad_state, scaled_visible_layer_rect,
-        raster_source_->GetSolidColor(),
-        !layer_tree_impl()->settings().enable_edge_anti_aliasing,
-        effect_node->blend_mode, append_quads_data);
+    AppendSolidQuad(render_pass, append_quads_data,
+                    raster_source_->GetSolidColor());
     return;
   }
 

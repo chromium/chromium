@@ -394,7 +394,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
     @Override
     public void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData) {
-        assert mPriceWelcomeMessageReviewActionProviderSupplier.get() != null;
+        @Nullable
+        PriceWelcomeMessageReviewActionProvider actionProvider =
+                mPriceWelcomeMessageReviewActionProviderSupplier.get();
+        if (actionProvider == null) return;
 
         if (mPriceMessageService == null
                 || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile)
@@ -408,9 +411,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             // To make the message card in view when user enters tab switcher, we should scroll to
             // current tab with 0 offset. See {@link
             // TabSwitcherMediator#setInitialScrollIndexOffset} for more details.
-            mPriceWelcomeMessageReviewActionProviderSupplier
-                    .get()
-                    .scrollToTab(mCurrentTabGroupModelFilterSupplier.get().index());
+            actionProvider.scrollToTab(mCurrentTabGroupModelFilterSupplier.get().index());
         }
         for (MessageUpdateObserver observer : mObservers) {
             observer.onShowPriceWelcomeMessage();

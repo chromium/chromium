@@ -1196,6 +1196,10 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   });
   ExpectMetric("Autofill.CreditCardInfoBar.Local",
                AutofillMetrics::INFOBAR_SHOWN);
+  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
+               "NumStrikes.0.NoFixFlow",
+               static_cast<int>(
+                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
   ASSERT_EQ(1U, infobar_manager->infobars().size());
   infobars::InfoBarDelegate* infobar =
       infobar_manager->infobars()[0]->delegate();
@@ -1263,6 +1267,10 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
   });
   ExpectMetric("Autofill.CreditCardInfoBar.Local",
                AutofillMetrics::INFOBAR_SHOWN);
+  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
+               "NumStrikes.0.NoFixFlow",
+               static_cast<int>(
+                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
   ASSERT_EQ(1U, infobar_manager->infobars().size());
   infobars::InfoBarDelegate* infobar =
       infobar_manager->infobars()[0]->delegate();
@@ -1357,6 +1365,10 @@ TEST_F(AutofillControllerTest,
   });
   ExpectMetric("Autofill.CreditCardInfoBar.Local",
                AutofillMetrics::INFOBAR_SHOWN);
+  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
+               "NumStrikes.0.NoFixFlow",
+               static_cast<int>(
+                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
   ASSERT_EQ(1U, infobar_manager->infobars().size());
   infobars::InfoBarDelegate* infobar =
       infobar_manager->infobars()[0]->delegate();

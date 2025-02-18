@@ -939,14 +939,6 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
     return base::Time();
   }
 
-  void CreatePrefServiceForUserBeforeLogin(const AccountId& account_id) {
-    GetSessionControllerClient()->set_provide_pref_service(false);
-    CHECK(!Shell::Get()->session_controller()->GetUserSessionByAccountId(
-        account_id));
-    ash_test_helper()->prefs_provider()->SetUserPrefs(
-        account_id, TestPrefServiceProvider::CreateUserPrefServiceSimple());
-  }
-
   raw_ptr<WallpaperControllerImpl, DanglingUntriaged> controller_;
   raw_ptr<WallpaperPrefManager, DanglingUntriaged> pref_manager_ =
       nullptr;  // owned by controller
@@ -4675,7 +4667,7 @@ TEST_P(WallpaperControllerTest, SetCustomWallpaper) {
 }
 
 TEST_P(WallpaperControllerTest, OldOnlineInfoSynced_Discarded) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
+  SimulateUserLogin(kAccountId1);
   // Create a dictionary that looks like the preference from crrev.com/a040384.
   // DO NOT CHANGE as there are preferences like this in production.
   base::Value::Dict wallpaper_info_dict;
@@ -4698,6 +4690,8 @@ TEST_P(WallpaperControllerTest, OldOnlineInfoSynced_Discarded) {
     wallpaper_update->Set(kAccountId1.GetUserEmail(),
                           std::move(wallpaper_info_dict));
   }
+  ClearLogin();
+
   SimulateUserLogin(kAccountId1);
   task_environment()->RunUntilIdle();
 
@@ -4707,9 +4701,11 @@ TEST_P(WallpaperControllerTest, OldOnlineInfoSynced_Discarded) {
 }
 
 TEST_P(WallpaperControllerTest, MigrateWallpaperInfo_Online) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
+  SimulateUserLogin(kAccountId1);
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kOnline);
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, expected_info);
+  ClearLogin();
+
   SimulateUserLogin(kAccountId1);
   WallpaperInfo info;
   ASSERT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &info));
@@ -4717,9 +4713,11 @@ TEST_P(WallpaperControllerTest, MigrateWallpaperInfo_Online) {
 }
 
 TEST_P(WallpaperControllerTest, MigrateWallpaperInfoCustomized) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
+  SimulateUserLogin(kAccountId1);
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kCustomized);
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, expected_info);
+  ClearLogin();
+
   SimulateUserLogin(kAccountId1);
   WallpaperInfo info;
   ASSERT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &info));
@@ -4727,7 +4725,7 @@ TEST_P(WallpaperControllerTest, MigrateWallpaperInfoCustomized) {
 }
 
 TEST_P(WallpaperControllerTest, MigrateWallpaperInfoDaily) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
+  SimulateUserLogin(kAccountId1);
   OnlineWallpaperVariant variant(kAssetId, GURL(kDummyUrl),
                                  backdrop::Image::IMAGE_TYPE_UNKNOWN);
   WallpaperInfo expected_info = WallpaperInfo(
@@ -4737,6 +4735,8 @@ TEST_P(WallpaperControllerTest, MigrateWallpaperInfoDaily) {
           /*daily_refresh_enabled=*/false, kUnitId, {variant}),
       variant);
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, expected_info);
+  ClearLogin();
+
   SimulateUserLogin(kAccountId1);
   WallpaperInfo info;
   ASSERT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &info));
@@ -4745,7 +4745,7 @@ TEST_P(WallpaperControllerTest, MigrateWallpaperInfoDaily) {
 
 TEST_P(WallpaperControllerTest,
        MigrateWallpaperInfoDoesntHappenWhenSyncedInfoAlreadyExists) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
+  SimulateUserLogin(kAccountId1);
   OnlineWallpaperVariant local_variant(kAssetId, GURL(kDummyUrl),
                                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
   WallpaperInfo local_info = WallpaperInfo(
@@ -4764,6 +4764,8 @@ TEST_P(WallpaperControllerTest,
       synced_variant);
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
+  ClearLogin();
+
   SimulateUserLogin(kAccountId1);
   WallpaperInfo info;
   ASSERT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &info));
@@ -5034,8 +5036,7 @@ TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_AlreadySynced) {
 }
 
 TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
-
+  SimulateUserLogin(kAccountId1);
   WallpaperInfo local_info = WallpaperInfo(
       "a_url", WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kCustomized,
       DayBeforeYesterdayish(), "/test/a_url");
@@ -5045,14 +5046,15 @@ TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
       "b_url", WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kCustomized,
       base::Time::Now().LocalMidnight(), "/test/b_url");
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
-  SimulateUserLogin(kAccountId1);
+  ClearLogin();
 
+  SimulateUserLogin(kAccountId1);
   controller_->SyncLocalAndRemotePrefs(kAccountId1);
   EXPECT_FALSE(drivefs_delegate_->get_save_wallpaper_account_id().is_valid());
 }
 
 TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
+  SimulateUserLogin(kAccountId1);
 
   WallpaperInfo local_info = WallpaperInfo(
       "a_url", WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kCustomized,
@@ -5063,9 +5065,9 @@ TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
       "b_url", WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kCustomized,
       DayBeforeYesterdayish(), "/test/b_url");
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
+  ClearLogin();
 
   SimulateUserLogin(kAccountId1);
-
   controller_->SyncLocalAndRemotePrefs(kAccountId1);
   EXPECT_EQ(kAccountId1, drivefs_delegate_->get_save_wallpaper_account_id());
 }
@@ -5826,7 +5828,7 @@ TEST_P(WallpaperControllerTest, ResetToDefaultForDeletedPhotoOnStalenessCheck) {
 }
 
 TEST_P(WallpaperControllerTest, HandleSyncDeletedGooglePhotosPhoto) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
+  SimulateUserLogin(kAccountId1);
 
   WallpaperInfo synced_info = InfoWithType(WallpaperType::kOnceGooglePhotos);
   WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
@@ -5839,6 +5841,7 @@ TEST_P(WallpaperControllerTest, HandleSyncDeletedGooglePhotosPhoto) {
   ASSERT_FALSE(controller_->HasShownAnyWallpaper());
   ASSERT_THAT(client_.fetch_google_photos_photo_id(), testing::IsEmpty());
   client_.set_google_photo_has_been_deleted(true);
+  ClearLogin();
 
   SimulateUserLogin(kAccountId1);
   EXPECT_EQ(synced_info.location, client_.fetch_google_photos_photo_id());
@@ -6356,12 +6359,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
        OnCheckpointChanged_WallpaperDailyRefreshScheduler) {
-  CreatePrefServiceForUserBeforeLogin(kAccountId1);
+  SimulateUserLogin(kAccountId1);
   TestWallpaperControllerObserver observer(controller_);
   EXPECT_EQ(0, observer.daily_refresh_checkpoint_count());
   // User's wallpaper info should exist.
   pref_manager_->SetUserWallpaperInfo(kAccountId1,
                                       InfoWithType(WallpaperType::kDefault));
+  ClearLogin();
+
   SimulateUserLogin(kAccountId1);
   // Clears signal on login.
   observer.ClearDailyRefreshCheckpointCount();

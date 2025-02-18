@@ -146,11 +146,11 @@ enum class MdlType {
 std::vector<MdlType> FromMdlResourceProto(
     masked_domain_list::Resource resource);
 
-struct IssuerToken {
+struct ProbabilisticRevealToken {
   std::int32_t version;
   std::string u;
   std::string e;
-  bool operator==(const IssuerToken& token) const = default;
+  bool operator==(const ProbabilisticRevealToken& token) const = default;
 };
 
 }  // namespace ip_protection

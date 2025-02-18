@@ -114,7 +114,7 @@ class ContentAnalysisDialogBehaviorBrowserTest
           std::tuple<bool, bool, base::TimeDelta>> {
  public:
   ContentAnalysisDialogBehaviorBrowserTest()
-      : ax_event_counter_(views::AXEventManager::Get()) {
+      : ax_event_counter_(views::AXUpdateNotifier::Get()) {
     ContentAnalysisDialog::SetObserverForTesting(this);
 
     expected_scan_result_ = dlp_success() && malware_success();

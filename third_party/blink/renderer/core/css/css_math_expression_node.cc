@@ -376,9 +376,9 @@ enum class ProgressArgsSimplificationStatus {
 };
 
 // Either all the arguments are numerics and have the same unit type (e.g.
-// progress(1em from 0em to 1em)), or they are all numerics and can be resolved
-// to the canonical unit (e.g. progress(1deg from 0rad to 1deg)). Note: this
-// can't be eagerly simplified - progress(1em from 0px to 1em).
+// progress(1em, 0em, 1em)), or they are all numerics and can be resolved
+// to the canonical unit (e.g. progress(1deg, 0rad, 1deg)). Note: this
+// can't be eagerly simplified - progress(1em, 0px, 1em).
 ProgressArgsSimplificationStatus CanEagerlySimplifyProgressArgs(
     const CSSMathExpressionOperation::Operands& operands) {
   if (std::all_of(operands.begin(), operands.end(),
@@ -2633,9 +2633,9 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       result.Append(ToString(operator_));
       result.Append('(');
       result.Append(operands_.front()->CustomCSSText());
-      result.Append(" from ");
+      result.Append(", ");
       result.Append(operands_[1]->CustomCSSText());
-      result.Append(" to ");
+      result.Append(", ");
       result.Append(operands_.back()->CustomCSSText());
       result.Append(')');
 
@@ -3561,21 +3561,19 @@ class CSSMathExpressionNodeParser {
         anchor_query_type, anchor_specifier, value, fallback);
   }
 
-  bool ParseProgressNotationFromTo(
+  bool ParseProgressNotationStartAndEndValues(
       CSSParserTokenStream& stream,
       State state,
       CSSMathExpressionOperation::Operands& nodes) {
-    if (stream.Peek().Id() != CSSValueID::kFrom) {
+    if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
       return false;
     }
-    stream.ConsumeIncludingWhitespace();
     if (CSSMathExpressionNode* node = ParseValueExpression(stream, state)) {
       nodes.push_back(node);
     }
-    if (stream.Peek().Id() != CSSValueID::kTo) {
+    if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
       return false;
     }
-    stream.ConsumeIncludingWhitespace();
     if (CSSMathExpressionNode* node = ParseValueExpression(stream, state)) {
       nodes.push_back(node);
     }
@@ -3593,7 +3591,7 @@ class CSSMathExpressionNodeParser {
         function_id != CSSValueID::kContainerProgress) {
       return nullptr;
     }
-    // <media-progress()> = media-progress(<media-feature> from <calc-sum> to
+    // <media-progress()> = media-progress(<media-feature>, <calc-sum>,
     // <calc-sum>)
     CSSMathExpressionOperation::Operands nodes;
     stream.ConsumeWhitespace();
@@ -3605,7 +3603,7 @@ class CSSMathExpressionNodeParser {
       }
     } else if (function_id == CSSValueID::kContainerProgress) {
       // <container-progress()> = container-progress(<size-feature> [ of
-      // <container-name> ]? from <calc-sum> to <calc-sum>)
+      // <container-name> ]?, <calc-sum>, <calc-sum>)
       const CSSIdentifierValue* size_feature =
           css_parsing_utils::ConsumeIdent(stream);
       if (!size_feature) {
@@ -3626,10 +3624,10 @@ class CSSMathExpressionNodeParser {
       }
     } else if (CSSMathExpressionNode* node =
                    ParseValueExpression(stream, state)) {
-      // <progress()> = progress(<calc-sum> from <calc-sum> to <calc-sum>)
+      // <progress()> = progress(<calc-sum>, <calc-sum>, <calc-sum>)
       nodes.push_back(node);
     }
-    if (!ParseProgressNotationFromTo(stream, state, nodes)) {
+    if (!ParseProgressNotationStartAndEndValues(stream, state, nodes)) {
       return nullptr;
     }
     if (nodes.size() != 3u || !stream.AtEnd() ||

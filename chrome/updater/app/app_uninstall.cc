@@ -230,7 +230,7 @@ void AppUninstall::UninstallAll(int reason) {
   update_client::UpdateClientFactory(config_)->SendPing(
       uninstall_data,
       {.event_type = update_client::protocol_request::kEventUninstall,
-       .result = 1,
+       .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,
        .extra_code1 = reason},
       base::BindOnce(

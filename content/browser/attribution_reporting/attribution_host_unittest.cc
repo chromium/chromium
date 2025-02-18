@@ -37,11 +37,11 @@
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "url/gurl.h"
@@ -134,9 +134,9 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     fenced_frame_node->set_fenced_frame_properties(new_props);
   }
 
-  blink::ParsedPermissionsPolicy RestrictivePermissionsPolicy(
+  network::ParsedPermissionsPolicy RestrictivePermissionsPolicy(
       const url::Origin& allowed_origin) {
-    return {blink::ParsedPermissionsPolicyDeclaration(
+    return {network::ParsedPermissionsPolicyDeclaration(
         network::mojom::PermissionsPolicyFeature::kAttributionReporting,
         /*allowed_origins=*/
         {*network::OriginWithPossibleWildcards::FromOrigin(allowed_origin)},

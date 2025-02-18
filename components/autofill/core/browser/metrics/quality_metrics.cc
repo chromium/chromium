@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
@@ -68,26 +67,6 @@ void LogPerfectFillingMetric(const FormStructure& form) {
   if (filling_product_was_used.at(FillingProduct::kCreditCard)) {
     AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/false,
                                                perfect_filling);
-  }
-}
-
-void LogPreFillMetrics(const FormStructure& form) {
-  for (const std::unique_ptr<AutofillField>& field : form) {
-    const FormType form_type_of_field =
-        FieldTypeGroupToFormType(field->Type().group());
-    const bool is_address_form_field =
-        form_type_of_field == FormType::kAddressForm;
-    const bool credit_card_form_field =
-        form_type_of_field == FormType::kCreditCardForm;
-    if (is_address_form_field || credit_card_form_field) {
-      const std::string_view form_type_name =
-          FormTypeToStringView(form_type_of_field);
-      LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
-                              field->Type().GetStorableType());
-      LogPreFilledFieldClassifications(form_type_name,
-                                       field->initial_value_changed(),
-                                       field->may_use_prefilled_placeholder());
-    }
   }
 }
 
@@ -236,7 +215,6 @@ void LogFillingMetrics(const FormStructure& form,
     return;
   }
   LogPerfectFillingMetric(form);
-  LogPreFillMetrics(form);
   LogFieldFillingStatsAndScore(form);
   LogFillingQualityMetrics(form);
 

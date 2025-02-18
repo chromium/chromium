@@ -38,6 +38,7 @@ constexpr char kGaiaId[] = "123";
 constexpr char kSessionId[] = "session-id";
 constexpr char kSpotlightConnectionCode[] = "456";
 constexpr char kUserEmail[] = "cat@gmail.com";
+constexpr char kTestBaseUrl[] = "https://test";
 
 class MockBocaAppClient : public BocaAppClient {
  public:
@@ -49,6 +50,7 @@ class MockBocaAppClient : public BocaAppClient {
               (),
               (override));
   MOCK_METHOD(std::string, GetDeviceId, (), (override));
+  MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
 };
 
 class MockSessionManager : public BocaSessionManager {
@@ -113,6 +115,9 @@ class SpotlightSessionManagerTest : public testing::Test {
     ON_CALL(*boca_app_client_, GetSessionManager())
         .WillByDefault(Return(session_manager()));
 
+    ON_CALL(*boca_app_client_, GetSchoolToolsServerBaseUrl())
+        .WillByDefault(Return(kTestBaseUrl));
+
     auto spotlight_crd_manager =
         std::make_unique<NiceMock<MockSpotlightCrdManager>>();
     spotlight_crd_manager_ = spotlight_crd_manager.get();
@@ -168,8 +173,8 @@ TEST_F(SpotlightSessionManagerTest, OnConsumerActivityUpdated) {
       .WillOnce(WithArg<0>(Invoke([&](auto callback) {
         std::move(callback).Run(kSpotlightConnectionCode);
       })));
-  EXPECT_CALL(*spotlight_service(), RegisterScreen(kSpotlightConnectionCode,
-                                                   kSchoolToolsApiBaseUrl, _))
+  EXPECT_CALL(*spotlight_service(),
+              RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
       .WillOnce(WithArg<2>(Invoke(
           [&](auto callback) { std::move(callback).Run(base::ok(true)); })));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(false)).Times(1);
@@ -253,8 +258,8 @@ TEST_F(SpotlightSessionManagerTest,
       .WillRepeatedly(WithArg<0>(Invoke([&](auto callback) {
         std::move(callback).Run(kSpotlightConnectionCode);
       })));
-  EXPECT_CALL(*spotlight_service(), RegisterScreen(kSpotlightConnectionCode,
-                                                   kSchoolToolsApiBaseUrl, _))
+  EXPECT_CALL(*spotlight_service(),
+              RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
       .Times(1);
 
   ::boca::UserIdentity producer;
@@ -263,8 +268,8 @@ TEST_F(SpotlightSessionManagerTest,
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
 
-  EXPECT_CALL(*spotlight_service(), RegisterScreen(kSpotlightConnectionCode,
-                                                   kSchoolToolsApiBaseUrl, _))
+  EXPECT_CALL(*spotlight_service(),
+              RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
       .Times(1);
   spotlight_session_manager_->OnSessionEnded(kSessionId);
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);

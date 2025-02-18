@@ -39,14 +39,14 @@ class AuraTestHelper;
 }
 }  // namespace aura
 
-namespace blink {
+namespace network {
 struct ParsedPermissionsPolicyDeclaration;
 using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;
+}  // namespace network
 
-namespace web_pref {
+namespace blink::web_pref {
 struct WebPreferences;
-}
-}  // namespace blink
+}  // namespace blink::web_pref
 
 namespace display {
 #if BUILDFLAG(IS_ANDROID)
@@ -121,7 +121,7 @@ class RenderFrameHostTester {
   // used as the container policy.
   virtual RenderFrameHost* AppendChildWithPolicy(
       const std::string& frame_name,
-      const blink::ParsedPermissionsPolicy& allow) = 0;
+      const network::ParsedPermissionsPolicy& allow) = 0;
 
   // Same as AppendChild above, but simulates the `credentialless` attribute
   // being added.

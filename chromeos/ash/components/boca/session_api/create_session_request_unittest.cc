@@ -150,7 +150,7 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithFullInputAndSucceed) {
 
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
-          request_sender(), teacher, session_duration,
+          request_sender(), "https://test", teacher, session_duration,
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
           future.GetCallback());
 
@@ -254,7 +254,7 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndSucceed) {
   teacher.set_gaia_id("1");
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
-          request_sender(), teacher, session_duration,
+          request_sender(), "https://test", teacher, session_duration,
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
           future.GetCallback());
 
@@ -293,7 +293,7 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndFail) {
   teacher.set_gaia_id("1");
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
-          request_sender(), teacher, session_duration,
+          request_sender(), "https://test", teacher, session_duration,
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
           future.GetCallback());
 

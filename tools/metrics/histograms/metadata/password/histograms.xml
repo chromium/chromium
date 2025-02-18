@@ -2375,6 +2375,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ModelPredictions.Empty" enum="Boolean"
+    expires_after="2025-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records if the predictions made by Password manager clientside
+    classification model are empty (= contain only NO_SERVER_DATA). Recorded
+    when predictions are propagated into PasswordManager after the model runs.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.MoveUIDismissalReason{UserSyncingType}"
     enum="PasswordManagerUIDismissalReason" expires_after="2025-06-22">
   <owner>mamir@chromium.org</owner>

@@ -23,6 +23,8 @@ constexpr char kCollectionSuccessHistogram[] =
     "Enterprise.DeviceSignals.Collection.Success";
 constexpr char kCollectionFailureHistogram[] =
     "Enterprise.DeviceSignals.Collection.Failure";
+constexpr char kCollectionSignalsCountHistogram[] =
+    "Enterprise.DeviceSignals.Collection.SignalsCount";
 
 constexpr char kCollectionSuccessLatencyHistogramFormat[] =
     "Enterprise.DeviceSignals.Collection.Success.%s.Latency";
@@ -66,6 +68,11 @@ void LogUserPermissionChecked(UserPermission permission) {
 
 void LogSignalCollectionRequested(SignalName signal_name) {
   base::UmaHistogramEnumeration(kCollectionRequestHistogram, signal_name);
+}
+
+void LogSignalsCountRequested(size_t number_of_signals) {
+  base::UmaHistogramExactLinear(kCollectionSignalsCountHistogram,
+                                number_of_signals, kMaxSampleValue);
 }
 
 void LogSignalCollectionRequestedWithItems(SignalName signal_name,

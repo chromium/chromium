@@ -101,7 +101,7 @@ class TestShellDelegate : public ShellDelegate {
   scoped_refptr<network::SharedURLLoaderFactory>
   GetBrowserProcessUrlLoaderFactory() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
-  void SetTabScrubberChromeOSEnabled(bool enabled) override;
+  void SetTabScrubberEnabled(bool enabled) override;
   void ShouldExitFullscreenBeforeLock(
       ShouldExitFullscreenCallback callback) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;

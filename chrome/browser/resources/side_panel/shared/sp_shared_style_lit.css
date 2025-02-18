@@ -93,7 +93,7 @@ cr-dialog {
 }
 
 cr-dialog::part(dialog) {
-  --scroll-border-color: var(--color-side-panel-dialog-divider);
+  --cr-scrollable-border-color: var(--color-side-panel-dialog-divider);
   border-radius: 12px;
   box-shadow: var(--cr-elevation-3);
 }

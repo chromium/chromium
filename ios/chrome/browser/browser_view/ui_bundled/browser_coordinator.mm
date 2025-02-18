@@ -128,11 +128,7 @@
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_coordinator.h"
 #import "ios/chrome/browser/page_info/ui_bundled/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
-#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
-#import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_coordinator.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_coordinator.h"
@@ -487,10 +483,6 @@ enum class ToolbarKind {
 
 // Coordinator for Page Info UI.
 @property(nonatomic, strong) ChromeCoordinator* pageInfoCoordinator;
-
-// Coordinator for parcel tracking opt-in UI presentation.
-@property(nonatomic, strong)
-    ParcelTrackingOptInCoordinator* parcelTrackingOptInCoordinator;
 
 // Coordinator to display local web approvals parent access UI in a bottom
 // sheet.
@@ -1580,9 +1572,6 @@ enum class ToolbarKind {
 
   [self.saveToPhotosCoordinator stop];
   self.saveToPhotosCoordinator = nil;
-
-  [self.parcelTrackingOptInCoordinator stop];
-  self.parcelTrackingOptInCoordinator = nil;
 
   [self.unitConversionCoordinator stop];
   self.unitConversionCoordinator = nil;
@@ -3021,36 +3010,6 @@ enum class ToolbarKind {
 
 #pragma mark - ParcelTrackingOptInCommands
 
-- (void)showTrackingForParcels:(NSArray<CustomTextCheckingResult*>*)parcels {
-  commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForProfile(
-          self.browser->GetProfile());
-  if (!shoppingService) {
-    return;
-  }
-  // Filter out parcels that are already being tracked and post
-  // `showParcelTrackingUIWithNewParcels` command for the new parcel list.
-  FilterParcelsAndShowParcelTrackingUI(
-      shoppingService, parcels,
-      HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands));
-}
-
-- (void)showTrackingForFilteredParcels:
-    (NSArray<CustomTextCheckingResult*>*)parcels {
-  commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForProfile(
-          self.browser->GetProfile());
-  if (!shoppingService) {
-    return;
-  }
-  if (IsUserEligibleParcelTrackingOptInPrompt(
-          self.browser->GetProfile()->GetPrefs(), shoppingService)) {
-    [self showParcelTrackingOptInPromptWithParcels:parcels];
-  } else {
-    [self maybeShowParcelTrackingInfobarWithParcels:parcels];
-  }
-}
-
 - (void)showParcelTrackingInfobarWithParcels:
             (NSArray<CustomTextCheckingResult*>*)parcels
                                      forStep:(ParcelTrackingStep)step {
@@ -3081,64 +3040,6 @@ enum class ToolbarKind {
       InfobarType::kInfobarTypeParcelTracking, std::move(delegate));
   infobar_manager->AddInfoBar(std::move(infobar),
                               /*replace_existing=*/true);
-}
-
-- (void)showParcelTrackingIPH {
-  [HandlerForProtocol(_dispatcher, HelpCommands)
-      presentInProductHelpWithType:InProductHelpType::kParcelTracking];
-}
-
-#pragma mark - ParcelTrackingOptInCommands helpers
-
-- (void)maybeShowParcelTrackingInfobarWithParcels:
-    (NSArray<CustomTextCheckingResult*>*)parcels {
-  IOSParcelTrackingOptInStatus optInStatus =
-      static_cast<IOSParcelTrackingOptInStatus>(
-          self.browser->GetProfile()->GetPrefs()->GetInteger(
-              prefs::kIosParcelTrackingOptInStatus));
-  switch (optInStatus) {
-    case IOSParcelTrackingOptInStatus::kAlwaysTrack: {
-      web::WebState* activeWebState = self.activeWebState;
-      if (!activeWebState) {
-        return;
-      }
-      commerce::ShoppingService* shoppingService =
-          commerce::ShoppingServiceFactory::GetForProfile(
-              ProfileIOS::FromBrowserState(activeWebState->GetBrowserState()));
-      // Track parcels and display infobar if successful.
-      TrackParcels(
-          shoppingService, parcels, std::string(),
-          HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands),
-          /*display_infobar=*/true, TrackingSource::kAutoTrack);
-      break;
-    }
-    case IOSParcelTrackingOptInStatus::kAskToTrack:
-      [self showParcelTrackingInfobarWithParcels:parcels
-                                         forStep:ParcelTrackingStep::
-                                                     kAskedToTrackPackage];
-      break;
-    case IOSParcelTrackingOptInStatus::kNeverTrack:
-    case IOSParcelTrackingOptInStatus::kStatusNotSet:
-      // Do not display infobar.
-      break;
-  }
-}
-
-- (void)showParcelTrackingOptInPromptWithParcels:
-    (NSArray<CustomTextCheckingResult*>*)parcels {
-  [self dismissParcelTrackingOptInPrompt];
-  self.parcelTrackingOptInCoordinator = [[ParcelTrackingOptInCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                         parcels:parcels];
-  [self.parcelTrackingOptInCoordinator start];
-}
-
-- (void)dismissParcelTrackingOptInPrompt {
-  if (self.parcelTrackingOptInCoordinator) {
-    [self.parcelTrackingOptInCoordinator stop];
-    self.parcelTrackingOptInCoordinator = nil;
-  }
 }
 
 #pragma mark - ParentAccessCommands

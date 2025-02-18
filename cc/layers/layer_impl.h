@@ -543,6 +543,11 @@ class CC_EXPORT LayerImpl {
   static float GetPreferredRasterScale(
       gfx::Vector2dF raster_space_scale_factor);
 
+  // Appends a solid-color quad with color `color`.
+  void AppendSolidQuad(viz::CompositorRenderPass* render_pass,
+                       AppendQuadsData* append_quads_data,
+                       SkColor4f color);
+
  private:
   void ValidateQuadResourcesInternal(viz::DrawQuad* quad) const;
   gfx::Transform GetScaledDrawTransform(float layer_to_content_scale) const;

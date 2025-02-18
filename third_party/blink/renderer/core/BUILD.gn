@@ -1500,6 +1500,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
+    "//services/network/public/mojom:mojom_permissions_policy",
     "//skia",
     "//skia:skcms",
     "//testing/gmock",

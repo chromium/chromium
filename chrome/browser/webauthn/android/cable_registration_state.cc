@@ -172,15 +172,6 @@ void RegistrationState::MaybeFlushPendingEvent() {
       return;
     }
   }
-
-  const std::optional<std::vector<uint8_t>> serialized(event->Serialize());
-  if (!serialized) {
-    return;
-  }
-
-  interface_->OnCloudMessage(
-      std::move(*serialized),
-      event->request_type == device::FidoRequestType::kMakeCredential);
 }
 
 void RegistrationState::MaybeSignalSync() {

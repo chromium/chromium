@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/path.h"
 
 #include <math.h>
+
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -55,6 +56,51 @@ bool PathQuadIntersection(const SkPath& path, const gfx::QuadF& quad) {
     return false;
   }
   return !intersection.isEmpty();
+}
+
+enum class Corner { kTopLeft, kTopRight, kBottomRight, kBottomLeft };
+
+void AddCornerShape(SkPath& path,
+                    gfx::RectF corner_rect,
+                    Corner corner,
+                    float curvature) {
+  gfx::PointF target_point;
+  switch (corner) {
+    case Corner::kTopLeft:
+      target_point = corner_rect.top_right();
+      break;
+    case Corner::kTopRight:
+      target_point = corner_rect.bottom_right();
+      break;
+    case Corner::kBottomRight:
+      target_point = corner_rect.bottom_left();
+      break;
+    case Corner::kBottomLeft:
+      target_point = corner_rect.origin();
+      break;
+  }
+  if (curvature == FloatRoundedRect::CornerCurvature::kBevel) {
+    path.lineTo(gfx::PointFToSkPoint(target_point));
+  } else {
+    gfx::PointF control_point;
+    switch (corner) {
+      case Corner::kTopLeft:
+        control_point = corner_rect.origin();
+        break;
+      case Corner::kTopRight:
+        control_point = corner_rect.top_right();
+        break;
+      case Corner::kBottomRight:
+        control_point = corner_rect.bottom_right();
+        break;
+      case Corner::kBottomLeft:
+        control_point = corner_rect.bottom_left();
+        break;
+    }
+    // TODO(crbug.com/394059604): render the other curvatures
+    path.conicTo(gfx::PointFToSkPoint(control_point),
+                 gfx::PointFToSkPoint(target_point), SK_ScalarRoot2Over2);
+  }
 }
 
 }  // namespace
@@ -501,9 +547,31 @@ void Path::AddRoundedRect(const FloatRoundedRect& rect, bool clockwise) {
   if (rect.IsEmpty())
     return;
 
-  path_.addRRect(SkRRect(rect),
-                 clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
-                 /* start at upper-left after corner radius */ 0);
+  if (rect.HasSimpleRoundedCurvature()) {
+    path_.addRRect(SkRRect(rect),
+                   clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
+                   /* start at upper-left after corner radius */ 0);
+    return;
+  }
+
+  // Counterclockwise rounded rects are only available in canvas, and there is
+  // no canvas API (at this moment) to change corner curvature.
+  DCHECK(clockwise);
+
+  path_.moveTo(gfx::PointFToSkPoint(rect.TopLeftCorner().top_right()));
+
+  path_.lineTo(gfx::PointFToSkPoint((rect.TopRightCorner().origin())));
+  AddCornerShape(path_, rect.TopRightCorner(), Corner::kTopRight,
+                 rect.GetCornerCurvature().TopRight());
+  path_.lineTo(gfx::PointFToSkPoint((rect.BottomRightCorner().top_right())));
+  AddCornerShape(path_, rect.BottomRightCorner(), Corner::kBottomRight,
+                 rect.GetCornerCurvature().BottomRight());
+  path_.lineTo(gfx::PointFToSkPoint(rect.BottomLeftCorner().bottom_right()));
+  AddCornerShape(path_, rect.BottomLeftCorner(), Corner::kBottomLeft,
+                 rect.GetCornerCurvature().BottomLeft());
+  path_.lineTo(gfx::PointFToSkPoint(rect.TopLeftCorner().bottom_left()));
+  AddCornerShape(path_, rect.TopLeftCorner(), Corner::kTopLeft,
+                 rect.GetCornerCurvature().TopLeft());
 }
 
 void Path::AddPath(const Path& src, const AffineTransform& transform) {

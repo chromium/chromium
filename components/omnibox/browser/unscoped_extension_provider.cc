@@ -64,8 +64,9 @@ void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
   }
 
   // Do not forward the input to the extensions delegate if the changes to the
-  // input are minimal.
-  if (minimal_changes) {
+  // input are minimal. If eligible for zero suggest (checked above), ignore
+  // the minimal changes check.
+  if (minimal_changes && !input.IsZeroSuggest()) {
     return;
   }
 

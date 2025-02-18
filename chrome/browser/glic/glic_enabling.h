@@ -5,9 +5,14 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_ENABLING_H_
 #define CHROME_BROWSER_GLIC_GLIC_ENABLING_H_
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
+
+namespace glic {
 
 // This class provides a central location for checking if GLIC is enabled. It
 // allows for future expansion to include other ways the feature may be disabled
@@ -45,6 +50,8 @@ class GlicEnabling {
   // Returns true if the given profile has Glic enabled. True implies that
   // IsEnabledByFlags is on and IsProfileEligible(profile) is also true. This
   // value can change at runtime.
+  // This is a convenience method for code outside of //chrome/browser/glic.
+  // Code inside should use instance method IsEnabled() instead.
   static bool IsEnabledForProfile(const Profile* profile);
 
   // Returns true if the given profile has Glic enabled and has completed the
@@ -56,6 +63,28 @@ class GlicEnabling {
   // Whether or not the profile is currently ready for Glic. This means no
   // additional steps must be taken before opening Glic.
   static bool IsReadyForProfile(Profile* profile);
+
+  explicit GlicEnabling(Profile* profile);
+  ~GlicEnabling();
+
+  // Returns true if the given profile has Glic enabled. True implies that
+  // IsEnabledByFlags is on and IsProfileEligible(profile) is also true. This
+  // value can change at runtime.
+  bool IsEnabled();
+
+  using EnableChangedCallback = base::RepeatingClosure;
+  base::CallbackListSubscription RegisterEnableChanged(
+      EnableChangedCallback callback);
+
+ private:
+  void OnGlicSettingsPolicyChanged();
+
+  raw_ptr<Profile> profile_;
+  using EnableChangedCallbackList = base::RepeatingCallbackList<void()>;
+  EnableChangedCallbackList enable_changed_callback_list_;
+  PrefChangeRegistrar pref_registrar_;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENABLING_H_

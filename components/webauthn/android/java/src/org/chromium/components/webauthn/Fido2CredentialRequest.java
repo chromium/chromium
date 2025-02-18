@@ -519,6 +519,15 @@ public class Fido2CredentialRequest
             } else if (hasAllowCredentials && mPlayServicesAvailable) {
                 // If the allowlist contains non-discoverable credentials then
                 // the request needs to be routed directly to Play Services.
+                if (is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
+                    mCredManHelper.setNoCredentialsFallback(
+                            () ->
+                                    this.maybeDispatchGetAssertionRequest(
+                                            options,
+                                            convertOriginToString(origin),
+                                            finalClientDataHash,
+                                            /* credentialId= */ null));
+                }
                 checkForMatchingCredentials(options, origin, clientDataHash);
             } else {
                 // WebauthnMode.CHROME_3PP_ENABLED will keep using CredMan's no credentials UI.
@@ -949,14 +958,6 @@ public class Fido2CredentialRequest
         }
         RecordHistogram.recordBooleanHistogram(
                 "WebAuthentication.Android.NonDiscoverableCredentialsFound", false);
-
-        mCredManHelper.setNoCredentialsFallback(
-                () ->
-                        this.maybeDispatchGetAssertionRequest(
-                                options,
-                                convertOriginToString(callerOrigin),
-                                clientDataHash,
-                                /* credentialId= */ null));
 
         // No elements of the allowlist are local, non-discoverable credentials
         // so route to CredMan.

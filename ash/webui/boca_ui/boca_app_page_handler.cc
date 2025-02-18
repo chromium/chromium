@@ -217,6 +217,7 @@ BocaAppHandler::BocaAppHandler(
                           weak_ptr_factory_.GetWeakPtr()));
   BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
       /*is_app_opened=*/true);
+  base_url_ = BocaAppClient::Get()->GetSchoolToolsServerBaseUrl();
 }
 
 BocaAppHandler::~BocaAppHandler() {
@@ -252,7 +253,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
                                    CreateSessionCallback callback) {
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
-          session_client_impl_->sender(), user_identity_,
+          session_client_impl_->sender(), base_url_, user_identity_,
           config->session_duration,
           // User will always start session as active state.
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
@@ -305,7 +306,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
   auto get_session_request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), is_producer_,
+      session_client_impl_->sender(), base_url_, is_producer_,
       GaiaId(user_identity_.gaia_id()),
       base::BindOnce(
           [](GetSessionCallback callback,
@@ -353,7 +354,8 @@ void BocaAppHandler::EndSession(EndSessionCallback callback) {
   }
   std::unique_ptr<UpdateSessionRequest> request =
       std::make_unique<UpdateSessionRequest>(
-          session_client_impl_->sender(), user_identity_, session->session_id(),
+          session_client_impl_->sender(), base_url_, user_identity_,
+          session->session_id(),
           base::BindOnce(
               [](EndSessionCallback callback,
                  base::expected<std::unique_ptr<::boca::Session>,
@@ -385,7 +387,8 @@ void BocaAppHandler::ExtendSessionDuration(
   }
   std::unique_ptr<UpdateSessionRequest> request =
       std::make_unique<UpdateSessionRequest>(
-          session_client_impl_->sender(), user_identity_, session->session_id(),
+          session_client_impl_->sender(), base_url_, user_identity_,
+          session->session_id(),
           base::BindOnce(
               [](EndSessionCallback callback,
                  base::expected<std::unique_ptr<::boca::Session>,
@@ -417,8 +420,8 @@ void BocaAppHandler::RemoveStudent(const std::string& id,
 
   std::unique_ptr<RemoveStudentRequest> request =
       std::make_unique<RemoveStudentRequest>(
-          session_client_impl_->sender(), GaiaId(user_identity_.gaia_id()),
-          session->session_id(),
+          session_client_impl_->sender(), base_url_,
+          GaiaId(user_identity_.gaia_id()), session->session_id(),
           base::BindOnce(&BocaAppHandler::OnStudentRemoved,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                          session, id));
@@ -438,7 +441,8 @@ void BocaAppHandler::UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
   }
 
   auto request = std::make_unique<UpdateSessionRequest>(
-      session_client_impl_->sender(), user_identity_, session->session_id(),
+      session_client_impl_->sender(), base_url_, user_identity_,
+      session->session_id(),
       base::BindOnce(&BocaAppHandler::OnUpdatedOnTaskConfig,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -481,7 +485,8 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
 
   std::unique_ptr<UpdateSessionRequest> request =
       std::make_unique<UpdateSessionRequest>(
-          session_client_impl_->sender(), user_identity_, session->session_id(),
+          session_client_impl_->sender(), base_url_, user_identity_,
+          session->session_id(),
           base::BindOnce(&BocaAppHandler::OnUpdatedCaptionConfig,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   auto captions_config = CaptionConfigMojomToProto(config->Clone());
@@ -510,7 +515,7 @@ void BocaAppHandler::SubmitAccessCode(const std::string& access_code,
                                       SubmitAccessCodeCallback callback) {
   std::unique_ptr<JoinSessionRequest> request =
       std::make_unique<JoinSessionRequest>(
-          session_client_impl_->sender(), user_identity_,
+          session_client_impl_->sender(), base_url_, user_identity_,
           BocaAppClient::Get()->GetDeviceId(), access_code,
           base::BindOnce(&BocaAppHandler::OnAccessCodeSubmitted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -521,7 +526,7 @@ void BocaAppHandler::ViewStudentScreen(const std::string& id,
                                        ViewStudentScreenCallback callback) {
   CHECK(spotlight_service_);
   spotlight_service_->ViewScreen(
-      id, kSchoolToolsApiBaseUrl,
+      id, base_url_,
       base::BindOnce(
           [](ViewStudentScreenCallback callback,
              base::expected<bool, google_apis::ApiErrorCode> result) {
@@ -542,7 +547,7 @@ void BocaAppHandler::EndViewScreenSession(
   CHECK(spotlight_service_);
 
   spotlight_service_->UpdateViewScreenState(
-      id, ::boca::ViewScreenConfig::INACTIVE, kSchoolToolsApiBaseUrl,
+      id, ::boca::ViewScreenConfig::INACTIVE, base_url_,
       base::BindOnce(
           [](EndViewScreenSessionCallback cb,
              base::expected<bool, google_apis::ApiErrorCode> result) {

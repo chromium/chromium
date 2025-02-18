@@ -66,11 +66,6 @@ class RegistrationState {
         base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
             callback) = 0;
 
-    // Process an FCM message. The `serialized` argument contains a
-    // `device::cablev2::authenticator::Event` in serialized form.
-    virtual void OnCloudMessage(std::vector<uint8_t> serialized,
-                                bool is_make_credential) = 0;
-
     // Request that Sync refresh the DeviceInfo entity for this device.
     virtual void RefreshLocalDeviceInfo() = 0;
   };

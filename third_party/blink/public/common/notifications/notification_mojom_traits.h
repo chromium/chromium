@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_NOTIFICATIONS_NOTIFICATION_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_NOTIFICATIONS_NOTIFICATION_MOJOM_TRAITS_H_
 
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -67,9 +63,9 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
   static const base::span<const int32_t> vibration_pattern(
       const blink::PlatformNotificationData& data) {
     // TODO(https://crbug.com/798466): Store as int32s to avoid this cast.
-    return base::span(
+    return UNSAFE_TODO(base::span(
         reinterpret_cast<const int32_t*>(data.vibration_pattern.data()),
-        data.vibration_pattern.size());
+        data.vibration_pattern.size()));
   }
 
   static double timestamp(const blink::PlatformNotificationData& data) {

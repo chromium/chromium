@@ -12,8 +12,6 @@
  * #css_wrapper_metadata_end */
 
 dialog {
-  --scroll-border-color: var(--google-grey-300);
-  --scroll-border: 1px solid var(--scroll-border-color);
   background-color: var(--cr-dialog-background-color, white);
   border: 0;
   border-radius: var(--cr-dialog-border-radius, 8px);
@@ -33,7 +31,6 @@ dialog {
 
 @media (prefers-color-scheme: dark) {
   dialog {
-    --scroll-border-color: var(--google-grey-700);
     background-color: var(--cr-dialog-background-color,
         var(--google-grey-900));
     /* Note: the colors in linear-gradient() are intentionally the same to
@@ -147,7 +144,7 @@ dialog::backdrop {
 #cr-container-shadow-top:has(+ #container.can-scroll:not(.scrolled-to-top)),
 #container.can-scroll:not(.scrolled-to-bottom) +
     #cr-container-shadow-bottom {
-  border-bottom: var(--scroll-border);
+  border-bottom: 1px solid var(--cr-scrollable-border-color);
 }
 
 .top-container {

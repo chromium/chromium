@@ -826,20 +826,47 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   NSString* hideItemText = l10n_util::GetNSString(
       IDS_IOS_REMINDER_NOTIFICATIONS_HIDE_SET_A_REMINDER);
 
-  return
-      [self createOverflowMenuActionWithNameID:
-                IDS_IOS_REMINDER_NOTIFICATIONS_SET_A_REMINDER
-                                    actionType:overflow_menu::ActionType::
-                                                   SetTabReminder
-                                    symbolName:kBellBadgeSymbol
-                                  systemSymbol:YES
-                              monochromeSymbol:NO
-                               accessibilityID:kToolsMenuSetTabReminder
-                                  hideItemText:hideItemText
-                                       handler:^{
-                                           // TODO(crbug.com/389912106): Display
-                                           // the new 'Set a Reminder' UI.
-                                       }];
+  __weak __typeof(self) weakSelf = self;
+
+  OverflowMenuAction* action = [self
+      createOverflowMenuActionWithNameID:
+          IDS_IOS_REMINDER_NOTIFICATIONS_SET_A_REMINDER
+                              actionType:overflow_menu::ActionType::
+                                             SetTabReminder
+                              symbolName:kBellBadgeSymbol
+                            systemSymbol:YES
+                        monochromeSymbol:NO
+                         accessibilityID:kToolsMenuSetTabReminder
+                            hideItemText:hideItemText
+                                 handler:^{
+                                   [weakSelf notifySetTabReminderActionTapped];
+                                 }];
+
+  if (_engagementTracker &&
+      _engagementTracker->ShouldTriggerHelpUI(
+          feature_engagement::
+              kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature)) {
+    action.displayNewLabelIcon = YES;
+
+    _engagementTracker->Dismissed(
+        feature_engagement::
+            kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature);
+  }
+
+  return action;
+}
+
+// Notifies the FET that the user tapped the "Set a Reminder" action.
+- (void)notifySetTabReminderActionTapped {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  if (_engagementTracker) {
+    _engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSOverflowMenuSetTabReminderTapped);
+  }
+
+  // TODO(crbug.com/389912106): Display the new 'Set a Reminder' UI.
 }
 
 - (OverflowMenuAction*)newClearBrowsingDataAction {

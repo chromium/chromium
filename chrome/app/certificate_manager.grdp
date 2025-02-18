@@ -180,6 +180,9 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_ERROR_TITLE" desc="Title of dialog  displayed in certificate manager when the user tried to import a certificate but their was an error preventing the certificate from being imported.">
       Error importing certificate
     </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_INVALID_FILE" desc="The message in the error dialog for corrupt certificate files.">
+      Invalid or corrupt file
+    </message>
     <if expr="is_chromeos or is_linux">
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_FAILED" desc="Error message displayed in certificate manager when the user tried to import a certificate but their was an error preventing the certificate from being imported.">
         Unable to import certificate
@@ -189,9 +192,6 @@
       </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_INVALID_MAC" desc="The message in the error dialog for certificate files with invalid MAC.">
         Incorrect password or corrupt file
-      </message>
-      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_INVALID_FILE" desc="The message in the error dialog for corrupt certificate files.">
-        Invalid or corrupt file
       </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_UNSUPPORTED" desc="The message in the error dialog for unsupported certificate files.">
         File uses unsupported features

@@ -41,30 +41,38 @@ namespace content {
 
 namespace {
 
+GURL GetURLForRenderFrameHostPtr(const RenderFrameHost* rfh) {
+  if (!rfh) {
+    return GURL();
+  }
+
+  // If a user lands on an error page, and then modifies the zoom level, it
+  // should be attributed to the error-page host and not the page they were
+  // trying to reach.
+  return rfh->IsErrorDocument() ? GURL(kUnreachableWebDataURL)
+                                : rfh->GetLastCommittedURL();
+}
+
 std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!rfh)
     return std::string();
 
-  NavigationEntry* entry = rfh->GetController().GetLastCommittedEntry();
-  if (!entry)
-    return std::string();
+  const GURL url = GetURLForRenderFrameHostPtr(rfh);
 
-  return net::GetHostOrSpecFromURL(HostZoomMap::GetURLFromEntry(entry));
+  return net::GetHostOrSpecFromURL(url);
 }
 
 }  // namespace
 
-GURL HostZoomMap::GetURLFromEntry(NavigationEntry* entry) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  switch (entry->GetPageType()) {
-    case PAGE_TYPE_ERROR:
-      return GURL(kUnreachableWebDataURL);
-    // TODO(wjmaclean): In future, give interstitial pages special treatment as
-    // well.
-    default:
-      return entry->GetURL();
-  }
+// static
+GURL HostZoomMap::GetURLForRenderFrameHost(GlobalRenderFrameHostId rfh_id) {
+  return GetURLForRenderFrameHostPtr(RenderFrameHost::FromID(rfh_id));
+}
+
+// static
+GURL HostZoomMap::GetURLForWebContents(WebContents* web_contents) {
+  return GetURLForRenderFrameHostPtr(web_contents->GetPrimaryMainFrame());
 }
 
 // static
@@ -309,21 +317,17 @@ double HostZoomMapImpl::GetDefaultZoomLevel() {
 void HostZoomMapImpl::SetDefaultZoomLevelInternal(double level,
                                                   WebContentsImpl* web_contents,
                                                   RenderFrameHostImpl* rfh) {
-  // Get the url from the navigation controller directly, as calling
-  // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
-  // is different than the one stored in the map.
-  GURL url;
   std::string host;
   std::string scheme;
 
-  NavigationEntry* entry = rfh->GetController().GetLastCommittedEntry();
+  // Get the url from the RenderFrameHost directly, as calling
+  // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
+  // is different than the one stored in the map.
+  GURL url = GetURLForRenderFrameHostPtr(rfh);
   // It is possible for a WebContent's zoom level to be queried before
-  // a navigation has occurred.
-  if (entry) {
-    url = GetURLFromEntry(entry);
-    scheme = url.scheme();
-    host = net::GetHostOrSpecFromURL(url);
-  }
+  // a navigation has occurred, in which case `url` will be empty.
+  scheme = url.scheme();
+  host = net::GetHostOrSpecFromURL(url);
 
   bool uses_default_zoom = !HasZoomLevel(scheme, host) &&
                            !UsesTemporaryZoomLevel(rfh->GetGlobalId());
@@ -411,20 +415,7 @@ double HostZoomMapImpl::GetZoomLevelForWebContents(
   if (UsesTemporaryZoomLevel(rfh_id))
     return GetTemporaryZoomLevel(rfh_id);
 
-  // Get the url from the navigation controller directly, as calling
-  // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
-  // is different than is stored in the map.
-  GURL url;
-  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
-  NavigationEntry* entry =
-      base::FeatureList::IsEnabled(features::kGuestViewMPArch)
-          ? rfh->GetController().GetLastCommittedEntry()
-          : web_contents_impl->GetController().GetLastCommittedEntry();
-  // It is possible for a WebContent's zoom level to be queried before
-  // a navigation has occurred.
-  if (entry) {
-    url = GetURLFromEntry(entry);
-  }
+  GURL url = GetURLForRenderFrameHost(rfh_id);
 
 #if BUILDFLAG(IS_ANDROID)
   return GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
@@ -444,22 +435,7 @@ void HostZoomMapImpl::SetZoomLevelForWebContents(
   if (UsesTemporaryZoomLevel(rfh_id)) {
     SetTemporaryZoomLevel(rfh_id, level);
   } else {
-    RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
-    NavigationEntry* entry =
-        base::FeatureList::IsEnabled(features::kGuestViewMPArch)
-            ? rfh->GetController().GetLastCommittedEntry()
-            : web_contents_impl->GetController().GetLastCommittedEntry();
-    // Get the url from the navigation controller directly, as calling
-    // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
-    // is different than what the render frame is using. If the two don't
-    // match, the attempt to set the zoom will fail.
-    // Tests may invoke this function with a null entry, but we don't
-    // want to save zoom levels in this case.
-    if (!entry) {
-      return;
-    }
-
-    GURL url = GetURLFromEntry(entry);
+    GURL url = GetURLForRenderFrameHost(rfh_id);
     SetZoomLevelForHost(net::GetHostOrSpecFromURL(url), level);
   }
 }

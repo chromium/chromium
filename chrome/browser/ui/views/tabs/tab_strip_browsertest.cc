@@ -1362,7 +1362,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   Tab* tab1 = tab_strip()->tab_at(1);
   ui::AXNodeData ax_node_data_0;
   ui::AXNodeData ax_node_data_1;
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
   tab0->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data_0);

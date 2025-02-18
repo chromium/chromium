@@ -422,7 +422,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserActionWithAccessibility) {
   InstallExtensionAndLayout("Test Extension");
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_NE(nullptr, menu_item);
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   constexpr char kPinButtonUserAction[] = "Extensions.Toolbar.PinButtonPressed";
 
   // Verify behavior before pin, after pin, and after unpin.

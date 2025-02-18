@@ -1051,3 +1051,108 @@ TEST_F(
       feature_engagement::
           kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
 }
+
+// Verifies the Reminder Notifications Overflow Menu New Badge IPH should
+// trigger when preconditions are met.
+TEST_F(FeatureEngagementTest,
+       TestReminderNotificationsOverflowMenuNewBadgeIPHShouldTrigger) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+  tracker->Dismissed(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature);
+}
+
+// Verifies the Reminder Notifications Overflow Menu New Badge IPH should not
+// trigger after tapping "Set a Reminder" (used event).
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuNewBadgeIPHShouldNotTriggerAfterTapped) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Simulates tapping "Set a Reminder" (used event).
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSOverflowMenuSetTabReminderTapped);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu New Badge IPH should not
+// trigger if a tab reminder was already scheduled (used event - historical
+// usage).
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuNewBadgeIPHShouldNotTriggerAfterReminderScheduled) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Simulates a reminder already scheduled (used event).
+  tracker->NotifyEvent(feature_engagement::events::kIOSTabReminderScheduled);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu New Badge IPH should not
+// trigger after reaching the trigger limit (3 times).
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuNewBadgeIPHShouldNotTriggerAfterLimit) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Trigger IPH 3 times.
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+        feature_engagement::
+            kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+    tracker->Dismissed(
+        feature_engagement::
+            kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature);
+  }
+
+  // IPH should not trigger again after reaching the limit.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+}

@@ -1679,7 +1679,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultA11y) {
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[1]->GetVisible());
 
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
 
   // Pressing down should not generate a selection accessibility event because
   // A11Y announcements are delayed since the results list just changed.

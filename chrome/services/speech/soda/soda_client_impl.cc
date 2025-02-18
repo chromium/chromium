@@ -7,9 +7,11 @@
 #include <tuple>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 
 namespace soda {
 
@@ -46,9 +48,9 @@ SodaClientImpl::SodaClientImpl(base::FilePath library_path)
   if (!lib_.is_valid()) {
     load_soda_result_ = LoadSodaResultValue::kBinaryInvalid;
 
-    // TODO(crbug.com/377332141): Remove once SODA version 1.1.1.8 is rolled out
-    // successfully.
-    base::debug::DumpWithoutCrashing();
+    if (base::FeatureList::IsEnabled(media::kLogSodaLoadFailures)) {
+      base::debug::DumpWithoutCrashing();
+    }
   } else if (!(create_soda_func_ && delete_soda_func_ && add_audio_func_ &&
                soda_start_func_ && mark_done_func_)) {
     load_soda_result_ = LoadSodaResultValue::kFunctionPointerInvalid;

@@ -23,9 +23,9 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -97,11 +97,11 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
 
   bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }
 
-  std::optional<blink::ParsedPermissionsPolicy>
+  std::optional<network::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
       WebContents* web_contents,
       const url::Origin& app_origin) override {
-    return {{blink::ParsedPermissionsPolicyDeclaration(
+    return {{network::ParsedPermissionsPolicyDeclaration(
         network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
         /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,

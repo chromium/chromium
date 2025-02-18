@@ -48,7 +48,7 @@ float get_loudness(vec4 opposing_color) {
 highp float triangle_noise(highp vec2 n) {
   n = fract(n * vec2(5.3987, 5.4421));
   n += dot(n.yx, n.xy + vec2(21.5351, 14.3137));
-  float xy = n.x * n.y;
+  highp float xy = n.x * n.y;
   // compute in [0..2[ and remap to [-1.0..1.0[
   return fract(xy * 95.4307) + fract(xy * 75.04961) - 1.0;
 }

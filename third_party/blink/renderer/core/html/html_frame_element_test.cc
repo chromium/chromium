@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -35,7 +36,7 @@ TEST_F(HTMLFrameElementTest, DefaultContainerPolicy) {
                               AtomicString("http://example.net/"));
   frame_element->UpdateContainerPolicyForTests();
 
-  const ParsedPermissionsPolicy& container_policy =
+  const network::ParsedPermissionsPolicy& container_policy =
       frame_element->GetFramePolicy().container_policy;
   EXPECT_EQ(2UL, container_policy.size());
   // Fullscreen should be disabled in this frame

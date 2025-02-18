@@ -18,9 +18,11 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
@@ -172,7 +174,7 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
     auto simulator =
         NavigationSimulator::CreateBrowserInitiated(url, web_contents());
 
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
         /*allowed_origins=*/

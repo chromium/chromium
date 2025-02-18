@@ -20,11 +20,13 @@
   return self;
 }
 
-- (instancetype)initWithSavedTabGroupID:(base::Uuid)savedTabGroupID {
+- (instancetype)initWithSavedTabGroupID:(base::Uuid)savedTabGroupID
+                           sharingState:(tab_groups::SharingState)sharingState {
   self = [super init];
   if (self) {
     _type = TabGroupsPanelItemType::kSavedTabGroup;
     _savedTabGroupID = savedTabGroupID;
+    _sharingState = sharingState;
     _hash = base::UuidHash()(_savedTabGroupID);
   }
   return self;
@@ -53,6 +55,9 @@
     return YES;
   }
   if (_type != item.type) {
+    return NO;
+  }
+  if (_sharingState != item.sharingState) {
     return NO;
   }
   switch (_type) {

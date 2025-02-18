@@ -27,6 +27,7 @@ class IdentityManager;
 
 namespace glic {
 class AuthController;
+class GlicEnabling;
 class GlicFocusedTabManager;
 class GlicMetrics;
 class GlicProfileManager;
@@ -60,6 +61,7 @@ class GlicKeyedService : public KeyedService {
                 bool prevent_close,
                 InvocationSource source);
 
+  GlicEnabling* enabling() { return enabling_.get(); }
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicWindowController& window_controller() { return *window_controller_; }
 
@@ -173,6 +175,7 @@ class GlicKeyedService : public KeyedService {
 
   raw_ptr<Profile> profile_;
 
+  std::unique_ptr<GlicEnabling> enabling_;
   GlicProfileConfiguration configuration_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicWindowController> window_controller_;

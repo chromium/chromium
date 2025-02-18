@@ -83,6 +83,7 @@
 #include "content/public/common/url_utils.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -633,7 +634,7 @@ void RenderFrameHostManager::InitRoot(
   scoped_refptr<BrowsingContextState> browsing_context_state =
       base::MakeRefCounted<BrowsingContextState>(
           blink::mojom::FrameReplicationState::New(
-              url::Origin(), name, "", blink::ParsedPermissionsPolicy(),
+              url::Origin(), name, "", network::ParsedPermissionsPolicy(),
               network::mojom::WebSandboxFlags::kNone, initial_main_frame_policy,
               // should enforce strict mixed content checking
               blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
@@ -685,7 +686,7 @@ void RenderFrameHostManager::InitChild(
       base::MakeRefCounted<BrowsingContextState>(
           blink::mojom::FrameReplicationState::New(
               url::Origin(), frame_name, frame_unique_name,
-              blink::ParsedPermissionsPolicy(),
+              network::ParsedPermissionsPolicy(),
               network::mojom::WebSandboxFlags::kNone, frame_policy,
               // should enforce strict mixed content checking
               blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,

@@ -33,6 +33,9 @@ void LogUserPermissionChecked(UserPermission permission);
 // Records that a request to collect `signal_name` was received.
 void LogSignalCollectionRequested(SignalName signal_name);
 
+// Records that a request to collect `number_of_signals` was received.
+void LogSignalsCountRequested(size_t number_of_signals);
+
 // Records that a request to collect the parameterized signal named
 // `signal_name` was received with `number_of_items` parameters.
 void LogSignalCollectionRequestedWithItems(SignalName signal_name,

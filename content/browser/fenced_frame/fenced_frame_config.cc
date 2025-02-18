@@ -10,10 +10,10 @@
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 
 namespace content {
 
@@ -362,7 +362,7 @@ void FencedFrameProperties::UpdateParentParsedPermissionsPolicy(
   // loaded through any other means, the vector remains empty.
   CHECK_EQ(effective_enabled_permissions_.size(), 0u);
   CHECK(parent_policy);
-  std::vector<blink::ParsedPermissionsPolicyDeclaration> parsed_policies;
+  std::vector<network::ParsedPermissionsPolicyDeclaration> parsed_policies;
   for (auto feature : blink::kFencedFrameAllowedFeatures) {
     const blink::PermissionsPolicy::Allowlist allow_list =
         parent_policy->GetAllowlistForFeature(feature);

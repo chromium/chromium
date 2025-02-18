@@ -14,6 +14,7 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace network {
 
@@ -584,6 +585,54 @@ TEST(AttributionRequestHeadersTest, Greases_AdAuctionRegistrationEligible) {
                   test_case.eligibility, test_case.options));
   }
 }
+
+// Ensure that any support and any grease bits combine to produce a valid
+// structured header dictionary.
+void IsSupportValid(const mojom::AttributionSupport support,
+                    const uint8_t grease_bits) {
+  const auto grease_options =
+      AttributionReportingHeaderGreaseOptions::FromBits(grease_bits);
+
+  const std::string actual =
+      GetAttributionSupportHeader(support, grease_options);
+
+  auto dict = net::structured_headers::ParseDictionary(actual);
+  EXPECT_TRUE(dict.has_value());
+}
+
+FUZZ_TEST(GetAttributionSupportHeader, IsSupportValid)
+    .WithDomains(fuzztest::ElementOf<mojom::AttributionSupport>({
+                     mojom::AttributionSupport::kWeb,
+                     mojom::AttributionSupport::kWebAndOs,
+                     mojom::AttributionSupport::kOs,
+                     mojom::AttributionSupport::kNone,
+                 }),
+                 fuzztest::Arbitrary<uint8_t>());
+
+// Ensure that any eligibility and any grease bits combine to produce a valid
+// structured header dictionary.
+void IsEligibleValid(const mojom::AttributionReportingEligibility eligibility,
+                     const uint8_t grease_bits) {
+  const auto grease_options =
+      AttributionReportingHeaderGreaseOptions::FromBits(grease_bits);
+
+  const std::string actual =
+      SerializeAttributionReportingEligibleHeader(eligibility, grease_options);
+
+  auto dict = net::structured_headers::ParseDictionary(actual);
+  EXPECT_TRUE(dict.has_value());
+}
+
+FUZZ_TEST(SerializeAttributionReportingEligibleHeader, IsEligibleValid)
+    .WithDomains(
+        fuzztest::ElementOf<mojom::AttributionReportingEligibility>({
+            mojom::AttributionReportingEligibility::kEmpty,
+            mojom::AttributionReportingEligibility::kEventSource,
+            mojom::AttributionReportingEligibility::kNavigationSource,
+            mojom::AttributionReportingEligibility::kTrigger,
+            mojom::AttributionReportingEligibility::kEventSourceOrTrigger,
+        }),
+        fuzztest::Arbitrary<uint8_t>());
 
 }  // namespace
 }  // namespace network
