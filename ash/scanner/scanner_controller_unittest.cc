@@ -273,6 +273,7 @@ TEST_F(ScannerControllerTest, CanShowUiIfConsentNotAcceptedOnly) {
           specialized_features::FeatureAccessFailure::kConsentNotAccepted}));
 
   EXPECT_TRUE(scanner_controller->CanShowUi());
+  EXPECT_TRUE(ScannerController::CanShowUiForShell());
 }
 
 TEST_F(ScannerControllerTest,
@@ -287,6 +288,7 @@ TEST_F(ScannerControllerTest,
       static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
 
   EXPECT_TRUE(scanner_controller->CanShowUi());
+  EXPECT_TRUE(ScannerController::CanShowUiForShell());
 }
 
 TEST_F(ScannerControllerTest,
@@ -302,6 +304,7 @@ TEST_F(ScannerControllerTest,
           ScannerEnterprisePolicy::kAllowedWithoutModelImprovement));
 
   EXPECT_TRUE(scanner_controller->CanShowUi());
+  EXPECT_TRUE(ScannerController::CanShowUiForShell());
 }
 
 TEST_F(ScannerControllerTest, CanShowUiIfEnterprisePolicyIsInvalidValue) {
@@ -314,6 +317,7 @@ TEST_F(ScannerControllerTest, CanShowUiIfEnterprisePolicyIsInvalidValue) {
       prefs::kScannerEnterprisePolicyAllowed, 3);
 
   EXPECT_TRUE(scanner_controller->CanShowUi());
+  EXPECT_TRUE(ScannerController::CanShowUiForShell());
 }
 
 TEST_F(ScannerControllerTest, CannotShowUiIfDisallowedByEnterprisePolicy) {
@@ -327,6 +331,29 @@ TEST_F(ScannerControllerTest, CannotShowUiIfDisallowedByEnterprisePolicy) {
       static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
 
   EXPECT_FALSE(scanner_controller->CanShowUi());
+  EXPECT_FALSE(ScannerController::CanShowUiForShell());
+}
+
+TEST(ScannerControllerNoFixtureTest, CanShowUiForShellFalseWhenNoShell) {
+  ASSERT_FALSE(Shell::HasInstance());
+  EXPECT_FALSE(ScannerController::CanShowUiForShell());
+}
+
+class ScannerControllerDisabledTest : public AshTestBase {
+ public:
+  ScannerControllerDisabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{}, /*disabled_features=*/{
+            features::kScannerUpdate, features::kScannerDogfood});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ScannerControllerDisabledTest, CanShowUiForShellFalseWhenNoController) {
+  ASSERT_FALSE(Shell::Get()->scanner_controller());
+  EXPECT_FALSE(ScannerController::CanShowUiForShell());
 }
 
 TEST_F(ScannerControllerTest,

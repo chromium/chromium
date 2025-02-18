@@ -398,6 +398,20 @@ void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
 }
 
+// static
+bool ScannerController::CanShowUiForShell() {
+  if (!Shell::HasInstance()) {
+    return false;
+  }
+
+  ScannerController* controller = Shell::Get()->scanner_controller();
+  if (!controller) {
+    return false;
+  }
+
+  return controller->CanShowUi();
+}
+
 void ScannerController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   scanner_session_ = nullptr;

@@ -115,8 +115,7 @@ class DefaultBehavior : public CaptureModeBehavior {
   }
   bool ShouldEndSessionOnShowingSearchResults() const override { return true; }
   bool CanShowSmartActionsButton() const override {
-    auto* scanner_controller = Shell::Get()->scanner_controller();
-    return scanner_controller && scanner_controller->CanShowUi();
+    return ScannerController::CanShowUiForShell();
   }
   bool CanShowActionButtons() const override { return true; }
   void OnRegionSelectedOrAdjusted() override {
