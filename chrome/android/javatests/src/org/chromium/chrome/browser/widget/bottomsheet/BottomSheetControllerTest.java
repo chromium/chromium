@@ -191,6 +191,7 @@ public class BottomSheetControllerTest {
         float transYWithoutBottomInset = bottomSheet.getTranslationY();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mTestSupport.setBottomMargin(0);
                     mSheetController.hideContent(mLowPriorityContent, false);
                 });
 

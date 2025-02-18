@@ -162,6 +162,8 @@ class BottomSheet extends FrameLayout
     /** The last recorded app header height, in px. */
     private int mAppHeaderHeight;
 
+    private int mBottomMargin;
+
     /**
      * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
      * view.
@@ -367,10 +369,7 @@ class BottomSheet extends FrameLayout
                         }
 
                         assert mEdgeToEdgeBottomInsetSupplier.get() != null;
-                        int bottomInset =
-                                ViewUtils.dpToPx(
-                                        getContext(), mEdgeToEdgeBottomInsetSupplier.get());
-                        int bottomPadding = bottomInset;
+                        int bottomPadding = getBottomInset();
 
                         // Reset mVisibleViewportRect regardless of sheet open state as it is used
                         // outside of calculating the keyboard height.
@@ -447,7 +446,15 @@ class BottomSheet extends FrameLayout
         mSheetContainer.removeView(this);
     }
 
-    /** @param ratio The current browser controls hidden ratio. */
+    private int getBottomInset() {
+        return mBottomMargin == 0
+                ? ViewUtils.dpToPx(getContext(), mEdgeToEdgeBottomInsetSupplier.get())
+                : 0;
+    }
+
+    /**
+     * @param ratio The current browser controls hidden ratio.
+     */
     void setBrowserControlsHiddenRatio(float ratio) {
         mBrowserControlsHiddenRatio = ratio;
 
@@ -725,7 +732,7 @@ class BottomSheet extends FrameLayout
         mCurrentOffsetPx = offset;
 
         assert mEdgeToEdgeBottomInsetSupplier.get() != null;
-        int bottomInset = ViewUtils.dpToPx(getContext(), mEdgeToEdgeBottomInsetSupplier.get());
+        int bottomInset = getBottomInset();
 
         // The browser controls offset is added here so that the sheet's toolbar behaves like the
         // browser controls do.
@@ -1393,8 +1400,9 @@ class BottomSheet extends FrameLayout
     }
 
     void setBottomMargin(int bottomMargin) {
+        mBottomMargin = bottomMargin;
         MarginLayoutParams layoutParams = (MarginLayoutParams) mSheetContainer.getLayoutParams();
-        layoutParams.bottomMargin = bottomMargin;
+        layoutParams.bottomMargin = mBottomMargin;
         mSheetContainer.setLayoutParams(layoutParams);
     }
 
@@ -1429,5 +1437,10 @@ class BottomSheet extends FrameLayout
 
     void setSheetContainerForTesting(ViewGroup sheetContainer) {
         mSheetContainer = sheetContainer;
+    }
+
+    void setEdgeToEdgeBottomInsetSupplierForTesting(
+            Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+        mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
     }
 }
