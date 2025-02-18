@@ -542,6 +542,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               features::kAutomaticFullscreenContentSetting));
 
+  html_source->AddBoolean(
+      "enablePermissionSiteSettingsRadioButton",
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionSiteSettingsRadioButton));
+
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "enableSmartCardReadersContentSetting",

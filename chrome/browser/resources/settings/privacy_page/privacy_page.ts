@@ -240,6 +240,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
       },
 
+      enablePermissionSiteSettingsRadioButton_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enablePermissionSiteSettingsRadioButton'),
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -368,6 +374,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private enableAutomaticFullscreenContentSetting_: boolean;
+  private enablePermissionSiteSettingsRadioButton_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
   private capturedSurfaceControlEnabled_: boolean;

@@ -484,28 +484,31 @@
                 $i18n{siteSettingsLocationAllowed}
               </cr-radio-button>
 
-              <settings-radio-group
-                  pref="{{prefs.generated.geolocation}}"
-                  selectable-elements="cr-radio-button"
-                  hidden$="[[!isLocationAllowed_]]">
-                <cr-radio-button class="padded-radio-section"
-                    name="[[settingsStateEnum_.QUIET]]"
-                    pref="[[prefs.generated.geolocation]]"
-                    label="$i18n{siteSettingsLocationAskQuiet}">
-                </cr-radio-button>
+              <template is="dom-if"
+                  if="[[!enablePermissionSiteSettingsRadioButton_]]">
+                <settings-radio-group
+                    pref="{{prefs.generated.geolocation}}"
+                    selectable-elements="cr-radio-button"
+                    hidden$="[[!isLocationAllowed_]]">
+                  <cr-radio-button class="padded-radio-section"
+                      name="[[settingsStateEnum_.QUIET]]"
+                      pref="[[prefs.generated.geolocation]]"
+                      label="$i18n{siteSettingsLocationAskQuiet}">
+                  </cr-radio-button>
 
-                <cr-radio-button class="padded-radio-section"
-                    name="[[settingsStateEnum_.CPSS]]"
-                    pref="[[prefs.generated.geolocation]]"
-                    label="$i18n{siteSettingsLocationAskCPSS}">
-                </cr-radio-button>
+                  <cr-radio-button class="padded-radio-section"
+                      name="[[settingsStateEnum_.CPSS]]"
+                      pref="[[prefs.generated.geolocation]]"
+                      label="$i18n{siteSettingsLocationAskCPSS}">
+                  </cr-radio-button>
 
-                <cr-radio-button class="padded-radio-section"
-                    name="[[settingsStateEnum_.LOUD]]"
-                    pref="[[prefs.generated.geolocation]]"
-                    label="$i18n{siteSettingsLocationAskLoud}">
-                </cr-radio-button>
-              </settings-radio-group>
+                  <cr-radio-button class="padded-radio-section"
+                      name="[[settingsStateEnum_.LOUD]]"
+                      pref="[[prefs.generated.geolocation]]"
+                      label="$i18n{siteSettingsLocationAskLoud}">
+                  </cr-radio-button>
+                </settings-radio-group>
+              </template>
 
               <cr-radio-button class="two-line"
                   name="location-block-radio-button"
@@ -516,6 +519,35 @@
               </cr-radio-button>
             </cr-radio-group>
           </div>
+
+          <template is="dom-if"
+              if="[[enablePermissionSiteSettingsRadioButton_]]">
+            <div class="radio-group"
+                hidden$="[[!isLocationAllowed_]]">
+              <h2>$i18n{siteSettingsHowToShowRequests}</h2>
+              <settings-radio-group
+                  pref="{{prefs.generated.geolocation}}"
+                  selectable-elements="cr-radio-button">
+                <cr-radio-button
+                    name="[[settingsStateEnum_.QUIET]]"
+                    pref="[[prefs.generated.geolocation]]"
+                    label="$i18n{siteSettingsLocationAskQuiet}">
+                </cr-radio-button>
+
+                <cr-radio-button
+                    name="[[settingsStateEnum_.CPSS]]"
+                    pref="[[prefs.generated.geolocation]]"
+                    label="$i18n{siteSettingsLocationAskCPSS}">
+                </cr-radio-button>
+
+                <cr-radio-button
+                    name="[[settingsStateEnum_.LOUD]]"
+                    pref="[[prefs.generated.geolocation]]"
+                    label="$i18n{siteSettingsLocationAskLoud}">
+                </cr-radio-button>
+              </settings-radio-group>
+            </div>
+          </template>
 
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
@@ -716,31 +748,34 @@
                 $i18n{siteSettingsNotificationsAskState}
               </cr-radio-button>
 
-              <settings-radio-group
-                  pref="{{prefs.generated.notification}}"
-                  selectable-elements="cr-radio-button"
-                  hidden$="[[!isNotificationAllowed_]]">
-                <cr-radio-button class="padded-radio-section"
-                    id="notification-ask-quiet"
-                    name="[[settingsStateEnum_.QUIET]]"
-                    pref="[[prefs.generated.notification]]"
-                    label="$i18n{siteSettingsNotificationsAskQuiet}">
-                </cr-radio-button>
+              <template is="dom-if"
+                  if="[[!enablePermissionSiteSettingsRadioButton_]]">
+                <settings-radio-group
+                    pref="{{prefs.generated.notification}}"
+                    selectable-elements="cr-radio-button"
+                    hidden$="[[!isNotificationAllowed_]]">
+                  <cr-radio-button class="padded-radio-section"
+                      id="notification-ask-quiet"
+                      name="[[settingsStateEnum_.QUIET]]"
+                      pref="[[prefs.generated.notification]]"
+                      label="$i18n{siteSettingsNotificationsAskQuiet}">
+                  </cr-radio-button>
 
-                <cr-radio-button class="padded-radio-section"
-                    id="notification-ask-cpss"
-                    name="[[settingsStateEnum_.CPSS]]"
-                    pref="[[prefs.generated.notification]]"
-                    label="$i18n{siteSettingsNotificationsAskCPSS}">
-                </cr-radio-button>
+                  <cr-radio-button class="padded-radio-section"
+                      id="notification-ask-cpss"
+                      name="[[settingsStateEnum_.CPSS]]"
+                      pref="[[prefs.generated.notification]]"
+                      label="$i18n{siteSettingsNotificationsAskCPSS}">
+                  </cr-radio-button>
 
-                <cr-radio-button class="padded-radio-section"
-                    id="notification-ask-loud"
-                    name="[[settingsStateEnum_.LOUD]]"
-                    pref="[[prefs.generated.notification]]"
-                    label="$i18n{siteSettingsNotificationsAskLoud}">
-                </cr-radio-button>
-              </settings-radio-group>
+                  <cr-radio-button class="padded-radio-section"
+                      id="notification-ask-loud"
+                      name="[[settingsStateEnum_.LOUD]]"
+                      pref="[[prefs.generated.notification]]"
+                      label="$i18n{siteSettingsNotificationsAskLoud}">
+                  </cr-radio-button>
+                </settings-radio-group>
+              </template>
 
               <cr-radio-button class="two-line"
                   id="notification-block"
@@ -752,6 +787,39 @@
               </cr-radio-button>
             </cr-radio-group>
           </div>
+
+          <template is="dom-if"
+              if="[[enablePermissionSiteSettingsRadioButton_]]">
+            <div class="radio-group"
+                hidden$="[[!isNotificationAllowed_]]">
+              <h2>$i18n{siteSettingsHowToShowRequests}</h2>
+              <settings-radio-group
+                  pref="{{prefs.generated.notification}}"
+                  selectable-elements="cr-radio-button">
+                <cr-radio-button
+                    id="notification-ask-quiet"
+                    name="[[settingsStateEnum_.QUIET]]"
+                    pref="[[prefs.generated.notification]]"
+                    label="$i18n{siteSettingsNotificationsAskQuiet}">
+                </cr-radio-button>
+
+                <cr-radio-button
+                    id="notification-ask-cpss"
+                    name="[[settingsStateEnum_.CPSS]]"
+                    pref="[[prefs.generated.notification]]"
+                    label="$i18n{siteSettingsNotificationsAskCPSS}">
+                </cr-radio-button>
+
+                <cr-radio-button
+                    id="notification-ask-loud"
+                    name="[[settingsStateEnum_.LOUD]]"
+                    pref="[[prefs.generated.notification]]"
+                    label="$i18n{siteSettingsNotificationsAskLoud}">
+                </cr-radio-button>
+              </settings-radio-group>
+            </div>
+          </template>
+
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.NOTIFICATIONS]]"
               allow-header="$i18n{siteSettingsNotificationsAllowedExceptions}"
