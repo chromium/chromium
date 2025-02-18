@@ -35,6 +35,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
@@ -461,5 +462,37 @@ public class OverlayPanelBaseTest {
                 tabHeight - overlayHeight,
                 mNoExpandPanel.calculateOverlayPanelY(),
                 /*delta*/ 0.1);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    public void testCalculateOverlayPanelY_expandedState() {
+        final float tabHeight = 1000;
+        mExpandPanel.onLayoutChanged(400, tabHeight, 100);
+
+        mExpandPanel.setIsFullWidthSizePanelForTesting(true);
+        when(mBrowserControlsStateProvider.getControlsPosition())
+                .thenReturn(ControlsPosition.BOTTOM);
+        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR))
+                .thenReturn(MOCK_TOOLBAR_HEIGHT);
+
+        float peekHeight = mExpandPanel.getPeekedHeight();
+        float expandedHeight = mExpandPanel.getExpandedHeight();
+        float maxedHeight = mExpandPanel.getMaximizedHeight();
+
+        mExpandPanel.setPanelHeight(peekHeight);
+        Assert.assertEquals(
+                tabHeight - peekHeight - (MOCK_TOOLBAR_HEIGHT * mExpandPanel.mPxToDp),
+                mExpandPanel.getOffsetY(),
+                MathUtils.EPSILON);
+
+        mExpandPanel.setPanelHeight(expandedHeight);
+        Assert.assertEquals(
+                tabHeight - expandedHeight, mExpandPanel.getOffsetY(), MathUtils.EPSILON);
+
+        mExpandPanel.setPanelHeight(maxedHeight);
+        Assert.assertEquals(tabHeight - maxedHeight, mExpandPanel.getOffsetY(), MathUtils.EPSILON);
     }
 }

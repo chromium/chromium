@@ -336,8 +336,13 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The current Y-position of the Overlay Panel.
      */
     protected float calculateOverlayPanelY() {
+        // The panel should only stack on top of the toolbar when it's peeking; beyond that height,
+        // it overlays the toolbar and thus does not need an upwards adjustment.
+        @PanelState int panelStateForHeight = findLargestPanelStateFromHeight(mHeight);
         float bottomControlsHeight =
-                mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM
+                panelStateForHeight == PanelState.PEEKED
+                                && mBrowserControlsStateProvider.getControlsPosition()
+                                        == ControlsPosition.BOTTOM
                         ? (mBottomControlsStacker != null
                                         ? mBottomControlsStacker.getHeightFromLayerToBottom(
                                                 LayerType.BOTTOM_TOOLBAR)
