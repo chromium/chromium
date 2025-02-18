@@ -159,7 +159,17 @@ void EditorMenuView::AddedToWidget() {
 
 void EditorMenuView::RequestFocus() {
   views::View::RequestFocus();
-  settings_button_->RequestFocus();
+
+  // Focus on first chip if there is any; otherwise focus on the prompt text
+  // field.
+  if (!chips_container_->children().empty()) {
+    auto first_chips_row = chips_container_->children().front();
+    if (!first_chips_row->children().empty()) {
+      first_chips_row->children().front()->RequestFocus();
+      return;
+    }
+  }
+  textfield_->textfield()->RequestFocus();
 }
 
 gfx::Size EditorMenuView::CalculatePreferredSize(
