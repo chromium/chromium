@@ -54,20 +54,23 @@ static_assert(kTestDefaultTopK <= kTestMaxTopK);
 static_assert(kTestDefaultTemperature <= kTestMaxTemperature);
 
 const char kTestPrompt[] = "Test prompt";
-const char kExpectedFormattedTestPrompt[] = "User: Test prompt\nModel: ";
+const char kExpectedFormattedTestPrompt[] = "U: Test prompt\nM: ";
 const char kTestSystemPrompts[] = "Test system prompt";
-const char kExpectedFormattedSystemPrompts[] = "Test system prompt\n";
+const char kExpectedFormattedSystemPrompts[] = "S: Test system prompt\n";
 const char kTestResponse[] = "Test response";
 
 const char kTestInitialPromptsUser1[] = "How are you?";
 const char kTestInitialPromptsSystem1[] = "I'm fine, thank you, and you?";
 const char kTestInitialPromptsUser2[] = "I'm fine too.";
 const char kExpectedFormattedInitialPrompts[] =
-    "User: How are you?\nModel: I'm fine, thank you, and you?\nUser: I'm fine "
-    "too.\n";
+    ("U: How are you?\n"
+     "M: I'm fine, thank you, and you?\n"
+     "U: I'm fine too.\n");
 const char kExpectedFormattedSystemPromptAndInitialPrompts[] =
-    "Test system prompt\nUser: How are you?\nModel: I'm fine, thank you, and "
-    "you?\nUser: I'm fine too.\n";
+    ("S: Test system prompt\n"
+     "U: How are you?\n"
+     "M: I'm fine, thank you, and you?\n"
+     "U: I'm fine too.\n");
 
 std::vector<blink::mojom::AILanguageModelInitialPromptPtr>
 GetTestInitialPrompts() {
@@ -82,12 +85,6 @@ GetTestInitialPrompts() {
   initial_prompts.push_back(
       create_initial_prompt(Role::kUser, kTestInitialPromptsUser2));
   return initial_prompts;
-}
-
-std::string GetContextString(AILanguageModel::Context& ctx) {
-  auto msg = ctx.MakeRequest();
-  auto* v = static_cast<optimization_guide::proto::StringValue*>(msg.get());
-  return v->value();
 }
 
 AILanguageModel::Context::ContextItem SimpleContextItem(std::string text,
@@ -142,6 +139,10 @@ std::string ToString(const google::protobuf::MessageLite& request_metadata) {
         ->value();
   }
   return "unexpected type";
+}
+
+std::string GetContextString(AILanguageModel::Context& ctx) {
+  return ToString(*ctx.MakeRequest());
 }
 
 const optimization_guide::proto::Any& GetPromptApiMetadata(
@@ -551,7 +552,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                       optimization_guide::
                           OptimizationGuideModelExecutionResultStreamingCallback
                               callback) {
-                    EXPECT_THAT(ToString(request_metadata), "User: A\nModel: ");
+                    EXPECT_THAT(ToString(request_metadata), "U: A\nM: ");
                     callback.Run(CreateExecutionResult(
                         "OK", /*is_complete=*/true, /*input_token_count=*/1u,
                         /*output_token_count=*/mock_size_in_tokens));
@@ -561,7 +562,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                       optimization_guide::
                           OptimizationGuideModelExecutionResultStreamingCallback
                               callback) {
-                    EXPECT_THAT(ToString(request_metadata), "User: B\nModel: ");
+                    EXPECT_THAT(ToString(request_metadata), "U: B\nM: ");
                     callback.Run(CreateExecutionResult(
                         "OK", /*is_complete=*/true, /*input_token_count=*/1u,
                         /*output_token_count=*/mock_size_in_tokens));
@@ -967,8 +968,7 @@ TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
 
 // Tests `AILanguageModel::Context` creation without initial prompts.
 TEST(AILanguageModelContextCreationTest, CreateContext_WithoutInitialPrompts) {
-  AILanguageModel::Context context(kTestMaxContextToken, {},
-                                   /*use_prompt_api_request*/ false);
+  AILanguageModel::Context context(kTestMaxContextToken, {});
   EXPECT_FALSE(context.HasContextItem());
 }
 
@@ -977,8 +977,7 @@ TEST(AILanguageModelContextCreationTest,
      CreateContext_WithInitialPrompts_Normal) {
   AILanguageModel::Context context(
       kTestMaxContextToken,
-      SimpleContextItem("initial prompts\n", kTestInitialPromptsToken),
-      /*use_prompt_api_request*/ false);
+      SimpleContextItem("initial prompts\n", kTestInitialPromptsToken));
   EXPECT_TRUE(context.HasContextItem());
 }
 
@@ -986,12 +985,11 @@ TEST(AILanguageModelContextCreationTest,
 // the max token limit.
 TEST(AILanguageModelContextCreationTest,
      CreateContext_WithInitialPrompts_Overflow) {
-  EXPECT_DEATH_IF_SUPPORTED(AILanguageModel::Context context(
-                                kTestMaxContextToken,
-                                SimpleContextItem("long initial prompts\n",
-                                                  kTestMaxContextToken + 1u),
-                                /*use_prompt_api_request*/ false),
-                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      AILanguageModel::Context context(
+          kTestMaxContextToken, SimpleContextItem("long initial prompts\n",
+                                                  kTestMaxContextToken + 1u)),
+      "");
 }
 
 // Tests the `AILanguageModel::Context` that's initialized with/without any
@@ -1009,15 +1007,14 @@ class AILanguageModelContextTest : public testing::Test,
   }
 
   std::string GetInitialPromptsPrefix() {
-    return IsInitializedWithInitialPrompts() ? "initial prompts\n" : "";
+    return IsInitializedWithInitialPrompts() ? "S: initial prompts\n" : "";
   }
 
   AILanguageModel::Context context_{
       kTestMaxContextToken,
       IsInitializedWithInitialPrompts()
           ? SimpleContextItem("initial prompts", kTestInitialPromptsToken)
-          : AILanguageModel::Context::ContextItem(),
-      /*use_prompt_api_request*/ false};
+          : AILanguageModel::Context::ContextItem()};
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1044,12 +1041,13 @@ TEST_P(AILanguageModelContextTest, TestContextOperation_Empty) {
 TEST_P(AILanguageModelContextTest, TestContextOperation_NonEmpty) {
   EXPECT_EQ(context_.AddContextItem(SimpleContextItem("test", 1u)),
             AILanguageModel::Context::SpaceReservationResult::kSufficientSpace);
-  EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix() + "test\n");
+  EXPECT_EQ(GetContextString(context_),
+            GetInitialPromptsPrefix() + "S: test\n");
   EXPECT_TRUE(context_.HasContextItem());
 
   context_.AddContextItem(SimpleContextItem(" test again", 2u));
   EXPECT_EQ(GetContextString(context_),
-            GetInitialPromptsPrefix() + "test\n test again\n");
+            GetInitialPromptsPrefix() + "S: test\nS:  test again\n");
   EXPECT_TRUE(context_.HasContextItem());
 }
 
@@ -1057,7 +1055,8 @@ TEST_P(AILanguageModelContextTest, TestContextOperation_NonEmpty) {
 TEST_P(AILanguageModelContextTest, TestContextOperation_Overflow) {
   EXPECT_EQ(context_.AddContextItem(SimpleContextItem("test", 1u)),
             AILanguageModel::Context::SpaceReservationResult::kSufficientSpace);
-  EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix() + "test\n");
+  EXPECT_EQ(GetContextString(context_),
+            GetInitialPromptsPrefix() + "S: test\n");
   EXPECT_TRUE(context_.HasContextItem());
 
   // Since the total number of tokens will exceed `kTestMaxContextToken`, the
@@ -1067,7 +1066,7 @@ TEST_P(AILanguageModelContextTest, TestContextOperation_Overflow) {
           SimpleContextItem("test long token", GetMaxContextToken())),
       AILanguageModel::Context::SpaceReservationResult::kSpaceMadeAvailable);
   EXPECT_EQ(GetContextString(context_),
-            GetInitialPromptsPrefix() + "test long token\n");
+            GetInitialPromptsPrefix() + "S: test long token\n");
   EXPECT_TRUE(context_.HasContextItem());
 }
 

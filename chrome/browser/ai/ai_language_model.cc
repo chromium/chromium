@@ -73,40 +73,6 @@ PromptApiPrompt MakePrompt(PromptApiRole role, const std::string& content) {
   return prompt;
 }
 
-const char* FormatPromptRole(PromptApiRole role) {
-  switch (role) {
-    case PromptApiRole::PROMPT_API_ROLE_SYSTEM:
-      return "";  // No prefix for system prompt.
-    case PromptApiRole::PROMPT_API_ROLE_USER:
-      return "User: ";
-    case PromptApiRole::PROMPT_API_ROLE_ASSISTANT:
-      return "Model: ";
-    default:
-      NOTREACHED();
-  }
-}
-
-std::unique_ptr<optimization_guide::proto::StringValue> ToStringValue(
-    const PromptApiRequest& request) {
-  std::ostringstream oss;
-  auto FormatPrompts =
-      [](std::ostringstream& oss,
-         const google::protobuf::RepeatedPtrField<PromptApiPrompt> prompts) {
-        for (const auto& prompt : prompts) {
-          oss << FormatPromptRole(prompt.role()) << prompt.content() << "\n";
-        }
-      };
-  FormatPrompts(oss, request.initial_prompts());
-  FormatPrompts(oss, request.prompt_history());
-  FormatPrompts(oss, request.current_prompts());
-  if (request.current_prompts_size() > 0) {
-    oss << FormatPromptRole(PromptApiRole::PROMPT_API_ROLE_ASSISTANT);
-  }
-  auto value = std::make_unique<optimization_guide::proto::StringValue>();
-  value->set_value(oss.str());
-  return value;
-}
-
 }  // namespace
 
 AILanguageModel::Context::ContextItem::ContextItem() = default;
@@ -119,11 +85,8 @@ using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
 AILanguageModel::Context::Context(uint32_t max_tokens,
-                                  ContextItem initial_prompts,
-                                  bool use_prompt_api_proto)
-    : max_tokens_(max_tokens),
-      initial_prompts_(std::move(initial_prompts)),
-      use_prompt_api_proto_(use_prompt_api_proto) {
+                                  ContextItem initial_prompts)
+    : max_tokens_(max_tokens), initial_prompts_(std::move(initial_prompts)) {
   CHECK_GE(max_tokens_, initial_prompts_.tokens)
       << "the caller shouldn't create an AILanguageModel with the initial "
          "prompts containing more tokens than the limit.";
@@ -168,10 +131,7 @@ AILanguageModel::Context::AddContextItem(ContextItem context_item) {
 
 std::unique_ptr<google::protobuf::MessageLite>
 AILanguageModel::Context::MaybeFormatRequest(PromptApiRequest request) {
-  if (use_prompt_api_proto_) {
-    return std::make_unique<PromptApiRequest>(std::move(request));
-  }
-  return ToStringValue(request);
+  return std::make_unique<PromptApiRequest>(std::move(request));
 }
 
 std::unique_ptr<google::protobuf::MessageLite>
@@ -220,11 +180,8 @@ AILanguageModel::AILanguageModel(
 
   // If the context is not provided, initialize a new context
   // with the default configuration.
-  uint32_t version = metadata.version();
-  bool use_prompt_api_proto = version >= kMinVersionUsingProto;
-  context_ =
-      std::make_unique<Context>(session_->GetTokenLimits().max_context_tokens,
-                                Context::ContextItem(), use_prompt_api_proto);
+  context_ = std::make_unique<Context>(
+      session_->GetTokenLimits().max_context_tokens, Context::ContextItem());
 }
 
 AILanguageModel::~AILanguageModel() = default;
@@ -288,8 +245,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   auto initial_prompts = Context::ContextItem();
   initial_prompts.tokens = size;
   initial_prompts.prompts.Swap(initial_request.mutable_initial_prompts());
-  context_ = std::make_unique<Context>(max_token, std::move(initial_prompts),
-                                       context_->use_prompt_api_proto());
+  context_ = std::make_unique<Context>(max_token, std::move(initial_prompts));
   std::move(callback).Run(TakePendingRemote(), GetLanguageModelInstanceInfo());
 }
 
