@@ -62,12 +62,9 @@ String WebUIBundledCachedMetadataHandler::Encoding() const {
   return WTF::UTF8Encoding().GetName();
 }
 
-bool WebUIBundledCachedMetadataHandler::IsServedFromCacheStorage() const {
-  return false;
-}
-
-bool WebUIBundledCachedMetadataHandler::IsServedFromWebUIBundledCache() const {
-  return true;
+CachedMetadataHandler::ServingSource
+WebUIBundledCachedMetadataHandler::GetServingSource() const {
+  return ServingSource::kWebUIBundledCache;
 }
 
 void WebUIBundledCachedMetadataHandler::OnMemoryDump(

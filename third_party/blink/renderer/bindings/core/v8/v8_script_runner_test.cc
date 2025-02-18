@@ -620,7 +620,8 @@ TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, DoesNotProduceCache) {
   ClassicScript* classic_script =
       CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
-  EXPECT_TRUE(cache_handler->IsServedFromWebUIBundledCache());
+  EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
+            cache_handler->GetServingSource());
 
   // Compile the script, no code cache should be set on the handler.
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
@@ -639,7 +640,8 @@ TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, ConsumesAvailableCodeCache) {
   ClassicScript* classic_script =
       CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
-  EXPECT_TRUE(cache_handler->IsServedFromWebUIBundledCache());
+  EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
+            cache_handler->GetServingSource());
 
   // Compile the script and explicitly extract the cached metadata, no code
   // cache should be set on the handler.

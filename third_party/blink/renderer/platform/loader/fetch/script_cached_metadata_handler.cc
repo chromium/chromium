@@ -80,8 +80,10 @@ String ScriptCachedMetadataHandler::Encoding() const {
   return encoding_.GetName();
 }
 
-bool ScriptCachedMetadataHandler::IsServedFromCacheStorage() const {
-  return sender_->IsServedFromCacheStorage();
+CachedMetadataHandler::ServingSource
+ScriptCachedMetadataHandler::GetServingSource() const {
+  return sender_->IsServedFromCacheStorage() ? ServingSource::kCacheStorage
+                                             : ServingSource::kOther;
 }
 
 void ScriptCachedMetadataHandler::OnMemoryDump(

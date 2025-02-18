@@ -75,11 +75,6 @@ String ServiceWorkerScriptCachedMetadataHandler::Encoding() const {
   return g_empty_string;
 }
 
-bool ServiceWorkerScriptCachedMetadataHandler::IsServedFromCacheStorage()
-    const {
-  return false;
-}
-
 void ServiceWorkerScriptCachedMetadataHandler::OnMemoryDump(
     WebProcessMemoryDump* pmd,
     const String& dump_prefix) const {

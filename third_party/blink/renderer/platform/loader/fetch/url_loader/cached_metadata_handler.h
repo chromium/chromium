@@ -106,6 +106,21 @@ class CachedMetadataHandler : public GarbageCollected<CachedMetadataHandler> {
                                          // by a single CachedMetadata entry.
   };
 
+  // Defines mutually exclusive serving sources for the handler's cached
+  // metadata.
+  enum class ServingSource {
+    // Served by ServiceWorker CacheStorage.
+    kCacheStorage,
+
+    // Served by the static cached metadata from the application's resource
+    // bundle for WebUI code.
+    kWebUIBundledCache,
+
+    // Served by other means, typically the platform's CodeCacheHost. Note: This
+    // enum should be expanded as necessary.
+    kOther,
+  };
+
   virtual ~CachedMetadataHandler() = default;
   virtual void Trace(Visitor* visitor) const {}
 
@@ -117,14 +132,10 @@ class CachedMetadataHandler : public GarbageCollected<CachedMetadataHandler> {
   // Returns the encoding to which the cache is specific.
   virtual String Encoding() const = 0;
 
-  // True if the resource resource associated with the handler is served from
-  // CacheStorage.
-  virtual bool IsServedFromCacheStorage() const = 0;
-
-  // True if this handler manages static cached metadata from the application's
-  // resource bundle. Used to ensure the caching strategy does not generate code
-  // cache data unnecessarily, see V8CodeCache::GetCompileOptions() details.
-  virtual bool IsServedFromWebUIBundledCache() const { return false; }
+  // The source serving the handler's cached metadata.
+  virtual ServingSource GetServingSource() const {
+    return ServingSource::kOther;
+  }
 
   // Dump cache size kept in memory.
   virtual void OnMemoryDump(WebProcessMemoryDump* pmd,

@@ -295,7 +295,8 @@ TEST(ScriptResourceTest, CreatesHandlerForWebUIBundledCodeCaching) {
     auto* handler = resource->CacheHandler();
     EXPECT_EQ(expect_handler, !!handler);
     if (handler) {
-      EXPECT_TRUE(handler->IsServedFromWebUIBundledCache());
+      EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
+                handler->GetServingSource());
       EXPECT_EQ(UTF8Encoding().GetName(), handler->Encoding());
     }
   };

@@ -33,8 +33,7 @@ class PLATFORM_EXPORT WebUIBundledCachedMetadataHandler final
       uint32_t data_type_id,
       GetCachedMetadataBehavior behavior) const override;
   String Encoding() const override;
-  bool IsServedFromCacheStorage() const override;
-  bool IsServedFromWebUIBundledCache() const override;
+  ServingSource GetServingSource() const override;
   void OnMemoryDump(WebProcessMemoryDump* pmd,
                     const String& dump_prefix) const override;
   size_t GetCodeCacheSize() const override;
