@@ -134,7 +134,17 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   //    1. The HTTP status is OK.
   //    2. The `headers` have `upload_status` and `upload_url`.
   //    3. The `upload_status` is "active".
+  // This method also has the side effect of setting upload_url_.
   bool CanUploadContent(const scoped_refptr<net::HttpResponseHeaders>& headers);
+
+  // Returns true if all of the following conditions are met:
+  //    1. The HTTP status is OK.
+  //    2. The `headers` contain the async upload intermediate header
+  // This method also has the side effect of setting `upload_url_` when
+  // the corresponding header is included in the response as it indicates
+  // the URL to upload the data to.
+  bool ContainsIntermediateHeader(
+      const scoped_refptr<net::HttpResponseHeaders>& headers);
 
   // Called whenever a net request finishes (on success or failure).
   void Finish(int net_error,
