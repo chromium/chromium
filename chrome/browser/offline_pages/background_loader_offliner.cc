@@ -250,7 +250,7 @@ void BackgroundLoaderOffliner::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
 void BackgroundLoaderOffliner::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  if (pending_request_) {
+  if (pending_request_ && completion_callback_) {
     SavePageRequest request(*pending_request_.get());
     switch (status) {
       case base::TERMINATION_STATUS_OOM:
