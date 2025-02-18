@@ -180,6 +180,14 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         mLearnMoreTextIdRes = R.id.privacy_sandbox_m1_consent_learn_more_bullet_2_description;
         mLearnMoreLinkString =
                 R.string.privacy_sandbox_m1_consent_learn_more_bullet_2_description_clank;
+        // Handling Ad Topics Content Parity feature - the changes are made on top of the changes to
+        // the Ads API UX Enhancements.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)) {
+            description2.setText(
+                    context.getString(
+                            R.string.privacy_sandbox_m1_consent_description_1_content_parity));
+        }
     }
 
     @Override
@@ -251,13 +259,19 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                 // mDropdownContainer not containing any views until this point.
                 if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
-                    mContentView
-                            .findViewById(
-                                    R.id.privacy_sandbox_m1_consent_learn_more_bullet_2_description)
-                            .setVisibility(View.VISIBLE);
+                    mContentView.findViewById(mLearnMoreTextIdRes).setVisibility(View.VISIBLE);
                     mContentView
                             .findViewById(R.id.privacy_sandbox_learn_more_text)
                             .setVisibility(View.GONE);
+                }
+                if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)) {
+                    mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
+                    mLearnMoreText.setText(
+                            getContext()
+                                    .getString(
+                                            R.string
+                                                    .privacy_sandbox_m1_consent_learn_more_bullet_2_description_no_link_content_parity));
                 }
 
                 mScrollView.post(
@@ -290,8 +304,22 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         mConsentViewContainer.setVisibility(View.VISIBLE);
     }
 
+    // If all Ad Topics Content Parity, Ads API UX Enhancements and Privacy Policy features are
+    // enabled, we want to show the new ad topics content parity learn more bullet description with
+    // the privacy policy link.
+    private void handleAdTopicsContentParityPrivacyPolicyEnabled() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
+            mLearnMoreLinkString =
+                    R.string
+                            .privacy_sandbox_m1_consent_learn_more_bullet_2_description_content_parity_clank;
+        }
+    }
+
     private void handlePrivacyPolicyFeature() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)) {
+            handleAdTopicsContentParityPrivacyPolicyEnabled();
             mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
             mLearnMoreText.setText(
                     SpanApplier.applySpans(
