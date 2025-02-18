@@ -7,6 +7,7 @@
 
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
 // Observer for the web contents of the parent approval dialog.
@@ -33,6 +34,8 @@ class ParentAccessDialogResultObserver : public content::WebContentsObserver {
   // Helper that sets the results to Error, in case we fail to load
   // and observe the content from the PACP widget.
   void SetResultToError();
+
+  content::WebContents* GetWebContentsForTesting() { return web_contents(); }
 
  private:
   // WebContentsObserver overrides:

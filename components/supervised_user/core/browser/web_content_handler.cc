@@ -13,8 +13,6 @@ namespace {
 
 constexpr char kLocalWebApprovalDurationHistogramName[] =
     "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
-constexpr char kLocalWebApprovalResultHistogramName[] =
-    "FamilyLinkUser.LocalWebApprovalResult";
 
 // Records the duration of a complete local web approval flow.
 void RecordTimeToApprovalDurationMetric(base::TimeDelta durationMs) {

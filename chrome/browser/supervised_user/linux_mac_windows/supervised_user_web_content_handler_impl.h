@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
+#include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace content {
@@ -44,6 +45,15 @@ class SupervisedUserWebContentHandlerImpl
       const supervised_user::FilteringBehaviorReason& filtering_reason,
       ApprovalRequestInitiatedCallback callback) override;
   void MaybeCloseLocalApproval() override;
+
+  content::WebContents* GetObserverContentsForTesting() {
+    CHECK(dialog_web_contents_observer_);
+    return dialog_web_contents_observer_->GetWebContentsForTesting();
+  }
+
+  base::WeakPtr<ParentAccessView> GetWeakParentAccessViewForTesting() {
+    return weak_parent_access_view_;
+  }
 
  private:
   void CreateObserverFromContents(base::TimeTicks start_time,

@@ -52,7 +52,6 @@ DialogContentLoadWithTimeoutObserver::DialogContentLoadWithTimeoutObserver(
     std::move(cancel_flow_on_timeout_callback).Run();
     return;
   }
-
   // Start a timer to abort the flow if the content fails to load by then.
   initial_load_timer_.Start(
       FROM_HERE,
@@ -71,6 +70,7 @@ void DialogContentLoadWithTimeoutObserver::DidFinishLoad(
       !validated_url.spec().starts_with(pacp_url_->spec())) {
     return;
   }
+
   // Stop the timeout timer and display the dialog.
   initial_load_timer_.Stop();
   if (!show_dialog_callback_.is_null()) {
@@ -118,7 +118,6 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
       std::move(dialog_result_reset_callback));
   const GURL pacp_url = GetPacpUrl(target_url, filtering_reason);
   parent_access_view->Initialize(pacp_url, corner_radius);
-
   // Keeps a pointer to the parent access views as it's ownership is transferred
   // to the delegate.
   auto view_weak_ptr = parent_access_view->GetWeakPtr();
