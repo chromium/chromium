@@ -164,25 +164,29 @@ void GlicMetrics::OnResponseStarted() {
     return;
   }
 
-  response_started_time_ = base::TimeTicks::Now();
-  base::UmaHistogramMediumTimes("Glic.Response.StartTime",
-                                response_started_time_ - input_submitted_time_);
+  base::TimeDelta start_time = base::TimeTicks::Now() - input_submitted_time_;
+  base::UmaHistogramMediumTimes("Glic.Response.StartTime", start_time);
   switch (input_mode_) {
     case mojom::WebClientMode::kUnknown:
-      base::UmaHistogramMediumTimes(
-          "Glic.Response.StartTime.InputMode.Unknown",
-          response_started_time_ - input_submitted_time_);
+      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Unknown",
+                                    start_time);
       break;
     case mojom::WebClientMode::kText:
-      base::UmaHistogramMediumTimes(
-          "Glic.Response.StartTime.InputMode.Text",
-          response_started_time_ - input_submitted_time_);
+      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Text",
+                                    start_time);
       break;
     case mojom::WebClientMode::kAudio:
-      base::UmaHistogramMediumTimes(
-          "Glic.Response.StartTime.InputMode.Audio",
-          response_started_time_ - input_submitted_time_);
+      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Audio",
+                                    start_time);
       break;
+  }
+
+  if (did_request_context_) {
+    base::UmaHistogramMediumTimes("Glic.Response.StartTime.WithContext",
+                                  start_time);
+  } else {
+    base::UmaHistogramMediumTimes("Glic.Response.StartTime.WithoutContext",
+                                  start_time);
   }
   base::RecordAction(base::UserMetricsAction("GlicResponse"));
   ++session_responses_;
@@ -219,7 +223,7 @@ void GlicMetrics::OnResponseStopped() {
 
   // Reset all times.
   input_submitted_time_ = base::TimeTicks();
-  response_started_time_ = base::TimeTicks();
+  did_request_context_ = false;
 }
 
 void GlicMetrics::OnSessionTerminated() {
@@ -265,6 +269,10 @@ void GlicMetrics::SetControllers(GlicWindowController* window_controller,
                                  GlicFocusedTabManager* tab_manager) {
   window_controller_ = window_controller;
   tab_manager_ = tab_manager;
+}
+
+void GlicMetrics::DidRequestContextFromFocusedTab() {
+  did_request_context_ = true;
 }
 
 void GlicMetrics::OnImpressionTimerFired() {

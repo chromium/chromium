@@ -219,6 +219,9 @@ void GlicKeyedService::GetContextFromFocusedTab(
         mojom::GetTabContextErrorReason::kPermissionDenied));
     return;
   }
+
+  metrics_->DidRequestContextFromFocusedTab();
+
   auto fetcher = std::make_unique<glic::GlicPageContextFetcher>();
   fetcher->Fetch(
       GetFocusedTabData(), options,

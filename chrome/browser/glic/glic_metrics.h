@@ -50,6 +50,9 @@ class GlicMetrics {
   void SetControllers(GlicWindowController* window_controller,
                       GlicFocusedTabManager* tab_manager);
 
+  // Must be called when context is requested.
+  void DidRequestContextFromFocusedTab();
+
  private:
   // Called when `impression_timer_` fires.
   void OnImpressionTimerFired();
@@ -63,7 +66,7 @@ class GlicMetrics {
   // These members are cleared in OnResponseStopped.
   base::TimeTicks input_submitted_time_;
   mojom::WebClientMode input_mode_;
-  base::TimeTicks response_started_time_;
+  bool did_request_context_ = false;
 
   // Session state. `session_start_time_` is a sentinel that is cleared in
   // OnGlicWindowClose() and is used to determine whether OnGlicWindowOpen was
