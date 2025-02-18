@@ -35,6 +35,31 @@ namespace {
 constexpr int kButtonHighlightRadiusDp = 18;
 constexpr int kButtonHighlightWidthDp = 1;
 
+ui::ColorId GetBackgroundColorId(bool is_active,
+                                 ShelfBackgroundType background_type) {
+  if (is_active) {
+    return cros_tokens::kCrosSysSystemPrimaryContainer;
+  }
+  if (background_type == ShelfBackgroundType::kLoginNonBlurredWallpaper) {
+    return cros_tokens::kCrosSysSystemOnBase;
+  }
+  return cros_tokens::kCrosSysSystemBaseElevated;
+}
+
+ui::ColorId GetIconColorId(bool is_active) {
+  if (is_active) {
+    return cros_tokens::kCrosSysOnPrimary;
+  }
+  return cros_tokens::kCrosSysOnSurface;
+}
+
+ui::ColorId GetEnabledTextColorId(bool is_active) {
+  if (is_active) {
+    return cros_tokens::kCrosSysSystemOnPrimaryContainer;
+  }
+  return cros_tokens::kCrosSysOnSurface;
+}
+
 }  // namespace
 
 LoginShelfButton::LoginShelfButton(PressedCallback callback,
@@ -96,16 +121,9 @@ void LoginShelfButton::OnBackgroundTypeChanged(
 }
 
 void LoginShelfButton::OnActiveChanged() {
-  if (is_active_) {
-    SetBackgroundColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
-    SetEnabledTextColorIds(cros_tokens::kCrosSysSystemOnPrimaryContainer);
-    SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  } else {
-    // Switch the pillbutton to the default background color.
-    SetBackgroundColor(gfx::kPlaceholderColor);
-    SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
-    SetIconColor(gfx::kPlaceholderColor);
-  }
+  SetBackgroundColorId(GetBackgroundColorId(is_active_, background_type_));
+  SetEnabledTextColorIds(GetEnabledTextColorId(is_active_));
+  SetIconColorId(GetIconColorId(is_active_));
 }
 
 void LoginShelfButton::SetIsActive(bool is_active) {
