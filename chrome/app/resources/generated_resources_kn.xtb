@@ -3213,7 +3213,7 @@
 <translation id="3232168089952388105">ನಿಮ್ಮ ಸಾಧನದ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕು?</translation>
 <translation id="3232368113895801406">ನಿಮ್ಮ ಭದ್ರತಾ ಆದ್ಯತೆಗಳು ಪತ್ಯೇಕಗೊಳಿಸಲಾದ ಆ್ಯಪ್‌ಗಳ ಇನ್‌ಸ್ಟಾಲೇಶನ್‌ಗಳನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="323251815203765852">ಸೃಜನಾತ್ಮಕ</translation>
-<translation id="3232558119926886907">ಬಲಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
+<translation id="3232558119926886907">ಬಲಕ್ಕೆ ಅಲೈನ್ ಮಾಡಿ</translation>
 <translation id="3232754137068452469">ವೆಬ್ ಅಪ್ಲಿಕೇಶನ್</translation>
 <translation id="3233271424239923319">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ</translation>
 <translation id="3234251228180563751">ಬಳಕೆದಾರರ ಹೆಸರು 1000 ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿದೆ</translation>
@@ -7330,7 +7330,7 @@
 <translation id="6192413564913825901">ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಸರಿಸಿ</translation>
 <translation id="6194333736420234626">&amp;ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="6195005504600220730">ನಿಮ್ಮ ಬ್ರೌಸರ್, OS ಹಾಗೂ ಸಾಧನದ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಓದಿ</translation>
-<translation id="6195155925303302899">ಮಧ್ಯಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
+<translation id="6195155925303302899">ಮಧ್ಯಕ್ಕೆ ಅಲೈನ್ ಮಾಡಿ</translation>
 <translation id="6195163219142236913">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳು ಸೀಮಿತವಾಗಿವೆ</translation>
 <translation id="6195693561221576702">ಈ ಸಾಧನವನ್ನು ಆಫ್‌ಲೈನ್ ಡೆಮೊ ಮೋಡ್‌ನಲ್ಲಿ ಸೆಟಪ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="6196640612572343990">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
@@ -8226,7 +8226,7 @@
         <ph name="BREAK" />
         ನೀವು ಕಾರ್ಡ್ ಮೆನುವಿನಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಅಥವಾ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="6831043979455480757">Translate</translation>
-<translation id="6832218595502288407">ಎಡಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
+<translation id="6832218595502288407">ಎಡಕ್ಕೆ ಅಲೈನ್ ಮಾಡಿ</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?}=1{ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?}}</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="6833753236242482566">ಸಮತೋಲಿತ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
