@@ -120,24 +120,6 @@ public class CableAuthenticatorModuleProvider {
 
     @NativeMethods
     interface Natives {
-        // getSystemNetworkContext returns a pointer, encoded in a long, to the
-        // global NetworkContext for system services that hangs off
-        // |g_browser|. This is needed because //chrome/browser, being a
-        // static_library, cannot be depended on by another component thus we
-        // pass this value into the feature module.
-        long getSystemNetworkContext();
-
-        // getRegistration returns a pointer to the global
-        // device::cablev2::authenticator::Registration.
-        long getRegistration();
-
-        // getSecret returns a 32-byte secret from which can be derived the
-        // key and shared secret that were advertised via Sync.
-        byte[] getSecret();
-
-        // freeEvent releases resources used by the given event.
-        void freeEvent(long event);
-
         // onHaveLinkingInformation is called when pre-link information has been received from Play
         // Services. The argument is a CBOR-encoded linking structure, as defined in CTAP 2.2, or is
         // null on error.
