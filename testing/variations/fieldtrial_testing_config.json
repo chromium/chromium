@@ -9010,21 +9010,6 @@
             ]
         }
     ],
-    "EnableInteractiveOnlyADPFRenderer": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableInteractiveOnlyADPFRenderer"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableLazyLoadImageForInvisiblePage": [
         {
             "platforms": [
