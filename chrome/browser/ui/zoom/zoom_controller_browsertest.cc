@@ -143,6 +143,8 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, ErrorPagesCanZoom) {
   EXPECT_EQ(
       content::PAGE_TYPE_ERROR,
       web_contents->GetController().GetLastCommittedEntry()->GetPageType());
+  EXPECT_EQ(GURL(content::kUnreachableWebDataURL),
+            content::HostZoomMap::GetURLForWebContents(web_contents));
 
   double old_zoom_level = zoom_controller->GetZoomLevel();
   double new_zoom_level = old_zoom_level + 0.5;

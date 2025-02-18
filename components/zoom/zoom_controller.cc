@@ -207,8 +207,6 @@ bool ZoomController::SetZoomLevelByClient(
     const scoped_refptr<const ZoomRequestClient>& client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* rfh = GetRenderFrameHost();
-  content::NavigationEntry* entry =
-      rfh->GetController().GetLastCommittedEntry();
   // Cannot zoom in disabled mode. Also, don't allow changing zoom level on
   // a crashed tab, an error page or an interstitial page.
   if (zoom_mode_ == ZOOM_MODE_DISABLED ||
@@ -265,15 +263,16 @@ bool ZoomController::SetZoomLevelByClient(
       zoom_map->UsesTemporaryZoomLevel(rfh->GetGlobalId())) {
     zoom_map->SetTemporaryZoomLevel(rfh->GetGlobalId(), zoom_level);
   } else {
-    if (!entry) {
+    const GURL url =
+        content::HostZoomMap::GetURLForRenderFrameHost(rfh->GetGlobalId());
+    if (url.is_empty()) {
       last_client_ = nullptr;
       // If we exit without triggering an update, we should clear event_data_,
       // else we may later trigger a DCHECK(event_data_).
       event_data_.reset();
       return false;
     }
-    std::string host =
-        net::GetHostOrSpecFromURL(content::HostZoomMap::GetURLFromEntry(entry));
+    std::string host = net::GetHostOrSpecFromURL(url);
     zoom_map->SetZoomLevelForHost(host, zoom_level);
   }
 
@@ -301,11 +300,10 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
 
   switch (new_mode) {
     case ZOOM_MODE_DEFAULT: {
-      content::NavigationEntry* entry =
-          rfh->GetController().GetLastCommittedEntry();
+      const GURL url =
+          content::HostZoomMap::GetURLForRenderFrameHost(rfh->GetGlobalId());
 
-      if (entry) {
-        GURL url = content::HostZoomMap::GetURLFromEntry(entry);
+      if (!url.is_empty()) {
         std::string host = net::GetHostOrSpecFromURL(url);
 
         if (zoom_map->HasZoomLevel(url.scheme(), host)) {
@@ -489,13 +487,26 @@ void ZoomController::UpdateState(const std::string& host) {
   auto* rfh = GetRenderFrameHost();
   // If |host| is empty, all observers should be updated.
   if (!host.empty()) {
-    // Use the navigation entry's URL instead of the WebContents' so virtual
-    // URLs work (e.g. chrome://settings). http://crbug.com/153950
-    content::NavigationEntry* entry =
-        rfh->GetController().GetLastCommittedEntry();
-    if (!entry ||
-        host != net::GetHostOrSpecFromURL(
-                    content::HostZoomMap::GetURLFromEntry(entry))) {
+    // Get the (non-virtual) url to be tracked by the HostZoomMap. Getting urls
+    // directly from a WebContents may result in a virtual url, so prefer using
+    // the value from the `rfh` instead, per https://crbug.com/40290372. There
+    // are several cases here:
+    // 1) This ZoomController is for a WebContent's main
+    //    frame, either a primary main frame or a GuestView main frame when
+    //    kGuestViewMPArch is disabled.
+    // 2) This ZoomController is for an independently-zoomable main frame (e.g.
+    //    corresponding to a FrameTree root for a GuestView when
+    //    kGuestViewMPArch is enabled). In this case we want the url from the
+    //    `rfh` as it corresponds to what is being zoomed, and should be
+    //    recorded in the HostZoomMap accordingly.
+    // 3) Although it doesn't happen in practice (yet), in future there will be
+    //    support for independently-zoomable subframes that have their own
+    //    RenderWidgetHosts (i.e. their RenderFrameHosts are local roots). In
+    //    that case we still want the `url` for `rfh` as it corresponds to what
+    //    is being zoomed.
+    const GURL url =
+        content::HostZoomMap::GetURLForRenderFrameHost(rfh->GetGlobalId());
+    if (url.is_empty() || host != net::GetHostOrSpecFromURL(url)) {
       return;
     }
   }
