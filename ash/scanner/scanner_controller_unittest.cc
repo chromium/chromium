@@ -24,6 +24,7 @@
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_enterprise_policy.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -38,6 +39,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -138,6 +140,20 @@ class MockToastManager : public ToastManager {
               (override));
   MOCK_METHOD(void, Pause, (), (override));
   MOCK_METHOD(void, Resume, (), (override));
+};
+
+class MockScannerDelegate : public ScannerDelegate {
+ public:
+  MOCK_METHOD(ScannerProfileScopedDelegate*,
+              GetProfileScopedDelegate,
+              (),
+              (override));
+  MOCK_METHOD(void,
+              OpenFeedbackDialog,
+              (const AccountId& account_id,
+               ScannerFeedbackInfo feedback_info,
+               SendFeedbackCallback send_feedback_callback),
+              (override));
 };
 
 class ScannerControllerTest : public AshTestBase {
@@ -354,6 +370,113 @@ class ScannerControllerDisabledTest : public AshTestBase {
 TEST_F(ScannerControllerDisabledTest, CanShowUiForShellFalseWhenNoController) {
   ASSERT_FALSE(Shell::Get()->scanner_controller());
   EXPECT_FALSE(ScannerController::CanShowUiForShell());
+}
+
+TEST(ScannerControllerNoFixtureTest, CanShowUiForShellFalseWhenNoShellMetrics) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_FALSE(Shell::HasInstance());
+  ASSERT_FALSE(ScannerController::CanShowUiForShell());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerDisabledTest,
+       CanShowUiForShellFalseWhenNoControllerMetrics) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_FALSE(Shell::Get()->scanner_controller());
+  ASSERT_FALSE(ScannerController::CanShowUiForShell());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST(ScannerControllerNoFixtureTest,
+     CanShowUiFalseWhenNoProfileScopedDelegateMetrics) {
+  base::HistogramTester histogram_tester;
+  SessionControllerImpl session_controller;
+  auto mock_delegate = std::make_unique<MockScannerDelegate>();
+  EXPECT_CALL(*mock_delegate, GetProfileScopedDelegate())
+      .WillRepeatedly(Return(nullptr));
+  ScannerController scanner_controller(std::move(mock_delegate),
+                                       session_controller);
+
+  ASSERT_FALSE(scanner_controller.CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowUiFalseWhenFeatureAccessCheckFailsMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kDisabledInSettings}));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowUiFalseWhenEnterprisePolicyDisallowedMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{}));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest, CanShowUiTrueWithoutConsentMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kConsentNotAccepted}));
+
+  ASSERT_TRUE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedTrueWithoutConsent, 1);
+}
+
+TEST_F(ScannerControllerTest, CanShowUiTrueWithConsentMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{}));
+
+  ASSERT_TRUE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedTrueWithConsent, 1);
 }
 
 TEST_F(ScannerControllerTest,

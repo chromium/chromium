@@ -2031,6 +2031,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="25" label="New Google Doc populated action failed on execution"/>
   <int value="26"
       label="Copy to clipboard populated action failed on execution"/>
+  <int value="27"
+      label="UI access checks resulted in &quot;do not show UI&quot;"/>
+  <int value="28"
+      label="UI access checks resulted in &quot;show UI, but user not
+             consented&quot;"/>
+  <int value="29"
+      label="UI access checks resulted in &quot;show UI and user
+             consented&quot;"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->

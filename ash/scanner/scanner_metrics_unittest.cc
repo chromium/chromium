@@ -51,6 +51,9 @@ INSTANTIATE_TEST_SUITE_P(
         kNewGoogleSheetPopulatedActionExecutionFailed,
         kNewGoogleDocPopulatedActionExecutionFailed,
         kCopyToClipboardPopulatedActionExecutionFailed,
+        kCanShowUiReturnedFalse,
+        kCanShowUiReturnedTrueWithoutConsent,
+        kCanShowUiReturnedTrueWithConsent,
     }));
 
 TEST_P(ScannerMetricsTest, Record) {

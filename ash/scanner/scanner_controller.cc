@@ -401,11 +401,15 @@ void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 // static
 bool ScannerController::CanShowUiForShell() {
   if (!Shell::HasInstance()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
 
   ScannerController* controller = Shell::Get()->scanner_controller();
   if (!controller) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
 
@@ -423,15 +427,22 @@ bool ScannerController::CanShowUi() {
       delegate_->GetProfileScopedDelegate();
 
   if (profile_scoped_delegate == nullptr) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
 
   specialized_features::FeatureAccessFailureSet checks =
       profile_scoped_delegate->CheckFeatureAccess();
 
+  bool consent_not_accepted = checks.Has(
+      specialized_features::FeatureAccessFailure::kConsentNotAccepted);
+
   checks.Remove(
       specialized_features::FeatureAccessFailure::kConsentNotAccepted);
   if (!checks.empty()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
 
@@ -444,9 +455,18 @@ bool ScannerController::CanShowUi() {
   if (prefs != nullptr &&
       prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
           static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
 
+  if (consent_not_accepted) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedTrueWithoutConsent);
+  } else {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedTrueWithConsent);
+  }
   return true;
 }
 

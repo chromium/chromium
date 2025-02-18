@@ -84,7 +84,12 @@ enum class ScannerFeatureUserState {
   kNewGoogleSheetPopulatedActionExecutionFailed,
   kNewGoogleDocPopulatedActionExecutionFailed,
   kCopyToClipboardPopulatedActionExecutionFailed,
-  kMaxValue = kCopyToClipboardPopulatedActionExecutionFailed,
+
+  kCanShowUiReturnedFalse = 27,
+  kCanShowUiReturnedTrueWithoutConsent = 28,
+  kCanShowUiReturnedTrueWithConsent = 29,
+
+  kMaxValue = kCanShowUiReturnedTrueWithConsent,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 
