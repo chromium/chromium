@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -106,7 +107,7 @@ public class BottomAttachedUiObserver
     private OverlayPanelStateProvider mOverlayPanelStateProvider;
     private @Nullable @ColorInt Integer mOverlayPanelColor;
     private boolean mOverlayPanelVisible;
-    private boolean mOverlayPanelPeeked;
+    @PanelState private int mOverlayPanelState;
 
     private Optional<OmniboxSuggestionsVisualState> mOmniboxSuggestionsVisualState;
     private boolean mOmniboxSuggestionsVisible;
@@ -302,12 +303,15 @@ public class BottomAttachedUiObserver
         }
 
         // A visible bottom toolbar should dictate the color even if there is a bottom sheet or
-        // overlay panel.
+        // unexpanded overlay panel.
         boolean isBottomToolbarVisible =
                 mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM
                         && !BrowserControlsUtils.areBrowserControlsOffScreen(
                                 mBrowserControlsStateProvider);
-        if (isBottomToolbarVisible && mUseBottomControlsColor) {
+        boolean isOverlayPanelUnexpanded =
+                mOverlayPanelState != OverlayPanel.PanelState.EXPANDED
+                        && mOverlayPanelState != OverlayPanel.PanelState.MAXIMIZED;
+        if (isBottomToolbarVisible && mUseBottomControlsColor && isOverlayPanelUnexpanded) {
             return mBottomControlsColor;
         }
         // If drawing edge-to-edge only match the bottom sheet color if the bottom sheet extends
@@ -325,7 +329,7 @@ public class BottomAttachedUiObserver
                         || !EdgeToEdgeUtils.isEnabled())) {
             // Return null if the overlay panel is visible but not peeked - the overlay panel's
             // content will be "bottom attached".
-            return mOverlayPanelPeeked ? mOverlayPanelColor : null;
+            return mOverlayPanelState == PanelState.PEEKED ? mOverlayPanelColor : null;
         }
         if (mUseBottomControlsColor) {
             return mBottomControlsColor;
@@ -455,7 +459,7 @@ public class BottomAttachedUiObserver
                 (state == OverlayPanel.PanelState.PEEKED)
                         || (state == OverlayPanel.PanelState.EXPANDED)
                         || (state == OverlayPanel.PanelState.MAXIMIZED);
-        mOverlayPanelPeeked = (state == OverlayPanel.PanelState.PEEKED);
+        mOverlayPanelState = state;
         updateBottomAttachedColor();
     }
 
