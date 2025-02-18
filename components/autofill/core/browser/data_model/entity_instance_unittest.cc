@@ -31,7 +31,7 @@ TEST(AutofillEntityInstanceTest, Attributes) {
 }
 
 TEST(AutofillEntityInstanceTest,
-     GetEntityMergeability_SameEntity_NoMergeableAttribute_IsASubset) {
+     GetEntityMergeability_IdentiticalEntities_NoMergeableAttribute_IsASubset) {
   EntityInstance::EntityMergeability result =
       test::GetPassportEntityInstance().GetEntityMergeability(
           test::GetPassportEntityInstance());
@@ -83,6 +83,29 @@ TEST(
       result.mergeable_attributes[0].value(),
       new_entity
           .attribute(AttributeType(AttributeTypeName::kPassportExpiryDate))
+          ->value());
+  EXPECT_FALSE(result.is_subset);
+}
+
+// This test has two entities that have the same merge constraints (Passport
+// number and expiry date). However, newer contains an update data for country,
+// this should not lead to a fresh entity, rather an updated one.
+TEST(
+    AutofillEntityInstanceTest,
+    GetEntityMergeability_MergeConstraintsMatch_AttributeWithDifferentValue_MergeableAttributesExists_IsNotASubset) {
+  autofill::test::PassportEntityOptions passport_with_new_country;
+  passport_with_new_country.country = u"Argentina";
+  EntityInstance new_entity =
+      test::GetPassportEntityInstance(passport_with_new_country);
+  EntityInstance::EntityMergeability result =
+      test::GetPassportEntityInstance().GetEntityMergeability(new_entity);
+
+  EXPECT_EQ(result.mergeable_attributes.size(), 1u);
+  EXPECT_EQ(result.mergeable_attributes[0].type().name(),
+            AttributeTypeName::kPassportCountry);
+  EXPECT_EQ(
+      result.mergeable_attributes[0].value(),
+      new_entity.attribute(AttributeType(AttributeTypeName::kPassportCountry))
           ->value());
   EXPECT_FALSE(result.is_subset);
 }

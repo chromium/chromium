@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 
+#include <algorithm>
 #include <ranges>
 
 #include "base/strings/utf_string_conversions.h"
@@ -71,6 +72,10 @@ FieldTypeSet AttributeInstance::GetSupportedTypes() const {
 bool operator==(const AttributeInstance& lhs, const AttributeInstance& rhs) {
   return lhs.context_ == rhs.context_ && lhs.type_ == rhs.type_ &&
          lhs.value_ == rhs.value_;
+}
+
+std::u16string AttributeInstance::NormalizedValue() const {
+  return AutofillProfileComparator::NormalizeForComparison(value());
 }
 
 EntityInstance::EntityInstance(
@@ -146,69 +151,116 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
     const EntityInstance& newer) const {
   CHECK_EQ(type_, newer.type());
 
-  // Returns -1 if `attribute_type` of `newer` should be set into `this`. This
-  // would mean `newer` having an attribute that `this` does not. Returns 0 if
-  // `attribute_type` of `newer` is empty but set on `this` or if they are the
-  // have the same value, which means no change to `this` should be made for the
-  // attribute. Returns 1 if `attribute_type` of `newer` is different from
-  // `this`, which ultimately means an actual new entity, note that in this
-  // cases both attributes exist.
+  enum class AttributeMergeabilityResult {
+    // A new entity has an attribute that the old entity
+    // (caller) does not have.
+    kNewEntityHasNewAttribute,
+    // A new and an old entity have an attribute with the
+    // same value.
+    kNewAndOldEntitiesHaveSameAttribute,
+    // A new entity does not have an attribute while the old one has.
+    kOldEntityHasAttribute,
+    // A new and an old entity have an attribute with
+    // different values.
+    kNewAndOldEntitiesHaveDifferentAttribute,
+  };
+
   auto get_attribute_mergeability = [&](AttributeType attribute_type) {
     base::optional_ref<const AttributeInstance> attribute_1 =
         attribute(attribute_type);
     base::optional_ref<const AttributeInstance> attribute_2 =
         newer.attribute(attribute_type);
 
+    auto is_attribute_empty =
+        [](base::optional_ref<const AttributeInstance> attribute_instance) {
+          return !attribute_instance ||
+                 attribute_instance->NormalizedValue().empty();
+        };
+    const bool is_attribute_1_empty = is_attribute_empty(attribute_1);
+    const bool is_attribute_2_empty = is_attribute_empty(attribute_2);
+
     // attribute does not exist on either entity.
-    if (!attribute_1 && !attribute_2) {
-      return 0;
+    if (is_attribute_1_empty && is_attribute_2_empty) {
+      return AttributeMergeabilityResult::kNewAndOldEntitiesHaveSameAttribute;
     }
 
     // Attribute exists on `this` but not in `newer`.
-    if (attribute_1 && !attribute_2) {
-      return 0;
+    if (!is_attribute_1_empty && is_attribute_2_empty) {
+      return AttributeMergeabilityResult::kOldEntityHasAttribute;
     }
 
     // Attribute exists on `newer` but not on `this`.
-    if (!attribute_1 && attribute_2) {
-      return -1;
+    if (is_attribute_1_empty && !is_attribute_2_empty) {
+      return AttributeMergeabilityResult::kNewEntityHasNewAttribute;
     }
 
-    const std::u16string attribute_value_1 =
-        AutofillProfileComparator::NormalizeForComparison(attribute_1->value());
-    const std::u16string attribute_value_2 =
-        AutofillProfileComparator::NormalizeForComparison(attribute_2->value());
-
-    // Attribute exists on `newer` but not on `this`.
-    if (attribute_value_1.empty() && !attribute_value_2.empty()) {
-      return -1;
-    }
-
-    if (!attribute_value_1.empty() && attribute_value_2.empty()) {
-      return 0;
-    }
-
+    const std::u16string attribute_value_1 = attribute_1->NormalizedValue();
+    const std::u16string attribute_value_2 = attribute_2->NormalizedValue();
     // Returns 1 if the attributes are different, which ultimately means no
     // merge should happen.
-    return attribute_value_1 == attribute_value_2 ? 0 : 1;
+    return attribute_value_1 == attribute_value_2
+               ? AttributeMergeabilityResult::
+                     kNewAndOldEntitiesHaveSameAttribute
+               : AttributeMergeabilityResult::
+                     kNewAndOldEntitiesHaveDifferentAttribute;
   };
 
+  // If a certain set of mergeable constraints for both entities have the same
+  // values, we consider them to be the same entity. This affects how we handle
+  // attributes with different values. For entities that are not the same, this
+  // will lead to  `newer` being a fresh new entity, otherwise we chose the
+  // attribute of `newer` as a mergeable attribute to eventually override the
+  // value of `this`.
+  bool is_same_entity = [&]() {
+    return std::ranges::any_of(
+        type_.merge_constraints(),
+        [&](const DenseSet<AttributeType>& constraints) {
+          return std::ranges::all_of(constraints, [&](AttributeType type) {
+            base::optional_ref<const AttributeInstance> attribute_1 =
+                attribute(type);
+            base::optional_ref<const AttributeInstance> attribute_2 =
+                newer.attribute(type);
+            return attribute_1 && attribute_2 &&
+                   (attribute_1->NormalizedValue() ==
+                    attribute_2->NormalizedValue());
+          });
+        });
+  }();
   bool is_subset = true;
   std::vector<AttributeInstance> mergeable_attributes;
   for (const AttributeType type : type_.attributes()) {
-    int attribute_mergeability = get_attribute_mergeability(type);
+    AttributeMergeabilityResult attribute_mergeability =
+        get_attribute_mergeability(type);
 
-    is_subset &= (attribute_mergeability == 0);
-    if (attribute_mergeability == -1) {
+    is_subset &=
+        (attribute_mergeability ==
+         AttributeMergeabilityResult::kNewAndOldEntitiesHaveSameAttribute) ||
+        (attribute_mergeability ==
+         AttributeMergeabilityResult::kOldEntityHasAttribute);
+    if (attribute_mergeability ==
+        AttributeMergeabilityResult::kNewEntityHasNewAttribute) {
       base::optional_ref<const AttributeInstance> new_attribute =
           newer.attribute(type);
       CHECK(new_attribute);
       mergeable_attributes.emplace_back(*new_attribute);
-    } else if (attribute_mergeability == 1) {
-      // If an attribute was found in `newer`, which DOES exist in `this` but is
-      // different, `newer` is neither a subset, nor mergeable.
-      mergeable_attributes.clear();
-      break;
+    } else if (attribute_mergeability ==
+               AttributeMergeabilityResult::
+                   kNewAndOldEntitiesHaveDifferentAttribute) {
+      if (!is_same_entity) {
+        // If both entities are not the same and an attribute was found in
+        // `newer`, which DOES exist in `this` but is
+        // different, `newer` is neither a subset, nor mergeable. This should
+        // lead to a save prompt.
+        mergeable_attributes.clear();
+        break;
+      } else {
+        // If the entities are the same, always chooses the `newer` entity type
+        // as the new attribute.
+        base::optional_ref<const AttributeInstance> new_attribute =
+            newer.attribute(type);
+        CHECK(new_attribute);
+        mergeable_attributes.emplace_back(*new_attribute);
+      }
     }
   }
 
