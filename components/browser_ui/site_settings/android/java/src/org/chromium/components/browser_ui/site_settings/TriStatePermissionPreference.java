@@ -11,7 +11,9 @@ import static org.chromium.components.content_settings.PrefNames.ENABLE_QUIET_NO
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -32,6 +34,8 @@ public class TriStatePermissionPreference extends Preference
     private PrefService mPrefService;
     private String mQuietUiPref;
     private String mCpssPref;
+    private boolean mShowTitle;
+    private TextView mTitleView;
 
     public TriStatePermissionPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -47,8 +51,9 @@ public class TriStatePermissionPreference extends Preference
      * @param prefService Instance of the PrefService to update the backing prefs for CPSS and Quiet
      *     UI settings.
      */
-    public void initialize(PrefService prefService) {
+    public void initialize(PrefService prefService, boolean showTitle) {
         mPrefService = prefService;
+        mShowTitle = showTitle;
         if (getKey().equals("notifications_tri_state_toggle")) {
             mQuietUiPref = ENABLE_QUIET_NOTIFICATION_PERMISSION_UI;
             mCpssPref = ENABLE_NOTIFICATION_CPSS;
@@ -66,6 +71,12 @@ public class TriStatePermissionPreference extends Preference
         mCpss = (RadioButtonWithDescription) holder.findViewById(R.id.cpss);
         mLoud = (RadioButtonWithDescription) holder.findViewById(R.id.loud);
         mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
+        mTitleView = (TextView) holder.findViewById(R.id.radio_button_title);
+        if (mShowTitle) {
+            mTitleView.setVisibility(View.VISIBLE);
+        } else {
+            mTitleView.setVisibility(View.INVISIBLE);
+        }
         mRadioGroup.setOnCheckedChangeListener(this);
         RadioButtonWithDescription selectedRadioButton = getSelectedRadioButton();
         if (selectedRadioButton != null) selectedRadioButton.setChecked(true);
