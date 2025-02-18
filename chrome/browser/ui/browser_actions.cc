@@ -21,11 +21,13 @@
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_action_prefs_listener.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -444,7 +446,7 @@ void BrowserActions::InitializeBrowserActions() {
 
     if (IsChromeLabsEnabled() &&
         !web_app::AppBrowserController::IsWebApp(browser)) {
-      // TODO(b/354758327): Update `ShouldShowChromeLabsUI()` to not require
+      // TODO(354758327): Update `ShouldShowChromeLabsUI()` to not require
       // `model` as a parameter, then use to set visibility of action item.
       root_action_item_->AddChild(
           ChromeMenuAction(base::BindRepeating(
@@ -486,6 +488,31 @@ void BrowserActions::InitializeBrowserActions() {
             kActionShowPasswordsBubbleOrPage, IDS_VIEW_PASSWORDS,
             IDS_VIEW_PASSWORDS, vector_icons::kPasswordManagerIcon)
             .SetEnabled(!is_guest_session)
+            .Build());
+
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  // TODO(396720194): simplify ptr const to non ptr const for clarity.
+                  content::WebContents* const web_contents =
+                      browser->tab_strip_model()->GetActiveWebContents();
+                  const GURL& url = chrome::GetURLToBookmark(web_contents);
+                  IntentPickerTabHelper* intent_picker_tab_helper =
+                      IntentPickerTabHelper::FromWebContents(web_contents);
+                  CHECK(intent_picker_tab_helper);
+                  intent_picker_tab_helper->ShowIntentPickerBubbleOrLaunchApp(
+                      url);
+                },
+                base::Unretained(browser)))
+            .SetActionId(kActionShowIntentPicker)
+            .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON)))
+            .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON)))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                kOpenInNewChromeRefreshIcon, ui::kColorIcon))
             .Build());
 
     root_action_item_->AddChild(
