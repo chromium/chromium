@@ -7188,6 +7188,31 @@
             ]
         }
     ],
+    "CustomizableSelect": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CustomizableSelect"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CustomizableSelect"
+                    ]
+                }
+            ]
+        }
+    ],
     "CustomizeChromeSidePanelExtensionsCard": [
         {
             "platforms": [
@@ -12775,6 +12800,31 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InlineFullscreenPerfExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "InputClosesSelect": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InputClosesSelect"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "InputClosesSelect"
                     ]
                 }
             ]
