@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_data_source.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -326,22 +325,25 @@
   _blockUpdates = YES;
   self.userInteractionsBlocked = YES;
 
-  __weak __typeof(self) weakSelf = self;
-  id<SystemIdentity> fromIdentity = _primaryIdentity;
-  // TODO(crbug.com/375604649): Need to use AuthenticationFlow in both cases.
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    _authenticationFlow = [self.delegate
-        triggerSigninWithSystemIdentity:newIdentity
-                             completion:^(SigninCoordinatorResult result) {
-                               [weakSelf signinEndedWithResult:result
-                                                  fromIdentity:fromIdentity
-                                                    toIdentity:newIdentity];
-                             }];
-    return;
+    std::optional<std::string> profileName =
+        GetApplicationContext()
+            ->GetAccountProfileMapper()
+            ->FindProfileNameForGaiaID(GaiaId(gaiaID));
+    if (profileName &&
+        *profileName != _accountManagerService->GetProfileName()) {
+      // TODO(crbug.com/375604649): Unblock the UI (and show some error?) if
+      // switching failed.
+      [self.delegate triggerProfileSwitchToProfileNamed:*profileName
+                            andSigninWithSystemIdentity:newIdentity];
+      return;
+    }
   }
 
   _accountSwitchInProgress =
       _authenticationService->DeclareAccountSwitchInProgress();
+  __weak __typeof(self) weakSelf = self;
+  id<SystemIdentity> fromIdentity = _primaryIdentity;
   [self.delegate signOutFromTargetRect:targetRect
                              forSwitch:YES
                             completion:^(BOOL success) {

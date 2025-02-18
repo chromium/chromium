@@ -246,7 +246,6 @@ void RecordIOSIdentityAvailableInProfile(
 
   // `YES` if the profile switching is done.
   BOOL _didSwitchProfile;
-  base::ScopedClosureRunner _accountSwitchInProgress;
 }
 
 @synthesize handlingError = _handlingError;
@@ -627,18 +626,14 @@ void RecordIOSIdentityAvailableInProfile(
 // Otherwise, this step does nothing and the flow continues to the next step.
 - (void)signOutIfNeededStep {
   ProfileIOS* profile = [self originalProfile];
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> currentIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (!currentIdentity || [currentIdentity isEqual:_identityToSignIn]) {
-    // No need to sign out.
-    [self continueFlow];
+      AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+  if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
+    [_performer signOutProfile:profile];
     return;
   }
-  _accountSwitchInProgress =
-      authenticationService->DeclareAccountSwitchInProgress();
-  [_performer signOutProfile:profile];
+  [self continueFlow];
 }
 
 // Sets the primary identity for the current profile.
@@ -696,7 +691,6 @@ void RecordIOSIdentityAvailableInProfile(
 - (void)completeWithSuccessStep {
   DCHECK(_signInCompletion)
       << "`completeSignInWithResult` should not be called twice.";
-  _accountSwitchInProgress.RunAndReset();
   signin_metrics::SigninAccountType accountType =
       (_identityToSignInHostedDomain.length > 0)
           ? signin_metrics::SigninAccountType::kManaged
@@ -719,7 +713,6 @@ void RecordIOSIdentityAvailableInProfile(
     ProfileIOS* profile = [self originalProfile];
     [_performer signOutImmediatelyFromProfile:profile];
   }
-  _accountSwitchInProgress.RunAndReset();
   SigninCoordinatorResult result;
   switch (_cancelationReason) {
     case CancelationReason::kFailed:

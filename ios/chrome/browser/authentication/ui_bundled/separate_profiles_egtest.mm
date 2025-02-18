@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
@@ -126,27 +125,12 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
-  // Wait for the enterprise onboarding screen.
-  ConditionBlock enterpriseOnboardingCondition = ^{
-    NSError* error;
-    [[EarlGrey selectElementWithMatcher:ManagedProfileCreationScreenMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
+  // TODO(crbug.com/375604649): The enterprise onboarding screen should show up
+  // at this point.
 
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout,
-                 enterpriseOnboardingCondition),
-             @"Enterprise onboarding didn't appear.");
-  // Confirm the enterprise onboarding screen.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::PromoStylePrimaryActionButtonMatcher()]
-      performAction:grey_tap()];
-
-  // Ensure the enterprise onboarding screen did disapepar.
-  [[EarlGrey selectElementWithMatcher:IdentityDiscMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Wait for the new profile to finish loading.
+  // TODO(crbug.com/331783685): Find a better way to wait for this.
+  GREYWaitForAppToIdle(@"App failed to idle");
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 
@@ -163,64 +147,6 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/331783685): Find a better way to wait for this.
-  GREYWaitForAppToIdle(@"App failed to idle");
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
-
-  // Verify that the profile was actually switched back.
-  GREYAssert(
-      [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
-      @"Profile should have been switched");
-}
-
-// Tests switching to a managed account and refuse the enterprise onboard
-// screen.
-- (void)testRefuseToSwitchToManageAccount {
-  // Separate profiles are only available in iOS 17+.
-  if (!@available(iOS 17, *)) {
-    return;
-  }
-
-  NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
-
-  // Setup: There's 1 personal and 1 managed account. The personal account is
-  // signed in.
-  FakeSystemIdentity* const personalIdentity =
-      [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:personalIdentity];
-
-  FakeSystemIdentity* const managedIdentity =
-      [FakeSystemIdentity fakeManagedIdentity];
-  [SigninEarlGrey addFakeIdentity:managedIdentity];
-
-  [SigninEarlGreyUI signinWithFakeIdentity:personalIdentity];
-
-  // Switch to the managed account, which triggers a switch to a new managed
-  // profile.
-  OpenAccountMenu();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuSecondaryAccountButtonId)]
-      performAction:grey_tap()];
-  // Wait for the enterprise onboarding screen.
-  ConditionBlock enterpriseOnboardingCondition = ^{
-    NSError* error;
-    [[EarlGrey selectElementWithMatcher:ManagedProfileCreationScreenMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout,
-                 enterpriseOnboardingCondition),
-             @"Enterprise onboarding didn't appear.");
-  // Refuse the enterprise onboarding screen.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
-      performAction:grey_tap()];
-
-  // Wait for the new profile to finish loading.
   // TODO(crbug.com/331783685): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
