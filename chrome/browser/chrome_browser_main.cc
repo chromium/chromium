@@ -225,7 +225,7 @@
 #include "components/soda/soda_installer.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/first_run/upgrade_util.h"
 #endif
 
@@ -236,7 +236,7 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -248,9 +248,7 @@
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/first_run/upgrade_util_linux.h"
 #endif
 
@@ -287,10 +285,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/metrics/desktop_session_duration/touch_mode_stats_tracker.h"
 #include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
@@ -457,7 +452,7 @@ StartupProfileInfo CreateInitialProfile(
   }
 
   StartupProfileInfo profile_info;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   profile_info = {ProfileManager::CreateInitialProfile(),
                   StartupProfileMode::kBrowserWindow};
 
@@ -467,19 +462,6 @@ StartupProfileInfo CreateInitialProfile(
   CHECK(profile_info.profile) << "Cannot get default profile.";
 
 #else
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros has a special "primary" profile that is tied to the active ChromeOS
-  // user identity. Lacros might attempt to load this profile synchorously via
-  // `ProfileManager::GetPrimaryUserProfile()` or
-  // `ProfileManager::GetActiveUserProfile()`. In combination with asynchronous
-  // profile loading, this can lead to a crash (see https://crbug.com/1289527).
-  // Load the primary Lacros profile before any other profile to ensure that the
-  // primary profile is always loaded.
-  // TODO(crbug.com/40203366): remove this once Lacros no longer uses
-  // GetActiveUserProfile() and GetPrimaryUserProfile().
-  ProfileManager::GetPrimaryUserProfile();
-#endif
-
   profile_info =
       GetStartupProfile(/*cur_dir=*/base::FilePath(), parsed_command_line);
 
@@ -567,14 +549,12 @@ void ProcessSingletonNotificationCallbackImpl(
 bool ShouldInstallSodaDuringPostProfileInit(
     const base::CommandLine& command_line,
     const Profile* const profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(
              ash::features::kOnDeviceSpeechRecognition) &&
          ash::IsUserBrowserContext(const_cast<Profile*>(profile));
-#elif !BUILDFLAG(IS_CHROMEOS_LACROS)
-  return !command_line.HasSwitch(switches::kDisableComponentUpdate);
 #else
-  return false;
+  return !command_line.HasSwitch(switches::kDisableComponentUpdate);
 #endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -662,7 +642,7 @@ void ChromeBrowserMainParts::ProfileInitManager::OnProfileAdded(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Ignore ChromeOS helper profiles (sign-in, lockscreen, etc).
   if (!ash::ProfileHelper::IsUserProfile(profile)) {
     // Notify of new profile initialization only for regular profiles. The
@@ -684,7 +664,7 @@ ChromeBrowserMainParts::ChromeBrowserMainParts(bool is_integration_test,
                                                StartupData* startup_data)
     : is_integration_test_(is_integration_test), startup_data_(startup_data) {
   DCHECK(startup_data_);
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (is_integration_test_) {
     extensions::ComponentLoader::DisableHelpAppForTesting();
   }
@@ -705,12 +685,8 @@ void ChromeBrowserMainParts::SetupMetrics() {
       variations::VariationsIdsProvider::GetInstance());
   metrics->GetSyntheticTrialRegistry()->AddObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
-  // TODO(crbug.com/40946277): Investiagte the reason why the mojo connection
-  // is often created and closed for the same render process on lacros-chrome.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   synthetic_trial_syncer_ = content::SyntheticTrialSyncer::Create(
       metrics->GetSyntheticTrialRegistry());
-#endif
   // Now that field trials have been created, initializes metrics recording.
   metrics->InitializeMetricsRecordingState();
 
@@ -931,9 +907,9 @@ int ChromeBrowserMainParts::PreCreateThreads() {
     // These members must be initialized before exiting this function normally.
 #if !BUILDFLAG(IS_ANDROID)
     DCHECK(browser_creator_.get());
-#endif
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     DCHECK(master_prefs_.get());
+#endif
 #endif
 
     for (auto& chrome_extra_part : chrome_extra_parts_)
@@ -1001,7 +977,7 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
 int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
 // Android does first run in Java instead of native.
 // Chrome OS has its own out-of-box-experience code.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   master_prefs_ = std::make_unique<first_run::MasterPrefs>();
 
   std::unique_ptr<installer::InitialPreferences> installer_initial_prefs =
@@ -1037,7 +1013,7 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
                             master_prefs_->confirm_to_quit);
   }
 #endif
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -1066,7 +1042,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
   PrefService* local_state = browser_process_->local_state();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   browser_process_->platform_part()->InitializeCrosSettings();
   ash::StatsReportingController::Initialize(local_state);
   arc::StabilityMetricsManager::Initialize(local_state);
@@ -1108,7 +1084,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
 // Android does first run in Java instead of native.
 // Chrome OS has its own out-of-box-experience code.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (first_run::IsChromeFirstRun()) {
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kApp) &&
         !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAppId)) {
@@ -1126,7 +1102,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
       base::CreateDirectory(user_native_messaging_dir);
 #endif
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_X86_64)
@@ -1160,10 +1136,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   metrics::DesktopSessionDurationTracker::Initialize();
   ProfileActivityMetricsRecorder::Initialize();
   TouchModeStatsTracker::Initialize(
@@ -1377,7 +1350,7 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
   }
 #endif
 
-#if BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS)
   if (is_initial_profile) {
     // Init the RLZ library. This just binds the dll and schedules a task on the
     // file thread to be run sometime later. If this is the first run we record
@@ -1402,7 +1375,7 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
   translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
       ChromeTranslateClient::CreateTranslatePrefs(profile->GetPrefs()));
 // On ChromeOS results in a crash. https://crbug.com/1151558
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   language::LanguageUsageMetrics::RecordPageLanguages(
       *UrlLanguageHistogramFactory::GetForBrowserContext(profile));
 #endif
@@ -1675,7 +1648,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // Call `PostProfileInit()`and set it up for profiles created later.
   profile_init_manager_ = std::make_unique<ProfileInitManager>(this, profile);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // Execute first run specific code after the PrefService has been initialized
   // and preferences have been registered since some of the import code depends
   // on preferences.
@@ -1789,7 +1762,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // We are in regular browser boot sequence. Open initial tabs and enter the
   // main message loop.
   std::vector<Profile*> last_opened_profiles;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS multiple profiles doesn't apply, and will break if we load
   // them this early as the cryptohome hasn't yet been mounted (which happens
   // only once we log in). And if we're launching a web app, we don't want to
@@ -1803,9 +1776,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (browser_creator_->Start(*base::CommandLine::ForCurrentProcess(),
                               base::FilePath(), profile_info,
                               last_opened_profiles)) {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     // Initialize autoupdate timer. Timer callback costs basically nothing
     // when browser is not in persistent mode, so it's OK to let it ride on
     // the main thread. This needs to be done here because we don't want
@@ -1813,9 +1784,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     browser_process_->StartAutoupdateTimer();
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
     // On Linux, the running exe will be updated if an upgrade becomes
     // available while the browser is running.  We need to save the last
     // modified time of the exe, so we can compare to determine if there is
@@ -1991,7 +1960,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 
   profile_init_manager_.reset();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // These controllers make use of `browser_process_->local_state()`, so they
   // must be destroyed before `browser_process_`.
   // Shutting down in the reverse order of Initialize().
@@ -2018,7 +1987,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 
   browser_shutdown::ShutdownPostThreadsStop(restart_mode);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   master_prefs_.reset();
 #endif
 
