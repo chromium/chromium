@@ -3422,7 +3422,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.iOS.FormExtraction.ForScan.BatchSize" units="count"
-    expires_after="2025-03-01">
+    expires_after="2025-05-01">
   <owner>vincb@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>eic@google.com</owner>
