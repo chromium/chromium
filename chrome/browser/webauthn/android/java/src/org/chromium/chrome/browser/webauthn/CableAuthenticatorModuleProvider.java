@@ -33,17 +33,6 @@ public class CableAuthenticatorModuleProvider {
     // TAG is subject to a 20 character limit.
     private static final String TAG = "CableAuthModuleProv";
 
-    /**
-     * onCloudMessage is called by native code when a GCM message is received.
-     *
-     * @param event a pointer to a |device::cablev2::authenticator::Registration::Event| which this
-     *     code takes ownership of.
-     */
-    @CalledByNative
-    public static void onCloudMessage(byte[] serializedEvent, boolean isMakeCredential) {
-        // TODO(crbug.com/348204152): Remove the native parts.
-    }
-
     @CalledByNative
     public static boolean canDeviceSupportCable() {
         // This function will be run on a background thread.

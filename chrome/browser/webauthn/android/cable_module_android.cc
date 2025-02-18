@@ -161,15 +161,6 @@ class SystemInterface : public RegistrationState::SystemInterface {
             reinterpret_cast<uintptr_t>(this)));
   }
 
-  void OnCloudMessage(std::vector<uint8_t> serialized,
-                      bool is_make_credential) override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    JNIEnv* const env = base::android::AttachCurrentThread();
-    Java_CableAuthenticatorModuleProvider_onCloudMessage(
-        env, base::android::ToJavaByteArray(env, serialized),
-        is_make_credential);
-  }
-
   void RefreshLocalDeviceInfo() override {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     DeviceInfoSyncServiceFactory::GetForProfile(
