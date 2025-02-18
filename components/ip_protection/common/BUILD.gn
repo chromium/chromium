@@ -501,6 +501,32 @@ source_set("masked_domain_list_manager_unittest") {
   ]
 }
 
+source_set("masked_domain_list") {
+  sources = [
+    "masked_domain_list.cc",
+    "masked_domain_list.h",
+  ]
+  deps = [
+    "//base",
+    "//components/ip_protection/common/flat:masked_domain_list",
+    "//third_party/flatbuffers",
+  ]
+}
+
+source_set("masked_domain_list_unittest") {
+  testonly = true
+  sources = [ "masked_domain_list_unittest.cc" ]
+  deps = [
+    ":masked_domain_list",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection/common/flat:masked_domain_list",
+    "//testing/gtest",
+    "//third_party/flatbuffers",
+    "//url:url",
+  ]
+}
+
 source_set("mock_blind_sign_auth") {
   testonly = true
   sources = [
