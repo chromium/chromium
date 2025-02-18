@@ -118,6 +118,9 @@ try_.orchestrator_builder(
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    tryjob = try_.job(
+        experiment_percentage = 30,
+    ),
 )
 
 try_.compilator_builder(
