@@ -318,6 +318,8 @@ chromium-metrics-reviews@google.com.
       summary="the full screen IPH for pull to refresh"/>
   <variant name="IPH_iOSReminderNotificationsOverflowMenuBubbleFeature"
       summary="Overflow menu bubble IPH to schedule tab reminders"/>
+  <variant name="IPH_iOSReminderNotificationsOverflowMenuNewBadgeFeature"
+      summary="Overflow menu new badge IPH to schedule tab reminders"/>
   <variant name="IPH_iOSReplaceSyncPromosWithSignInPromos"
       summary="account row in settings page"/>
   <variant name="IPH_iOSSavedTabGroupClosed"

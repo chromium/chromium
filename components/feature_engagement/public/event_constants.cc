@@ -148,6 +148,10 @@ const char kLensOverlayEntrypointUsed[] = "lens_overlay_entrypoint_used";
 const char kIOSTabReminderScheduled[] = "tab_reminder_scheduled";
 const char kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger[] =
     "ios_reminder_notifications_overflow_menu_bubble_iph_trigger";
+const char kIOSOverflowMenuSetTabReminderTapped[] =
+    "ios_overflow_menu_set_tab_reminder_tapped";
+const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[] =
+    "ios_reminder_notifications_overflow_menu_new_badge_iph_trigger";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

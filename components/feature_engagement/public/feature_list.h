@@ -288,6 +288,9 @@ DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserBannerPromoFeature,
                        "IPH_iOSDefaultBrowserBannerPromoFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,
                        "IPH_iOSReminderNotificationsOverflowMenuBubbleFeature");
+DEFINE_VARIATION_PARAM(
+    kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
+    "IPH_iOSReminderNotificationsOverflowMenuNewBadgeFeature");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -665,6 +668,8 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSSharedTabGroupForeground),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserBannerPromoFeature),
         VARIATION_ENTRY(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature),
+        VARIATION_ENTRY(
+            kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),
