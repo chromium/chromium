@@ -43,10 +43,9 @@ gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
   const auto& icon =
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
   return gfx::CreateVectorIcon(
-      icon,
-      (native_theme->ShouldUseDarkColorsForSystemIntegratedUI())
-          ? SK_ColorWHITE
-          : SK_ColorBLACK);
+      icon, (native_theme->ShouldUseDarkColorsForSystemIntegratedUI())
+                ? SK_ColorWHITE
+                : SK_ColorBLACK);
 #endif
 }
 }  // namespace
