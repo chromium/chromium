@@ -221,7 +221,7 @@ ScriptPromise<V8AIAvailability> AISummarizerFactory::availability(
                 AIMetrics::AISessionType::kSummarizer, result);
             resolver->Resolve(AIAvailabilityToV8(availability));
           },
-          WrapPersistent(resolver), WrapWeakPersistent(this)));
+          WrapPersistent(resolver), WrapPersistent(this)));
   return promise;
 }
 
@@ -256,7 +256,7 @@ ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
             resolver->Resolve(MakeGarbageCollected<AISummarizerCapabilities>(
                 AICapabilityAvailabilityToV8(availability)));
           },
-          WrapPersistent(resolver), WrapWeakPersistent(this)));
+          WrapPersistent(resolver), WrapPersistent(this)));
   return promise;
 }
 

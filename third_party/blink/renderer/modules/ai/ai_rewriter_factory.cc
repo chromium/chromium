@@ -203,7 +203,7 @@ ScriptPromise<V8AIAvailability> AIRewriterFactory::availability(
                 AIMetrics::AISessionType::kRewriter, result);
             resolver->Resolve(AIAvailabilityToV8(availability));
           },
-          WrapPersistent(resolver), WrapWeakPersistent(this)));
+          WrapPersistent(resolver), WrapPersistent(this)));
   return promise;
 }
 

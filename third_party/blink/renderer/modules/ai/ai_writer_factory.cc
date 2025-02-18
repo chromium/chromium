@@ -197,7 +197,7 @@ ScriptPromise<V8AIAvailability> AIWriterFactory::availability(
                 AIMetrics::AISessionType::kWriter, result);
             resolver->Resolve(AIAvailabilityToV8(availability));
           },
-          WrapPersistent(resolver), WrapWeakPersistent(this)));
+          WrapPersistent(resolver), WrapPersistent(this)));
   return promise;
 }
 
