@@ -18020,7 +18020,7 @@
                     "name": "Enabled",
                     "params": {
                         "accepted-trigger-rate": "1.0",
-                        "decline-trigger-rate": "1.0",
+                        "declined-trigger-rate": "1.0",
                         "eea-accepted-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
                         "eea-control-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
                         "eea-declined-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
