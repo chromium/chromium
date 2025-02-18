@@ -1963,9 +1963,19 @@
     "expiry_milestone": 140
   },
   {
+    "name": "devtools-automatic-workspace-folders",
+    "owners": [ "bmeurer@chromium.org", "alexrudenko@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "devtools-privacy-ui",
     "owners": [ "jalonthomas@chromium.com", "shuuran@chromium.org", "masnoble@chromium.com" ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "devtools-project-settings",
+    "owners": [ "bmeurer@chromium.org" ],
+    "expiry_milestone": 140
   },
   {
     "name": "direct-sockets-in-service-workers",

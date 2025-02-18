@@ -11879,6 +11879,7 @@ from previous Chrome versions.
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
+  <int value="-888688589" label="DevToolsAutomaticFileSystems:enabled"/>
   <int value="-888336510" label="NtpSingleRowShortcuts:enabled"/>
   <int value="-887094098" label="ForcedColors:enabled"/>
   <int value="-886912558" label="ChromeHomePromo:enabled"/>
@@ -15631,6 +15632,7 @@ from previous Chrome versions.
   <int value="604671392" label="MuteCompromisedPasswords:disabled"/>
   <int value="605150752" label="WebUSB:disabled"/>
   <int value="605332010" label="SidePanelBorder:disabled"/>
+  <int value="605712166" label="DevToolsWellKnown:enabled"/>
   <int value="606288133" label="enable-print-preview-register-promos"/>
   <int value="606512202" label="AutofillCreditCardPopupLayout:enabled"/>
   <int value="606611135" label="ContextMenuTranslateWithGoogleLens:disabled"/>
@@ -17071,6 +17073,7 @@ from previous Chrome versions.
   <int value="1179407596" label="PreemptiveLinkToTextGeneration:enabled"/>
   <int value="1179587141" label="CommerceMerchantViewer:enabled"/>
   <int value="1179936481" label="enable-android-pay-integration-v1"/>
+  <int value="1180171767" label="DevToolsWellKnown:disabled"/>
   <int value="1180692900"
       label="SyncChromeOSExplicitPassphraseSharing:enabled"/>
   <int value="1180722846" label="OculusVR:disabled"/>
@@ -19189,6 +19192,7 @@ from previous Chrome versions.
   <int value="1971964569" label="NewEncodeCpuLoadEstimator:disabled"/>
   <int value="1972178452" label="CCTResizableWindowAboveNavbar:enabled"/>
   <int value="1972232935" label="DisplayMoveWindowAccels:enabled"/>
+  <int value="1972275425" label="DevToolsAutomaticFileSystems:disabled"/>
   <int value="1972720114" label="WebPaymentsJustInTimePaymentApp:enabled"/>
   <int value="1973376634" label="WebXRMultiGpu:enabled"/>
   <int value="1974013089" label="EmptyStates:enabled"/>
