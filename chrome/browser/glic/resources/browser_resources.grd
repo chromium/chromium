@@ -25,6 +25,12 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT" file="glic_profile_banner_top_right.svg" type="BINDATA" compress="brotli" />
     </includes>
 
+    <!-- NOTE: file is currently marked as untranslatable in
+      translation_expectations.pyl, so changing the translateable attribute on
+      the following messages will have no effect until that .pyl file is
+      updated.
+    -->
+
     <messages>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="[Placeholder Description]" translateable="false">
         [Placeholder String]
