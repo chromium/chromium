@@ -363,7 +363,6 @@
 <translation id="2561093647892030937">ನಿಂಬೆ ಹಣ್ಣುಗಳು</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ...</translation>
 <translation id="2573178735329662769">ಎಲ್ಲಾ Chromebook ಆಡಿಯೊವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
-<translation id="2575552334616524665">ನೀವು ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅಥವಾ <ph name="THREE_DOTS_MENU_ICON" /> ಮೆನುವಿನಲ್ಲಿ ಆನ್ ಮಾಡಬಹುದು</translation>
 <translation id="2576253868710695442">ಇದು 2GB ಸಂಗ್ರಹಣೆಯನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="2584547424703650812">ಗ್ಲೋಸ್ಕೇಪ್ಸ್</translation>
 <translation id="2584559707064218956">ಸೆಟಪ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
@@ -502,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> ಪತ್ರವನ್ನು ಹೊಂದಿರುವ <ph name="LETTERS_COLOR" /> ಹಿನ್ನೆಲೆ</translation>
 <translation id="3383623117265110236">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್</translation>
 <translation id="3404249063913988450">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
-<translation id="3410165745972100556">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="3413935475507503304">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು, ಮುಂದಿನದು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="3428551088151258685">ಹೊರಾಂಗಣ</translation>
 <translation id="3428971106895559033">ಪೇಸ್ಟಲ್</translation>
@@ -1470,6 +1468,7 @@
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> ಕೆಫೆ</translation>
 <translation id="7841134249932030522">ಕತ್ತಲೆ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7846634333498149051">ಕೀಬೋರ್ಡ್</translation>
+<translation id="7847923465436619066">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಭಾಷಾ ಪಿಕರ್</translation>
 <translation id="7849030488395653706">ನಾರ್ದರ್ನ್ ಲೈಟ್ಸ್</translation>
 <translation id="7849737607196682401">ಲೇಸ್</translation>
 <translation id="7850320739366109486">ಅಡಚಣೆ ಮಾಡಬೇಡಿ</translation>
@@ -1656,6 +1655,7 @@
 <translation id="8749478549112817787">ಕ್ಯಾಮರಾದ ಹಿನ್ನೆಲೆ</translation>
 <translation id="8755946156089753497">ಗೋಪುರ</translation>
 <translation id="8760616037557661287">ಹಿಂದಿನ ಪ್ರಾಂಪ್ಟ್‌ಗಳು</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಹಾಗೂ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ಆಲ್ಬಮ್‌</translation>
 <translation id="8775713578693478175">ಮೋಡೆಮ್ APN</translation>

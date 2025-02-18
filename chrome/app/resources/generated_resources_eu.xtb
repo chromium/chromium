@@ -196,6 +196,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1129348283834595293">Ziberpunka</translation>
 <translation id="1129420403709586868">Ikusi telefonoko argazkiak eta multimedia-elementuak</translation>
 <translation id="1129850422003387628">Kudeatu aplikazioak</translation>
+<translation id="1130430615924359526">{0,plural, =1{Itxi ezkutuko moduko leiho guztiak}other{Itxi ezkutuko moduko leiho guztiak (# leiho)}}</translation>
 <translation id="113050636487300043">Aukeratu izen eta kolore-gai bat profilak bereizteko</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />, <ph name="GROUP_NAME" /> taldekoa</translation>
 <translation id="1130676589211693127">Eskuineko aurikularrari bateriaren ehuneko <ph name="PERCENTAGE" /> geratzen zaio.</translation>
@@ -1513,6 +1514,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2042279886444479655">Profil aktiboak</translation>
 <translation id="2042427131767688936">Gailua segurtasunez erabil daitekeela ziurtatzeko, erakundeak sistema eragilearen, arakatzailearen eta ezarpenen informazioa ikus dezake, baita gailuan zer software instalatu den ere.</translation>
 <translation id="2044014337866019681">Ziurtatu <ph name="ACCOUNT" /> kontua ari zarela egiaztatzen saioa desblokeatzeko.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Itxi gonbidatuentzako leiho guztiak}other{Itxi gonbidatuentzako leiho guztiak (# leiho)}}</translation>
 <translation id="204497730941176055">Microsoft ziurtagiriaren txantiloiaren izena</translation>
 <translation id="2045211794962848221">Mezu hau ez zaizu berriro erakutsiko</translation>
 <translation id="2045838962742066664">Idazkera takigrafikoa</translation>
@@ -2285,7 +2287,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2569972178052279830">Saltzailearen izena</translation>
 <translation id="257088987046510401">Gaiak</translation>
 <translation id="2571638829488071045">Luzapen hau Google-ko kontuan gorde nahi duzu?</translation>
-<translation id="2571655996835834626">Webguneek darabiltzaten eginbideen baimenak kontrolatzen dituzten ezarpenak aldatu; besteak beste, cookieak, JavaScript, pluginak, geokokapena, mikrofonoa eta kamera.</translation>
 <translation id="257175846174451436">Fitxa taldea iradoki da</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> bolumenean irakurtzeko sarbidea bakarrik eman da.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> fitxa</translation>
@@ -7349,6 +7350,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6214106213498203737">Akuarela</translation>
 <translation id="621470880408090483">Ez eman Bluetooth bidezko gailuetara konektatzeko baimena webguneei</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pasahitzak seguru mantentzeko, <ph name="BRAND" /> blokeatu egingo da minutu batez jarduerarik ez badago}other{Pasahitzak seguru mantentzeko, <ph name="BRAND" /> blokeatu egingo da # minutuz jarduerarik ez badago}}</translation>
+<translation id="6216154119179790291">Joan lehen fitxara</translation>
 <translation id="6216239400972191926">Baztertutako webguneak eta aplikazioak</translation>
 <translation id="6216601812881225442">Ezin da aldatu diskoaren tamaina. Linux-ek aldez aurretik esleituta daukan biltegiratzeko tokia doitzeko, egin babeskopia bat eta, ondoren, lehenera ezazu beste edukiontzi batean.</translation>
 <translation id="6216696360484424239">Hasi saioa automatikoki</translation>
@@ -7545,6 +7547,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6357305427698525450">Onartzen diren esteka batzuek <ph name="APP_NAME" /> edo <ph name="APP_NAME_2" /> aplikazioan irekitzen jarraituko dute.</translation>
 <translation id="6357750620525943720">Beste identifikatzaile egonkor batzuk (adib., hash-ak edo UUIDak)</translation>
 <translation id="6358884629796491903">Dragoia</translation>
+<translation id="6359640073754977254">Joan azken fitxara</translation>
 <translation id="6361850914223837199">Errorearen xehetasunak:</translation>
 <translation id="6362853299801475928">&amp;Eman arazo baten berri…</translation>
 <translation id="6363786367719063276">Ikusi erregistroak</translation>
@@ -7607,7 +7610,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6411135999030237579">Tekla automatikoki errepikatzeko, eduki sakatuta</translation>
 <translation id="6414618057231176439">Hautatu <ph name="VM_NAME" /> zerbitzuaren zein bertsio instalatu nahi duzun.</translation>
 <translation id="641469293210305670">Instalatu eguneratzeak eta aplikazioak</translation>
-<translation id="6414878884710400018">Ireki sistemaren hobespenak</translation>
 <translation id="6415757856498750027">"ư" lortzeko, idatzi "w"</translation>
 <translation id="6415816101512323589">Gailuko datuak berreskuratzeko aukera aktibatu nahi duzu?</translation>
 <translation id="6415900369006735853">Konektatu Internetera telefonoa erabiliz</translation>
@@ -10202,6 +10204,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8258027225380843424">Inportatu dira!</translation>
 <translation id="8259048637628995340">Gailuak erosoago erabiltzeko, konektatu Android-eko telefonoa</translation>
 <translation id="8260177673299865994">Hobetu deskargen babesa</translation>
+<translation id="8260473380156923937">Chrome-ren aplikazioak zaharkituta geratuko dira laster. Ordezko aukerak lortzeko, jarri garatzailearekin edo IKT zerbitzuaren kontaktuarekin harremanetan.</translation>
 <translation id="8260864402787962391">Sagua</translation>
 <translation id="8261378640211443080">Luzapen hau ez dago <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan, eta agian zuk jakin gabe gehitu da.</translation>
 <translation id="8261506727792406068">Ezabatu</translation>

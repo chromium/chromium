@@ -196,6 +196,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1129348283834595293">Kuberpunk</translation>
 <translation id="1129420403709586868">Bekyk jou foon se foto's en media</translation>
 <translation id="1129850422003387628">Bestuur programme</translation>
+<translation id="1130430615924359526">{0,plural, =1{Maak Incognito toe}other{Maak Incognito (# vensters) toe}}</translation>
 <translation id="113050636487300043">Kies 'n naam en kleurtema om tussen profiele te onderskei</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – deel van groep <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Regterbatteryvlak <ph name="PERCENTAGE" />%.</translation>
@@ -1523,6 +1524,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2042279886444479655">Aktiewe profiele</translation>
 <translation id="2042427131767688936">Om te verseker dat hierdie toestel veilig gebruik kan word, kan jou organisasie inligting oor sy bedryfstelsel, blaaier en instellings sien, en watter sagteware op die toestel geïnstalleer is.</translation>
 <translation id="2044014337866019681">Maak asseblief seker dat jy <ph name="ACCOUNT" /> verifieer om die sessie te ontsluit.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Maak Gas toe}other{Maak Gas (# vensters) toe}}</translation>
 <translation id="204497730941176055">Microsoft-sertifikaattemplaatnaam</translation>
 <translation id="2045211794962848221">Jy sal nie weer hierdie spesifieke boodskap sien nie</translation>
 <translation id="2045838962742066664">Kortpadtik</translation>
@@ -2298,7 +2300,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2569972178052279830">Kleinhandelaarnaam</translation>
 <translation id="257088987046510401">Temas</translation>
 <translation id="2571638829488071045">Stoor hierdie uitbreiding in jou Google-rekening?</translation>
-<translation id="2571655996835834626">Verander jou instellings wat webwerwe se toegang tot kenmerke soos webkoekies, JavaScript, inproppe, geoligging, mikrofoon, kamera, ensovoorts beheer.</translation>
 <translation id="257175846174451436">Oortjiegroep is voorgestel</translation>
 <translation id="2572032849266859634">Leesalleen-toegang tot <ph name="VOLUME_NAME" /> is toegestaan.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> oortjies</translation>
@@ -7370,6 +7371,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6214106213498203737">Waterverf</translation>
 <translation id="621470880408090483">Moenie werwe toelaat om aan Bluetooth-toestelle te koppel nie</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" /> sluit na 1 minuut van onaktiwiteit om jou wagwoorde veilig te hou}other{<ph name="BRAND" /> sluit na # minute van onaktiwiteit om jou wagwoorde veilig te hou}}</translation>
+<translation id="6216154119179790291">Rollees na die eerste oortjie</translation>
 <translation id="6216239400972191926">Afgekeurde webwerwe en apps</translation>
 <translation id="6216601812881225442">Jou houer se grootte kan nie verander word nie. Om die hoeveelheid spasie te verstel wat vooraf aan Linux toegewys word, moet jy rugsteun en dan in 'n nuwe houer terugstel.</translation>
 <translation id="6216696360484424239">Meld outomaties aan</translation>
@@ -7566,6 +7568,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6357305427698525450">Sommige gesteunde skakels sal steeds in <ph name="APP_NAME" /> of <ph name="APP_NAME_2" /> oopmaak.</translation>
 <translation id="6357750620525943720">Ander stabiele identifiseerders (bv. hutsmerke of UUID’s)</translation>
 <translation id="6358884629796491903">Draak</translation>
+<translation id="6359640073754977254">Rollees na die laaste oortjie</translation>
 <translation id="6361850914223837199">Foutbesonderhede:</translation>
 <translation id="6362853299801475928">Gee 'n kwessie aan …</translation>
 <translation id="6363786367719063276">Bekyk loglêers</translation>
@@ -7628,7 +7631,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6411135999030237579">Druk en hou om die sleutel outomaties te herhaal</translation>
 <translation id="6414618057231176439">Kies watter weergawe van <ph name="VM_NAME" /> om te installeer</translation>
 <translation id="641469293210305670">Instelleer opdaterings en programme</translation>
-<translation id="6414878884710400018">Maak stelselvoorkeure oop</translation>
 <translation id="6415757856498750027">Tik “w” om “ư” te kry</translation>
 <translation id="6415816101512323589">Skakel terugstelling van plaaslike data aan om jou data te beskerm?</translation>
 <translation id="6415900369006735853">Koppel aan die internet deur jou foon</translation>
@@ -10224,6 +10226,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8258027225380843424">Suksesvol ingevoer!</translation>
 <translation id="8259048637628995340">Koppel jou Android-foon vir ’n moeitelose ervaring</translation>
 <translation id="8260177673299865994">Verbeter aflaaibeskerming</translation>
+<translation id="8260473380156923937">Chrome-apps sal binnekort opgeskort word. Kontak die ontwikkelaar of jou IT-dienskontak vir alternatiewe.</translation>
 <translation id="8260864402787962391">Muis</translation>
 <translation id="8261378640211443080">Hierdie uitbreiding word nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys nie en kon sonder jou medewete bygevoeg gewees het.</translation>
 <translation id="8261506727792406068">Vee uit</translation>

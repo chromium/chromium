@@ -658,6 +658,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3904270275864974753">Uredite rotirajući meni</translation>
 <translation id="3909222758573607742">Sačuvajte lozinke i druge stavke na račun</translation>
+<translation id="3913463964270756493">Sakrijte zaslon pretraživanja pomoću Google objektiva</translation>
 <translation id="3914640181019354363">Otkrij adrese</translation>
 <translation id="3922185497376658606">Predučitaj web stranice</translation>
 <translation id="3922395466317605522">Prilagodite meni</translation>
@@ -975,6 +976,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> sada može koristiti vaše korisničko ime i lozinku kada koristi Google upravitelj lozinki da se prijavi na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5242899254250321823">Promijenite lozinku na web lokaciji</translation>
 <translation id="5248640482715684545">Web lokacija pokušava otvoriti drugu aplikaciju.</translation>
+<translation id="5250371859659394278">Iz nepoznatog izvora</translation>
 <translation id="5271265092610673171">{count,plural, =1{Obavezno polje je prazno. Popunite ga prije pohranjivanja.}one{Neka obavezna polja su prazna. Popunite ih prije pohranjivanja.}few{Neka obavezna polja su prazna. Popunite ih prije pohranjivanja.}other{Neka obavezna polja su prazna. Popunite ih prije pohranjivanja.}}</translation>
 <translation id="5271549068863921519">Sačuvaj lozinku</translation>
 <translation id="5279214046729249716">Da, razdvoji ih</translation>

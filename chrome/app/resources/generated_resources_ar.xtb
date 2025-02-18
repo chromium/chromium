@@ -1188,6 +1188,7 @@
 <translation id="1812027881030482584">ليس بإمكان "<ph name="SITE_ETLD_PLUS_ONE" />" مواصلة استخدام "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="1812284620455788548">يجري بث "<ph name="TAB_NAME" />".</translation>
 <translation id="1813278315230285598">الخدمات</translation>
+<translation id="1813828404076816564">لإرسال ملاحظات حول ميزة مجموعات علامات التبويب المشترَكة، عليك النقر على زر "ملاحظات"</translation>
 <translation id="18139523105317219">‏اسم جهة تبادل البيانات الإلكتروني (EDI)</translation>
 <translation id="1815083418640426271">لصق كنص عادي</translation>
 <translation id="1815097521077272760">تمت دعوتك لتجربة ميزة التحكّم في هذه اللعبة باستخدام لوحة المفاتيح.</translation>
@@ -2292,7 +2293,6 @@
 <translation id="2569972178052279830">اسم بائع التجزئة</translation>
 <translation id="257088987046510401">المظاهر</translation>
 <translation id="2571638829488071045">‏هل تريد حفظ هذه الإضافة في حسابك على Google؟</translation>
-<translation id="2571655996835834626">يمكنك تغيير الإعدادات التي تتحكَّم في وصول المواقع الإلكترونية إلى ميزات مثل ملفات تعريف الارتباط وجافا سكريبت والمكوّنات الإضافية والمواقع الجغرافية والميكروفون والكاميرا وغيرها.</translation>
 <translation id="257175846174451436">مجموعة علامات التبويب المقترَحة</translation>
 <translation id="2572032849266859634">تم منح إذن دخول للقراءة فقط إلى <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501">عدد علامات التبويب: <ph name="NUM" /></translation>
@@ -4117,6 +4117,7 @@
 <translation id="3857807444929313943">ارفع الإصبع، ثم المس أداة الاستشعار مرة أخرى</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="385939467708172187">استخدام كلمة مرور قوية</translation>
+<translation id="3859869403161297890">يمكنك إرسال ملاحظاتك حول مجموعات علامات التبويب المشترَكة هنا</translation>
 <translation id="3859987779882450877">تعرض هذه الميزة اقتراحات وتنشئ مجموعات تلقائيًا من علامات التبويب المفتوحة</translation>
 <translation id="386009056910366930">إدارة مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">اسم المستخدم "<ph name="USERNAME" />" غير متوفر.</translation>
@@ -7621,7 +7622,6 @@
 <translation id="6411135999030237579">الضغط مع الاستمرار لتكرار المفتاح تلقائيًا</translation>
 <translation id="6414618057231176439">اختَر إصدار "<ph name="VM_NAME" />" الذي تريد تثبيته.</translation>
 <translation id="641469293210305670">تثبيت التطبيقات والتحديثات</translation>
-<translation id="6414878884710400018">فتح الإعدادات المفضّلة للنظام</translation>
 <translation id="6415757856498750027">‏اكتب w لإظهار ư</translation>
 <translation id="6415816101512323589">هل تريد تفعيل ميزة استرداد البيانات المحلية لحماية بياناتك؟</translation>
 <translation id="6415900369006735853">يمكنك الاتصال بالإنترنت من خلال هاتفك.</translation>
@@ -8176,6 +8176,7 @@
 <translation id="6805478749741295868">‏هذه ميزة تجريبية تستخدم الذكاء الاصطناعي (AI) وقد ينشأ عنها نتائج غير دقيقة أحيانًا.</translation>
 <translation id="6805647936811177813">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> لاستيراد شهادة العميل من <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">‏تفعيل تتبع RLZ في <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">ملاحظات حول مجموعات علامات التبويب المشترَكة</translation>
 <translation id="6806089545527108739">عدم السماح بإرسال الإشعارات والسؤال لاحقًا</translation>
 <translation id="680644983456221885">‏يوفِّر هذا الوضع حمايةً استباقية فورية من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات تصفّحك التي يتم إرسالها إلى Google.</translation>
 <translation id="6806781719264274042">‏جهات الاتصال التي لديها حساب على Google فقط. <ph name="LINK_BEGIN" />عرض جهات الاتصال<ph name="LINK_END" /></translation>

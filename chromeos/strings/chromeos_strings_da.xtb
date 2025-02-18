@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
+<translation id="2164131940279488868">Sørg for, at en mikrofon er tilknyttet, før du starter lydoptagelsen</translation>
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2180197493692062006">Der opstod en fejl. Prøv at åbne appen igen.</translation>
 <translation id="2189104374785738357">Rediger APN-oplysninger</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">citroner</translation>
 <translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
 <translation id="2573178735329662769">Optagelse af al Chromebook-lyd</translation>
-<translation id="2575552334616524665">Du kan aktivere denne funktion under Indstillinger eller i <ph name="THREE_DOTS_MENU_ICON" />-menuen</translation>
 <translation id="2576253868710695442">Dette kræver op til 2 GB lagerplads</translation>
 <translation id="2584547424703650812">Lysende landskaber</translation>
 <translation id="2584559707064218956">Gå til Indstillinger for at konfigurere</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" />-baggrund med bogstavet <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusivt</translation>
 <translation id="3404249063913988450">Aktivér Pauseskærm</translation>
-<translation id="3410165745972100556">Transskription er deaktiveret</translation>
 <translation id="3413935475507503304">Klik på Næste for at fortsætte med opdateringen.</translation>
 <translation id="3428551088151258685">udendørs</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -1685,6 +1684,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8876270629542503161">Enheden er en tablet.</translation>
 <translation id="8881098542468797602">Testen blev gennemført</translation>
 <translation id="8882789155418924367">ugler</translation>
+<translation id="8885038613856655272">Tilknyt en mikrofon</translation>
 <translation id="8892443466059986410">Annuller redigering af genvej</translation>
 <translation id="8897043028305808902">Filen er omdøbt</translation>
 <translation id="8898840733695078011">Signalstyrke</translation>

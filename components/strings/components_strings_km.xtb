@@ -811,7 +811,6 @@
 <translation id="238459632961158867">គេហទំព័រ</translation>
 <translation id="2385809941344967209">ដំឡើង​កំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="2386255080630008482">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេត្រូវបានបញ្ឈប់សុពលភាព។</translation>
-<translation id="2386410849674401722">ការលើកមេដៃដាក់បញ្ជូនមតិកែលម្អដែលប្រាប់ថា អ្នកចូលចិត្ត "បំពេញស្វ័យប្រវត្តិដោយប្រើ AI"</translation>
 <translation id="2388828676877700238">ការ​រៀបចំលិខិតប្រកាស និង​ផែនការ​ពន្ធ</translation>
 <translation id="239203817277685015">បរិយាយ</translation>
 <translation id="239293030466334554">យានជំនិះ​ដែលអាចបិទបើក​ដំបូលបាន</translation>
@@ -1445,7 +1444,6 @@
 <translation id="3543935938072367282">បង់ប្រាក់​ចេញបាន​កាន់តែរហ័ស​ដោយប្រើ​ការបំពេញ​ស្វ័យប្រវត្តិ</translation>
 <translation id="3547442767634383572">ទិដ្ឋភាព​រួមនៃកម្រងព័ត៌មានការងារ</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
-<translation id="3550325450190222557">ផ្ញើមតិកែលម្អសម្រាប់ "បំពេញស្វ័យប្រវត្តិដោយប្រើ AI"។</translation>
 <translation id="3552155506104542239">សូមប្រុងប្រយ័ត្ន៖ គោលការណ៍នេះ​ផ្ទុយគ្នានឹង <ph name="POLICY_NAME" /> ហើយនឹង​មិនមាន​ឥទ្ធិពលលើ​កម្មវិធី Android ទេ។ បើមិន​ដូច្នោះទេ គោលការណ៍នេះ​កំពុង​ដំណើរការ​ដូចការរំពឹងទុក។</translation>
 <translation id="3552297013052089404">ពុម្ពអក្សរ Sans-serif</translation>
 <translation id="3558573058928565255">ពេលថ្ងៃ</translation>
@@ -2903,7 +2901,6 @@
 <translation id="6124432979022149706">កម្មវិធីភ្ជាប់ Chrome Enterprise</translation>
 <translation id="6126565365696310362">ស្រោមសំបុត្រចិន #2</translation>
 <translation id="6127379762771434464">ធាតុត្រូវបានយកចេញ</translation>
-<translation id="6128214169525122635">ការឱ្យមេដៃ​ចុះដាក់បញ្ជូនមតិកែលម្អដែលប្រាប់ថា អ្នកមិនចូលចិត្ត "បំពេញស្វ័យប្រវត្តិដោយប្រើ AI" ទេ</translation>
 <translation id="6131824478727057281">ទីតាំង</translation>
 <translation id="6133320744616005677">បន្តការអនុញ្ញាត</translation>
 <translation id="6133984428121856852">កន្ទុយឯកសារ​ទទេ ឬ​មាន​ទម្រង់​មិន​ត្រឹមត្រូវ។</translation>
@@ -4602,7 +4599,6 @@
 <translation id="9150025764986957246">អ្នកអាច​បញ្ចូលអ្វីៗ​ដូចជា៖</translation>
 <translation id="9154194610265714752">បានធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="9155211586651734179">បានភ្ជាប់ឧបករណ៍សំឡេងខាងក្រៅ</translation>
-<translation id="9155453166708525139">"បំពេញស្វ័យប្រវត្តិដោយប្រើ AI" ជាមុខងារដែលស្ថិតក្នុងដំណាក់កាលពិសោធន៍ ហើយនឹងមិនធ្វើបានត្រឹមត្រូវជានិច្ចនោះទេ។ <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />។</translation>
 <translation id="9155646082713385498">ទស្សនាវដ្ដី</translation>
 <translation id="9157595877708044936">កំពុងតំឡើង...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> អាចមាន​ខ្លឹមសារ​រសើប}other{ឯកសារ <ph name="FILE_COUNT" /> អាចមាន​ខ្លឹមសារ​រសើប}}</translation>

@@ -625,6 +625,35 @@ Bu politikayı etkinleştirir veya yapılandırmazsanız web sayfasını URL yol
 Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli metin parçalarına kaydırma işlevi devre dışı bırakılır.</translation>
 <translation id="1468702975912409463">Uzaktan erişim kullanıcılarının, yerel istemci tarayıcılarında ana makine taraflı URL'leri açmasını etkinleştir</translation>
 <translation id="1474273443907024088">TLS Yanlış Başlatma'yı devre dışı bırak</translation>
+<translation id="1475494149102693892">Dosya türü uzantısına dayalı indirme uyarılarından muaf tutulacak dosya türü uzantılarını ve muafiyetin geçerli olacağı alanların listesini içeren bir sözlük oluşturmak için bu politikayı etkinleştirebilirsiniz. Böylece kuruluş yöneticileri, listedeki alanlarla ilişkili dosyalar için dosya türü uzantısına dayalı indirme uyarılarını engelleyebilirler. Örneğin "jnlp" uzantısı "website1.com" ile ilişkilendirilmişse kullanıcılar, "website1.com"dan "jnlp" dosyalarını indirirken uyarı almaz ancak "website2.com"dan "jnlp" dosyalarını indirirken uyarı alır.
+
+Bu politikada tanımlanan alanlar için belirtilen dosya türü uzantılarına sahip dosyalar da, karma içerik indirme uyarısı ve Güvenli Tarama uyarısı gibi dosya türü uzantısına dayalı olmayan güvenlik uyarılarına tabidir.
+
+Bu politikayı devre dışı bırakır veya yapılandırmazsanız uzantıya dayalı indirme uyarılarını tetikleyen dosya türleri kullanıcıya uyarı verir.
+
+Bu politikayı etkinleştirirseniz:
+
+* URL kalıpları https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresindeki kurallara uygun olarak biçimlendirilmelidir.
+
+* Dosya türü uzantıları küçük harflerle ASCII olarak girilmelidir. Dosya türü uzantısı listelenirken ayırıcı eklenmemelidir, yani ".jnlp" yerine "jnlp" şeklinde yazmanız gerekir.
+
+Örnek:
+
+Aşağıdaki örnek değer, *.example.com alanlarında "exe" ve "jnlp" uzantıları, tüm alanlarda ise "swf" uzantıları için dosya türü uzantısına dayalı indirme uyarılarını önler. Diğer tüm alanlarda kullanıcıya exe ve jnlp dosyaları için dosya türü uzantısına dayalı indirme uyarısı gösterir ancak swf dosyaları için göstermez.
+
+[
+  { "file_extension": "jnlp", "domains": ["example.com"] },
+  { "file_extension": "exe", "domains": ["example.com"] },
+  { "file_extension": "swf", "domains": ["*"] }
+]
+
+Bu örnekte "swf" dosyaları için dosya türü uzantısına dayalı indirme uyarılarının tüm alanlarda engellendiğini görebilirsiniz. Güvenlik riski nedeniyle, tehlikeli dosya türü uzantıları için bu gibi uyarıların tüm alanlarda engellenmesi önerilmez. Bu örnek yalnızca böyle bir yapılandırmanın mümkün olduğunu göstermek amacıyla verilmiştir.
+
+Bu politika <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> ile birlikte etkinleştirildiğinde bu politika tarafından belirtilen dosya türü uzantısına dayalı uyarı muafiyetlerine, tehlikeli dosya türlerini engelleyen bir <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> ayarına göre öncelik verilir. Bu politikada belirtilen istisnalar yalnızca <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> politikasının 1 ve 2. değerleriyle belirtilen "tehlikeli dosya türlerini engelle" davranışı için geçerlidir.
+
+Örneğin, bu politika "website1.com" adresinden "exe" uzantılı indirmeler için muafiyet belirtiyorsa ve <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> politikası kötü amaçlı indirmeleri ve tehlikeli dosya türlerini engelleyecek şekilde ayarlanmışsa (değer 1) "website1.com" adresinden "exe" uzantılı indirmeler, dosya türü uzantısına dayalı engellemelerden muaf tutulur ancak kötü amaçlıysa engellenir.
+
+<ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> hakkında daha fazla bilgiyi https://chromeenterprise.google/policies/?policy=DownloadRestrictions adresinde bulabilirsiniz.</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Politikayı ayarlamak, kullanıcıların chrome.usb API'sı aracılığıyla doğrudan bir web uygulaması içinde kullanmak için çekirdek sürücüsünden çıkarabildikleri USB cihazlarının listesini tanımlar. Girişler, belirli bir donanımı tanımlamak için kullanılan USB Tedarikçi Tanımlayıcısı ve Ürün Tanımlayıcısı çiftlerinden oluşmaktadır.
 

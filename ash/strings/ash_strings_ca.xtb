@@ -193,6 +193,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1607312127821884567">Ignora la configuració de visualització de les aplicacions del telèfon</translation>
 <translation id="1610778689852195798">"Desfés"</translation>
 <translation id="1611993646327628135">Activat</translation>
+<translation id="1612679292338846734">Si actives aquestes funcions, és possible que el text d'entrada, el contingut del document i l'URL de la pàgina web s'enviïn als servidors de la IA de Google. Aquesta informació s'utilitza per generar suggeriments d'escriptura i resums, respondre a preguntes i millorar el producte de conformitat amb les <ph name="LINK_TO_SERVICE_TERMS" />. No hi incloguis informació personal, sensible ni confidencial.</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1623768535032616219">Replega Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> no està disponible.</translation>
@@ -565,6 +566,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2946119680249604491">Afegeix una connexió</translation>
 <translation id="2947835478872237115">Nivell de bateria actual: <ph name="BATTERY_PERCENTAGE" />%; <ph name="TIME" /> per completar la càrrega.</translation>
 <translation id="2949420361496057765">Prem <ph name="MODIFIER" /> i fes clic en un enllaç</translation>
+<translation id="2957159466053076448">Pots desactivar aquestes funcions en qualsevol moment a Configuració. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Àudio del dispositiu</translation>
 <translation id="2960314608273155470">Mode de captura, l'opció predeterminada és <ph name="TYPE" /> <ph name="SOURCE" />. Prem la tecla de tabulació per navegar amb el teclat.</translation>
 <translation id="2961963223658824723">S'ha produït un error. Torna-ho a provar d'aquí a uns quants segons.</translation>
@@ -1905,6 +1907,7 @@ Instal·lació nova</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>
 <translation id="7360036564632145207">Canviar l'opció de configuració de la protecció d'accés a les dades per a perifèrics pot optimitzar el rendiment</translation>
 <translation id="736045644501761622">Estableix l'estil i el fons de pantalla</translation>
+<translation id="7368041336688136012">Has de tenir 18 anys com a mínim per utilitzar Ajuda'm a llegir o Ajuda'm a escriure, i per crear imatges amb IA.</translation>
 <translation id="7371404428569700291">Grava la finestra</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de memòria disponible d'un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Permet l'accés al micròfon a totes les aplicacions i a tots els llocs web amb permís per accedir al micròfon</translation>
@@ -2030,6 +2033,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Mostra-ho tot</translation>
+<translation id="7762664108390426952">condicions del servei i la política de privadesa de Google</translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
 <translation id="7769299611924763557">El teu GIF estarà a punt aviat</translation>
 <translation id="7773536009433685931">Activa la Wi-Fi</translation>

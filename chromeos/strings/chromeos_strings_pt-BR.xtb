@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Cancelar trabalho de impressão</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Ativar o modo escuro</translation>
+<translation id="2164131940279488868">Conecte um microfone para começar a gravar áudio</translation>
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
 <translation id="2180197493692062006">Algo deu errado. Tente abrir o app novamente.</translation>
 <translation id="2189104374785738357">Editar detalhes do APN</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">limões-sicilianos</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2573178735329662769">Gravando todo o áudio do Chromebook</translation>
-<translation id="2575552334616524665">Você pode ativar essa opção nas Configurações ou no menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Isso vai usar até 2 GB de armazenamento</translation>
 <translation id="2584547424703650812">Paisagens brilhantes</translation>
 <translation id="2584559707064218956">Para definir, acesse as Configurações</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">Plano de fundo <ph name="LETTERS_COLOR" /> com a letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Ativar o protetor de tela</translation>
-<translation id="3410165745972100556">A transcrição está desativada</translation>
 <translation id="3413935475507503304">Para continuar com a atualização, clique em "Próxima".</translation>
 <translation id="3428551088151258685">ao ar livre</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -1469,6 +1468,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7828503206075800057">Um café <ph name="CAFE_TYPE" /> <ph name="CAFE_STYLE" /></translation>
 <translation id="7841134249932030522">Ativar o modo escuro</translation>
 <translation id="7846634333498149051">Teclado</translation>
+<translation id="7847923465436619066">Seletor de idioma da transcrição</translation>
 <translation id="7849030488395653706">aurora boreal</translation>
 <translation id="7849737607196682401">renda</translation>
 <translation id="7850320739366109486">Não Perturbe</translation>
@@ -1655,6 +1655,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8749478549112817787">Plano de fundo da câmera</translation>
 <translation id="8755946156089753497">Torre</translation>
 <translation id="8760616037557661287">Comandos anteriores</translation>
+<translation id="876280838467039397">Baixar e selecionar o modelo de transcrição em <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>
 <translation id="8775713578693478175">APN de modem</translation>
@@ -1685,6 +1686,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8876270629542503161">Este dispositivo é um tablet.</translation>
 <translation id="8881098542468797602">Teste bem sucedido</translation>
 <translation id="8882789155418924367">corujas</translation>
+<translation id="8885038613856655272">Conectar um microfone</translation>
 <translation id="8892443466059986410">Cancelar edição do atalho</translation>
 <translation id="8897043028305808902">Arquivo renomeado</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>

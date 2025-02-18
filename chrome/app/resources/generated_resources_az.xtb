@@ -194,6 +194,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1129348283834595293">Kiberpank</translation>
 <translation id="1129420403709586868">Telefonunuzun fotolarına və mediasına baxın</translation>
 <translation id="1129850422003387628">Tətbiqləri idarə edin</translation>
+<translation id="1130430615924359526">{0,plural, =1{Anonim pəncərəsini bağlayın}other{Anonim pəncərəsini bağlayın (# pəncərə)}}</translation>
 <translation id="113050636487300043">Profilləri ayırmaq üçün ad və rəng teması seçin</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> qrupunun hissəsi</translation>
 <translation id="1130676589211693127">Sağ qulaqlığın batareya səviyyəsi: <ph name="PERCENTAGE" />%.</translation>
@@ -1509,6 +1510,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2042279886444479655">Aktiv profillər</translation>
 <translation id="2042427131767688936">Bu cihazın təhlükəsiz istifadəsi üçün təşkilat əməliyyat sistemi, brauzer və ayarlar, habelə cihazda quraşdırılmış proqram təminatı haqqında məlumatları görə bilər.</translation>
 <translation id="2044014337866019681">Seansı blokdan çıxarmaq üçün <ph name="ACCOUNT" /> hesabını doğruladığınıza əmin olun.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Qonaq pəncərəsini bağlayın}other{Qonaq pəncərəsini bağlayın (# pəncərə)}}</translation>
 <translation id="204497730941176055">Microsoft Sertifikat Şablon adı</translation>
 <translation id="2045211794962848221">Bu xüsusi mesajı bir daha görməyəcəksiniz</translation>
 <translation id="2045838962742066664">Stenoqrafiya</translation>
@@ -2284,7 +2286,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2569972178052279830">Pərakəndə Satıcının Adı</translation>
 <translation id="257088987046510401">Temalar</translation>
 <translation id="2571638829488071045">Bu artırma Google Hesabınızda yadda saxlanılsın?</translation>
-<translation id="2571655996835834626">Veb səhifələrin kuki, JavaScript, plaqin, coğrafi məkan, mikrofon, kamera və s. kimi funksiyalara girişinə nəzarət edən ayarları dəyişin.</translation>
 <translation id="257175846174451436">Tab qrupu təklif edildi</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> yalnız oxumaq hüququ verilmişdir.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> tab</translation>
@@ -7351,6 +7352,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6214106213498203737">Akvarel</translation>
 <translation id="621470880408090483">Saytlara Bluetooth cihazlarına qoşulmaq icazəsi verməyin</translation>
 <translation id="6215039389782910006">{1,plural, =1{Parolların təhlükəsizliyi üçün <ph name="BRAND" /> 1 dəqiqəlik fəaliyyətsizlikdən sonra kilidlənir}other{Parolların təhlükəsizliyi üçün <ph name="BRAND" /> # dəqiqəlik fəaliyyətsizlikdən sonra kilidlənir}}</translation>
+<translation id="6216154119179790291">İlk taba sürüşdürün</translation>
 <translation id="6216239400972191926">Rədd edilən sayt və tətbiqlər</translation>
 <translation id="6216601812881225442">Konteyneriniz ölçüsünün dəyişilməsini dəstəkləmir. Linux üçün əvvəlcədən ayrılmış boş yerin həcmini tənzimləmək üçün ehtiyat nüsxəsini çıxarın və sonra yeni bir konteynerə bərpa edin.</translation>
 <translation id="6216696360484424239">Avtomatik daxil olun</translation>
@@ -7547,6 +7549,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6357305427698525450">Bəzi dəstəklənən keçidlər hələ də <ph name="APP_NAME" /> və ya <ph name="APP_NAME_2" /> tətbiqində açılacaq.</translation>
 <translation id="6357750620525943720">Digər stabil identifikatorlar (məsələn, heş və ya UUID-lər)</translation>
 <translation id="6358884629796491903">Əjdaha</translation>
+<translation id="6359640073754977254">Son taba sürüşdürün</translation>
 <translation id="6361850914223837199">Xəta detalları:</translation>
 <translation id="6362853299801475928">Problemi xəbər verin...</translation>
 <translation id="6363786367719063276">Baxış jurnalı</translation>
@@ -7609,7 +7612,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6411135999030237579">Düyməni avtomatik təkrarlamaq üçün basıb saxlayın</translation>
 <translation id="6414618057231176439">Quraşdırılacaq <ph name="VM_NAME" /> versiyasını seçin.</translation>
 <translation id="641469293210305670">Güncəlləmə və Tətbiqləri Quraşdırın</translation>
-<translation id="6414878884710400018">Açıq Sistem Tərcihləri</translation>
 <translation id="6415757856498750027">"ư" üçün "w" yazın</translation>
 <translation id="6415816101512323589">Datanızı qorumaq üçün lokal data bərpası yandırılsın?</translation>
 <translation id="6415900369006735853">İnternetə telefonla bağlanın</translation>
@@ -10205,6 +10207,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8258027225380843424">İmport edildi!</translation>
 <translation id="8259048637628995340">Problemsiz təcrübə üçün Android telefonunu qoşun</translation>
 <translation id="8260177673299865994">Daha güvənli endirin</translation>
+<translation id="8260473380156923937">Chrome Tətbiqləri tezliklə ləğv ediləcək. Alternativlər üçün tərtibatçı və ya IT xidməti kontakınız ilə əlaqə saxlayın.</translation>
 <translation id="8260864402787962391">Maus</translation>
 <translation id="8261378640211443080">Bu artırma <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> siyahısında yoxdur və xəbəriniz olmadan əlavə edilmiş ola bilər.</translation>
 <translation id="8261506727792406068">Silin</translation>

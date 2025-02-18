@@ -1192,6 +1192,7 @@
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="1812284620455788548">投放 <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">服務</translation>
+<translation id="1813828404076816564">選取「意見回饋」按鈕，提供有關共用分頁群組功能的意見</translation>
 <translation id="18139523105317219">EDI 合作對象名稱</translation>
 <translation id="1815083418640426271">以純文字貼上</translation>
 <translation id="1815097521077272760">您已獲邀試用此遊戲的鍵盤控制功能。</translation>
@@ -2300,7 +2301,6 @@
 <translation id="2569972178052279830">零售商名稱</translation>
 <translation id="257088987046510401">主題背景</translation>
 <translation id="2571638829488071045">要將這個擴充程式儲存到 Google 帳戶嗎？</translation>
-<translation id="2571655996835834626">變更設定來控制網站對 Cookie、JavaScript、外掛程式、地理位置、麥克風、相機等功能的存取權。</translation>
 <translation id="257175846174451436">已建議分頁群組</translation>
 <translation id="2572032849266859634">已授與「<ph name="VOLUME_NAME" />」的唯讀權限。</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> 個分頁</translation>
@@ -4119,6 +4119,7 @@
 <translation id="3857807444929313943">提起手指，然後再次輕觸</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="385939467708172187">使用安全性強的密碼</translation>
+<translation id="3859869403161297890">請在此提供有關共用分頁群組的意見</translation>
 <translation id="3859987779882450877">自動根據已開啟的分頁建議並建立群組</translation>
 <translation id="386009056910366930">管理「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
@@ -7616,7 +7617,6 @@
 <translation id="6411135999030237579">按住即可自動重複按鍵動作</translation>
 <translation id="6414618057231176439">選取要安裝的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安裝更新內容和應用程式</translation>
-<translation id="6414878884710400018">開啟系統偏好設定</translation>
 <translation id="6415757856498750027">輸入「w」會得到「ư」</translation>
 <translation id="6415816101512323589">要開啟本機資料復原以保護資料嗎？</translation>
 <translation id="6415900369006735853">透過手機連線至互聯網</translation>
@@ -8163,6 +8163,7 @@
 <translation id="6805478749741295868">這是實驗版 AI 功能，提供的建議不一定符合需求。</translation>
 <translation id="6805647936811177813">登入 <ph name="TOKEN_NAME" /> 即可從 <ph name="HOST_NAME" /> 匯入用戶端憑證。</translation>
 <translation id="680572642341004180">對 <ph name="SHORT_PRODUCT_OS_NAME" /> 啟用 RLZ 追蹤功能。</translation>
+<translation id="6805817411033102703">共用分頁群組意見回饋</translation>
 <translation id="6806089545527108739">不允許但稍後再詢問</translation>
 <translation id="680644983456221885">系統會根據你向 Google 傳送的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充程式</translation>
 <translation id="6806781719264274042">只限你的聯絡人 (必須擁有 Google 帳戶)。<ph name="LINK_BEGIN" />查看聯絡人<ph name="LINK_END" /></translation>

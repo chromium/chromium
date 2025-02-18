@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">A telefon alkalmazásainak megtekintésére vonatkozó beállítás elvetése</translation>
 <translation id="1610778689852195798">„Undo” (Visszavonás)</translation>
 <translation id="1611993646327628135">Be</translation>
+<translation id="1612679292338846734">Ha bekapcsolja ezeket a funkciókat, a rendszer elküldi a bevitt szöveget, a dokumentum tartalmát és a weboldal URL-jét a Google AI szervereinek. Ezeket az információkat írási javaslatok és összefoglalók generálásához, kérdések megválaszolásához, valamint a termék fejlesztéséhez használjuk fel a <ph name="LINK_TO_SERVICE_TERMS" /> értelmében. Ne adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">A Google Tanterem összecsukása</translation>
 <translation id="163032029566320584">A(z) <ph name="UNAVAILABLE_DLC" /> nem áll rendelkezésre.</translation>
@@ -565,6 +566,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="2946119680249604491">Kapcsolat hozzáadása</translation>
 <translation id="2947835478872237115">Jelenlegi akkumulátorszint: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> van hátra a teljes feltöltésig</translation>
 <translation id="2949420361496057765">Nyomja le a(z) <ph name="MODIFIER" /> billentyűt, majd kattintson a kívánt linkre</translation>
+<translation id="2957159466053076448">Ezeket a funkciókat bármikor kikapcsolhatja a Beállításokban. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Eszköz hangja</translation>
 <translation id="2960314608273155470">Rögzítés mód, alapértelmezett beállítás: <ph name="SOURCE" /> <ph name="TYPE" />. A billentyűzettel való navigációhoz nyomja le a Tab billentyűt.</translation>
 <translation id="2961963223658824723">Valami nem sikerült. Próbálja újra néhány másodperc múlva.</translation>
@@ -1906,6 +1908,7 @@ Frissen telepítve</translation>
 <translation id="735745346212279324">A VPN nincs csatlakoztatva</translation>
 <translation id="7360036564632145207">A perifériás adathozzáférési védelemre vonatkozó beállítás módosítása optimalizálhatja a teljesítményt.</translation>
 <translation id="736045644501761622">Háttérkép és stílus beállítása</translation>
+<translation id="7368041336688136012">A Segítség az olvasáshoz és Segítség az íráshoz funkciók használatához, valamint képek AI segítségével való generálásához legalább 18 évesnek kell lennie.</translation>
 <translation id="7371404428569700291">Felvétel készítése az ablakról</translation>
 <translation id="7372069265635026568"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> memória áll rendelkezésre</translation>
 <translation id="737315737514430195">Ezzel engedélyezi a mikrofonhoz való hozzáférést a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
@@ -2031,6 +2034,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
 <translation id="7749958366403230681">4. ExpressKey</translation>
 <translation id="7751260505918304024">Összes megjelenítése</translation>
+<translation id="7762664108390426952">Google Általános Szerződési Feltételei és adatvédelmi irányelvei</translation>
 <translation id="7768784765476638775">Felolvasás</translation>
 <translation id="7769299611924763557">A GIF hamarosan elkészül.</translation>
 <translation id="7773536009433685931">Helyette Wi-Fi bekapcsolása</translation>

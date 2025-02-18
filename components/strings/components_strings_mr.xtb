@@ -809,7 +809,6 @@
 <translation id="238459632961158867">वेबसाइट</translation>
 <translation id="2385809941344967209">तुमच्‍या Chrome सेटिंग्जमधून Chrome अपडेट करा</translation>
 <translation id="2386255080630008482">सर्व्हरचे सर्टिफिकेट रिव्होक केले गेले.</translation>
-<translation id="2386410849674401722">थंब्स अपवर क्लिक केल्यावर तुम्हाला AI वापरून ऑटोफिल करा हे आवडले आहे असा फीडबॅक सबमिट केला जातो</translation>
 <translation id="2388828676877700238">कर भरणा आणि नियोजन</translation>
 <translation id="239203817277685015">सविस्तरपणे सांगा</translation>
 <translation id="239293030466334554">रूपांतरणीय</translation>
@@ -1441,7 +1440,6 @@
 <translation id="3543935938072367282">ऑटोफिलसह अधिक जलद चेक आउट करा</translation>
 <translation id="3547442767634383572">कार्य प्रोफाइलचे अवलोकन</translation>
 <translation id="3547746132308051926">२० x २४ इं</translation>
-<translation id="3550325450190222557">AI वापरून ऑटोफिल करा यासाठी फीडबॅक पाठवा.</translation>
 <translation id="3552155506104542239">चेतावणी: हे धोरण <ph name="POLICY_NAME" /> सह विरोधाभासी आहे आणि Android ॲप्सवर त्याचा कोणताही परिणाम होणार नाही. अन्यथा, हे धोरण अपेक्षेप्रमाणे काम करत आहे.</translation>
 <translation id="3552297013052089404">Sans-Serif फॉंट</translation>
 <translation id="3558573058928565255">दिवसापर्यंत</translation>
@@ -2898,7 +2896,6 @@
 <translation id="6124432979022149706">Chrome एंटरप्राइझ कनेक्टर</translation>
 <translation id="6126565365696310362">एन्व्हलप चायनीज #२</translation>
 <translation id="6127379762771434464">आयटम काढला</translation>
-<translation id="6128214169525122635">थंब्स डाउनवर क्लिक केल्यावर तुम्हाला AI वापरून ऑटोफिल करा हे आवडले नाही असा फीडबॅक सबमिट केला जातो</translation>
 <translation id="6131824478727057281">स्थान</translation>
 <translation id="6133320744616005677">अनुमती देणे पुढे सुरू ठेवा</translation>
 <translation id="6133984428121856852">फाइल एक्स्टेंशन रिकामे आहे किंवा त्यामध्ये समस्या आहे.</translation>
@@ -4598,7 +4595,6 @@
 <translation id="9150025764986957246">तुम्ही यासारख्या गोष्टी एंटर करू शकता:</translation>
 <translation id="9154194610265714752">अपडेट केलेले</translation>
 <translation id="9155211586651734179">ऑडिओ उपकरणे कनेक्ट केली</translation>
-<translation id="9155453166708525139">AI वापरून ऑटोफिल करा हे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">मासिके</translation>
 <translation id="9157595877708044936">सेट अप करीत आहे...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> यामध्ये संवेदनशील आशय असू शकतो}other{<ph name="FILE_COUNT" /> या फाइलमध्ये संवेदनशील आशय असू शकतो}}</translation>

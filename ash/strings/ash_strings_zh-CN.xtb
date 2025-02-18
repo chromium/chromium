@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">取消设置查看手机中的应用</translation>
 <translation id="1610778689852195798">“撤消”</translation>
 <translation id="1611993646327628135">开启</translation>
+<translation id="1612679292338846734">开启这些功能后，系统可能会将输入文本、文档内容和网页网址发送到 Google AI 服务器。系统会根据这些信息生成写作建议、总结内容、回答问题和改进产品，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1623768535032616219">收起 Google 课堂</translation>
 <translation id="163032029566320584">“<ph name="UNAVAILABLE_DLC" />”不可用。</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">添加连接</translation>
 <translation id="2947835478872237115">当前电池电量为 <ph name="BATTERY_PERCENTAGE" />%，还需 <ph name="TIME" />才能充满</translation>
 <translation id="2949420361496057765">在按住 <ph name="MODIFIER" /> 的同时点击链接</translation>
+<translation id="2957159466053076448">您随时可以在“设置”中关闭这些功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">设备音频</translation>
 <translation id="2960314608273155470">截屏/录屏模式，默认为<ph name="SOURCE" /><ph name="TYPE" />。按 Tab 键即可使用键盘进行导航。</translation>
 <translation id="2961963223658824723">出了点问题。请过几秒钟后重试。</translation>
@@ -1903,6 +1905,7 @@
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
 <translation id="736045644501761622">设置壁纸与样式</translation>
+<translation id="7368041336688136012">您必须年满 18 周岁，才能使用“帮我读”“帮我写”和借助 AI 创作图片功能。</translation>
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7372069265635026568">可用内存为 <ph name="AVAILABLE_MEMORY" />，总共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">如果您取消麦克风静音，即意味着允许所有具有麦克风使用权限的应用和网站使用麦克风</translation>
@@ -2028,6 +2031,7 @@
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">全部显示</translation>
+<translation id="7762664108390426952">Google 的服务条款和隐私权政策</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7769299611924763557">您的 GIF 很快便能就绪</translation>
 <translation id="7773536009433685931">改为开启 Wi-Fi</translation>

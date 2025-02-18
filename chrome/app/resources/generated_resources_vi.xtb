@@ -1193,6 +1193,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> không thể tiếp tục dùng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Đang truyền <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Dịch vụ</translation>
+<translation id="1813828404076816564">Chọn nút phản hồi để gửi ý kiến phản hồi về tính năng nhóm thẻ được chia sẻ</translation>
 <translation id="18139523105317219">Tên của Bên EDI</translation>
 <translation id="1815083418640426271">Dán dưới dạng văn bản thuần túy</translation>
 <translation id="1815097521077272760">Bạn được mời dùng thử tính năng kiểm soát bàn phím cho trò chơi này.</translation>
@@ -2300,7 +2301,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2569972178052279830">Tên nhà bán lẻ</translation>
 <translation id="257088987046510401">Chủ đề</translation>
 <translation id="2571638829488071045">Lưu tiện ích này vào Tài khoản Google?</translation>
-<translation id="2571655996835834626">Thay đổi các tùy chọn cài đặt kiểm soát quyền truy cập vào các tính năng của trang web, chẳng hạn như cookie, JavaScript, plugin, vị trí địa lý, micrô, máy ảnh, v.v.</translation>
 <translation id="257175846174451436">Một nhóm thẻ đã được đề xuất</translation>
 <translation id="2572032849266859634">Quyền truy cập chỉ đọc vào <ph name="VOLUME_NAME" /> đã được cấp.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> thẻ</translation>
@@ -4124,6 +4124,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3857807444929313943">Nhấc ngón tay lên rồi chạm lại</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="385939467708172187">Dùng mật khẩu mạnh</translation>
+<translation id="3859869403161297890">Gửi ý kiến phản hồi về nhóm thẻ được chia sẻ tại đây</translation>
 <translation id="3859987779882450877">Tự động đề xuất và tạo nhóm thẻ từ các thẻ đang mở</translation>
 <translation id="386009056910366930">Quản lý nhóm thẻ "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">Tên người dùng "<ph name="USERNAME" />" không có sẵn</translation>
@@ -7631,7 +7632,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6411135999030237579">Nhấn và giữ để tự động lặp lại phím</translation>
 <translation id="6414618057231176439">Chọn phiên bản <ph name="VM_NAME" /> bạn muốn cài đặt.</translation>
 <translation id="641469293210305670">Cài đặt bản cập nhật và ứng dụng</translation>
-<translation id="6414878884710400018">Mở Tùy chọn hệ thống</translation>
 <translation id="6415757856498750027">Nhập "w" để gõ "ư"</translation>
 <translation id="6415816101512323589">Bật tính năng khôi phục dữ liệu cục bộ để bảo vệ dữ liệu của bạn?</translation>
 <translation id="6415900369006735853">Kết nối Internet qua điện thoại</translation>
@@ -8178,6 +8178,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6805478749741295868">Đây là tính năng AI thử nghiệm và không phải lúc nào cũng chính xác.</translation>
 <translation id="6805647936811177813">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để nhập chứng chỉ ứng dụng khách từ <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Bật theo dõi RLZ trên <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Ý kiến phản hồi về nhóm thẻ được chia sẻ</translation>
 <translation id="6806089545527108739">Không cho phép nhưng có thể hỏi sau</translation>
 <translation id="680644983456221885">Chủ động bảo vệ theo thời gian thực trước các trang web, nội dung tải xuống và tiện ích nguy hiểm, dựa trên dữ liệu duyệt web được gửi tới Google</translation>
 <translation id="6806781719264274042">Chỉ những người liên hệ có Tài khoản Google. <ph name="LINK_BEGIN" />Xem người liên hệ<ph name="LINK_END" /></translation>

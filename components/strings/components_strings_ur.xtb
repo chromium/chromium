@@ -809,7 +809,6 @@
 <translation id="238459632961158867">ویب سائٹ</translation>
 <translation id="2385809941344967209">‏اپنے Chrome کی ترتیبات سے Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="2386255080630008482">سرور کا سرٹیفکیٹ کالعدم کر دیا گیا ہے۔</translation>
-<translation id="2386410849674401722">‏اظہار پسندیدگی یہ تاثرات جمع کراتا ہے کہ آپ AI کے ساتھ آٹو فل پسند کرتے ہیں</translation>
 <translation id="2388828676877700238">ٹیکس کی تیاری اور پلاننگ</translation>
 <translation id="239203817277685015">وضاحت کریں</translation>
 <translation id="239293030466334554">کنورٹیبلز</translation>
@@ -1443,7 +1442,6 @@
 <translation id="3543935938072367282">آٹو فل کے ساتھ تیزی سے چیک آؤٹ کریں</translation>
 <translation id="3547442767634383572">دفتری پروفائل کا مجموعی جائزہ</translation>
 <translation id="3547746132308051926">‏‎20 x 24 انچ</translation>
-<translation id="3550325450190222557">‏‫AI کے ساتھ آٹو فل کرنے کے لیے تاثرات بھیجیں۔</translation>
 <translation id="3552155506104542239">‏وارننگ: یہ پالیسی <ph name="POLICY_NAME" /> سے متصادم ہے اور Android ایپس پر اس کا کوئی اثر نہیں ہوگا۔ بصورت دیگر، یہ پالیسی حسب تقاضہ کام کر رہی ہے۔</translation>
 <translation id="3552297013052089404">‏Sans Serif فونٹ</translation>
 <translation id="3558573058928565255">دن کا وقت</translation>
@@ -2900,7 +2898,6 @@
 <translation id="6124432979022149706">‏Chrome Enterprise کنیکٹرز</translation>
 <translation id="6126565365696310362">‏Chinese #2 لفافہ</translation>
 <translation id="6127379762771434464">آئٹم ہٹا دیا گیا</translation>
-<translation id="6128214169525122635">‏اظہار ناپسندیدگی یہ تاثرات جمع کراتی ہے کہ آپ AI کے ساتھ آٹو فل کو ناپسند کرتے ہیں</translation>
 <translation id="6131824478727057281">مقام</translation>
 <translation id="6133320744616005677">اجازت دینا جاری رکھیں</translation>
 <translation id="6133984428121856852">فائل ایکسٹینشن خالی یا خراب ہے۔</translation>
@@ -4599,7 +4596,6 @@
 <translation id="9150025764986957246">آپ ان جیسی چیزیں درج کر سکتے ہیں:</translation>
 <translation id="9154194610265714752">اپ ڈیٹ کر دیا گیا</translation>
 <translation id="9155211586651734179">آڈیو پیریفیرلز منسلک ہیں</translation>
-<translation id="9155453166708525139">‏‫AI کے ساتھ آٹو فل کرنا ایک تجرباتی خصوصیت ہے اور یہ ہمیشہ درست نہیں ہوگی <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />۔</translation>
 <translation id="9155646082713385498">میگزینز</translation>
 <translation id="9157595877708044936">تشکیل دیا جا رہا ہے…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> میں حساس مواد ہو سکتا ہے}other{<ph name="FILE_COUNT" /> فائلز میں حساس مواد ہو سکتا ہے}}</translation>

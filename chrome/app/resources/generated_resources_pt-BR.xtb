@@ -1194,6 +1194,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar usando o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Transmitindo <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Serviços</translation>
+<translation id="1813828404076816564">Selecione o botão de feedback para enviar sua opinião sobre o recurso de grupos de guias compartilhados</translation>
 <translation id="18139523105317219">Nome da Parte EDI</translation>
 <translation id="1815083418640426271">Colar como texto sem formatação</translation>
 <translation id="1815097521077272760">Você foi convidado para testar os controles de teclado para este jogo.</translation>
@@ -2301,7 +2302,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2569972178052279830">Nome do varejista</translation>
 <translation id="257088987046510401">Temas</translation>
 <translation id="2571638829488071045">Salvar extensão na sua Conta do Google?</translation>
-<translation id="2571655996835834626">Alterar configurações que controlam o acesso de sites a recursos como cookies, JavaScript, plug-ins, geolocalização, microfone, câmera etc.</translation>
 <translation id="257175846174451436">Grupo de guias sugerido</translation>
 <translation id="2572032849266859634">Foi concedido acesso apenas de leitura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> guias</translation>
@@ -4125,6 +4125,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3857807444929313943">Tire o dedo e toque novamente</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="385939467708172187">Usar uma senha forte</translation>
+<translation id="3859869403161297890">Envie seu feedback sobre os grupos de guias compartilhados aqui</translation>
 <translation id="3859987779882450877">Sugere e cria grupos automaticamente com base nas suas guias abertas</translation>
 <translation id="386009056910366930">Gerenciar o grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">O nome de usuário "<ph name="USERNAME" />" não está disponível</translation>
@@ -7633,7 +7634,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6411135999030237579">Toque e mantenha pressionada para repetir a tecla automaticamente</translation>
 <translation id="6414618057231176439">Selecione qual versão do <ph name="VM_NAME" /> será instalada.</translation>
 <translation id="641469293210305670">Instalar atualizações e apps</translation>
-<translation id="6414878884710400018">Abrir preferências do sistema</translation>
 <translation id="6415757856498750027">Digite "w" para inserir "ư"</translation>
 <translation id="6415816101512323589">Ativar a recuperação de dados locais para proteger seus dados?</translation>
 <translation id="6415900369006735853">Conectar à Internet pelo smartphone</translation>
@@ -8182,6 +8182,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6805478749741295868">Esse é um recurso de IA experimental, e o resultado nem sempre é o esperado.</translation>
 <translation id="6805647936811177813">Faça login para que o <ph name="TOKEN_NAME" /> importe o certificado do cliente de <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Ativar rastreamento RLZ no <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Feedback sobre grupos de guias compartilhados</translation>
 <translation id="6806089545527108739">Não permitir, mas perguntar mais tarde</translation>
 <translation id="680644983456221885">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseada nos dados de navegação enviados ao Google</translation>
 <translation id="6806781719264274042">Apenas seus contatos com uma Conta do Google. <ph name="LINK_BEGIN" />Ver contatos<ph name="LINK_END" /></translation>

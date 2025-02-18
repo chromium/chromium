@@ -809,7 +809,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="238459632961158867">Website</translation>
 <translation id="2385809941344967209">Atualize o Chrome nas definições do Chrome.</translation>
 <translation id="2386255080630008482">O certificado do servidor foi revogado.</translation>
-<translation id="2386410849674401722">A opção Gosto envia feedback a indicar que gosta do pré-preenchimento com IA</translation>
 <translation id="2388828676877700238">Preparação e planeamento de impostos</translation>
 <translation id="239203817277685015">Elaborar</translation>
 <translation id="239293030466334554">Conversíveis</translation>
@@ -1442,7 +1441,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3543935938072367282">Pague mais rapidamente com o preenchimento automático</translation>
 <translation id="3547442767634383572">Vista geral do perfil de trabalho</translation>
 <translation id="3547746132308051926">20 x 24 pol.</translation>
-<translation id="3550325450190222557">Envie feedback sobre o preenchimento automático com IA.</translation>
 <translation id="3552155506104542239">Aviso: esta política está em conflito com a <ph name="POLICY_NAME" /> e não tem efeito nas apps Android. Caso contrário, esta política está a funcionar conforme previsto.</translation>
 <translation id="3552297013052089404">Tipo de letra Sans Serif</translation>
 <translation id="3558573058928565255">Dia e hora</translation>
@@ -2899,7 +2897,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6124432979022149706">Conetores do Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope Chinese n.º 2</translation>
 <translation id="6127379762771434464">Item removido</translation>
-<translation id="6128214169525122635">A opção Não gosto envia feedback a indicar que não gosta do preenchimento automático com IA</translation>
 <translation id="6131824478727057281">localização</translation>
 <translation id="6133320744616005677">Continuar a permitir</translation>
 <translation id="6133984428121856852">A extensão do ficheiro está vazia ou tem um formato incorreto.</translation>
@@ -4598,7 +4595,6 @@ Detalhes adicionais:
 <translation id="9150025764986957246">Pode introduzir, por exemplo:</translation>
 <translation id="9154194610265714752">Atualizado</translation>
 <translation id="9155211586651734179">Periféricos de áudio ligados</translation>
-<translation id="9155453166708525139">O preenchimento automático com IA é uma funcionalidade experimental e nem sempre está certo. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">A configurar...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluir conteúdo sensível}other{<ph name="FILE_COUNT" /> ficheiros podem incluir conteúdo sensível}}</translation>

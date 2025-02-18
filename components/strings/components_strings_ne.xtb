@@ -809,7 +809,6 @@
 <translation id="238459632961158867">वेबसाइट</translation>
 <translation id="2385809941344967209">आफ्नो Chrome ब्राउजरका सेटिङमा गई Chrome अपडेट गर्नुहोस्</translation>
 <translation id="2386255080630008482">सर्भरको प्रमाणपत्रलाई खारेज गरिएको छ।</translation>
-<translation id="2386410849674401722">तपाईंले थम्ज अप बटनमा क्लिक गर्नुभयो भने तपाईंलाई AI प्रयोग गरी जानकारी स्वतः भर्ने सुविधा मन पर्छ भन्ने प्रतिक्रिया पेस गर्छ</translation>
 <translation id="2388828676877700238">करको तयारी तथा योजना</translation>
 <translation id="239203817277685015">व्याख्या गर्नुहोस्</translation>
 <translation id="239293030466334554">छत निकाल्न मिल्ने सवारी साधन</translation>
@@ -1439,7 +1438,6 @@
 <translation id="3543935938072367282">अटोफिलका सहायताले अझ छिटो चेक आउट गर्नुहोस्</translation>
 <translation id="3547442767634383572">कार्य प्रोफाइलको संक्षिप्त जानकारी</translation>
 <translation id="3547746132308051926">२० x २४ इन्च</translation>
-<translation id="3550325450190222557">AI प्रयोग गरी जानकारी स्वतः भर्ने सुविधाका बारेमा प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="3552155506104542239">चेतावनी: यो नीति <ph name="POLICY_NAME" /> सँग बाझिएको छ र यसले Android एपमा कुनै प्रभाव पार्ने छैन। अन्यथा यो नीतिले अपेक्षा गरेअनुसार नै काम गरिरहेको छ।</translation>
 <translation id="3552297013052089404">Sans Serif फन्ट</translation>
 <translation id="3558573058928565255">दिउँसो</translation>
@@ -2897,7 +2895,6 @@
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
-<translation id="6128214169525122635">तपाईंले थम्ज डाउन बटनमा क्लिक गर्नुभयो भने तपाईंलाई AI प्रयोग गरी जानकारी स्वतः भर्ने सुविधा मन पर्दैन भन्ने प्रतिक्रिया पेस गर्छ</translation>
 <translation id="6131824478727057281">स्थान</translation>
 <translation id="6133320744616005677">अनुमति दिइरहनुहोस्</translation>
 <translation id="6133984428121856852">फाइल एक्सटेन्सन खाली वा अवैध छ।</translation>
@@ -4595,7 +4592,6 @@
 <translation id="9150025764986957246">तपाईं निम्नलगायतका कुराहरू हाल्न सक्नुहुन्छ:</translation>
 <translation id="9154194610265714752">अपडेट भयो</translation>
 <translation id="9155211586651734179">एट्याच गरिएका अडियोसम्बन्धी सहायक डिभाइसहरू</translation>
-<translation id="9155453166708525139">AI प्रयोग गरी जानकारी स्वतः भर्ने सुविधा परीक्षणका क्रममा रहेकाले यसले सधैँ सही जानकारी नदिन सक्छ। <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />।</translation>
 <translation id="9155646082713385498">पत्रिकाहरू</translation>
 <translation id="9157595877708044936">सेटिङ गर्दै...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> मा संवेदनशील सामग्री समावेश हुन सक्छ}other{<ph name="FILE_COUNT" /> वटा फाइलमा संवेदनशील सामग्री समावेश हुन सक्छ}}</translation>

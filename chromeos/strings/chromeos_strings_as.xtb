@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
 <translation id="2161656808144014275">পাঠ</translation>
 <translation id="2163937499206714165">গাঢ় ম’ড ম’ডটো অন কৰক</translation>
+<translation id="2164131940279488868">অডিঅ’ ৰেকৰ্ড কৰা আৰম্ভ কৰিবলৈ এটা মাইক সংযোগ হৈ থকাটো নিশ্চিত কৰক</translation>
 <translation id="2173302385160625112">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="2180197493692062006">কিবা ভুল হ’ল। এপ্‌টো পুনৰ খুলিবলৈ চেষ্টা কৰক।</translation>
 <translation id="2189104374785738357">এপিএনৰ সবিশেষ সম্পাদনা কৰক</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">নেমু</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
 <translation id="2573178735329662769">Chromebookৰ আটাইবোৰ অডিঅ' ৰেকর্ড কৰা</translation>
-<translation id="2575552334616524665">আপুনি এইটো ছেটিঙত বা <ph name="THREE_DOTS_MENU_ICON" />ৰ মেনুত অন কৰিব পাৰে</translation>
 <translation id="2576253868710695442">এইটোৱে ষ্ট’ৰেজৰ ২ জিবি পৰ্যন্ত ঠাই ল’ব</translation>
 <translation id="2584547424703650812">গ্ল’স্কেপ</translation>
 <translation id="2584559707064218956">ছেট আপ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">আখৰ <ph name="LETTERS_LETTER" />ৰ সৈতে <ph name="LETTERS_COLOR" />ৰ পটভূমি</translation>
 <translation id="3383623117265110236">বিশেষ</translation>
 <translation id="3404249063913988450">স্ক্ৰীন ছেভাৰ সক্ষম কৰক</translation>
-<translation id="3410165745972100556">ট্ৰেন্সক্ৰিপ্ট অফ হৈ আছে</translation>
 <translation id="3413935475507503304">আপডে’টটো কাৰ্যকৰী কৰিবলৈ, পৰৱৰ্তীত টিপক।</translation>
 <translation id="3428551088151258685">মুকলি ঠাইত</translation>
 <translation id="3428971106895559033">পেষ্টেল</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">ডিভাইচটো এটা টেবলেট।</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
 <translation id="8882789155418924367">ফেঁচা</translation>
+<translation id="8885038613856655272">এটা মাইক সংযোগ কৰক</translation>
 <translation id="8892443466059986410">শ্বৰ্টকাট সম্পাদনা বাতিল কৰক</translation>
 <translation id="8897043028305808902">ফাইলৰ নতুন নাম দিয়া হৈছে</translation>
 <translation id="8898840733695078011">ছিগনেলৰ ক্ষমতা</translation>

@@ -809,7 +809,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="238459632961158867">Sivusto</translation>
 <translation id="2385809941344967209">Päivitä Chrome sen asetuksista</translation>
 <translation id="2386255080630008482">Palvelimen varmenne on kumottu.</translation>
-<translation id="2386410849674401722">Tykkään-palaute kertoo, että pidät tekoälyä hyödyntävästä automaattisesta täytöstä</translation>
 <translation id="2388828676877700238">Veroneuvonta ja ‑suunnittelu</translation>
 <translation id="239203817277685015">Kerro lisää</translation>
 <translation id="239293030466334554">Avoautot</translation>
@@ -1443,7 +1442,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3543935938072367282">Maksa nopeammin automaattisen täytön avulla</translation>
 <translation id="3547442767634383572">Työprofiilin yleiskatsaus</translation>
 <translation id="3547746132308051926">20 x 24 tuumaa</translation>
-<translation id="3550325450190222557">Lähetä palautetta tekoälyä hyödyntävästä automaattisesta täytöstä.</translation>
 <translation id="3552155506104542239">Varoitus: Tämä käytäntö on ristiriidassa <ph name="POLICY_NAME" />-käytännön kanssa, eikä se tule vaikuttamaan Android-sovelluksiin. Muussa tapauksessa käytäntö toimii kuten pitääkin.</translation>
 <translation id="3552297013052089404">Sans Serif ‑fontti</translation>
 <translation id="3558573058928565255">Päiväsaika</translation>
@@ -2900,7 +2898,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Kirjekuori kiinalainen #2</translation>
 <translation id="6127379762771434464">Kohde poistettu</translation>
-<translation id="6128214169525122635">En tykkää ‑palaute kertoo, että et pidä tekoälyä hyödyntävästä automaattisesta täytöstä</translation>
 <translation id="6131824478727057281">sijainti</translation>
 <translation id="6133320744616005677">Salli jatkossakin</translation>
 <translation id="6133984428121856852">Tiedostotunniste on tyhjä tai väärässä muodossa.</translation>
@@ -4600,7 +4597,6 @@ Lisätietoja:
 <translation id="9150025764986957246">Esimerkkejä asioista, joita voit kirjoittaa:</translation>
 <translation id="9154194610265714752">Päivitetty</translation>
 <translation id="9155211586651734179">Yhdistetyt audiolisälaitteet</translation>
-<translation id="9155453166708525139">Tekoälyä hyödyntävä automaattinen täyttö on kokeellinen ominaisuus, joka ei välttämättä toimi oikein. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Lehdet</translation>
 <translation id="9157595877708044936">Valmistellaan...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> saattaa sisältää arkaluontoista sisältöä}other{<ph name="FILE_COUNT" /> tiedostossa voi olla arkaluontoista sisältöä}}</translation>

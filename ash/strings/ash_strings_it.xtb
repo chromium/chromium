@@ -193,6 +193,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1607312127821884567">Chiudi la configurazione della visualizzazione di app dello smartphone</translation>
 <translation id="1610778689852195798">"Annulla"</translation>
 <translation id="1611993646327628135">On</translation>
+<translation id="1612679292338846734">Quando attivi queste funzionalità, il testo di input, i contenuti del documento e l'URL della pagina web potrebbero essere inviati ai server di Google AI. Queste informazioni vengono utilizzate per generare suggerimenti di bozza e riassunti, rispondere a domande e migliorare il prodotto, in conformità ai <ph name="LINK_TO_SERVICE_TERMS" />. Non includere informazioni personali, sensibili o riservate.</translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1623768535032616219">Comprimi Google Classroom</translation>
 <translation id="163032029566320584">La funzionalità <ph name="UNAVAILABLE_DLC" /> non è disponibile.</translation>
@@ -565,6 +566,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2946119680249604491">Aggiungi connessione</translation>
 <translation id="2947835478872237115">Livello attuale della batteria: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> alla ricarica completa</translation>
 <translation id="2949420361496057765">Premi <ph name="MODIFIER" /> e fai clic su un link</translation>
+<translation id="2957159466053076448">Puoi disattivare queste funzionalità in qualsiasi momento nelle Impostazioni. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio del dispositivo</translation>
 <translation id="2960314608273155470">Modalità di acquisizione, l'impostazione predefinita è <ph name="TYPE" /> <ph name="SOURCE" />. Premi Tab per usare la navigazione da tastiera.</translation>
 <translation id="2961963223658824723">Si è verificato un problema. Riprova tra qualche secondo.</translation>
@@ -1902,6 +1904,7 @@ Nuova installazione</translation>
 <translation id="735745346212279324">VPN scollegata</translation>
 <translation id="7360036564632145207">La modifica della protezione dell'accesso ai dati per l'impostazione delle periferiche può ottimizzare le prestazioni</translation>
 <translation id="736045644501761622">Imposta sfondo e stile</translation>
+<translation id="7368041336688136012">Devi avere almeno 18 anni per poter usare Aiutami a leggere, Aiutami a scrivere e creare immagini con l'AI.</translation>
 <translation id="7371404428569700291">Finestra di registrazione</translation>
 <translation id="7372069265635026568">Memoria disponibile: <ph name="AVAILABLE_MEMORY" /> su un totale di <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Consente l'accesso al microfono per tutti i siti web e le app che hanno l'autorizzazione di accesso al microfono</translation>
@@ -2027,6 +2030,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Mostra tutto</translation>
+<translation id="7762664108390426952">I Termini di servizio e le Norme sulla privacy di Google</translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7769299611924763557">La tua GIF sarà pronta a breve</translation>
 <translation id="7773536009433685931">Attiva invece il Wi-Fi</translation>

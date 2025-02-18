@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Avisar se as suas senhas forem expostas em uma violação de dados</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
 <translation id="104491362976654916">Página offline</translation>
+<translation id="1049200476149974839">quer que você participe de um grupo de guias. Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. O link expira em 48 horas.</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
 <translation id="1053651653201045802">Conta desconectada. Faça login novamente para acessar os favoritos, as senhas e outros itens da sua conta.</translation>
 <translation id="1054745118061919935">Ao continuar, você concorda com os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" />.</translation>
@@ -194,6 +195,7 @@
 <translation id="1780152987505130652">Fechar grupo</translation>
 <translation id="178400879184240105">Suas senhas são exclusivas</translation>
 <translation id="17906873777101817">Oferecer para salvar senhas e chaves de acesso</translation>
+<translation id="1794893174442046596">Grupo de guias</translation>
 <translation id="1807893857950749072">Permitir notificações de monitoramento de preços…</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1815941218935345331">Senha</translation>
@@ -656,6 +658,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Editar carrossel</translation>
 <translation id="3909222758573607742">Salvar senhas e outros itens na conta</translation>
+<translation id="3913463964270756493">Ocultar "Pesquisar na tela com o Google Lens"</translation>
 <translation id="3914640181019354363">Detectar endereços</translation>
 <translation id="3922185497376658606">Pré-carregar páginas</translation>
 <translation id="3922395466317605522">Personalizar menu</translation>
@@ -973,6 +976,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> agora pode usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
 <translation id="5242899254250321823">Mudar a senha no site</translation>
 <translation id="5248640482715684545">O site está tentando abrir outro aplicativo.</translation>
+<translation id="5250371859659394278">De uma fonte desconhecida</translation>
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está em branco. Preencha antes de salvar.}one{Um campo obrigatório está em branco. Preencha antes de salvar.}other{Alguns campos obrigatórios estão em branco. Preencha antes de salvar.}}</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
 <translation id="5279214046729249716">Sim, manter separados</translation>

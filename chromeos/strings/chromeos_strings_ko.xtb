@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
 <translation id="2161656808144014275">텍스트</translation>
 <translation id="2163937499206714165">어두운 모드 사용 설정</translation>
+<translation id="2164131940279488868">오디오 녹음을 시작하려면 마이크가 연결되어 있어야 합니다</translation>
 <translation id="2173302385160625112">인터넷 연결 상태 확인</translation>
 <translation id="2180197493692062006">문제가 발생했습니다. 앱을 다시 열어 보세요.</translation>
 <translation id="2189104374785738357">APN 세부정보 수정</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">레몬</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
 <translation id="2573178735329662769">모든 Chromebook 오디오 녹음</translation>
-<translation id="2575552334616524665">설정 또는 <ph name="THREE_DOTS_MENU_ICON" /> 메뉴에서 이 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="2576253868710695442">최대 2GB의 저장용량이 사용됩니다.</translation>
 <translation id="2584547424703650812">글로우스케이프</translation>
 <translation id="2584559707064218956">설정하려면 설정으로 이동하세요.</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> 글자가 있는 <ph name="LETTERS_COLOR" /> 배경</translation>
 <translation id="3383623117265110236">전용</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
-<translation id="3410165745972100556">스크립트 작성이 사용 중지되었습니다</translation>
 <translation id="3413935475507503304">업데이트를 계속하려면 다음을 클릭하세요.</translation>
 <translation id="3428551088151258685">야외</translation>
 <translation id="3428971106895559033">파스텔</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">태블릿 기기입니다.</translation>
 <translation id="8881098542468797602">테스트 성공</translation>
 <translation id="8882789155418924367">올빼미</translation>
+<translation id="8885038613856655272">마이크를 연결하세요</translation>
 <translation id="8892443466059986410">바로가기 수정 취소</translation>
 <translation id="8897043028305808902">파일 이름 변경됨</translation>
 <translation id="8898840733695078011">신호 강도</translation>

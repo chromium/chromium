@@ -42,9 +42,6 @@
           <ph name="ADVANCED_TITLE" />
           और "<ph name="NO_PREFETCH_DESCRIPTION" />" चुना हुआ हटाएं.
           अगर इससे समस्‍या हल नहीं होती, तो बेहतर प्रदर्शन के लिए हम इस विकल्‍प को फिर से चुनने का सुझाव देते हैं.</translation>
-<translation id="8187289872471304532">यहां
-          ऐप्लिकेशन  &gt; सिस्टम प्राथमिकताएं &gt; नेटवर्क &gt; बेहतर &gt; प्रॉक्सी
-          पर जाएं और चुनी गई प्रॉक्सी को न चुनें.</translation>
 <translation id="8597726643333341451">आप एक सुरक्षित Chrome for Testing पेज पर हैं</translation>
 <translation id="8684913864886094367">क्रोमियम सही तरीके से बंद नहीं हुआ.</translation>
 </translationbundle>

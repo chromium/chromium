@@ -471,6 +471,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1791415068765905273">Mostrar todas as táboas de comparación</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para xestionar a información, a privacidade e a seguranza na túa Conta de Google</translation>
+<translation id="1793473605302304726">Pagar a prazos</translation>
 <translation id="1793631236004319016">Utilizouse por última vez hai <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Hai varias accións dispoñibles; para desprazarte por elas, preme Tab</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -808,7 +809,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="238459632961158867">Sitio web</translation>
 <translation id="2385809941344967209">Actualizar Chrome desde a súa configuración</translation>
 <translation id="2386255080630008482">Revogouse o certificado do servidor.</translation>
-<translation id="2386410849674401722">Coa opción Gústame indicas que che agrada a opción de autocompletar coa IA</translation>
 <translation id="2388828676877700238">Planificación e asesoramento fiscal</translation>
 <translation id="239203817277685015">Engadir detalles</translation>
 <translation id="239293030466334554">Cabriolés</translation>
@@ -1441,7 +1441,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3543935938072367282">Paga de xeito máis rápido coa función de autocompletar</translation>
 <translation id="3547442767634383572">A vista xeral do perfil de traballo</translation>
 <translation id="3547746132308051926">20 x 24 polgadas</translation>
-<translation id="3550325450190222557">Envíanos comentarios sobre a función de autocompletar coa IA.</translation>
 <translation id="3552155506104542239">Advertencia: Esta política está en conflito con <ph name="POLICY_NAME" />, polo que non terá ningún efecto nas aplicacións para Android. Polo resto, funciona do xeito previsto.</translation>
 <translation id="3552297013052089404">Tipo de letra sen serifas</translation>
 <translation id="3558573058928565255">Hora do día</translation>
@@ -2898,7 +2897,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6126565365696310362">Sobre chinés n.º 2</translation>
 <translation id="6127379762771434464">Eliminouse o elemento</translation>
-<translation id="6128214169525122635">Coa opción Non me gusta indicas que non che agrada a función de autocompletar coa IA</translation>
 <translation id="6131824478727057281">localización</translation>
 <translation id="6133320744616005677">Continuar permitindo</translation>
 <translation id="6133984428121856852">A extensión de ficheiro está baleira ou ten un formato incorrecto.</translation>
@@ -3411,6 +3409,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7042616127917168121">Filtrar os resultados</translation>
 <translation id="7043552168914147882">Separador con pestana</translation>
 <translation id="7044081119134178347">Permítese o uso da cámara esta vez</translation>
+<translation id="704738887031336226">Mostra as opcións de <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />pago a prazos<ph name="PAY_OVER_TIME_HELP_LINK_END" /> na tramitación da compra</translation>
 <translation id="7048095965575426564">Continuo europeo</translation>
 <translation id="7050187094878475250">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado cun período de validez demasiado longo para ser fiable.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Esta tarxeta non se pode gardar neste momento}other{Estas tarxetas non se poden gardar neste momento}}</translation>
@@ -4595,7 +4594,6 @@ Detalles adicionais:
 <translation id="9150025764986957246">Poderás poñer cousas como:</translation>
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="9155211586651734179">Os periféricos de audio conectados</translation>
-<translation id="9155453166708525139">Autocompletar coa IA é unha función experimental, polo que non sempre acerta. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluír contido delicado}other{<ph name="FILE_COUNT" /> ficheiros poden incluír contido delicado}}</translation>

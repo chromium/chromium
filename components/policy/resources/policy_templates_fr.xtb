@@ -612,6 +612,35 @@ Si vous activez cette règle ou ne la configurez pas, le défilement des pages W
 Si vous la désactivez, le défilement des pages Web vers des fragments de texte spécifiques via URL sera désactivé.</translation>
 <translation id="1468702975912409463">Permettre aux utilisateurs connectés à distance d'ouvrir des URL côté hôte dans leur navigateur client local</translation>
 <translation id="1474273443907024088">Désactiver TLS False Start</translation>
+<translation id="1475494149102693892">Vous pouvez activer cette règle afin de créer un dictionnaire d'extensions de fichier et une liste correspondante de domaines qui seront exemptés d'avertissements de téléchargement basés sur l'extension. Cela permet aux administrateurs de l'entreprise de bloquer ces avertissements pour les fichiers associés à un domaine listé. Par exemple, si l'extension "jnlp" est associée à "website1.com", les utilisateurs verront un avertissement s'ils téléchargent des fichiers "jnlp" depuis "website1.com". En revanche, ils n'en verront pas s'ils téléchargent des fichiers "jnlp" depuis "website2.com".
+
+Le téléchargement, depuis les domaines identifiés par cette règle, de fichiers dont l'extension est spécifiée fera toutefois l'objet d'avertissements de sécurité (non basés sur l'extension) pour signaler, par exemple, un contenu mixte ou une navigation sécurisée.
+
+Si vous désactivez cette règle, ou que vous ne la configurez pas, les utilisateurs verront des avertissements s'ils téléchargent des fichiers des types spécifiés.
+
+Si vous activez cette règle :
+
+* Les URL doivent avoir le format décrit sur https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+* L'extension doit être saisie au format ASCII, en minuscules. Les extensions doivent être listées sans le séparateur qui les précède (par exemple, indiquez "jlnp" et non ".jlnp").
+
+Exemple :
+
+La configuration suivante empêche que des avertissements s'affichent en cas de téléchargement de fichiers de type "exe" et "jnlp" depuis le domaine *.example.com, et de fichiers de type "swf" depuis tous les domaines. L'utilisateur voit un avertissement s'il télécharge un fichier exe ou jnlp depuis un autre domaine, mais pas s'il télécharge un fichier swf.
+
+[
+  { "file_extension": "jnlp", "domains": ["example.com"] },
+  { "file_extension": "exe", "domains": ["example.com"] },
+  { "file_extension": "swf", "domains": ["*"] }
+]
+
+Notez que même si les avertissements basés sur l'extension sont ici supprimés en cas de téléchargement d'un fichier swf depuis n'importe quel domaine, il n'est pas recommandé d'appliquer ce type de configuration aux extensions dangereuses, pour des raisons de sécurité. Cet exemple ne vise qu'à montrer qu'il est possible de le faire.
+
+Si cette règle est activée en même temps que <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, les exemptions aux avertissements basés sur l'extension spécifiées par cette règle prévalent sur un paramètre <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> qui bloquerait les types de fichiers dangereux. Les exemptions spécifiées par cette règle ne s'appliquent qu'au comportement "bloquer les types de fichiers dangereux" spécifié par les valeurs 1 et 2 de <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.
+
+Par exemple, si cette règle spécifie une exemption pour les téléchargements "exe" depuis "website1.com" et que <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> est configurée pour bloquer les téléchargements malveillants et les types de fichiers dangereux (valeur 1), les téléchargements "exe" depuis "website1.com" seront exemptés du blocage basé sur l'extension, mais seront quand même bloqués s'ils sont malveillants.
+
+Pour en savoir plus sur <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, consultez https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Permet d'établir la liste des appareils USB que les utilisateurs peuvent dissocier de leur pilote de noyau pour les employer via l'API chrome.usb directement au sein d'une application Web. Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un identifiant produit associé à un appareil spécifique.
 

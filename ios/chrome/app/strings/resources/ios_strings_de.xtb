@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Warnen, wenn Passwörter durch eine Datenpanne preisgegeben wurden</translation>
 <translation id="1044891598689252897">Websites funktionieren normal</translation>
 <translation id="104491362976654916">Offlineseite</translation>
+<translation id="1049200476149974839">möchte, dass du einer Tabgruppe beitrittst. Alle Nutzer mit dem Link können alle Tabs bearbeiten. Überlege dir also gut, ob du beitrittst. Der Link läuft in 48 Stunden ab.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Abgemeldet. Melde dich wieder an, um die Lesezeichen, Passwörter und sonstigen Informationen in deinem Konto zu verwenden.</translation>
 <translation id="1054745118061919935">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />.</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">Verwaltetes Konto</translation>
 <translation id="1358214951266274152">Kopierten Link aufrufen</translation>
 <translation id="1360432990279830238">Abmelden &amp; Synchronisierung deaktivieren?</translation>
+<translation id="1362192716574455663">Vorhandene Browserdaten werden nicht in dein Arbeitskonto verschoben. Du kannst weiterhin darauf zugreifen, indem du dich abmeldest oder ein privates Konto hinzufügst.</translation>
 <translation id="1363028406613469049">Verfolgen</translation>
 <translation id="1364367057792633742">Neuer Tab</translation>
 <translation id="1365106417372288489">Dein iPhone wurde vor Kurzem wiederhergestellt. Möglicherweise hat sich dadurch dein Standardbrowser geändert.</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">Gruppe schließen</translation>
 <translation id="178400879184240105">Deine Passwörter sind eindeutig</translation>
 <translation id="17906873777101817">Speichern von Passwörtern und Passkeys anbieten</translation>
+<translation id="1794893174442046596">Tabgruppe</translation>
 <translation id="1807893857950749072">Benachrichtigungen zum Preis-Tracking erlauben…</translation>
 <translation id="1810976980198522421">Abbrechen</translation>
 <translation id="1815941218935345331">Sicherheitscode</translation>
@@ -655,6 +658,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3904270275864974753">Karussell bearbeiten</translation>
 <translation id="3909222758573607742">Die Passwörter und anderen Elemente werden im Konto gespeichert</translation>
+<translation id="3913463964270756493">Suchbildschirm mit Google Lens ausblenden</translation>
 <translation id="3914640181019354363">Adressen erkennen</translation>
 <translation id="3922185497376658606">Webseiten vorab laden</translation>
 <translation id="3922395466317605522">Menü anpassen</translation>

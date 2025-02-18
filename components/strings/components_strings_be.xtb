@@ -809,7 +809,6 @@
 <translation id="238459632961158867">Вэб-сайт</translation>
 <translation id="2385809941344967209">Абнавіць браўзер Chrome праз яго налады</translation>
 <translation id="2386255080630008482">Сертыфікат сервера адкліканы.</translation>
-<translation id="2386410849674401722">Калі націснуць значок "Падабаецца", будзе адпраўлены водгук аб тым, што вам спадабаўся вынік аўтазапаўнення з дапамогай AI</translation>
 <translation id="2388828676877700238">Падрыхтоўка і планаванне падаткаў</translation>
 <translation id="239203817277685015">Дапоўніць</translation>
 <translation id="239293030466334554">Кабрыялеты</translation>
@@ -1442,7 +1441,6 @@
 <translation id="3543935938072367282">Аўтазапаўненне дапамагае паскорыць працэс аплаты</translation>
 <translation id="3547442767634383572">агляд працоўнага профілю;</translation>
 <translation id="3547746132308051926">20 x 24 цалі</translation>
-<translation id="3550325450190222557">Адпраўце водгук на функцыю аўтазапаўнення з дапамогай штучнага інтэлекту.</translation>
 <translation id="3552155506104542239">Увага! Гэта палітыка канфліктуе з <ph name="POLICY_NAME" /> і не будзе прымяняцца да праграм для Android. У астатнім яна працуе належным чынам.</translation>
 <translation id="3552297013052089404">Шрыфт без засечак</translation>
 <translation id="3558573058928565255">Светлы час дня</translation>
@@ -2898,7 +2896,6 @@
 <translation id="6124432979022149706">Злучальнікі Chrome Enterprise</translation>
 <translation id="6126565365696310362">Канверт Chinese № 2</translation>
 <translation id="6127379762771434464">Элемент выдалены</translation>
-<translation id="6128214169525122635">Калі націснуць значок "Не падабаецца", будзе адпраўлены водгук аб тым, што вам не спадабаўся вынік аўтазапаўнення з дапамогай AI</translation>
 <translation id="6131824478727057281">месца</translation>
 <translation id="6133320744616005677">Пакінуць дазвол</translation>
 <translation id="6133984428121856852">Пашырэнне файла не ўказана або мае няправільны фармат.</translation>
@@ -4597,7 +4594,6 @@
 <translation id="9150025764986957246">Вы можаце ўвесці, напрыклад:</translation>
 <translation id="9154194610265714752">Абноўлена</translation>
 <translation id="9155211586651734179">Якія перыферыйныя прылады падключаны</translation>
-<translation id="9155453166708525139">Аўтазапаўненне з дапамогай AI – гэта эксперыментальная функцыя, якая не заўсёды працуе бездакорна. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Часопісы</translation>
 <translation id="9157595877708044936">Ідзе наладжванне...</translation>
 <translation id="9161794544616754735">{0,plural, =1{У файле "<ph name="FILE_NAME" />" можа быць канфідэнцыяльнае змесціва}one{У <ph name="FILE_COUNT" /> файле можа быць канфідэнцыяльнае змесціва}few{У <ph name="FILE_COUNT" /> файлах можа быць канфідэнцыяльнае змесціва}many{У <ph name="FILE_COUNT" /> файлах можа быць канфідэнцыяльнае змесціва}other{У <ph name="FILE_COUNT" /> файла можа быць канфідэнцыяльнае змесціва}}</translation>

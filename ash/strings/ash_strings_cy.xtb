@@ -193,6 +193,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1607312127821884567">Diystyru gosod gweld apiau eich ffôn</translation>
 <translation id="1610778689852195798">"Dadwneud"</translation>
 <translation id="1611993646327628135">Ymlaen</translation>
+<translation id="1612679292338846734">Pan fyddwch chi'n troi'r nodweddion hyn ymlaen, efallai y bydd y testun mewnbwn, cynnwys y ddogfen, ac URL y dudalen we yn cael eu hanfon at weinyddion AI Google. Defnyddir y wybodaeth hon i gynhyrchu awgrymiadau ysgrifennu, cynhyrchu crynodebau, ateb cwestiynau, a gwella'r cynnyrch, yn amodol ar <ph name="LINK_TO_SERVICE_TERMS" />. Peidiwch â chynnwys unrhyw beth personol, sensitif neu gyfrinachol.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623768535032616219">Crebachu Google Classroom</translation>
 <translation id="163032029566320584">Nid yw <ph name="UNAVAILABLE_DLC" /> ar gael.</translation>
@@ -565,6 +566,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="2946119680249604491">Ychwanegu cysylltiad</translation>
 <translation id="2947835478872237115">Lefel batri bresennol <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> nes yn llawn</translation>
 <translation id="2949420361496057765">Pwyswch <ph name="MODIFIER" /> a chliciwch ddolen</translation>
+<translation id="2957159466053076448">Gallwch ddiffodd y nodweddion hyn ar unrhyw adeg yn y Gosodiadau. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Sain dyfais</translation>
 <translation id="2960314608273155470">Diofyn y Modd Tynnu yw <ph name="SOURCE" /> <ph name="TYPE" />. Pwyswch Tab am lywio bysellfwrdd.</translation>
 <translation id="2961963223658824723">Aeth rhywbeth o'i le. Rhowch gynnig arall arni mewn ychydig eiliadau.</translation>
@@ -1905,6 +1907,7 @@ Gosodiad newydd</translation>
 <translation id="735745346212279324">Mae'r VPN wedi'i ddatgysylltu</translation>
 <translation id="7360036564632145207">Mae'n bosib y bydd newid eich diogelwch mynediad data ar gyfer gosodiadau perifferolion un optimeiddio perfformiad</translation>
 <translation id="736045644501761622">Gosod papur wal ac arddull</translation>
+<translation id="7368041336688136012">Rhaid i chi fod yn 18 oed o leiaf i ddefnyddio Helpa fi i ddarllen, Helpa fi i ysgrifennu, a chreu delweddau gydag AI.</translation>
 <translation id="7371404428569700291">Recordio'r ffenestr</translation>
 <translation id="7372069265635026568">Mae <ph name="AVAILABLE_MEMORY" /> o gof ar gael allan o gyfanswm o <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Mae hyn yn caniatáu mynediad meicroffon ar gyfer pob ap a gwefan gyda'r caniatâd meicroffon</translation>
@@ -2030,6 +2033,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7749443890790263709">Wedi cyrraedd y nifer uchaf o ddesgiau.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Dangos pob un</translation>
+<translation id="7762664108390426952">Telerau Gwasanaeth a Pholisi Preifatrwydd Google</translation>
 <translation id="7768784765476638775">Dewis i siarad</translation>
 <translation id="7769299611924763557">Bydd eich GIF yn barod yn fuan</translation>
 <translation id="7773536009433685931">Trowch y Wi-Fi ymlaen yn lle hynny</translation>

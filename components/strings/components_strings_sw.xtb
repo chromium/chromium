@@ -809,7 +809,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="238459632961158867">Tovuti</translation>
 <translation id="2385809941344967209">Sasisha Chrome kwenye mipangilio yako ya Chrome</translation>
 <translation id="2386255080630008482">Cheti cha seva kimebatilishwa.</translation>
-<translation id="2386410849674401722">Alama ya bomba hutuma maoni kuwa umekipenda kipengele cha kujaza kiotomatiki kwa kutumia AI</translation>
 <translation id="2388828676877700238">Mipango na Maandalizi ya Kodi</translation>
 <translation id="239203817277685015">Fafanua</translation>
 <translation id="239293030466334554">Magari aina ya kibandawazi</translation>
@@ -1442,7 +1441,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3543935938072367282">Kulipa kwa haraka ukitumia kipengele cha kujaza kiotomatiki</translation>
 <translation id="3547442767634383572">Muhtasari wa wasifu wa kazini</translation>
 <translation id="3547746132308051926">Inchi 20 x 24</translation>
-<translation id="3550325450190222557">Tuma maoni kuhusu kipengele cha Kujaza Kiotomatiki kwa kutumia AI.</translation>
 <translation id="3552155506104542239">Onyo: Sera hii inakinzana na <ph name="POLICY_NAME" /> na haitaathiri programu za Android. Vinginevyo, sera hii inafanya kazi kama ilivyokusudiwa.</translation>
 <translation id="3552297013052089404">Fonti ya "Sans-serif"</translation>
 <translation id="3558573058928565255">Mchana</translation>
@@ -2899,7 +2897,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6124432979022149706">Viunganishi vya Chrome Enterprise</translation>
 <translation id="6126565365696310362">Bahasha ya muundo wa Kichina ya ukubwa #2</translation>
 <translation id="6127379762771434464">Kipengee kimeondolewa</translation>
-<translation id="6128214169525122635">Alama ya hainipendezi hutuma maoni kuwa hukipendi kipengele cha kujaza kiotomatiki kwa kutumia AI</translation>
 <translation id="6131824478727057281">mahali</translation>
 <translation id="6133320744616005677">Endelea kuruhusu</translation>
 <translation id="6133984428121856852">Kiambishi cha faili kiko tupu au kina hitilafu.</translation>
@@ -4595,7 +4592,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9150025764986957246">Unaweza kuweka vitu kama vile:</translation>
 <translation id="9154194610265714752">Imesasishwa</translation>
 <translation id="9155211586651734179">Vifaa vya sauti vimeambatishwa</translation>
-<translation id="9155453166708525139">Kujaza Kiotomatiki kwa kutumia AI ni kipengele cha majaribio na hakitakupa matokeo sahihi kila wakati. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Magazeti</translation>
 <translation id="9157595877708044936">Inasanidi...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Huenda <ph name="FILE_NAME" /> ikawa na maudhui nyeti}other{Huenda faili <ph name="FILE_COUNT" /> zikawa na maudhui nyeti}}</translation>

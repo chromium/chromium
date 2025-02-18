@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
+<translation id="2164131940279488868">Аудио бичиж эхлэхийн тулд микрофон холбогдсон эсэхийг баталгаажуулна уу</translation>
 <translation id="2173302385160625112">Интернэт холболтоо шалгана уу</translation>
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
 <translation id="2189104374785738357">APN-н дэлгэрэнгүйг засах</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">нимбэгүүд</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тестийг ажиллуулж байна...</translation>
 <translation id="2573178735329662769">Chromebook-н бүх аудиог бичиж байна</translation>
-<translation id="2575552334616524665">Та үүнийг Тохиргоонд эсвэл <ph name="THREE_DOTS_MENU_ICON" /> цэсэд асаах боломжтой</translation>
 <translation id="2576253868710695442">Энэ нь 2ГБ-ын хадгалах санг эзэлнэ</translation>
 <translation id="2584547424703650812">Гялалзсан дүр зураг</translation>
 <translation id="2584559707064218956">Тохируулахын тулд Тохиргоо руу очно уу</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> үсэгтэй <ph name="LETTERS_COLOR" /> дэвсгэр</translation>
 <translation id="3383623117265110236">Онцгой</translation>
 <translation id="3404249063913988450">Дэлгэц амраагчийг идэвхжүүлэх</translation>
-<translation id="3410165745972100556">Сийрүүлэг унтраалттай байна</translation>
 <translation id="3413935475507503304">Шинэчлэлтийг үргэлжлүүлэхийн тулд Дараах дээр товшино уу.</translation>
 <translation id="3428551088151258685">гадаа</translation>
 <translation id="3428971106895559033">пастел</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">Төхөөрөмж нь таблет байна.</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>
 <translation id="8882789155418924367">шар шувууд</translation>
+<translation id="8885038613856655272">Микрофон холбох</translation>
 <translation id="8892443466059986410">Товчлолыг засахыг цуцлах</translation>
 <translation id="8897043028305808902">Файлын нэр өөрчлөгдсөн</translation>
 <translation id="8898840733695078011">Дохионы хүч</translation>

@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
 <translation id="2161656808144014275">نوشتار</translation>
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
+<translation id="2164131940279488868">برای ضبط صدا، مطمئن شوید میکروفون وصل است</translation>
 <translation id="2173302385160625112">اتصال اینترنت را بررسی کنید</translation>
 <translation id="2180197493692062006">مشکلی پیش آمد. برنامه را دوباره باز کنید.</translation>
 <translation id="2189104374785738357">ویرایش جزئیات «نام نقطه دستیابی»</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">لیمو</translation>
 <translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
 <translation id="2573178735329662769">‏ضبط کردن همه صداهای Chromebook</translation>
-<translation id="2575552334616524665">می‌توانید این گزینه را در «تنظیمات» یا منو <ph name="THREE_DOTS_MENU_ICON" /> روشن کنید</translation>
 <translation id="2576253868710695442">این بارگیری ۲ گیگابایت فضای خالی لازم دارد</translation>
 <translation id="2584547424703650812">منظره‌های درخشان</translation>
 <translation id="2584559707064218956">برای راه‌اندازی، به «تنظیمات» بروید</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">پس‌زمینه <ph name="LETTERS_COLOR" /> با حرف <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">انحصاری</translation>
 <translation id="3404249063913988450">فعال کردن محافظ صفحه</translation>
-<translation id="3410165745972100556">ترانویسی خاموش است</translation>
 <translation id="3413935475507503304">برای به‌روزرسانی، روی «بعدی» کلیک کنید.</translation>
 <translation id="3428551088151258685">فضای باز</translation>
 <translation id="3428971106895559033">پاستل</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">دستگاه رایانه لوحی است.</translation>
 <translation id="8881098542468797602">آزمایش موفق بود</translation>
 <translation id="8882789155418924367">جغد</translation>
+<translation id="8885038613856655272">میکروفون را وصل کنید</translation>
 <translation id="8892443466059986410">لغو کردن ویرایش میان‌بر</translation>
 <translation id="8897043028305808902">نام فایل تغییر کرد</translation>
 <translation id="8898840733695078011">قدرت سیگنال</translation>

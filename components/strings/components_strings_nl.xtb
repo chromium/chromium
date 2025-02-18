@@ -809,7 +809,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="238459632961158867">Website</translation>
 <translation id="2385809941344967209">Chrome updaten in de Chrome-instellingen</translation>
 <translation id="2386255080630008482">Het servercertificaat is ingetrokken.</translation>
-<translation id="2386410849674401722">Met Leuk stuur je feedback dat je Automatisch invullen met AI leuk vindt</translation>
 <translation id="2388828676877700238">Belastingvoorbereiding en -planning</translation>
 <translation id="239203817277685015">Uitbreiden</translation>
 <translation id="239293030466334554">Convertibles</translation>
@@ -1438,7 +1437,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3543935938072367282">Sneller betalen met automatisch invullen</translation>
 <translation id="3547442767634383572">Overzicht van werkprofiel</translation>
 <translation id="3547746132308051926">20 x 24 inch</translation>
-<translation id="3550325450190222557">Stuur feedback voor Automatisch invullen met AI.</translation>
 <translation id="3552155506104542239">Waarschuwing: Dit beleid is in strijd met <ph name="POLICY_NAME" /> en heeft geen invloed op Android-apps. Verder werkt dit beleid zoals bedoeld.</translation>
 <translation id="3552297013052089404">Sans-serif-lettertype</translation>
 <translation id="3558573058928565255">Tijd van de dag</translation>
@@ -2893,7 +2891,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6124432979022149706">Chrome Enterprise-connectors</translation>
 <translation id="6126565365696310362">Envelop Chinees #2</translation>
 <translation id="6127379762771434464">Item verwijderd</translation>
-<translation id="6128214169525122635">Met Niet leuk stuur je feedback dat je Automatisch invullen met AI niet leuk vindt</translation>
 <translation id="6131824478727057281">locatie</translation>
 <translation id="6133320744616005677">Blijven toestaan</translation>
 <translation id="6133984428121856852">De bestandsextensie is leeg of heeft een onjuiste notatie.</translation>
@@ -4590,7 +4587,6 @@ Aanvullende informatie:
 <translation id="9150025764986957246">Je kunt bijvoorbeeld het volgende invoeren:</translation>
 <translation id="9154194610265714752">Bijgewerkt</translation>
 <translation id="9155211586651734179">Aangesloten audiorandapparaten</translation>
-<translation id="9155453166708525139">Automatisch invullen met AI is een experimentele functie en zit er weleens naast. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Tijdschriften</translation>
 <translation id="9157595877708044936">Bezig met instellen...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> bevat misschien gevoelige content}other{<ph name="FILE_COUNT" /> bestanden bevatten misschien gevoelige content}}</translation>

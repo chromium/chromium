@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
 <translation id="2161656808144014275">मजकूर</translation>
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
+<translation id="2164131940279488868">ऑडिओ रेकॉर्ड करणे सुरू करण्यासाठी माइक कनेक्ट केला असल्याची खात्री करा</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
 <translation id="2189104374785738357">APN शी संबंधित तपशील संपादित करा</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">लिंबे</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
 <translation id="2573178735329662769">सर्व Chromebook ऑडिओ रेकॉर्ड करत आहे</translation>
-<translation id="2575552334616524665">तुम्ही हे सेटिंग्ज मध्ये किंवा <ph name="THREE_DOTS_MENU_ICON" /> मेनूमध्ये सुरू करू शकता</translation>
 <translation id="2576253868710695442">यासाठी कमाल २GB स्टोरेज लागेल</translation>
 <translation id="2584547424703650812">ग्लोस्केप</translation>
 <translation id="2584559707064218956">सेट करण्यासाठी, सेटिंग्ज वर जा</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> या अक्षरासह <ph name="LETTERS_COLOR" /> बॅकग्राउंड</translation>
 <translation id="3383623117265110236">विशिष्ट</translation>
 <translation id="3404249063913988450">स्क्रीन सेव्हर सुरू करा</translation>
-<translation id="3410165745972100556">ट्रान्स्क्रिप्ट बंद आहे</translation>
 <translation id="3413935475507503304">अपडेटसह पुढे सुरू ठेवण्यासाठी, पुढील वर क्लिक करा.</translation>
 <translation id="3428551088151258685">आउटडोअर</translation>
 <translation id="3428971106895559033">पेस्टल</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">डिव्हाइस हे टॅबलेट आहे.</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>
 <translation id="8882789155418924367">घुबडे</translation>
+<translation id="8885038613856655272">माइक कनेक्ट करा</translation>
 <translation id="8892443466059986410">शॉर्टकट संपादित करणे रद्द करा</translation>
 <translation id="8897043028305808902">फाइलचे नाव बदलले आहे</translation>
 <translation id="8898840733695078011">सिग्नल सामर्थ्य</translation>

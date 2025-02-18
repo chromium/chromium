@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">ပရင့်ထုတ်ရန်ဖိုင် မထုတ်တော့ပါ</translation>
 <translation id="2161656808144014275">စာသား</translation>
 <translation id="2163937499206714165">အမှောင်မုဒ် ဖွင့်ရန်</translation>
+<translation id="2164131940279488868">အသံစဖမ်းရန်အတွက် မိုက်နှင့်ချိတ်ဆက်ထားကြောင်း သေချာပါစေ</translation>
 <translation id="2173302385160625112">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="2180197493692062006">တစ်ခုခုမှားသွားသည်။ အက်ပ်ကို ပြန်ဖွင့်ကြည့်ပါ။</translation>
 <translation id="2189104374785738357">APN အသေးစိတ် ပြင်ခြင်း</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">သံပရိုသီး</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
 <translation id="2573178735329662769">Chromebook အသံအားလုံးကို ဖမ်းယူခြင်း</translation>
-<translation id="2575552334616524665">၎င်းကို ဆက်တင်များ (သို့) <ph name="THREE_DOTS_MENU_ICON" /> မီနူးတွင် ဖွင့်နိုင်သည်</translation>
 <translation id="2576253868710695442">၎င်းက သိုလှောင်ခန်း 2GB အထိ နေရာယူမည်</translation>
 <translation id="2584547424703650812">တောက်ပသောမြင်ကွင်း</translation>
 <translation id="2584559707064218956">စနစ်ထည့်သွင်းရန် ဆက်တင်များသို့ သွားပါ</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> စာလုံးဖြင့် <ph name="LETTERS_COLOR" /> နောက်ခံ</translation>
 <translation id="3383623117265110236">အထူးသီးသန့်</translation>
 <translation id="3404249063913988450">စခရင်နားချိန်ပုံ ဖွင့်ရန်</translation>
-<translation id="3410165745972100556">စာသားမှတ်တမ်း ပိတ်ထားသည်</translation>
 <translation id="3413935475507503304">ရှေ့ဆက်၍ အပ်ဒိတ်လုပ်ရန် ‘ရှေ့သို့’ ကို နှိပ်ပါ။</translation>
 <translation id="3428551088151258685">အိမ်ပြင်ပ</translation>
 <translation id="3428971106895559033">အရောင်ဖျော့</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">ကိရိယာသည် တက်ဘလက်ဖြစ်သည်</translation>
 <translation id="8881098542468797602">စစ်ဆေးမှု အောင်မြင်သည်</translation>
 <translation id="8882789155418924367">ဇီးကွက်</translation>
+<translation id="8885038613856655272">မိုက်နှင့်ချိတ်ဆက်ပါ</translation>
 <translation id="8892443466059986410">ဖြတ်လမ်းလင့်ခ် တည်းဖြတ်ခြင်းကို ပယ်ဖျက်ရန်</translation>
 <translation id="8897043028305808902">ဖိုင်အမည်ပြောင်းပြီးပါပြီ</translation>
 <translation id="8898840733695078011">လိုင်းဆွဲအား</translation>

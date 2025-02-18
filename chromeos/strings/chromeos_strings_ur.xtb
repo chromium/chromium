@@ -363,7 +363,6 @@
 <translation id="2561093647892030937">لیمونز</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ٹیسٹ چل رہا ہے...</translation>
 <translation id="2573178735329662769">‏تمام Chromebook آڈیوز کو ریکارڈ کرنا</translation>
-<translation id="2575552334616524665">آپ اسے ترتیبات یا <ph name="THREE_DOTS_MENU_ICON" /> مینو میں آن کر سکتے ہیں</translation>
 <translation id="2576253868710695442">‏اس میں 2GB تک کی اسٹوریج صرف ہوگی</translation>
 <translation id="2584547424703650812">چمکتے ہوئے مناظر</translation>
 <translation id="2584559707064218956">سیٹ اپ کرنے کیلئے، ترتیبات پر جائیں</translation>
@@ -502,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> والا <ph name="LETTERS_COLOR" /> پس منظر</translation>
 <translation id="3383623117265110236">خصوصی</translation>
 <translation id="3404249063913988450">اسکرین سیور فعال کریں</translation>
-<translation id="3410165745972100556">ٹرانسکرپٹ آف ہے</translation>
 <translation id="3413935475507503304">اپ ڈیٹ کے ساتھ آگے بڑھنے کے لیے اگلے پر کلک کریں۔</translation>
 <translation id="3428551088151258685">آؤٹ ڈور</translation>
 <translation id="3428971106895559033">پھیکا زرد رنگ</translation>
@@ -1470,6 +1468,7 @@
 <translation id="7828503206075800057">ایک <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> کیفے</translation>
 <translation id="7841134249932030522">تاریک وضع فعال کریں</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
+<translation id="7847923465436619066">ٹرانسکرپشن کا زبان منتخب کنندہ</translation>
 <translation id="7849030488395653706">شمالی روشنیاں</translation>
 <translation id="7849737607196682401">لیس</translation>
 <translation id="7850320739366109486">ڈسٹرب نہ کریں</translation>
@@ -1656,6 +1655,7 @@
 <translation id="8749478549112817787">کیمرے کا پس منظر</translation>
 <translation id="8755946156089753497">ٹاور</translation>
 <translation id="8760616037557661287">پچھلے پرامپٹس</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> کا ٹرانسکرپشن ماڈل ڈاؤن لوڈ اور منتخب کریں</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏Google تصاویر کا البم</translation>
 <translation id="8775713578693478175">‏موڈم APN</translation>

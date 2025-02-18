@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Ativar modo escuro</translation>
+<translation id="2164131940279488868">Certifique-se de que um microfone está ligado para começar a gravar áudio</translation>
 <translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2180197493692062006">Algo correu mal. Experimente reabrir a app.</translation>
 <translation id="2189104374785738357">Edite detalhes do APN (Nome do Ponto de Acesso)</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">limões</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2573178735329662769">A gravar todo o áudio do Chromebook</translation>
-<translation id="2575552334616524665">Pode ativar esta opção nas Definições ou no menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Isto vai ocupar até 2 GB de armazenamento</translation>
 <translation id="2584547424703650812">Paisagens brilhantes</translation>
 <translation id="2584559707064218956">Para configurar, aceda às Definições</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">Fundo <ph name="LETTERS_COLOR" /> com a letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivo</translation>
 <translation id="3404249063913988450">Ativar proteção de ecrã</translation>
-<translation id="3410165745972100556">A transcrição está desativada</translation>
 <translation id="3413935475507503304">Para prosseguir com a atualização, clique em Seguinte.</translation>
 <translation id="3428551088151258685">exterior</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -1685,6 +1684,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8876270629542503161">O dispositivo é um tablet.</translation>
 <translation id="8881098542468797602">Teste com êxito</translation>
 <translation id="8882789155418924367">corujas</translation>
+<translation id="8885038613856655272">Ligue um microfone</translation>
 <translation id="8892443466059986410">Cancelar edição de atalhos</translation>
 <translation id="8897043028305808902">Mudou o nome do ficheiro</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>

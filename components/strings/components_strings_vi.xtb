@@ -809,7 +809,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="238459632961158867">Trang web</translation>
 <translation id="2385809941344967209">Cập nhật Chrome từ phần cài đặt của Chrome</translation>
 <translation id="2386255080630008482">Chứng chỉ của máy chủ đã bị thu hồi.</translation>
-<translation id="2386410849674401722">Nút Thích cho chúng tôi biết bạn thích tính năng tự động điền bằng AI</translation>
 <translation id="2388828676877700238">Lập kế hoạch và chuẩn bị hồ sơ thuế</translation>
 <translation id="239203817277685015">Chi tiết</translation>
 <translation id="239293030466334554">Xe mui trần</translation>
@@ -1442,7 +1441,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3543935938072367282">Thanh toán nhanh hơn nhờ tính năng tự động điền</translation>
 <translation id="3547442767634383572">Tổng quan về hồ sơ công việc</translation>
 <translation id="3547746132308051926">20 x 24 inch</translation>
-<translation id="3550325450190222557">Gửi phản hồi về tính năng Tự động điền bằng AI.</translation>
 <translation id="3552155506104542239">Cảnh báo: Chính sách này xung đột với <ph name="POLICY_NAME" /> và sẽ không có hiệu lực với ứng dụng Android. Trong các trường hợp khác, chính sách này sẽ hoạt động như dự kiến.</translation>
 <translation id="3552297013052089404">Phông chữ Sans-serif</translation>
 <translation id="3558573058928565255">Giờ ban ngày</translation>
@@ -2899,7 +2897,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6124432979022149706">Trình kết nối của Chrome Enterprise</translation>
 <translation id="6126565365696310362">Phong bì kiểu Trung số 2</translation>
 <translation id="6127379762771434464">Đã xóa mục</translation>
-<translation id="6128214169525122635">Nút Không thích cho chúng tôi biết bạn không thích tính năng tự động điền bằng AI</translation>
 <translation id="6131824478727057281">vị trí</translation>
 <translation id="6133320744616005677">Tiếp tục cho phép</translation>
 <translation id="6133984428121856852">Đuôi tệp đang trống hoặc không hợp lệ.</translation>
@@ -4599,7 +4596,6 @@ Thông tin chi tiết bổ sung:
 <translation id="9150025764986957246">Bạn có thể nhập nội dung như:</translation>
 <translation id="9154194610265714752">Đã cập nhật</translation>
 <translation id="9155211586651734179">Thiết bị âm thanh ngoại vi gắn kèm</translation>
-<translation id="9155453166708525139">Tự động điền bằng AI là tính năng thử nghiệm và không phải lúc nào cũng chính xác. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Tạp chí</translation>
 <translation id="9157595877708044936">Đang thiết lập...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> có thể chứa nội dung nhạy cảm}other{<ph name="FILE_COUNT" /> tệp có thể chứa nội dung nhạy cảm}}</translation>

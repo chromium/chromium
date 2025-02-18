@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Укључите тамни режим</translation>
+<translation id="2164131940279488868">Проверите да ли је микрофон повезан да бисте почели да снимате звук</translation>
 <translation id="2173302385160625112">Проверите интернет везу</translation>
 <translation id="2180197493692062006">Дошло је до грешке. Пробајте да поново отворите апликацију.</translation>
 <translation id="2189104374785738357">Измените детаље назива приступне тачке</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">лимунови</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
 <translation id="2573178735329662769">Снимање свих звукова на Chromebook-у</translation>
-<translation id="2575552334616524665">То можете да укључите у Подешавањима или менију <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Ово ће заузети до 2 GB меморијског простора</translation>
 <translation id="2584547424703650812">Светлећи пејзажи</translation>
 <translation id="2584559707064218956">Да бисте подесили мрежу, идите у Подешавања</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> позадина са словом <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ексклузивно</translation>
 <translation id="3404249063913988450">Омогућите чувар екрана</translation>
-<translation id="3410165745972100556">Транскрипт је искључен</translation>
 <translation id="3413935475507503304">Да бисте наставили са ажурирањем, кликните на Даље.</translation>
 <translation id="3428551088151258685">отворени</translation>
 <translation id="3428971106895559033">пастелним</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">Уређај је таблет.</translation>
 <translation id="8881098542468797602">Тест је успео</translation>
 <translation id="8882789155418924367">сове</translation>
+<translation id="8885038613856655272">Повежите микрофон</translation>
 <translation id="8892443466059986410">Откажите измену пречица</translation>
 <translation id="8897043028305808902">Фајл је преименован</translation>
 <translation id="8898840733695078011">Јачина сигнала</translation>

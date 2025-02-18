@@ -63,7 +63,6 @@
 <translation id="1874309113135274312">Google Chrome 测试版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
 <translation id="1880677175115548835">选择文字</translation>
-<translation id="1907925560334657849">若要共享窗口，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
 <translation id="1982647487457769627">Chrome 支持多种平台，无论您使用哪种设备，都能获得熟悉的体验</translation>
@@ -241,7 +240,6 @@
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
 <translation id="408393047846373801">如需获取您所有设备上的密码等信息，请登录 Chrome。登录后，该密码将保存到您的 Google 账号。</translation>
-<translation id="4084404300720192944">若要共享窗口，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能。</translation>
 <translation id="4110895483821904099">设置您的新 Chrome 个人资料</translation>
 <translation id="4111566860456076004">Chrome 无法验证此扩展程序的来源，它可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括个人信息。</translation>
 <translation id="4128488089242627000">提高 Chrome 运行速度，让使用 JavaScript 的功能按预期运行（建议）</translation>
@@ -402,7 +400,6 @@
 <translation id="6180522807229584611">此标签页正在占用额外的资源。请通过 Chrome 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6200139057479872438">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />权限</translation>
-<translation id="621585339844629864">若要共享屏幕，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能。</translation>
 <translation id="6235018212288296708">Google Chrome的入站规则，允许mDNS流量。</translation>
 <translation id="624230925347970731">Chrome 即将关闭</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
@@ -471,7 +468,6 @@
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
 <translation id="7098166902387133879">Google Chrome 正在使用您的麦克风。</translation>
 <translation id="7099479769133613710">重新启动以更新 Chrome 操作系统(&amp;C)</translation>
-<translation id="7100085796996987445">若要共享屏幕，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="7106741999175697885">任务管理器 - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="7155997830309522122">如果是的话，请修改您在 Chrome 中保存的密码，使它与您的新密码保持一致。</translation>

@@ -43,9 +43,6 @@
           puis désélectionnez "<ph name="NO_PREFETCH_DESCRIPTION" />".
           Si le problème persiste, nous vous conseillons de
           réactiver cette option pour des performances optimales.</translation>
-<translation id="8187289872471304532">Sélectionnez
-          Applications &gt; Préférences système &gt; Réseau &gt; Avancé &gt; Proxys
-          et désélectionnez les serveurs proxy sélectionnés.</translation>
 <translation id="8597726643333341451">Cette page Chrome for Testing est sécurisée</translation>
 <translation id="8684913864886094367">Chrome n'a pas été arrêté correctement.</translation>
 </translationbundle>

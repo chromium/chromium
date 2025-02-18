@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
+<translation id="2164131940279488868">请确保已连接麦克风，以便开始录制音频</translation>
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
 <translation id="2189104374785738357">修改 APN 详细信息</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">柠檬</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2573178735329662769">录制所有 Chromebook 音频</translation>
-<translation id="2575552334616524665">您可以在“设置”或 <ph name="THREE_DOTS_MENU_ICON" /> 菜单中开启此功能</translation>
 <translation id="2576253868710695442">将占用最多 2GB 存储空间</translation>
 <translation id="2584547424703650812">发光景观</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">包含字母 <ph name="LETTERS_LETTER" /> 的<ph name="LETTERS_COLOR" />背景</translation>
 <translation id="3383623117265110236">专有</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
-<translation id="3410165745972100556">转写功能已关闭</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3428551088151258685">室外</translation>
 <translation id="3428971106895559033">柔和</translation>
@@ -1685,6 +1684,7 @@
 <translation id="8876270629542503161">设备类型是平板电脑。</translation>
 <translation id="8881098542468797602">测试成功</translation>
 <translation id="8882789155418924367">猫头鹰</translation>
+<translation id="8885038613856655272">连接麦克风</translation>
 <translation id="8892443466059986410">取消修改快捷方式</translation>
 <translation id="8897043028305808902">文件已重命名</translation>
 <translation id="8898840733695078011">信号强度</translation>

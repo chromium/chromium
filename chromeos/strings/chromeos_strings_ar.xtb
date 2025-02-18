@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
 <translation id="2161656808144014275">نص</translation>
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
+<translation id="2164131940279488868">يُرجى التأكّد من توصيل ميكروفون لبدء تسجيل الصوت</translation>
 <translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
 <translation id="2189104374785738357">تعديل تفاصيل اسم نقطة الوصول</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">ليمون</translation>
 <translation id="2570743873672969996">جارٍ تنفيذ اختبار <ph name="TEST_NAME" />...</translation>
 <translation id="2573178735329662769">‏تسجيل كلّ الأصوات على جهاز Chromebook</translation>
-<translation id="2575552334616524665">يمكنك تفعيل هذه الميزة في "الإعدادات" أو في القائمة "<ph name="THREE_DOTS_MENU_ICON" />"</translation>
 <translation id="2576253868710695442">ستستهلك عملية التسجيل ما يصل إلى 2 غيغابايت من مساحة التخزين</translation>
 <translation id="2584547424703650812">منظر بألوان لامعة</translation>
 <translation id="2584559707064218956">لضبط إعدادات الشبكة، انتقِل إلى "الإعدادات".</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">خلفية <ph name="LETTERS_COLOR" /> على شكل حرف <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">مجموعة حصرية</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
-<translation id="3410165745972100556">ميزة "تحويل الصوت إلى نص" غير مفعَّلة</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
 <translation id="3428551088151258685">خارجي</translation>
 <translation id="3428971106895559033">باستيل</translation>
@@ -1469,6 +1468,7 @@
 <translation id="7828503206075800057">مقهى <ph name="CAFE_STYLE" /> على شكل <ph name="CAFE_TYPE" /></translation>
 <translation id="7841134249932030522">تفعيل الوضع المُعتِم</translation>
 <translation id="7846634333498149051">لوحة المفاتيح</translation>
+<translation id="7847923465436619066">أداة اختيار لغة تحويل الصوت إلى نص</translation>
 <translation id="7849030488395653706">الشفق القطبي الشمالي</translation>
 <translation id="7849737607196682401">الدانتيل</translation>
 <translation id="7850320739366109486">عدم الإزعاج</translation>
@@ -1655,6 +1655,7 @@
 <translation id="8749478549112817787">خلفية الكاميرا</translation>
 <translation id="8755946156089753497">برج</translation>
 <translation id="8760616037557661287">الطلبات السابقة</translation>
+<translation id="876280838467039397">تنزيل نموذج تحويل الصوت إلى نص باللغة <ph name="LANGUAGE_NAME" /> واختياره</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏ألبوم "صور Google"</translation>
 <translation id="8775713578693478175">اسم نقطة وصول المودم</translation>
@@ -1685,6 +1686,7 @@
 <translation id="8876270629542503161">الجهاز هو جهاز لوحي.</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>
 <translation id="8882789155418924367">بوم</translation>
+<translation id="8885038613856655272">توصيل ميكروفون</translation>
 <translation id="8892443466059986410">إلغاء تعديل الاختصارات</translation>
 <translation id="8897043028305808902">تمّت إعادة تسمية الملف</translation>
 <translation id="8898840733695078011">قوة الإشارة</translation>

@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
 <translation id="2161656808144014275">Besedilo</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
+<translation id="2164131940279488868">Če želite začeti snemati zvok, se prepričajte, da je mikrofon priključen</translation>
 <translation id="2173302385160625112">Preverite internetno povezavo</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
 <translation id="2189104374785738357">Urejanje podrobnosti APN-ja</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">limone</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2573178735329662769">Snemanje vsega zvoka v Chromebooku</translation>
-<translation id="2575552334616524665">To lahko vklopite v nastavitvah ali meniju <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">To bo zavzelo do 2 GB prostora za shranjevanje</translation>
 <translation id="2584547424703650812">Svetleče pokrajine</translation>
 <translation id="2584559707064218956">Če želite nastaviti, odprite nastavitve.</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">Ozadje <ph name="LETTERS_COLOR" /> barve s črko <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
-<translation id="3410165745972100556">Prepis je izklopljen</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
 <translation id="3428551088151258685">na prostem</translation>
 <translation id="3428971106895559033">pastelne</translation>
@@ -1469,6 +1468,7 @@
 <translation id="7828503206075800057"><ph name="CAFE_TYPE" /> v tem slogu: <ph name="CAFE_STYLE" /></translation>
 <translation id="7841134249932030522">Omogočanje temnega načina</translation>
 <translation id="7846634333498149051">Tipkovnica</translation>
+<translation id="7847923465436619066">Izbirnik jezika prepisa</translation>
 <translation id="7849030488395653706">severni sij</translation>
 <translation id="7849737607196682401">čipka</translation>
 <translation id="7850320739366109486">Ne moti</translation>
@@ -1655,6 +1655,7 @@
 <translation id="8749478549112817787">Ozadje kamere</translation>
 <translation id="8755946156089753497">stolp</translation>
 <translation id="8760616037557661287">Prejšnji pozivi</translation>
+<translation id="876280838467039397">Prenesite in izberite model prepisa v jeziku <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>
 <translation id="8775713578693478175">APN modema</translation>
@@ -1685,6 +1686,7 @@
 <translation id="8876270629542503161">Naprava je tablični računalnik.</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>
 <translation id="8882789155418924367">sove</translation>
+<translation id="8885038613856655272">Priključite mikrofon</translation>
 <translation id="8892443466059986410">Prekliči urejanje bližnjice</translation>
 <translation id="8897043028305808902">Datoteka je bila preimenovana</translation>
 <translation id="8898840733695078011">Moč signala</translation>

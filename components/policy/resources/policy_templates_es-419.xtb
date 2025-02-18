@@ -642,6 +642,35 @@ Si habilitas o no configuras esta política, se habilitará el desplazamiento de
 Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragmentos de texto específicos mediante la URL.</translation>
 <translation id="1468702975912409463">Permitir que los usuarios con acceso remoto abran las URLs del host en el navegador de su cliente local</translation>
 <translation id="1474273443907024088">Inhabilitar TLS False Start</translation>
+<translation id="1475494149102693892">Puedes habilitar esta política para crear un diccionario de extensiones del tipo de archivo con una lista correspondiente de dominios que quedarán exentos de las advertencias sobre descargas basadas en las extensiones del tipo de archivo. Esto les permite a los administradores de empresas bloquear las advertencias sobre descargas basadas en las extensiones del tipo de archivo para los archivos asociados con un dominio de la lista. Por ejemplo, si la extensión "jnlp" está asociada con "website1.com", los usuarios no verán advertencias cuando se descarguen archivos "jnlp" de "website1.com", sino cuando se descarguen de "website2.com".
+
+Los archivos con extensiones del tipo de archivo especificadas para los dominios que se identifican en esta política seguirán sujetas a las advertencias de seguridad que no estén basadas en extensiones del tipo de archivo, como las advertencias sobre descargas de contenido mixto y las advertencias de Navegación segura.
+
+Si inhabilitas esta política o no la configuras, los tipos de archivos que activan advertencias sobre descargas basadas en extensiones enviarán advertencias al usuario.
+
+Si habilitas esta política:
+
+* El formato del patrón de URL debe seguir las condiciones especificadas en https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+* La extensión del tipo de archivo ingresada debe estar en minúscula y con letras en formato ASCII. Cuando enumeres la extensión del tipo de archivo, no incluyas el separador principal. Por ejemplo, usa "jnlp" en lugar de ".jnlp".
+
+Por ejemplo:
+
+El siguiente valor de ejemplo evitaría las advertencias sobre descargas basadas en las extensiones del tipo de archivo para las extensiones "exe" y "jnlp" en los dominios *.example.com, y para las extensiones "swf" en todos los dominios. Le enviará al usuario una advertencia sobre descargas basada en las extensiones del tipo de archivo en cualquier otro dominio para los archivos exe y jnlp, pero no para los archivos swf.
+
+[
+  { "file_extension": "jnlp", "domains": ["example.com"] },
+  { "file_extension": "exe", "domains": ["example.com"] },
+  { "file_extension": "swf", "domains": ["*"] }
+]
+
+Ten en cuenta que, mientras que el ejemplo anterior muestra menos advertencias sobre descargas basadas en las extensiones del tipo de archivo para los archivos "swf" en todos los dominios, por cuestiones de seguridad, no te recomendamos reducir la cantidad de ese tipo de advertencias en todos los dominios para las extensiones peligrosas de tipo de archivo. El único fin del ejemplo es demostrar que es posible hacerlo.
+
+Si habilitas esta política junto a <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, las excepciones de las advertencias basadas en las extensiones del tipo de archivo especificadas por esta política tendrán prioridad sobre un parámetro de configuración de <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> que bloquearía los tipos de archivos peligrosos. Las excepciones especificadas por esta política solo se aplican al comportamiento "block dangerous file types" especificado por los valores 1 y 2 de <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.
+
+Por ejemplo, si esta política especifica una excepción para las descargas de "exe" de "website1.com" y <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> está configurada para bloquear las descargas maliciosas y los tipos de archivos peligrosos (valor 1), las descargas de "exe" de "website1.com" estarán exentas del bloqueo basado en la extensión del tipo de archivo, pero se bloquearán si son maliciosas.
+
+Puedes encontrar más información sobre <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> en https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Si estableces la política, se definirá la lista de dispositivos USB que el usuario puede desconectar del controlador de kernel para usarlos a través de la API chrome.usb directamente en una aplicación web. Las entradas son pares formados por el identificador del producto y del proveedor USB que permiten reconocer un hardware específico.
 

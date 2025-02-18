@@ -809,7 +809,6 @@
 <translation id="238459632961158867">الموقع الإلكتروني</translation>
 <translation id="2385809941344967209">‏تحديث Chrome من إعداداته</translation>
 <translation id="2386255080630008482">تم إبطال شهادة الخادم.</translation>
-<translation id="2386410849674401722">يؤدي النقر على رمز الإعجاب إلى إرسال ملاحظات بأنّ ميزة "الملء التلقائي باستخدام الذكاء الاصطناعي" تعجبك</translation>
 <translation id="2388828676877700238">إعداد الضرائب والتخطيط الضريبي</translation>
 <translation id="239203817277685015">أسلوب مفصَّل</translation>
 <translation id="239293030466334554">مركبات مكشوفة السقف</translation>
@@ -1443,7 +1442,6 @@
 <translation id="3543935938072367282">إتمام الدفع بشكل أسرع باستخدام "الملء التلقائي"</translation>
 <translation id="3547442767634383572">نظرة عامة على ملف العمل</translation>
 <translation id="3547746132308051926">20 × 24 بوصة</translation>
-<translation id="3550325450190222557">إرسال ملاحظات عن ميزة "الملء التلقائي باستخدام الذكاء الاصطناعي"</translation>
 <translation id="3552155506104542239">‏تحذير: تتعارض هذه السياسة مع سياسة "<ph name="POLICY_NAME" />" ولن تؤثّر في تطبيقات Android. بخلاف ذلك، تعمل هذه السياسة على النحو المقصود.</translation>
 <translation id="3552297013052089404">‏خط Sans-serif</translation>
 <translation id="3558573058928565255">خلال النهار</translation>
@@ -2901,7 +2899,6 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">ظرف صيني رقم 2</translation>
 <translation id="6127379762771434464">أُزيلَ عنصر</translation>
-<translation id="6128214169525122635">يؤدي النقر على رمز عدم الإعجاب إلى إرسال ملاحظات بأنّ ميزة "الملء التلقائي باستخدام الذكاء الاصطناعي" لم تعجبك</translation>
 <translation id="6131824478727057281">الموقع الجغرافي</translation>
 <translation id="6133320744616005677">مواصلة منح الإذن</translation>
 <translation id="6133984428121856852">امتداد الملف فارغ أو غير صالح.</translation>
@@ -3273,7 +3270,7 @@
 <translation id="6786145470008421571">ظرف مقاس 15 × 23 سم</translation>
 <translation id="67862343314499040">بنفسجي</translation>
 <translation id="6786747875388722282">الإضافات</translation>
-<translation id="6787094689637422836">‏سيطلق Chrome ميزات جديدة متعلّقة بالخصوصية توفّر لك خيارات أكثر لتحديد الإعلانات التي تظهر لك.</translation>
+<translation id="6787094689637422836">سنطلق ميزات خصوصية جديدة تتيح لك التحكّم بشكل أكبر في الإعلانات التي تظهر لك.</translation>
 <translation id="6789062271869667677">غير متقطع (طويل)</translation>
 <translation id="678982761784843853">معرّفات المحتوى المحمي</translation>
 <translation id="6790428901817661496">التشغيل</translation>
@@ -4603,7 +4600,6 @@
 <translation id="9150025764986957246">يمكنك إدخال نص مثل:</translation>
 <translation id="9154194610265714752">تم التحديث</translation>
 <translation id="9155211586651734179">تم ربط أجهزة صوتية ملحقة.</translation>
-<translation id="9155453166708525139">إنّ ميزة "الملء التلقائي باستخدام الذكاء الاصطناعي" تجريبية وقد توفِّر نتائج غير دقيقة أحيانًا. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">مجلات</translation>
 <translation id="9157595877708044936">جارٍ الإعداد...</translation>
 <translation id="9161794544616754735">{0,plural, =1{قد يتضمّن الملف "<ph name="FILE_NAME" />" محتوى حسّاسًا.}zero{قد يتضمّن <ph name="FILE_COUNT" /> ملف محتوى حسّاسًا.}two{قد يتضمّن ملفان (<ph name="FILE_COUNT" />) محتوى حسّاسًا.}few{قد تتضمّن <ph name="FILE_COUNT" /> ملفات محتوى حسّاسًا.}many{قد يتضمّن <ph name="FILE_COUNT" /> ملفًا محتوى حسّاسًا.}other{قد يتضمّن <ph name="FILE_COUNT" /> ملف محتوى حسّاسًا.}}</translation>

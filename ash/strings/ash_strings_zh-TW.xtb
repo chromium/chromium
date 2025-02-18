@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">取消以下設定：查看手機的應用程式</translation>
 <translation id="1610778689852195798">「復原」</translation>
 <translation id="1611993646327628135">開啟</translation>
+<translation id="1612679292338846734">開啟這些功能後，輸入的文字、文件內容和網頁網址可能會傳送到 Google AI 伺服器。依據 <ph name="LINK_TO_SERVICE_TERMS" />規定，這類資訊會用於產生撰寫建議、生成摘要、回答問題及提升產品品質，請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1623768535032616219">收合 Google Classroom</translation>
 <translation id="163032029566320584">目前無法使用「<ph name="UNAVAILABLE_DLC" />」。</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">新增連線</translation>
 <translation id="2947835478872237115">目前電池電量：<ph name="BATTERY_PERCENTAGE" />%；充電所需時間：<ph name="TIME" /></translation>
 <translation id="2949420361496057765">按下 <ph name="MODIFIER" /> 鍵，然後點選連結</translation>
+<translation id="2957159466053076448">你隨時可以前往「設定」關閉這些功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">裝置音訊</translation>
 <translation id="2960314608273155470">擷取模式，預設為<ph name="SOURCE" /><ph name="TYPE" />。按下 Tab 鍵即可查看鍵盤瀏覽資訊。</translation>
 <translation id="2961963223658824723">發生錯誤，請於幾秒後再試一次。</translation>
@@ -1901,6 +1903,7 @@
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7360036564632145207">變更周邊裝置的資料存取權防護設定可以改善效能</translation>
 <translation id="736045644501761622">設定桌布和樣式</translation>
+<translation id="7368041336688136012">你必須年滿 18 歲才能使用「幫我閱讀」、「幫我寫」功能，以及運用 AI 製作圖片。</translation>
 <translation id="7371404428569700291">錄製視窗畫面</translation>
 <translation id="7372069265635026568">記憶體總容量為 <ph name="TOTAL_MEMORY" />，還可使用 <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="737315737514430195">這將允許具有麥克風權限的所有應用程式和網站存取麥克風</translation>
@@ -2026,6 +2029,7 @@
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">全部顯示</translation>
+<translation id="7762664108390426952">Google 的《服務條款》和《隱私權政策》</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7769299611924763557">GIF 很快就能使用</translation>
 <translation id="7773536009433685931">改為開啟 Wi-Fi</translation>

@@ -43,9 +43,6 @@
           y desactiva la opción "<ph name="NO_PREFETCH_DESCRIPTION" />".
           Si esto no soluciona el problema, te recomendamos que vuelvas a seleccionar esta opción
           para conseguir un mejor rendimiento.</translation>
-<translation id="8187289872471304532">Accede a
-          Aplicaciones &gt; Preferencias del Sistema &gt; Red &gt; Configuración avanzada &gt; Proxies
-          y desactiva las casillas de verificación de los proxies seleccionados.</translation>
 <translation id="8597726643333341451">Estás viendo una página segura de Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium no se ha cerrado correctamente.</translation>
 </translationbundle>

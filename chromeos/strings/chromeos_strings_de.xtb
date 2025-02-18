@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Dunklen Modus einschalten</translation>
+<translation id="2164131940279488868">Vergewissere dich, dass ein Mikrofon angeschlossen ist, um Audio aufzunehmen</translation>
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2180197493692062006">Es gab ein Problem. Versuche, die App wieder zu öffnen.</translation>
 <translation id="2189104374785738357">APN-Details bearbeiten</translation>
@@ -362,7 +363,6 @@
 <translation id="2561093647892030937">Zitronen</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
 <translation id="2573178735329662769">Alle Chromebook-Audiodaten werden aufgezeichnet</translation>
-<translation id="2575552334616524665">Du kannst diese Funktion in den Einstellungen oder über das <ph name="THREE_DOTS_MENU_ICON" />‑Menü aktivieren</translation>
 <translation id="2576253868710695442">Das erfordert bis zu 2 GB Speicherplatz</translation>
 <translation id="2584547424703650812">Leuchtende Landschaften</translation>
 <translation id="2584559707064218956">Gehe für die Einrichtung zu den Einstellungen</translation>
@@ -501,7 +501,6 @@
 <translation id="33736539805963175">Hintergrund in <ph name="LETTERS_COLOR" /> mit dem Buchstaben „<ph name="LETTERS_LETTER" />“</translation>
 <translation id="3383623117265110236">Exklusiv</translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
-<translation id="3410165745972100556">Transkriptfunktion ist deaktiviert</translation>
 <translation id="3413935475507503304">Klicke zum Fortsetzen der Aktualisierung auf „Weiter“.</translation>
 <translation id="3428551088151258685">Outdoor</translation>
 <translation id="3428971106895559033">Pastelltönen</translation>
@@ -1685,6 +1684,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>
 <translation id="8882789155418924367">Eulen</translation>
+<translation id="8885038613856655272">Mikrofon anschließen</translation>
 <translation id="8892443466059986410">Bearbeiten der Verknüpfung abbrechen</translation>
 <translation id="8897043028305808902">Datei umbenannt</translation>
 <translation id="8898840733695078011">Signalstärke</translation>

@@ -41,9 +41,6 @@ LAN Тохиргоонууд руу орж
           <ph name="ADVANCED_TITLE" />
            "<ph name="NO_PREFETCH_DESCRIPTION" />." сонголтыг устгана уу. 
 Хэрвээ ингээд асуудлыг шийдвэрлэж чадахгүй байгаа бол бид танд үзүүлэлтийг сайжруулахын тулд энэ сонголтоо дахин хийхийг зөвлөж байна.</translation>
-<translation id="8187289872471304532">Дараах урсгалын дарааллаар хандана уу
-          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
-          мөн аливаа төлөөлөх сервер сонгосон байгаа бол үл сонгосон болгож өөрчлөх.</translation>
 <translation id="8597726643333341451">Ta Chrome for Testing-н аюулгүй хуудсыг үзэж байна</translation>
 <translation id="8684913864886094367">Chromium-ыг буруу унтраасан байна.</translation>
 </translationbundle>

@@ -196,6 +196,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1129348283834595293">Ciberpunk</translation>
 <translation id="1129420403709586868">Accede ao contido multimedia e ás fotos do teu teléfono</translation>
 <translation id="1129850422003387628">Xestionar aplicacións</translation>
+<translation id="1130430615924359526">{0,plural, =1{Pechar modo de incógnito}other{Pechar modo de incógnito (# ventás)}}</translation>
 <translation id="113050636487300043">Para diferenciar entre os distintos perfís, escolle un nome e un tema de cor</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> (forma parte do grupo <ph name="GROUP_NAME" />)</translation>
 <translation id="1130676589211693127">Nivel de batería do dispositivo dereito: <ph name="PERCENTAGE" /> %.</translation>
@@ -1512,6 +1513,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2042279886444479655">Perfís activos</translation>
 <translation id="2042427131767688936">Para garantir que este dispositivo se use de maneira segura, a túa organización pode ver información sobre o seu sistema operativo, o navegador e a configuración, así como o software instalado no aparello.</translation>
 <translation id="2044014337866019681">Asegúrate de estar verificando a conta <ph name="ACCOUNT" /> para desbloquear a sesión.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Pechar sesión de convidado}other{Pechar sesión de convidado (# ventás)}}</translation>
 <translation id="204497730941176055">Nome do modelo do certificado de Microsoft</translation>
 <translation id="2045211794962848221">Non volverás ver esta mensaxe concreta</translation>
 <translation id="2045838962742066664">Escritura abreviada</translation>
@@ -2284,7 +2286,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2569972178052279830">Nome do punto de venda</translation>
 <translation id="257088987046510401">Temas</translation>
 <translation id="2571638829488071045">Queres gardar esta extensión na túa Conta de Google?</translation>
-<translation id="2571655996835834626">Cambiar as opcións de configuración que controlan o acceso dos sitios web a funcións como as cookies, o JavaScript, os complementos, a xeolocalización, o micrófono, a cámara etc.</translation>
 <translation id="257175846174451436">Grupo de pestanas suxerido</translation>
 <translation id="2572032849266859634">Concedeuse acceso só de lectura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> pestanas</translation>
@@ -7355,6 +7356,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6214106213498203737">Acuarela</translation>
 <translation id="621470880408090483">Non permitir que os sitios se conecten a dispositivos Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Para manter a salvo os teus contrasinais, <ph name="BRAND" /> bloquéase despois de 1 minuto de inactividade}other{Para manter a salvo os teus contrasinais, <ph name="BRAND" /> bloquéase despois de # minutos de inactividade}}</translation>
+<translation id="6216154119179790291">Desprazarse ata a primeira pestana</translation>
 <translation id="6216239400972191926">Sitios e aplicacións rexeitados</translation>
 <translation id="6216601812881225442">Non se pode cambiar o tamaño do contedor. Se queres axustar a cantidade de espazo asignado previamente a Linux, fai unha copia de seguranza e restaura os datos nun contedor novo.</translation>
 <translation id="6216696360484424239">Iniciar sesión automaticamente</translation>
@@ -7551,6 +7553,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6357305427698525450">Algunhas ligazóns compatibles seguirán abríndose nas aplicacións <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Outros identificadores estables (por exemplo, hash ou UUID)</translation>
 <translation id="6358884629796491903">Dragón</translation>
+<translation id="6359640073754977254">Desprazarse ata a última pestana</translation>
 <translation id="6361850914223837199">Detalles dos erros:</translation>
 <translation id="6362853299801475928">&amp;Informar dun problema...</translation>
 <translation id="6363786367719063276">Ver os rexistros</translation>
@@ -7613,7 +7616,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6411135999030237579">Manter premida unha tecla para que se repita automaticamente</translation>
 <translation id="6414618057231176439">Selecciona que versión de <ph name="VM_NAME" /> queres instalar.</translation>
 <translation id="641469293210305670">Instalar actualizacións e aplicacións</translation>
-<translation id="6414878884710400018">Abrir Preferencias do sistema</translation>
 <translation id="6415757856498750027">Escribir "w" para obter "ư"</translation>
 <translation id="6415816101512323589">Queres activar a recuperación de datos locais para protexer os teus datos?</translation>
 <translation id="6415900369006735853">Conéctase a Internet a través do teléfono</translation>
@@ -10209,6 +10211,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8258027225380843424">Completouse a importación</translation>
 <translation id="8259048637628995340">Conecta o teu teléfono Android para desfrutar dunha experiencia fluída</translation>
 <translation id="8260177673299865994">Mellora a protección durante as descargas</translation>
+<translation id="8260473380156923937">As aplicacións de Chrome pronto quedarán obsoletas. Para ver alternativas, ponte en contacto co programador ou co teu servizo de IT.</translation>
 <translation id="8260864402787962391">Rato</translation>
 <translation id="8261378640211443080">Esta extensión non figura en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é posible que se engadise sen o teu coñecemento.</translation>
 <translation id="8261506727792406068">Eliminar</translation>

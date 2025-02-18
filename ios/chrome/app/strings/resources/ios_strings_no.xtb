@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Få en advarsel hvis passord blir avdekket i databrudd</translation>
 <translation id="1044891598689252897">Nettsteder kommer til å fungere som normalt</translation>
 <translation id="104491362976654916">Side uten nett</translation>
+<translation id="1049200476149974839">vil ha deg med i en fanegruppe. Alle som har linken, kan endre alle fanene, så vær forsiktig hvis du velger å bli med. Linken utløper om 48 timer.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget av. Logg på igjen for å bruke blant annet bokmerkene og passordene i kontoen din.</translation>
 <translation id="1054745118061919935">Ved å fortsette godtar du <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" />.</translation>
@@ -194,6 +195,7 @@
 <translation id="1780152987505130652">Lukk gruppen</translation>
 <translation id="178400879184240105">Passordene dine er unike</translation>
 <translation id="17906873777101817">Tilby å lagre passord og passnøkler</translation>
+<translation id="1794893174442046596">Fanegruppe</translation>
 <translation id="1807893857950749072">Tillat varsler om prissporing…</translation>
 <translation id="1810976980198522421">Avbryt</translation>
 <translation id="1815941218935345331">Sikkerhetskode</translation>
@@ -656,6 +658,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3904270275864974753">Rediger karusell</translation>
 <translation id="3909222758573607742">Lagre passord og andre elementer i kontoen</translation>
+<translation id="3913463964270756493">Skjul søkeskjermen med Google Lens</translation>
 <translation id="3914640181019354363">Finn adresser</translation>
 <translation id="3922185497376658606">Forhåndslast nettsider</translation>
 <translation id="3922395466317605522">Tilpass menyen</translation>

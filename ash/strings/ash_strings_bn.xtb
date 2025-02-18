@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">আপনার ফোনের অ্যাপ দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
 <translation id="1610778689852195798">"আগের অবস্থায় ফিরুন"</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
+<translation id="1612679292338846734">আপনি এইসব ফিচার চালু করলে, ইনপুট টেক্স, ডকুমেন্টের কন্টেন্ট এবং ওয়েব পেজের URL, Google AI সার্ভারে পাঠানো হতে পারে। এই তথ্য লেখার সাজেশন জেনারেট, সারসংক্ষেপ তৈরি করতে, প্রশ্নের উত্তর দিতে এবং প্রোডাক্ট উন্নত করতে ব্যবহার করা হয় এবং তা <ph name="LINK_TO_SERVICE_TERMS" /> অনুযায়ী করা হয়। ব্যক্তিগত, সংবেদনশীল, বা গোপনীয় তথ্য অন্তর্ভুক্ত করবেন না।</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1623768535032616219">Google Classroom আড়াল করুন</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> উপলভ্য নেই।</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">সংযোগ জুড়ুন</translation>
 <translation id="2947835478872237115">বর্তমান ব্যাটারি লেভেল <ph name="BATTERY_PERCENTAGE" />%, পুরো চার্জ হতে <ph name="TIME" /> লাগবে</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" /> প্রেস করুন এবং লিঙ্কে ক্লিক করুন</translation>
+<translation id="2957159466053076448">আপনি 'সেটিংস' থেকে যেকোনও সময় এইসব ফিচার বন্ধ করতে পারবেন। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ডিভাইস অডিও</translation>
 <translation id="2960314608273155470">ক্যাপচার মোড, <ph name="SOURCE" /> <ph name="TYPE" /> ডিফল্ট হিসেবে সেট করা হয়েছে। কীবোর্ড ব্যবহার করে নেভিগেট করতে Tab কী প্রেস করুন।</translation>
 <translation id="2961963223658824723">কিছু সমস্যা হয়েছে। কয়েক সেকেন্ডের মধ্যে আবার চেষ্টা করুন।</translation>
@@ -1906,6 +1908,7 @@
 <translation id="735745346212279324">VPN ডিসকানেক্ট করা হয়েছে</translation>
 <translation id="7360036564632145207">পেরিফেরাল সেটিংসের জন্য আপনার 'ডেটা অ্যাক্সেস সুরক্ষা' ব্যবস্থায় পরিবর্তন করলে পারফর্ম্যান্স অপ্টিমাইজ হতে পারে</translation>
 <translation id="736045644501761622">'ওয়ালপেপার ও স্টাইল' ফিচার সেট করুন</translation>
+<translation id="7368041336688136012">'আমাকে লিখতে সাহায্য করো', 'আমাকে পড়তে সাহায্য করো' ফিচার ব্যবহার ও AI-এর মাধ্যমে ছবি তৈরি করতে হলে আপনার বয়স অবশ্যই ১৮ বছর হতে হবে।</translation>
 <translation id="7371404428569700291">উইন্ডো রেকর্ড করুন</translation>
 <translation id="7372069265635026568">মোট <ph name="TOTAL_MEMORY" /> মেমরির মধ্যে <ph name="AVAILABLE_MEMORY" /> উপলভ্য</translation>
 <translation id="737315737514430195">এটি মাইক্রোফোন অনুমতি সহ সমস্ত অ্যাপ এবং ওয়েবসাইটগুলির জন্য মাইক্রোফোন অ্যাক্সেসের অনুমতি দেয়</translation>
@@ -2031,6 +2034,7 @@
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">সকল দেখান</translation>
+<translation id="7762664108390426952">Google-এর পরিষেবার শর্তাবলী এবং গোপনীয়তা নীতি</translation>
 <translation id="7768784765476638775">বাছুন ও শুনুন</translation>
 <translation id="7769299611924763557">আপনার GIF শীঘ্রই তৈরি হয়ে যাবে</translation>
 <translation id="7773536009433685931">পরিবর্তে ওয়াই-ফাই চালু করুন</translation>

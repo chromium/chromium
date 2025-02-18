@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Berikan peringatan jika sandi Anda Terekspos saat terjadi Pelanggaran data</translation>
 <translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
 <translation id="104491362976654916">Halaman offline</translation>
+<translation id="1049200476149974839">ingin Anda bergabung ke grup tab. Siapa saja yang memiliki link ini dapat mengedit semua tab. Harap bergabung dengan hati-hati. Masa berlaku link akan berakhir setelah 48 jam.</translation>
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="1053651653201045802">Telah Logout. Login kembali untuk menggunakan bookmark, sandi, dan lainnya di akun Anda.</translation>
 <translation id="1054745118061919935">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK" />Persyaratan Layanan<ph name="END_LINK" />.</translation>
@@ -194,6 +195,7 @@
 <translation id="1780152987505130652">Tutup Grup</translation>
 <translation id="178400879184240105">Sandi Anda unik</translation>
 <translation id="17906873777101817">Tawarkan penyimpanan sandi &amp; kunci sandi</translation>
+<translation id="1794893174442046596">Grup tab</translation>
 <translation id="1807893857950749072">Izinkan notifikasi pemantauan harga…</translation>
 <translation id="1810976980198522421">Batal</translation>
 <translation id="1815941218935345331">Kode sandi</translation>
@@ -656,6 +658,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edit carousel</translation>
 <translation id="3909222758573607742">Simpan sandi dan item lainnya di akun</translation>
+<translation id="3913463964270756493">Sembunyikan layar Penelusuran dengan Google Lens</translation>
 <translation id="3914640181019354363">Deteksi alamat</translation>
 <translation id="3922185497376658606">Pramuat halaman web</translation>
 <translation id="3922395466317605522">Sesuaikan Menu</translation>

@@ -809,7 +809,6 @@
 <translation id="238459632961158867">Вебсайт</translation>
 <translation id="2385809941344967209">Chrome-н тохиргоон дээрээс Chrome-г шинэчлэх</translation>
 <translation id="2386255080630008482">Серверийн гэрчилгээг цуцалсан байна.</translation>
-<translation id="2386410849674401722">Сайн тэмдэглэгээ нь танд ХОУ-аар автоматаар бөглөх таалагдсан гэсэн санал хүсэлтийг илгээнэ</translation>
 <translation id="2388828676877700238">Татварын мэргэшсэн зөвлөх, төлөвлөлт</translation>
 <translation id="239203817277685015">Сайтар боловсруулах</translation>
 <translation id="239293030466334554">Хагас задгай машин</translation>
@@ -1443,7 +1442,6 @@
 <translation id="3543935938072367282">Автоматаар бөглөж илүү хурдан тооцоо хийгээрэй</translation>
 <translation id="3547442767634383572">Ажлын профайлын тойм</translation>
 <translation id="3547746132308051926">20 x 24 инч</translation>
-<translation id="3550325450190222557">ХОУ-аар автоматаар бөглөхтэй холбоотой санал хүсэлт илгээнэ үү.</translation>
 <translation id="3552155506104542239">Сануулга: Энэ бодлого <ph name="POLICY_NAME" /> бодлоготой зөрчилдөж байгаа бөгөөд Android аппуудад нөлөөлөхгүй. Өөрөөр энэ бодлого зориулалтын дагуу ажиллаж байна.</translation>
 <translation id="3552297013052089404">Санс-сериф фонт</translation>
 <translation id="3558573058928565255">Өдөр цаг</translation>
@@ -2900,7 +2898,6 @@
 <translation id="6124432979022149706">Chrome байгууллагын холбогч</translation>
 <translation id="6126565365696310362">Хятад дугтуй #2</translation>
 <translation id="6127379762771434464">Хамгийн их зочилсон вэбсайтуудыг устгасан</translation>
-<translation id="6128214169525122635">Муу тэмдэглэгээ нь танд ХОУ-аар автоматаар бөглөх таалагдаагүй гэсэн санал хүсэлтийг илгээнэ</translation>
 <translation id="6131824478727057281">байршил</translation>
 <translation id="6133320744616005677">Үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="6133984428121856852">Файлын өргөтгөл хоосон эсвэл алдаатай байна.</translation>
@@ -4597,7 +4594,6 @@
 <translation id="9150025764986957246">Та дараах зүйлсийг оруулах боломжтой. Жишээ нь:</translation>
 <translation id="9154194610265714752">Шинэчилсэн</translation>
 <translation id="9155211586651734179">Аудионы нэмэлт хэрэгслийг залгасан</translation>
-<translation id="9155453166708525139">ХОУ-аар автоматаар бөглөх нь туршилтын онцлог бөгөөд заримдаа алдаа гаргаж болно. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Сэтгүүлүүд</translation>
 <translation id="9157595877708044936">Тохиргоог хийж байна ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> эмзэг контент агуулж байж магадгүй}other{<ph name="FILE_COUNT" /> файл эмзэг контент агуулж байж магадгүй}}</translation>

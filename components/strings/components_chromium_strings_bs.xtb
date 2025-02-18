@@ -43,9 +43,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
           i poništite odabir za "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Ako ovo ne riješi problem, preporučujemo vam da ponovo odaberete
           ovu opcija za unapređenje performansi.</translation>
-<translation id="8187289872471304532">Idite na
-          Aplikacije &gt; Postavke sistema &gt; Mreža &gt; Napredno &gt; Proksiji
-          i poništite odabir svih odabranih proksija.</translation>
 <translation id="8597726643333341451">Gledate sigurnu stranicu verzije Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium se nije ispravno zatvorio.</translation>
 </translationbundle>

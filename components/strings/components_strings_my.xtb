@@ -810,7 +810,6 @@
 <translation id="238459632961158867">ဝဘ်ဆိုက်</translation>
 <translation id="2385809941344967209">သင့် Chrome ဆက်တင်များတွင် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="2386255080630008482">ဆာဗာ၏ လက်မှတ်မှာ ရုပ်သိမ်းခံခဲ့ရသည်။</translation>
-<translation id="2386410849674401722">လက်မထောင်သည် ‘AI ဖြင့် အော်တိုဖြည့်ခြင်း’ ကို သင်နှစ်သက်ကြောင်း တုံ့ပြန်ချက်ပို့သည်</translation>
 <translation id="2388828676877700238">အခွန် ပြင်ဆင်ခြင်း၊ အစီအစဉ်ဆွဲခြင်း</translation>
 <translation id="239203817277685015">အသေးစိတ်ရှင်းပြပါ</translation>
 <translation id="239293030466334554">အမိုးဖွင့်ကားများ</translation>
@@ -1443,7 +1442,6 @@
 <translation id="3543935938072367282">အော်တိုဖြည့်ဖြင့် မြန်ဆန်စွာ ငွေရှင်းခြင်း</translation>
 <translation id="3547442767634383572">အလုပ်ပရိုဖိုင် အနှစ်ချုပ်</translation>
 <translation id="3547746132308051926">၂၀ x ၂၄ လက်မ</translation>
-<translation id="3550325450190222557">‘AI ဖြင့် အော်တိုဖြည့်ခြင်း’ အတွက် အကြံပြုချက်ပို့ရန်။</translation>
 <translation id="3552155506104542239">သတိပေးချက်- ဤမူဝါဒသည် <ph name="POLICY_NAME" /> နှင့် ကွဲလွဲနေပြီး Android အက်ပ်များပေါ်တွင် သက်ရောက်မှုရှိမည် မဟုတ်ပါ။ ထိုသို့မဟုတ်ပါက ဤမူဝါဒသည် ရည်ရွယ်ထားသည့်အတိုင်း လုပ်ဆောင်ပါသည်။</translation>
 <translation id="3552297013052089404">Sans-serif ဖောင့်</translation>
 <translation id="3558573058928565255">နေ့အချိန်</translation>
@@ -2900,7 +2898,6 @@
 <translation id="6124432979022149706">Chrome လုပ်ငန်းသုံး ချိတ်ဆက်သည့်ကိရိယာများ</translation>
 <translation id="6126565365696310362">Chinese #2 စာအိတ်</translation>
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
-<translation id="6128214169525122635">လက်မအောက်စိုက်သည် ‘AI ဖြင့် အော်တိုဖြည့်ခြင်း’ ကို သင်မနှစ်သက်ကြောင်း တုံ့ပြန်ချက်ပို့သည်</translation>
 <translation id="6131824478727057281">တည်နေရာ</translation>
 <translation id="6133320744616005677">ဆက်၍ခွင့်ပြုရန်</translation>
 <translation id="6133984428121856852">ဖိုင်နောက်ဆက်တွဲ အလွတ်ဖြစ်နေသည် (သို့) ပုံစံပျက်နေသည်။</translation>
@@ -4599,7 +4596,6 @@
 <translation id="9150025764986957246">အောက်ပါကဲ့သို့သော အရာများကို ထည့်နိုင်သည်-</translation>
 <translation id="9154194610265714752">မွမ်းမံပြီး</translation>
 <translation id="9155211586651734179">တွဲချိတ်ထားသည့် အသံဆိုင်ရာချိတ်ဆက်ပစ္စည်းများ</translation>
-<translation id="9155453166708525139">‘AI ဖြင့် အော်တိုဖြည့်ခြင်း’ သည် စမ်းသပ်ဆဲ ဝန်ဆောင်မှုဖြစ်ပြီး အမြဲတမ်းမှန်ကန်မည်မဟုတ်ပါ။ <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />။</translation>
 <translation id="9155646082713385498">မဂ္ဂဇင်း</translation>
 <translation id="9157595877708044936">စဖွင့်သတ်မှတ်နေ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> တွင် သတိထားရမည့်အကြောင်းအရာ ပါဝင်နိုင်သည်}other{ဖိုင် <ph name="FILE_COUNT" /> ဖိုင်တွင် သတိထားရမည့်အကြောင်းအရာ ပါဝင်နိုင်သည်}}</translation>

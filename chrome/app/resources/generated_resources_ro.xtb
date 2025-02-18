@@ -196,6 +196,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Afișează fotografiile și conținutul media de pe telefon</translation>
 <translation id="1129850422003387628">Gestionează aplicații</translation>
+<translation id="1130430615924359526">{0,plural, =1{Închide modul incognito}few{Închide modul incognito (# ferestre)}other{Închide modul incognito (# de ferestre)}}</translation>
 <translation id="113050636487300043">Alege un nume și o temă de culoare pentru a face diferența între profiluri</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – parte a grupului <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Nivelul bateriei din dreapta: <ph name="PERCENTAGE" /> %.</translation>
@@ -1514,6 +1515,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2042279886444479655">Profiluri active</translation>
 <translation id="2042427131767688936">Pentru a se asigura că dispozitivul poate fi folosit în siguranță, organizația ta poate să vadă informații despre sistemul de operare, browser și setări, precum și despre software-ul instalat pe dispozitiv.</translation>
 <translation id="2044014337866019681">Confirmă <ph name="ACCOUNT" /> pentru a debloca sesiunea.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Închide modul pentru invitați}few{Închide modul pentru invitați (# ferestre)}other{Închide modul pentru invitați (# de ferestre)}}</translation>
 <translation id="204497730941176055">Nume șablon de certificat Microsoft</translation>
 <translation id="2045211794962848221">Nu vei mai vedea acest mesaj</translation>
 <translation id="2045838962742066664">Introducerea textului abreviat</translation>
@@ -2286,7 +2288,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2569972178052279830">Numele comerciantului</translation>
 <translation id="257088987046510401">Teme</translation>
 <translation id="2571638829488071045">Salvezi această extensie în Contul Google?</translation>
-<translation id="2571655996835834626">Modifică setările care controlează accesul site-ului la funcții cum ar fi cookie-urile, JavaScript, pluginurile, localizarea geografică, microfonul, camera etc.</translation>
 <translation id="257175846174451436">Grup de file sugerat</translation>
 <translation id="2572032849266859634">A fost acordat accesul numai în citire la <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> file</translation>
@@ -7354,6 +7355,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6214106213498203737">Acuarele</translation>
 <translation id="621470880408090483">Nu permite site-urilor să se conecteze la dispozitive Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pentru a-ți proteja parolele, <ph name="BRAND" /> se blochează după un minut de inactivitate}few{Pentru a-ți proteja parolele, <ph name="BRAND" /> se blochează după # minute de inactivitate}other{Pentru a-ți proteja parolele, <ph name="BRAND" /> se blochează după # de minute de inactivitate}}</translation>
+<translation id="6216154119179790291">Derulează la prima filă</translation>
 <translation id="6216239400972191926">Site-uri și aplicații refuzate</translation>
 <translation id="6216601812881225442">Containerul nu acceptă redimensionarea. Pentru a ajusta spațiul alocat în avans pentru Linux, fă-i backup și restabilește-l într-un container nou.</translation>
 <translation id="6216696360484424239">Conectează-te în mod automat</translation>
@@ -7550,6 +7552,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6357305427698525450">Unele linkuri acceptate se vor deschide în continuare în <ph name="APP_NAME" /> sau <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Alți identificatori stabili (de exemplu, valori hash sau ID-uri UUID).</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="6359640073754977254">Derulează la ultima filă</translation>
 <translation id="6361850914223837199">Detaliile erorii:</translation>
 <translation id="6362853299801475928">&amp;Raportează o problemă...</translation>
 <translation id="6363786367719063276">Consultă jurnalele</translation>
@@ -7612,7 +7615,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6411135999030237579">Apasă lung pentru a repeta automat apăsarea tastei</translation>
 <translation id="6414618057231176439">Selectează versiunea de <ph name="VM_NAME" /> pe care dorești să o instalezi.</translation>
 <translation id="641469293210305670">Instalează actualizări și aplicații</translation>
-<translation id="6414878884710400018">Deschide Preferințele de sistem</translation>
 <translation id="6415757856498750027">Introdu „w” pentru a obține „ư”</translation>
 <translation id="6415816101512323589">Activezi recuperarea datelor locale pentru a-ți proteja datele?</translation>
 <translation id="6415900369006735853">Conectează-te la internet folosind telefonul</translation>
@@ -10212,6 +10214,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8258027225380843424">Importul s-a finalizat!</translation>
 <translation id="8259048637628995340">Conectează-ți telefonul Android pentru o experiență fluidă</translation>
 <translation id="8260177673299865994">Îmbunătățește protecția descărcării</translation>
+<translation id="8260473380156923937">Aplicațiile Chrome vor fi retrase în curând. Pentru alternative, contactează dezvoltatorul sau persoana de contact pentru servicii IT.</translation>
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Această extensie nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și este posibil să fi fost adăugată fără știrea dvs.</translation>
 <translation id="8261506727792406068">Șterge</translation>

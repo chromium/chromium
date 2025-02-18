@@ -40,8 +40,6 @@
           (으)로 이동하고 '<ph name="NO_PREFETCH_DESCRIPTION" />'을(를) 선택 취소합니다.
           그래도 문제가 해결되지 않으면 이 옵션을 다시 선택하여
           성능을 개선해 보시기 바랍니다.</translation>
-<translation id="8187289872471304532">애플리케이션 &gt; 시스템 환경설정 &gt; 네트워크 &gt; 고급 &gt; 프록시로 이동한 다음
-          선택된 프록시를 선택 취소합니다.</translation>
 <translation id="8597726643333341451">안전한 Chrome for Testing 페이지를 보는 중</translation>
 <translation id="8684913864886094367">Chromium이 제대로 종료되지 않았습니다.</translation>
 </translationbundle>

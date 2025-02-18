@@ -809,7 +809,6 @@
 <translation id="238459632961158867">웹사이트</translation>
 <translation id="2385809941344967209">Chrome 설정에서 Chrome을 업데이트하세요.</translation>
 <translation id="2386255080630008482">서버 인증서가 폐기되었습니다.</translation>
-<translation id="2386410849674401722">좋아요를 누르면 AI 자동 완성이 마음에 든다는 의견이 제출됩니다.</translation>
 <translation id="2388828676877700238">세금 신고 준비 및 계획</translation>
 <translation id="239203817277685015">더 상세하게 작성</translation>
 <translation id="239293030466334554">컨버터블</translation>
@@ -1442,7 +1441,6 @@
 <translation id="3543935938072367282">자동 완성으로 더 빠르게 결제하기</translation>
 <translation id="3547442767634383572">직장 프로필 개요</translation>
 <translation id="3547746132308051926">20x24인치</translation>
-<translation id="3550325450190222557">AI 자동 완성에 관한 의견을 보내세요.</translation>
 <translation id="3552155506104542239">경고: 이 정책은 <ph name="POLICY_NAME" /> 정책과 충돌하므로 Android 앱에 영향을 미치지 않습니다. 충돌하지 않는 경우 이 정책이 정상적으로 작동합니다.</translation>
 <translation id="3552297013052089404">산세리프 글꼴</translation>
 <translation id="3558573058928565255">낮</translation>
@@ -2899,7 +2897,6 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">봉투 Chinese @2</translation>
 <translation id="6127379762771434464">항목 삭제됨</translation>
-<translation id="6128214169525122635">싫어요를 누르면 AI 자동 완성이 마음에 들지 않는다는 의견이 제출됩니다.</translation>
 <translation id="6131824478727057281">위치</translation>
 <translation id="6133320744616005677">계속 허용</translation>
 <translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
@@ -4596,7 +4593,6 @@
 <translation id="9150025764986957246">다음과 같은 정보를 입력할 수 있습니다</translation>
 <translation id="9154194610265714752">업데이트됨</translation>
 <translation id="9155211586651734179">연결된 오디오 주변기기</translation>
-<translation id="9155453166708525139">AI 자동 완성은 실험용 기능이므로 정확하지 않을 수 있습니다. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">잡지</translation>
 <translation id="9157595877708044936">설정 중...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />에 민감한 콘텐츠가 포함되어 있을 수 있습니다.}other{파일 <ph name="FILE_COUNT" />개에 민감한 콘텐츠가 포함되어 있을 수 있습니다.}}</translation>

@@ -196,6 +196,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">View your phone's photos and media</translation>
 <translation id="1129850422003387628">Manage apps</translation>
+<translation id="1130430615924359526">{0,plural, =1{Close Incognito}other{Close Incognito (# windows)}}</translation>
 <translation id="113050636487300043">Choose a name and colour theme to differentiate between profiles</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Part of group <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Right battery level <ph name="PERCENTAGE" />%.</translation>
@@ -1523,6 +1524,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2042279886444479655">Active profiles</translation>
 <translation id="2042427131767688936">To make sure that this device can be used safely, your organisation may need to see information about its operating system, browser and settings, and what software is installed on the device.</translation>
 <translation id="2044014337866019681">Please make sure that you are verifying <ph name="ACCOUNT" /> to unlock the session.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Close Guest}other{Close Guest (# windows)}}</translation>
 <translation id="204497730941176055">Microsoft certificate template name</translation>
 <translation id="2045211794962848221">You won't see this specific message again</translation>
 <translation id="2045838962742066664">Shorthand typing</translation>
@@ -2298,7 +2300,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2569972178052279830">Retailer name</translation>
 <translation id="257088987046510401">Themes</translation>
 <translation id="2571638829488071045">Save this extension in your Google Account?</translation>
-<translation id="2571655996835834626">Change your settings that control websites' access to features such as cookies, JavaScript, plugins, geolocation, microphone, camera, etc.</translation>
 <translation id="257175846174451436">Tab group suggested</translation>
 <translation id="2572032849266859634">Read-only access to <ph name="VOLUME_NAME" /> has been granted.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> tabs</translation>
@@ -7369,6 +7370,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6214106213498203737">Watercolour</translation>
 <translation id="621470880408090483">Don't allow sites to connect to Bluetooth devices</translation>
 <translation id="6215039389782910006">{1,plural, =1{To keep your passwords safe, <ph name="BRAND" /> locks after 1 minute of inactivity}other{To keep your passwords safe, <ph name="BRAND" /> locks after # minutes of inactivity}}</translation>
+<translation id="6216154119179790291">Scroll to first tab</translation>
 <translation id="6216239400972191926">Declined sites and apps</translation>
 <translation id="6216601812881225442">Your container doesn't support being resized. To adjust the amount of space that is pre-allocated to Linux, back up and then restore into a new container.</translation>
 <translation id="6216696360484424239">Sign in automatically</translation>
@@ -7565,6 +7567,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6357305427698525450">Some supported links will still open in <ph name="APP_NAME" /> or <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Other Stable Identifiers (e.g., Hashes or UUIDs)</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="6359640073754977254">Scroll to last tab</translation>
 <translation id="6361850914223837199">Error details:</translation>
 <translation id="6362853299801475928">&amp;Report an issue...</translation>
 <translation id="6363786367719063276">View logs</translation>
@@ -7627,7 +7630,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6411135999030237579">Press and hold to automatically repeat the key</translation>
 <translation id="6414618057231176439">Select which version of <ph name="VM_NAME" /> to install.</translation>
 <translation id="641469293210305670">Install updates and apps</translation>
-<translation id="6414878884710400018">Open system preferences</translation>
 <translation id="6415757856498750027">Type 'w' to get 'ư'</translation>
 <translation id="6415816101512323589">Turn on local data recovery to protect your data?</translation>
 <translation id="6415900369006735853">Connect to the Internet through your phone</translation>
@@ -10225,6 +10227,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8258027225380843424">Import successful!</translation>
 <translation id="8259048637628995340">Connect your Android phone for a seamless experience</translation>
 <translation id="8260177673299865994">Improve download protection</translation>
+<translation id="8260473380156923937">Chrome Apps will soon be deprecated. For alternatives, contact the developer or your IT service contact.</translation>
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">This extension is not listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="8261506727792406068">Delete</translation>

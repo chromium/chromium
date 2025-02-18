@@ -196,6 +196,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1129348283834595293">Ciberpunk</translation>
 <translation id="1129420403709586868">Mostra les fotos i els fitxers multimèdia del telèfon</translation>
 <translation id="1129850422003387628">Gestiona aplicacions</translation>
+<translation id="1130430615924359526">{0,plural, =1{Tanca la finestra d'incògnit}other{Tanca les finestres d'incògnit (#)}}</translation>
 <translation id="113050636487300043">Tria un nom i un tema de color per diferenciar els perfils</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> (part del grup <ph name="GROUP_NAME" />)</translation>
 <translation id="1130676589211693127">Nivell de bateria de l'auricular dret: <ph name="PERCENTAGE" />%.</translation>
@@ -1514,6 +1515,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2042279886444479655">Perfils actius</translation>
 <translation id="2042427131767688936">Per assegurar-se que aquest dispositiu es pot utilitzar de manera segura, la teva organització pot veure informació sobre el sistema operatiu, el navegador i la configuració, i sobre el programari que hi ha instal·lat al dispositiu.</translation>
 <translation id="2044014337866019681">Comprova que estàs verificant <ph name="ACCOUNT" /> per desbloquejar la sessió.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Tanca la finestra de convidat}other{Tanca les finestres de convidat (#)}}</translation>
 <translation id="204497730941176055">Nom de plantilla de certificat de Microsoft</translation>
 <translation id="2045211794962848221">No tornaràs a veure aquest missatge concret</translation>
 <translation id="2045838962742066664">Escriptura abreviada</translation>
@@ -2286,7 +2288,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2569972178052279830">Nom del comerç al detall</translation>
 <translation id="257088987046510401">Temes</translation>
 <translation id="2571638829488071045">Vols desar aquesta extensió al teu Compte de Google?</translation>
-<translation id="2571655996835834626">Modifica la configuració que controla l'accés dels llocs web a elements com les galetes, JavaScript, els connectors, la geolocalització, el micròfon, la càmera, etc.</translation>
 <translation id="257175846174451436">Grup de pestanyes suggerit</translation>
 <translation id="2572032849266859634">S'ha concedit accés només de lectura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> pestanyes</translation>
@@ -7352,6 +7353,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6214106213498203737">Aquarel·la</translation>
 <translation id="621470880408090483">No permetis que els llocs web es connectin a dispositius Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Per protegir les teves contrasenyes, <ph name="BRAND" /> es bloqueja després d'1 minut d'inactivitat}other{Per protegir les teves contrasenyes, <ph name="BRAND" /> es bloqueja després de # minuts d'inactivitat}}</translation>
+<translation id="6216154119179790291">Desplaça't fins a la primera pestanya</translation>
 <translation id="6216239400972191926">Aplicacions i llocs web rebutjats</translation>
 <translation id="6216601812881225442">El teu contenidor no admet el canvi de mida. Per ajustar la quantitat d'espai que s'assigna prèviament a Linux, crea una còpia de seguretat i, a continuació, fes la restauració en un contenidor nou.</translation>
 <translation id="6216696360484424239">Inicia la sessió automàticament</translation>
@@ -7548,6 +7550,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6357305427698525450">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" /> o <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Altres identificadors estables (p. ex., funcions resum o UUID)</translation>
 <translation id="6358884629796491903">Drac</translation>
+<translation id="6359640073754977254">Desplaça't fins a la darrera pestanya</translation>
 <translation id="6361850914223837199">Detalls de l'error:</translation>
 <translation id="6362853299801475928">&amp;Informa d'un problema...</translation>
 <translation id="6363786367719063276">Mostra els registres</translation>
@@ -7610,7 +7613,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6411135999030237579">Mantén premuda la tecla perquè es repeteixi automàticament</translation>
 <translation id="6414618057231176439">Selecciona quina versió de <ph name="VM_NAME" /> vols instal·lar.</translation>
 <translation id="641469293210305670">Instal·la actualitzacions i aplicacions</translation>
-<translation id="6414878884710400018">Obre les preferències del sistema</translation>
 <translation id="6415757856498750027">Escriu "w" per obtenir "ư"</translation>
 <translation id="6415816101512323589">Vols activar la recuperació de dades locals per protegir les teves dades?</translation>
 <translation id="6415900369006735853">Connecta't a Internet a través del telèfon</translation>
@@ -10209,6 +10211,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8258027225380843424">La importació s'ha completat correctament</translation>
 <translation id="8259048637628995340">Connecta el telèfon Android per gaudir d'una experiència perfecta</translation>
 <translation id="8260177673299865994">Millora la protecció de les baixades</translation>
+<translation id="8260473380156923937">Les aplicacions de Chrome aviat es discontinuaran. Per veure alternatives, contacta amb el desenvolupador o amb el teu contacte del servei de TI.</translation>
 <translation id="8260864402787962391">Ratolí</translation>
 <translation id="8261378640211443080">Aquesta extensió no apareix a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i és possible que s'hagi afegit sense que ho sapigueu.</translation>
 <translation id="8261506727792406068">Suprimeix</translation>

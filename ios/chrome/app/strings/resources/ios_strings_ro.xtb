@@ -15,6 +15,7 @@
 <translation id="1041322626941363065">Avertizează-mă dacă parolele au fost expuse în urma încălcării securității datelor</translation>
 <translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
 <translation id="104491362976654916">Pagină offline</translation>
+<translation id="1049200476149974839">vrea să te alături unui grup de file. Oricine are linkul poate edita toate filele, așadar ai grijă la conectare. Linkul expiră în 48 de ore.</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Te-ai deconectat. Conectează-te din nou pentru a folosi marcajele, parolele și altele în contul tău.</translation>
 <translation id="1054745118061919935">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK" />Termenii și condițiile<ph name="END_LINK" />.</translation>
@@ -89,6 +90,7 @@
 <translation id="1358106883354237005">Cont gestionat</translation>
 <translation id="1358214951266274152">Accesează linkul pe care l-ai copiat</translation>
 <translation id="1360432990279830238">Te deconectezi și dezactivezi sincronizarea?</translation>
+<translation id="1362192716574455663">Datele de navigare existente nu vor fi mutate în contul de serviciu. Le poți accesa în continuare dacă te deconectezi sau adaugi un cont personal.</translation>
 <translation id="1363028406613469049">Melodia</translation>
 <translation id="1364367057792633742">Filă nouă</translation>
 <translation id="1365106417372288489">Dispozitivul iPhone a fost restabilit recent, acțiune care ar fi putut schimba browserul prestabilit.</translation>
@@ -193,6 +195,7 @@
 <translation id="1780152987505130652">Închide grupul</translation>
 <translation id="178400879184240105">Parolele sunt unice</translation>
 <translation id="17906873777101817">Oferă salvarea parolelor și a cheilor de acces</translation>
+<translation id="1794893174442046596">Grup de file</translation>
 <translation id="1807893857950749072">Permite notificările de urmărire a prețurilor…</translation>
 <translation id="1810976980198522421">Anulează</translation>
 <translation id="1815941218935345331">Parolă</translation>
@@ -655,6 +658,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3904270275864974753">Editează caruselul</translation>
 <translation id="3909222758573607742">Salvează parolele și alte elemente în cont</translation>
+<translation id="3913463964270756493">Ascunde ecranul de căutare cu Google Lens</translation>
 <translation id="3914640181019354363">Detectează adresele</translation>
 <translation id="3922185497376658606">Preîncarcă paginile web</translation>
 <translation id="3922395466317605522">Personalizează meniul</translation>

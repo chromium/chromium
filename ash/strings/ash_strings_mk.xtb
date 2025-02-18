@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">Отфрлете го поставувањето прегледување на апликациите на телефонот</translation>
 <translation id="1610778689852195798">„Врати“</translation>
 <translation id="1611993646327628135">Вклучено</translation>
+<translation id="1612679292338846734">Кога ќе ги вклучите функцииве, внесениот текст, содржините на документот и URL-адресата на веб-страницата може да се испраќаат до серверите на Google AI. Податоциве се користат за да се генерираат предлози за пишување, да се генерираат резимеа, да се одговараат прашања и да се подобрува производот, што подлежи на <ph name="LINK_TO_SERVICE_TERMS" />. Не внесувајте лични, чувствителни или доверливи податоци.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623768535032616219">Собери го Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> не е достапна.</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">Додај врска</translation>
 <translation id="2947835478872237115">Тековно ниво на батеријата: <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> до целосно полнење</translation>
 <translation id="2949420361496057765">Притиснете <ph name="MODIFIER" /> и кликнете на линк</translation>
+<translation id="2957159466053076448">Функцииве може да ги исклучите во „Поставки“ кога сакате. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Аудио од уредот</translation>
 <translation id="2960314608273155470">Режим на снимање. Стандардната поставка е „<ph name="TYPE" />“ (<ph name="SOURCE" />). Притиснете Tab за навигација со тастатура.</translation>
 <translation id="2961963223658824723">Нешто тргна наопаку. Обидете се повторно за неколку секунди.</translation>
@@ -1906,6 +1908,7 @@
 <translation id="735745346212279324">VPN е исклучен</translation>
 <translation id="7360036564632145207">Ако ја промените поставката за заштита на пристапот до податоци за перфиферните уреди, перформансите може да се оптимизираат</translation>
 <translation id="736045644501761622">Поставете тапет и стил</translation>
+<translation id="7368041336688136012">Мора да имате најмалку 18 години за да ги користите „Помош при читање“ и „Помош при пишување“, како и да создавате слики со AI.</translation>
 <translation id="7371404428569700291">Снимање прозорец</translation>
 <translation id="7372069265635026568">Достапна меморија: <ph name="AVAILABLE_MEMORY" /> од вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Ова дозволува пристап до микрофонот за сите апликации и веб-сајтови со дозвола за микрофонот</translation>
@@ -2031,6 +2034,7 @@
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Прикажи ги сите</translation>
+<translation id="7762664108390426952">„Условите за користење“ и „Политиката за приватност“ на Google</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7769299611924763557">Вашата GIF-датотека ќе биде подготвена наскоро</translation>
 <translation id="7773536009433685931">Наместо тоа, вклучете Wi-Fi</translation>

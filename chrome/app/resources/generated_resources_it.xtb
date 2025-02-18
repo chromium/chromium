@@ -196,6 +196,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Visualizza foto e contenuti multimediali del tuo telefono</translation>
 <translation id="1129850422003387628">Gestire app</translation>
+<translation id="1130430615924359526">{0,plural, =1{Chiudi finestre di navigazione in incognito}other{Chiudi finestre di navigazione in incognito (# finestre)}}</translation>
 <translation id="113050636487300043">Scegli un nome e un tema a colori per riconoscere i profili</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Parte del gruppo <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Livello della batteria dell'auricolare destro a <ph name="PERCENTAGE" />%.</translation>
@@ -1513,6 +1514,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2042279886444479655">Profili attivi</translation>
 <translation id="2042427131767688936">Per garantire che questo dispositivo possa essere usato in sicurezza, la tua organizzazione può accedere alle informazioni relative al sistema operativo, al browser, alle impostazioni e al software installato sul dispositivo.</translation>
 <translation id="2044014337866019681">Per sbloccare la sessione devi assicurarti di verificare l'account <ph name="ACCOUNT" />.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Chiudi Ospite}other{Chiudi Ospite (# finestre)}}</translation>
 <translation id="204497730941176055">Nome modello di certificato Microsoft</translation>
 <translation id="2045211794962848221">Non vedrai più questo messaggio specifico</translation>
 <translation id="2045838962742066664">Digitazione in forma breve</translation>
@@ -2285,7 +2287,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2569972178052279830">Nome del rivenditore</translation>
 <translation id="257088987046510401">Temi</translation>
 <translation id="2571638829488071045">Salvare questa estensione nel tuo Account Google?</translation>
-<translation id="2571655996835834626">Modifica delle impostazioni che controllano l'accesso dei siti web a funzioni quali cookie, JavaScript, plug-in, geolocalizzazione, microfono, videocamera e così via.</translation>
 <translation id="257175846174451436">Gruppo di schede suggerito</translation>
 <translation id="2572032849266859634">È stato concesso l'accesso in sola lettura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> schede</translation>
@@ -7352,6 +7353,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6214106213498203737">Acquerello</translation>
 <translation id="621470880408090483">Non consentire ai siti di connettersi ai dispositivi Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Per proteggere le tue password, <ph name="BRAND" /> si blocca dopo 1 minuto di inattività}other{Per proteggere le tue password, <ph name="BRAND" /> si blocca dopo # minuti di inattività}}</translation>
+<translation id="6216154119179790291">Scorri fino alla prima scheda</translation>
 <translation id="6216239400972191926">App e siti rifiutati</translation>
 <translation id="6216601812881225442">Il tuo contenitore non supporta il ridimensionamento. Per modificare la quantità di spazio preassegnata a Linux, effettua il backup e il ripristino in un nuovo contenitore.</translation>
 <translation id="6216696360484424239">Accedi automaticamente</translation>
@@ -7548,6 +7550,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6357305427698525450">Alcuni link supportati saranno comunque aperti nelle app <ph name="APP_NAME" /> o  <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Altri identificatori stabili (ad es. hash o UUID)</translation>
 <translation id="6358884629796491903">Drago</translation>
+<translation id="6359640073754977254">Scorri fino all'ultima scheda</translation>
 <translation id="6361850914223837199">Dettagli errore:</translation>
 <translation id="6362853299801475928">Segnala un p&amp;roblema...</translation>
 <translation id="6363786367719063276">Visualizza log</translation>
@@ -7610,7 +7613,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6411135999030237579">Tieni premuto per ripetere automaticamente il tasto</translation>
 <translation id="6414618057231176439">Seleziona la versione di <ph name="VM_NAME" /> da installare.</translation>
 <translation id="641469293210305670">Installa aggiornamenti e app</translation>
-<translation id="6414878884710400018">Apri le Preferenze di sistema</translation>
 <translation id="6415757856498750027">Digita "w" per ottenere "ư"</translation>
 <translation id="6415816101512323589">Vuoi attivare il recupero dei dati locali per proteggere i tuoi dati?</translation>
 <translation id="6415900369006735853">Connettiti a Internet tramite il telefono</translation>
@@ -10208,6 +10210,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8258027225380843424">Importazione riuscita.</translation>
 <translation id="8259048637628995340">Connetti il tuo smartphone Android per un'esperienza ottimale</translation>
 <translation id="8260177673299865994">Migliora la protezione dei download</translation>
+<translation id="8260473380156923937">Le app di Chrome verranno presto ritirate. Per alternative, contatta lo sviluppatore o il referente del servizio IT.</translation>
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Questa estensione non è elencata nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbe essere stata aggiunta a tua insaputa.</translation>
 <translation id="8261506727792406068">Elimina</translation>
