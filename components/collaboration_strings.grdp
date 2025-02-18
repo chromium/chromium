@@ -56,6 +56,15 @@
   <message name="IDS_COLLABORATION_SIGNED_OUT_POSITIVE_BUTTON" desc="The positive button text for the signed out dialog." formatter_data="android_java">
     Settings
   </message>
+  <message name ="IDS_COLLABORATION_GROUP_IS_FULL_DESCRIPTION" desc="The description when group is full, and toggle button for link sharing is disabled." formatter_data="android_java">
+    Your tab group is full, new members can't join with the link
+  </message>
+  <message name ="IDS_COLLABORATION_GROUP_IS_FULL_ERROR_DIALOG_HEADER" desc="The header of the error dialog group is full." formatter_data="android_java">
+    This tab group is full
+  </message>
+  <message name ="IDS_COLLABORATION_GROUP_IS_FULL_ERROR_DIALOG_BODY" desc="The body of the error dialog group is full." formatter_data="android_java">
+    Contact the person who sent this link
+  </message>
   <!-- Error Messages -->
   <!-- /Collaboration -->
 
