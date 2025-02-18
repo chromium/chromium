@@ -129,6 +129,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     std::optional<LargeBlob> large_blob;
     std::optional<std::array<uint8_t, 32>> large_blob_key;
     std::optional<std::vector<uint8_t>> cred_blob;
+
+    // The custom provider name for this credential.
+    std::optional<std::string> provider_name;
   };
 
   using Credential = std::pair<base::span<const uint8_t>, RegistrationData*>;
