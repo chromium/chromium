@@ -230,7 +230,7 @@ std::vector<uint8_t> ThumbnailImage::CompressBitmap(
     data = gfx::JPEGCodec::Encode(bitmap, kCompressionQuality);
   }
 
-  return data.value();
+  return data.value_or(std::vector<uint8_t>());
 }
 
 // static
