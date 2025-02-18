@@ -60,8 +60,8 @@ class GlicMetrics {
   // Called when `impression_timer_` fires.
   void OnImpressionTimerFired();
 
-  // Returns the source id for the targeted tab, or the untargeted source id.
-  ukm::SourceId GetSourceId();
+  // Stores the source id at the time that context is requested.
+  void StoreSourceId();
 
   // Called when enabled changes.
   void OnEnabledChanged();
@@ -82,6 +82,9 @@ class GlicMetrics {
   base::RepeatingTimer impression_timer_;
 
   // A context-free source id used when no web contents is targeted.
+  ukm::SourceId no_url_source_id_;
+  // The source id at the time context is requested. If context was not
+  // requested then this is `no_url_source_id_`.
   ukm::SourceId source_id_;
 
   // The owner of this class is responsible for maintaining appropriate lifetime

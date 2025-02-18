@@ -179,6 +179,7 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
   tab_manager_->SetWebContents(web_contents.get());
 
   controller_->showing_ = true;
+  metrics_->DidRequestContextFromFocusedTab();
   metrics_->OnGlicWindowOpen(/*attached=*/false, InvocationSource::kFre);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();

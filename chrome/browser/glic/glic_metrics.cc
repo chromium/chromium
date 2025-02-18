@@ -132,7 +132,8 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
       FROM_HERE, base::Minutes(15),
       base::BindRepeating(&GlicMetrics::OnImpressionTimerFired,
                           base::Unretained(this)));
-  source_id_ = ukm::NoURLSourceId();
+  no_url_source_id_ = ukm::NoURLSourceId();
+  source_id_ = no_url_source_id_;
 
   is_enabled_ = enabling_->IsEnabled();
   subscriptions_.push_back(enabling_->RegisterEnableChanged(base::BindRepeating(
@@ -199,8 +200,7 @@ void GlicMetrics::OnResponseStarted() {
       "Glic.Response.Segmentation",
       GetResponseSegmentation(attached, input_mode_, invocation_source_));
 
-  ukm::SourceId source_id = GetSourceId();
-  ukm::builders::Glic_Response(source_id)
+  ukm::builders::Glic_Response(source_id_)
       .SetAttached(attached)
       .SetInvocationSource(static_cast<int64_t>(invocation_source_))
       .SetWebClientMode(static_cast<int64_t>(input_mode_))
@@ -222,6 +222,7 @@ void GlicMetrics::OnResponseStopped() {
   // Reset all times.
   input_submitted_time_ = base::TimeTicks();
   did_request_context_ = false;
+  source_id_ = no_url_source_id_;
 }
 
 void GlicMetrics::OnSessionTerminated() {
@@ -239,8 +240,7 @@ void GlicMetrics::OnGlicWindowOpen(bool attached, InvocationSource source) {
   base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
   base::UmaHistogramEnumeration("Glic.Session.Open.InvocationSource", source);
 
-  ukm::SourceId source_id = GetSourceId();
-  ukm::builders::Glic_WindowOpen(source_id)
+  ukm::builders::Glic_WindowOpen(source_id_)
       .SetAttached(attached)
       .SetInvocationSource(static_cast<int64_t>(source))
       .Record(ukm::UkmRecorder::Get());
@@ -271,6 +271,14 @@ void GlicMetrics::SetControllers(GlicWindowController* window_controller,
 
 void GlicMetrics::DidRequestContextFromFocusedTab() {
   did_request_context_ = true;
+
+  content::WebContents* web_contents =
+      tab_manager_->GetFocusedTabData().focused_tab_contents.get();
+  if (web_contents) {
+    source_id_ = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  } else {
+    source_id_ = no_url_source_id_;
+  }
 }
 
 void GlicMetrics::OnImpressionTimerFired() {
@@ -288,15 +296,6 @@ void GlicMetrics::OnImpressionTimerFired() {
     impression = EntryPointImpression::kBeforeFre;
   }
   base::UmaHistogramEnumeration("Glic.EntryPoint.Impression", impression);
-}
-
-ukm::SourceId GlicMetrics::GetSourceId() {
-  content::WebContents* web_contents =
-      tab_manager_->GetFocusedTabData().focused_tab_contents.get();
-  if (web_contents) {
-    return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  }
-  return source_id_;
 }
 
 void GlicMetrics::OnEnabledChanged() {
