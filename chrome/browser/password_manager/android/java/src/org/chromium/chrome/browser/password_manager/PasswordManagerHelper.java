@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
@@ -755,26 +756,37 @@ public class PasswordManagerHelper {
     // TODO(crbug.com/40841269): Exceptions should be thrown by factory, remove this method.
     private PasswordCheckupClientHelper getPasswordCheckupClientHelper()
             throws PasswordCheckBackendException {
-        if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
-            throw new PasswordCheckBackendException(
-                    "Backend downstream implementation is not available.",
-                    CredentialManagerError.BACKEND_NOT_AVAILABLE);
-        }
-        // This checks against GMSCore version required for using the account store (technically it
-        // also checks if the internal backend is present, but the check above guarantees that if
-        // this is executed then it is).
-        if (!PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
-            throw new PasswordCheckBackendException(
-                    "Backend version is not supported.",
-                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
-        }
-        // This checks against the account store GMSCore version if the user is syncing and against
-        // the local version if the user is not syncing.
-        if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                UserPrefs.get(mProfile), SyncServiceFactory.getForProfile(mProfile))) {
-            throw new PasswordCheckBackendException(
-                    "Backend version is not supported.",
-                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            // After login DB deprecation, callers shouldn't need to distinguish between the
+            // errors anymore, since there will be no more partial support, so
+            // PASSWORD_MANGER_NOT_AVAILABLE will replace and include all the errors.
+            if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+                throw new PasswordCheckBackendException(
+                        "Password manager is not available",
+                        CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE);
+            }
+        } else {
+            if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
+                throw new PasswordCheckBackendException(
+                        "Backend downstream implementation is not available.",
+                        CredentialManagerError.BACKEND_NOT_AVAILABLE);
+            }
+            // This checks against GMSCore version required for using the account store (technically
+            // it also checks if the internal backend is present, but the check above guarantees
+            // that if this is executed then it is).
+            if (!PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
+                throw new PasswordCheckBackendException(
+                        "Backend version is not supported.",
+                        CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+            }
+            // This checks against the account store GMSCore version if the user is syncing and
+            // against the local version if the user is not syncing.
+            if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                    UserPrefs.get(mProfile), SyncServiceFactory.getForProfile(mProfile))) {
+                throw new PasswordCheckBackendException(
+                        "Backend version is not supported.",
+                        CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+            }
         }
 
         PasswordCheckupClientHelper helper =
