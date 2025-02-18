@@ -20,6 +20,8 @@ source_set("change_profile") {
     "change_profile_reading_list_continuation.mm",
     "change_profile_recent_tabs_continuation.h",
     "change_profile_recent_tabs_continuation.mm",
+    "change_profile_search_passwords_continuation.h",
+    "change_profile_search_passwords_continuation.mm",
     "change_profile_send_tab.h",
     "change_profile_send_tab.mm",
     "change_profile_settings_continuation.h",
