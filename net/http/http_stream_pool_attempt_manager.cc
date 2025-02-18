@@ -390,8 +390,6 @@ void HttpStreamPool::AttemptManager::StartJob(
     const NetLogWithSource& request_net_log) {
   CHECK(!is_failing_);
 
-  quic::ParsedQuicVersion quic_version = job->quic_version();
-  MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB, [&] {
         base::Value::Dict dict;
@@ -405,7 +403,8 @@ void HttpStreamPool::AttemptManager::StartJob(
         dict.Set("enable_ip_based_pooling", job->enable_ip_based_pooling());
         dict.Set("enable_alternative_services",
                  job->enable_alternative_services());
-        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+        dict.Set("quic_version",
+                 quic::ParsedQuicVersionToString(job->quic_version()));
         dict.Set("create_to_resume_ms",
                  static_cast<int>(job->CreateToResumeTime().InMilliseconds()));
         job->net_log().source().AddToEventParameters(dict);
@@ -457,7 +456,7 @@ void HttpStreamPool::AttemptManager::StartJob(
   }
 
   allowed_bad_certs_ = job->allowed_bad_certs();
-  quic_version_ = quic_version;
+  quic_version_ = job->quic_version();
 
   StartInternal(job->priority());
 
@@ -473,13 +472,12 @@ void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
     return;
   }
 
-  quic::ParsedQuicVersion quic_version = job->quic_version();
-  MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT, [&] {
         base::Value::Dict dict;
         dict.Set("num_streams", static_cast<int>(job->num_streams()));
-        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+        dict.Set("quic_version",
+                 quic::ParsedQuicVersionToString(job->quic_version()));
         job->delegate_net_log().source().AddToEventParameters(dict);
         return dict;
       });
@@ -493,7 +491,7 @@ void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
   DCHECK(!HasAvailableSpdySession());
 
   preconnect_jobs_.emplace(job);
-  quic_version_ = quic_version;
+  quic_version_ = job->quic_version();
 
   StartInternal(job->priority());
 }
@@ -2139,17 +2137,6 @@ void HttpStreamPool::AttemptManager::OnStreamAttemptDelayPassed() {
   CHECK(should_block_stream_attempt_);
   should_block_stream_attempt_ = false;
   MaybeAttemptConnection();
-}
-
-// TODO(crbug.com/396998469): Move this QUIC version update to Job.
-void HttpStreamPool::AttemptManager::MaybeUpdateQuicVersionWhenForced(
-    quic::ParsedQuicVersion& quic_version) {
-  if (!quic_version.IsKnown() && group_->force_quic()) {
-    quic_version = http_network_session()
-                       ->context()
-                       .quic_context->params()
-                       ->supported_versions[0];
-  }
 }
 
 bool HttpStreamPool::AttemptManager::CanUseTcpBasedProtocols() {

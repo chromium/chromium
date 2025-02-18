@@ -47,6 +47,19 @@ NextProtoSet CalculateAllowedAlpns(NextProto expected_protocol,
   return allowed_alpns;
 }
 
+// If the destination is forced to use QUIC and the QUIC version is unknown,
+// try the preferred QUIC version that is supported by default.
+quic::ParsedQuicVersion CalculateQuicVersion(
+    quic::ParsedQuicVersion original_quic_version,
+    HttpStreamPool::Group* group) {
+  return !original_quic_version.IsKnown() && group->force_quic()
+             ? group->http_network_session()
+                   ->context()
+                   .quic_context->params()
+                   ->supported_versions[0]
+             : original_quic_version;
+}
+
 }  // namespace
 
 HttpStreamPool::Job::Job(Delegate* delegate,
@@ -57,7 +70,7 @@ HttpStreamPool::Job::Job(Delegate* delegate,
                          size_t num_streams)
     : delegate_(delegate),
       group_(group),
-      quic_version_(quic_version),
+      quic_version_(CalculateQuicVersion(quic_version, group_)),
       allowed_alpns_(CalculateAllowedAlpns(expected_protocol,
                                            delegate_->is_http1_allowed())),
       request_net_log_(request_net_log),

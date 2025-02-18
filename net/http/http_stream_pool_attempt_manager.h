@@ -476,10 +476,6 @@ class HttpStreamPool::AttemptManager
   // Called when `stream_attempt_delay_timer_` is fired.
   void OnStreamAttemptDelayPassed();
 
-  // If the destination is forced to use QUIC and the QUIC version is unknown,
-  // try the preferred QUIC version that is supported by default.
-  void MaybeUpdateQuicVersionWhenForced(quic::ParsedQuicVersion& quic_version);
-
   bool CanUseTcpBasedProtocols();
 
   bool CanUseQuic();
