@@ -171,7 +171,6 @@ public class PdfCoordinator {
      */
     void destroy() {
         if (mChromePdfViewerFragment == null) {
-            PdfUtils.recordHasFilepathWithoutFragmentOnDestroy(mPdfFilePath != null);
             Log.w(TAG, "Fragment is null when pdf page is destroyed.");
             return;
         }

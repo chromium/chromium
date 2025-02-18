@@ -367,11 +367,6 @@ public class PdfUtils {
                 "Android.Pdf.AssistContent.IsWorkProfile", isWorkProfile);
     }
 
-    static void recordHasFilepathWithoutFragmentOnDestroy(boolean hasFilepath) {
-        RecordHistogram.recordBooleanHistogram(
-                "Android.Pdf.HasFilepathWithoutFragmentOnDestroy", hasFilepath);
-    }
-
     private static void recordIsPdfDownloadUrlEncoded(boolean encodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlEncoded", encodeResult);
     }
