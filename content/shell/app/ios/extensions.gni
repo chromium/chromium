@@ -47,14 +47,16 @@ template("browserkit_extension") {
     output_name = target_name
     transparent = true
 
-    configs += [ "//build/config/ios:ios_extension_executable_flags" ]
-
     deps = [
       "//content/app/ios/appex:${_process_target}",
       "//content/shell:content_shell_framework+link",
     ]
 
-    ldflags = [
+    if (!defined(ldflags)) {
+      ldflags = []
+    }
+
+    ldflags += [
       "-Wl,--ignore-auto-link-option=CoreAudioTypes",
       "-Wl,-no_application_extension",
       "-Wl,-rpath,@executable_path/../../Frameworks",
@@ -64,4 +66,8 @@ template("browserkit_extension") {
     entitlements_target = ":${_process_target}_entitlements"
     info_plist_target = ":tweak_${_process_target}_plist"
   }
+}
+
+set_defaults("browserkit_extension") {
+  configs = [ "//build/config/ios:ios_extension_executable_flags" ]
 }
