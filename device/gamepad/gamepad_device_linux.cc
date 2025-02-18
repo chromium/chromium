@@ -387,8 +387,8 @@ void GamepadDeviceLinux::InitializeEvdevSpecialKeys() {
         continue;
 
       // Advance to the next unused button index.
-      while (button_indices_used_[button_index] &&
-             button_index < Gamepad::kButtonsLengthCap) {
+      while (button_index < Gamepad::kButtonsLengthCap &&
+             button_indices_used_[button_index]) {
         ++button_index;
       }
       if (button_index >= Gamepad::kButtonsLengthCap)
