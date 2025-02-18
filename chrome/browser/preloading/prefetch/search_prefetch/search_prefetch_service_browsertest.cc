@@ -3736,7 +3736,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
-                       NavigationPrefetchDoesntReplaceComplete) {
+                       NavigationPrefetchIsServedForOmniboxOpenSelection) {
   SetDSEWithURL(
       GetSearchServerQueryURL(
           "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
@@ -3788,10 +3788,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 
   omnibox->model()->OpenSelection();
 
-  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
-      canonical_search_url);
-  ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+  // Wait until it is served to the navigation.
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
@@ -3835,15 +3833,11 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 
   omnibox->model()->OpenSelection();
 
-  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
-      canonical_search_url);
-  EXPECT_FALSE(prefetch_status.has_value());
+  // Suggestion server does not suggest the user agent to prefetch the resource,
+  // so there should be no prefetch attempt.
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
   content::WaitForLoadStop(GetWebContents());
-
-  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
-      canonical_search_url);
-  EXPECT_FALSE(prefetch_status.has_value());
 
   auto inner_html = GetDocumentInnerHTML();
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
