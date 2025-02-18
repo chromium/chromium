@@ -734,6 +734,10 @@ def _set_builder_config_property(ctx):
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
+
+            mirror_description = _get_builder_mirror_description(bucket_name, builder, bc_state)
+            builder.description_html = _get_builder_owner_description(mirror_description, builder.contact_team_email)
+
             node = _BUILDER_CONFIG.get(bucket_name, builder_name)
             if not node:
                 continue
@@ -849,9 +853,6 @@ def _set_builder_config_property(ctx):
                 builder_config = builder_config,
             )
             builder.properties = json.encode(builder_properties)
-
-            mirror_description = _get_builder_mirror_description(bucket_name, builder, bc_state)
-            builder.description_html = _get_builder_owner_description(mirror_description, builder.contact_team_email)
 
             # Enforce that most gardened CI bots have a matching trybot.
             rotations = get_gardener_rotations(bucket_name, builder.name)
