@@ -23045,6 +23045,26 @@
             ]
         }
     ],
+    "StopExportDFCMetricsExperiment": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StopExportDFCMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "StorageBuckets": [
         {
             "platforms": [
