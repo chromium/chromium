@@ -5,20 +5,22 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_H_
 
+#include <memory>
+#include <vector>
+
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/commands/command_service.h"
-#include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/permissions_manager.h"
+#include "extensions/common/command.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -27,15 +29,11 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                     public CommandService::Observer,
                                     public ExtensionAllowlist::Observer,
                                     public ExtensionManagement::Observer,
-                                    public PermissionsManager::Observer,
                                     public ToolbarActionsModel::Observer,
                                     public AccountExtensionTracker::Observer {
  public:
   static std::unique_ptr<api::developer_private::ProfileInfo> CreateProfileInfo(
       Profile* profile);
-
-  static api::developer_private::UserSiteSettings ConvertToUserSiteSettings(
-      const PermissionsManager::UserPermissionsSettings& settings);
 
   explicit DeveloperPrivateEventRouter(Profile* profile);
 
@@ -63,13 +61,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   // ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
 
-  // PermissionsManager::Observer:
-  void OnUserPermissionsSettingsChanged(
-      const PermissionsManager::UserPermissionsSettings& settings) override;
-  void OnExtensionPermissionsUpdated(
-      const Extension& extension,
-      const PermissionSet& permissions,
-      PermissionsManager::UpdateReason reason) override;
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override {}
@@ -104,8 +95,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
       command_service_observation_{this};
   base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
       extension_allowlist_observer_{this};
-  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
-      permissions_manager_observation_{this};
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_actions_model_observation_{this};
   base::ScopedObservation<AccountExtensionTracker,

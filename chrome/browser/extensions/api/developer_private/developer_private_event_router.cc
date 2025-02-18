@@ -45,24 +45,6 @@ DeveloperPrivateEventRouter::CreateProfileInfo(Profile* profile) {
   return info;
 }
 
-// static
-developer::UserSiteSettings
-DeveloperPrivateEventRouter::ConvertToUserSiteSettings(
-    const PermissionsManager::UserPermissionsSettings& settings) {
-  api::developer_private::UserSiteSettings user_site_settings;
-  user_site_settings.permitted_sites.reserve(settings.permitted_sites.size());
-  for (const auto& origin : settings.permitted_sites) {
-    user_site_settings.permitted_sites.push_back(origin.Serialize());
-  }
-
-  user_site_settings.restricted_sites.reserve(settings.restricted_sites.size());
-  for (const auto& origin : settings.restricted_sites) {
-    user_site_settings.restricted_sites.push_back(origin.Serialize());
-  }
-
-  return user_site_settings;
-}
-
 DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : DeveloperPrivateEventRouterShared(profile) {
   app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
@@ -71,7 +53,6 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
   command_service_observation_.Observe(CommandService::Get(profile));
   extension_allowlist_observer_.Observe(
       ExtensionSystem::Get(profile)->extension_service()->allowlist());
-  permissions_manager_observation_.Observe(PermissionsManager::Get(profile));
   toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
 
   if (sync_util::IsExtensionsExplicitSigninEnabled()) {
@@ -139,28 +120,6 @@ void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
       events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
       developer::OnProfileStateChanged::kEventName, std::move(args));
   event_router_->BroadcastEvent(std::move(event));
-}
-
-
-void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
-    const PermissionsManager::UserPermissionsSettings& settings) {
-  developer::UserSiteSettings user_site_settings =
-      ConvertToUserSiteSettings(settings);
-  base::Value::List args;
-  args.Append(user_site_settings.ToValue());
-
-  auto event = std::make_unique<Event>(
-      events::DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED,
-      developer::OnUserSiteSettingsChanged::kEventName, std::move(args));
-  event_router_->BroadcastEvent(std::move(event));
-}
-
-void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
-    const Extension& extension,
-    const PermissionSet& permissions,
-    PermissionsManager::UpdateReason reason) {
-  BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
-                            extension.id());
 }
 
 void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {

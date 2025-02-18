@@ -30,8 +30,12 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
                                           public ErrorConsole::Observer,
                                           public ProcessManagerObserver,
                                           public ExtensionPrefsObserver,
-                                          public WarningService::Observer {
+                                          public WarningService::Observer,
+                                          public PermissionsManager::Observer {
  public:
+  static api::developer_private::UserSiteSettings ConvertToUserSiteSettings(
+      const PermissionsManager::UserPermissionsSettings& settings);
+
   explicit DeveloperPrivateEventRouterShared(Profile* profile);
 
   DeveloperPrivateEventRouterShared(const DeveloperPrivateEventRouterShared&) =
@@ -97,6 +101,14 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
   void ExtensionWarningsChanged(
       const ExtensionIdSet& affected_extensions) override;
 
+  // PermissionsManager::Observer:
+  void OnUserPermissionsSettingsChanged(
+      const PermissionsManager::UserPermissionsSettings& settings) override;
+  void OnExtensionPermissionsUpdated(
+      const Extension& extension,
+      const PermissionSet& permissions,
+      PermissionsManager::UpdateReason reason) override;
+
   // Broadcasts an event to all listeners.
   virtual void BroadcastItemStateChanged(
       api::developer_private::EventType event_type,
@@ -112,6 +124,8 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       extension_prefs_observation_{this};
   base::ScopedObservation<WarningService, WarningService::Observer>
       warning_service_observation_{this};
+  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently
