@@ -154,9 +154,9 @@ TEST_F(JoinSessionTest, JoinSessionWithAndSucceed) {
       future;
 
   std::unique_ptr<JoinSessionRequest> request =
-      std::make_unique<JoinSessionRequest>(request_sender(), std::move(student),
-                                           "deviceId", "code",
-                                           future.GetCallback());
+      std::make_unique<JoinSessionRequest>(request_sender(), "https://test",
+                                           std::move(student), "deviceId",
+                                           "code", future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
 
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -192,9 +192,9 @@ TEST_F(JoinSessionTest, JoinSessionAndFail) {
       future;
 
   std::unique_ptr<JoinSessionRequest> request =
-      std::make_unique<JoinSessionRequest>(request_sender(), std::move(student),
-                                           "deviceId", "code",
-                                           future.GetCallback());
+      std::make_unique<JoinSessionRequest>(request_sender(), "https://test",
+                                           std::move(student), "deviceId",
+                                           "code", future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
 
   request_sender()->StartRequestWithAuthRetry(std::move(request));

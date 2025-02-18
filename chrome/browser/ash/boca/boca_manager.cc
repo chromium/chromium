@@ -61,8 +61,10 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     return boca::BabelOrcaManager::CreateAsConsumer(
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
-        account_id.GetGaiaId(), std::move(babel_orca_translator),
-        profile->GetPrefs(), application_locale);
+        account_id.GetGaiaId(),
+        boca::BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
+        std::move(babel_orca_translator), profile->GetPrefs(),
+        application_locale);
   }
   // Producer
   if (!base::FeatureList::IsEnabled(
@@ -119,7 +121,7 @@ BocaManager::BocaManager(Profile* profile,
         std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile));
   }
   boca_metrics_manager_ =
-      std::make_unique<boca::BocaMetricsManager>(/*is_producer*/ !is_consumer);
+      std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/!is_consumer);
 
   spotlight_session_manager_ = std::make_unique<boca::SpotlightSessionManager>(
       std::make_unique<boca::SpotlightCrdManagerImpl>(profile->GetPrefs()));
@@ -131,7 +133,8 @@ BocaManager::BocaManager(Profile* profile,
           ->driver();
   invalidation_service_impl_ = std::make_unique<boca::InvalidationServiceImpl>(
       gcm_driver, instance_id_driver, user->GetAccountId(),
-      boca_session_manager_.get(), session_client_impl_.get());
+      boca_session_manager_.get(), session_client_impl_.get(),
+      boca::BocaAppClient::Get()->GetSchoolToolsServerBaseUrl());
   AddObservers(user);
 }
 

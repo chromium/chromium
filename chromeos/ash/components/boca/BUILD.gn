@@ -30,6 +30,7 @@ static_library("boca") {
     "//base",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/strings:strings_grit",

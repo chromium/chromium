@@ -97,6 +97,7 @@ std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     GaiaId gaia_id,
+    std::string school_tools_base_url,
     std::unique_ptr<CaptionController> caption_controller,
     std::unique_ptr<BabelOrcaCaptionTranslator> translator,
     PrefService* pref_service,
@@ -105,7 +106,7 @@ std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
   auto streaming_client_getter =
       base::BindRepeating(CreateStreamingClient, tachyon_oauth_token_manager);
   return std::make_unique<BabelOrcaConsumer>(
-      url_loader_factory, identity_manager, gaia_id,
+      url_loader_factory, identity_manager, gaia_id, school_tools_base_url,
       std::move(caption_controller), tachyon_oauth_token_manager,
       tachyon_request_data_provider, std::move(streaming_client_getter),
       std::move(translator), pref_service);
@@ -115,6 +116,7 @@ BabelOrcaConsumer::BabelOrcaConsumer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     const GaiaId& gaia_id,
+    std::string school_tools_base_url,
     std::unique_ptr<CaptionController> caption_controller,
     TokenManager* tachyon_oauth_token_manager,
     TachyonRequestDataProvider* tachyon_request_data_provider,
@@ -124,6 +126,7 @@ BabelOrcaConsumer::BabelOrcaConsumer(
     : url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       gaia_id_(gaia_id),
+      school_tools_base_url_(std::move(school_tools_base_url)),
       caption_controller_(std::move(caption_controller)),
       tachyon_oauth_token_manager_(tachyon_oauth_token_manager),
       tachyon_request_data_provider_(tachyon_request_data_provider),
@@ -249,7 +252,7 @@ void BabelOrcaConsumer::JoinSessionTachyonGroup() {
       std::make_unique<TachyonClientImpl>(url_loader_factory_),
       join_group_token_manager_.get());
   join_group_url_ =
-      base::StrCat({boca::kSchoolToolsApiBaseUrl,
+      base::StrCat({school_tools_base_url_,
                     base::ReplaceStringPlaceholders(
                         boca::kJoinTachyonGroupUrlTemplate,
                         {gaia_id_.ToString(),

@@ -107,6 +107,7 @@ class MockBocaAppClient : public BocaAppClient {
               (),
               (override));
   MOCK_METHOD(std::string, GetDeviceId, (), (override));
+  MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
 };
 
 constexpr GaiaId::Literal kTestGaiaId("123");
@@ -114,6 +115,7 @@ constexpr char kTestUserEmail[] = "cat@gmail.com";
 constexpr char kInitialSessionId[] = "0";
 constexpr int kInitialSessionDurationInSecs = 600;
 constexpr char kDeviceId[] = "myDevice";
+constexpr char kTestDefaultUrl[] = "https://test";
 
 class BocaSessionManagerTestBase : public testing::Test {
  public:
@@ -148,7 +150,8 @@ class BocaSessionManagerTestBase : public testing::Test {
     EXPECT_CALL(*boca_app_client_, GetIdentityManager())
         .Times(2)
         .WillRepeatedly(Return(identity_manager()));
-
+    EXPECT_CALL(*boca_app_client_, GetSchoolToolsServerBaseUrl())
+        .WillRepeatedly(Return(kTestDefaultUrl));
     core_account_id_ = identity_manager()->PickAccountIdForAccount(
         signin::GetTestGaiaIdForEmail(kTestUserEmail), kTestUserEmail);
   }

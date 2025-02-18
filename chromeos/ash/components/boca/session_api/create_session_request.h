@@ -31,6 +31,7 @@ using CreateSessionCallback =
 class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
  public:
   CreateSessionRequest(google_apis::RequestSender* sender,
+                       std::string url_base,
                        ::boca::UserIdentity teacher,
                        base::TimeDelta duration,
                        ::boca::Session::SessionState session_state,

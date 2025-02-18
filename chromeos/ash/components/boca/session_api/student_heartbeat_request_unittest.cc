@@ -118,8 +118,8 @@ TEST_F(StudentHeartbeatRequestTest, StudentHeartbeatSucceed) {
       future;
   std::unique_ptr<StudentHeartbeatRequest> request =
       std::make_unique<StudentHeartbeatRequest>(
-          request_sender(), sessionId, gaiaId, deviceId, studentGroupId,
-          future.GetCallback());
+          request_sender(), "https://test", sessionId, gaiaId, deviceId,
+          studentGroupId, future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -149,8 +149,8 @@ TEST_F(StudentHeartbeatRequestTest, StudentHeartbeatFail) {
       future;
   std::unique_ptr<StudentHeartbeatRequest> request =
       std::make_unique<StudentHeartbeatRequest>(
-          request_sender(), sessionId, gaiaId, deviceId, studentGroupId,
-          future.GetCallback());
+          request_sender(), "https://test", sessionId, gaiaId, deviceId,
+          studentGroupId, future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));

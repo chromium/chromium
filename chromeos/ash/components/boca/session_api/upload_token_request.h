@@ -30,6 +30,7 @@ using UploadTokenCallback = base::OnceCallback<void(
 class UploadTokenRequest : public google_apis::UrlFetchRequestBase {
  public:
   UploadTokenRequest(google_apis::RequestSender* sender,
+                     std::string base_url,
                      GaiaId gaia_id,
                      std::string token,
                      UploadTokenCallback callback);

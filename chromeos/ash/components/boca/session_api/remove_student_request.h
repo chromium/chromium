@@ -30,6 +30,7 @@ using RemoveStudentCallback = base::OnceCallback<void(
 class RemoveStudentRequest : public google_apis::UrlFetchRequestBase {
  public:
   RemoveStudentRequest(google_apis::RequestSender* sender,
+                       std::string base_url,
                        GaiaId gaia_id,
                        std::string session_id,
                        RemoveStudentCallback callback);

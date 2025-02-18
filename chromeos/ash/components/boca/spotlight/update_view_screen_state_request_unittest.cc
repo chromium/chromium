@@ -118,7 +118,7 @@ TEST_F(UpdateViewScreenStateRequestTest,
           request_sender(), std::move(session_id),
           UpdateViewScreenStateParam("1", "d1", "2", "d2",
                                      ::boca::ViewScreenConfig::INACTIVE),
-          kSchoolToolsApiBaseUrl, future.GetCallback());
+          "http://test", future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -154,7 +154,7 @@ TEST_F(UpdateViewScreenStateRequestTest, InitUpdateViewScreenStateAndFail) {
           request_sender(), std::move(session_id),
           UpdateViewScreenStateParam("1", "d1", "2", "d2",
                                      ::boca::ViewScreenConfig::INACTIVE),
-          kSchoolToolsApiBaseUrl, future.GetCallback());
+          "http://test", future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 

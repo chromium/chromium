@@ -32,6 +32,7 @@
 namespace ash::boca {
 
 GetSessionRequest::GetSessionRequest(google_apis::RequestSender* sender,
+                                     std::string url_base,
                                      bool is_producer,
                                      GaiaId gaia_id,
                                      Callback callback)
@@ -40,7 +41,7 @@ GetSessionRequest::GetSessionRequest(google_apis::RequestSender* sender,
                           google_apis::ProgressCallback()),
       is_producer_(is_producer),
       gaia_id_(std::move(gaia_id)),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(std::move(url_base)),
       callback_(std::move(callback)) {}
 
 GetSessionRequest::~GetSessionRequest() = default;

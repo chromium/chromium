@@ -180,7 +180,9 @@ void BocaSessionManager::LoadCurrentSession(bool from_polling) {
     return;
   }
   auto request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), is_producer_, account_id_.GetGaiaId(),
+      session_client_impl_->sender(),
+      BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(), is_producer_,
+      account_id_.GetGaiaId(),
       base::BindOnce(&BocaSessionManager::ParseSessionResponse,
                      weak_factory_.GetWeakPtr(), from_polling));
   request->set_device_id(BocaAppClient::Get()->GetDeviceId());
@@ -238,7 +240,8 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
   auto gaia_id = account_id_.GetGaiaId();
   auto device_id = BocaAppClient::Get()->GetDeviceId();
   auto request = std::make_unique<UpdateStudentActivitiesRequest>(
-      session_client_impl_->sender(), session_id, gaia_id,
+      session_client_impl_->sender(),
+      BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(), session_id, gaia_id,
       !device_id.empty() ? device_id : kDummyDeviceId,
       base::BindOnce(
           [](base::expected<bool, google_apis::ApiErrorCode> result) {
@@ -285,8 +288,9 @@ void BocaSessionManager::SendStudentHeartbeatRequest() {
   const std::string& student_group_id =
       GetStudentGroupIdSafe(current_session_.get());
   auto request = std::make_unique<StudentHeartbeatRequest>(
-      session_client_impl_->sender(), session_id, gaia_id, device_id,
-      student_group_id,
+      session_client_impl_->sender(),
+      BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(), session_id, gaia_id,
+      device_id, student_group_id,
       base::BindOnce(
           [](base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {

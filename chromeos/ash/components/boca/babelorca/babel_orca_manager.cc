@@ -71,6 +71,7 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsConsumer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
     const GaiaId& gaia_id,
+    std::string school_tools_url_base,
     std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
     PrefService* pref_service,
     const std::string& application_locale) {
@@ -79,10 +80,10 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsConsumer(
       std::make_unique<babelorca::CaptionBubbleSettingsImpl>(
           pref_service,
           /*caption_language_code=*/application_locale));
-  ControllerFactory controller_factory =
-      base::BindOnce(babelorca::BabelOrcaConsumer::Create, url_loader_factory,
-                     identity_manager, gaia_id, std::move(caption_controller),
-                     std::move(translator), pref_service);
+  ControllerFactory controller_factory = base::BindOnce(
+      babelorca::BabelOrcaConsumer::Create, url_loader_factory,
+      identity_manager, gaia_id, school_tools_url_base,
+      std::move(caption_controller), std::move(translator), pref_service);
   return std::make_unique<BabelOrcaManager>(
       identity_manager, url_loader_factory, std::move(controller_factory));
 }

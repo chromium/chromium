@@ -26,6 +26,7 @@ bool ParseResponse(std::string json) {
 
 StudentHeartbeatRequest::StudentHeartbeatRequest(
     google_apis::RequestSender* sender,
+    std::string url_base,
     const std::string& session_id,
     const GaiaId gaia_id,
     const std::string& device_id,
@@ -38,7 +39,7 @@ StudentHeartbeatRequest::StudentHeartbeatRequest(
       gaia_id_(std::move(gaia_id)),
       device_id_(std::move(device_id)),
       student_group_id_(std::move(student_group_id)),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(std::move(url_base)),
       callback_(std::move(callback)) {}
 
 StudentHeartbeatRequest ::~StudentHeartbeatRequest() = default;

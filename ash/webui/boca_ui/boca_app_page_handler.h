@@ -153,6 +153,7 @@ class BocaAppHandler : public mojom::PageHandler,
 
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
+  std::string base_url_;
   TabInfoCollector tab_info_collector_;
   std::unique_ptr<WebviewAuthHandler> auth_handler_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
