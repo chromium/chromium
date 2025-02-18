@@ -623,7 +623,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.HelpMeWriteEnabled"
-    enum="BooleanToggled" expires_after="2025-03-31">
+    enum="BooleanToggled" expires_after="2025-08-10">
   <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
