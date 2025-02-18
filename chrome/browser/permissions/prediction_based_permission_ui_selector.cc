@@ -12,8 +12,8 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/permissions/genai_model_handler.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
+#include "chrome/browser/permissions/permissions_ai_handler.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
@@ -45,8 +45,8 @@
 
 namespace {
 
-using ::permissions::GenAiModelHandler;
 using ::permissions::PermissionRequest;
+using ::permissions::PermissionsAiHandler;
 using ::permissions::PredictionModelHandlerProvider;
 using ::permissions::PredictionRequestFeatures;
 using QuietUiReason = PredictionBasedPermissionUiSelector::QuietUiReason;
@@ -193,7 +193,7 @@ void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
 }
 
 void PredictionBasedPermissionUiSelector::
-    InquireGenAiOnDeviceAndServerModelIfAvailable(
+    InquireAiOnDeviceAndServerModelIfAvailable(
         content::RenderFrameHost* rfh,
         PredictionRequestFeatures features,
         permissions::RequestType request_type) {
@@ -254,8 +254,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   DCHECK(!request_);
 
   switch (prediction_source) {
-    case PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE:
-      InquireGenAiOnDeviceAndServerModelIfAvailable(
+    case PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE:
+      InquireAiOnDeviceAndServerModelIfAvailable(
           web_contents->GetPrimaryMainFrame(), std::move(features),
           request->request_type());
       return;
@@ -274,7 +274,7 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
     PredictionRequestFeatures features,
     permissions::RequestType request_type,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  VLOG(1) << "[PermissionsAIv1] On device genAI prediction requested";
+  VLOG(1) << "[PermissionsAIv1] On device AI prediction requested";
   if (result && result->inner_text.size() > kPageContentMinLength) {
     std::string inner_text = std::move(result->inner_text);
 
@@ -284,19 +284,19 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
     if (PredictionModelHandlerProvider* prediction_model_handler_provider =
             PredictionModelHandlerProviderFactory::GetForBrowserContext(
                 profile_)) {
-      if (GenAiModelHandler* gen_ai_model_handler =
-              prediction_model_handler_provider->GetGenAiModelHandler()) {
+      if (PermissionsAiHandler* gen_ai_model_handler =
+              prediction_model_handler_provider->GetPermissionsAiHandler()) {
         VLOG(1) << "[PermissionsAIv1] Inquire model.";
-        gen_ai_model_handler->InquireGenAiOnDeviceModel(
+        gen_ai_model_handler->InquireAiOnDeviceModel(
             std::move(inner_text), request_type,
             base::BindRepeating(&PredictionBasedPermissionUiSelector::
-                                    GenAIModelExecutionCallback,
+                                    AiOnDeviceModelExecutionCallback,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 std::move(features), request_type));
         return;
       }
     }
-    VLOG(1) << "[PermissionsAIv1] On device genAI model session unavailable";
+    VLOG(1) << "[PermissionsAIv1] On device AI model session unavailable";
   } else {
     VLOG(1) << "[PermissionsAIv1] The page's contnet too short or empty";
   }
@@ -379,11 +379,11 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   return features;
 }
 
-void PredictionBasedPermissionUiSelector::GenAIModelExecutionCallback(
+void PredictionBasedPermissionUiSelector::AiOnDeviceModelExecutionCallback(
     PredictionRequestFeatures features,
     permissions::RequestType request_type,
     std::optional<PermissionsAiResponse> response) {
-  VLOG(1) << "[PermissionsAIv1]: GenAI model execution callback called "
+  VLOG(1) << "[PermissionsAIv1]: AI model execution callback called "
           << (response.has_value() ? "with value" : "without value");
   if (response.has_value()) {
     last_permission_request_relevance_ =
@@ -394,8 +394,7 @@ void PredictionBasedPermissionUiSelector::GenAIModelExecutionCallback(
             << (response.value().is_permission_relevant() ? "relevant"
                                                           : "not relevant");
     permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
-        permissions::PermissionPredictionSource::
-            SERVER_SIDE_AND_ON_DEVICE_GENAI);
+        permissions::PermissionPredictionSource::ONDEVICE_AI_AND_SERVER_SIDE);
   } else {
     last_permission_request_relevance_ =
         permissions::PermissionRequestRelevance::kUnspecified;
@@ -522,7 +521,7 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   }
   if (use_server_side) {
     if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
-      return PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE;
+      return PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE;
     }
     return PredictionSource::USE_SERVER_SIDE;
   }

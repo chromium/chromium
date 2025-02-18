@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/genai_model_handler.h"
+#include "chrome/browser/permissions/permissions_ai_handler.h"
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
@@ -99,15 +99,15 @@ PermissionType GetPermissionType(permissions::RequestType request_type) {
 
 }  // namespace
 
-GenAiModelHandler::GenAiModelHandler(
+PermissionsAiHandler::PermissionsAiHandler(
     OptimizationGuideKeyedService* optimization_guide)
     : optimization_guide_(optimization_guide) {}
 
-GenAiModelHandler::~GenAiModelHandler() {
+PermissionsAiHandler::~PermissionsAiHandler() {
   StopListeningToOnDeviceModelUpdate();
 }
 
-void GenAiModelHandler::StartListeningToOnDeviceModelUpdate() {
+void PermissionsAiHandler::StartListeningToOnDeviceModelUpdate() {
   if (observing_on_device_model_availability_) {
     return;
   }
@@ -130,7 +130,7 @@ void GenAiModelHandler::StartListeningToOnDeviceModelUpdate() {
   }
 }
 
-void GenAiModelHandler::StopListeningToOnDeviceModelUpdate() {
+void PermissionsAiHandler::StopListeningToOnDeviceModelUpdate() {
   if (!observing_on_device_model_availability_ || !optimization_guide_) {
     return;
   }
@@ -140,14 +140,14 @@ void GenAiModelHandler::StopListeningToOnDeviceModelUpdate() {
       kFeatureKey, this);
 }
 
-void GenAiModelHandler::SetOnDeviceModelAvailable() {
+void PermissionsAiHandler::SetOnDeviceModelAvailable() {
   LogOnDeviceModelDownloadSuccessAndTime(/*success=*/true,
                                          on_device_download_start_time_);
   is_on_device_model_available_ = true;
   observing_on_device_model_availability_ = false;
 }
 
-void GenAiModelHandler::OnDeviceModelAvailabilityChanged(
+void PermissionsAiHandler::OnDeviceModelAvailabilityChanged(
     ModelBasedCapabilityKey feature,
     optimization_guide::OnDeviceModelEligibilityReason reason) {
   if (!observing_on_device_model_availability_ || feature != kFeatureKey) {
@@ -169,7 +169,7 @@ void GenAiModelHandler::OnDeviceModelAvailabilityChanged(
   }
 }
 
-void GenAiModelHandler::CreateModelExecutorSession() {
+void PermissionsAiHandler::CreateModelExecutorSession() {
   if (!optimization_guide_) {
     return;
   }
@@ -181,7 +181,7 @@ void GenAiModelHandler::CreateModelExecutorSession() {
   }
 }
 
-void GenAiModelHandler::OnModelExecutionComplete(
+void PermissionsAiHandler::OnModelExecutionComplete(
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   if (!result.response.has_value()) {
     VLOG(1) << "[PermissionsAIv1] OnModelExecutionComplete failed with error: "
@@ -228,11 +228,11 @@ void GenAiModelHandler::OnModelExecutionComplete(
   }
 }
 
-bool GenAiModelHandler::IsOnDeviceModelAvailable() {
+bool PermissionsAiHandler::IsOnDeviceModelAvailable() {
   return is_on_device_model_available_;
 }
 
-void GenAiModelHandler::InquireGenAiOnDeviceModel(
+void PermissionsAiHandler::InquireAiOnDeviceModel(
     std::string rendered_text,
     permissions::RequestType request_type,
     base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback) {
@@ -266,8 +266,9 @@ void GenAiModelHandler::InquireGenAiOnDeviceModel(
   inquire_on_device_model_callback_ = std::move(callback);
   session_execution_start_time_ = base::TimeTicks::Now();
   session_->ExecuteModel(
-      request, base::BindRepeating(&GenAiModelHandler::OnModelExecutionComplete,
-                                   weak_ptr_factory_.GetWeakPtr()));
+      request,
+      base::BindRepeating(&PermissionsAiHandler::OnModelExecutionComplete,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace permissions

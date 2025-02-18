@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/genai_model_handler.h"
+#include "chrome/browser/permissions/permissions_ai_handler.h"
 
 #include <memory>
 
@@ -75,9 +75,9 @@ void CallCounter(int& cnt, std::optional<PermissionsAiResponse> _) {
   ++cnt;
 }
 
-class GenAiModelHandlerTestBase : public testing::Test {
+class PermissionsAiHandlerTestBase : public testing::Test {
  protected:
-  GenAiModelHandlerTestBase()
+  PermissionsAiHandlerTestBase()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     CHECK(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
@@ -85,7 +85,7 @@ class GenAiModelHandlerTestBase : public testing::Test {
 
   void SetUp() override {
     SetupMockOptimizationGuideKeyedService();
-    genai_model_handler_ = std::make_unique<GenAiModelHandler>(
+    permissions_ai_handler_ = std::make_unique<PermissionsAiHandler>(
         mock_optimization_guide_keyed_service_.get());
   }
 
@@ -106,40 +106,41 @@ class GenAiModelHandlerTestBase : public testing::Test {
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
 
-  std::unique_ptr<GenAiModelHandler> genai_model_handler_;
+  std::unique_ptr<PermissionsAiHandler> permissions_ai_handler_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
   testing::NiceMock<MockSession> session_;
 };
 
-class GenAiModelHandlerTest : public GenAiModelHandlerTestBase {};
+class PermissionsAiHandlerTest : public PermissionsAiHandlerTestBase {};
 
-struct GenAiModelHandlerTestCase {
+struct PermissionsAiHandlerTestCase {
   PermissionType permission_type;
   RequestType request_type;
   bool is_permission_relevant;
 };
 
-class ParametrizedGenAiModelHandlerTest
-    : public GenAiModelHandlerTestBase,
-      public testing::WithParamInterface<GenAiModelHandlerTestCase> {};
+class ParametrizedPermissionsAiHandlerTest
+    : public PermissionsAiHandlerTestBase,
+      public testing::WithParamInterface<PermissionsAiHandlerTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
     RequestTypes,
-    ParametrizedGenAiModelHandlerTest,
-    testing::ValuesIn<GenAiModelHandlerTestCase>({
+    ParametrizedPermissionsAiHandlerTest,
+    testing::ValuesIn<PermissionsAiHandlerTestCase>({
         {PermissionType::PERMISSION_TYPE_NOTIFICATIONS,
          RequestType::kNotifications, /*is_permission_relevant=*/true},
         {PermissionType::PERMISSION_TYPE_GEOLOCATION, RequestType::kGeolocation,
          /*is_permission_relevant=*/false},
     }));
 
-TEST_P(ParametrizedGenAiModelHandlerTest, CanDealWithInvalidOptimizationGuide) {
+TEST_P(ParametrizedPermissionsAiHandlerTest,
+       CanDealWithInvalidOptimizationGuide) {
   base::HistogramTester histogram_tester;
-  GenAiModelHandler genai_model_handler(nullptr);
+  PermissionsAiHandler permissions_ai_handler(nullptr);
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler.InquireGenAiOnDeviceModel(
+  permissions_ai_handler.InquireAiOnDeviceModel(
       kRenderedText, GetParam().request_type, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
@@ -149,9 +150,9 @@ TEST_P(ParametrizedGenAiModelHandlerTest, CanDealWithInvalidOptimizationGuide) {
                                       false, 1);
 }
 
-TEST_F(GenAiModelHandlerTest, ModelNeedsDownloadForFirstInquiry) {
+TEST_F(PermissionsAiHandlerTest, ModelNeedsDownloadForFirstInquiry) {
   base::HistogramTester histogram_tester;
-  EXPECT_FALSE(genai_model_handler_->IsOnDeviceModelAvailable());
+  EXPECT_FALSE(permissions_ai_handler_->IsOnDeviceModelAvailable());
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               StartSession(kFeatureKey, _))
@@ -163,12 +164,12 @@ TEST_F(GenAiModelHandlerTest, ModelNeedsDownloadForFirstInquiry) {
   // Installs model on first call.
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               AddOnDeviceModelAvailabilityChangeObserver(
-                  kFeatureKey, genai_model_handler_.get()));
+                  kFeatureKey, permissions_ai_handler_.get()));
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
-  EXPECT_FALSE(genai_model_handler_->IsOnDeviceModelAvailable());
+  EXPECT_FALSE(permissions_ai_handler_->IsOnDeviceModelAvailable());
 
   // Fails for first created session (because model is not downloaded yet).
   histogram_tester.ExpectUniqueSample(kSessionCreationSuccessHistogram, false,
@@ -177,7 +178,7 @@ TEST_F(GenAiModelHandlerTest, ModelNeedsDownloadForFirstInquiry) {
                                       false, 1);
 }
 
-TEST_F(GenAiModelHandlerTest, ModelDownloadFailureIsHandled) {
+TEST_F(PermissionsAiHandlerTest, ModelDownloadFailureIsHandled) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
@@ -199,7 +200,7 @@ TEST_F(GenAiModelHandlerTest, ModelDownloadFailureIsHandled) {
           }));
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
@@ -222,7 +223,7 @@ TEST_F(GenAiModelHandlerTest, ModelDownloadFailureIsHandled) {
   histogram_tester.ExpectUniqueSample(kModelDownloadSuccessHistogram, false, 1);
 }
 
-TEST_F(GenAiModelHandlerTest, ModelDownloadsSuccessfully) {
+TEST_F(PermissionsAiHandlerTest, ModelDownloadsSuccessfully) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
@@ -244,7 +245,7 @@ TEST_F(GenAiModelHandlerTest, ModelDownloadsSuccessfully) {
           }));
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
@@ -271,10 +272,10 @@ TEST_F(GenAiModelHandlerTest, ModelDownloadsSuccessfully) {
   histogram_tester.ExpectUniqueSample(kModelDownloadSuccessHistogram, true, 1);
   histogram_tester.ExpectTotalCount(kModelDownloadTimeHistogram, 1);
 
-  EXPECT_TRUE(genai_model_handler_->IsOnDeviceModelAvailable());
+  EXPECT_TRUE(permissions_ai_handler_->IsOnDeviceModelAvailable());
 }
 
-TEST_P(ParametrizedGenAiModelHandlerTest, RequestIsBuildProperly) {
+TEST_P(ParametrizedPermissionsAiHandlerTest, RequestIsBuildProperly) {
   // We will skip model download here, instantly returning a valid session.
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
@@ -303,11 +304,11 @@ TEST_P(ParametrizedGenAiModelHandlerTest, RequestIsBuildProperly) {
                 /*provided_by_on_device=*/true));
           })));
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, GetParam().request_type, future.GetCallback());
 }
 
-TEST_F(GenAiModelHandlerTest, EmptyModelResponseIsHandled) {
+TEST_F(PermissionsAiHandlerTest, EmptyModelResponseIsHandled) {
   // We will skip model download here, instantly returning a valid session.
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
@@ -334,10 +335,10 @@ TEST_F(GenAiModelHandlerTest, EmptyModelResponseIsHandled) {
 
   base::HistogramTester histogram_tester;
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
-  EXPECT_TRUE(genai_model_handler_->IsOnDeviceModelAvailable());
+  EXPECT_TRUE(permissions_ai_handler_->IsOnDeviceModelAvailable());
 
   histogram_tester.ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
                                       true, 1);
@@ -349,7 +350,7 @@ TEST_F(GenAiModelHandlerTest, EmptyModelResponseIsHandled) {
   histogram_tester.ExpectUniqueSample(kResponseParseSuccessHistogram, false, 1);
 }
 
-TEST_F(GenAiModelHandlerTest, IncompleResponseIsIgnored) {
+TEST_F(PermissionsAiHandlerTest, IncompleResponseIsIgnored) {
   // We will skip model download on the first session here, instantly
   // returning a valid session.
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
@@ -379,7 +380,7 @@ TEST_F(GenAiModelHandlerTest, IncompleResponseIsIgnored) {
 
   base::HistogramTester histogram_tester;
   int call_count = 0;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       BindOnce(&CallCounter, OwnedRef(call_count)));
 
@@ -395,7 +396,7 @@ TEST_F(GenAiModelHandlerTest, IncompleResponseIsIgnored) {
   histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 0);
 }
 
-TEST_P(ParametrizedGenAiModelHandlerTest,
+TEST_P(ParametrizedPermissionsAiHandlerTest,
        ResponseIsParsedCorrectlyAndCallbackCalledWithResult) {
   // We will skip model download on the first session here, instantly
   // returning a valid session.
@@ -428,7 +429,7 @@ TEST_P(ParametrizedGenAiModelHandlerTest,
   base::HistogramTester histogram_tester;
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_THAT(future.Take(), Optional(EqualsProto(response)));
 
@@ -442,7 +443,7 @@ TEST_P(ParametrizedGenAiModelHandlerTest,
   histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 1);
 }
 
-TEST_F(GenAiModelHandlerTest, FailForNewSessionIfOldIsStillRunning) {
+TEST_F(PermissionsAiHandlerTest, FailForNewSessionIfOldIsStillRunning) {
   base::HistogramTester histogram_tester;
   // We will skip model download on the first session here, instantly
   // returning a valid session.
@@ -460,13 +461,13 @@ TEST_F(GenAiModelHandlerTest, FailForNewSessionIfOldIsStillRunning) {
   EXPECT_CALL(session_, ExecuteModel(_, _));
 
   int call_count = 0;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       BindOnce(&CallCounter, OwnedRef(call_count)));
   EXPECT_EQ(call_count, 0);
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
@@ -482,7 +483,8 @@ TEST_F(GenAiModelHandlerTest, FailForNewSessionIfOldIsStillRunning) {
   histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 0);
 }
 
-TEST_F(GenAiModelHandlerTest, OldSessionGetsNotInterruptedByNewInquiryRequest) {
+TEST_F(PermissionsAiHandlerTest,
+       OldSessionGetsNotInterruptedByNewInquiryRequest) {
   // We will skip model download on the first session here, instantly
   // returning a valid session.
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
@@ -505,12 +507,12 @@ TEST_F(GenAiModelHandlerTest, OldSessionGetsNotInterruptedByNewInquiryRequest) {
                       callback) { internal_callback = std::move(callback); })));
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future_1;
-  genai_model_handler_->InquireGenAiOnDeviceModel(
+  permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future_1.GetCallback());
 
   {
     base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-    genai_model_handler_->InquireGenAiOnDeviceModel(
+    permissions_ai_handler_->InquireAiOnDeviceModel(
         kRenderedText, RequestType::kNotifications, future.GetCallback());
     EXPECT_EQ(future.Take(), std::nullopt);
   }

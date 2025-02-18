@@ -3008,7 +3008,7 @@ const char kCrosSystemLevelPermissionBlockedWarningsDescription[] =
 
 const char kPermissionsAIv1Name[] = "PermissionsAI";
 const char kPermissionsAIv1Description[] =
-    "Use the Permission Predictions Service and Gemini Nano v2 to surface "
+    "Use the Permission Predictions Service and the AIv1 model to surface "
     "permission requests using a quieter UI when the likelihood of the user "
     "granting the permission is predicted to be low. Requires `Make Searches "
     "and Browsing Better` to be enabled.";

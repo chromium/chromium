@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_GENAI_MODEL_HANDLER_H_
-#define CHROME_BROWSER_PERMISSIONS_GENAI_MODEL_HANDLER_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AI_HANDLER_H_
+#define CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AI_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -14,17 +14,18 @@
 
 namespace permissions {
 
-class GenAiModelHandler
+class PermissionsAiHandler
     : public optimization_guide::OnDeviceModelAvailabilityObserver {
  public:
-  explicit GenAiModelHandler(OptimizationGuideKeyedService* optimization_guide);
-  ~GenAiModelHandler() override;
-  GenAiModelHandler(const GenAiModelHandler&) = delete;
-  GenAiModelHandler& operator=(const GenAiModelHandler&) = delete;
+  explicit PermissionsAiHandler(
+      OptimizationGuideKeyedService* optimization_guide);
+  ~PermissionsAiHandler() override;
+  PermissionsAiHandler(const PermissionsAiHandler&) = delete;
+  PermissionsAiHandler& operator=(const PermissionsAiHandler&) = delete;
 
   bool IsOnDeviceModelAvailable();
 
-  void InquireGenAiOnDeviceModel(
+  void InquireAiOnDeviceModel(
       std::string rendered_text,
       RequestType request_type,
       base::OnceCallback<
@@ -71,8 +72,8 @@ class GenAiModelHandler
   base::OnceCallback<void(
       std::optional<optimization_guide::proto::PermissionsAiResponse>)>
       inquire_on_device_model_callback_;
-  base::WeakPtrFactory<GenAiModelHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PermissionsAiHandler> weak_ptr_factory_{this};
 };
 }  // namespace permissions
 
-#endif  // CHROME_BROWSER_PERMISSIONS_GENAI_MODEL_HANDLER_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AI_HANDLER_H_

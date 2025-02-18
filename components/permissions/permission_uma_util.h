@@ -448,10 +448,10 @@ enum class AutoDSEPermissionRevertTransition {
 enum class PermissionPredictionSource {
   ON_DEVICE_TFLITE = 0,
   SERVER_SIDE = 1,
-  SERVER_SIDE_AND_ON_DEVICE_GENAI = 2,
+  ONDEVICE_AI_AND_SERVER_SIDE = 2,
 
   // Always keep at the end.
-  kMaxValue = SERVER_SIDE_AND_ON_DEVICE_GENAI,
+  kMaxValue = ONDEVICE_AI_AND_SERVER_SIDE,
 };
 
 // This enum backs up the 'PageInfoDialogAccessType' histogram enum.
