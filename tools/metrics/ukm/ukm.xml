@@ -17461,6 +17461,32 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.PasswordChangeSubmissionOutcome" singular="True">
+  <owner>fiorellab@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Metrics reported after the change password form submission in the password
+    change flow.
+  </summary>
+  <metric name="PasswordChangeSubmissionOutcome" enum="SubmissionOutcome">
+    <summary>
+      Records the change password form submission result (success or the error
+      type). This is recorded when receiving a response from the optimization
+      guide service to a request made with the representation of the web page
+      where the submission happened.
+
+      This mirrors PasswordManager.PasswordChangeSubmissionOutcome in UMA.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PasswordManager.PasswordChangeTriggered">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-duplex@google.com</owner>

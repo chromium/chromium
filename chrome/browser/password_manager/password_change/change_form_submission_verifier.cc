@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -17,6 +18,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/ax_tree_update.h"
 
@@ -35,23 +37,27 @@ constexpr int kMaxNodesInAXTreeSnapshot = 5000;
 constexpr char kSubmissionOutcomeHistogramName[] =
     "PasswordManager.PasswordChangeSubmissionOutcome";
 
-void LogSubmissionOutcome(SubmissionOutcome outcome) {
+void LogSubmissionOutcome(SubmissionOutcome outcome, ukm::SourceId ukm_id) {
   base::UmaHistogramEnumeration(kSubmissionOutcomeHistogramName, outcome);
+  ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome(ukm_id)
+      .SetPasswordChangeSubmissionOutcome(static_cast<int>(outcome))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void RecordOutcomeMetrics(
-    optimization_guide::proto ::PasswordChangeSubmissionData submission_data) {
+    optimization_guide::proto ::PasswordChangeSubmissionData submission_data,
+    ukm::SourceId ukm_id) {
   PasswordChangeOutcome outcome = submission_data.submission_outcome();
   if (outcome ==
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME) {
-    LogSubmissionOutcome(SubmissionOutcome::kSuccess);
+    LogSubmissionOutcome(SubmissionOutcome::kSuccess, ukm_id);
     return;
   }
   if (outcome ==
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
-    LogSubmissionOutcome(SubmissionOutcome::kUnknown);
+    LogSubmissionOutcome(SubmissionOutcome::kUnknown, ukm_id);
     return;
   }
   for (auto error_case_enum : submission_data.error_case()) {
@@ -60,30 +66,33 @@ void RecordOutcomeMetrics(
     switch (error_case) {
       case optimization_guide::proto::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_OLD_PASSWORD_INCORRECT:
-        LogSubmissionOutcome(SubmissionOutcome::kErrorOldPasswordIncorrect);
+        LogSubmissionOutcome(SubmissionOutcome::kErrorOldPasswordIncorrect,
+                             ukm_id);
         break;
       case optimization_guide::proto::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_PASSWORDS_DO_NOT_MATCH:
-        LogSubmissionOutcome(SubmissionOutcome::kErrorOldPasswordDoNotMatch);
+        LogSubmissionOutcome(SubmissionOutcome::kErrorOldPasswordDoNotMatch,
+                             ukm_id);
         break;
       case optimization_guide::proto::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_NEW_PASSWORD_INCORRECT:
-        LogSubmissionOutcome(SubmissionOutcome::kErrorNewPasswordIncorrect);
+        LogSubmissionOutcome(SubmissionOutcome::kErrorNewPasswordIncorrect,
+                             ukm_id);
         break;
       case optimization_guide::proto::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_PAGE_ERROR:
-        LogSubmissionOutcome(SubmissionOutcome::kPageError);
+        LogSubmissionOutcome(SubmissionOutcome::kPageError, ukm_id);
         break;
       case optimization_guide::proto::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_UNKNOWN_CASE:
       default:
-        LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError);
+        LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError, ukm_id);
         break;
     }
   }
 
   if (!submission_data.error_case_size()) {
-    LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError);
+    LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError, ukm_id);
   }
 }
 
@@ -234,9 +243,13 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   CHECK(callback_);
+  CHECK(web_contents_);
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(web_contents_.get());
 
   if (!execution_result.response.has_value()) {
-    LogSubmissionOutcome(SubmissionOutcome::kNoResponse);
+    LogSubmissionOutcome(SubmissionOutcome::kNoResponse,
+                         client->GetUkmSourceId());
     std::move(callback_).Run(false);
     return;
   }
@@ -245,12 +258,14 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
           optimization_guide::proto::PasswordChangeResponse>(
           execution_result.response.value());
   if (!response) {
-    LogSubmissionOutcome(SubmissionOutcome::kCouldNotParse);
+    LogSubmissionOutcome(SubmissionOutcome::kCouldNotParse,
+                         client->GetUkmSourceId());
     std::move(callback_).Run(false);
     return;
   }
 
-  RecordOutcomeMetrics(response.value().outcome_data());
+  RecordOutcomeMetrics(response.value().outcome_data(),
+                       client->GetUkmSourceId());
   PasswordChangeOutcome outcome =
       response.value().outcome_data().submission_outcome();
   if (outcome !=
