@@ -28,9 +28,13 @@ class ScheduledFile {
   ScheduledFile(const base::FilePath& filepath,
                 const std::string& hash,
                 base::Time download_time);
+  ScheduledFile(const ScheduledFile& file);
+  ScheduledFile& operator=(const ScheduledFile& file);
+  ScheduledFile(ScheduledFile&&);
+  ScheduledFile& operator=(ScheduledFile&&);
   ~ScheduledFile();
 
-  // Converts the ScheduledFile object into a serialized string.
+  // Converts the ScheduledFile object into a ScheduledFile proto.
   auto_deletion::proto::ScheduledFile Serialize() const;
 
   // Converts the serialized string into a ScheduledFile object.
@@ -45,8 +49,8 @@ class ScheduledFile {
   const base::Time download_time() const { return download_time_; }
 
  private:
-  const base::FilePath filepath_;
-  const std::string hash_;
+  base::FilePath filepath_;
+  std::string hash_;
   base::Time download_time_;
 };
 

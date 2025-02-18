@@ -17,7 +17,10 @@ ScheduledFile::ScheduledFile(const base::FilePath& filepath,
                              const std::string& hash,
                              base::Time download_time)
     : filepath_(filepath), hash_(hash), download_time_(download_time) {}
-
+ScheduledFile::ScheduledFile(const ScheduledFile&) = default;
+ScheduledFile::ScheduledFile(ScheduledFile&&) = default;
+ScheduledFile& ScheduledFile::operator=(const ScheduledFile&) = default;
+ScheduledFile& ScheduledFile::operator=(ScheduledFile&&) = default;
 ScheduledFile::~ScheduledFile() = default;
 
 auto_deletion::proto::ScheduledFile ScheduledFile::Serialize() const {

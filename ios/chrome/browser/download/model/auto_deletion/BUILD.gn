@@ -4,6 +4,8 @@ source_set("auto_deletion") {
     "auto_deletion_service.mm",
     "scheduled_file.h",
     "scheduled_file.mm",
+    "scheduled_file_queue.h",
+    "scheduled_file_queue.mm",
   ]
   deps = [
     "//components/prefs",
@@ -15,7 +17,10 @@ source_set("auto_deletion") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "scheduled_file_unittest.mm" ]
+  sources = [
+    "scheduled_file_queue_unittest.mm",
+    "scheduled_file_unittest.mm",
+  ]
 
   deps = [
     ":auto_deletion",
