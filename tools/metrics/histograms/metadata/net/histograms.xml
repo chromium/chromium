@@ -1784,7 +1784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Dns.ResolveTimeDiff.{Variant}.{Bucket}" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2026-02-18">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
