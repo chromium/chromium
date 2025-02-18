@@ -8278,6 +8278,25 @@
             ]
         }
     ],
+    "DisableParkableStrings": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CompressParkableStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableSystemBlur": [
         {
             "platforms": [
