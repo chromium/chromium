@@ -741,6 +741,10 @@
       status: "experimental",
     },
     {
+      // crbug.com/389726691.
+      name: "CanvasTextNg",
+    },
+    {
       // Kill switch for https://crbug.com/330506337.
       name: "CanvasUsesArcPaintOp",
       status: "stable",
@@ -3337,6 +3341,10 @@
     {
       name: "PermissionsRequestRevoke",
       status: "experimental",
+    },
+    {
+      // crbug.com/389726691.
+      name: "PlainTextPainter",
     },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374
