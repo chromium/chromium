@@ -41,7 +41,9 @@ class SaveAutofillAiDataControllerImpl
   ~SaveAutofillAiDataControllerImpl() override;
 
   // SaveAutofillAiDataController:
-  void OfferSave(autofill::EntityInstance autofill_ai_data,
+  void OfferSave(autofill::EntityInstance new_entity,
+                 std::optional<autofill::EntityInstance> old_entity,
+
                  AutofillAiClient::SavePromptAcceptanceCallback
                      save_prompt_acceptance_callback) override;
   void OnSaveButtonClicked() override;
@@ -64,8 +66,14 @@ class SaveAutofillAiDataControllerImpl
 
   void ShowBubble();
 
-  // Entity prompted to the user to be saved or updated.
-  std::optional<autofill::EntityInstance> autofill_ai_data_;
+  // New entity prompted to the user to be saved. It can be a fresh new entity
+  // or an update of `old_entity`.
+  std::optional<autofill::EntityInstance> new_entity_;
+
+  // Present for updates. Used to give users
+  // information about which attribute was either added or changed in their old
+  // instance.
+  std::optional<autofill::EntityInstance> old_entity_;
 
   // Callback to notify the data provider about the user decision for the save
   // prompt.

@@ -135,12 +135,13 @@ bool ChromeAutofillAiClient::IsAutofillAiEnabledPref() const {
 }
 
 void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
-    autofill::EntityInstance entity,
+    autofill::EntityInstance new_entity,
+    std::optional<autofill::EntityInstance> old_entity,
     SavePromptAcceptanceCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller = autofill_ai::SaveAutofillAiDataController::GetOrCreate(
           &*web_contents_)) {
-    controller->OfferSave(std::move(entity),
+    controller->OfferSave(std::move(new_entity), std::move(old_entity),
                           std::move(prompt_acceptance_callback));
     return;
   }

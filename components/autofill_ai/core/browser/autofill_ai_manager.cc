@@ -158,10 +158,11 @@ bool ShouldShowNewEntitySavePrompt(
 }
 
 // Finds an entity in `current_entities` which `entity` can be merged into.
+// Returns both the updated entity and the original entity.
 // Returns `std::nullopt` if no suitable entity is found.
-std::optional<autofill::EntityInstance> MaybeUpdateEntity(
-    const autofill::EntityInstance& entity,
-    base::span<const autofill::EntityInstance> current_entities) {
+std::optional<std::pair<autofill::EntityInstance, autofill::EntityInstance>>
+MaybeUpdateEntity(const autofill::EntityInstance& entity,
+                  base::span<const autofill::EntityInstance> current_entities) {
   for (const autofill::EntityInstance& existing_entity : current_entities) {
     // Entities of different type should not be merged.
     if (entity.type() != existing_entity.type()) {
@@ -181,9 +182,11 @@ std::optional<autofill::EntityInstance> MaybeUpdateEntity(
          existing_entity.attributes()) {
       new_attributes.emplace_back(std::move(curr_attribute));
     }
-    return autofill::EntityInstance(
-        existing_entity.type(), std::move(new_attributes),
-        existing_entity.guid(), existing_entity.nickname(), base::Time::Now());
+    return std::make_pair(autofill::EntityInstance(
+                              existing_entity.type(), std::move(new_attributes),
+                              existing_entity.guid(),
+                              existing_entity.nickname(), base::Time::Now()),
+                          existing_entity);
   }
   return std::nullopt;
 }
@@ -351,13 +354,17 @@ void AutofillAiManager::MaybeImportForm(
     if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
       client_->ShowSaveAutofillAiBubble(
           std::move(entity),
+          /*old_entity=*/std::nullopt,
           BindOnce(&AutofillAiManager::OnSavePromptAcceptance, GetWeakPtr()));
       std::move(autofill_callback).Run(std::move(form), true);
       return;
-    } else if (std::optional<autofill::EntityInstance> maybe_entity_to_update =
-                   MaybeUpdateEntity(entity, current_entities)) {
+    } else if (std::optional<std::pair<autofill::EntityInstance,
+                                       autofill::EntityInstance>>
+                   maybe_entity_to_update =
+                       MaybeUpdateEntity(entity, current_entities)) {
       client_->ShowSaveAutofillAiBubble(
-          std::move(*maybe_entity_to_update),
+          std::move(maybe_entity_to_update->first),
+          std::move(maybe_entity_to_update->second),
           BindOnce(&AutofillAiManager::OnSavePromptAcceptance, GetWeakPtr()));
       std::move(autofill_callback).Run(std::move(form), true);
       return;

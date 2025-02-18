@@ -38,6 +38,7 @@ class MockAutofillAiClient : public AutofillAiClient {
   MOCK_METHOD(void,
               ShowSaveAutofillAiBubble,
               (autofill::EntityInstance entity,
+               std::optional<autofill::EntityInstance> old_entity,
                SavePromptAcceptanceCallback prompt_acceptance_callback),
               (override));
 };
