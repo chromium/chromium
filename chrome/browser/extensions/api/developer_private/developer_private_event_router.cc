@@ -66,7 +66,6 @@ DeveloperPrivateEventRouter::ConvertToUserSiteSettings(
 DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : DeveloperPrivateEventRouterShared(profile) {
   app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
-  warning_service_observation_.Observe(WarningService::Get(profile));
   extension_management_observation_.Observe(
       ExtensionManagementFactory::GetForBrowserContext(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
@@ -142,12 +141,6 @@ void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
   event_router_->BroadcastEvent(std::move(event));
 }
 
-void DeveloperPrivateEventRouter::ExtensionWarningsChanged(
-    const ExtensionIdSet& affected_extensions) {
-  for (const ExtensionId& id : affected_extensions) {
-    BroadcastItemStateChanged(developer::EventType::kWarningsChanged, id);
-  }
-}
 
 void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
     const PermissionsManager::UserPermissionsSettings& settings) {

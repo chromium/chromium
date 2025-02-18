@@ -21,6 +21,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/browser/warning_service.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -28,7 +29,8 @@ namespace extensions {
 class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
                                           public ErrorConsole::Observer,
                                           public ProcessManagerObserver,
-                                          public ExtensionPrefsObserver {
+                                          public ExtensionPrefsObserver,
+                                          public WarningService::Observer {
  public:
   explicit DeveloperPrivateEventRouterShared(Profile* profile);
 
@@ -91,6 +93,10 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
   void OnExtensionRuntimePermissionsChanged(
       const ExtensionId& extension_id) override;
 
+  // WarningService::Observer:
+  void ExtensionWarningsChanged(
+      const ExtensionIdSet& affected_extensions) override;
+
   // Broadcasts an event to all listeners.
   virtual void BroadcastItemStateChanged(
       api::developer_private::EventType event_type,
@@ -104,6 +110,8 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       process_manager_observation_{this};
   base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
       extension_prefs_observation_{this};
+  base::ScopedObservation<WarningService, WarningService::Observer>
+      warning_service_observation_{this};
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently

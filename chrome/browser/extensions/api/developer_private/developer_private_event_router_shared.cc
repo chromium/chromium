@@ -19,6 +19,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/browser/warning_service.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -32,6 +33,7 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
   error_console_observation_.Observe(ErrorConsole::Get(profile));
   process_manager_observation_.Observe(ProcessManager::Get(profile));
   extension_prefs_observation_.Observe(ExtensionPrefs::Get(profile));
+  warning_service_observation_.Observe(WarningService::Get(profile));
 }
 
 DeveloperPrivateEventRouterShared::~DeveloperPrivateEventRouterShared() =
@@ -147,6 +149,13 @@ void DeveloperPrivateEventRouterShared::OnExtensionRuntimePermissionsChanged(
     const ExtensionId& extension_id) {
   BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
                             extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::ExtensionWarningsChanged(
+    const ExtensionIdSet& affected_extensions) {
+  for (const ExtensionId& id : affected_extensions) {
+    BroadcastItemStateChanged(developer::EventType::kWarningsChanged, id);
+  }
 }
 
 void DeveloperPrivateEventRouterShared::BroadcastItemStateChanged(

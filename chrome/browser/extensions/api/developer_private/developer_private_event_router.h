@@ -19,7 +19,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/permissions_manager.h"
-#include "extensions/browser/warning_service.h"
 
 namespace extensions {
 
@@ -28,7 +27,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                     public CommandService::Observer,
                                     public ExtensionAllowlist::Observer,
                                     public ExtensionManagement::Observer,
-                                    public WarningService::Observer,
                                     public PermissionsManager::Observer,
                                     public ToolbarActionsModel::Observer,
                                     public AccountExtensionTracker::Observer {
@@ -65,10 +63,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   // ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
 
-  // WarningService::Observer:
-  void ExtensionWarningsChanged(
-      const ExtensionIdSet& affected_extensions) override;
-
   // PermissionsManager::Observer:
   void OnUserPermissionsSettingsChanged(
       const PermissionsManager::UserPermissionsSettings& settings) override;
@@ -104,8 +98,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
 
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       app_window_registry_observation_{this};
-  base::ScopedObservation<WarningService, WarningService::Observer>
-      warning_service_observation_{this};
   base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
       extension_management_observation_{this};
   base::ScopedObservation<CommandService, CommandService::Observer>
