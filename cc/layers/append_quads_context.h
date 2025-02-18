@@ -24,6 +24,14 @@ struct CC_EXPORT AppendQuadsContext {
   DrawMode draw_mode = DRAW_MODE_NONE;
 
   // A set of all view transition tokens in the capture phase.
+  // During view transition capture phase, the transitions that are in this
+  // state (as indicated by these tokens) are treated differently from other
+  // view transitions. Specifically, the capture phase generates two render
+  // passes -- one for capture which isn't displayed and one for display. The
+  // reason this is important is that the captured render passes are filtered
+  // to exclude ancestor clips as well as nested view transiiton elements,
+  // which may not be appropriate for display. Note that this is only set if
+  // ViewTransitionCaptureAndDisplay feature is enabled.
   base::flat_set<blink::ViewTransitionToken> capture_view_transition_tokens;
 
   // In separate render pass appends, this indicates whether we're appending for
