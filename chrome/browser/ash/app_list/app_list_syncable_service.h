@@ -110,24 +110,6 @@ class AppListSyncableService : public syncer::SyncableService,
     // IDs of obsolete ephemeral items.
     bool is_ephemeral = false;
 
-    // Whether the app was pinned to shelf by the user or not.
-    // The eventual consistency (a sufficient amount of time after rollout)
-    // we're aspiring to reach here is for this field to be interleaved with the
-    // pin ordinal: `item_pin_ordinal.IsValid() <=> is_user_pinned.has_value()`.
-    // However, it's okay for this contract to be violated in the meantine.
-    //
-    //  * missing value indicates that either `item_pin_ordinal` is invalid or
-    //    this field is new and hasn't yet been processed by sync.
-    //  * `true` means that the app was pinned by the user.
-    //    We are using this definition in a relaxed way -- for instance, default
-    //    OS apps that are shown in the shelf (like Chrome itself) also have
-    //    this set to true.
-    //  * `false` means that the app was pinned by PinnedLauncherApps policy.
-    //    Note that user pin has priority: if an app was first pinned by the
-    //    user and then additionally specified in PinnedLauncherApps, this value
-    //    will be set to true.
-    std::optional<bool> is_user_pinned;
-
     // Whether the item is considered new - i.e. first added during the current
     // user session. This will be false if the sync item was created when
     // loading items from local storage, or in response to sync changes.
@@ -254,12 +236,9 @@ class AppListSyncableService : public syncer::SyncableService,
   virtual syncer::StringOrdinal GetPinPosition(const std::string& app_id);
 
   // Sets pin position and how it is pinned for the app specified by |app_id|.
-  // |item_pin_ordinal| must be valid.
-  // |pinned_by_policy| tells whether this item is pinned to the shelf by the
-  // `PinnedLauncherApps` policy.
+  // Empty |item_pin_ordinal| indicates that the app has no pin.
   virtual void SetPinPosition(const std::string& app_id,
-                              const syncer::StringOrdinal& item_pin_ordinal,
-                              bool pinned_by_policy);
+                              const syncer::StringOrdinal& item_pin_ordinal);
 
   // Copies a promise app sync item attributes from a sync item  with
   // `promise_app_id` to a sync item with `target_id`. No-op if the source sync
@@ -268,11 +247,6 @@ class AppListSyncableService : public syncer::SyncableService,
   // attributes the the sync item associated with the installed app.
   void CopyPromiseItemAttributesToItem(const std::string& promise_app_id,
                                        const std::string& target_id);
-
-  // Sets |is_user_pinned| to false for the given item specified by |item_id|.
-  // Item must exist, |item_pin_ordinal| must be valid, and |is_user_pinned|
-  // must be unset by the time of the call.
-  void SetIsPolicyPinned(const std::string& app_id);
 
   // Removes pin position for the app specified by |app_id|.
   virtual void RemovePinPosition(const std::string& app_id);

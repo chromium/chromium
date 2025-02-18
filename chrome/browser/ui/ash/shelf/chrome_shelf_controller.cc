@@ -1322,9 +1322,7 @@ void ChromeShelfController::SyncPinPosition(const ash::ShelfID& shelf_id) {
     }
   }
 
-  shelf_prefs_->SetPinPosition(
-      shelf_id, shelf_id_before, shelf_ids_after,
-      /*pinned_by_policy=*/model_->items()[index].pinned_by_policy);
+  shelf_prefs_->SetPinPosition(shelf_id, shelf_id_before, shelf_ids_after);
 }
 
 void ChromeShelfController::OnSyncModelUpdated() {

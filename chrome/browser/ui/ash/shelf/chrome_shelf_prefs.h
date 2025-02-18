@@ -77,12 +77,9 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // before the target app. |shelf_ids_after| optionally specifies sorted by
   // position apps that exist right after the target app. Note, |shelf_id| with
   // non-empty launch_id is not supported.
-  // |pinned_by_policy| tells whether this item is pinned to the shelf by the
-  // `PinnedLauncherApps` policy.
   void SetPinPosition(const ash::ShelfID& shelf_id,
                       const ash::ShelfID& shelf_id_before,
-                      base::span<const ash::ShelfID> shelf_ids_after,
-                      bool pinned_by_policy);
+                      base::span<const ash::ShelfID> shelf_ids_after);
 
   // Makes ShouldAddDefaultApps() return true if set to true.
   static void SetShouldAddDefaultAppsForTest(bool value);

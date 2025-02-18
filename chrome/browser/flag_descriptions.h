@@ -3731,9 +3731,6 @@ extern const char kEnableFastTouchpadClickDescription[];
 extern const char kEnablePalmSuppressionName[];
 extern const char kEnablePalmSuppressionDescription[];
 
-extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfName[];
-extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[];
-
 extern const char kEnableSeamlessRefreshRateSwitchingName[];
 extern const char kEnableSeamlessRefreshRateSwitchingDescription[];
 

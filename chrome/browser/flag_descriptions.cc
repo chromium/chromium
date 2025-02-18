@@ -6370,12 +6370,6 @@ const char kEnableFastTouchpadClickName[] = "Enable Fast Touchpad Click";
 const char kEnableFastTouchpadClickDescription[] =
     "If enabled, reduce the time after touchpad click before cursor can move.";
 
-const char kEnableRemoveStalePolicyPinnedAppsFromShelfName[] =
-    "Enable removing stale policy-pinned apps from shelf.";
-const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[] =
-    "If enabled, allows the system to remove apps that were once pinned to the "
-    "shelf by PinnedLauncherApps policy but are no longer listed in it.";
-
 const char kEnableSeamlessRefreshRateSwitchingName[] =
     "Seamless Refresh Rate Switching";
 const char kEnableSeamlessRefreshRateSwitchingDescription[] =

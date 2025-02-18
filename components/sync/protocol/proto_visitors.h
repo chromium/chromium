@@ -130,7 +130,6 @@ VISIT_PROTO_FIELDS(const sync_pb::AppListSpecifics& proto) {
   VISIT(parent_id);
   VISIT(item_ordinal);
   VISIT(item_pin_ordinal);
-  VISIT(is_user_pinned);
   VISIT(promise_package_id);
 }
 

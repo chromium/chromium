@@ -3705,11 +3705,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-remove-stale-policy-pinned-apps-from-shelf",
-    "owners": [ "greengrape@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-render-pass-drawn-rect",
     "owners": [ "petermcneeley@chromium.org" ],
     "expiry_milestone": 140
