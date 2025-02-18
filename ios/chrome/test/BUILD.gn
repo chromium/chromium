@@ -229,6 +229,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill:unit_tests",
     "//ios/chrome/browser/autofill/ui_bundled/progress_dialog:unit_tests",
     "//ios/chrome/browser/badges/ui_bundled:unit_tests",
+    "//ios/chrome/browser/banner_promo/model:unit_tests",
     "//ios/chrome/browser/bookmarks/model:unit_tests",
     "//ios/chrome/browser/bookmarks/ui_bundled:unit_tests",
     "//ios/chrome/browser/bookmarks/ui_bundled/cells:unit_tests",
