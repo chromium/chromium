@@ -60,11 +60,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiWebPImageDecodeAcceleration);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kVulkan);
 
-#if BUILDFLAG(IS_OZONE)
-GPU_EXPORT BASE_DECLARE_FEATURE(
-    kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported);
-#endif
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphite);
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphitePrecompilation);
 GPU_EXPORT extern const base::FeatureParam<bool>
