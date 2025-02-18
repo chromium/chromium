@@ -13,6 +13,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
+    "WEBNN_USE_CHROME_ML_API=$webnn_use_chrome_ml_api",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
   ]
 }

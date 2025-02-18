@@ -17,7 +17,7 @@
 #include "third_party/tflite/src/tensorflow/lite/tflite_with_xnnpack_optional.h"
 #endif
 
-#if defined(ENABLE_ML_INTERNAL)
+#if defined(WEBNN_USE_CHROME_ML_API)
 #include "services/on_device_model/ml/chrome_ml.h"  // nogncheck
 #include "services/on_device_model/ml/chrome_ml_api.h"  // nogncheck
 #endif
@@ -289,7 +289,7 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
   }
 #endif
 
-#if defined(ENABLE_ML_INTERNAL)
+#if defined(WEBNN_USE_CHROME_ML_API)
   if (options.device == mojom::CreateContextOptions::Device::kGpu) {
     // TODO(crbug.com/394119734): Simplify this check once these functions are
     // always available.
