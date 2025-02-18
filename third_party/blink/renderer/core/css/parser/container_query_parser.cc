@@ -86,25 +86,6 @@ class SizeFeatureSet : public MediaQueryParser::FeatureSet {
   bool SupportsRange() const override { return true; }
 };
 
-class StyleFeatureSet : public MediaQueryParser::FeatureSet {
-  STACK_ALLOCATED();
-
- public:
-  bool IsAllowed(const AtomicString& feature) const override {
-    // TODO(crbug.com/1302630): Only support querying custom properties for now.
-    return CSSVariableParser::IsValidVariableName(feature);
-  }
-  bool IsAllowedWithoutValue(const AtomicString& feature,
-                             const ExecutionContext*) const override {
-    return true;
-  }
-  bool IsCaseSensitive(const AtomicString& feature) const override {
-    // TODO(crbug.com/1302630): non-custom properties are case-insensitive.
-    return true;
-  }
-  bool SupportsRange() const override { return false; }
-};
-
 class StateFeatureSet : public MediaQueryParser::FeatureSet {
   STACK_ALLOCATED();
 
@@ -227,29 +208,6 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerCondition(
         return this->ConsumeQueryInParens(stream);
       },
       stream);
-}
-
-// <if-test> = style( <style-query> )
-// <style-query>     = not <style-in-parens>
-//                   | <style-in-parens> [ [ and <style-in-parens> ]* | [ or
-//                   <style-in-parens> ]* ] | <style-feature>
-// <style-in-parens> = ( <style-query> )
-//                   | ( <style-feature> )
-//                   | <general-enclosed>
-const MediaQueryExpNode* ContainerQueryParser::ConsumeIfTest(
-    CSSParserTokenStream& stream) {
-  if (stream.Peek().GetType() == kFunctionToken &&
-      stream.Peek().FunctionId() == CSSValueID::kStyle) {
-    CSSParserTokenStream::RestoringBlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    if (const MediaQueryExpNode* query =
-            ConsumeFeatureQuery(stream, StyleFeatureSet())) {
-      guard.Release();
-      stream.ConsumeWhitespace();
-      return MediaQueryExpNode::Function(query, AtomicString("style"));
-    }
-  }
-  return nullptr;
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(

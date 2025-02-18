@@ -36,9 +36,10 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
+#include "third_party/blink/renderer/core/css/if_test.h"
 #include "third_party/blink/renderer/core/css/kleene_value.h"
 #include "third_party/blink/renderer/core/css/media_eval_utils.h"
-#include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
@@ -2184,21 +2185,28 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
     return true;
   }
 
-  ContainerQueryParser parser(context);
+  CSSIfParser parser(context);
 
-  const MediaQueryExpNode* exp_node = parser.ConsumeIfTest(stream);
-  DCHECK(exp_node);
+  std::optional<IfTest> if_test = parser.ConsumeIfTest(stream);
+  DCHECK(if_test.has_value());
 
-  stream.ConsumeWhitespace();
-  DCHECK_EQ(stream.Peek().GetType(), kColonToken);
-  stream.ConsumeIncludingWhitespace();
+  // style()
+  if (const MediaQueryExpNode* style_test = if_test->GetStyleTest()) {
+    stream.ConsumeWhitespace();
+    DCHECK_EQ(stream.Peek().GetType(), kColonToken);
+    stream.ConsumeIncludingWhitespace();
 
-  return MediaEval(*exp_node, [this, &resolver, &context, &function_context,
-                               &is_attr_tainted](
-                                  const MediaQueryFeatureExpNode& feature) {
-           return EvalIfStyleFeature(feature, resolver, context,
-                                     function_context, is_attr_tainted);
-         }) == KleeneValue::kTrue;
+    return MediaEval(*style_test, [this, &resolver, &context, &function_context,
+                                   &is_attr_tainted](
+                                      const MediaQueryFeatureExpNode& feature) {
+             return EvalIfStyleFeature(feature, resolver, context,
+                                       function_context, is_attr_tainted);
+           }) == KleeneValue::kTrue;
+  }
+
+  // TODO(crbug.com/346977961): Support media() and supports() queries in if()
+  // condition.
+  return false;
 }
 
 bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,

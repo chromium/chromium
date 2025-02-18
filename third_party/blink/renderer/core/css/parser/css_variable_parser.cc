@@ -11,7 +11,8 @@
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
-#include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
+#include "third_party/blink/renderer/core/css/if_test.h"
+#include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
@@ -232,14 +233,17 @@ static bool ConsumeIfCondition(CSSParserTokenStream& stream,
     return true;
   }
 
-  ContainerQueryParser parser(context);
+  CSSIfParser parser(context);
 
-  const MediaQueryExpNode* exp_node = parser.ConsumeIfTest(stream);
-  if (!exp_node) {
+  std::optional<IfTest> if_test = parser.ConsumeIfTest(stream);
+  if (!if_test.has_value()) {
     return false;
   }
-
   stream.ConsumeWhitespace();
+
+  if (if_test->GetMediaTest()) {
+    return RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled();
+  }
   return true;
 }
 

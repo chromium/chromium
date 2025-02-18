@@ -117,60 +117,6 @@ TEST_F(ContainerQueryParserTest, ParseQuery) {
             ParseQuery("size(width)", container_query_parser_func));
 }
 
-TEST_F(ContainerQueryParserTest, ParseStyleQuery) {
-  auto container_query_parser_func = [](String string,
-                                        ContainerQueryParser& parser) {
-    CSSParserTokenStream stream(string);
-    return parser.ConsumeIfTest(stream);
-  };
-  const char* valid_tests[] = {
-      // clang-format off
-    "style(--x)",
-    "style(((--x)))",
-     "style((--x) and (--y: 10))",
-     "style((--x) and ((--y) or (not (--z))))",
-    "style(not (--x))",
-    "style(--x: var(--y))",
-    "style((--y: green) and (--x: 3))",
-    "style(((--x: 3px) and (--y: 3)) or (not (--z: 6px)))",
-      // clang-format on
-  };
-
-  for (const char* test : valid_tests) {
-    EXPECT_EQ(String(test), ParseQuery(test, container_query_parser_func));
-  }
-
-  const char* invalid_parse_time_tests[] = {
-      // clang-format off
-    "(min-width: 100px)",
-    "not (width)",
-    "(width) and (height)",
-    "(((style(--x))))",
-    "not style(--x)",
-    "style(width)",
-    "style(invalid)",
-    "(style(--x: 3px) and style(--y: 3)) or (not style(--z: 6px))",
-      // clang-format on
-  };
-
-  for (const char* test : invalid_parse_time_tests) {
-    EXPECT_FALSE(ParseQuery(test, container_query_parser_func));
-  }
-
-  const char* invalid_tests[] = {
-      // clang-format off
-    "style(style(--x))",
-    "style(var(--x))",
-    "style(attr(data-foo))",
-    "style(var(--x): green) and style(var(--x): 3)",
-      // clang-format on
-  };
-
-  for (const char* test : invalid_tests) {
-    EXPECT_EQ("<unknown>", ParseQuery(test, container_query_parser_func));
-  }
-}
-
 // This test exists primarily to not lose coverage of
 // `ContainerQueryParser::ConsumeFeatureQuery`, which is unused until
 // style() queries are supported (crbug.com/1302630).
