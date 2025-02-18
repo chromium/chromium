@@ -107,11 +107,9 @@ ScriptPromise<IDLUndefined> IdentityCredential::disconnect(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
-  if (!options->hasConfigURL()) {
-    resolver->RejectWithTypeError("configURL is required");
-    return promise;
-  }
-
+  // configURL, accountHint, and clientId are required. But the latter is marked
+  // optional due to the dictionary being reused for digital credentials. So we
+  // have to check that one manually.
   if (!options->hasClientId()) {
     resolver->RejectWithTypeError("clientId is required");
     return promise;
