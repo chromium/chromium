@@ -1253,6 +1253,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.12.0 -> 1.13.0"
 
+[[audits.equivalent]]
+who = "Jonathan Hao <phao@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.1 -> 1.0.2"
+notes = "No changes to any .rs files or Rust code."
+
 [[audits.fdeflate]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

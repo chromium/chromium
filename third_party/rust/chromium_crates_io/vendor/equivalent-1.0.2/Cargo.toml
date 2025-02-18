@@ -12,7 +12,13 @@
 [package]
 rust-version = "1.6"
 name = "equivalent"
-version = "1.0.1"
+version = "1.0.2"
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Traits for key comparison in maps."
 readme = "README.md"
 keywords = [
@@ -24,4 +30,8 @@ categories = [
     "no-std",
 ]
 license = "Apache-2.0 OR MIT"
-repository = "https://github.com/cuviper/equivalent"
+repository = "https://github.com/indexmap-rs/equivalent"
+
+[lib]
+name = "equivalent"
+path = "src/lib.rs"
