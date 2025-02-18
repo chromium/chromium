@@ -6202,6 +6202,28 @@ TEST_P(PasswordManagerTest, PasswordVsOtpMetric_OtpForm) {
       PasswordVsOtpFormType::kOtp);
 }
 
+TEST_P(PasswordManagerTest, ModelPredictionsEmptyMetric_Empty) {
+  base::HistogramTester histogram_tester;
+  FormData form_data(MakeSimpleFormData());
+  manager()->ProcessClassificationModelPredictions(
+      &driver_, form_data,
+      {{form_data.fields()[0].global_id(), FieldType::NO_SERVER_DATA},
+       {form_data.fields()[1].global_id(), FieldType::NO_SERVER_DATA}});
+  histogram_tester.ExpectUniqueSample("PasswordManager.ModelPredictions.Empty",
+                                      true, 1);
+}
+
+TEST_P(PasswordManagerTest, ModelPredictionsEmptyMetric_NonEmpty) {
+  base::HistogramTester histogram_tester;
+  FormData form_data(MakeSimpleFormData());
+  manager()->ProcessClassificationModelPredictions(
+      &driver_, form_data,
+      {{form_data.fields()[0].global_id(), FieldType::USERNAME},
+       {form_data.fields()[1].global_id(), FieldType::PASSWORD}});
+  histogram_tester.ExpectUniqueSample("PasswordManager.ModelPredictions.Empty",
+                                      false, 1);
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Check that a happiness surney is triggered after the user has submitted
 // a manually filled form and logged in.
