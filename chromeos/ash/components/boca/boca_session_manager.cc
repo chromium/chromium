@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "components/user_manager/user_manager.h"
@@ -46,6 +47,11 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
       features::IsBocaCustomPollingEnabled()
           ? ash::features::kBocaIndefinitePeriodicJobIntervalInSeconds.Get()
           : base::Seconds(kDefaultPollingIntervalInSeconds);
+  student_heartbeat_interval_ =
+      features::IsBocaStudentHeartbeatCustomIntervalEnabled()
+          ? ash::features::kBocaStudentHeartbeatPeriodicJobIntervalInSeconds
+                .Get()
+          : base::Seconds(kDefaultStudentHeartbeatIntervalInSeconds);
 
   GetNetworkConfigService(cros_network_config_.BindNewPipeAndPassReceiver());
   cros_network_config_->AddObserver(
@@ -164,12 +170,12 @@ void BocaSessionManager::MaybeLoadCurrentSession() {
 }
 
 void BocaSessionManager::LoadCurrentSession(bool from_polling) {
-  // TODO(crbug.com/374788934): Currently always try fetching regardless of
+  // TODO: crbug.com/374788934 - Currently always try fetching regardless of
   // network status as we've seen inconsistent behavior between machines
   // regarding network config, revisit this.
 
-  // TODO(b/361852484): We should ideally listen to user switch events. But
-  // since we'll remove polling after we have FCM, leave it as it is now.
+  // TODO: crbug.com/361852484 - We should ideally listen to user switch events.
+  // But since we'll remove polling after we have FCM, leave it as it is now.
   if (!IsProfileActive()) {
     return;
   }
@@ -237,12 +243,12 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
       base::BindOnce(
           [](base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
-              // TODO(b/366316261):Add metrics for update failure.
+              // TODO: crbug.com/366316261 - Add metrics for update failure.
               LOG(WARNING) << "[Boca]Failed to update student activity.";
             }
           }));
 
-  // TODO(crbug.com/376550427):Make a permanet fix to provide URL resource for
+  // TODO: crbug.com/376550427 - Make a permanet fix to provide URL resource for
   // home page, and remove this after that.
   request->set_active_tab_title(active_tab_title_.empty()
                                     ? kHomePageTitle
@@ -252,6 +258,43 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
 
 void BocaSessionManager::ToggleAppStatus(bool is_app_opened) {
   is_app_opened_ = is_app_opened;
+}
+
+void BocaSessionManager::StartSendingStudentHeartbeatRequests() {
+  if (!features::IsBocaStudentHeartbeatEnabled() || is_producer_ ||
+      student_heartbeat_interval_ == base::Seconds(0)) {
+    return;
+  }
+  if (!student_heartbeat_timer_.IsRunning()) {
+    student_heartbeat_timer_.Start(
+        FROM_HERE, student_heartbeat_interval_, this,
+        &BocaSessionManager::SendStudentHeartbeatRequest);
+  }
+}
+
+void BocaSessionManager::StopSendingStudentHeartbeatRequests() {
+  if (student_heartbeat_timer_.IsRunning()) {
+    student_heartbeat_timer_.Stop();
+  }
+}
+
+void BocaSessionManager::SendStudentHeartbeatRequest() {
+  const std::string& session_id = current_session_->session_id();
+  const GaiaId& gaia_id = account_id_.GetGaiaId();
+  const std::string& device_id = BocaAppClient::Get()->GetDeviceId();
+  const std::string& student_group_id =
+      GetStudentGroupIdSafe(current_session_.get());
+  auto request = std::make_unique<StudentHeartbeatRequest>(
+      session_client_impl_->sender(), session_id, gaia_id, device_id,
+      student_group_id,
+      base::BindOnce(
+          [](base::expected<bool, google_apis::ApiErrorCode> result) {
+            if (!result.has_value()) {
+              // TODO: crbug.com/366316261 - Add metrics for update failure.
+              DVLOG(1) << "[Boca]Failed to call student heartbeat.";
+            }
+          }));
+  session_client_impl_->StudentHeartbeat(std::move(request));
 }
 
 void BocaSessionManager::NotifyLocalCaptionEvents(
@@ -399,6 +442,12 @@ void BocaSessionManager::NotifySessionUpdate() {
       }
     }
   }
+
+  if (IsSessionActive(current_session_.get())) {
+    StartSendingStudentHeartbeatRequests();
+  } else {
+    StopSendingStudentHeartbeatRequests();
+  }
 }
 
 void BocaSessionManager::NotifyOnTaskUpdate() {
@@ -445,7 +494,7 @@ void BocaSessionManager::NotifySessionCaptionConfigUpdate() {
     for (auto& observer : observers_) {
       observer.OnSessionCaptionConfigUpdated(
           kMainStudentGroupName, current_session_caption_config,
-          // TODO(crbug.com/374200256):Should not notify events when session
+          // TODO: crbug.com/374200256 - Should not notify events when session
           // ended. Remove the null check after that.
           current_session_ ? current_session_->tachyon_group_id()
                            : std::string());

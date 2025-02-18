@@ -215,16 +215,21 @@ BASE_FEATURE(kBocaOnTaskPod,
              "BocaOnTaskPod",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables Boca student heartbeat interval on ChromeOS.
+// Enables or disables Boca sending student heartbeat requests on ChromeOS.
 BASE_FEATURE(kBocaStudentHeartbeat,
              "kBocaStudentHeartbeat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables Boca student heartbeat custom interval on ChromeOS.
+BASE_FEATURE(kBocaStudentHeartbeatCustomInterval,
+             "kBocaStudentHeartbeatCustomInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Time interval to do student heartbeat
 constexpr base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds{
-        &kBocaStudentHeartbeat, "StudentHeartbeatPeriodicJobIntervalInSeconds",
-        base::Seconds(60)};
+        &kBocaStudentHeartbeatCustomInterval,
+        "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(60)};
 
 // Enables or disables Boca extension consumer experience on ChromeOS.
 BASE_FEATURE(kBocaExtensionConsumer,
@@ -3366,6 +3371,10 @@ bool IsBocaOnTaskPodEnabled() {
 
 bool IsBocaStudentHeartbeatEnabled() {
   return base::FeatureList::IsEnabled(kBocaStudentHeartbeat);
+}
+
+bool IsBocaStudentHeartbeatCustomIntervalEnabled() {
+  return base::FeatureList::IsEnabled(kBocaStudentHeartbeatCustomInterval);
 }
 
 bool IsBocaSpotlightEnabled() {

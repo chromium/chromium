@@ -80,6 +80,8 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskPod);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaStudentHeartbeat);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kBocaStudentHeartbeatCustomInterval);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaSpotlight);
@@ -1045,7 +1047,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaConsumerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaExtensionConsumerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskPodEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaStudentHeartbeatEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBocaStudentHeartbeatEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBocaStudentHeartbeatCustomIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaSpotlightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();

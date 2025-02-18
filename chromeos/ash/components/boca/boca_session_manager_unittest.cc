@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
+#include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
@@ -54,6 +55,10 @@ class MockSessionClientImpl : public SessionClientImpl {
   MOCK_METHOD(void,
               UpdateStudentActivity,
               (std::unique_ptr<UpdateStudentActivitiesRequest>),
+              (override));
+  MOCK_METHOD(void,
+              StudentHeartbeat,
+              (std::unique_ptr<StudentHeartbeatRequest>),
               (override));
 };
 
@@ -150,6 +155,7 @@ class BocaSessionManagerTestBase : public testing::Test {
 
   const base::TimeDelta kDefaultInSessionPollingInterval = base::Seconds(60);
   const base::TimeDelta kDefaultIndefinitePollingInterval = base::Seconds(60);
+  const base::TimeDelta kDefaultStudentHeartbeatInterval = base::Seconds(60);
 
  protected:
   void ToggleOnline() {
@@ -212,7 +218,7 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
   void SetUp() override {
     BocaSessionManagerTestBase::SetUp();
     scoped_feature_list().InitWithFeatures(
-        {ash::features::kBoca},
+        {ash::features::kBoca, ash::features::kBocaStudentHeartbeat},
         /*disabled_features=*/{ash::features::kBocaCustomPolling});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
@@ -1397,6 +1403,19 @@ TEST_F(BocaSessionManagerTest,
       base::Seconds(1));
 }
 
+TEST_F(BocaSessionManagerTest, StudentHeartbeatNotCalledWithProducer) {
+  ::boca::Session session;
+  session.set_session_id(kInitialSessionId);
+  session.set_session_state(::boca::Session::ACTIVE);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  EXPECT_CALL(*session_client_impl(), StudentHeartbeat(_)).Times(0);
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session), false);
+
+  task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
+}
+
 class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
  public:
   BocaSessionManagerNoPollingTest() = default;
@@ -1518,6 +1537,227 @@ TEST_F(BocaSessionManagerCustomPollingTest, CustomPollingInterval) {
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
   task_environment()->FastForwardBy(
       base::Seconds(kOutOfSessionPollingInterval + 1));
+}
+
+class BocaSessionManagerStudentHeartbeatTest
+    : public BocaSessionManagerTestBase {
+ protected:
+  void SetUp() override {
+    BocaSessionManagerTestBase::SetUp();
+    scoped_feature_list().InitWithFeaturesAndParameters(
+        {
+            /*enabled_features=*/{
+                ash::features::kBocaStudentHeartbeat,
+                {
+                    {ash::features::
+                         kBocaStudentHeartbeatPeriodicJobIntervalInSeconds.name,
+                     "60s"},
+                }},
+            // Disable session polling so it does not interfere the student
+            // heartbeat tests.
+            {ash::features::kBocaCustomPolling,
+             {{ash::features::kBocaIndefinitePeriodicJobIntervalInSeconds.name,
+               "0"},
+              {ash::features::kBocaInSessionPeriodicJobIntervalInSeconds.name,
+               "0"}}},
+        },
+        /*disabled_features=*/{});
+    EXPECT_CALL(*session_client_impl(), GetSession(_)).WillOnce([&]() {
+      // The first fetch at construction time will fail due to refresh token
+      // not ready.
+      boca_session_manager_->ParseSessionResponse(
+          /*from_polling=*/false, base::unexpected<google_apis::ApiErrorCode>(
+                                      google_apis::ApiErrorCode::NOT_READY));
+    });
+    EXPECT_CALL(*boca_app_client(), GetDeviceId())
+        .WillRepeatedly(Return(kDeviceId));
+    const auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+    boca_session_manager_ = std::make_unique<BocaSessionManager>(
+        session_client_impl(), account_id, /*is_producer=*/false);
+  }
+
+  BocaSessionManager* boca_session_manager() {
+    return boca_session_manager_.get();
+  }
+
+ private:
+  std::unique_ptr<BocaSessionManager> boca_session_manager_;
+};
+
+TEST_F(BocaSessionManagerStudentHeartbeatTest,
+       NoStudentHeartbeatCalledWithoutActiveSession) {
+  EXPECT_CALL(*session_client_impl(), StudentHeartbeat(_)).Times(0);
+  task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
+}
+
+TEST_F(BocaSessionManagerStudentHeartbeatTest,
+       StudentHeartbeatCalledWhenSessionIsActive) {
+  ::boca::Session session_1;
+  session_1.set_session_id(kInitialSessionId);
+  session_1.set_session_state(::boca::Session::ACTIVE);
+  session_1.mutable_duration()->set_seconds(kInitialSessionDurationInSecs);
+  session_1.mutable_start_time()->set_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  EXPECT_CALL(*session_client_impl(), StudentHeartbeat(_)).Times(1);
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
+
+  task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
+}
+
+TEST_F(BocaSessionManagerStudentHeartbeatTest,
+       StudentHeartbeatStoppedWhenSessionIsNotActive) {
+  ::boca::Session session_1;
+  session_1.set_session_id(kInitialSessionId);
+  session_1.set_session_state(::boca::Session::ACTIVE);
+  session_1.mutable_duration()->set_seconds(kInitialSessionDurationInSecs);
+  session_1.mutable_start_time()->set_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  EXPECT_CALL(*session_client_impl(), StudentHeartbeat(_)).Times(0);
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
+
+  session_1.set_session_state(::boca::Session::PAST);
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
+
+  task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval * 1 +
+                                    base::Seconds(1));
+}
+
+class BocaSessionManagerStudentHeartbeatCustomPollingTest
+    : public BocaSessionManagerTestBase {
+ protected:
+  static constexpr int kStudentHeartbeatCustomPollingInterval = 10;
+  BocaSessionManagerStudentHeartbeatCustomPollingTest() = default;
+  void SetUp() override {
+    BocaSessionManagerTestBase::SetUp();
+    scoped_feature_list().InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {ash::features::kBocaStudentHeartbeat, {}},
+            {ash::features::kBocaStudentHeartbeatCustomInterval,
+             {
+                 {ash::features::
+                      kBocaStudentHeartbeatPeriodicJobIntervalInSeconds.name,
+                  "10s"},
+             }},
+            // Disable session polling so it does not interfere the student
+            // heartbeat tests.
+            {ash::features::kBocaCustomPolling,
+             {{ash::features::kBocaIndefinitePeriodicJobIntervalInSeconds.name,
+               "0"},
+              {ash::features::kBocaInSessionPeriodicJobIntervalInSeconds.name,
+               "0"}}},
+        },
+        /*disabled_features=*/{});
+    EXPECT_CALL(*session_client_impl(), GetSession(_)).WillOnce([&]() {
+      // The first fetch at construction time will fail due to refresh token
+      // not ready.
+      boca_session_manager_->ParseSessionResponse(
+          /*from_polling=*/false, base::unexpected<google_apis::ApiErrorCode>(
+                                      google_apis::ApiErrorCode::NOT_READY));
+    });
+    EXPECT_CALL(*boca_app_client(), GetDeviceId())
+        .WillRepeatedly(Return(kDeviceId));
+    const auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+    boca_session_manager_ = std::make_unique<BocaSessionManager>(
+        session_client_impl(), account_id, /*is_producer=*/false);
+  }
+
+  BocaSessionManager* boca_session_manager() {
+    return boca_session_manager_.get();
+  }
+
+ private:
+  std::unique_ptr<BocaSessionManager> boca_session_manager_;
+};
+
+TEST_F(BocaSessionManagerStudentHeartbeatCustomPollingTest,
+       StudentHeartbeatCalledWhenSessionIsActive) {
+  ::boca::Session session_1;
+  session_1.set_session_id(kInitialSessionId);
+  session_1.set_session_state(::boca::Session::ACTIVE);
+  session_1.mutable_duration()->set_seconds(kInitialSessionDurationInSecs);
+  session_1.mutable_start_time()->set_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  EXPECT_CALL(*session_client_impl(), StudentHeartbeat(_)).Times(1);
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
+
+  task_environment()->FastForwardBy(
+      base::Seconds(kStudentHeartbeatCustomPollingInterval));
+}
+
+class BocaSessionManagerStudentHeartbeatNoPollingTest
+    : public BocaSessionManagerTestBase {
+ public:
+  BocaSessionManagerStudentHeartbeatNoPollingTest() = default;
+  void SetUp() override {
+    BocaSessionManagerTestBase::SetUp();
+    scoped_feature_list().InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {ash::features::kBocaStudentHeartbeat, {}},
+            {ash::features::kBocaStudentHeartbeatCustomInterval,
+             {
+                 {ash::features::
+                      kBocaStudentHeartbeatPeriodicJobIntervalInSeconds.name,
+                  "0"},
+             }},
+            // Disable session polling so it does not interfere the student
+            // heartbeat tests.
+            {ash::features::kBocaCustomPolling,
+             {{ash::features::kBocaIndefinitePeriodicJobIntervalInSeconds.name,
+               "0"},
+              {ash::features::kBocaInSessionPeriodicJobIntervalInSeconds.name,
+               "0"}}},
+        },
+        /*disabled_features=*/{});
+    auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+    EXPECT_CALL(*session_client_impl(), GetSession(_))
+        .WillOnce(testing::InvokeWithoutArgs([&]() {
+          // The first fetch at construction time will fail due to
+          // refresh token not ready.
+          boca_session_manager_->ParseSessionResponse(
+              /*from_polling=*/false,
+              base::unexpected<google_apis::ApiErrorCode>(
+                  google_apis::ApiErrorCode::NOT_READY));
+        }));
+    EXPECT_CALL(*boca_app_client(), GetDeviceId())
+        .WillRepeatedly(Return(kDeviceId));
+    boca_session_manager_ = std::make_unique<BocaSessionManager>(
+        session_client_impl(), account_id, /*is_producer=*/false);
+  }
+
+  BocaSessionManager* boca_session_manager() {
+    return boca_session_manager_.get();
+  }
+
+ private:
+  std::unique_ptr<BocaSessionManager> boca_session_manager_;
+};
+
+TEST_F(BocaSessionManagerStudentHeartbeatNoPollingTest,
+       StudentHeartbeatNotCalled) {
+  ::boca::Session session_1;
+  session_1.set_session_id(kInitialSessionId);
+  session_1.set_session_state(::boca::Session::ACTIVE);
+  session_1.mutable_duration()->set_seconds(kInitialSessionDurationInSecs);
+  session_1.mutable_start_time()->set_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  EXPECT_CALL(*session_client_impl(), StudentHeartbeat(_)).Times(0);
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
+
+  task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
 }
 
 }  // namespace
