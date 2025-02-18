@@ -127,28 +127,28 @@ class CreateLanguageModelClient
     Cleanup();
   }
 
-  void OnError(mojom::blink::AIManagerCreateLanguageModelError error) override {
+  void OnError(mojom::blink::AIManagerCreateClientError error) override {
     if (!GetResolver()) {
       return;
     }
 
-    using mojom::blink::AIManagerCreateLanguageModelError;
+    using mojom::blink::AIManagerCreateClientError;
 
     switch (error) {
-      case AIManagerCreateLanguageModelError::kUnableToCreateSession:
-      case AIManagerCreateLanguageModelError::kUnableToCalculateTokenSize: {
+      case AIManagerCreateClientError::kUnableToCreateSession:
+      case AIManagerCreateClientError::kUnableToCalculateTokenSize: {
         GetResolver()->RejectWithDOMException(
             DOMExceptionCode::kInvalidStateError,
             kExceptionMessageUnableToCreateSession);
         break;
       }
-      case AIManagerCreateLanguageModelError::kInitialPromptsTooLarge: {
+      case AIManagerCreateClientError::kInitialPromptsTooLarge: {
         GetResolver()->RejectWithDOMException(
             DOMExceptionCode::kQuotaExceededError,
             kExceptionMessageInitialPromptTooLarge);
         break;
       }
-      case AIManagerCreateLanguageModelError::kUnsupportedLanguage: {
+      case AIManagerCreateClientError::kUnsupportedLanguage: {
         GetResolver()->RejectWithDOMException(
             DOMExceptionCode::kNotSupportedError,
             kExceptionMessageUnsupportedLanguages);

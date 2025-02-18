@@ -49,6 +49,10 @@ class MockCreateRewriterClient
               OnResult,
               (mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter),
               (override));
+  MOCK_METHOD(void,
+              OnError,
+              (blink::mojom::AIManagerCreateClientError error),
+              (override));
 
  private:
   mojo::Receiver<blink::mojom::AIManagerCreateRewriterClient> receiver_{this};
@@ -173,12 +177,14 @@ TEST_F(AIRewriterTest, CreateRewriterNoService) {
 
   MockCreateRewriterClient mock_create_rewriter_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
-      .WillOnce(testing::Invoke(
-          [&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
-            EXPECT_FALSE(rewriter);
-            run_loop.Quit();
-          }));
+  EXPECT_CALL(mock_create_rewriter_client, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
+                                        error) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        run_loop.Quit();
+      }));
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateRewriter(
@@ -204,12 +210,14 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
 
   MockCreateRewriterClient mock_create_rewriter_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
-      .WillOnce(testing::Invoke(
-          [&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
-            EXPECT_FALSE(rewriter);
-            run_loop.Quit();
-          }));
+  EXPECT_CALL(mock_create_rewriter_client, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
+                                        error) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        run_loop.Quit();
+      }));
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateRewriter(

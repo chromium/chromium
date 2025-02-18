@@ -118,14 +118,42 @@ class CreateSummarizerClient
       return;
     }
     if (!ai_->GetExecutionContext() || !remote_summarizer) {
-      GetResolver()->Reject(DOMException::Create(
-          kExceptionMessageUnableToCreateSession,
-          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          kExceptionMessageUnableToCreateSession);
     } else {
       AISummarizer* summarizer = MakeGarbageCollected<AISummarizer>(
           ai_->GetExecutionContext(), ai_->GetTaskRunner(),
           std::move(remote_summarizer), options_);
       GetResolver()->Resolve(summarizer);
+    }
+    Cleanup();
+  }
+
+  void OnError(mojom::blink::AIManagerCreateClientError error) override {
+    if (!GetResolver()) {
+      return;
+    }
+
+    using mojom::blink::AIManagerCreateClientError;
+
+    switch (error) {
+      // TODO(crbug.com/381975242): Set specific exception once the type is
+      // finalized for `kInitialPromptsTooLarge`.
+      case AIManagerCreateClientError::kUnableToCreateSession:
+      case AIManagerCreateClientError::kUnableToCalculateTokenSize:
+      case AIManagerCreateClientError::kInitialPromptsTooLarge: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            kExceptionMessageUnableToCreateSession);
+        break;
+      }
+      case AIManagerCreateClientError::kUnsupportedLanguage: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            kExceptionMessageUnsupportedLanguages);
+        break;
+      }
     }
     Cleanup();
   }

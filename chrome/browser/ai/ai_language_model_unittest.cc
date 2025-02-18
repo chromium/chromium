@@ -351,9 +351,10 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
           });
     } else {
       EXPECT_CALL(mock_create_language_model_client, OnError(_))
-          .WillOnce([&](blink::mojom::AIManagerCreateLanguageModelError error) {
-            EXPECT_EQ(error, blink::mojom::AIManagerCreateLanguageModelError::
-                                 kUnsupportedLanguage);
+          .WillOnce([&](blink::mojom::AIManagerCreateClientError error) {
+            EXPECT_EQ(
+                error,
+                blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
             creation_run_loop.Quit();
           });
     }

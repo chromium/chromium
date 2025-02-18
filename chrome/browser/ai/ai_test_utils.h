@@ -9,6 +9,7 @@
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -97,7 +98,7 @@ class AITestUtils {
 
     MOCK_METHOD(void,
                 OnError,
-                (blink::mojom::AIManagerCreateLanguageModelError error),
+                (blink::mojom::AIManagerCreateClientError error),
                 (override));
 
    private:
@@ -140,6 +141,12 @@ class AITestUtils {
       const std::string& expected_context,
       const optimization_guide::proto::WritingAssistanceApiOptions&
           expected_options,
+      const std::string& expected_input);
+  static void CheckSummarizeRequest(
+      const google::protobuf::MessageLite& request_metadata,
+      const std::string& expected_shared_context,
+      const std::string& expected_context,
+      const optimization_guide::proto::SummarizeOptions& expected_options,
       const std::string& expected_input);
 
   // Converts string language codes to AILanguageCode mojo struct.

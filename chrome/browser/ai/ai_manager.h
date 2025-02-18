@@ -39,8 +39,7 @@ class AIManager : public base::SupportsUserData::Data,
  public:
   using AILanguageModelOrCreationError =
       base::expected<std::unique_ptr<AILanguageModel>,
-                     blink::mojom::AIManagerCreateLanguageModelError>;
-
+                     blink::mojom::AIManagerCreateClientError>;
   explicit AIManager(content::BrowserContext* browser_context);
   AIManager(const AIManager&) = delete;
   AIManager& operator=(const AIManager&) = delete;

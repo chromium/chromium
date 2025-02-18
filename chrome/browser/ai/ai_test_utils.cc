@@ -138,6 +138,26 @@ void AITestUtils::CheckWritingAssistanceApiRequest(
 }
 
 // static
+void AITestUtils::CheckSummarizeRequest(
+    const google::protobuf::MessageLite& request_metadata,
+    const std::string& expected_shared_context,
+    const std::string& expected_context,
+    const optimization_guide::proto::SummarizeOptions& expected_options,
+    const std::string& expected_input) {
+  const optimization_guide::proto::SummarizeRequest* request =
+      static_cast<const optimization_guide::proto::SummarizeRequest*>(
+          &request_metadata);
+  EXPECT_EQ(request->context(), AISummarizer::CombineContexts(
+                                    expected_shared_context, expected_context));
+  EXPECT_EQ(request->options().output_type(), expected_options.output_type());
+  EXPECT_EQ(request->options().output_format(),
+            expected_options.output_format());
+  EXPECT_EQ(request->options().output_length(),
+            expected_options.output_length());
+  EXPECT_EQ(request->article(), expected_input);
+}
+
+// static
 std::vector<blink::mojom::AILanguageCodePtr> AITestUtils::ToMojoLanguageCodes(
     const std::vector<std::string>& language_codes) {
   std::vector<blink::mojom::AILanguageCodePtr> result;

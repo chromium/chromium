@@ -268,7 +268,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   // handled accordingly.
   if (!size) {
     std::move(callback).Run(
-        base::unexpected(blink::mojom::AIManagerCreateLanguageModelError::
+        base::unexpected(blink::mojom::AIManagerCreateClientError::
                              kUnableToCalculateTokenSize),
         /*info=*/nullptr);
     return;
@@ -279,8 +279,8 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
     // The session cannot be created if the system prompt contains more tokens
     // than the limit.
     std::move(callback).Run(
-        base::unexpected(blink::mojom::AIManagerCreateLanguageModelError::
-                             kInitialPromptsTooLarge),
+        base::unexpected(
+            blink::mojom::AIManagerCreateClientError::kInitialPromptsTooLarge),
         /*info=*/nullptr);
     return;
   }
@@ -446,8 +446,8 @@ void AILanguageModel::Fork(
   if (!browser_context_) {
     // The `browser_context_` is already destroyed before the renderer owner
     // is gone.
-    client_remote->OnError(blink::mojom::AIManagerCreateLanguageModelError::
-                               kUnableToCreateSession);
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
 

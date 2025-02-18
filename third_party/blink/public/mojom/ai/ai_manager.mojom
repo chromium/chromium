@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/ai_language_model.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
@@ -71,25 +72,31 @@ enum ModelAvailabilityCheckResult {
 // The client interface that receives an AIWriter from an AIManager.
 interface AIManagerCreateWriterClient {
   // Called with a created writer's mojo interface as a result for the
-  // CreateWriter() method of the AIManager. When failed to create a
-  // AIWriter, this method is called with a null pending remote.
-  OnResult(pending_remote<blink.mojom.AIWriter>? writer);
+  // CreateWriter() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AIWriter> writer);
+
+  // Called when the manager cannot create an AIWriter.
+  OnError(AIManagerCreateClientError error);
 };
 
 // The client interface that receives an AIRewriter from an AIManager.
 interface AIManagerCreateRewriterClient {
   // Called with a created rewriter's mojo interface as a result for the
-  // CreateRewriter() method of the AIManager. When failed to create a
-  // AIRewriter, this method is called with a null pending remote.
-  OnResult(pending_remote<blink.mojom.AIRewriter>? rewriter);
+  // CreateRewriter() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AIRewriter> rewriter);
+
+  // Called when the manager cannot create an AIRewriter.
+  OnError(AIManagerCreateClientError error);
 };
 
 // The client interface that receives an AISummarizer from an AIManager.
 interface AIManagerCreateSummarizerClient {
   // Called with a created summarizer's mojo interface as a result for the
-  // CreateSummarizer() method of the AIManager. When failed to create a
-  // AISummarizer, this method is called with a null pending remote.
-  OnResult(pending_remote<blink.mojom.AISummarizer>? summarizer);
+  // CreateSummarizer() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AISummarizer> summarizer);
+
+  // Called when the manager cannot create an AISummarizer.
+  OnError(AIManagerCreateClientError error);
 };
 
 // The manager that could create a new session for the model.

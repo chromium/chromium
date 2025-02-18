@@ -22,9 +22,6 @@
 namespace blink {
 namespace {
 
-const char kExceptionMessageUnableToCreateRewriter[] =
-    "The rewriter cannot be created.";
-
 mojom::blink::AIRewriterTone ToMojoAIRewriterTone(V8AIRewriterTone tone) {
   switch (tone.AsEnum()) {
     case V8AIRewriterTone::Enum::kAsIs:
@@ -113,9 +110,37 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
           ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(rewriter),
           options_));
     } else {
-      GetResolver()->Reject(DOMException::Create(
-          kExceptionMessageUnableToCreateRewriter,
-          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          kExceptionMessageUnableToCreateSession);
+    }
+    Cleanup();
+  }
+
+  void OnError(mojom::blink::AIManagerCreateClientError error) override {
+    if (!GetResolver()) {
+      return;
+    }
+
+    using mojom::blink::AIManagerCreateClientError;
+
+    switch (error) {
+      // TODO(crbug.com/381975242): Set specific exception once the type is
+      // finalized for `kInitialPromptsTooLarge`.
+      case AIManagerCreateClientError::kUnableToCreateSession:
+      case AIManagerCreateClientError::kUnableToCalculateTokenSize:
+      case AIManagerCreateClientError::kInitialPromptsTooLarge: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            kExceptionMessageUnableToCreateSession);
+        break;
+      }
+      case AIManagerCreateClientError::kUnsupportedLanguage: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            kExceptionMessageUnsupportedLanguages);
+        break;
+      }
     }
     Cleanup();
   }

@@ -21,9 +21,6 @@
 namespace blink {
 namespace {
 
-const char kExceptionMessageUnableToCreateWriter[] =
-    "The writer cannot be created.";
-
 mojom::blink::AIWriterTone ToMojoAIWriterTone(V8AIWriterTone tone) {
   switch (tone.AsEnum()) {
     case V8AIWriterTone::Enum::kFormal:
@@ -107,9 +104,37 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
           ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(writer),
           options_));
     } else {
-      GetResolver()->Reject(DOMException::Create(
-          kExceptionMessageUnableToCreateWriter,
-          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          kExceptionMessageUnableToCreateSession);
+    }
+    Cleanup();
+  }
+
+  void OnError(mojom::blink::AIManagerCreateClientError error) override {
+    if (!GetResolver()) {
+      return;
+    }
+
+    using mojom::blink::AIManagerCreateClientError;
+
+    switch (error) {
+      // TODO(crbug.com/381975242): Set specific exception once the type is
+      // finalized for `kInitialPromptsTooLarge`.
+      case AIManagerCreateClientError::kUnableToCreateSession:
+      case AIManagerCreateClientError::kUnableToCalculateTokenSize:
+      case AIManagerCreateClientError::kInitialPromptsTooLarge: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            kExceptionMessageUnableToCreateSession);
+        break;
+      }
+      case AIManagerCreateClientError::kUnsupportedLanguage: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            kExceptionMessageUnsupportedLanguages);
+        break;
+      }
     }
     Cleanup();
   }

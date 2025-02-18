@@ -49,6 +49,10 @@ class MockCreateWriterClient
               OnResult,
               (mojo::PendingRemote<::blink::mojom::AIWriter> writer),
               (override));
+  MOCK_METHOD(void,
+              OnError,
+              (blink::mojom::AIManagerCreateClientError error),
+              (override));
 
  private:
   mojo::Receiver<blink::mojom::AIManagerCreateWriterClient> receiver_{this};
@@ -217,12 +221,14 @@ TEST_F(AIWriterTest, CreateWriterNoService) {
 
   MockCreateWriterClient mock_create_writer_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_writer_client, OnResult(_))
-      .WillOnce(testing::Invoke(
-          [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
-            EXPECT_FALSE(writer);
-            run_loop.Quit();
-          }));
+  EXPECT_CALL(mock_create_writer_client, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
+                                        error) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        run_loop.Quit();
+      }));
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(mock_create_writer_client.BindNewPipeAndPassRemote(),
@@ -247,12 +253,14 @@ TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
 
   MockCreateWriterClient mock_create_writer_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_writer_client, OnResult(_))
-      .WillOnce(testing::Invoke(
-          [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
-            EXPECT_FALSE(writer);
-            run_loop.Quit();
-          }));
+  EXPECT_CALL(mock_create_writer_client, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
+                                        error) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        run_loop.Quit();
+      }));
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(mock_create_writer_client.BindNewPipeAndPassRemote(),

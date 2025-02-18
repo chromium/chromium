@@ -44,7 +44,7 @@ class AILanguageModel : public AIContextBoundObject,
   using PromptApiMetadata = optimization_guide::proto::PromptApiMetadata;
   using CreateLanguageModelCallback = base::OnceCallback<void(
       base::expected<mojo::PendingRemote<blink::mojom::AILanguageModel>,
-                     blink::mojom::AIManagerCreateLanguageModelError>,
+                     blink::mojom::AIManagerCreateClientError>,
       blink::mojom::AILanguageModelInstanceInfoPtr)>;
 
   // The minimum version of the model execution config for prompt API that
