@@ -24,8 +24,10 @@ class AutofillWebDataServiceTestHelper {
 
   ~AutofillWebDataServiceTestHelper();
 
-  scoped_refptr<WebDatabaseService> web_database_service() { return wdbs_; }
-  scoped_refptr<AutofillWebDataService> autofill_webdata_service() {
+  scoped_refptr<WebDatabaseService> web_database_service() const {
+    return wdbs_;
+  }
+  scoped_refptr<AutofillWebDataService> autofill_webdata_service() const {
     return awds_;
   }
 
