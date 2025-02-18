@@ -128,6 +128,23 @@ struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
   }
 };
 
+struct COLOR_SPACE_EXPORT HdrMetadataAgtm {
+  HdrMetadataAgtm();
+  explicit HdrMetadataAgtm(sk_sp<SkData> payload);
+  HdrMetadataAgtm(const void* payload, size_t size);
+  HdrMetadataAgtm(const HdrMetadataAgtm& other);
+  HdrMetadataAgtm& operator=(const HdrMetadataAgtm& other);
+  ~HdrMetadataAgtm();
+
+  std::string ToString() const;
+
+  bool operator==(const HdrMetadataAgtm& rhs) const;
+  bool operator!=(const HdrMetadataAgtm& rhs) const { return !(*this == rhs); }
+
+  // The raw encoded AGTM metadata payload.
+  sk_sp<SkData> payload;
+};
+
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
 struct COLOR_SPACE_EXPORT HDRMetadata {
   // Mastering display color volume (MDCV) metadata.
@@ -142,16 +159,17 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // Brightness points for extended range color spaces.
   std::optional<HdrMetadataExtendedRange> extended_range;
 
-  HDRMetadata() = default;
+  // Agtm metadata.
+  std::optional<HdrMetadataAgtm> agtm;
+
+  HDRMetadata();
   HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
-              const HdrMetadataCta861_3& cta_861_3)
-      : smpte_st_2086(smpte_st_2086), cta_861_3(cta_861_3) {}
-  explicit HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086)
-      : smpte_st_2086(smpte_st_2086) {}
-  explicit HDRMetadata(const HdrMetadataCta861_3& cta_861_3)
-      : cta_861_3(cta_861_3) {}
-  HDRMetadata(const HDRMetadata& rhs) = default;
-  HDRMetadata& operator=(const HDRMetadata& rhs) = default;
+              const HdrMetadataCta861_3& cta_861_3);
+  explicit HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086);
+  explicit HDRMetadata(const HdrMetadataCta861_3& cta_861_3);
+  HDRMetadata(const HDRMetadata& rhs);
+  HDRMetadata& operator=(const HDRMetadata& rhs);
+  ~HDRMetadata();
 
   bool IsValid() const {
     return (cta_861_3 && cta_861_3->IsValid()) ||
@@ -171,7 +189,8 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   bool operator==(const HDRMetadata& rhs) const {
     return cta_861_3 == rhs.cta_861_3 && smpte_st_2086 == rhs.smpte_st_2086 &&
-           ndwl == rhs.ndwl && extended_range == rhs.extended_range;
+           ndwl == rhs.ndwl && extended_range == rhs.extended_range &&
+           agtm == rhs.agtm;
   }
 
   bool operator!=(const HDRMetadata& rhs) const { return !(*this == rhs); }
