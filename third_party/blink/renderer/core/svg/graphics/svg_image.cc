@@ -682,8 +682,12 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // so we have sensible defaults. These settings are fixed and will not update
   // if changed.
   const auto& pages = Page::OrdinaryPages();
-  const Settings* settings_to_use =
-      !pages.empty() ? &(*pages.begin())->GetSettings() : nullptr;
+  Page* page = !pages.empty() ? *pages.begin() : nullptr;
+  const Settings* settings_to_use = page ? &page->GetSettings() : nullptr;
+  const ColorProviderColorMaps* color_maps =
+      page && RuntimeEnabledFeatures::IsolatedSVGDocumentOptimizationEnabled()
+          ? &page->GetColorProviderColorMaps()
+          : nullptr;
 
   // FIXME: If this SVG ends up loading itself, we might leak the world.
   // The Cache code does not know about ImageResources holding Frames and
@@ -695,7 +699,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
       *chrome_client_, *agent_group_scheduler_, Data(),
       WTF::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
                     weak_ptr_factory_.GetWeakPtr()),
-      settings_to_use, IsolatedSVGDocumentHost::ProcessingMode::kAnimated);
+      settings_to_use, color_maps,
+      IsolatedSVGDocumentHost::ProcessingMode::kAnimated);
 
   const SVGSVGElement* root_element = RootElement();
   if (!root_element) {

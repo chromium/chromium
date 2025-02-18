@@ -2569,6 +2569,10 @@
       status: "stable",
     },
     {
+      name: "IsolatedSVGDocumentOptimization",
+      status: "stable",
+    },
+    {
       name: "IsSecurePaymentConfirmationAvailableAPI",
       status: "experimental",
     },
