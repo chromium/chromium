@@ -27,6 +27,8 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/common/env_vars.h"
+#include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/install_util.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -105,6 +107,12 @@ void ReportFirstStartFailure(const CLSID& clsid, HRESULT result) {
                   local_service_value_result, local_service);
     }
 
+    // Get the name of the service registered with the SCM.
+    std::wstring service_name =
+        installer::InstallServiceWorkItem::GetCurrentServiceName(
+            install_static::GetTracingServiceName(),
+            install_static::GetClientStateKeyPath());
+
     // Read the `ImagePath` value in the service's key.
     std::wstring service_path;
     LONG service_key_result = ERROR_SUCCESS;
@@ -156,6 +164,10 @@ void ReportFirstStartFailure(const CLSID& clsid, HRESULT result) {
     // "GoogleChromeDevTracingService".
     SCOPED_CRASH_KEY_STRING64("tracing", "LocalService",
                               base::WideToASCII(local_service));
+    // The name of the service as registered with the SCM. This should match the
+    // LocalService value.
+    SCOPED_CRASH_KEY_STRING64("tracing", "service_name",
+                              base::WideToASCII(service_name));
     // The result of opening the service's registry key; should be 0.
     SCOPED_CRASH_KEY_NUMBER("tracing", "service_key_result",
                             service_key_result);
