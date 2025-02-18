@@ -37,6 +37,7 @@
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/quick_pair/feature_status_tracker/scanning_enabled_provider.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -213,6 +214,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
     registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
     registry->RegisterBooleanPref(prefs::kLobsterEnabled, true);
+    registry->RegisterBooleanPref(
+        prefs::kLobsterEnterprisePolicySettings,
+        base::to_underlying(
+            ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
     registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
     registry->RegisterListPref(
         chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList);

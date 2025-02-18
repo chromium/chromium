@@ -32,6 +32,14 @@ enum class ASH_PUBLIC_EXPORT LobsterStatus {
   kBlocked,
 };
 
+enum class ASH_PUBLIC_EXPORT LobsterEnterprisePolicyValue : int {
+  // The policy allows the feature to run with model improvement.
+  kAllowedWithModelImprovement = 0,
+  // The policy allows the feature
+  kAllowedWithoutModelImprovement = 1,
+  kDisabled = 2,
+};
+
 enum class ASH_PUBLIC_EXPORT LobsterSystemCheck {
   kMinValue,
   kInvalidConsent,
