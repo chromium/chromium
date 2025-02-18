@@ -818,15 +818,15 @@ TEST_F(AutofillOptimizationGuideTest,
   // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
-              Eq(GURL("https://www.abercrombie.com")),
+              Eq(GURL("https://www.testurl.test")),
               Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
               Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
 
-  // abercrombie.com is in the allowlist.
+  // testurl.test is in the allowlist.
   EXPECT_TRUE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplAffirmIssuerId, GURL("https://www.abercrombie.com")));
+      kBnplAffirmIssuerId, GURL("https://www.testurl.test")));
 }
 
 // Test that we do not allow checkout amount searching for Affirm on a
@@ -840,15 +840,15 @@ TEST_F(AutofillOptimizationGuideTest,
   // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
-              Eq(GURL("https://www.abc.com")),
+              Eq(GURL("https://www.testurl.test")),
               Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
               Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
 
-  // abc.com is not in the allowlist.
+  // testurl.test is not in the allowlist.
   EXPECT_FALSE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplAffirmIssuerId, GURL("https://www.abc.com")));
+      kBnplAffirmIssuerId, GURL("https://www.testurl.test")));
 }
 
 // Test that we allow checkout amount searching for Zip on an allowlisted URL.
@@ -861,15 +861,15 @@ TEST_F(AutofillOptimizationGuideTest,
   // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
-              Eq(GURL("https://www.abercrombie.com")),
+              Eq(GURL("https://www.testurl.test")),
               Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
               Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
 
-  // abercrombie.com is in the allowlist.
+  // testurl.test is in the allowlist.
   EXPECT_TRUE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplZipIssuerId, GURL("https://www.abercrombie.com")));
+      kBnplZipIssuerId, GURL("https://www.testurl.test")));
 }
 
 // Test that we do not allow checkout amount searching for Zip on a
@@ -883,15 +883,15 @@ TEST_F(AutofillOptimizationGuideTest,
   // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
-              Eq(GURL("https://www.abc.com")),
+              Eq(GURL("https://www.testurl.test")),
               Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
               Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
 
-  // abc.com is not in the allowlist.
+  // testurl.test is not in the allowlist.
   EXPECT_FALSE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplZipIssuerId, GURL("https://www.abc.com")));
+      kBnplZipIssuerId, GURL("https://www.testurl.test")));
 }
 
 // Test that we do not allow checkout amount searching for unknown issuer id.
@@ -904,15 +904,15 @@ TEST_F(AutofillOptimizationGuideTest,
   // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
-              Eq(GURL("https://www.abercrombie.com")),
+              Eq(GURL("https://www.testurl.test")),
               Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
               Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
 
-  // abercrombie.com is in the allowlist but issuer_id is not matched.
+  // testurl.test is in the allowlist but issuer_id is not matched.
   EXPECT_FALSE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      /*issuer_id=*/"zipp", GURL("https://www.abercrombie.com")));
+      /*issuer_id=*/"zipp", GURL("https://www.testurl.test")));
 }
 
 // Test that we do not allow checkout amount searching when the amount
@@ -927,14 +927,14 @@ TEST_F(AutofillOptimizationGuideTest,
   // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
-              Eq(GURL("https://www.abercrombie.com")),
+              Eq(GURL("https://www.testurl.test")),
               Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
               Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
 
   EXPECT_FALSE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplZipIssuerId, GURL("https://www.abercrombie.com")));
+      kBnplZipIssuerId, GURL("https://www.testurl.test")));
 }
 #endif
 
