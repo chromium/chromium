@@ -3760,6 +3760,47 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   ExpectAccessObserved(expected_accesses);
 }
 
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WebLocksUsageHistograms) {
+  // The test assumes pages gets deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      await sharedStorage.set('key0', 'value0');
+      await sharedStorage.set('key0', 'value0');
+
+      await navigator.locks.request("lock1", async (lock) => {
+        await sharedStorage.set('key0', 'value0', { withLock: 'lock2' });
+      });
+
+      await sharedStorage.batchUpdate([
+        new SharedStorageSetMethod('key0', 'value0'),
+        new SharedStorageAppendMethod('key1', 'value1')
+      ], { withLock: 'lock1' });
+    )",
+                         &out_script_url);
+
+  // Navigate again to record histograms.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  histogram_tester_.ExpectBucketCount(
+      "Storage.SharedStorage.UpdateMethod.HasLockOption", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Storage.SharedStorage.UpdateMethod.HasLockOption", false, 2);
+  histogram_tester_.ExpectUniqueSample(
+      "Storage.SharedStorage.BatchUpdateMethod.HasLockOption", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Storage.SharedStorage.Worklet.NavigatorLocksInvoked", true, 1);
+}
+
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        CreateWorklet_SameOrigin_Success) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);

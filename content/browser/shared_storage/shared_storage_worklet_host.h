@@ -350,6 +350,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // bool is updated with each call to `run()` or `selectURL()`.
   bool keep_alive_after_operation_ = true;
 
+  // Whether navigator.locks has been invoked for this worklet.
+  bool navigator_locks_invoked_ = false;
+
   // Timer for starting and ending the keep-alive phase.
   base::OneShotTimer keep_alive_timer_;
 

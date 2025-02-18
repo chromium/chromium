@@ -4,6 +4,7 @@
 
 #include "content/browser/shared_storage/shared_storage_lock_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
@@ -104,6 +105,9 @@ void SharedStorageLockManager::SharedStorageUpdate(
     AccessScope scope,
     FrameTreeNodeId main_frame_id,
     SharedStorageUpdateCallback callback) {
+  base::UmaHistogramBoolean("Storage.SharedStorage.UpdateMethod.HasLockOption",
+                            !!method_with_options->with_lock);
+
   SharedStorageUpdateHelper(std::move(method_with_options),
                             shared_storage_origin, scope, main_frame_id,
                             std::move(callback),
@@ -118,6 +122,9 @@ void SharedStorageLockManager::SharedStorageBatchUpdate(
     AccessScope scope,
     FrameTreeNodeId main_frame_id,
     SharedStorageUpdateCallback callback) {
+  base::UmaHistogramBoolean(
+      "Storage.SharedStorage.BatchUpdateMethod.HasLockOption", !!with_lock);
+
   auto ready_to_handle_batch_update_callback = base::BindOnce(
       &SharedStorageLockManager::OnReadyToHandleBatchUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(methods_with_options),

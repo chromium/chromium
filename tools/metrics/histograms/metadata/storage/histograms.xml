@@ -1236,6 +1236,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.BatchUpdateMethod.HasLockOption"
+    enum="BooleanPresent" expires_after="2025-08-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a shared storage 'batch update' method specifies to
+    acquire a lock. Recorded upon execution after early permission checks.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Database.Destruction"
     enum="BooleanDestroyed" expires_after="2025-08-10">
   <owner>cammie@chromium.org</owner>
@@ -1854,6 +1865,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.UpdateMethod.HasLockOption"
+    enum="BooleanPresent" expires_after="2025-08-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a shared storage individual update method (set,
+    append, delete, clear) specifies to acquire a lock. Recorded upon execution
+    after early permission checks.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Worklet.Context.IsDefined"
     enum="Boolean" expires_after="2025-08-10">
   <owner>cammie@chromium.org</owner>
@@ -1890,6 +1913,17 @@ chromium-metrics-reviews@google.com.
     thrown, after a callback is run with `/*success=*/false`, after a call to
     `ReportBadMessage()`, and/or just before the rejected promise is returned,
     via the utility method `LogWorkletError()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.NavigatorLocksInvoked"
+    enum="Boolean" expires_after="2025-08-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a shared storage worklet invokes `navigator.locks`.
+    Recorded when the worklet is destroyed.
   </summary>
 </histogram>
 
