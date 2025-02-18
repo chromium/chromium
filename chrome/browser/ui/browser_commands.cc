@@ -1129,6 +1129,8 @@ void MoveTabsToNewWindow(Browser* browser,
     if (tab_group_service && tab_group_service->GetGroup(group.value())) {
       observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
     }
+
+    new_browser->tab_strip_model()->AddTabGroup(group.value(), visual_data);
   }
 
   int indices_size = tab_indices.size();
@@ -1148,18 +1150,12 @@ void MoveTabsToNewWindow(Browser* browser,
       add_types = add_types | AddTabTypes::ADD_ACTIVE;
     }
 
-    new_browser->tab_strip_model()->AddTab(std::move(tab_model), -1,
-                                           ui::PAGE_TRANSITION_TYPED, add_types,
-                                           std::nullopt);
+    new_browser->tab_strip_model()->AddTab(
+        std::move(tab_model), -1, ui::PAGE_TRANSITION_TYPED, add_types, group);
   }
 
   // Add all the tabs in the new browser to the group if it belonged in a group.
   if (group.has_value()) {
-    std::vector<int> indices(new_browser->tab_strip_model()->GetTabCount());
-    std::iota(indices.begin(), indices.end(), 0);
-    new_browser->tab_strip_model()->AddToNewGroup(indices, group.value(),
-                                                  visual_data);
-
     if (observation_pauser) {
       observation_pauser.reset();
     }
