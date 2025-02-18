@@ -21,7 +21,7 @@ export function getHtml(this: ThemesElement) {
         @change="${this.onRefreshDailyToggleChange_}">
     </cr-toggle>
   </div>
-  <cr-grid columns="3" disable-arrow-navigation role="radiogroup">
+  <cr-grid columns="3" role="radiogroup">
     ${this.themes_.map((item, index) => html`
       <div class="tile theme" tabindex="0" role="radio"
           data-index="${index}" @click="${this.onSelectTheme_}"
