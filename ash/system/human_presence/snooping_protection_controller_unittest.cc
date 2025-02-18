@@ -296,7 +296,7 @@ TEST_F(SnoopingProtectionControllerTestPresent, Oobe) {
   // Simulate end of OOBE when user is logged in.
   session->AddUserSession("testuser@gmail.com",
                           user_manager::UserType::kRegular,
-                          /*provide_pref_service=*/true,
+                          /*pref_service=*/nullptr,
                           /*is_new_profile=*/true);
   session->SwitchActiveUser(AccountId::FromUserEmail("testuser@gmail.com"));
   session->SetSessionState(session_manager::SessionState::OOBE);

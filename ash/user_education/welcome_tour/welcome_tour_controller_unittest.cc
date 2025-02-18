@@ -406,10 +406,10 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   auto* const session_controller_client = GetSessionControllerClient();
   session_controller_client->AddUserSession(
       primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
+      /*pref_service=*/nullptr, /*is_new_profile=*/true);
   session_controller_client->AddUserSession(
       secondary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
+      /*pref_service=*/nullptr, /*is_new_profile=*/true);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
   // to be registered and started as well as notify observers. Note that
@@ -788,9 +788,9 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
 
   base::HistogramTester histogram_tester;
   TestSessionControllerClient* const session = GetSessionControllerClient();
-  session->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
+  session->AddUserSession(primary_account_id.GetUserEmail(),
+                          user_manager::UserType::kRegular,
+                          /*pref_service=*/nullptr, /*is_new_profile=*/true);
   session->SwitchActiveUser(primary_account_id);
 
   // Enable the spoken feedback after the pref service is ready and before the
@@ -957,7 +957,7 @@ class WelcomeTourControllerUserEligibilityTest
     // Add a user based on test parameterization.
     TestSessionControllerClient* const session = GetSessionControllerClient();
     session->AddUserSession(primary_account_id_.GetUserEmail(), GetUserType(),
-                            /*provide_pref_service=*/true,
+                            /*pref_service=*/nullptr,
                             /*is_new_profile=*/IsNewUserLocally(),
                             /*given_name=*/std::string(), IsManagedUser());
     session->SwitchActiveUser(primary_account_id_);

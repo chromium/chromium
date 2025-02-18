@@ -116,23 +116,22 @@ void TestSessionControllerClient::SetIsDemoSession() {
 void TestSessionControllerClient::AddUserSession(
     std::string_view display_email,
     user_manager::UserType user_type,
-    std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service,
+    std::unique_ptr<PrefService> pref_service,
     bool is_new_profile,
     const std::string& given_name,
     bool is_account_managed) {
   auto account_id = AccountId::FromUserEmail(
       use_lower_case_user_id_ ? GetUserIdFromEmail(display_email)
                               : display_email);
-  AddUserSession(account_id, display_email, user_type,
-                 std::move(provide_or_pref_service), is_new_profile, given_name,
-                 is_account_managed);
+  AddUserSession(account_id, display_email, user_type, std::move(pref_service),
+                 is_new_profile, given_name, is_account_managed);
 }
 
 void TestSessionControllerClient::AddUserSession(
     const AccountId& account_id,
     std::string_view display_email,
     user_manager::UserType user_type,
-    std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service,
+    std::unique_ptr<PrefService> pref_service,
     bool is_new_profile,
     const std::string& given_name,
     bool is_account_managed) {
@@ -141,27 +140,17 @@ void TestSessionControllerClient::AddUserSession(
   bool is_ephemeral = user_type == user_manager::UserType::kGuest ||
                       user_type == user_manager::UserType::kPublicAccount;
 
-  if (std::holds_alternative<bool>(provide_or_pref_service)) {
-    bool provide = std::get<bool>(provide_or_pref_service);
-    CHECK(!default_provide_pref_service_ || provide);
-    if (!default_provide_pref_service_) {
-      CHECK(GetUserPrefService(account_id));
-    } else if (provide && !GetUserPrefService(account_id)) {
-      prefs_provider_->SetUserPrefs(
-          account_id, TestPrefServiceProvider::CreateUserPrefServiceSimple());
-    } else {
-      CHECK(!provide || reuse_pref_service_);
-      CHECK(GetUserPrefService(account_id));
-    }
-  } else {
-    CHECK(std::holds_alternative<std::unique_ptr<PrefService>>(
-        provide_or_pref_service));
-    auto& pref_service =
-        std::get<std::unique_ptr<PrefService>>(provide_or_pref_service);
-    CHECK(pref_service);
+  if (pref_service) {
     CHECK(!controller_->GetUserPrefServiceForUser(account_id));
-
     prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
+  } else if (!provide_pref_service_) {
+    CHECK(GetUserPrefService(account_id));
+  } else if (!GetUserPrefService(account_id)) {
+    prefs_provider_->SetUserPrefs(
+        account_id, TestPrefServiceProvider::CreateUserPrefServiceSimple());
+  } else {
+    CHECK(reuse_pref_service_);
+    CHECK(GetUserPrefService(account_id));
   }
 
   UserSession session;

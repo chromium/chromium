@@ -940,7 +940,7 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
   }
 
   void CreatePrefServiceForUserBeforeLogin(const AccountId& account_id) {
-    GetSessionControllerClient()->set_default_provide_pref_service(false);
+    GetSessionControllerClient()->set_provide_pref_service(false);
     CHECK(!Shell::Get()->session_controller()->GetUserSessionByAccountId(
         account_id));
     ash_test_helper()->prefs_provider()->SetUserPrefs(

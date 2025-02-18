@@ -402,7 +402,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   session_controller_client_ = std::make_unique<TestSessionControllerClient>(
       shell->session_controller(), prefs_provider_.get(),
       init_params.create_signin_pref_service);
-  session_controller_client_->set_default_provide_pref_service(
+  session_controller_client_->set_provide_pref_service(
       init_params.auto_create_prefs_services);
   session_controller_client_->InitializeAndSetClient();
 
@@ -498,15 +498,9 @@ void AshTestHelper::SimulateUserLogin(
     user_manager::UserType user_type,
     bool is_new_profile,
     std::unique_ptr<PrefService> pref_service) {
-  std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service =
-      true;
-  if (pref_service) {
-    provide_or_pref_service = std::move(pref_service);
-  }
-
   session_controller_client_->AddUserSession(
-      account_id, account_id.GetUserEmail(), user_type,
-      std::move(provide_or_pref_service), is_new_profile);
+      account_id, account_id.GetUserEmail(), user_type, std::move(pref_service),
+      is_new_profile);
   session_controller_client_->SwitchActiveUser(account_id);
   session_controller_client_->SetSessionState(
       session_manager::SessionState::ACTIVE);

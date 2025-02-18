@@ -249,7 +249,7 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
     const auto account_id = AccountId::FromUserEmail(std::string(user_email));
     GetSessionControllerClient()->AddUserSession(
         account_id, account_id.GetUserEmail(), user_type,
-        /*provide_pref_service=*/true, /*is_new_profile=*/false,
+        /*pref_service=*/nullptr, /*is_new_profile=*/false,
         /*given_name=*/std::string(), /*is_managed=*/true);
     GetSessionControllerClient()->SwitchActiveUser(account_id);
     GetSessionControllerClient()->SetSessionState(
