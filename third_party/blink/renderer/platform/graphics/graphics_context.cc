@@ -951,7 +951,14 @@ void GraphicsContext::ClipRoundedRect(const FloatRoundedRect& rrect,
     return;
   }
 
-  ClipRRect(SkRRect(rrect), should_antialias, clip_op);
+  if (rrect.HasSimpleRoundedCurvature()) {
+    ClipRRect(SkRRect(rrect), should_antialias, clip_op);
+    return;
+  }
+
+  Path path;
+  path.AddRoundedRect(rrect);
+  ClipPath(path.GetSkPath(), should_antialias, clip_op);
 }
 
 void GraphicsContext::ClipOutRoundedRect(const FloatRoundedRect& rect) {
