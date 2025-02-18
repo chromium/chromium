@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_notification_cell.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
 
+using tab_groups::SharingState;
+
 namespace {
 
 // Layout.
@@ -574,10 +576,30 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak TabGroupsPanelViewController* weakSelf = self;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                  [weakSelf.mutator deleteTabGroupsPanelItem:cell.item
-                                                  sourceView:cell];
-                }]];
+
+  switch (cell.item.sharingState) {
+    case SharingState::kNotShared: {
+      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                      [weakSelf.mutator deleteTabGroupsPanelItem:cell.item
+                                                      sourceView:cell];
+                    }]];
+      break;
+    }
+    case SharingState::kShared: {
+      [menuElements
+          addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+                        // TODO(crbug.com/375586820): Implement this.
+                    }]];
+      break;
+    }
+    case SharingState::kSharedAndOwned: {
+      [menuElements
+          addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+                        // TODO(crbug.com/375586820): Implement this.
+                    }]];
+      break;
+    }
+  }
 
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {

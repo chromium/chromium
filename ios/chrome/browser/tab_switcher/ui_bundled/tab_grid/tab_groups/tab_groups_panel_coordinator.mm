@@ -9,6 +9,7 @@
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
@@ -81,14 +82,23 @@ using collaboration::messaging::MessagingBackendServiceFactory;
     _gridContainerViewController.containedViewController = _gridViewController;
   }
 
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  collaboration::messaging::MessagingBackendService* messagingService =
+      MessagingBackendServiceFactory::GetForProfile(profile);
+  data_sharing::DataSharingService* dataSharingService =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+
   _mediator = [[TabGroupsPanelMediator alloc]
-      initWithTabGroupSyncService:tab_groups::TabGroupSyncServiceFactory::
-                                      GetForProfile(profile)
-                  shareKitService:ShareKitServiceFactory::GetForProfile(profile)
-             collaborationService:CollaborationServiceFactory::GetForProfile(
-                                      profile)
-                 messagingService:MessagingBackendServiceFactory::GetForProfile(
-                                      profile)
+      initWithTabGroupSyncService:tabGroupSyncService
+                  shareKitService:shareKitService
+             collaborationService:collaborationService
+                 messagingService:messagingService
+               dataSharingService:dataSharingService
               regularWebStateList:self.browser->GetWebStateList()
                     faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                       profile)
