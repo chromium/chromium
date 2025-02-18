@@ -2537,6 +2537,7 @@ Full version information for the fingerprint enum values:
   <int value="29785307" label="CROS Cr50 0.1.2"/>
   <int value="31386678" label="CROS Cr50 0.6.91"/>
   <int value="46986725" label="CROS Ti50 0.23.3"/>
+  <int value="53187598" label="CROS Ti50 0.22.3"/>
   <int value="58020716" label="CROS Ti50 0.21.1"/>
   <int value="67287287" label="CROS Cr50 0.4.26 aka 0.6.0"/>
   <int value="70763054" label="CROS Ti50 0.24.1"/>
@@ -2569,6 +2570,7 @@ Full version information for the fingerprint enum values:
   <int value="367426829" label="CROS Cr50 0.5.180"/>
   <int value="368058567" label="STM d08"/>
   <int value="369007271" label="CROS Ti50 0.23.62"/>
+  <int value="379167039" label="CROS Ti50 0.22.4"/>
   <int value="379654202" label="CROS Cr50 0.0.13"/>
   <int value="399636984" label="CROS Cr50 0.0.18"/>
   <int value="403344126" label="CROS Ti50 0.23.72"/>
@@ -2586,6 +2588,7 @@ Full version information for the fingerprint enum values:
   <int value="488674186" label="CROS Cr50 0.6.201"/>
   <int value="498251593" label="CROS Cr50 0.5.4"/>
   <int value="500048220" label="CROS Cr50 0.5.271"/>
+  <int value="506922183" label="CROS Ti50 NT 0.36.20"/>
   <int value="517482723" label="IFX 9655 rev 38 fw 4.32 build 036f"/>
   <int value="533446617" label="CROS Cr50 0.5.111"/>
   <int value="544519086" label="CROS Ti50 0.23.121"/>
@@ -2605,7 +2608,9 @@ Full version information for the fingerprint enum values:
   <int value="666817951" label="CROS Cr50 0.6.211"/>
   <int value="679016111" label="CROS Cr50 0.5.60"/>
   <int value="691364586" label="CROS Cr50 0.0.22 Eve Flags 0xff00(unknown)"/>
+  <int value="692410650" label="CROS Ti50 0.22.0"/>
   <int value="698425188" label="CROS Ti50 0.24.90"/>
+  <int value="699220438" label="CROS Ti50 0.22.1"/>
   <int value="704960859" label="CROS Ti50 0.24.3"/>
   <int value="705140733" label="CROS Cr50 0.6.111"/>
   <int value="707846933" label="CROS Cr50 0.1.1 Flags 0x10(pre-pvt)"/>
@@ -2666,6 +2671,7 @@ Full version information for the fingerprint enum values:
   <int value="1154690950" label="CROS Cr50 0.6.250"/>
   <int value="1170421178" label="CROS Ti50 0.23.140"/>
   <int value="1172082999" label="CROS Cr50 0.5.205"/>
+  <int value="1184211282" label="CROS Cr50 0.6.281"/>
   <int value="1184698907" label="CROS Cr50 0.3.23"/>
   <int value="1190683265" label="CROS Cr50 0.0.14"/>
   <int value="1204349964" label="CROS Cr50 0.6.3"/>
@@ -2683,8 +2689,11 @@ Full version information for the fingerprint enum values:
   <int value="1335300248" label="CROS Ti50 0.24.120"/>
   <int value="1338970508" label="CROS Ti50 0.24.80"/>
   <int value="1349306733" label="CROS Cr50 0.6.222"/>
+  <int value="1352415402" label="CROS Ti50 0.24.160"/>
   <int value="1353576267" label="IFX 9635 fw 3.18 build 0009"/>
+  <int value="1360145401" label="CROS Ti50 NT 0.36.4"/>
   <int value="1366252830" label="CROS Ti50 0.0.15"/>
+  <int value="1374014142" label="CROS Ti50 NT 0.36.7"/>
   <int value="1374260250" label="CROS Cr50 0.6.7"/>
   <int value="1387509141" label="CROS Ti50 0.24.132"/>
   <int value="1389941253" label="CROS Cr50 0.5.140"/>
@@ -2707,6 +2716,7 @@ Full version information for the fingerprint enum values:
   <int value="1498375675" label="CROS Ti50 0.24.72"/>
   <int value="1514324233" label="CROS Cr50 0.5.1"/>
   <int value="1517782969" label="CROS Ti50 0.23.51"/>
+  <int value="1517791951" label="CROS Ti50 NT 0.36.3"/>
   <int value="1520081310" label="CROS Cr50 0.0.22 variant"/>
   <int value="1521866659" label="CROS Cr50 0.4.13 Flags 0x10(pre-pvt)"/>
   <int value="1534426482" label="CROS Ti50 0.24.14"/>
@@ -2727,6 +2737,7 @@ Full version information for the fingerprint enum values:
   <int value="1730776982" label="CROS Ti50 0.24.140"/>
   <int value="1733077393" label="IFX 9645 rev 49 fw 133.33 build 00e3"/>
   <int value="1734763743" label="CROS Ti50 0.24.12"/>
+  <int value="1758642527" label="CROS Ti50 0.22.2"/>
   <int value="1758758919" label="CROS Cr50 0.6.130"/>
   <int value="1769445930" label="CROS Ti50 0.24.30"/>
   <int value="1774347833" label="CROS Cr50 0.0.15"/>
