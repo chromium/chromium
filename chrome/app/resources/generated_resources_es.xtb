@@ -1767,7 +1767,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2224444042887712269">Esta opción pertenece a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar nombre de carpeta</translation>
 <translation id="2225927550500503913">Tarjeta virtual activada</translation>
-<translation id="2226826835915474236">Accesos directos inactivos</translation>
+<translation id="2226826835915474236">Atajos inactivos</translation>
 <translation id="2226907662744526012">Desbloquear automáticamente una vez introducido el PIN</translation>
 <translation id="2227179592712503583">Eliminar sugerencia</translation>
 <translation id="2229161054156947610">Más de 1 hora</translation>
@@ -10473,7 +10473,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8457251154056341970">No volverás a ver <ph name="MODULE_NAME" /> en esta página</translation>
 <translation id="8457451314607652708">Importar marcadores</translation>
 <translation id="8458259704995116343">No se ha podido iniciar la VM.</translation>
-<translation id="8458341576712814616">Acceso directo</translation>
+<translation id="8458341576712814616">Atajo</translation>
 <translation id="8458627787104127436">Abrir todas (<ph name="URL_COUNT" />) en una ventana nueva</translation>
 <translation id="8459023460357294721">Abrir <ph name="FILE_NAME" /> de todos modos</translation>
 <translation id="8459333762072051247">Estado de inicio de sesión</translation>
