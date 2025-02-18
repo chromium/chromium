@@ -22,6 +22,7 @@ def __filegroups(ctx):
 
 __handlers = {}
 __handlers.update(clang_unix.handlers)
+__handlers.update(clang_all.handlers)
 
 def __step_config(ctx, step_config):
     cfg = "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_mac.cfg"

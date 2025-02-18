@@ -37,6 +37,7 @@ def __padding(data):
     return data + "\n"
 
 def __ar_create(ctx, wd, ins):
+    """Creates a thin archive without a symbol table."""
     data = "!<thin>\n"
     offset = {}
     content = ""
@@ -52,7 +53,30 @@ def __ar_create(ctx, wd, ins):
             data += __file_header(__ref_fname(offset, fname), size)
     return bytes(data)
 
+def __ar_entries(ctx, fname, build_dir):
+    """Read entries from a thin archive. """
+
+    # TODO: It may take long time to read an entire archive.
+    # Is it better to read only the first X bytes?
+    lines = str(ctx.fs.read(fname)).splitlines()
+    lib_dir = path.rel(build_dir, path.dir(fname))
+    ents = []
+    if not len(lines):
+        print("warning: empty archive. `%s`" % fname)
+        return []
+    if not lines[0].startswith("!<thin>"):
+        print("not thin archive. `%s`" % fname)
+        return []
+    for l in lines:
+        l.strip()
+        if l.endswith(".obj/") or l.endswith(".o/"):
+            ents.append(path.join(lib_dir, l.removesuffix("/")))
+        if l.endswith(".lib/") or l.endswith(".a/"):
+            fail("nested archive is not supported, yet. found `%s` in `%s`" % (l, fname))
+    return ents
+
 ar = module(
     "ar",
     create = __ar_create,
+    entries = __ar_entries,
 )
