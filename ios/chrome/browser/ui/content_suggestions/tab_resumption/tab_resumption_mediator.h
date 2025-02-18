@@ -39,11 +39,10 @@ class IdentityManager;
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Default initializer.
-- (instancetype)initWithLocalState:(PrefService*)localState
-                       prefService:(PrefService*)prefService
-                   identityManager:(signin::IdentityManager*)identityManager
-                           browser:(Browser*)browser
-                   shoppingService:(commerce::ShoppingService*)shoppingService
+- (instancetype)initWithPrefService:(PrefService*)prefService
+                    identityManager:(signin::IdentityManager*)identityManager
+                            browser:(Browser*)browser
+                    shoppingService:(commerce::ShoppingService*)shoppingService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

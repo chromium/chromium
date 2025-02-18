@@ -16,7 +16,7 @@ class PrefRegistrySyncable;
 namespace tab_resumption_prefs {
 
 // Pref name that disables the tab resumption tile.
-extern const char kTabResumptioDisabledPref[];
+extern const char kTabResumptionDisabledPref[];
 
 // Pref name that stores the last opened tab URL.
 extern const char kTabResumptionLastOpenedTabURLPref[];

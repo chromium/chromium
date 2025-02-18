@@ -158,8 +158,8 @@ NSString* HostnameFromGURL(GURL URL) {
 - (void)tearDownHelper {
   [SigninEarlGrey signOut];
   [ChromeEarlGrey clearFakeSyncServerData];
-  [ChromeEarlGrey resetDataForLocalStatePref:tab_resumption_prefs::
-                                                 kTabResumptioDisabledPref];
+  [ChromeEarlGrey
+      clearUserPrefWithName:tab_resumption_prefs::kTabResumptionDisabledPref];
   [ChromeEarlGrey clearUserPrefWithName:tab_resumption_prefs::
                                             kTabResumptionLastOpenedTabURLPref];
   [super tearDownHelper];

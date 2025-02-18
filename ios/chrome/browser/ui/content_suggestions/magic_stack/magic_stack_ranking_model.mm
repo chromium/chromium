@@ -315,8 +315,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 - (void)tabResumptionHelperDidReceiveItem {
   CHECK(IsTabResumptionEnabled());
-  if (tab_resumption_prefs::IsTabResumptionDisabled(
-          IsHomeCustomizationEnabled() ? _prefService : _localState)) {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(_prefService)) {
     return;
   }
 
@@ -324,8 +323,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 }
 
 - (void)tabResumptionHelperDidReconfigureItem {
-  if (tab_resumption_prefs::IsTabResumptionDisabled(
-          IsHomeCustomizationEnabled() ? _prefService : _localState)) {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(_prefService)) {
     return;
   }
   TabResumptionItem* item = _tabResumptionMediator.itemConfig;
@@ -935,8 +933,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 // Returns YES if the tab resumption module should added into the Magic Stack.
 - (BOOL)shouldShowTabResumption {
   return IsTabResumptionEnabled() &&
-         !tab_resumption_prefs::IsTabResumptionDisabled(
-             IsHomeCustomizationEnabled() ? _prefService : _localState) &&
+         !tab_resumption_prefs::IsTabResumptionDisabled(_prefService) &&
          _tabResumptionMediator.itemConfig;
 }
 

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -44,6 +45,8 @@ class MagicStackHalfSheetMediatorTest : public PlatformTest {
         prefs::kHomeCustomizationMostVisitedEnabled, true);
     pref_service_->registry()->RegisterBooleanPref(
         safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, false);
+    pref_service_->registry()->RegisterBooleanPref(
+        tab_resumption_prefs::kTabResumptionDisabledPref, false);
 
     consumer_ = OCMStrictProtocolMock(@protocol(MagicStackHalfSheetConsumer));
   }
