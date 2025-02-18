@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//components/signin/features.gni")
 
 assert(!is_fuchsia && !is_android)
@@ -376,6 +377,10 @@ if (!is_chromeos) {
       "//ui/webui",
       "//url",
     ]
+
+    if (enable_glic) {
+      deps += [ "//chrome/browser/glic/resources:browser_resources" ]
+    }
   }
 }
 

@@ -167,8 +167,10 @@ class TabStripActionContainer : public views::View,
 
   void OnAnimationSessionEnded();
 
+#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<TabStripNudgeButton> CreateGlicNudgeButton(
       TabStripController* tab_strip_controller);
+#endif  // BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton(
       TabStripController* tab_strip_controller);
   std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton(

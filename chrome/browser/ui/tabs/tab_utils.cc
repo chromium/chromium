@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif
 
 std::vector<TabAlertState> GetTabAlertStatesForContents(
@@ -171,8 +172,12 @@ std::u16string GetTabAlertStateText(const TabAlertState alert_state) {
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
     case TabAlertState::GLIC_ACCESSING:
+#if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING);
+#else
+      return u"";
+#endif
   }
   NOTREACHED();
 }
