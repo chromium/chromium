@@ -117,7 +117,14 @@ class CachedMetadataHandler : public GarbageCollected<CachedMetadataHandler> {
   // Returns the encoding to which the cache is specific.
   virtual String Encoding() const = 0;
 
+  // True if the resource resource associated with the handler is served from
+  // CacheStorage.
   virtual bool IsServedFromCacheStorage() const = 0;
+
+  // True if this handler manages static cached metadata from the application's
+  // resource bundle. Used to ensure the caching strategy does not generate code
+  // cache data unnecessarily, see V8CodeCache::GetCompileOptions() details.
+  virtual bool IsServedFromWebUIBundledCache() const { return false; }
 
   // Dump cache size kept in memory.
   virtual void OnMemoryDump(WebProcessMemoryDump* pmd,

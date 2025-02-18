@@ -281,13 +281,11 @@ int ResourceRequestSender::SendAsync(
     }
   }
 #endif
-  if (code_cache_host) {
-    used_code_cache_fetcher_ = true;
-    code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
-        *request, *code_cache_host,
-        WTF::BindOnce(&ResourceRequestSender::DidReceiveCachedCode,
-                      weak_factory_.GetWeakPtr()));
-  }
+  code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
+      *request, code_cache_host, loading_task_runner_,
+      WTF::BindOnce(&ResourceRequestSender::DidReceiveCachedCode,
+                    weak_factory_.GetWeakPtr()));
+  used_code_cache_fetcher_ = !!code_cache_fetcher_;
 
   // Compute a unique request_id for this renderer process.
   int request_id = GenerateRequestId();

@@ -32,7 +32,8 @@ class BLINK_PLATFORM_EXPORT CodeCacheFetcher
   // to fetch the associated code cache metadata.
   static scoped_refptr<CodeCacheFetcher> TryCreateAndStart(
       const network::ResourceRequest& request,
-      CodeCacheHost& code_cache_host,
+      CodeCacheHost* code_cache_host,
+      scoped_refptr<base::SequencedTaskRunner> host_task_runner,
       base::OnceClosure done_closure);
 
   // Called when the request associated with the fetcher responds with code

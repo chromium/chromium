@@ -41,6 +41,7 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
   blink::WebData GetDataResource(int resource_id,
                                  ui::ResourceScaleFactor scale_factor) override;
   std::string GetDataResourceString(int resource_id) override;
+  base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
   blink::WebString QueryLocalizedString(int resource_id) override;
   blink::WebString QueryLocalizedString(int resource_id,
                                         const blink::WebString& value) override;

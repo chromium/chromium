@@ -35,6 +35,7 @@
 #include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace base {
@@ -95,6 +96,13 @@ template <>
 struct CrossThreadCopier<base::UnguessableToken>
     : public CrossThreadCopierPassThrough<base::UnguessableToken> {
   STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<mojo_base::BigBuffer> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = mojo_base::BigBuffer;
+  static Type Copy(Type&& value) { return std::move(value); }
 };
 
 template <typename T>

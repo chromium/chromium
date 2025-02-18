@@ -10,11 +10,20 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/isolated_code_cache_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/webui_bundled_code_cache_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 namespace blink {
 
 namespace {
+
+// Returns true if the code cache for `request` should be serviced from the
+// webui bundled code cache.
+bool ShouldFetchWebUIBundledCodeCache(const network::ResourceRequest& request) {
+  return SchemeRegistry::SchemeSupportsWebUIBundledBytecode(
+             String(request.url.scheme())) &&
+         Platform::Current()->GetWebUIBundledCodeCacheResourceId(request.url);
+}
 
 bool ShouldFetchCodeCache(const network::ResourceRequest& request) {
   // Since code cache requests use a per-frame interface, don't fetch cached
@@ -87,15 +96,24 @@ mojom::blink::CodeCacheType GetCodeCacheType(
 // static
 scoped_refptr<CodeCacheFetcher> CodeCacheFetcher::TryCreateAndStart(
     const network::ResourceRequest& request,
-    CodeCacheHost& code_cache_host,
+    CodeCacheHost* code_cache_host,
+    scoped_refptr<base::SequencedTaskRunner> host_task_runner,
     base::OnceClosure done_closure) {
-  if (!ShouldFetchCodeCache(request)) {
-    return nullptr;
+  scoped_refptr<CodeCacheFetcher> fetcher;
+  if (ShouldFetchWebUIBundledCodeCache(request)) {
+    fetcher = base::MakeRefCounted<WebUIBundledCodeCacheFetcher>(
+        std::move(host_task_runner),
+        Platform::Current()
+            ->GetWebUIBundledCodeCacheResourceId(request.url)
+            .value(),
+        std::move(done_closure));
+    fetcher->Start();
+  } else if (code_cache_host && ShouldFetchCodeCache(request)) {
+    fetcher = base::MakeRefCounted<IsolatedCodeCacheFetcher>(
+        *code_cache_host, GetCodeCacheType(request.destination),
+        KURL(request.url), std::move(done_closure));
+    fetcher->Start();
   }
-  auto fetcher = base::MakeRefCounted<IsolatedCodeCacheFetcher>(
-      code_cache_host, GetCodeCacheType(request.destination), KURL(request.url),
-      std::move(done_closure));
-  fetcher->Start();
   return fetcher;
 }
 

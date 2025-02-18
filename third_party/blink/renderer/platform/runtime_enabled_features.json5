@@ -5091,6 +5091,13 @@
       base_feature: "none",
     },
     {
+      // Fetches the WebUI code cache from the resource bundle asynchronously
+      // on a worker thread.
+      name: "WebUIBundledCodeCacheAsyncFetch",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebUSB",
       public: true,
       status: "stable",

@@ -46,7 +46,6 @@ class CachedMetadataHandler;
 class FetchParameters;
 class KURL;
 class ResourceFetcher;
-class ScriptCachedMetadataHandler;
 
 namespace v8_compile_hints {
 class V8CrowdsourcedCompileHintsConsumer;
@@ -307,7 +306,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   ScriptStreamer::NotStreamingReason no_streamer_reason_ =
       ScriptStreamer::NotStreamingReason::kInvalid;
   StreamingState streaming_state_ = StreamingState::kWaitingForDataPipe;
-  Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
+  Member<CachedMetadataHandler> cached_metadata_handler_;
   Member<ScriptCacheConsumer> cache_consumer_;
   ConsumeCacheState consume_cache_state_;
   const mojom::blink::ScriptType initial_request_script_type_;

@@ -69,6 +69,7 @@ class SkBitmap;
 
 namespace base {
 class SingleThreadTaskRunner;
+class RefCountedMemory;
 }  // namespace base
 
 namespace cc {
@@ -397,6 +398,19 @@ class BLINK_PLATFORM_EXPORT Platform {
   // detected automatically.
   virtual std::string GetDataResourceString(int resource_id) {
     return std::string();
+  }
+
+  // Returns the raw bytes of a data resource for the specified `resource_id`.
+  // Can be called from any thread.
+  virtual base::RefCountedMemory* GetDataResourceBytes(int resource_id) {
+    return nullptr;
+  }
+
+  // Returns the resource ID for the webui bundled code cache corresponding to
+  // the `webui_resource_url`, if it exists.
+  virtual std::optional<int> GetWebUIBundledCodeCacheResourceId(
+      const GURL& webui_resource_url) {
+    return std::nullopt;
   }
 
   // Decodes the in-memory audio file data and returns the linear PCM audio data

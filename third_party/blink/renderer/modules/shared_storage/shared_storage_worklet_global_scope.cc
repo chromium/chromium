@@ -470,7 +470,8 @@ void SharedStorageWorkletGlobalScope::AddModule(
 
   CHECK(GetCodeCacheHost());
   code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
-      *resource_request, *GetCodeCacheHost(),
+      *resource_request, GetCodeCacheHost(),
+      GetTaskRunner(blink::TaskType::kMiscPlatformAPI),
       WTF::BindOnce(&SharedStorageWorkletGlobalScope::DidReceiveCachedCode,
                     WrapWeakPersistent(this)));
 }
