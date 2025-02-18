@@ -8775,21 +8775,6 @@
             ]
         }
     ],
-    "EnableADPFSetThreads": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableADPFSetThreads"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableASWebAuthenticationSession": [
         {
             "platforms": [
