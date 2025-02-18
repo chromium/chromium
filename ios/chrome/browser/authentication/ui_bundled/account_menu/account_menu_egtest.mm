@@ -170,8 +170,22 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
 // Asserts that there is no account menu.
 - (void)assertAccountMenuIsNotShown {
-  [[EarlGrey selectElementWithMatcher:accountMenuMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  ConditionBlock wait_for_disappearance = ^{
+    NSError* error;
+
+    // Checking if collection view does not exist in the UI hierarchy.
+    [[EarlGrey selectElementWithMatcher:accountMenuMatcher()]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+
+    return error == nil;
+  };
+
+  // The account menu fades with animation; wait for 5 seconds to ensure the
+  // animation is completed.
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::Seconds(5), wait_for_disappearance),
+             @"Account menu did not disappear.");
 }
 
 // Assert the snackbar is not shown for kPrimaryIdentity.
@@ -483,6 +497,20 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [self assertSnackbarShownAndDismissItWithIdentity:kManagedIdentity2];
   [self assertAccountMenuIsNotShown];
   [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity2];
+}
+
+// Test the open Settings button.
+- (void)testOpenSettings {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [self selectIdentityDisc];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuOpenSettingsButtonId)]
+      performAction:grey_tap()];
+  [self assertAccountMenuIsNotShown];
+  // Check that the Settings page is presented.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Test snackbar
