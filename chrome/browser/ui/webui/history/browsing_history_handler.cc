@@ -369,7 +369,7 @@ void BrowsingHistoryHandler::QueryHistory(const std::string& query,
 
   // Cancel the previous query if it is still in flight.
   if (query_history_callback_) {
-    std::move(query_history_callback_).Run({});
+    std::move(query_history_callback_).Run(history::mojom::QueryResult::New());
   }
 
   query_history_callback_ = std::move(callback);
@@ -405,7 +405,7 @@ void BrowsingHistoryHandler::QueryHistoryContinuation(
     QueryHistoryContinuationCallback callback) {
   // Cancel the previous query if it is still in flight.
   if (query_history_callback_) {
-    std::move(query_history_callback_).Run({});
+    std::move(query_history_callback_).Run(history::mojom::QueryResult::New());
   }
   query_history_callback_ = std::move(callback);
 
