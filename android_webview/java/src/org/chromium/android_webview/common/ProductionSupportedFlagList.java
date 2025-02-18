@@ -190,6 +190,13 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 VizFeatures.DRAW_IMMEDIATELY_WHEN_INTERACTIVE,
                 "Enable optimization for immediate activation and draw when interactive."),
+        Flag.baseFeature(
+                VizFeatures.ACK_ON_SURFACE_ACTIVATION_WHEN_INTERACTIVE,
+                "Enable immediately sending acks to clients when a viz surface activates and when"
+                        + " that surface is a dependency of an interactive frame (i.e., when there"
+                        + " is an active scroll or a touch interaction). This effectively removes"
+                        + " back-pressure in this case. This can result in wasted work and "
+                        + " contention, but should regularize the timing of client rendering."),
         Flag.baseFeature(GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),
         Flag.baseFeature(
                 NetFeatures.USE_NEW_ALPS_CODEPOINT_QUIC,
