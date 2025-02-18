@@ -23,6 +23,7 @@
 #include "components/user_manager/user_type.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/chromeos/features.h"
+#include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -352,6 +353,9 @@ class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled
 
     return u"dialog-not-found";
   }
+
+  void AcceptDialog() { GetDialogDelegate().AcceptDialog(); }
+  void DeclineDialog() { GetDialogDelegate().CancelDialog(); }
 };
 
 TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
@@ -454,6 +458,26 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
 
   ASSERT_EQ(GetDialogMessage(),
             FormatMessage(kTestingRemoteEmail, /*style=*/GetParam()));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       TestDialogResultWhenDialogIsAccepted) {
+  TestFuture<It2MeConfirmationDialog::Result> result_future;
+  CreateAndShowDialog(kTestingRemoteEmail, result_future.GetCallback());
+
+  AcceptDialog();
+
+  ASSERT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::OK);
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       TestDialogResultWhenDialogIsDeclined) {
+  TestFuture<It2MeConfirmationDialog::Result> result_future;
+  CreateAndShowDialog(kTestingRemoteEmail, result_future.GetCallback());
+
+  DeclineDialog();
+
+  ASSERT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::CANCEL);
 }
 
 INSTANTIATE_TEST_SUITE_P(
