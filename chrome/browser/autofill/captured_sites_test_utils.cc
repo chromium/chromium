@@ -2075,6 +2075,15 @@ bool TestRecipeReplayer::WaitForStateChange(
 bool TestRecipeReplayer::AllAssertionsPassed(
     const content::ToRenderFrameHost& frame,
     const std::vector<std::string>& assertions) {
+  // We may be dealing with a frame that is mid-/post-navigation. `EvalJs`
+  // will fail if the frame is e.g. unloading or in back/forward-cache. Don't
+  // even try unless the frame is active.
+  if (frame.render_frame_host()->GetLifecycleState() !=
+      content::RenderFrameHost::LifecycleState::kActive) {
+    VLOG(1) << "Frame not active, not testing assertions. "
+            << (int)frame.render_frame_host()->GetLifecycleState();
+    return false;
+  }
   for (const std::string& assertion : assertions) {
     if (!EvalJs(frame, base::StringPrintf("(function() {"
                                           "  try {"
