@@ -14,7 +14,7 @@ proc-macro = true
 
 [dependencies]
 anyhow = "1.0.1"
-itertools = ">=0.10.1, <=0.13"
+itertools = ">=0.10.1, <=0.14"
 proc-macro2 = "1.0.60"
 quote = "1"
 syn = { version = "2", features = ["extra-traits"] }
