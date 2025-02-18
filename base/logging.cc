@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/logging.h"
 
 #include <limits.h>
@@ -28,6 +23,7 @@
 #include "base/base_export.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/stack.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -207,7 +203,7 @@ static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
 
 const char* log_severity_name(int severity) {
   if (severity >= 0 && severity < LOGGING_NUM_SEVERITIES) {
-    return log_severity_names[severity];
+    return UNSAFE_TODO(log_severity_names[severity]);
   }
   return "UNKNOWN";
 }
@@ -435,7 +431,8 @@ void WriteToFd(int fd, const char* data, size_t length) {
   size_t bytes_written = 0;
   long rv;
   while (bytes_written < length) {
-    rv = HANDLE_EINTR(write(fd, data + bytes_written, length - bytes_written));
+    rv = HANDLE_EINTR(
+        write(fd, UNSAFE_TODO(data + bytes_written), length - bytes_written));
     if (rv < 0) {
       // Give up, nothing we can do now.
       break;
@@ -479,7 +476,7 @@ std::string BuildCrashString(const char* file,
 #endif  // BUILDFLAG(IS_WIN)
     );
     if (slash) {
-      file = slash + 1;
+      file = UNSAFE_TODO(slash + 1);
     }
   }
 
@@ -955,7 +952,7 @@ void LogMessage::Flush() {
 
 std::string LogMessage::BuildCrashString() const {
   return logging::BuildCrashString(file(), line(),
-                                   str().c_str() + message_start_);
+                                   UNSAFE_TODO(str().c_str() + message_start_));
 }
 
 // writes the common header info to the stream
@@ -1271,7 +1268,7 @@ void RawLog(int level, const char* message) {
     const size_t message_len = strlen(message);
     WriteToFd(STDERR_FILENO, message, message_len);
 
-    if (message_len > 0 && message[message_len - 1] != '\n') {
+    if (message_len > 0 && UNSAFE_TODO(message[message_len - 1]) != '\n') {
       long rv;
       do {
         rv = HANDLE_EINTR(write(STDERR_FILENO, "\n", 1));

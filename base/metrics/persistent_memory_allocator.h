@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_METRICS_PERSISTENT_MEMORY_ALLOCATOR_H_
 #define BASE_METRICS_PERSISTENT_MEMORY_ALLOCATOR_H_
 
@@ -20,7 +15,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -1002,8 +997,8 @@ class BASE_EXPORT DelayedPersistentAllocation {
     // will result.
     CHECK_EQ(offset_ % alignof(T), 0u);
     span<uint8_t> untyped = GetUntyped();
-    return span(reinterpret_cast<T*>(untyped.data()),
-                untyped.size() / sizeof(T));
+    return UNSAFE_TODO(
+        span(reinterpret_cast<T*>(untyped.data()), untyped.size() / sizeof(T)));
   }
 
   // Gets the internal reference value. If this returns a non-zero value then

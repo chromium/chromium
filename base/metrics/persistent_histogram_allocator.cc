@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/metrics/persistent_histogram_allocator.h"
 
 #include <atomic>
@@ -14,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -76,10 +72,10 @@ std::unique_ptr<BucketRanges> CreateRangesFromData(
   std::unique_ptr<BucketRanges> ranges(new BucketRanges(count));
   DCHECK_EQ(count, ranges->size());
   for (size_t i = 0; i < count; ++i) {
-    if (i > 0 && ranges_data[i] <= ranges_data[i - 1]) {
+    if (i > 0 && UNSAFE_TODO(ranges_data[i] <= ranges_data[i - 1])) {
       return nullptr;
     }
-    ranges->set_range(i, ranges_data[i]);
+    ranges->set_range(i, UNSAFE_TODO(ranges_data[i]));
   }
 
   ranges->ResetChecksum();
@@ -336,7 +332,8 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::GetHistogram(
   // ID fields have been loaded with a hash of the name (0 is considered
   // unset/invalid).
   if (metric_name.empty() ||
-      reinterpret_cast<const char*>(data)[alloc_size - 1] != '\0' ||
+      UNSAFE_TODO(reinterpret_cast<const char*>(data)[alloc_size - 1]) !=
+          '\0' ||
       data->samples_metadata.id == 0 || data->logged_metadata.id == 0 ||
       // Note: Sparse histograms use `id + 1` in `logged_metadata`.
       (data->logged_metadata.id != data->samples_metadata.id &&
@@ -378,7 +375,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
           offsetof(PersistentHistogramData, name) + name.size() + 1);
   if (histogram_data) {
     memcpy(histogram_data->name, name.data(), name.size());
-    histogram_data->name[name.size()] = '\0';
+    UNSAFE_TODO(histogram_data->name[name.size()]) = '\0';
     histogram_data->histogram_type = histogram_type;
     histogram_data->flags = flags | HistogramBase::kIsPersistent;
 
@@ -423,7 +420,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
                 ranges_ref, kTypeIdRangesArray, ranges_count);
         if (ranges_data) {
           for (size_t i = 0; i < bucket_ranges->size(); ++i) {
-            ranges_data[i] = bucket_ranges->range(i);
+            UNSAFE_TODO(ranges_data[i]) = bucket_ranges->range(i);
           }
           bucket_ranges->set_persistent_reference(ranges_ref);
         } else {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_METRICS_FIELD_TRIAL_PARAMS_H_
 #define BASE_METRICS_FIELD_TRIAL_PARAMS_H_
 
@@ -15,6 +10,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
@@ -227,7 +223,8 @@ struct FeatureParam<Enum, true> {
   }
   Enum GetWithoutCache() const {
     return GetFieldTrialParamByFeatureAsEnum(
-        *feature, name, default_value, base::span(&*options, option_count));
+        *feature, name, default_value,
+        UNSAFE_TODO(base::span(&*options, option_count)));
   }
 
   // Returns the param-string for the given enum value.
