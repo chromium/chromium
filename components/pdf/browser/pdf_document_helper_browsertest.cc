@@ -5,6 +5,7 @@
 #include "components/pdf/browser/pdf_document_helper.h"
 
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
@@ -53,11 +54,6 @@ class FakePdfListener : public pdf::mojom::PdfListener {
               GetMostVisiblePageIndex,
               (GetMostVisiblePageIndexCallback callback),
               (override));
-};
-
-class FakePdfLoadObserver : public PDFDocumentHelper::Observer {
- public:
-  MOCK_METHOD(void, OnDocumentLoadComplete, (), (override));
 };
 
 class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
@@ -272,16 +268,18 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, DefaultImplementation) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, DocumentLoadComplete) {
-  NiceMock<FakePdfLoadObserver> listener;
+  base::test::TestFuture<void> load_complete_future;
   EXPECT_FALSE(pdf_document_helper()->IsDocumentLoadComplete());
-  pdf_document_helper()->AddObserver(&listener);
-  EXPECT_CALL(listener, OnDocumentLoadComplete);
+  pdf_document_helper()->RegisterForDocumentLoadComplete(
+      load_complete_future.GetCallback());
   pdf_document_helper()->OnDocumentLoadComplete();
+  EXPECT_TRUE(load_complete_future.WaitAndClear());
   EXPECT_TRUE(pdf_document_helper()->IsDocumentLoadComplete());
 
-  // Subsequent load complete should not trigger listener calls.
-  EXPECT_CALL(listener, OnDocumentLoadComplete).Times(0);
-  pdf_document_helper()->OnDocumentLoadComplete();
+  // Immediately called when document is already load complete.
+  pdf_document_helper()->RegisterForDocumentLoadComplete(
+      load_complete_future.GetCallback());
+  EXPECT_TRUE(load_complete_future.WaitAndClear());
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer

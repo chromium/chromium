@@ -265,12 +265,13 @@ void PDFDocumentHelper::GetMostVisiblePageIndex(
   remote_pdf_client_->GetMostVisiblePageIndex(std::move(callback));
 }
 
-void PDFDocumentHelper::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void PDFDocumentHelper::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+void PDFDocumentHelper::RegisterForDocumentLoadComplete(
+    base::OnceClosure callback) {
+  if (is_document_load_complete_) {
+    std::move(callback).Run();
+    return;
+  }
+  document_load_complete_callbacks_.push_back(std::move(callback));
 }
 
 void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {
@@ -394,10 +395,14 @@ void PDFDocumentHelper::InitTouchSelectionClientManager() {
 
 void PDFDocumentHelper::OnDocumentLoadComplete() {
   // Only notify the consumers on first load complete.
-  if (!is_document_load_complete_) {
-    is_document_load_complete_ = true;
-    observers_.Notify(&Observer::OnDocumentLoadComplete);
+  if (is_document_load_complete_) {
+    return;
   }
+  is_document_load_complete_ = true;
+  for (auto& callback : document_load_complete_callbacks_) {
+    std::move(callback).Run();
+  }
+  document_load_complete_callbacks_.clear();
 }
 
 void PDFDocumentHelper::SaveUrlAs(const GURL& url,

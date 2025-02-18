@@ -120,25 +120,15 @@ void ContextualCueingPageData::RequestPdfPageCount() {
 
   auto* pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument()));
-  if (!pdf_helper) {
-    return;
+  if (pdf_helper) {
+    pdf_helper->RegisterForDocumentLoadComplete(
+        base::BindOnce(&ContextualCueingPageData::OnPdfDocumentLoadComplete,
+                       weak_factory_.GetWeakPtr()));
   }
-  if (!pdf_helper->IsDocumentLoadComplete()) {
-    // Wait for the PDF to load.
-    pdf_load_obseration_.Observe(pdf_helper);
-    return;
-  }
-  // Fetch zero PDF bytes to just receive the total page count.
-  pdf_helper->GetPdfBytes(
-      /*size_limit=*/0,
-      base::BindOnce(&ContextualCueingPageData::OnPdfPageCountReceived,
-                     weak_factory_.GetWeakPtr()));
 }
 
-void ContextualCueingPageData::OnDocumentLoadComplete() {
+void ContextualCueingPageData::OnPdfDocumentLoadComplete() {
   CHECK_EQ(pdf::kPDFMimeType, page().GetContentsMimeType());
-  pdf_load_obseration_.Reset();
-
   auto* pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument()));
   if (pdf_helper) {
