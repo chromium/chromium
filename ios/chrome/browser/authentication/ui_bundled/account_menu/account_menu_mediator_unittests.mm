@@ -422,24 +422,52 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   // This variable will contain the callback that should be executed once
   // sign-out ends.
   __block signin_ui::SignoutCompletionCallback signoutCallback = nil;
+  __block signin_ui::SigninCompletionCallback signinCallback = nil;
   const CGRect target = CGRect();
-  OCMExpect([delegate_mock_
-      signOutFromTargetRect:target
-                  forSwitch:YES
-                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                   signoutCallback = value;
-                   return true;
-                 }]]);
   OCMExpect([consumer_mock_ switchingStarted]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
+  switch (GetParam()) {
+    case kOldApiWithoutSeparateProfiles:
+    case kNewApiWithoutSeparateProfiles:
+      OCMExpect([delegate_mock_
+          signOutFromTargetRect:target
+                      forSwitch:YES
+                     completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                       signoutCallback = value;
+                       return true;
+                     }]]);
+      break;
+    case kNewApiWithSeparateProfiles:
+      OCMExpect(
+          [delegate_mock_
+              triggerSigninWithSystemIdentity:kSecondaryIdentity
+                                   completion:[OCMArg checkWithBlock:^BOOL(
+                                                          id value) {
+                                     signinCallback = value;
+                                     return true;
+                                   }]])
+          .andReturn(authentication_flow_mock_);
+      break;
+  }
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
 
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
-  // Simulate a sign-out failure
-  signoutCallback(false);
+  switch (GetParam()) {
+    case kOldApiWithoutSeparateProfiles:
+    case kNewApiWithoutSeparateProfiles:
+      // Simulate a sign-out failure.
+      signoutCallback(false);
+      EXPECT_EQ(signinCallback, nil);
+      break;
+    case kNewApiWithSeparateProfiles:
+      // Simulate AuthenticationFlow failure.
+      signinCallback(SigninCoordinatorResultCanceledByUser);
+      EXPECT_EQ(signoutCallback, nil);
+      break;
+  }
 }
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
@@ -459,26 +487,35 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // This variable will contain the callback that should be executed once
   // sign-out ends.
   __block signin_ui::SignoutCompletionCallback signoutCallback = nil;
+  __block signin_ui::SigninCompletionCallback signinCallback = nil;
   const CGRect target = CGRect();
-  OCMExpect([delegate_mock_
-      signOutFromTargetRect:target
-                  forSwitch:YES
-                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                   signoutCallback = value;
-                   // Actually sign-out, in order to test next step.
-                   SignOut();
-                   return true;
-                 }]]);
   OCMExpect([consumer_mock_ switchingStarted]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
-  VerifyMock();
+  switch (GetParam()) {
+    case kOldApiWithoutSeparateProfiles:
+    case kNewApiWithoutSeparateProfiles:
+      OCMExpect([delegate_mock_
+          signOutFromTargetRect:target
+                      forSwitch:YES
+                     completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                       signoutCallback = value;
+                       // Actually sign-out, in order to test next step.
+                       SignOut();
+                       return true;
+                     }]]);
+      [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
+                              targetRect:target];
+      VerifyMock();
+      break;
+    case kNewApiWithSeparateProfiles:
+      // Sign-out is not done by the mediator but by AuthenticationFlow.
+      // This step can be skipped.
+      break;
+  }
 
   // Simulate a sign-out success.
   // This variable will contain the callback that should be executed once
   // sign-in ended.
-  __block signin_ui::SigninCompletionCallback signinCallback = nil;
   OCMExpect([delegate_mock_
                 triggerSigninWithSystemIdentity:kSecondaryIdentity
                                      completion:[OCMArg checkWithBlock:^BOOL(
@@ -487,12 +524,23 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
                                        return true;
                                      }]])
       .andReturn(authentication_flow_mock_);
-  signoutCallback(true);
+  switch (GetParam()) {
+    case kOldApiWithoutSeparateProfiles:
+    case kNewApiWithoutSeparateProfiles:
+      signoutCallback(true);
+      // Testing the sign-in callback.
+      // The delegate should not receive any message. The mediator directly sign
+      // the user back in the previous account.
+      OCMExpect([consumer_mock_ updatePrimaryAccount]);
+      break;
+    case kNewApiWithSeparateProfiles:
+      // Simulate account switching.
+      [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
+                              targetRect:target];
+      break;
+  }
 
-  // Testing the sign-in callback.
-  // The delegate should not receive any message. The mediator directly sign the
-  // user back in the previous account.
-  OCMExpect([consumer_mock_ updatePrimaryAccount]);
+  // Expect that the consumer unlocks the UI.
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
   signinCallback(SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
@@ -519,33 +567,52 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   // This variable will contain the callback that should be executed once
   // sign-out ends.
   __block signin_ui::SignoutCompletionCallback signoutCallback = nil;
+  __block signin_ui::SigninCompletionCallback signinCallback = nil;
   const CGRect target = CGRect();
-  OCMExpect([delegate_mock_
-      signOutFromTargetRect:target
-                  forSwitch:YES
-                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                   signoutCallback = value;
-                   return true;
-                 }]]);
   OCMExpect([consumer_mock_ switchingStarted]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
-  VerifyMock();
-
-  // Simulate a sign-out success.
-  // This variable will contain the callback that should be executed once
-  // sign-in ends.
-  __block signin_ui::SigninCompletionCallback signinCallback = nil;
-  OCMExpect([delegate_mock_
-                triggerSigninWithSystemIdentity:kSecondaryIdentity
-                                     completion:[OCMArg checkWithBlock:^BOOL(
-                                                            id value) {
-                                       signinCallback = value;
-                                       return true;
-                                     }]])
-      .andReturn(authentication_flow_mock_);
-  signoutCallback(true);
+  switch (GetParam()) {
+    case kOldApiWithoutSeparateProfiles:
+    case kNewApiWithoutSeparateProfiles:
+      OCMExpect([delegate_mock_
+          signOutFromTargetRect:target
+                      forSwitch:YES
+                     completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                       signoutCallback = value;
+                       return true;
+                     }]]);
+      [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
+                              targetRect:target];
+      VerifyMock();
+      // Simulate a sign-out success.
+      // This variable will contain the callback that should be executed once
+      // sign-in ends.
+      OCMExpect(
+          [delegate_mock_
+              triggerSigninWithSystemIdentity:kSecondaryIdentity
+                                   completion:[OCMArg checkWithBlock:^BOOL(
+                                                          id value) {
+                                     signinCallback = value;
+                                     return true;
+                                   }]])
+          .andReturn(authentication_flow_mock_);
+      signoutCallback(true);
+      break;
+    case kNewApiWithSeparateProfiles:
+      // Simulate account switching.
+      OCMExpect(
+          [delegate_mock_
+              triggerSigninWithSystemIdentity:kSecondaryIdentity
+                                   completion:[OCMArg checkWithBlock:^BOOL(
+                                                          id value) {
+                                     signinCallback = value;
+                                     return true;
+                                   }]])
+          .andReturn(authentication_flow_mock_);
+      [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
+                              targetRect:target];
+      break;
+  }
   VerifyMock();
 
   OCMExpect([delegate_mock_
