@@ -2499,6 +2499,22 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyMismatchedField) -->
 
+<!-- LINT.IfChange(QuicSessionKeyMismatchedFieldCombination) -->
+
+<enum name="QuicSessionKeyMismatchedFieldCombination">
+  <int value="0" label="kUnknownCombination"/>
+  <int value="1" label="kPrivacyMode"/>
+  <int value="2" label="kNetworkAnonymizationKey"/>
+  <int value="3" label="kPrivacyModeNetworkAnonymizationKey"/>
+  <int value="4" label="kRequireDNSHttpsAlpn"/>
+  <int value="5" label="kRequireDNSHttpsAlpnPrivacyMode"/>
+  <int value="6" label="kRequireDNSHttpsNetworkAnonymizationKey"/>
+  <int value="7"
+      label="kPrivacyModeAndNetworkAnonymizationKeyRequireDNSHttpsAlpn"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyMismatchedFieldCombination) -->
+
 <!-- LINT.IfChange(QuicSessionKeyPartialMatchResult) -->
 
 <enum name="QuicSessionKeyPartialMatchResult">

@@ -4852,6 +4852,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.QuicSession.SessionKeyMismatch.MismatchedFieldCombination{HostType}"
+    enum="QuicSessionKeyMismatchedFieldCombination" expires_after="2025-07-06">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records which combination of fields in `QuicSessionKey` mismatched with the
+    key of existing session or an in-flight session attempt to {HostType} with
+    the same `ServerId`. We only look at the combinations of frequent fields
+    which cause mismatches, retrieved by `MismatchedField` histograms. Recorded
+    every time when we attempt to create a QUIC session.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
 <histogram name="Net.QuicSession.SessionKeyMismatch.MismatchedField{HostType}"
     enum="QuicSessionKeyMismatchedField" expires_after="2025-07-06">
   <owner>suzukikeita@chromium.org</owner>
