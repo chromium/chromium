@@ -13,9 +13,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/browser/ui_util.h"
 
 namespace extensions {
@@ -67,7 +65,6 @@ DeveloperPrivateEventRouter::ConvertToUserSiteSettings(
 
 DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : DeveloperPrivateEventRouterShared(profile) {
-  process_manager_observation_.Observe(ProcessManager::Get(profile));
   app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
   warning_service_observation_.Observe(WarningService::Get(profile));
   extension_prefs_observation_.Observe(ExtensionPrefs::Get(profile));
@@ -106,32 +103,6 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
 }
 
 DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() = default;
-
-void DeveloperPrivateEventRouter::OnExtensionFrameRegistered(
-    const ExtensionId& extension_id,
-    content::RenderFrameHost* render_frame_host) {
-  BroadcastItemStateChanged(developer::EventType::kViewRegistered,
-                            extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
-    const ExtensionId& extension_id,
-    content::RenderFrameHost* render_frame_host) {
-  BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
-                            extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnStartedTrackingServiceWorkerInstance(
-    const WorkerId& worker_id) {
-  BroadcastItemStateChanged(developer::EventType::kServiceWorkerStarted,
-                            worker_id.extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnStoppedTrackingServiceWorkerInstance(
-    const WorkerId& worker_id) {
-  BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
-                            worker_id.extension_id);
-}
 
 void DeveloperPrivateEventRouter::OnAppWindowAdded(AppWindow* window) {
   BroadcastItemStateChanged(developer::EventType::kViewRegistered,

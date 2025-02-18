@@ -20,13 +20,11 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/permissions_manager.h"
-#include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/warning_service.h"
 
 namespace extensions {
 
 class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
-                                    public ProcessManagerObserver,
                                     public AppWindowRegistry::Observer,
                                     public CommandService::Observer,
                                     public ExtensionPrefsObserver,
@@ -52,18 +50,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   ~DeveloperPrivateEventRouter() override;
 
  private:
-  // ProcessManagerObserver:
-  void OnExtensionFrameRegistered(
-      const ExtensionId& extension_id,
-      content::RenderFrameHost* render_frame_host) override;
-  void OnExtensionFrameUnregistered(
-      const ExtensionId& extension_id,
-      content::RenderFrameHost* render_frame_host) override;
-  void OnStartedTrackingServiceWorkerInstance(
-      const WorkerId& worker_id) override;
-  void OnStoppedTrackingServiceWorkerInstance(
-      const WorkerId& worker_id) override;
-
   // AppWindowRegistry::Observer:
   void OnAppWindowAdded(AppWindow* window) override;
   void OnAppWindowRemoved(AppWindow* window) override;
@@ -125,8 +111,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
       std::unique_ptr<ExtensionInfoGenerator> info_generator,
       std::vector<api::developer_private::ExtensionInfo> infos);
 
-  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
-      process_manager_observation_{this};
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       app_window_registry_observation_{this};
   base::ScopedObservation<WarningService, WarningService::Observer>

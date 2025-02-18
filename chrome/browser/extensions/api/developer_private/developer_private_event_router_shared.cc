@@ -4,6 +4,19 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"
 
+#include "base/check.h"
+#include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/api/developer_private.h"
+#include "content/public/browser/render_frame_host.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_error.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/service_worker/worker_id.h"
+#include "extensions/browser/uninstall_reason.h"
+#include "extensions/common/extension_id.h"
+
 namespace extensions {
 
 namespace developer = api::developer_private;
@@ -13,6 +26,7 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
     : profile_(profile), event_router_(EventRouter::Get(profile_)) {
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   error_console_observation_.Observe(ErrorConsole::Get(profile));
+  process_manager_observation_.Observe(ProcessManager::Get(profile));
 }
 
 DeveloperPrivateEventRouterShared::~DeveloperPrivateEventRouterShared() =
@@ -90,6 +104,32 @@ void DeveloperPrivateEventRouterShared::OnErrorsRemoved(
       BroadcastItemStateChanged(developer::EventType::kErrorsRemoved, id);
     }
   }
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionFrameRegistered(
+    const ExtensionId& extension_id,
+    content::RenderFrameHost* render_frame_host) {
+  BroadcastItemStateChanged(developer::EventType::kViewRegistered,
+                            extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionFrameUnregistered(
+    const ExtensionId& extension_id,
+    content::RenderFrameHost* render_frame_host) {
+  BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
+                            extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::OnStartedTrackingServiceWorkerInstance(
+    const WorkerId& worker_id) {
+  BroadcastItemStateChanged(developer::EventType::kServiceWorkerStarted,
+                            worker_id.extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::OnStoppedTrackingServiceWorkerInstance(
+    const WorkerId& worker_id) {
+  BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
+                            worker_id.extension_id);
 }
 
 void DeveloperPrivateEventRouterShared::BroadcastItemStateChanged(
