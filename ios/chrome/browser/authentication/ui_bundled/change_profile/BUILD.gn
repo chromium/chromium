@@ -14,6 +14,8 @@ source_set("change_profile") {
     "change_profile_lens_search_continuation.mm",
     "change_profile_load_url.h",
     "change_profile_load_url.mm",
+    "change_profile_qr_scanner_search_continuation.h",
+    "change_profile_qr_scanner_search_continuation.mm",
     "change_profile_reading_list_continuation.h",
     "change_profile_reading_list_continuation.mm",
     "change_profile_recent_tabs_continuation.h",
