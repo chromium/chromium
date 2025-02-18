@@ -11,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
 #include "crypto/aead.h"
@@ -214,20 +215,21 @@ base::expected<std::vector<uint8_t>, Error> DeobfuscateDataChunk(
 base::expected<void, Error> DeobfuscateFileInPlace(
     const base::FilePath& file_path) {
   if (!IsFileObfuscationEnabled()) {
-    return base::unexpected(Error::kDisabled);
+    return RecordAndReturn<void>(base::unexpected(Error::kDisabled));
   }
 
   // Open the obfuscated file in read-only mode.
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid() || file.GetLength() == 0) {
-    return base::unexpected(Error::kFileOperationError);
+    return RecordAndReturn<void>(base::unexpected(Error::kFileOperationError));
   }
 
   // Create and open a temporary file for deobfuscation.
   base::FilePath temp_path;
   if (!base::CreateTemporaryFileInDir(file_path.DirName(), &temp_path)) {
-    return base::unexpected(Error::kFileOperationError);
+    return RecordAndReturn<void>(base::unexpected(Error::kFileOperationError));
   }
+
   // Ensure cleanup of temporary file on all error exits.
   base::ScopedClosureRunner temp_file_cleanup(
       base::BindOnce(base::IgnoreResult(&base::DeleteFile), temp_path));
@@ -237,30 +239,30 @@ base::expected<void, Error> DeobfuscateFileInPlace(
 
   // Get header data
   if (static_cast<size_t>(file.GetLength()) < kHeaderSize) {
-    return base::unexpected(Error::kDeobfuscationFailed);
+    return RecordAndReturn<void>(base::unexpected(Error::kDeobfuscationFailed));
   }
   std::vector<uint8_t> header(kHeaderSize);
   std::optional<size_t> header_read = file.ReadAtCurrentPos(header);
   if (!header_read || header_read != kHeaderSize) {
-    return base::unexpected(Error::kFileOperationError);
+    return RecordAndReturn<void>(base::unexpected(Error::kFileOperationError));
   }
   auto header_data = GetHeaderData(header);
   if (!header_data.has_value()) {
-    return base::unexpected(header_data.error());
+    return RecordAndReturn<void>(base::unexpected(header_data.error()));
   }
 
   // Initialize cipher.
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
   aead.Init(header_data.value().derived_key);
   if (aead.NonceLength() != kNonceSize) {
-    return base::unexpected(Error::kSchemeError);
+    return RecordAndReturn<void>(base::unexpected(Error::kSchemeError));
   }
   uint32_t counter = 0;
   size_t total_bytes_read = header_read.value();
 
   int64_t file_length = file.GetLength();
   if (file_length < 0) {
-    return base::unexpected(Error::kFileOperationError);
+    return RecordAndReturn<void>(base::unexpected(Error::kFileOperationError));
   }
   const size_t file_size = static_cast<size_t>(file_length);
 
@@ -270,12 +272,13 @@ base::expected<void, Error> DeobfuscateFileInPlace(
     std::array<uint8_t, kChunkSizePrefixSize> size;
     std::optional<size_t> size_read = file.ReadAtCurrentPos(size);
     if (!size_read || size_read.value() != kChunkSizePrefixSize) {
-      return base::unexpected(Error::kFileOperationError);
+      return RecordAndReturn<void>(
+          base::unexpected(Error::kFileOperationError));
     }
 
     auto chunk_size = GetObfuscatedChunkSize(size);
     if (!chunk_size.has_value()) {
-      return base::unexpected(chunk_size.error());
+      return RecordAndReturn<void>(base::unexpected(chunk_size.error()));
     }
     total_bytes_read += kChunkSizePrefixSize;
 
@@ -283,10 +286,12 @@ base::expected<void, Error> DeobfuscateFileInPlace(
     std::vector<uint8_t> ciphertext(chunk_size.value());
     std::optional<size_t> bytes_read = file.ReadAtCurrentPos(ciphertext);
     if (!bytes_read) {
-      return base::unexpected(Error::kFileOperationError);
+      return RecordAndReturn<void>(
+          base::unexpected(Error::kFileOperationError));
     }
     if (bytes_read.value() != chunk_size) {
-      return base::unexpected(Error::kDeobfuscationFailed);
+      return RecordAndReturn<void>(
+          base::unexpected(Error::kDeobfuscationFailed));
     }
 
     total_bytes_read += bytes_read.value();
@@ -297,7 +302,8 @@ base::expected<void, Error> DeobfuscateFileInPlace(
 
     auto plaintext = aead.Open(ciphertext, nonce, base::span<uint8_t>());
     if (!plaintext) {
-      return base::unexpected(Error::kDeobfuscationFailed);
+      return RecordAndReturn<void>(
+          base::unexpected(Error::kDeobfuscationFailed));
     }
     deobfuscated_file.WriteAtCurrentPos(plaintext.value());
   }
@@ -308,12 +314,17 @@ base::expected<void, Error> DeobfuscateFileInPlace(
   if (!base::ReplaceFile(temp_path, file_path, /*error=*/nullptr)) {
     // For cross-device errors, fallback to move for copy+delete instead.
     if (!base::Move(temp_path, file_path)) {
-      return base::unexpected(Error::kFileOperationError);
+      return RecordAndReturn<void>(
+          base::unexpected(Error::kFileOperationError));
     }
   }
 
   std::ignore = temp_file_cleanup.Release();
-  return base::ok();
+  return RecordAndReturn<void>(base::ok());
+}
+
+void RecordObfuscationResult(Error result) {
+  base::UmaHistogramEnumeration(kObfuscationResultHistogram, result);
 }
 
 }  // namespace enterprise_obfuscation
