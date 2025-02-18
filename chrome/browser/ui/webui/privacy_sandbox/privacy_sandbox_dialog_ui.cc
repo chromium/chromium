@@ -318,26 +318,21 @@ PrivacySandboxDialogUI::~PrivacySandboxDialogUI() = default;
 
 void PrivacySandboxDialogUI::Initialize(
     Profile* profile,
-    base::OnceClosure close_callback,
+    base::RepeatingCallback<void(
+        PrivacySandboxService::AdsDialogCallbackNoArgsEvents)> dialog_callback,
     base::OnceCallback<void(int)> resize_callback,
-    base::OnceClosure show_dialog_callback,
-    base::OnceClosure open_settings_callback,
-    base::OnceClosure open_measurement_settings_callback,
     PrivacySandboxService::PromptType prompt_type) {
   base::Value::Dict update;
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
-      std::move(close_callback), std::move(resize_callback),
-      std::move(show_dialog_callback), std::move(open_settings_callback),
-      std::move(open_measurement_settings_callback), prompt_type);
+      std::move(dialog_callback), std::move(resize_callback), prompt_type);
   web_ui()->AddMessageHandler(std::move(handler));
 }
 
 void PrivacySandboxDialogUI::InitializeForDebug(
     content::WebUIDataSource* source) {
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
-      base::DoNothing(), base::DoNothing(), base::DoNothing(),
       base::DoNothing(), base::DoNothing(),
       PrivacySandboxService::PromptType::kNone);
   source->AddBoolean("isConsent", false);

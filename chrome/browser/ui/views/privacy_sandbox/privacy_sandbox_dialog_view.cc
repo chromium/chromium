@@ -29,6 +29,8 @@
 
 namespace {
 
+using enum PrivacySandboxService::AdsDialogCallbackNoArgsEvents;
+
 constexpr int kM1DialogWidth = 600;
 constexpr int kDefaultDialogHeight = 494;
 constexpr int kMinRequiredDialogHeight = 100;
@@ -146,19 +148,32 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   // Unretained is fine because this outlives the inner web UI.
   web_ui->Initialize(
       browser->profile(),
-      base::BindOnce(&PrivacySandboxDialogView::Close, base::Unretained(this)),
+      base::BindRepeating(&PrivacySandboxDialogView::AdsDialogNoArgsCallback,
+                          base::Unretained(this)),
       base::BindOnce(&PrivacySandboxDialogView::ResizeNativeView,
                      base::Unretained(this)),
-      base::BindOnce(&PrivacySandboxDialogView::ShowNativeView,
-                     base::Unretained(this)),
-      base::BindOnce(&PrivacySandboxDialogView::OpenPrivacySandboxSettings,
-                     base::Unretained(this)),
-      base::BindOnce(
-          &PrivacySandboxDialogView::OpenPrivacySandboxAdMeasurementSettings,
-          base::Unretained(this)),
+
       prompt_type);
 
   SetUseDefaultFillLayout(true);
+}
+
+void PrivacySandboxDialogView::AdsDialogNoArgsCallback(
+    PrivacySandboxService::AdsDialogCallbackNoArgsEvents event) {
+  switch (event) {
+    case kShowDialog:
+      ShowNativeView();
+      break;
+    case kCloseDialog:
+      Close();
+      break;
+    case kOpenAdsPrivacySettings:
+      OpenPrivacySandboxSettings();
+      break;
+    case kOpenMeasurementSettings:
+      OpenPrivacySandboxAdMeasurementSettings();
+      break;
+  }
 }
 
 void PrivacySandboxDialogView::Close() {

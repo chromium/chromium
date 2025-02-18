@@ -33,6 +33,9 @@ class PrivacySandboxDialogView : public views::View {
 
  private:
   friend class PrivacySandboxQueueTestHelper;
+
+  void AdsDialogNoArgsCallback(
+      PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
   void ResizeNativeView(int height);
   void ShowNativeView();
   void OpenPrivacySandboxSettings();
