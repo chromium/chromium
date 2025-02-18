@@ -209,6 +209,28 @@ SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
   return SkiaBackendType::kUnknown;
 }
 
+std::string SkiaBackendTypeToString(SkiaBackendType type) {
+  switch (type) {
+    case SkiaBackendType::kUnknown:
+      return "Unknown";
+    case SkiaBackendType::kNone:
+      return "None";
+    case SkiaBackendType::kGaneshGL:
+      return "GaneshGL";
+    case SkiaBackendType::kGaneshVulkan:
+      return "GaneshVulkan";
+    case SkiaBackendType::kGraphiteDawnVulkan:
+      return "GraphiteDawnVulkan";
+    case SkiaBackendType::kGraphiteDawnMetal:
+      return "GraphiteDawnMetal";
+    case SkiaBackendType::kGraphiteDawnD3D11:
+      return "GraphiteDawnD3D11";
+    case SkiaBackendType::kGraphiteDawnD3D12:
+      return "GraphiteDawnD3D12";
+  }
+  NOTREACHED();
+}
+
 GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,
                                            GLsizeiptr key_size,
                                            void* value,
@@ -536,9 +558,9 @@ bool SharedContextState::InitializeSkia(
   if (once.exchange(false, std::memory_order_relaxed)) {
     SkiaBackendType context_enum = FindSkiaBackendType(this);
     base::UmaHistogramEnumeration("GPU.SkiaBackendType", context_enum);
-    // Record gr-context-type crash key.
+    // Record SkiaBackendType as gr-context-type crash key.
     static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
-    crash_key.Set(GrContextTypeToString(gr_context_type_));
+    crash_key.Set(SkiaBackendTypeToString(context_enum));
   }
 
   is_drdc_enabled_ = features::IsDrDcEnabled() && !workarounds.disable_drdc;
