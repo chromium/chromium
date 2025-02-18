@@ -5,8 +5,8 @@
 import '../common/learn_mode_bridge.js';
 
 import {Flags} from '/common/flags.js';
-import {InstanceChecker} from '/common/instance_checker.js';
 import {LocalStorage} from '/common/local_storage.js';
+import {InstanceChecker} from '/common/mv2/instance_checker.js';
 
 import type {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';

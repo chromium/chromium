@@ -6,7 +6,7 @@
 import '/common/async_util.js';
 import '/common/event_generator.js';
 
-import {InstanceChecker} from '/common/instance_checker.js';
+import {InstanceChecker} from '/common/mv2/instance_checker.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {SelectToSpeak} from './select_to_speak.js';
