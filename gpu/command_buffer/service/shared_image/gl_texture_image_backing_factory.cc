@@ -42,10 +42,6 @@ bool SupportScanout() {
               kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage)) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(
-          features::kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
 
   return base::FeatureList::IsEnabled(kSupportScanoutInGLTextureImageBacking);
 }
