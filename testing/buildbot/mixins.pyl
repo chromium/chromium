@@ -465,6 +465,17 @@
       },
     },
   },
+  'linux_amd_rx_7600_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:7480-24.2.8',
+        'os': 'Ubuntu-24.04',
+        'display_attached': '1',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'linux_intel_uhd_630_experimental': {
     'fail_if_unused': False,
     'swarming': {
@@ -859,6 +870,17 @@
         'display_attached': '1',
         'gpu': '10de:2184-31.0.15.4601',
         'os': 'Windows-10-19045',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'win11_amd_rx_7600_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '1002:7480-31.0.24033.1003',
+        'os': 'Windows-11-26100',
         'pool': 'chromium.tests.gpu',
       },
     },

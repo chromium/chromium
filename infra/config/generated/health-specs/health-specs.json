@@ -3573,6 +3573,27 @@
           }
         ]
       },
+      "Linux FYI Release (AMD RX 7600)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "Linux FYI Release (Intel UHD 630)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [
@@ -6248,6 +6269,27 @@
         ]
       },
       "Win11 FYI arm64 Release (Qualcomm Adreno 690)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "Win11 FYI x64 Release (AMD RX 7600)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [
           {

@@ -1337,6 +1337,21 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "linux_amd_rx_7600_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "1002:7480-24.2.8",
+            "os": "Ubuntu-24.04",
+            "display_attached": "1",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "linux_intel_uhd_630_experimental",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
@@ -2261,6 +2276,21 @@ targets.mixin(
             "display_attached": "1",
             "gpu": "1002:7340-31.0.24002.92",
             "os": "Windows-10-19045.3930",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "win11_amd_rx_7600_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "1002:7480-31.0.24033.1003",
+            "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu",
         },
     ),
