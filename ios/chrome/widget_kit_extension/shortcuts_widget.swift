@@ -29,7 +29,7 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   let expirationDate: Date?
   // Profile avatar (to be used when multiprofile flag is enabled).
   let avatar: Image?
-  let gaiaID: String
+  let gaiaID: String?
 
 }
 
@@ -43,7 +43,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: TimelineProviderContext) -> Entry {
     return Entry(
       date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
-      avatar: nil, gaiaID: "")
+      avatar: nil, gaiaID: nil)
   }
 
   // Provides a timeline entry that represents the current time and state of a widget.
@@ -138,14 +138,14 @@ struct ShortcutsWidget: Widget {
     func placeholder(in context: TimelineProviderContext) -> Entry {
       return Entry(
         date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
-        avatar: nil, gaiaID: "")
+        avatar: nil, gaiaID: nil)
     }
 
     // Provides a timeline entry that represents the current time and state of a widget.
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
 
       let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
-      let gaiaID = configuration.gaiaForAccount(account: configuration.profile)
+      let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       let entry = loadMostVisitedSitesEntry(
         isPreview: context.isPreview, avatar: avatar, gaia: gaiaID)
       return entry
@@ -156,7 +156,7 @@ struct ShortcutsWidget: Widget {
       Entry
     > {
       let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
-      let gaiaID = configuration.gaiaForAccount(account: configuration.profile)
+      let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       let entry = loadMostVisitedSitesEntry(
         isPreview: context.isPreview, avatar: avatar, gaia: gaiaID)
       let entries = [entry]
@@ -168,7 +168,7 @@ struct ShortcutsWidget: Widget {
 #endif
 
 // Return ConfigureShortcutsWidgetEntry with the most visited sites
-func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil, gaia: String)
+func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil, gaia: String? = nil)
   -> ConfigureShortcutsWidgetEntry
 {
   // A type that specifies the entry of the configured timeline entry of the widget.
@@ -182,7 +182,7 @@ func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil, gaia: Stri
     isExpired: false,
     expirationDate: nil,
     avatar: avatar,
-    gaiaID: ""
+    gaiaID: gaia
   )
   // A constant of an expired entry.
   let expiredEntry = Entry(
@@ -292,7 +292,7 @@ struct ShortcutsWidgetEntryView: View {
     var urlcomps = URLComponents(
       url: WidgetConstants.ShortcutsWidget.open,
       resolvingAgainstBaseURL: false)!
-    if entry.gaiaID.isEmpty {
+    if entry.gaiaID == nil {
       urlcomps.queryItems = [query_url]
     } else {
       // Add the gaia_id parameter only if available.

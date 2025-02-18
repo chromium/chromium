@@ -85,9 +85,9 @@ struct SelectProfileIntent: WidgetConfigurationIntent {
   }
 
   // Returns the gaiaID linked to the account.
-  func gaiaForAccount(account: ProfileDetail?) -> String {
+  func gaiaForAccount(account: ProfileDetail?) -> String? {
     guard let gaia = profile?.gaia
-    else { return "" }
+    else { return nil }
 
     return gaia
   }
