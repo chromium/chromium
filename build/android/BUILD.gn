@@ -148,7 +148,7 @@ python_library("devil_chromium_py") {
 group("apk_installer_data") {
   # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
-    if (is_component_build) {
+    if (!is_component_build) {
       data_deps = [
         "//build/android/pylib/device/commands",
         "//tools/android/md5sum",
