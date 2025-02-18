@@ -64,7 +64,9 @@ class MockAutofillSaveCardInfoBarDelegateMobileFactory {
   static std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
   CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
       bool upload,
-      autofill::CreditCard card);
+      autofill::CreditCard card,
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
+          options = {});
 
  private:
   autofill::CreditCard credit_card_;

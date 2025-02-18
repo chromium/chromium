@@ -56,7 +56,9 @@ std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
 MockAutofillSaveCardInfoBarDelegateMobileFactory::
     CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
         bool upload,
-        autofill::CreditCard card) {
+        autofill::CreditCard card,
+        autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
+            options) {
   using Variant = absl::variant<
       autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
       autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>;
@@ -65,7 +67,7 @@ MockAutofillSaveCardInfoBarDelegateMobileFactory::
   autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
       local_cb = base::DoNothing();
   return std::make_unique<MockAutofillSaveCardInfoBarDelegateMobile>(
-      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions(), card,
+      options, card,
       upload ? Variant(std::move(upload_cb)) : Variant(std::move(local_cb)),
       autofill::LegalMessageLines(
           {autofill::TestLegalMessageLine("Test message")}),
