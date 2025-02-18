@@ -10,9 +10,6 @@
   # See //third_party/grpc/README.chromium for more information.
 
   declare_args() {
-    # Compiles with ares.
-    enable_grpc_ares = false
-
     # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
     # Keep using static linking for now.
     # In windows, mac and iOS use static linking.
@@ -81,12 +78,10 @@
       ]
     }
 
-    if (!enable_grpc_ares) {
-      defines += [
-        # Disable c-ares since it doesn't currently support Fuchsia
-        "GRPC_ARES=0",
-      ]
-    }
+    defines += [
+      # Disable c-ares since it doesn't currently support Fuchsia
+      "GRPC_ARES=0",
+    ]
   }
 
   config("grpc_config_private") {
@@ -610,15 +605,6 @@
       "src/third_party/cares/ares_build.h",
     ]
 
-    if (enable_grpc_ares) {
-      include_dirs = [ "//third_party/cares/include" ]
-      sources += [
-  % for src in cares_sources:
-        "${src}",
-  % endfor
-      ]
-    }
-
     if (is_android) {
       sources += [ "src/third_party/cares/config_android/ares_config.h" ]
       configs += [ ":cares_config" ]
@@ -632,18 +618,4 @@
     ]
 
     public_configs = [ ":grpc_config" ]
-  }
-
-  group("fuzzers") {}
-
-  if (is_android) {
-    # gRPC BinderTransport's Java API and internal code, which cannot be handled by GN's source_set
-    # and we need manually create a android_library target for them.
-    android_library("binder_java_helper") {
-      sources = [
-        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/GrpcBinderConnection.java",
-        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/GrpcCppServerBuilder.java",
-        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/NativeConnectionHelper.java",
-      ]
-    }
   }
