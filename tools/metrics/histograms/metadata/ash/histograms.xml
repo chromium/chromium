@@ -2423,7 +2423,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.MultimodalSearchRequest.{TabletOrClamshell}"
-    enum="Boolean" expires_after="2025-05-07">
+    enum="Boolean" expires_after="2025-08-17">
   <owner>hewer@chromium.org</owner>
   <owner>sophiewen@google.com</owner>
   <summary>

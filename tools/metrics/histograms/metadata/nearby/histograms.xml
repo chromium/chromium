@@ -551,7 +551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.WifiDirect.ConnectToService.Error"
-    enum="NearbyConnectionsWifiDirectServiceError" expires_after="2025-04-30">
+    enum="NearbyConnectionsWifiDirectServiceError" expires_after="2025-08-17">
   <owner>jackshira@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>

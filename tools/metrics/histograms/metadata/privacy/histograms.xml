@@ -1493,7 +1493,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.DarkLaunch.{Profile}.UnknownProfileSignInDuration"
-    enum="Boolean" expires_after="2025-06-11">
+    enum="Boolean" expires_after="2025-08-17">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1923,7 +1923,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures"
-    enum="PrivacySandboxCctAdsNoticeSurveyFailures" expires_after="2025-06-01">
+    enum="PrivacySandboxCctAdsNoticeSurveyFailures" expires_after="2025-08-17">
   <owner>alvingo@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1934,7 +1934,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Surveys.SurfaceAttempts"
-    enum="PrivacySandboxSurveyTypes" expires_after="2025-06-01">
+    enum="PrivacySandboxSurveyTypes" expires_after="2025-08-17">
   <owner>alvingo@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

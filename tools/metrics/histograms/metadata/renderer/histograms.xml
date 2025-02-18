@@ -631,7 +631,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad6" units="%"
-    expires_after="2025-06-08">
+    expires_after="2025-08-17">
   <owner>lizeb@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <summary>
