@@ -14,6 +14,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -376,7 +377,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onError,
                 mCallback::onRequestOutcome);
 
-        verifyNoInteractions(mCredManHelperMock);
+        verify(mCredManHelperMock).setNoCredentialsFallback(any());
+        verifyNoMoreInteractions(mCredManHelperMock);
     }
 
     @Test
@@ -456,6 +458,7 @@ public class Fido2CredentialRequestRobolectricTest {
         verify(mCredManHelperMock)
                 .startGetRequest(
                         any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
+        verify(mCredManHelperMock).setNoCredentialsFallback(any());
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
@@ -474,7 +477,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onError,
                 mCallback::onRequestOutcome);
 
-        verifyNoInteractions(mCredManHelperMock);
+        verify(mCredManHelperMock).setNoCredentialsFallback(any());
+        verifyNoMoreInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
     }
 
