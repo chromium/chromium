@@ -128,7 +128,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*sin_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*sqrt_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*tan_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*elu_input=*/{},
+       /*elu_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*expand_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*gather_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
@@ -143,7 +144,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*gru_input=*/{},
        /*gru_cell_input=*/{},
        /*hard_sigmoid_input=*/{},
-       /*hard_swish_input=*/{},
+       /*hard_swish_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*leaky_relu_input=*/{},

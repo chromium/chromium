@@ -70,11 +70,13 @@ constexpr char kOpTypeConcat[] = "Concat";
 constexpr char kOpTypeConv2d[] = "Conv";
 constexpr char kOpTypeConvTranspose2d[] = "ConvTranspose";
 constexpr char kOpTypeDequantizeLinear[] = "DequantizeLinear";
+constexpr char kOpTypeElu[] = "Elu";
 constexpr char kOpTypeExpand[] = "Expand";
 constexpr char kOpTypeGather[] = "Gather";
 constexpr char kOpTypeGatherND[] = "GatherND";
 constexpr char kOpTypeGelu[] = "Gelu";
 constexpr char kOpTypeGemm[] = "Gemm";
+constexpr char kOpTypeHardSwish[] = "HardSwish";
 constexpr char kOpTypeInstanceNormalization[] = "InstanceNormalization";
 constexpr char kOpTypeLayerNormalization[] = "LayerNormalization";
 constexpr char kOpTypeMatMul[] = "MatMul";
@@ -981,6 +983,21 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   }
 
   return base::ok();
+}
+
+void GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
+  const std::string node_name = GenerateNextOperationName(elu.label);
+  const std::string input_name = GetOperandNameById(elu.input_operand_id);
+  const std::string output_name = GetOperandNameById(elu.output_operand_id);
+
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_.CreateAttribute(/*name=*/"alpha", elu.alpha).Release()};
+
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  model_builder_.AddNode(kOpTypeElu, node_name, input_names, output_names,
+                         attributes);
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -2070,6 +2087,10 @@ GraphBuilderOrt::BuildModel() {
             AddDequantizeLinearOperation(*operation->get_dequantize_linear()));
         break;
       }
+      case mojom::Operation::Tag::kElu: {
+        AddEluOperation(*operation->get_elu());
+        break;
+      }
       case mojom::Operation::Tag::kExpand: {
         RETURN_IF_ERROR(AddExpandOperation(*operation->get_expand()));
         break;
@@ -2088,6 +2109,10 @@ GraphBuilderOrt::BuildModel() {
       }
       case mojom::Operation::Tag::kGemm: {
         AddGemmOperation(*operation->get_gemm());
+        break;
+      }
+      case mojom::Operation::Tag::kHardSwish: {
+        AddUnaryOperation(*operation->get_hard_swish(), kOpTypeHardSwish);
         break;
       }
       case mojom::Operation::Tag::kInstanceNormalization: {
@@ -2169,12 +2194,10 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kCumulativeSum:
-      case mojom::Operation::Tag::kElu:
       case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kHardSigmoid:
-      case mojom::Operation::Tag::kHardSwish:
       case mojom::Operation::Tag::kLeakyRelu:
       case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:

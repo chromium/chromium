@@ -184,6 +184,7 @@ class GraphBuilderOrt {
   void AddConcatOperation(const mojom::Concat& concat);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddConv2dOperation(
       const mojom::Conv2d& conv2d);
+  void AddEluOperation(const mojom::Elu& elu);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddExpandOperation(
       const mojom::Expand& expand);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
