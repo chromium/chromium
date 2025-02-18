@@ -631,8 +631,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedFreshnessDiff" units="minutes"
-    expires_after="2025-03-03">
-  <owner>dogancanemek@chromium.org</owner>
+    expires_after="2025-09-18">
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Logs the difference between the age of the seed (Seed Freshness) and the
