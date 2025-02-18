@@ -950,7 +950,7 @@ void WebContentsAndroid::SetSupportsForwardTransitionAnimation(
   web_contents_->SetSupportsForwardTransitionAnimation(supports);
 }
 
-void WebContentsAndroid::NotifyControlsConstraintsChanged(
+void WebContentsAndroid::UpdateOffsetTagDefinitions(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jtag_definitions) {
   ui::BrowserControlsOffsetTagDefinitions tag_definitions =

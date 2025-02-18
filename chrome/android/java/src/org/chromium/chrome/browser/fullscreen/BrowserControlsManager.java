@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.BrowserControlsOffsetTagConstraints;
 import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.ViewUtils;
@@ -108,6 +110,12 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private boolean mContentViewScrolling;
 
     private boolean mForceRelayoutOnVisibilityChange;
+
+    private BrowserControlsOffsetTagDefinitions mOffsetTagDefinitions =
+            new BrowserControlsOffsetTagDefinitions();
+
+    private boolean mHasTopControlsHeightAnimation;
+
     private final Runnable mUpdateVisibilityRunnable =
             new Runnable() {
                 @Override
@@ -276,11 +284,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
-                        WebContents webContents = tab.getWebContents();
-                        if (webContents == null) {
-                            return;
-                        }
-
                         int hairlineHeight = mControlContainer.getToolbarHairlineHeight();
                         offsetTagsInfo.mTopControlsAdditionalHeight = hairlineHeight;
                         offsetTagsInfo.mContentConstraints =
@@ -293,10 +296,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         // can set their relevant fields in offsetTagsInfo.
                         notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
 
-                        BrowserControlsOffsetTagDefinitions offsetTagDefinitions =
+                        updateOffsetTagDefinitions(
                                 new BrowserControlsOffsetTagDefinitions(
-                                        offsetTagsInfo.getTags(), offsetTagsInfo.getConstraints());
-                        webContents.notifyControlsConstraintsChanged(offsetTagDefinitions);
+                                        offsetTagsInfo.getTags(), offsetTagsInfo.getConstraints()));
                     }
 
                     @Override
@@ -440,6 +442,18 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 && mTopControlsMinHeight == topControlsMinHeight) {
             return;
         }
+
+        mHasTopControlsHeightAnimation = mAnimateBrowserControlsHeightChanges;
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && mHasTopControlsHeightAnimation) {
+            // The height changes just before the animation starts. The controls must be at the same
+            // position before and after the height changes. These constraints allow for the full
+            // range of the animation.
+            int diff = mTopControlsHeight - topControlsHeight;
+            int animationLow = -topControlsHeight;
+            int animationHigh = diff > 0 ? diff : 0;
+            updateTopControlsOffsetTagConstraints(animationLow, animationHigh);
+        }
+
         try (TraceEvent e = TraceEvent.scoped("BrowserControlsManager.setTopControlsHeight")) {
             final int oldTopHeight = mTopControlsHeight;
             final int oldTopMinHeight = mTopControlsMinHeight;
@@ -474,11 +488,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     @Override
     public int getTopControlsMinHeight() {
         return mTopControlsMinHeight;
-    }
-
-    @Override
-    public int getTopControlsCurrentHeight() {
-        return mTopControlsHeight - mTopControlsMinHeight + mRendererTopControlsMinHeightOffset;
     }
 
     @Override
@@ -786,6 +795,15 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 mControlContainer.getView().setTranslationY(getTopControlOffset());
             }
 
+            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                    && mHasTopControlsHeightAnimation
+                    && mRendererTopControlsMinHeightChanged
+                    && mTopControlsMinHeight == mRendererTopControlsMinHeightOffset) {
+                mHasTopControlsHeightAnimation = false;
+                int topControlsScrollableHeight = mTopControlsHeight - mTopControlsMinHeight;
+                updateTopControlsOffsetTagConstraints(-topControlsScrollableHeight, 0);
+            }
+
             // Explicitly tell the compositor to draw again. Should be |true| only when the android
             // views for the browser controls are visible, or when the android browser controls are
             // being moved by a browser driven animation. Browser driven animations refer to
@@ -1082,6 +1100,35 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private boolean canAnimateNativeBrowserControls() {
         final Tab tab = getTab();
         return tab != null && tab.isUserInteractable() && !tab.isNativePage();
+    }
+
+    private void updateOffsetTagDefinitions(BrowserControlsOffsetTagDefinitions newDefinitions) {
+        mOffsetTagDefinitions = newDefinitions;
+
+        Tab tab = getTab();
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
+        if (webContents != null) {
+            webContents.updateOffsetTagDefinitions(mOffsetTagDefinitions);
+        }
+    }
+
+    private void updateTopControlsOffsetTagConstraints(int topControlsLow, int topControlsHigh) {
+        OffsetTagConstraints newTopConstraints =
+                new OffsetTagConstraints(
+                        0,
+                        0,
+                        topControlsLow - mControlContainer.getToolbarHairlineHeight(),
+                        topControlsHigh);
+        OffsetTagConstraints newContentConstraints =
+                new OffsetTagConstraints(0, 0, topControlsLow, topControlsHigh);
+        BrowserControlsOffsetTagConstraints constraints =
+                new BrowserControlsOffsetTagConstraints(
+                        newTopConstraints,
+                        newContentConstraints,
+                        mOffsetTagDefinitions.getConstraints().getBottomControlsConstraints());
+        updateOffsetTagDefinitions(
+                new BrowserControlsOffsetTagDefinitions(
+                        mOffsetTagDefinitions.getTags(), constraints));
     }
 
     /** Destroys the BrowserControlsManager */

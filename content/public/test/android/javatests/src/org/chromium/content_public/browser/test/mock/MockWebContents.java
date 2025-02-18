@@ -378,7 +378,7 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     public void setLongPressLinkSelectText(boolean enabled) {}
 
     @Override
-    public void notifyControlsConstraintsChanged(
+    public void updateOffsetTagDefinitions(
             BrowserControlsOffsetTagDefinitions offsetTagDefinitions) {}
 
     @Override

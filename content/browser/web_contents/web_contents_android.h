@@ -214,7 +214,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void UpdateWebContentsVisibility(JNIEnv* env, jint visibility);
 
-  void NotifyControlsConstraintsChanged(
+  void UpdateOffsetTagDefinitions(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& joffset_tag_definitions);
 
