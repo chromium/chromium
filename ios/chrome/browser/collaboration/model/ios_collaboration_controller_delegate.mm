@@ -158,6 +158,8 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
   config.token = token;
   config.baseViewController = base_view_controller_;
+  config.applicationHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   if (const auto& tab_group_preview = preview_data.shared_tab_group_preview) {
     config.displayName = base::SysUTF8ToNSString(tab_group_preview->title);
     NSMutableArray<ShareKitPreviewItem*>* preview_items =
