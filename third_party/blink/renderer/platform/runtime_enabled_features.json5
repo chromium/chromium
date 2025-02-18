@@ -1114,11 +1114,11 @@
       status: "stable",
     },
     {
-      // CSS if() function for custom properties. Supports only style
-      // queries in conditions.
-      // https://github.com/w3c/csswg-drafts/issues/10064.
+      // CSS if() function for custom properties. Flag is used only for style
+      // queries support in conditions.
+      // https://drafts.csswg.org/css-values-5/#if-notation.
       name: "CSSInlineIfForStyleQueries",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://chromestatus.com/feature/6289894144212992
