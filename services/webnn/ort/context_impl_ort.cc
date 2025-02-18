@@ -203,8 +203,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*slice_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
-       /*softplus_input=*/{},
-       /*softsign_input=*/{},
+       /*softplus_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*softsign_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*split_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*tanh_input=*/{},

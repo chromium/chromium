@@ -104,6 +104,8 @@ constexpr char kOpTypeScatterND[] = "ScatterND";
 constexpr char kOpTypeSigmoid[] = "Sigmoid";
 constexpr char kOpTypeSlice[] = "Slice";
 constexpr char kOpTypeSoftmax[] = "Softmax";
+constexpr char kOpTypeSoftplus[] = "Softplus";
+constexpr char kOpTypeSoftsign[] = "Softsign";
 constexpr char kOpTypeSplit[] = "Split";
 constexpr char kOpTypeTranspose[] = "Transpose";
 constexpr char kOpTypeTriangular[] = "Trilu";
@@ -2142,6 +2144,14 @@ GraphBuilderOrt::BuildModel() {
         AddSoftmaxOperation(*operation->get_softmax());
         break;
       }
+      case mojom::Operation::Tag::kSoftplus: {
+        AddUnaryOperation(*operation->get_softplus(), kOpTypeSoftplus);
+        break;
+      }
+      case mojom::Operation::Tag::kSoftsign: {
+        AddUnaryOperation(*operation->get_softsign(), kOpTypeSoftsign);
+        break;
+      }
       case mojom::Operation::Tag::kSplit: {
         RETURN_IF_ERROR(AddSplitOperation(*operation->get_split()));
         break;
@@ -2173,8 +2183,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReverse:
       case mojom::Operation::Tag::kScatterElements:
-      case mojom::Operation::Tag::kSoftplus:
-      case mojom::Operation::Tag::kSoftsign:
       case mojom::Operation::Tag::kTanh:
       case mojom::Operation::Tag::kTile:
         return NewNotSupportedError("op is not supported.");
