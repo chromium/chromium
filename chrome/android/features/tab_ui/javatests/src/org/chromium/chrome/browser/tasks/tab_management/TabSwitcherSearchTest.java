@@ -345,6 +345,35 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_press_enter_to_search/true")
+    public void testTypedSuggestions_OpenSuggestionWithEnter() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        List<String> urlsToOpen =
+                Arrays.asList(
+                        "/chrome/test/data/android/navigate/one.html",
+                        "/chrome/test/data/android/test.html");
+        TabSwitcherSearchStation tabSwitcherSearchStation =
+                TabSwitcherSearchTestUtils.openUrls(
+                                mTestServer, mInitialPage, urlsToOpen, /* incognito= */ false)
+                        .openRegularTabSwitcher()
+                        .openTabSwitcherSearch();
+        tabSwitcherSearchStation.typeInOmnibox("one.html");
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(0, "One");
+        tabSwitcherSearchStation.pressEnter();
+
+        CriteriaHelper.pollUiThread(
+                () -> ActivityState.RESUMED == ApplicationStatus.getStateForActivity(cta));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ActivityState.DESTROYED
+                                == ApplicationStatus.getStateForActivity(
+                                        tabSwitcherSearchStation.getActivity()));
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
+    }
+
+    @Test
+    @MediumTest
     public void testTypedSuggestions_Incognito() {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchStation tabSwitcherSearchStation =

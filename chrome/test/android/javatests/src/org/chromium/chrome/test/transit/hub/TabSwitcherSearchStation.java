@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import android.view.KeyEvent;
 import android.view.View;
 
 import org.hamcrest.Matcher;
@@ -100,6 +101,11 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
                 SUGGESTIONS_LIST
                         .descendant(allOf(withParentIndex(index), withText(containsString(text))))
                         .getViewMatcher());
+    }
+
+    public void pressEnter() {
+        maybeInitSearchUtils();
+        mOmniboxTestUtils.sendKey(KeyEvent.KEYCODE_ENTER);
     }
 
     private void maybeInitSearchUtils() {
