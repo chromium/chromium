@@ -332,8 +332,6 @@ crbug.com/1078927 fast/multicol/table-row-height-increase.html [ Failure ]
 # View transition failures
 crbug.com/1351556 virtual/threaded/view-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/view-transition-wide-gamut/view-transition/capture-callback-exception.html [ Failure ]
-crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
-crbug.com/1412910 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 crbug.com/1430357 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 crbug.com/40283765 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/transition-to-prerender.html [ Failure ]
@@ -353,9 +351,6 @@ crbug.com/333739950 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitio
 crbug.com/373759981 virtual/threaded/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
 crbug.com/373759981 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
 crbug.com/373759981 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
-
-# View transition SPA failures with MPA serialization.
-crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 
 # Flaky on Mac
 crbug.com/40946176 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]

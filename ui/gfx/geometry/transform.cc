@@ -995,6 +995,17 @@ void Transform::Round2dTranslationComponents() {
   }
 }
 
+void Transform::Floor2dTranslationComponents() {
+  if (!full_matrix_) [[likely]] {
+    axis_2d_ = AxisTransform2d::FromScaleAndTranslation(
+        axis_2d_.scale(), Vector2dF(std::floor(axis_2d_.translation().x()),
+                                    std::floor(axis_2d_.translation().y())));
+  } else {
+    matrix_.set_rc(0, 3, std::floor(matrix_.rc(0, 3)));
+    matrix_.set_rc(1, 3, std::floor(matrix_.rc(1, 3)));
+  }
+}
+
 void Transform::RoundToIdentityOrIntegerTranslation() {
   if (!full_matrix_) [[likely]] {
     axis_2d_ = AxisTransform2d::FromScaleAndTranslation(
