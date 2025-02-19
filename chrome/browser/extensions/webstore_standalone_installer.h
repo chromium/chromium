@@ -27,6 +27,7 @@
 
 namespace extensions {
 class Extension;
+struct InstallApproval;
 class ScopedActiveInstall;
 class WebstoreDataFetcher;
 
@@ -126,7 +127,7 @@ class WebstoreStandaloneInstaller
   virtual std::unique_ptr<ExtensionInstallPrompt> CreateInstallUI();
 
   // Create an approval to pass installation parameters to the CrxInstaller.
-  virtual std::unique_ptr<WebstoreInstaller::Approval> CreateApproval() const;
+  virtual std::unique_ptr<InstallApproval> CreateApproval() const;
 
   // Called once the install prompt has finished.
   virtual void OnInstallPromptDone(

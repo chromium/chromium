@@ -39,6 +39,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/scoped_database_manager_for_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -204,11 +205,11 @@ class ManagementPolicyMock : public ManagementPolicy::Provider {
 
 class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
  protected:
-  std::unique_ptr<WebstoreInstaller::Approval> GetApproval(
+  std::unique_ptr<InstallApproval> GetApproval(
       const char* manifest_dir,
       const extensions::ExtensionId& id,
       bool strict_manifest_checks) {
-    std::unique_ptr<WebstoreInstaller::Approval> result;
+    std::unique_ptr<InstallApproval> result;
 
     base::ScopedAllowBlockingForTesting allow_io;
     base::FilePath ext_path = test_data_dir_.AppendASCII(manifest_dir);
@@ -219,7 +220,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
       return result;
     }
 
-    return WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
+    return InstallApproval::CreateWithNoInstallPrompt(
         browser()->profile(), id, std::move(*parsed_manifest),
         strict_manifest_checks);
   }
@@ -290,7 +291,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     std::move(quit_closure).Run();
   }
 
-  void RunCrxInstaller(const WebstoreInstaller::Approval* approval,
+  void RunCrxInstaller(const InstallApproval* approval,
                        std::unique_ptr<ExtensionInstallPrompt> prompt,
                        CrxInstaller::InstallerResultCallback callback,
                        const base::FilePath& crx_path) {
@@ -356,7 +357,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
                          MockPromptProxy* mock_install_prompt) {
     base::FilePath ext_path = test_data_dir_.AppendASCII(ext_relpath);
 
-    std::unique_ptr<WebstoreInstaller::Approval> approval;
+    std::unique_ptr<InstallApproval> approval;
     if (!id.empty()) {
       approval = GetApproval(ext_relpath, id, true);
     }
@@ -692,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, NonStrictManifestCheck) {
   // the newly published version hasn't fully propagated to all the download
   // servers yet. So load the v2 manifest, but then install the v1 crx file.
   extensions::ExtensionId id = "ooklpoaelmiimcjipecogjfcejghbogp";
-  std::unique_ptr<WebstoreInstaller::Approval> approval =
+  std::unique_ptr<InstallApproval> approval =
       GetApproval("crx_installer/v2_no_permission_change/", id, false);
 
   RunCrxInstaller(approval.get(), mock_prompt->CreatePrompt(),
@@ -712,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   // the newly published version hasn't fully propagated to all the download
   // servers yet. So load the v2 manifest, but then install the v1 crx file.
   const extensions::ExtensionId id = "ooklpoaelmiimcjipecogjfcejghbogp";
-  std::unique_ptr<WebstoreInstaller::Approval> approval =
+  std::unique_ptr<InstallApproval> approval =
       GetApproval("crx_installer/v2_no_permission_change/", id, false);
 
   RunCrxInstaller(

@@ -20,7 +20,7 @@
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/webstore_installer.h"
+#include "chrome/browser/extensions/manifest_check_level.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/sync/model/string_ordinal.h"
@@ -44,6 +44,7 @@ namespace extensions {
 class CrxInstallError;
 class ExtensionService;
 class ExtensionUpdaterTest;
+struct InstallApproval;
 enum class InstallationStage;
 class MockCrxInstaller;
 class PreloadCheckGroup;
@@ -114,7 +115,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   static scoped_refptr<CrxInstaller> Create(
       ExtensionService* service,
       std::unique_ptr<ExtensionInstallPrompt> client,
-      const WebstoreInstaller::Approval* approval);
+      const InstallApproval* approval);
 
   // Install the crx in |source_file|. The file must be a CRX3. A publisher
   // proof in the file is required unless off-webstore installation is allowed.
@@ -275,7 +276,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
 
   CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
                std::unique_ptr<ExtensionInstallPrompt> client,
-               const WebstoreInstaller::Approval* approval);
+               const InstallApproval* approval);
   ~CrxInstaller() override;
 
   // Converts the source user script to an extension.

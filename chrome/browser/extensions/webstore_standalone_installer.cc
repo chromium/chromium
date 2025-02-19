@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
@@ -165,11 +166,11 @@ WebstoreStandaloneInstaller::CreateInstallUI() {
   return std::make_unique<ExtensionInstallPrompt>(GetWebContents());
 }
 
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreStandaloneInstaller::CreateApproval() const {
-  std::unique_ptr<WebstoreInstaller::Approval> approval(
-      WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-          profile_, id_, manifest_->Clone(), true));
+std::unique_ptr<InstallApproval> WebstoreStandaloneInstaller::CreateApproval()
+    const {
+  std::unique_ptr<InstallApproval> approval(
+      InstallApproval::CreateWithNoInstallPrompt(profile_, id_,
+                                                 manifest_->Clone(), true));
   approval->skip_post_install_ui = !ShouldShowPostInstallUI();
   approval->installing_icon = gfx::ImageSkia::CreateFrom1xBitmap(icon_);
   return approval;
@@ -191,7 +192,7 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
 
   DCHECK(payload.result == ExtensionInstallPrompt::Result::ACCEPTED);
 
-  std::unique_ptr<WebstoreInstaller::Approval> approval = CreateApproval();
+  std::unique_ptr<InstallApproval> approval = CreateApproval();
 
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
   const Extension* installed_extension =
