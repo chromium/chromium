@@ -73,6 +73,7 @@ constexpr char kOpTypeDequantizeLinear[] = "DequantizeLinear";
 constexpr char kOpTypeElu[] = "Elu";
 constexpr char kOpTypeExpand[] = "Expand";
 constexpr char kOpTypeGather[] = "Gather";
+constexpr char kOpTypeGatherElements[] = "GatherElements";
 constexpr char kOpTypeGatherND[] = "GatherND";
 constexpr char kOpTypeGelu[] = "Gelu";
 constexpr char kOpTypeGemm[] = "Gemm";
@@ -1194,6 +1195,32 @@ void GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
                          attributes);
 }
 
+void GraphBuilderOrt::AddGatherElementsOperation(
+    const mojom::GatherElements& gather_elements) {
+  const std::string node_name =
+      GenerateNextOperationName(gather_elements.label);
+  const std::string input_name =
+      GetOperandNameById(gather_elements.input_operand_id);
+  const std::string indices_name =
+      GetOperandNameById(gather_elements.indices_operand_id);
+  const std::string output_name =
+      GetOperandNameById(gather_elements.output_operand_id);
+
+  // TODO(https://github.com/shiyi9801/chromium/issues/149): Clamp the indices
+  // operand to ensure it won't be out-of-bound.
+
+  int64_t axis = static_cast<int64_t>(gather_elements.axis);
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_.CreateAttribute(/*name=*/"axis", axis).Release()};
+
+  std::array<const char*, 2> input_names = {input_name.c_str(),
+                                            indices_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  model_builder_.AddNode(kOpTypeGatherElements, node_name, input_names,
+                         output_names, attributes);
+}
+
 void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
   const std::string node_name = GenerateNextOperationName(gather_nd.label);
   const std::string input_name = GetOperandNameById(gather_nd.input_operand_id);
@@ -2122,6 +2149,10 @@ GraphBuilderOrt::BuildModel() {
         AddGatherOperation(*operation->get_gather());
         break;
       }
+      case mojom::Operation::Tag::kGatherElements: {
+        AddGatherElementsOperation(*operation->get_gather_elements());
+        break;
+      }
       case mojom::Operation::Tag::kGatherNd: {
         AddGatherNDOperation(*operation->get_gather_nd());
         break;
@@ -2225,7 +2256,6 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kCumulativeSum:
-      case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kHardSigmoid:
