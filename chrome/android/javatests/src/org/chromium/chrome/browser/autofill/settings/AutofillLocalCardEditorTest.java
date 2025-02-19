@@ -17,12 +17,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -36,7 +34,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -60,7 +57,11 @@ import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
-/** Instrumentation tests for AutofillLocalCardEditor. */
+/**
+ * Instrumentation tests for {@link AutofillLocalCardEditor}.
+ *
+ * <p>TODO: crbug.com/391100396 - Rewrite these tests using Robolectric.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillLocalCardEditorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -198,325 +199,10 @@ public class AutofillLocalCardEditorTest {
         mActionTester.tearDown();
     }
 
-    @Test
-    @MediumTest
-    public void nicknameFieldEmpty_cardDoesNotHaveNickname() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        assertThat(autofillLocalCardEditorFragment.mNicknameText.getText().toString()).isEmpty();
-        assertThat(autofillLocalCardEditorFragment.mDoneButton.isEnabled()).isFalse();
-    }
-
-    @Test
-    @MediumTest
-    public void nicknameFieldSet_cardHasNickname() throws Exception {
-        String nickname = "test nickname";
-        SAMPLE_LOCAL_CARD.setNickname(nickname);
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        assertThat(autofillLocalCardEditorFragment.mNicknameText.getText().toString())
-                .isEqualTo(nickname);
-        // If the nickname is not modified the Done button should be disabled.
-        assertThat(autofillLocalCardEditorFragment.mDoneButton.isEnabled()).isFalse();
-    }
-
-    @Test
-    @MediumTest
-    public void testNicknameFieldIsShown() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getVisibility())
-                .isEqualTo(View.VISIBLE);
-    }
-
-    @Test
-    @MediumTest
-    public void testInvalidNicknameShowsErrorMessage() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    try {
-                        autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
-                    } catch (Exception e) {
-                        throw new AssertionError("Failed to set the nickname", e);
-                    }
-                });
-
-        assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getError())
-                .isEqualTo(
-                        activity.getResources()
-                                .getString(R.string.autofill_credit_card_editor_invalid_nickname));
-        // Since the nickname has an error, the done button should be disabled.
-        assertThat(autofillLocalCardEditorFragment.mDoneButton.isEnabled()).isFalse();
-    }
-
-    @Test
-    @MediumTest
-    public void testErrorMessageHiddenAfterNicknameIsEditedFromInvalidToValid() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    try {
-                        autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
-                    } catch (Exception e) {
-                        throw new AssertionError("Failed to set the nickname", e);
-                    }
-                });
-        assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getError())
-                .isEqualTo(
-                        activity.getResources()
-                                .getString(R.string.autofill_credit_card_editor_invalid_nickname));
-
-        // Set the nickname to valid one.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    try {
-                        autofillLocalCardEditorFragment.mNicknameText.setText("Valid Nickname");
-                    } catch (Exception e) {
-                        throw new AssertionError("Failed to set the nickname", e);
-                    }
-                });
-
-        assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getError()).isNull();
-        assertThat(autofillLocalCardEditorFragment.mDoneButton.isEnabled()).isTrue();
-    }
-
-    @Test
-    @MediumTest
-    public void testErrorMessageHiddenAfterNicknameIsEditedFromInvalidToEmpty() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    try {
-                        autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
-                    } catch (Exception e) {
-                        throw new AssertionError("Failed to set the nickname", e);
-                    }
-                });
-        assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getError())
-                .isEqualTo(
-                        activity.getResources()
-                                .getString(R.string.autofill_credit_card_editor_invalid_nickname));
-
-        // Clear the nickname.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    try {
-                        autofillLocalCardEditorFragment.mNicknameText.setText(null);
-                    } catch (Exception e) {
-                        throw new AssertionError("Failed to set the nickname", e);
-                    }
-                });
-
-        assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getError()).isNull();
-        assertThat(autofillLocalCardEditorFragment.mDoneButton.isEnabled()).isTrue();
-    }
-
-    @Test
-    @MediumTest
-    public void testNicknameLengthCappedAt25Characters() throws Exception {
-        String veryLongNickname = "This is a very very long nickname";
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    try {
-                        autofillLocalCardEditorFragment.mNicknameText.setText(veryLongNickname);
-                    } catch (Exception e) {
-                        throw new AssertionError("Failed to set the nickname", e);
-                    }
-                });
-
-        assertThat(autofillLocalCardEditorFragment.mNicknameText.getText().toString())
-                .isEqualTo(veryLongNickname.substring(0, 25));
-    }
-
     private Bundle fragmentArgs(String guid) {
         Bundle args = new Bundle();
         args.putString(AutofillEditorBase.AUTOFILL_GUID, guid);
         return args;
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testExpirationDateSpinnerAreShownWhenCvcFlagOff() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        assertThat(autofillLocalCardEditorFragment.mExpirationMonth.getVisibility())
-                .isEqualTo(View.VISIBLE);
-        assertThat(autofillLocalCardEditorFragment.mExpirationYear.getVisibility())
-                .isEqualTo(View.VISIBLE);
-        assertThat(autofillLocalCardEditorFragment.mExpirationDate).isNull();
-        assertThat(autofillLocalCardEditorFragment.mCvc).isNull();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testExpirationDateAndSecurityCodeFieldsAreShown() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        assertThat(autofillLocalCardEditorFragment.mExpirationDate.getVisibility())
-                .isEqualTo(View.VISIBLE);
-        assertThat(autofillLocalCardEditorFragment.mCvc.getVisibility()).isEqualTo(View.VISIBLE);
-        assertThat(autofillLocalCardEditorFragment.mExpirationMonth).isNull();
-        assertThat(autofillLocalCardEditorFragment.mExpirationYear).isNull();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void securityCodeFieldSet_cardHasCvc() throws Exception {
-        String cvc = "234";
-        SAMPLE_LOCAL_CARD_WITH_CVC.setCvc(cvc);
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        assertThat(autofillLocalCardEditorFragment.mCvc.getText().toString()).isEqualTo(cvc);
-        assertThat(autofillLocalCardEditorFragment.mDoneButton.isEnabled()).isFalse();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testSecurityCode_whenAmExCardIsSet_usesAmExCvcHintImage() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_AMEX_CARD_WITH_CVC);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-
-        verifyCvcHintImage(
-                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon_amex);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testSecurityCode_whenCardIsNotSet_usesDefaultCvcHintImage() throws Exception {
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-
-        verifyCvcHintImage(
-                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testSecurityCode_whenAmExCardNumberIsEntered_usesAmExCvcHintImage()
-            throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        setCardNumberOnEditor(autofillLocalCardEditorFragment, AMEX_CARD_NUMBER);
-
-        verifyCvcHintImage(
-                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon_amex);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testSecurityCode_whenNonAmExCardNumberIsEntered_usesDefaultCvcHintImage()
-            throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
-
-        verifyCvcHintImage(
-                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testSecurityCode_whenNumberIsChangedFromAmExToNonAmEx_usesDefaultCvcHintImage()
-            throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_AMEX_CARD_WITH_CVC);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
-
-        verifyCvcHintImage(
-                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testSecurityCode_whenNumberIsChangedFromNonAmExToAmEx_usesAmExCvcHintImage()
-            throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        setCardNumberOnEditor(autofillLocalCardEditorFragment, AMEX_CARD_NUMBER);
-
-        verifyCvcHintImage(
-                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon_amex);
     }
 
     @Test
@@ -1196,17 +882,6 @@ public class AutofillLocalCardEditorTest {
                         throw new AssertionError("Failed to click the button", e);
                     }
                 });
-    }
-
-    private void verifyCvcHintImage(
-            AutofillLocalCardEditor autofillLocalCardEditorFragment, int expectedImage) {
-        ImageView expectedCvcHintImage = new ImageView(ContextUtils.getApplicationContext());
-        expectedCvcHintImage.setImageResource(expectedImage);
-
-        BitmapDrawable expectedDrawable = (BitmapDrawable) expectedCvcHintImage.getDrawable();
-        BitmapDrawable actualDrawable =
-                (BitmapDrawable) autofillLocalCardEditorFragment.mCvcHintImage.getDrawable();
-        assertThat(expectedDrawable.getBitmap().sameAs(actualDrawable.getBitmap())).isTrue();
     }
 
     @Test
