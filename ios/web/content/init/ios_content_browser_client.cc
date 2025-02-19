@@ -14,6 +14,7 @@
 #import "content/public/common/user_agent.h"
 #import "ios/web/content/init/ios_browser_main_parts.h"
 #import "ios/web/content/ui/web_contents_view_delegate_impl.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace web {
 
@@ -125,6 +126,14 @@ IOSContentBrowserClient::GetGeneratedCodeCacheSettings(
 std::unique_ptr<content::DevToolsManagerDelegate>
 IOSContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<content::DevToolsManagerDelegate>();
+}
+
+void IOSContentBrowserClient::AppendExtraCommandLineSwitches(
+    base::CommandLine* command_line,
+    int child_process_id) {
+  // Disable JIT for now.
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--jitless");
 }
 
 }  // namespace web
