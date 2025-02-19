@@ -262,11 +262,6 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 }
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
-    suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result {
-  [self lensOverlay:lensOverlay hasSuggestSignalsAvailableOnResult:result];
-}
-
-- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     hasSuggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result {
   if (result != _currentLensResult) {
     return;
