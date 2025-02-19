@@ -871,6 +871,40 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SetPriority) {
   ASSERT_TRUE(stream);
 }
 
+// Regression test for crbug.com/397403548.
+// AttemptManager should return a valid priority even after Job (request) is
+// notified.
+TEST_F(HttpStreamPoolAttemptManagerTest, GetPriority) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data;
+  MockConnectCompleter completer;
+  data.set_connect_data(MockConnect(&completer));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  // Request a stream with the HIGHEST priority.
+  StreamRequester requester;
+  requester.set_priority(RequestPriority::HIGHEST).RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Ensure the corresponding attempt manager has the HIGHEST priority.
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  ASSERT_EQ(manager->GetPriority(), RequestPriority::HIGHEST);
+
+  // Complete the stream attempt and wait for request completion. The
+  // corresponding attempt manager should return IDLE priority.
+  completer.Complete(OK);
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  ASSERT_EQ(manager->GetPriority(), RequestPriority::IDLE);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, TcpFailSync) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
