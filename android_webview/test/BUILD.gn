@@ -71,7 +71,7 @@ if (android_64bit_target_cpu) {
     ]
   }
 
-  if (!skip_secondary_abi_for_cq) {
+  if (defined(android_app_secondary_abi)) {
     python_library("webview_trichrome_64_32_cts_tests") {
       pydeps_file = "//android_webview/tools/run_cts.pydeps"
       deps = [ "//android_webview:trichrome_webview_64_32_apk" ]

@@ -29,11 +29,20 @@ template("system_webview_apk_or_module_tmpl") {
          "If trichrome library is used, static_library_provider must be set " +
              "so that a dep can be added on the library APK.")
 
-  _include_32_bit_webview =
-      !defined(invoker.include_32_bit_webview) || invoker.include_32_bit_webview
   _include_64_bit_webview =
       android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
                                    invoker.include_64_bit_webview)
+
+  if (defined(invoker.include_32_bit_webview)) {
+    _include_32_bit_webview = invoker.include_32_bit_webview
+  } else {
+    _include_32_bit_webview =
+        !android_64bit_target_cpu || defined(android_app_secondary_abi)
+
+    # Make sure defaults never lead no abi.
+    assert(_include_32_bit_webview || _include_64_bit_webview)
+  }
+
   if (_is_trichrome) {
     _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
     _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]

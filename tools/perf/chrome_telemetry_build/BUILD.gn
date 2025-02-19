@@ -111,9 +111,12 @@ group("telemetry_chrome_test") {
 if (is_android) {
   _bitness_if_needed = ""
   _webview_bitness_if_needed = ""
-  if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+  if (defined(android_app_secondary_abi)) {
     _bitness_if_needed = "_64_32"
     _webview_bitness_if_needed = "_32_64"
+  } else if (android_64bit_target_cpu) {
+    _bitness_if_needed = "_64"
+    _webview_bitness_if_needed = "_64"
   }
   group("telemetry_chrome_test_android_chrome") {
     testonly = true
@@ -162,7 +165,7 @@ if (is_android) {
     ]
   }
 
-  if (android_64bit_target_cpu) {
+  if (defined(android_app_secondary_abi)) {
     group("telemetry_chrome_test_android_trichrome_chrome_64_32_bundle") {
       testonly = true
 

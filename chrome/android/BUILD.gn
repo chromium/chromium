@@ -45,12 +45,8 @@ import("trichrome.gni")
 assert(!is_cronet_build)
 assert(enable_supervised_users)
 
-if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-  assert(current_toolchain != android_secondary_abi_toolchain)
-}
-
 # 32-bit library will have browser code in it. 64-bit is webview-only.
-if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+if (defined(android_app_secondary_abi)) {
   _monochrome_browser_toolchain = android_secondary_abi_toolchain
 } else {
   _monochrome_browser_toolchain = default_toolchain
@@ -1948,7 +1944,7 @@ if (current_toolchain == default_toolchain) {
   chrome_public_apk_or_module_tmpl("chrome_public_apk") {
     target_type = "android_apk"
     apk_name = "ChromePublic"
-    if (android_64bit_target_cpu) {
+    if (defined(android_app_secondary_abi)) {
       # Ensure 64-bit chrome does not depend on 32-bit things.
       assert_no_deps =
           [ "//build/config:toolchain_marker_" +
@@ -2113,7 +2109,7 @@ if (current_toolchain == default_toolchain) {
     resources_package = "org.chromium.chrome.base"
   }
 
-  if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
+  if (android_64bit_target_cpu && !defined(android_app_secondary_abi)) {
     group("trichrome_library_apk") {
       deps = [ ":trichrome_library_64_apk" ]
     }
@@ -2189,7 +2185,7 @@ if (current_toolchain == default_toolchain) {
       }
     }
 
-    if (!skip_secondary_abi_for_cq) {
+    if (defined(android_app_secondary_abi)) {
       trichrome_library_apk_tmpl("trichrome_library_32_apk") {
         apk_name = "TrichromeLibrary32"
         is_64_bit_browser = false
@@ -2447,7 +2443,7 @@ if (current_toolchain == default_toolchain) {
   # Public webview targets don't work with non-public sdks.
   # https://crbug.com/1000763
   instrumentation_test_runner("monochrome_public_smoke_test") {
-    if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
+    if (android_64bit_target_cpu && !defined(android_app_secondary_abi)) {
       apk_under_test = ":monochrome_64_public_apk"
       if (!is_java_debug) {
         proguard_mapping_path =
@@ -2509,7 +2505,7 @@ if (current_toolchain == default_toolchain) {
 
   instrumentation_test_runner("monochrome_public_bundle_smoke_test") {
     if (android_64bit_target_cpu) {
-      if (skip_secondary_abi_for_cq) {
+      if (!defined(android_app_secondary_abi)) {
         apk_under_test = "//chrome/android:monochrome_64_public_bundle_apks"
         if (!is_java_debug) {
           proguard_mapping_path =
@@ -2537,7 +2533,7 @@ if (current_toolchain == default_toolchain) {
 
   _verify_32bit_static_initializers =
       defined(expected_static_initializer_32bit_count) &&
-      !skip_secondary_abi_for_cq
+      defined(android_app_secondary_abi)
   _verify_64bit_static_initializers =
       defined(expected_static_initializer_64bit_count) &&
       android_64bit_target_cpu
@@ -2602,7 +2598,7 @@ if (current_toolchain == default_toolchain) {
     modules = [ "test_dummy" ]
     extra_args = _bundle_smoke_test_extra_args
     if (android_64bit_target_cpu) {
-      if (skip_secondary_abi_for_cq) {
+      if (!defined(android_app_secondary_abi)) {
         apk_under_test = "//chrome/android:trichrome_chrome_64_bundle_apks"
         additional_apks = [ "//chrome/android:trichrome_library_64_apk" ]
         if (!is_java_debug) {
@@ -2689,7 +2685,7 @@ if (current_toolchain == default_toolchain) {
     }
   }
 
-  if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
+  if (android_64bit_target_cpu && !defined(android_app_secondary_abi)) {
     group("monochrome_public_bundle") {
       deps = [ ":monochrome_64_public_bundle" ]
     }
@@ -2761,7 +2757,7 @@ if (current_toolchain == default_toolchain) {
     }
 
     # Used for binary size monitoring things:
-    if (is_official_build && !skip_secondary_abi_for_cq) {
+    if (is_official_build && defined(android_app_secondary_abi)) {
       _trichrome_library_basename = "TrichromeLibrary.apk"
       _trichrome_chrome_basename = "TrichromeChrome.minimal.apks"
       _trichrome_chrome_bundle = "TrichromeChrome.aab"
@@ -2865,7 +2861,7 @@ if (current_toolchain == default_toolchain) {
         data_deps = [ ":trichrome_32_minimal_apks" ]
       }
 
-      if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+      if (defined(android_app_secondary_abi)) {
         android_size_bot_config("resource_size_config_trichrome") {
           name = "Trichrome"
           mapping_files = [
@@ -2941,7 +2937,7 @@ if (current_toolchain == default_toolchain) {
       }
     }
 
-    if (!skip_secondary_abi_for_cq) {
+    if (defined(android_app_secondary_abi)) {
       chrome_public_bundle("monochrome_32_public_bundle") {
         is_monochrome = true
         bundle_name = "MonochromePublic32"
@@ -3423,7 +3419,7 @@ if (current_toolchain == _monochrome_browser_toolchain) {
     collect_inputs_only = true
   }
 
-  if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+  if (defined(android_app_secondary_abi)) {
     group("monochrome_64_secondary_abi_lib") {
       public_deps = [ ":libmonochrome_64($android_secondary_abi_toolchain)" ]
     }
@@ -3436,7 +3432,7 @@ if (android_64bit_target_cpu) {
   }
 
   # 32-bit browser library alias targets, pulled in by 64-bit WebView builds.
-  if (!skip_secondary_abi_for_cq) {
+  if (defined(android_app_secondary_abi)) {
     group("monochrome_secondary_abi_lib") {
       public_deps = [ ":libmonochrome($android_secondary_abi_toolchain)" ]
     }
