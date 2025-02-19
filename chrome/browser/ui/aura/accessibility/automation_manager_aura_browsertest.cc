@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -118,6 +119,14 @@ class AutomationEventWaiter
     return std::move(matched_wait_for_event_);
   }
 
+  std::unique_ptr<ui::AXNodeData> WaitForDataChange(
+      ui::AXNodeID target_node_id) {
+    data_change_target_node_id_ = target_node_id;
+    run_loop_->Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    return std::move(matched_wait_for_data_change_);
+  }
+
   bool WasNodeIdFocused(int node_id) {
     for (int focused_node_id : focused_node_ids_) {
       if (node_id == focused_node_id) {
@@ -148,6 +157,16 @@ class AutomationEventWaiter
         if (focused_node_id == node_id_to_wait_for_) {
           node_id_to_wait_for_ = ui::kInvalidAXNodeID;
           run_loop_->Quit();
+        }
+      }
+
+      if (data_change_target_node_id_ != ui::kInvalidAXNodeID) {
+        for (const auto& data : update.nodes) {
+          if (data.id == data_change_target_node_id_) {
+            matched_wait_for_data_change_ =
+                std::make_unique<ui::AXNodeData>(data);
+            run_loop_->Quit();
+          }
         }
       }
     }
@@ -189,6 +208,9 @@ class AutomationEventWaiter
   std::unique_ptr<ui::AXEvent> matched_wait_for_event_;
   ax::mojom::Event event_type_to_wait_for_ = ax::mojom::Event::kNone;
   ui::AXNodeID event_target_node_id_to_wait_for_ = ui::kInvalidAXNodeID;
+
+  std::unique_ptr<ui::AXNodeData> matched_wait_for_data_change_;
+  ui::AXNodeID data_change_target_node_id_ = ui::kInvalidAXNodeID;
 };
 
 ui::TableColumn TestTableColumn(int id, const std::string& title) {
@@ -412,6 +434,55 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_ScrollView) {
   tree->SerializeNode(scroll_view_wrapper, &node_data);
   EXPECT_EQ(50, node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX));
   EXPECT_EQ(315, node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollY));
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       SerializeOnDataChanged) {
+  auto cache = std::make_unique<views::AXAuraObjCache>();
+  auto* cache_ptr = cache.get();
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
+  manager->send_window_state_on_enable_ = false;
+  manager->Enable();
+  AutomationEventWaiter waiter;
+  auto* tree = manager->GetTreeSource();
+
+  // Create a widget with size 200, 200.
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+
+  views::View* root_view = widget->GetRootView();
+  auto orig_label = std::make_unique<views::Label>();
+  root_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  views::View* label_view = root_view->AddChildView(std::move(orig_label));
+  widget->Show();
+  widget->Activate();
+  root_view->GetLayoutManager()->Layout(root_view);
+
+  views::AXAuraObjWrapper* label_view_wrapper =
+      cache_ptr->GetOrCreate(label_view);
+  ui::AXNodeData node_data;
+  tree->SerializeNode(label_view_wrapper, &node_data);
+
+  ui::AXNodeData label_data;
+  label_view->GetViewAccessibility().GetAccessibleNodeData(&label_data);
+  ui::AXNodeID id = label_data.id;
+  EXPECT_NE(label_data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+
+  if (::features::IsViewsAccessibilitySerializeOnDataChangeEnabled()) {
+    label_view->GetViewAccessibility().SetReadOnly(true);
+    auto data_change_from_views = waiter.WaitForDataChange(id);
+    ASSERT_NE(nullptr, data_change_from_views.get());
+    ui::AXNodeData received_data = *data_change_from_views;
+    ASSERT_EQ(label_data.id, received_data.id);
+    EXPECT_EQ(received_data.GetRestriction(),
+              ax::mojom::Restriction::kReadOnly);
+  }
 }
 
 // Ensure that TableView accessibility works at the level of the

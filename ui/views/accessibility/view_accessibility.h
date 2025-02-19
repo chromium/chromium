@@ -756,6 +756,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   ui::AXAttributeChangedCallbacks* GetOrCreateAXAttributeChangedCallbacks();
 
+  virtual void NotifyDataChanged();
+
   // Weak. Owns this.
   const raw_ptr<View> view_;
 

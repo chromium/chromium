@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -76,6 +77,9 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
   void OnVirtualViewEvent(views::AXVirtualView* virtual_view,
                           ax::mojom::Event event_type) override;
 
+  void OnDataChanged(views::View* view) override;
+  void OnVirtualViewDataChanged(views::AXVirtualView* virtual_view) override;
+
   bool is_enabled() const { return is_enabled_; }
 
   void set_ax_aura_obj_cache_for_testing(
@@ -97,7 +101,7 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
                  int action_request_id = -1,
                  bool from_user = false);
 
-  virtual void SendPendingEvents();
+  virtual void SendPendingUpdate();
 
   // Subclasses override this to do final dispatching of events.
   virtual void DispatchAccessibilityEvents(
@@ -131,8 +135,9 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
 
   std::unique_ptr<views::AccessibilityAlertWindow> alert_window_;
 
-  // Indicates whether we have already posted a task to SendPendingEvents().
-  bool processing_posted_ = false;
+  // Indicates whether we have already posted an event or data changed task to
+  // SendPendingUpdate().
+  bool processing_update_posted_ = false;
 
   ax::mojom::Action currently_performing_action_ = ax::mojom::Action::kNone;
 
@@ -144,6 +149,8 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
     bool from_user;
   };
   std::vector<Event> pending_events_;
+
+  std::unordered_set<ui::AXNodeID> pending_data_updates_;
 };
 }  // namespace views
 

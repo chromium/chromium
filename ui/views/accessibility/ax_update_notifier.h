@@ -34,6 +34,10 @@ class VIEWS_EXPORT AXUpdateNotifier {
   void NotifyVirtualViewEvent(views::AXVirtualView* virtual_view,
                               ax::mojom::Event event_type);
 
+  // Notifies observers of a data change. `view` must not be null.
+  void NotifyViewDataChanged(views::View* view);
+  void NotifyVirtualViewDataChanged(views::AXVirtualView* virtual_view);
+
  private:
   base::ObserverList<AXUpdateObserver> observers_;
 };

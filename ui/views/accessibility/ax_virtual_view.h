@@ -200,6 +200,7 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   // `ViewAccessibility` overrides.
   void NotifyEvent(ax::mojom::Event event_type,
                    bool send_native_event) override;
+  void NotifyDataChanged() override;
   void UpdateFocusableState() override;
   void UpdateInvisibleState() override;
   void OnWidgetClosing(Widget* widget) override;

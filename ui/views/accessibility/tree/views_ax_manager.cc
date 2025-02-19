@@ -52,7 +52,8 @@ void ViewsAXManager::Enable() {
   pending_events_.push_back({tree_source_->GetRoot()->GetUniqueId(),
                              ax::mojom::Event::kLoadComplete, -1,
                              currently_performing_action_});
-  SendPendingEvents();
+  pending_data_updates_.insert(tree_source_->GetRoot()->GetUniqueId());
+  SendPendingUpdate();
 
   // Intentionally not reset at shutdown since we cannot rely on the shutdown
   // ordering of two base::Singletons.
@@ -109,6 +110,63 @@ void ViewsAXManager::SetA11yOverrideWindow(aura::Window* a11y_override_window) {
   if (cache_) {
     cache_->SetA11yOverrideWindow(a11y_override_window);
   }
+}
+
+void ViewsAXManager::OnDataChanged(views::View* view) {
+  CHECK(view);
+  if (!is_enabled_) {
+    return;
+  }
+
+  DCHECK(tree_source_.get());
+
+  views::Widget* widget = view->GetWidget();
+  if (widget && !widget->GetNativeView()) {
+    return;
+  }
+
+  views::AXAuraObjWrapper* obj = cache_->GetOrCreate(view);
+  if (!obj) {
+    return;
+  }
+
+  pending_data_updates_.insert(obj->GetUniqueId());
+
+  if (processing_update_posted_) {
+    return;
+  }
+
+  processing_update_posted_ = true;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ViewsAXManager::SendPendingUpdate,
+                                base::Unretained(this)));
+}
+
+void ViewsAXManager::OnVirtualViewDataChanged(
+    views::AXVirtualView* virtual_view) {
+  CHECK(virtual_view);
+
+  if (!is_enabled_) {
+    return;
+  }
+
+  DCHECK(tree_source_.get());
+
+  views::AXAuraObjWrapper* obj = virtual_view->GetOrCreateWrapper(cache_.get());
+  if (!obj) {
+    return;
+  }
+
+  pending_data_updates_.insert(obj->GetUniqueId());
+
+  if (processing_update_posted_) {
+    return;
+  }
+
+  processing_update_posted_ = true;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ViewsAXManager::SendPendingUpdate,
+                                base::Unretained(this)));
 }
 
 void ViewsAXManager::PerformAction(const ui::AXActionData& data) {
@@ -223,19 +281,20 @@ void ViewsAXManager::PostEvent(int id,
                                bool from_user) {
   pending_events_.push_back({id, event_type, action_request_id,
                              currently_performing_action_, from_user});
+  pending_data_updates_.insert(id);
 
-  if (processing_posted_) {
+  if (processing_update_posted_) {
     return;
   }
 
-  processing_posted_ = true;
+  processing_update_posted_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ViewsAXManager::SendPendingEvents,
+      FROM_HERE, base::BindOnce(&ViewsAXManager::SendPendingUpdate,
                                 base::Unretained(this)));
 }
 
-void ViewsAXManager::SendPendingEvents() {
-  processing_posted_ = false;
+void ViewsAXManager::SendPendingUpdate() {
+  processing_update_posted_ = false;
   if (!is_enabled_ || !tree_serializer_) {
     return;
   }
@@ -244,7 +303,9 @@ void ViewsAXManager::SendPendingEvents() {
   std::vector<ui::AXEvent> events;
 
   auto pending_events_copy = std::move(pending_events_);
+  auto pending_data_changes_copy = std::move(pending_data_updates_);
   pending_events_.clear();
+  pending_data_updates_.clear();
 
   for (auto& event_copy : pending_events_copy) {
     const int id = event_copy.id;
@@ -261,12 +322,17 @@ void ViewsAXManager::SendPendingEvents() {
       continue;
     }
 
+    // We can't defer serialization until the loop of the
+    // `pending_data_changes_copy` since we need to first fire the event but
+    // only if the object in the client tree, and we need to serialize to know
+    // this.
     ui::AXTreeUpdate update;
     if (!tree_serializer_->SerializeChanges(aura_obj, &update)) {
       OnSerializeFailure(event_type, update);
       return;
     }
     tree_updates.push_back(std::move(update));
+    pending_data_changes_copy.erase(id);
 
     // Fire the event on the node, but only if it's actually in the tree.
     // Sometimes we get events fired on nodes with an ancestor that's
@@ -286,6 +352,21 @@ void ViewsAXManager::SendPendingEvents() {
       event.action_request_id = event_copy.action_request_id;
       events.push_back(std::move(event));
     }
+  }
+
+  // We must now serialize any changes that were not associated with an event.
+  ui::AXTreeUpdate update;
+  for (auto& id : pending_data_changes_copy) {
+    auto* aura_obj = cache_->Get(id);
+    if (!aura_obj) {
+      continue;
+    }
+
+    if (!tree_serializer_->SerializeChanges(aura_obj, &update)) {
+      OnSerializeFailure(ax::mojom::Event::kChildrenChanged, update);
+      return;
+    }
+    tree_updates.push_back(std::move(update));
   }
 
   // Make sure the focused node is serialized.
