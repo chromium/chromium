@@ -7,6 +7,6 @@ found in the LICENSE file.
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/default_bg_color_baseline" />
+    <solid android:color="@color/widget_bg" />
     <corners android:radius="@dimen/quick_action_search_widget_xsmall_background_radius" />
 </shape>
