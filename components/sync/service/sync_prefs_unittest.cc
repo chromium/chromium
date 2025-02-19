@@ -803,33 +803,6 @@ TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
   EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(SyncPrefsTest, GetNumberOfAccountsWithPasswordsSelected) {
-  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 0);
-
-  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, true,
-                                         gaia_id_hash_);
-
-  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 1);
-
-  const auto other_gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId(GaiaId("other"));
-  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, true,
-                                         other_gaia_id_hash);
-
-  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 2);
-
-  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, false,
-                                         gaia_id_hash_);
-
-  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 1);
-
-  sync_prefs_->KeepAccountSettingsPrefsOnlyForUsers({});
-
-  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 0);
-}
-#endif
-
 TEST_F(SyncPrefsTest, PasswordSyncAllowed_DefaultValue) {
   // Passwords is in its default state. For syncing users, it's enabled. For
   // non-syncing users, it depends on the platform.

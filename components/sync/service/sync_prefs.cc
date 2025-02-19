@@ -402,25 +402,6 @@ bool SyncPrefs::IsTypeDisabledByUserForAccount(
   return false;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-int SyncPrefs::GetNumberOfAccountsWithPasswordsSelected() const {
-  int n_accounts = 0;
-  for (auto [serialized_gaia_id_hash, selected_types] :
-       pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)) {
-    // `selected_types` should be a dict but doesn't hurt to check and be safe.
-    bool enabled =
-        selected_types.is_dict() &&
-        selected_types.GetDict()
-            .FindBool(GetPrefNameForType(UserSelectableType::kPasswords))
-            .value_or(false);
-    if (enabled) {
-      n_accounts++;
-    }
-  }
-  return n_accounts;
-}
-#endif
-
 void SyncPrefs::SetSelectedTypesForSyncingUser(
     bool keep_everything_synced,
     UserSelectableTypeSet registered_types,

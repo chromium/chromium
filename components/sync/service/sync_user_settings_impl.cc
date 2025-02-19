@@ -159,12 +159,6 @@ SyncUserSettingsImpl::GetTypePrefStateForAccount(
   return SyncUserSettings::UserSelectableTypePrefState::kEnabledOrDefault;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-int SyncUserSettingsImpl::GetNumberOfAccountsWithPasswordsSelected() const {
-  return prefs_->GetNumberOfAccountsWithPasswordsSelected();
-}
-#endif
-
 void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
