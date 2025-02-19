@@ -841,6 +841,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 #pragma mark - private
 
+// Prepares the lens overlay for display from the given entrypoint.
 - (void)prepareOverlayWithEntrypoint:(LensOverlayEntrypoint)entrypoint {
   if (self.isUICreated) {
     // The UI is probably associated with the non-active tab. Destroy it with no
@@ -868,6 +869,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _associatedTabHelper->SetLensOverlayUIAttachedAndAlive(true);
 }
 
+// Opens a given URL in a new tab.
 - (void)openURLInNewTab:(GURL)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:URL
@@ -877,6 +879,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       openURLInNewTab:command];
 }
 
+// Returns whether or not the consent dialog should be shown.
 - (BOOL)shouldShowConsentFlow {
   if (lens::IsLVFEntrypoint(_entrypoint) ||
       lens::IsImageContextMenuEntrypoint(_entrypoint)) {
@@ -889,6 +892,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   return !self.termsOfServiceAccepted || forceShowConsent;
 }
 
+// Return whether or not the terms of service has been accepted.
 - (BOOL)termsOfServiceAccepted {
   if (!self.browser || !self.browser->GetProfile() ||
       !self.browser->GetProfile()->GetPrefs()) {
@@ -899,6 +903,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       prefs::kLensOverlayConditionsAccepted);
 }
 
+// Asserts that the terms of service has been accepted.
 - (void)checkTermsOfServiceIfNeeded {
   if (lens::IsLVFEntrypoint(_entrypoint) ||
       lens::IsImageContextMenuEntrypoint(_entrypoint)) {
@@ -908,6 +913,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   CHECK(self.termsOfServiceAccepted);
 }
 
+// Creates and displays the results bottom sheet.
 - (void)startResultPage {
   Browser* browser = self.browser;
   ProfileIOS* profile = browser->GetProfile();
@@ -980,6 +986,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _omniboxCoordinator.focusDelegate = _mediator;
 }
 
+// Exits the fullscreen state.
 - (void)exitFullscreenAnimated:(BOOL)animated {
   Browser* browser = self.browser;
   if (!browser) {
@@ -996,6 +1003,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 }
 
+// Ends the lifecycle of the presented result bottom sheet.
 - (void)stopResultPage {
   [_resultContextMenuProvider stop];
   _resultContextMenuProvider = nil;
@@ -1011,6 +1019,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _omniboxCoordinator = nil;
 }
 
+// Indicates whether the UI has been created.
 - (BOOL)isUICreated {
   return _containerViewController != nil;
 }
@@ -1092,6 +1101,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
 }
 
+// Handles a low memory warning.
 - (void)lowMemoryWarningReceived {
   // Preserve the UI if it's currently visible to the user.
   if ([self isLensOverlayVisible]) {
@@ -1133,6 +1143,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 }
 
+// Configures and initializes the presenter responsible for displaying the
+// results bottom sheet.
 - (void)buildResultsBottomSheetPresentation {
   _resultsPagePresenter = [[LensOverlayResultsPagePresenter alloc]
       initWithBaseViewController:_containerViewController
@@ -1143,6 +1155,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _mediator.presentationDelegate = _resultsPagePresenter;
 }
 
+// Presents the result botom sheet.
 - (void)showResultsBottomSheet {
   if (!_associatedTabHelper) {
     return;
@@ -1163,6 +1176,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                       }];
 }
 
+// Displays a restoration window to preserve lens overlay's visual state during
+// tab changes.
 - (void)showRestorationWindowIfNeeded {
   // If there is a pending snapshot, show it in a separate fullscreen window to
   // ease the transition.
@@ -1191,11 +1206,13 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _restorationWindow.hidden = NO;
 }
 
+// Removes the restoration window.
 - (void)dismissRestorationWindow {
   _restorationWindow.hidden = YES;
   _restorationWindow = nil;
 }
 
+// Called when the results bottom sheet is presented.
 - (void)resultsBottomSheetPresented {
   [self dismissRestorationWindow];
   if (_associatedTabHelper) {
