@@ -9102,6 +9102,7 @@ crbug.com/391728750 [ Linux ] external/wpt/ai/translator/translator_translate.te
 crbug.com/392640451 [ Win11 ] editing/pasteboard/4947130.html [ Failure Pass ]
 
 crbug.com/394287937 http/tests/devtools/components/cookies-table.js [ Failure Pass ]
+crbug.com/394287937 http/tests/devtools/unit/datagrid-editable-longtext.js [ Failure Pass ]
 
 crbug.com/392640451 [ Win11-arm64 ] editing/pasteboard/4947130.html [ Failure Pass ]
 
