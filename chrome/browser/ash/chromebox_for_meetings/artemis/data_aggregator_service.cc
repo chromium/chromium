@@ -612,6 +612,12 @@ void DataAggregatorService::EnqueueNextPendingTransportPayload() {
     return;
   }
 
+  InitiateEnqueueRequest();
+}
+
+void DataAggregatorService::InitiateEnqueueRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (pending_transport_payloads_.empty()) {
     LOG(WARNING) << "Requested payload enqueue, but payload queue is empty.";
     return;
@@ -642,11 +648,15 @@ void DataAggregatorService::HandleEnqueueResponse(
     LOG(ERROR) << "Recent enqueue failed with error code: " << status->code
                << ". Trying again in " << retry_delay;
 
+    // Note: we call the helper directly here to force the attempt to go
+    // through, despite `enqueue_in_progress_` being set. We can't unset
+    // this var as we may get additional enqueue requests while we wait
+    // to retry, and we want to decline these. Otherwise, we break the
+    // backoff timer functionality of the retry.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &DataAggregatorService::EnqueueNextPendingTransportPayload,
-            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&DataAggregatorService::InitiateEnqueueRequest,
+                       weak_ptr_factory_.GetWeakPtr()),
         retry_delay);
     return;
   }
