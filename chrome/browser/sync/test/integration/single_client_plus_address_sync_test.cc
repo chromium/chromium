@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
@@ -136,7 +137,7 @@ class SingleClientPlusAddressSyncTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     SingleClientPlusAddressSyncTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS, sync-the-feature gets started automatically once a primary
     // account is signed in and transport mode is not a thing. As such, only run
     // the tests in sync-the-feature mode.
@@ -198,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
 }
 
 // ChromeOS does not support signing out of the primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, Signout_DataCleared) {
   InjectEntityToServer(
       EntityDataFromPlusProfile(CreatePlusProfile()).specifics);
@@ -210,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, Signout_DataCleared) {
   EXPECT_TRUE(
       PlusProfileChecker(GetPlusAddressService(), testing::IsEmpty()).Wait());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Overwrites the Sync test account with a non-gmail account to treat it as a
 // Dasher account.

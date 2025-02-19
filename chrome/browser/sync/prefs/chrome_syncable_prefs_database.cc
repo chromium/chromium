@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "build/build_config.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -21,7 +22,8 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -33,9 +35,11 @@
 #include "components/variations/service/google_groups_manager_prefs.h"
 #include "ui/events/ash/pref_names.h"
 #endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/pref_names.h"  // nogncheck
 #endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/supervised_user/core/common/pref_names.h"
 #endif
@@ -568,7 +572,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {ash::prefs::kRestoreAppsAndPagesPrefName,
      {syncable_prefs_ids::kRestoreAppsAndPagesPrefName, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
@@ -1274,7 +1278,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kKeyboardHasSplitModifierKeyboard,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
      {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,

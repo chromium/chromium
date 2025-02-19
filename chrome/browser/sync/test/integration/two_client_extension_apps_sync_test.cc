@@ -66,20 +66,6 @@ class TwoClientExtensionAppsSyncTest : public AppsSyncTestBase {
       const TwoClientExtensionAppsSyncTest&) = delete;
 
   ~TwoClientExtensionAppsSyncTest() override = default;
-  bool SetupClients() override {
-    if (!SyncTest::SetupClients()) {
-      return false;
-    }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings.
-    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    }
-#endif
-    return true;
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,

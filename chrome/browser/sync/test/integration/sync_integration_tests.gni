@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 sync_integration_tests_sources = [
   "//chrome/browser/sync/test/integration/single_client_autofill_profile_sync_test.cc",
   "//chrome/browser/sync/test/integration/single_client_bookmarks_sync_test.cc",
@@ -112,13 +110,11 @@ if (is_win) {
   sync_integration_tests_sources += [ "//chrome/browser/sync/test/integration/two_client_web_apps_integration_test_win.cc" ]
 }
 
-# https://crbug.com/1252812 The intent picker (launch icon) actions are not
-# working on Lacros.
-if (is_chromeos_ash) {
+if (is_chromeos) {
   sync_integration_tests_sources += [ "//chrome/browser/sync/test/integration/two_client_web_apps_integration_test_cros.cc" ]
 }
 
-if (!is_chromeos_ash && !is_android) {
+if (!is_chromeos && !is_android) {
   sync_integration_tests_sources += [ "//chrome/browser/sync/test/integration/select_type_and_migrate_local_data_items_when_active_sync_test.cc" ]
 }
 

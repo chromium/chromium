@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {
 
 // ChromeOS does not support late signin after profile creation, so the test
 // below does not apply, at least in the current form.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
                        ShouldSubmitInTransportMode) {
   // We avoid calling SetupSync(), because we don't want to turn on full sync,
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
   EXPECT_TRUE(WaitForSharingMessage({specifics}));
   EXPECT_TRUE(callback_checker.Wait());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
                        ShouldPropagateCommitFailure) {
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
 }
 
 // ChromeOS does not support signing out of a primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
                        ShouldCleanPendingMessagesUponSignout) {
   ASSERT_TRUE(SetupSync());
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
                   ->GetSyncEntitiesByDataType(syncer::SHARING_MESSAGE)
                   .empty());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientSharingMessageSyncTest,

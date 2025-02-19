@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
@@ -15,7 +15,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -74,22 +74,6 @@ class TwoClientAppSettingsSyncTest
 
   bool UseVerifier() override {
     // TODO(crbug.com/40724949): rewrite tests to not use verifier.
-    return true;
-  }
-
-  bool SetupClients() override {
-    if (!SyncTest::SetupClients()) {
-      return false;
-    }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings.
-    // Enable the Apps toggle for both clients.
-    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    }
-#endif
     return true;
   }
 };
@@ -238,8 +222,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsSyncTest,
       InstallHostedAppForAllProfiles(1), InstallHostedAppForAllProfiles(2));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests for ChromeOS-Ash, which uses a different DataTypeController for
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests for ChromeOS, which uses a different DataTypeController for
 // syncer::APP_SETTINGS.
 class TwoClientAppSettingsOsSyncTest : public SyncTest {
  public:
@@ -267,6 +251,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsOsSyncTest,
       StartWithDifferentSettingsTest, InstallHostedAppForAllProfiles(0),
       InstallHostedAppForAllProfiles(1), InstallHostedAppForAllProfiles(2));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
