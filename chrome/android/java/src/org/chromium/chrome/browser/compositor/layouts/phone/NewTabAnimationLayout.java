@@ -27,6 +27,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -63,12 +64,15 @@ import java.util.Collections;
  */
 public class NewTabAnimationLayout extends Layout {
     private static final int FOREGROUND_ANIMATION_DURATION = 300;
+    private static final int FOREGROUND_FADE_DURATION = 150;
     private final ViewGroup mAnimationHostView;
     private final CompositorViewHolder mCompositorViewHolder;
     private final BlackHoleEventFilter mBlackHoleEventFilter;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private AnimatorSet mTabCreatedForegroundAnimation;
+    private ObjectAnimator mFadeAnimator;
+    private ShrinkExpandImageView mRectView;
     private int mNextTabId = Tab.INVALID_TAB_ID;
 
     /**
@@ -234,6 +238,12 @@ public class NewTabAnimationLayout extends Layout {
         mSceneLayer.update(layoutTab);
     }
 
+    /**
+     * Returns true if animations are running (excluding {@link #mFadeAnimator}).
+     *
+     * <p>Including {@link #mFadeAnimator} would prevent {@link #doneHiding} from being called
+     * during the animation cycle in {@link LayoutManagerImpl#onUpdate(long, long)}.
+     */
     @Override
     public boolean isRunningAnimations() {
         // TODO(crbug.com/40282469): Check background animation once it is implemented.
@@ -306,13 +316,35 @@ public class NewTabAnimationLayout extends Layout {
         mNextTabId = nextTabId;
     }
 
+    /**
+     * Forces the new tab animation to finish.
+     *
+     * <p>This method is intended for internal use within {@link NewTabAnimationLayout}. It ensures
+     * {@link #mFadeAnimator} runs after calling {@link #startHiding}, preventing premature
+     * termination by external calls to {@link #forceAnimationToFinish} from {@link
+     * LayoutManagerImpl#startShowing}.
+     */
+    @VisibleForTesting
+    void forceNewTabAnimationToFinish() {
+        // TODO(crbug.com/40282469): Make sure the right mode is selected after forcing the
+        // animation to finish.
+        if (mTabCreatedForegroundAnimation != null) {
+            mAnimationHostView.removeView(mRectView);
+            mFadeAnimator = null;
+            mTabCreatedForegroundAnimation.end();
+        } else if (mFadeAnimator != null) {
+            mFadeAnimator.end();
+        }
+        // TODO(crbug.com/40282469): Implement this for Background Animation.
+    }
+
     @VisibleForTesting
     AnimatorSet getForegroundAnimatorSet() {
         return mTabCreatedForegroundAnimation;
     }
 
     /**
-     * Animate opening a tab in the foreground.
+     * Animates opening a tab in the foreground.
      *
      * @param id The id of the new tab to animate.
      * @param sourceId The id of the tab that spawned this new tab.
@@ -323,22 +355,22 @@ public class NewTabAnimationLayout extends Layout {
         assert mLayoutTabs.length == 1;
         mLayoutTabs = new LayoutTab[] {mLayoutTabs[0], newLayoutTab};
         updateCacheVisibleIds(new ArrayList<>(Arrays.asList(id, sourceId)));
-        forceAnimationToFinish();
+        forceNewTabAnimationToFinish();
 
         // TODO(crbug.com/40933120): Investigate why the old tab flickers when switching to the new
         // tab.
         requestUpdate();
 
-        ShrinkExpandImageView rectView = new ShrinkExpandImageView(getContext());
+        mRectView = new ShrinkExpandImageView(getContext());
         @ColorInt
         int backgroundColor = NewTabAnimationUtils.getBackgroundColor(getContext(), newIsIncognito);
-        rectView.setRoundedFillColor(backgroundColor);
+        mRectView.setRoundedFillColor(backgroundColor);
 
         // TODO(crbug.com/40933120): Investigate why {@link
         // RoundedCornerImageView#setRoundedCorners} sometimes incorrectly detects the view as LTR
         // during the animation.
         boolean isRtl = LocalizationUtils.isLayoutRtl();
-        rectView.setLayoutDirection(isRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+        mRectView.setLayoutDirection(isRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
 
         Rect initialRect = new Rect();
         Rect finalRect = new Rect();
@@ -362,7 +394,7 @@ public class NewTabAnimationLayout extends Layout {
 
         ShrinkExpandAnimator shrinkExpandAnimator =
                 new ShrinkExpandAnimator(
-                        rectView, initialRect, finalRect, /* searchBoxHeight= */ 0);
+                        mRectView, initialRect, finalRect, /* searchBoxHeight= */ 0);
         ObjectAnimator rectAnimator =
                 ObjectAnimator.ofObject(
                         shrinkExpandAnimator,
@@ -378,30 +410,41 @@ public class NewTabAnimationLayout extends Layout {
         float scaleFactor = (float) initialRect.width() / finalRect.width();
         int endRadius = Math.round(radius * scaleFactor);
         int[] endRadii = new int[] {0, endRadius, endRadius, endRadius};
-        rectView.setRoundedCorners(startRadii[0], startRadii[1], startRadii[2], startRadii[3]);
+        mRectView.setRoundedCorners(startRadii[0], startRadii[1], startRadii[2], startRadii[3]);
         ValueAnimator cornerAnimator =
                 RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
-                        rectView, startRadii, endRadii);
+                        mRectView, startRadii, endRadii);
+
+        mFadeAnimator = ObjectAnimator.ofFloat(mRectView, ShrinkExpandImageView.ALPHA, 1f, 0f);
+        mFadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        mFadeAnimator.setDuration(FOREGROUND_FADE_DURATION);
+        mFadeAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mAnimationHostView.removeView(mRectView);
+                        mFadeAnimator = null;
+                    }
+                });
 
         mTabCreatedForegroundAnimation = new AnimatorSet();
         mTabCreatedForegroundAnimation.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
         mTabCreatedForegroundAnimation.setDuration(FOREGROUND_ANIMATION_DURATION);
-        // TODO(crbug.com/40933120): Add fade animator and ensure {@link #doneHiding} gets called
-        // properly in the animation cycle.
         mTabCreatedForegroundAnimation.playTogether(rectAnimator, cornerAnimator);
         mTabCreatedForegroundAnimation.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        if (mFadeAnimator != null) mFadeAnimator.start();
                         startHiding();
                         mTabModelSelector.selectModel(newIsIncognito);
                         mNextTabId = id;
-                        mAnimationHostView.removeView(rectView);
                         mTabCreatedForegroundAnimation = null;
                     }
                 });
-        mAnimationHostView.addView(rectView);
-        rectView.reset(initialRect);
-        rectView.post(mTabCreatedForegroundAnimation::start);
+
+        mAnimationHostView.addView(mRectView);
+        mRectView.reset(initialRect);
+        mRectView.post(mTabCreatedForegroundAnimation::start);
     }
 }
