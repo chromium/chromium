@@ -20,11 +20,11 @@ MultiContentsView::MultiContentsView(
     content::BrowserContext* browser_context,
     WebContentsPressedCallback inactive_view_pressed_callback)
     : inactive_view_pressed_callback_(inactive_view_pressed_callback) {
-  active_contents_view_ =
+  start_contents_view_ =
       AddChildView(std::make_unique<ContentsWebView>(browser_context));
-  inactive_contents_view_ =
+  end_contents_view_ =
       AddChildView(std::make_unique<ContentsWebView>(browser_context));
-  inactive_contents_view_->SetVisible(false);
+  end_contents_view_->SetVisible(false);
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -37,38 +37,45 @@ MultiContentsView::MultiContentsView(
 
 MultiContentsView::~MultiContentsView() = default;
 
+ContentsWebView* MultiContentsView::GetActiveContentsView() {
+  return active_position_ == 0 ? start_contents_view_ : end_contents_view_;
+}
+
+ContentsWebView* MultiContentsView::GetInactiveContentsView() {
+  return active_position_ == 0 ? end_contents_view_ : start_contents_view_;
+}
+
 void MultiContentsView::SetWebContents(content::WebContents* web_contents,
                                        bool active) {
   ContentsWebView* contents_view =
-      active ? active_contents_view_ : inactive_contents_view_;
+      active ? GetActiveContentsView() : GetInactiveContentsView();
   contents_view->SetWebContents(web_contents);
   contents_view->SetVisible(web_contents != nullptr);
 }
 
-void MultiContentsView::SetActivePosition(int position) {
+ContentsWebView* MultiContentsView::SetActivePosition(int position) {
   // Position should never be less than 0 or equal to or greater than the total
   // number of contents views.
   CHECK(position >= 0 && position < 2);
-  ReorderChildView(active_contents_view_, position);
+  active_position_ = position;
+  return GetActiveContentsView();
 }
 
 bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
+  ContentsWebView* inactive_contents_view = GetInactiveContentsView();
   if (event.GetTypeAsUiEventType() == ui::EventType::kMousePressed &&
-      inactive_contents_view_->GetVisible()) {
+      inactive_contents_view->GetVisible()) {
     gfx::Rect inactive_contents_view_bounds =
-        inactive_contents_view_->GetWebContents()->GetContainerBounds();
+        inactive_contents_view->GetWebContents()->GetContainerBounds();
     const gfx::PointF& event_position = event.PositionInScreen();
     if (inactive_contents_view_bounds.Contains(event_position.x(),
                                                event_position.y())) {
       inactive_view_pressed_callback_.Run(
-          inactive_contents_view_->GetWebContents());
+          inactive_contents_view->GetWebContents());
     }
   }
   // Always allow the event to propagate to the WebContents, regardless of
   // whether it was also handled above.
-  // TODO(crbug.com/394367683): Investigate why the click event isn't actually
-  // making it to the WebContents. Likely this is because the WebContents is
-  // being replaced as a result of activating the inactive tab.
   return false;
 }
 

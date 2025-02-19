@@ -38,25 +38,38 @@ class MultiContentsView : public views::View {
   MultiContentsView& operator=(const MultiContentsView&) = delete;
   ~MultiContentsView() override;
 
-  ContentsWebView* active_contents_view() { return active_contents_view_; }
-  ContentsWebView* inactive_contents_view() { return inactive_contents_view_; }
+  // Returns the currently active ContentsWebView.
+  ContentsWebView* GetActiveContentsView();
+
+  // Returns the currently inactive ContentsWebView.
+  ContentsWebView* GetInactiveContentsView();
 
   // Assigns the given |web_contents| to a ContentsWebView. If |active| it will
-  // be assigned to active_contents_view_, else it will be assigned to
-  // inactive_contents_view_.
+  // be assigned to the active contents view, else it will be assigned to
+  // the inactive contents view.
   void SetWebContents(content::WebContents* web_contents, bool active);
 
   // Sets the index of the active contents view, as relative to the inactive
-  // contents view. In LTR, a value of 0 will place the active view on the
-  // left.
-  void SetActivePosition(int position);
+  // contents view. A value of 0 will activate start_contents_view_. Returns
+  // the newly active ContentsWebView.
+  ContentsWebView* SetActivePosition(int position);
 
   // Handles a mouse event prior to it being passed along to the WebContents.
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
 
  private:
-  raw_ptr<ContentsWebView> active_contents_view_ = nullptr;
-  raw_ptr<ContentsWebView> inactive_contents_view_ = nullptr;
+  // The left contents view, in LTR.
+  raw_ptr<ContentsWebView> start_contents_view_ = nullptr;
+
+  // The right contents view, in LTR.
+  raw_ptr<ContentsWebView> end_contents_view_ = nullptr;
+
+  // The index of the active context view. A value of 0 corresponds to
+  // start_contents_view_.
+  int active_position_ = 0;
+
+  // Callback to be executed when the user clicks anywhere within the bounds of
+  // the inactive contents view.
   WebContentsPressedCallback inactive_view_pressed_callback_;
 };
 
