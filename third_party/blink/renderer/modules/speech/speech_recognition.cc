@@ -328,8 +328,14 @@ void SpeechRecognition::OnConnectionError() {
 }
 
 void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
-  if (!controller_ || !GetExecutionContext())
+  if (!controller_ || !GetExecutionContext()) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Cannot start speech recognition on a detached document.");
+    }
     return;
+  }
 
   if (started_) {
     // https://wicg.github.io/speech-api/#dom-speechrecognition-start

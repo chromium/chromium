@@ -3237,8 +3237,7 @@
       "external/wpt/screen-details/getScreenDetails.tentative.https.window.js",
       "wpt_internal/geolocation-api/disconnected-frame-permission-denied.https.html",
       "wpt_internal/geolocation-api/disconnected-frame.https.html",
-      "wpt_internal/presentation/presentation-receiver-terminate-connection.https.html",
-      "wpt_internal/speech/scripted/speechrecognition-no-crash-detached.html"
+      "wpt_internal/presentation/presentation-receiver-terminate-connection.https.html"
      ],
     "args": ["--disable-features=DeprecateUnload"],
     "expires": "Jun 1, 2025",
