@@ -86,7 +86,7 @@ public class OmniboxFeatures {
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
-                    FeatureState.ENABLED_IN_TEST);
+                    FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sRichInlineAutocomplete =
             newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, FeatureState.ENABLED_IN_PROD);

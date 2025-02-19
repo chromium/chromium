@@ -21549,26 +21549,6 @@
             ]
         }
     ],
-    "SearchPrefetchHighPriorityPrefetchesAndroid_WithVariousCacheSizes": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240913",
-                    "params": {
-                        "navigation_prefetch_param": "op",
-                        "touch_down": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxTouchDownTriggerForPrefetch",
-                        "SearchNavigationPrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
     "SearchReadyOmniboxAllowQueryEdit": [
         {
             "platforms": [
