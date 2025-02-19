@@ -1732,6 +1732,11 @@ void Browser::SetFocusToLocationBar() {
   window_->SetFocusToLocationBar(false);
 }
 
+bool Browser::PreHandleMouseEvent(content::WebContents* source,
+                                  const blink::WebMouseEvent& event) {
+  return window()->PreHandleMouseEvent(event);
+}
+
 content::KeyboardEventProcessingResult Browser::PreHandleKeyboardEvent(
     content::WebContents* source,
     const NativeWebKeyboardEvent& event) {

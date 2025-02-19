@@ -482,6 +482,9 @@ class BrowserView : public BrowserWindow,
   // side-by-side display.
   void HideSplitView();
 
+  // Activate the tab containing the given WebContents (if any).
+  void ActivateWebContents(content::WebContents* web_contents);
+
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;
@@ -635,6 +638,7 @@ class BrowserView : public BrowserWindow,
       base::OnceCallback<void(bool)> callback) override;
   void UserChangedTheme(BrowserThemeChangeType theme_change_type) override;
   void ShowAppMenu() override;
+  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
@@ -872,6 +876,10 @@ class BrowserView : public BrowserWindow,
 
   enterprise_watermark::WatermarkView* get_watermark_view_for_testing() {
     return watermark_view_;
+  }
+
+  MultiContentsView* multi_contents_view_for_testing() {
+    return multi_contents_view_;
   }
 
   // This value is used in a common calculation in NonClientFrameView

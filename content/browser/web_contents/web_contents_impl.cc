@@ -4109,6 +4109,12 @@ void WebContentsImpl::RenderWidgetWasResized(
                              width_changed);
 }
 
+bool WebContentsImpl::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
+  OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
+                        "WebContentsImpl::PreHandleMouseEvent");
+  return delegate_ ? delegate_->PreHandleMouseEvent(this, event) : false;
+}
+
 KeyboardEventProcessingResult WebContentsImpl::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),

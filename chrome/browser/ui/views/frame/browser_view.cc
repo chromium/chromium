@@ -1014,8 +1014,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    auto multi_contents_view =
-        std::make_unique<MultiContentsView>(browser_->profile());
+    auto multi_contents_view = std::make_unique<MultiContentsView>(
+        browser_->profile(),
+        base::BindRepeating(&BrowserView::ActivateWebContents,
+                            base::Unretained(this)));
     contents_web_view_ = multi_contents_view->active_contents_view();
     multi_contents_view_ =
         contents_container->AddChildView(std::move(multi_contents_view));
@@ -1471,6 +1473,14 @@ void BrowserView::ShowSplitView() {
 void BrowserView::HideSplitView() {
   CHECK(multi_contents_view_);
   multi_contents_view_->SetWebContents(nullptr, false);
+}
+
+void BrowserView::ActivateWebContents(content::WebContents* web_contents) {
+  int tab_index =
+      browser_->tab_strip_model()->GetIndexOfWebContents(web_contents);
+  if (tab_index != TabStripModel::kNoTab) {
+    browser_->tab_strip_model()->ActivateTabAt(tab_index);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3426,6 +3436,13 @@ void BrowserView::ShowAppMenu() {
   toolbar_button_provider_->GetAppMenuButton()
       ->menu_button_controller()
       ->Activate(nullptr);
+}
+
+bool BrowserView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
+  if (multi_contents_view_) {
+    return multi_contents_view_->PreHandleMouseEvent(event);
+  }
+  return false;
 }
 
 content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(

@@ -1101,6 +1101,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   double GetPendingZoomLevel(RenderWidgetHostImpl* rwh) override;
 
+  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleMouseEvent(const blink::WebMouseEvent& event) override;

@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_H_
 
+#include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class ContentsWebView;
+
+namespace blink {
+class WebMouseEvent;
+}  // namespace blink
 
 namespace content {
 class BrowserContext;
@@ -24,7 +29,11 @@ class MultiContentsView : public views::View {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewElementId);
 
-  explicit MultiContentsView(content::BrowserContext* browser_context);
+  using WebContentsPressedCallback =
+      base::RepeatingCallback<void(content::WebContents*)>;
+
+  MultiContentsView(content::BrowserContext* browser_context,
+                    WebContentsPressedCallback inactive_view_pressed_callback);
   MultiContentsView(const MultiContentsView&) = delete;
   MultiContentsView& operator=(const MultiContentsView&) = delete;
   ~MultiContentsView() override;
@@ -42,9 +51,13 @@ class MultiContentsView : public views::View {
   // left.
   void SetActivePosition(int position);
 
+  // Handles a mouse event prior to it being passed along to the WebContents.
+  bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
+
  private:
   raw_ptr<ContentsWebView> active_contents_view_ = nullptr;
   raw_ptr<ContentsWebView> inactive_contents_view_ = nullptr;
+  WebContentsPressedCallback inactive_view_pressed_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_H_

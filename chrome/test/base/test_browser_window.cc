@@ -200,6 +200,10 @@ ExtensionsContainer* TestBrowserWindow::GetExtensionsContainer() {
   return nullptr;
 }
 
+bool TestBrowserWindow::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
+  return false;
+}
+
 content::KeyboardEventProcessingResult
 TestBrowserWindow::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
