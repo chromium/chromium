@@ -167,6 +167,12 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
         SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
         SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
     quic_session_alias_key_ = QuicSessionAliasKey(destination, session_key);
+    attempt_ = pool_->CreateSessionAttempt(
+        this, quic_session_alias_key_.session_key(), quic_endpoint,
+        /*cert_verify_flags=*/0,
+        /*dns_resolution_start_time=*/base::TimeTicks(),
+        /*dns_resolution_end_time=*/base::TimeTicks(), /*use_dns_aliases=*/true,
+        /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown);
   }
 
   SessionAttemptHelper(const SessionAttemptHelper&) = delete;
@@ -182,15 +188,11 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
   const NetLogWithSource& GetNetLog() override { return net_log_; }
 
   int Start() {
-    attempt_ = pool_->CreateSessionAttempt(
-        this, quic_session_alias_key_.session_key(), quic_endpoint,
-        /*cert_verify_flags=*/0,
-        /*dns_resolution_start_time=*/base::TimeTicks(),
-        /*dns_resolution_end_time=*/base::TimeTicks(), /*use_dns_aliases=*/true,
-        /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown);
     return attempt_->Start(base::BindOnce(&SessionAttemptHelper::OnComplete,
                                           base::Unretained(this)));
   }
+
+  QuicSessionAttempt* attempt() const { return attempt_.get(); }
 
   std::optional<int> result() const { return result_; }
 
@@ -14725,11 +14727,18 @@ TEST_P(QuicSessionPoolTest, CreateSessionAttempt) {
 
   SessionAttemptHelper session_attempt(factory_.get(), version_);
 
+  NetErrorDetails details;
+  session_attempt.attempt()->PopulateNetErrorDetails(&details);
+  EXPECT_EQ(details.connection_info, HttpConnectionInfo::kUNKNOWN);
+
   int rv = session_attempt.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   RunUntilIdle();
   EXPECT_THAT(session_attempt.result(), testing::Optional(OK));
   ASSERT_TRUE(GetActiveSession(kDefaultDestination));
+  session_attempt.attempt()->PopulateNetErrorDetails(&details);
+  // Check HttpConnectionInfo is updated, we don't care about the actual value.
+  EXPECT_NE(details.connection_info, HttpConnectionInfo::kUNKNOWN);
 
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();

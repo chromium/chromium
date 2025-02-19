@@ -158,7 +158,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   bool connection_retried_ = false;
 
   // Used to populate NetErrorDetails after we reset `session_`.
-  HttpConnectionInfo connection_info_;
+  HttpConnectionInfo connection_info_ = HttpConnectionInfo::kUNKNOWN;
   quic::QuicErrorCode quic_connection_error_ = quic::QUIC_NO_ERROR;
 
   base::TimeTicks quic_connection_start_time_;
