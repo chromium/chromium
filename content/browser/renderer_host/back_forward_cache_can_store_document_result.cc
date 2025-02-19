@@ -204,6 +204,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
       return ProtoEnum::UNKNOWN;
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
+      return ProtoEnum::CACHE_CONTROL_NO_STORE_DEVICE_BOUND_SESSION_TERMINATED;
   }
   NOTREACHED();
 }
@@ -463,6 +465,9 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Android WebView safe browsing allowlist changed";
     case Reason::kWebViewDocumentStartJavascriptChanged:
       return "Android WebView document start script changed";
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
+      return "A device bound session was terminated on a cached page with "
+             "Cache-Control: no-store";
   }
 }
 
@@ -542,6 +547,7 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return "response-cache-control-no-store";
     case Reason::kCookieDisabled:
       return base::FeatureList::IsEnabled(

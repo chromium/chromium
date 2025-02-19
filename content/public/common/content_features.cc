@@ -233,11 +233,6 @@ const char kCookieDeprecationTestingDisableAdsAPIsName[] = "disable_ads_apis";
 // Adiitional FeatureParams for CookieDeprecationFacilitatedTesting are defined
 // in chrome/browser/tpcd/experiment/tpcd_experiment_features.cc.
 
-// When enabled, the DevTools Privacy UI is displayed.
-BASE_FEATURE(kDevToolsPrivacyUI,
-             "DevToolsPrivacyUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
 // the network request. With this feature the creation will be deferred until
@@ -272,6 +267,20 @@ const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
 BASE_FEATURE(kDeleteStaleSessionCookiesOnStartup,
              "DeleteStaleSessionCookiesOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When a device bound session
+// (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) is
+// terminated, evict pages with cache-control:no-store from the
+// BFCache. Note that if `kCacheControlNoStoreEnterBackForwardCache` is
+// disabled, no such pages will be in the cache.
+BASE_FEATURE(kDeviceBoundSessionTerminationEvictBackForwardCache,
+             "DeviceBoundSessionTerminationEvictBackForwardCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the DevTools Privacy UI is displayed.
+BASE_FEATURE(kDevToolsPrivacyUI,
+             "DevToolsPrivacyUI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Digital Goods API is enabled.
 // https://github.com/WICG/digital-goods/

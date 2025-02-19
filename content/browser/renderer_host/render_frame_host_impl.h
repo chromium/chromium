@@ -1568,6 +1568,31 @@ class CONTENT_EXPORT RenderFrameHostImpl
     CookieChangeInfo cookie_change_info_;
   };
 
+  class DeviceBoundSessionObserver
+      : public network::mojom::DeviceBoundSessionAccessObserver {
+   public:
+    DeviceBoundSessionObserver(StoragePartition* storage_partition, GURL& url);
+    ~DeviceBoundSessionObserver() override;
+    DeviceBoundSessionObserver(const DeviceBoundSessionObserver&) = delete;
+    DeviceBoundSessionObserver& operator=(const DeviceBoundSessionObserver&) =
+        delete;
+
+    bool IsTerminated() const { return is_terminated_; }
+
+   private:
+    // network::mojom::DeviceBoundSessionAccessObserver
+    void OnDeviceBoundSessionAccessed(
+        const net::device_bound_sessions::SessionAccess& access) override;
+    void Clone(
+        mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+            observer) override;
+
+    mojo::Receiver<network::mojom::DeviceBoundSessionAccessObserver> receiver_{
+        this};
+
+    bool is_terminated_ = false;
+  };
+
   // Indicates that a navigation is ready to commit and can be
   // handled by this RenderFrame.
   // |subresource_loader_params| is used in network service land to pass
@@ -3078,6 +3103,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Retrieves the information about the cookie changes that are observed on the
   // last committed document.
   CookieChangeListener::CookieChangeInfo GetCookieChangeInfo();
+
+  // Retrieves the whether a device bound session on the last committed
+  // document has been terminated.
+  bool IsDeviceBoundSessionTerminated();
 
   // Records metrics on sudden termination handlers found in this frame and
   // subframes.
@@ -5397,6 +5426,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the destruction of the document. See the comments of the
   // `cookie_change_listener_` in `NavigationRequest`.
   std::unique_ptr<CookieChangeListener> cookie_change_listener_;
+
+  // Listens for changes to DeviceBoundSessions on this page.
+  std::unique_ptr<DeviceBoundSessionObserver> device_bound_session_observer_;
 
   // If true, the renderer side widget is created after the navigation is
   // committed.

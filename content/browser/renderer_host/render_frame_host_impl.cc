@@ -15275,10 +15275,13 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     RecordDocumentCreatedUkmEvent(params->origin, document_ukm_source_id,
                                   ukm_recorder);
 
-    // We only replace the `CookieChangeListener` with the one initialized by
-    // the navigation request when navigating to a new document. Otherwise, the
-    // existing `CookieChangeListener` will be reused.
+    // We only replace the `CookieChangeListener` and
+    // `DeviceBoundSessionObserver` with the one initialized by the
+    // navigation request when navigating to a new document. Otherwise,
+    // the existing observers will be reused.
     cookie_change_listener_ = navigation_request->TakeCookieChangeListener();
+    device_bound_session_observer_ =
+        navigation_request->TakeDeviceBoundSessionObserver();
   }
 
   // Note: The renderer never sets |params->is_overriding_user_agent| to true
@@ -18221,6 +18224,43 @@ RenderFrameHostImpl::CookieChangeListener::CookieChangeInfo
 RenderFrameHostImpl::GetCookieChangeInfo() {
   return cookie_change_listener_ ? cookie_change_listener_->cookie_change_info()
                                  : CookieChangeListener::CookieChangeInfo{};
+}
+
+RenderFrameHostImpl::DeviceBoundSessionObserver::DeviceBoundSessionObserver(
+    StoragePartition* storage_partition,
+    GURL& url) {
+  DCHECK(storage_partition);
+  auto* device_bound_session_manager =
+      storage_partition->GetDeviceBoundSessionManager();
+  if (device_bound_session_manager) {
+    device_bound_session_manager->AddObserver(
+        url, receiver_.BindNewPipeAndPassRemote());
+  }
+}
+
+RenderFrameHostImpl::DeviceBoundSessionObserver::~DeviceBoundSessionObserver() =
+    default;
+
+void RenderFrameHostImpl::DeviceBoundSessionObserver::
+    OnDeviceBoundSessionAccessed(
+        const net::device_bound_sessions::SessionAccess& access) {
+  is_terminated_ |=
+      access.access_type ==
+      net::device_bound_sessions::SessionAccess::AccessType::kTermination;
+}
+
+void RenderFrameHostImpl::DeviceBoundSessionObserver::Clone(
+    mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+        observer) {
+  // The `Clone` method is only called for the observers that are part
+  // of network requests, so it is not expected to be called here.
+  NOTREACHED();
+}
+
+bool RenderFrameHostImpl::IsDeviceBoundSessionTerminated() {
+  return device_bound_session_observer_
+             ? device_bound_session_observer_->IsTerminated()
+             : false;
 }
 
 bool RenderFrameHostImpl::LoadedWithCacheControlNoStoreHeader() {

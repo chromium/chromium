@@ -2959,6 +2959,12 @@ bool NavigationRequest::ShouldAddCookieChangeListener() {
          common_params_->url.SchemeIsHTTPOrHTTPS();
 }
 
+bool NavigationRequest::ShouldAddDeviceBoundSessionObserver() {
+  // Device bound session expiry should evict pages from the BFCache in
+  // the exact same circumstances as cookie expiry.
+  return ShouldAddCookieChangeListener();
+}
+
 void NavigationRequest::StartNavigation() {
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::StartNavigation",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
@@ -2996,6 +3002,12 @@ void NavigationRequest::StartNavigation() {
     // `NavigationRequest::OnRequestRedirected()` is called.
     cookie_change_listener_ =
         std::make_unique<RenderFrameHostImpl::CookieChangeListener>(
+            GetStoragePartitionWithCurrentSiteInfo(), common_params_->url);
+  }
+
+  if (ShouldAddDeviceBoundSessionObserver()) {
+    device_bound_session_observer_ =
+        std::make_unique<RenderFrameHostImpl::DeviceBoundSessionObserver>(
             GetStoragePartitionWithCurrentSiteInfo(), common_params_->url);
   }
 
@@ -3550,6 +3562,14 @@ void NavigationRequest::OnRequestRedirected(
             GetStoragePartitionWithCurrentSiteInfo(), common_params_->url);
   } else {
     cookie_change_listener_.reset();
+  }
+
+  if (ShouldAddDeviceBoundSessionObserver()) {
+    device_bound_session_observer_ =
+        std::make_unique<RenderFrameHostImpl::DeviceBoundSessionObserver>(
+            GetStoragePartitionWithCurrentSiteInfo(), common_params_->url);
+  } else {
+    device_bound_session_observer_.reset();
   }
 
   // Check Content Security Policy before the NavigationThrottles run. This
