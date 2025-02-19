@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -122,15 +123,6 @@ SkBitmap CreateEmptyBitmap() {
   return bitmap;
 }
 
-// Helper function for determining whether a resource is gzipped.
-bool HasGzipHeader(std::string_view data) {
-  net::GZipHeader header;
-  const char* header_end = nullptr;
-  net::GZipHeader::Status header_status =
-      header.ReadMore(data.data(), data.length(), &header_end);
-  return header_status == net::GZipHeader::COMPLETE_HEADER;
-}
-
 // Helper function for determining whether a resource is brotli compressed.
 bool HasBrotliHeader(std::string_view data) {
   // Check that the data is brotli decoded by checking for kBrotliConst in
@@ -191,7 +183,8 @@ bool BrotliDecompress(std::string_view input, OutputBufferType output) {
 
 // Helper function for decompressing resource.
 void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
-  if (!data.empty() && HasGzipHeader(data)) {
+  if (!data.empty() &&
+      net::GZipHeader::HasGZipHeader(base::as_byte_span(data))) {
     TRACE_EVENT0("ui", "DecompressIfNeeded::GzipUncompress");
     const uint32_t uncompressed_size = compression::GetUncompressedSize(data);
     bool success = compression::GzipUncompress(
@@ -694,7 +687,8 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
   if (data.empty())
     return nullptr;
 
-  if (HasGzipHeader(data) || HasBrotliHeader(data)) {
+  if (net::GZipHeader::HasGZipHeader(base::as_byte_span(data)) ||
+      HasBrotliHeader(data)) {
     base::RefCountedString* bytes_string = new base::RefCountedString();
     DecompressIfNeeded(data, &bytes_string->as_string());
     return bytes_string;
@@ -802,7 +796,7 @@ bool ResourceBundle::IsGzipped(int resource_id) const {
   if (!raw_data.data())
     return false;
 
-  return HasGzipHeader(raw_data);
+  return net::GZipHeader::HasGZipHeader(base::as_byte_span(raw_data));
 }
 
 bool ResourceBundle::IsBrotli(int resource_id) const {

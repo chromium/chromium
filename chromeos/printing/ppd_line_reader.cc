@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
@@ -26,14 +27,6 @@ namespace chromeos {
 namespace {
 
 constexpr char kPPDMagicNumberString[] = "*PPD-Adobe:";
-
-// Return true if contents has a valid Gzip header.
-bool IsGZipped(const std::string& contents) {
-  const char* unused;
-  return net::GZipHeader().ReadMore(contents.data(), contents.size(),
-                                    &unused) ==
-         net::GZipHeader::COMPLETE_HEADER;
-}
 
 // Return true if c is a newline in the ppd sense, that is, either newline or
 // carriage return.
@@ -78,7 +71,7 @@ class PpdLineReaderImpl : public PpdLineReader {
         read_buf_(
             base::MakeRefCounted<net::IOBufferWithSize>(kReadBufCapacity)) {
     input_ = std::make_unique<StringSourceStream>(ppd_contents);
-    if (IsGZipped(ppd_contents)) {
+    if (net::GZipHeader::HasGZipHeader(base::as_byte_span(ppd_contents))) {
       input_ = net::GzipSourceStream::Create(std::move(input_),
                                              net::SourceStream::TYPE_GZIP);
     }

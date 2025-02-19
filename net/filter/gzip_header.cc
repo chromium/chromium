@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/filter/gzip_header.h"
 
+#include <stdint.h>
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "third_party/zlib/zlib.h"
 
 namespace net {
 
-const uint8_t GZipHeader::magic[] = {0x1f, 0x8b};
+// gzip magic header.
+static constexpr std::array<uint8_t, 2> kGzipHeaderBytes = {0x1f, 0x8b};
 
 GZipHeader::GZipHeader() {
   Reset();
@@ -32,21 +31,23 @@ void GZipHeader::Reset() {
   extra_length_ = 0;
 }
 
-GZipHeader::Status GZipHeader::ReadMore(const char* inbuf,
-                                        size_t inbuf_len,
-                                        const char** header_end) {
-  const uint8_t* pos = reinterpret_cast<const uint8_t*>(inbuf);
-  const uint8_t* const end = pos + inbuf_len;
+GZipHeader::Status GZipHeader::ReadMore(base::span<const uint8_t> inbuf,
+                                        size_t& header_end) {
+  auto pos = inbuf.begin();
 
-  while ( pos < end ) {
+  while (pos != inbuf.end()) {
     switch ( state_ ) {
       case IN_HEADER_ID1:
-        if ( *pos != magic[0] )  return INVALID_HEADER;
+        if (*pos != kGzipHeaderBytes[0]) {
+          return INVALID_HEADER;
+        }
         pos++;
         state_++;
         break;
       case IN_HEADER_ID2:
-        if ( *pos != magic[1] )  return INVALID_HEADER;
+        if (*pos != kGzipHeaderBytes[1]) {
+          return INVALID_HEADER;
+        }
         pos++;
         state_++;
         break;
@@ -112,8 +113,8 @@ GZipHeader::Status GZipHeader::ReadMore(const char* inbuf,
       case IN_FEXTRA: {
         // Grab the rest of the bytes in the extra field, or as many
         // of them as are actually present so far.
-        const uint16_t num_extra_bytes = static_cast<uint16_t>(
-            std::min(static_cast<ptrdiff_t>(extra_length_), (end - pos)));
+        const uint16_t num_extra_bytes = static_cast<uint16_t>(std::min(
+            static_cast<ptrdiff_t>(extra_length_), (inbuf.end() - pos)));
         pos += num_extra_bytes;
         extra_length_ -= num_extra_bytes;
         if ( extra_length_ == 0 ) {
@@ -128,15 +129,18 @@ GZipHeader::Status GZipHeader::ReadMore(const char* inbuf,
           state_ = IN_FCOMMENT;
           break;
         }
-        // See if we can find the end of the \0-terminated FNAME field.
-        pos = reinterpret_cast<const uint8_t*>(memchr(pos, '\0', (end - pos)));
-        if (pos != nullptr) {
-          pos++;  // advance past the '\0'
-          flags_ &= ~FLAG_FNAME;   // we're done with the FNAME stuff
+        // See if we can find the end of the null-byte-terminated FNAME field.
+        pos = std::find(pos, inbuf.end(), 0u);
+        // If the null was found, the end of the FNAME has been reached, and
+        // need to advance to the next character.
+        if (pos != inbuf.end()) {
+          pos++;                  // Advance past the null-byte.
+          flags_ &= ~FLAG_FNAME;  // We're done with the FNAME stuff.
           state_ = IN_FCOMMENT;
-        } else {
-          pos = end;  // everything we have so far is part of the FNAME
         }
+        // Otherwise, everything so far is part of the FNAME, and still have to
+        // continue looking for the null byte, so nothing else to do until more
+        // data is received.
         break;
 
       case IN_FCOMMENT:
@@ -144,15 +148,19 @@ GZipHeader::Status GZipHeader::ReadMore(const char* inbuf,
           state_ = IN_FHCRC_BYTE_0;
           break;
         }
-        // See if we can find the end of the \0-terminated FCOMMENT field.
-        pos = reinterpret_cast<const uint8_t*>(memchr(pos, '\0', (end - pos)));
-        if (pos != nullptr) {
-          pos++;  // advance past the '\0'
-          flags_ &= ~FLAG_FCOMMENT;   // we're done with the FCOMMENT stuff
+        // See if we can find the end of the null-byte-terminated FCOMMENT
+        // field.
+        pos = std::find(pos, inbuf.end(), 0u);
+        // If the null was found, the end of the FNAME has been reached, and
+        // need to advance to the next character.
+        if (pos != inbuf.end()) {
+          pos++;                     // Advance past the null-byte.
+          flags_ &= ~FLAG_FCOMMENT;  // We're done with the FCOMMENT stuff.
           state_ = IN_FHCRC_BYTE_0;
-        } else {
-          pos = end;  // everything we have so far is part of the FNAME
         }
+        // Otherwise, everything so far is part of the FCOMMENT, and still have
+        // to continue looking for the null byte, so nothing else to do until
+        // more data is received.
         break;
 
       case IN_FHCRC_BYTE_0:
@@ -171,17 +179,22 @@ GZipHeader::Status GZipHeader::ReadMore(const char* inbuf,
         break;
 
       case IN_DONE:
-        *header_end = reinterpret_cast<const char*>(pos);
+        header_end = pos - inbuf.begin();
         return COMPLETE_HEADER;
     }
   }
 
   if ( (state_ > IN_HEADER_OS) && (flags_ == 0) ) {
-    *header_end = reinterpret_cast<const char*>(pos);
+    header_end = pos - inbuf.begin();
     return COMPLETE_HEADER;
   } else {
     return INCOMPLETE_HEADER;
   }
+}
+
+bool GZipHeader::HasGZipHeader(base::span<const uint8_t> inbuf) {
+  size_t ignored_header_end = 0u;
+  return GZipHeader().ReadMore(inbuf, ignored_header_end) == COMPLETE_HEADER;
 }
 
 }  // namespace net

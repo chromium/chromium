@@ -76,14 +76,6 @@ void MaybePrintResourceId(uint16_t resource_id) {
   }
 }
 
-bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
-  net::GZipHeader header;
-  const char* header_end = nullptr;
-  net::GZipHeader::Status header_status = header.ReadMore(
-      reinterpret_cast<const char*>(mmap->data()), mmap->length(), &header_end);
-  return header_status == net::GZipHeader::COMPLETE_HEADER;
-}
-
 }  // namespace
 
 namespace ui {
@@ -208,7 +200,7 @@ std::unique_ptr<DataPack::DataSource> DataPack::LoadFromPathInternal(
     DLOG(ERROR) << "Failed to mmap datapack";
     return nullptr;
   }
-  if (MmapHasGzipHeader(mmap.get())) {
+  if (net::GZipHeader::HasGZipHeader(mmap->bytes())) {
     std::string_view compressed(reinterpret_cast<char*>(mmap->data()),
                                 mmap->length());
     std::string data;

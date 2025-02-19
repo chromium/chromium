@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "net/filter/gzip_source_stream.h"
+
 #include <string>
 #include <utility>
 
@@ -16,7 +18,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/filter_source_stream_test_util.h"
-#include "net/filter/gzip_source_stream.h"
+#include "net/filter/gzip_header.h"
 #include "net/filter/mock_source_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/zlib.h"
@@ -57,6 +59,8 @@ struct GzipTestParam {
 
 }  // namespace
 
+// Note that these tests cover GZipHeader::HasGZipHeader(), to avoid duplicating
+// data passed to the method.
 class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
  protected:
   GzipSourceStreamTest() : output_buffer_size_(GetParam().buffer_size) {}
@@ -106,6 +110,9 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
 
   char* encoded_data() { return encoded_data_; }
   size_t encoded_data_len() { return encoded_data_len_; }
+  base::span<const uint8_t> encoded_span() {
+    return base::as_byte_span(encoded_data_);
+  }
 
   IOBuffer* output_buffer() { return output_buffer_.get(); }
   char* output_data() { return output_buffer_->data(); }
@@ -186,6 +193,7 @@ TEST_P(GzipSourceStreamTest, EmptyStream) {
   int result = ReadStream(&actual_output);
   EXPECT_EQ(OK, result);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::span<uint8_t>()));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateOneBlock) {
@@ -198,6 +206,7 @@ TEST_P(GzipSourceStreamTest, DeflateOneBlock) {
   EXPECT_EQ(static_cast<int>(source_data_len()), rv);
   EXPECT_EQ(std::string(source_data(), source_data_len()), actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(encoded_span()));
 }
 
 TEST_P(GzipSourceStreamTest, GzipOneBloc) {
@@ -210,6 +219,7 @@ TEST_P(GzipSourceStreamTest, GzipOneBloc) {
   EXPECT_EQ(static_cast<int>(source_data_len()), rv);
   EXPECT_EQ(std::string(source_data(), source_data_len()), actual_output);
   EXPECT_EQ("GZIP", stream()->Description());
+  EXPECT_TRUE(GZipHeader::HasGZipHeader(encoded_span()));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateTwoReads) {
@@ -259,6 +269,7 @@ TEST_P(GzipSourceStreamTest, MissingZlibHeader) {
   EXPECT_EQ(static_cast<int>(source_data_len()), rv);
   EXPECT_EQ(std::string(source_data(), source_data_len()), actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(encoded_span().first(kZlibHeaderLen)));
 }
 
 TEST_P(GzipSourceStreamTest, CorruptGzipHeader) {
@@ -273,6 +284,7 @@ TEST_P(GzipSourceStreamTest, CorruptGzipHeader) {
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, rv);
   EXPECT_EQ("GZIP", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(encoded_span()));
 }
 
 // This test checks that the gzip stream source works correctly on 'golden' data
@@ -295,6 +307,7 @@ TEST_P(GzipSourceStreamTest, GzipCorrectness) {
   EXPECT_EQ(static_cast<int>(strlen(kDecompressedData)), rv);
   EXPECT_EQ(kDecompressedData, actual_output);
   EXPECT_EQ("GZIP", stream()->Description());
+  EXPECT_TRUE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 // Same as GzipCorrectness except that last 8 bytes are removed to test that the
@@ -317,6 +330,7 @@ TEST_P(GzipSourceStreamTest, GzipCorrectnessWithoutFooter) {
   EXPECT_EQ(static_cast<int>(strlen(kDecompressedData)), rv);
   EXPECT_EQ(kDecompressedData, actual_output);
   EXPECT_EQ("GZIP", stream()->Description());
+  EXPECT_TRUE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 // Test with the same compressed data as the above tests, but uses deflate with
@@ -336,6 +350,7 @@ TEST_P(GzipSourceStreamTest, DeflateWithAdler32) {
   EXPECT_EQ(static_cast<int>(strlen(kDecompressedData)), rv);
   EXPECT_EQ(kDecompressedData, actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithBadAdler32) {
@@ -349,6 +364,7 @@ TEST_P(GzipSourceStreamTest, DeflateWithBadAdler32) {
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, rv);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithAdler32) {
@@ -365,6 +381,7 @@ TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithAdler32) {
   EXPECT_EQ(static_cast<int>(strlen(kDecompressedData)), rv);
   EXPECT_EQ(kDecompressedData, actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithBadAdler32) {
@@ -378,6 +395,7 @@ TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithBadAdler32) {
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, rv);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 }  // namespace net
