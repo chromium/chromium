@@ -11635,12 +11635,15 @@ interface webkitSpeechGrammarList
     method addFromUri
     method item
 interface webkitSpeechRecognition : EventTarget
+    static method availableOnDevice
+    static method installOnDevice
     attribute @@toStringTag
     getter continuous
     getter grammars
     getter interimResults
     getter lang
     getter maxAlternatives
+    getter mode
     getter onaudioend
     getter onaudiostart
     getter onend
@@ -11660,6 +11663,7 @@ interface webkitSpeechRecognition : EventTarget
     setter interimResults
     setter lang
     setter maxAlternatives
+    setter mode
     setter onaudioend
     setter onaudiostart
     setter onend

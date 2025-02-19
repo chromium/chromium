@@ -2539,6 +2539,7 @@
     },
     {
       name: "InstallOnDeviceSpeechRecognition",
+      status: "experimental",
     },
     {
       name: "InterestGroupsInSharedStorageWorklet",
@@ -3046,6 +3047,7 @@
     },
     {
       name: "OnDeviceWebSpeechAvailable",
+      status: "experimental",
     },
     {
       // This flag makes the <option> element's label attribute render the
