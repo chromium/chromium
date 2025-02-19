@@ -3594,15 +3594,6 @@ ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(
          resource_type == ResourceType::kRaw ||
          resource_type == ResourceType::kXSLStyleSheet);
 
-  if (!RuntimeEnabledFeatures::
-          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
-    params_.OverrideContentType(factory_.ContentType());
-    return PrepareResourceRequest(
-        resource_type, fetcher_.properties_->GetFetchClientSettingsObject(),
-        params_, fetcher_.Context(), pauser, *this,
-        bundle_url_for_uuid_resources_);
-  }
-
   std::optional<ResourceRequestBlockedReason> blocked_reason =
       PrepareResourceRequestForCacheAccess(
           resource_type, fetcher_.properties_->GetFetchClientSettingsObject(),
@@ -3627,8 +3618,8 @@ void ResourceFetcher::ResourcePrepareHelper::UpgradeForLoaderIfNecessary(
   }
   was_upgrade_for_loader_called_ = true;
   params_.OverrideContentType(factory_.ContentType());
-  UpgradeResourceRequestForLoaderNew(factory_.GetType(), params_,
-                                     fetcher_.Context(), *this, pauser);
+  UpgradeResourceRequestForLoader(factory_.GetType(), params_,
+                                  fetcher_.Context(), *this, pauser);
 }
 
 ResourceLoadPriority

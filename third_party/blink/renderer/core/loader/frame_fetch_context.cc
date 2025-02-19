@@ -394,12 +394,7 @@ void FrameFetchContext::PrepareRequest(
   // TODO(yhirano): Clarify which statements are actually needed when
   // this is called during redirect.
   const bool for_redirect = request.GetRedirectInfo().has_value();
-  const bool minimal_prep = RuntimeEnabledFeatures::
-      MinimimalResourceRequestPrepBeforeCacheLookupEnabled();
 
-  if (!minimal_prep) {
-    SetFirstPartyCookie(request);
-  }
   if (request.GetRequestContext() ==
       mojom::blink::RequestContextType::SERVICE_WORKER) {
     // The top frame origin is defined to be null for service worker main
@@ -417,17 +412,6 @@ void FrameFetchContext::PrepareRequest(
   request.SetUkmSourceId(document_->UkmSourceID());
   request.SetStorageAccessApiStatus(
       document_->GetExecutionContext()->GetStorageAccessApiStatus());
-
-  if (!minimal_prep) {
-    if (document_loader_->ForceFetchCacheMode()) {
-      request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
-    }
-    if (const AttributionSrcLoader* attribution_src_loader =
-            GetFrame()->GetAttributionSrcLoader()) {
-      request.SetAttributionReportingSupport(
-          attribution_src_loader->GetSupport());
-    }
-  }
 
   // If the original request included the attribute to opt-in to shared storage,
   // then update eligibility for the current (possibly redirected) request. Note
@@ -447,9 +431,6 @@ void FrameFetchContext::PrepareRequest(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
           GetExecutionContext()));
 
-  if (!minimal_prep) {
-    WillSendRequest(request);
-  }
   GetLocalFrameClient()->DispatchFinalizeRequest(request);
   FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler();
   if (!for_redirect && frame_scheduler) {
@@ -832,8 +813,6 @@ void FrameFetchContext::WillSendRequest(ResourceRequest& resource_request) {
 void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
     const ResourceLoaderOptions& options,
     ResourceRequest& request) {
-  DCHECK(RuntimeEnabledFeatures::
-             MinimimalResourceRequestPrepBeforeCacheLookupEnabled());
   if (!GetResourceFetcherProperties().IsDetached()) {
     probe::SetDevToolsIds(Probe(), request, options.initiator_info);
   }
@@ -868,13 +847,6 @@ void FrameFetchContext::UpgradeResourceRequestForLoader(
     const std::optional<float> resource_width,
     ResourceRequest& request,
     const ResourceLoaderOptions& options) {
-  if (!RuntimeEnabledFeatures::
-          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
-    if (!GetResourceFetcherProperties().IsDetached()) {
-      probe::SetDevToolsIds(Probe(), request, options.initiator_info);
-    }
-    ModifyRequestForMixedContentUpgrade(request);
-  }
   AddClientHintsIfNecessary(resource_width, request);
   AddReducedAcceptLanguageIfNecessary(request);
 }
@@ -1303,8 +1275,7 @@ std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
   if (blocked_reason) {
     return blocked_reason;
   }
-  if (detached || !RuntimeEnabledFeatures::
-                      MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
+  if (detached) {
     return std::nullopt;
   }
   if (!resource_request.Url().IsValid()) {

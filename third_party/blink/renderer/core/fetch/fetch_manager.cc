@@ -1862,25 +1862,15 @@ FetchLaterManager::PrepareNetworkRequest(
       fetcher->GetProperties().GetFetchClientSettingsObject();
 
   FetchManagerResourceRequestContext resource_request_context;
-  if (!RuntimeEnabledFeatures::
-          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
-    if (PrepareResourceRequest(
-            kFetchLaterResourceType, fetch_client_settings_object, params,
-            fetcher->Context(), unused_virtual_time_pauser,
-            resource_request_context, KURL()) != std::nullopt) {
-      return nullptr;
-    }
-  } else {
-    if (PrepareResourceRequestForCacheAccess(
-            kFetchLaterResourceType, fetch_client_settings_object, KURL(),
-            resource_request_context, fetcher->Context(),
-            params) != std::nullopt) {
-      return nullptr;
-    }
-    UpgradeResourceRequestForLoaderNew(
-        kFetchLaterResourceType, params, fetcher->Context(),
-        resource_request_context, unused_virtual_time_pauser);
+  if (PrepareResourceRequestForCacheAccess(
+          kFetchLaterResourceType, fetch_client_settings_object, KURL(),
+          resource_request_context, fetcher->Context(),
+          params) != std::nullopt) {
+    return nullptr;
   }
+  UpgradeResourceRequestForLoader(kFetchLaterResourceType, params,
+                                  fetcher->Context(), resource_request_context,
+                                  unused_virtual_time_pauser);
 
   // From `ResourceFetcher::StartLoad()`:
   ScriptForbiddenScope script_forbidden_scope;
