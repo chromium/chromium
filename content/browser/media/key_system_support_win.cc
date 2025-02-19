@@ -61,6 +61,7 @@ void OnKeySystemCapability(
 
 void GetMediaFoundationServiceCdmCapability(
     const std::string& key_system,
+    const media::CdmType& cdm_type,
     const base::FilePath& cdm_path,
     bool is_hw_secure,
     media::CdmCapabilityCB cdm_capability_cb) {
@@ -75,7 +76,8 @@ void GetMediaFoundationServiceCdmCapability(
   }
 
   // CDM capability is global, use a generic BrowserContext and Site to query.
-  auto& mf_service = GetMediaFoundationService(nullptr, GURL(), cdm_path);
+  auto& mf_service =
+      GetMediaFoundationService(cdm_type, nullptr, GURL(), cdm_path);
   mf_service.IsKeySystemSupported(
       key_system,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(

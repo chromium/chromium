@@ -539,8 +539,9 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
   DVLOG(1) << __func__ << ": this=" << this << ", cdm_path=" << cdm_path;
   DCHECK(!mf_interface_factory_remote_);
 
+  // Passing an empty CdmType since it is not needed in this scenario.
   auto& mf_service = GetMediaFoundationService(
-      render_frame_host().GetBrowserContext(),
+      media::CdmType(), render_frame_host().GetBrowserContext(),
       render_frame_host().GetSiteInstance()->GetSiteURL(), cdm_path);
 
   // Passing an empty CdmType as MediaFoundation-based CDMs don't use CdmStorage
