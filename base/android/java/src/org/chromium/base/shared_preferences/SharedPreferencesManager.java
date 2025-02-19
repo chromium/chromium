@@ -540,7 +540,7 @@ public class SharedPreferencesManager {
      */
     @CalledByNative
     public void writeString(
-            @JniType("std::string") String key, @JniType("std::string") String value) {
+            @JniType("std::string") String key, @Nullable @JniType("std::string") String value) {
         SharedPreferences.Editor ed = getEditor();
         ed.putString(key, value);
         ed.apply();

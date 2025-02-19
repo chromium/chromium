@@ -10,11 +10,14 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Bridge to UnifiedConsentService. */
+@NullMarked
 public class UnifiedConsentServiceBridge {
-    private static Boolean sUrlKeyedAnonymizedDataCollectionEnabledForTesting;
+    private static @Nullable Boolean sUrlKeyedAnonymizedDataCollectionEnabledForTesting;
 
     private UnifiedConsentServiceBridge() {}
 

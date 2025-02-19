@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -19,8 +20,9 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
  * Provides access to sign-in related services that are profile-keyed on the native side. Java
  * equivalent of AccountTrackerServiceFactory and similar classes.
  */
+@NullMarked
 public class IdentityServicesProvider {
-    private static IdentityServicesProvider sIdentityServicesProvider;
+    private static @Nullable IdentityServicesProvider sIdentityServicesProvider;
 
     private IdentityServicesProvider() {}
 

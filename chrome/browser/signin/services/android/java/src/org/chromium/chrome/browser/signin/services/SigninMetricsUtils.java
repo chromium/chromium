@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninPromoAction;
@@ -20,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Util methods for signin metrics logging. */
+@NullMarked
 public class SigninMetricsUtils {
     /** Used to record Signin.AddAccountState histogram. Do not change existing values. */
     @Retention(RetentionPolicy.SOURCE)

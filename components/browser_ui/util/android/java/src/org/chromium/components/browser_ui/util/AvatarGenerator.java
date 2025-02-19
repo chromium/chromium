@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -37,6 +38,7 @@ public class AvatarGenerator {
      * @param imageSize the target image size in pixels.
      * @return the scaled and cropped avatar.
      */
+    @Contract("_, !null, _ -> !null")
     public static @Nullable Drawable makeRoundAvatar(
             Resources resources, Bitmap avatar, @Px int imageSize) {
         if (avatar == null) return null;

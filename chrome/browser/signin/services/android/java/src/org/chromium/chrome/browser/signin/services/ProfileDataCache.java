@@ -20,8 +20,6 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -29,6 +27,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -46,6 +46,7 @@ import java.util.Objects;
  * Fetches and caches Google Account profile images and full names for the accounts on the device.
  */
 @MainThread
+@NullMarked
 public class ProfileDataCache implements AccountInfoService.Observer {
     /** Observer to get notifications about changes in profile data. */
     public interface Observer {
@@ -384,7 +385,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
 
     private void updateCacheAndNotifyObservers(
             String email,
-            Bitmap avatar,
+            @Nullable Bitmap avatar,
             String fullName,
             String givenName,
             boolean hasDisplayableEmailAddress) {
@@ -458,7 +459,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         return new BitmapDrawable(context.getResources(), output);
     }
 
-    private @Nullable BadgeConfig getBadgeConfigForAccount(@NonNull String email) {
+    private @Nullable BadgeConfig getBadgeConfigForAccount(String email) {
         return mPerAccountBadgeConfig.get(email) != null
                 ? mPerAccountBadgeConfig.get(email)
                 : mDefaultBadgeConfig;

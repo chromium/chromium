@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -23,6 +23,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import java.util.List;
 
 /** This class regroups sign-in checks when chrome starts up and when accounts change on device */
+@NullMarked
 public class SigninChecker implements AccountsChangeObserver, Destroyable {
     private static final String TAG = "SigninChecker";
     private final AccountManagerFacade mAccountManagerFacade;
