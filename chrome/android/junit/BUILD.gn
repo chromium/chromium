@@ -992,7 +992,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/signin/PolicyLoadListenerUnitTest.java",
       "src/org/chromium/chrome/browser/signin/SigninBridgeTest.java",
       "src/org/chromium/chrome/browser/signin/SigninManagerImplTest.java",
-      "src/org/chromium/chrome/browser/signin/SyncConsentActivityLauncherImplTest.java",
     ]
 
     deps = chrome_junit_tests_deps
