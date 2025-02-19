@@ -199,6 +199,14 @@ class SyncPrefs {
   void SetCachedPassphraseType(PassphraseType passphrase_type);
   void ClearCachedPassphraseType();
 
+  // Cached notion of whether or not a persistent auth error exists, useful
+  // during profile startup before IdentityManager can determine the
+  // authoritative value.
+  bool HasCachedPersistentAuthErrorForMetrics() const;
+  void SetHasCachedPersistentAuthErrorForMetrics(
+      bool has_persistent_auth_error);
+  void ClearCachedPersistentAuthErrorForMetrics();
+
   // The user's TrustedVaultAutoUpgradeExperimentGroup, determined the first
   // time the engine is successfully initialized.
   std::optional<sync_pb::TrustedVaultAutoUpgradeExperimentGroup>

@@ -11912,6 +11912,7 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/prefs",
       "//chrome/browser/reading_list",
       "//chrome/browser/search_engines",

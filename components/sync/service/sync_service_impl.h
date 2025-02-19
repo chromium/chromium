@@ -122,6 +122,7 @@ class SyncServiceImpl : public SyncService,
   bool HasSyncConsent() const override;
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
+  bool HasCachedPersistentAuthErrorForMetrics() const override;
   bool RequiresClientUpgrade() const override;
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;

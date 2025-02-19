@@ -113,7 +113,12 @@ HistorySyncSessionDurationsMetricsRecorder::DetermineHistorySyncStatus() const {
           UserSelectableType::kHistory)) {
     return HistorySyncStatus::kDisabled;
   }
-  return HistorySyncStatus::kEnabled;
+  if (sync_service_->GetTransportState() ==
+          SyncService::TransportState::PAUSED ||
+      sync_service_->HasCachedPersistentAuthErrorForMetrics()) {
+    return HistorySyncStatus::kEnabledWithError;
+  }
+  return HistorySyncStatus::kEnabledWithoutError;
 }
 
 // static
@@ -124,7 +129,16 @@ void HistorySyncSessionDurationsMetricsRecorder::LogHistorySyncDuration(
     case HistorySyncStatus::kDisabled:
       LogDuration("WithoutHistorySync", session_length);
       break;
-    case HistorySyncStatus::kEnabled:
+    case HistorySyncStatus::kEnabledWithoutError:
+      LogDuration("WithHistorySyncWithoutAuthError", session_length);
+      // "WithHistorySync" gets logged regardless of whether there is an auth
+      // error or not.
+      LogDuration("WithHistorySync", session_length);
+      break;
+    case HistorySyncStatus::kEnabledWithError:
+      LogDuration("WithHistorySyncAndAuthError", session_length);
+      // "WithHistorySync" gets logged regardless of whether there is an auth
+      // error or not.
       LogDuration("WithHistorySync", session_length);
       break;
   }

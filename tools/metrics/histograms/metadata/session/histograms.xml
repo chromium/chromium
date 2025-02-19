@@ -920,6 +920,10 @@ chromium-metrics-reviews@google.com.
   <token key="HistorySyncState">
     <variant name="WithHistorySync"
         summary="enabled (with or without persistent auth error)"/>
+    <variant name="WithHistorySyncAndAuthError"
+        summary="enabled but with persistent auth error"/>
+    <variant name="WithHistorySyncWithoutAuthError"
+        summary="enabled and without persistent auth error"/>
     <variant name="WithoutHistorySync" summary="NOT enabled"/>
   </token>
 </histogram>
