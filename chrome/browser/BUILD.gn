@@ -4538,6 +4538,8 @@ static_library("browser") {
         "upgrade_detector/installed_version_poller.h",
         "upgrade_detector/upgrade_detector_impl.cc",
         "upgrade_detector/upgrade_detector_impl.h",
+        "upgrade_detector/version_history_client.cc",
+        "upgrade_detector/version_history_client.h",
         "usb/usb_status_icon.cc",
         "usb/usb_status_icon.h",
       ]

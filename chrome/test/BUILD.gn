@@ -9780,6 +9780,7 @@ test("unit_tests") {
       "../browser/ui/views/sharing/sharing_icon_view_unittest.cc",
       "../browser/upgrade_detector/installed_version_poller_unittest.cc",
       "../browser/upgrade_detector/upgrade_detector_impl_unittest.cc",
+      "../browser/upgrade_detector/version_history_client_unittest.cc",
       "../common/channel_info_unittest.cc",
     ]
 
