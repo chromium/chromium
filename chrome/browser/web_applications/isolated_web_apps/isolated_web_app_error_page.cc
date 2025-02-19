@@ -46,6 +46,9 @@ std::u16string GetNetErrorMessage(content::BrowserContext* browser_context,
                                   const GURL& url,
                                   net::Error error_code) {
   switch (error_code) {
+    case net::ERR_HTTP_RESPONSE_CODE_FAILURE:
+      return l10n_util::GetStringUTF16(
+          IDS_ERRORPAGES_MESSAGE_IWA_PAGE_NOT_FOUND);
     case net::ERR_INVALID_WEB_BUNDLE:
       return l10n_util::GetStringUTF16(
           IDS_ERRORPAGES_MESSAGE_IWA_INVALID_WEB_BUNDLE);
