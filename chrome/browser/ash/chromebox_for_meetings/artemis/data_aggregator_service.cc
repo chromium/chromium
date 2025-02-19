@@ -273,7 +273,7 @@ void DataAggregatorService::OnLocalLogDisconnect(const std::string& filepath) {
 }
 
 void DataAggregatorService::OnMojoDisconnect() {
-  VLOG(3) << "mojom::DataAggregator disconnected";
+  VLOG(2) << "mojom::DataAggregator disconnected";
 }
 
 void DataAggregatorService::InitializeLocalSources() {
@@ -318,7 +318,7 @@ void DataAggregatorService::OnRequestBindUploadService(
     const std::string& interface_name,
     size_t num_tries,
     bool success) {
-  VLOG(3) << "Uploader RequestBindService result: " << success
+  VLOG(2) << "Uploader RequestBindService result: " << success
           << " for interface: " << interface_name;
 
   if (success) {
@@ -333,7 +333,7 @@ void DataAggregatorService::OnRequestBindUploadService(
     return;
   }
 
-  VLOG(3) << "Retrying service adaptor connection in "
+  VLOG(2) << "Retrying service adaptor connection in "
           << kServiceAdaptorRetryDelay;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -365,7 +365,7 @@ void DataAggregatorService::OnRequestBindDeviceInfoService(
     const std::string& interface_name,
     size_t num_tries,
     bool success) {
-  VLOG(3) << "DeviceInfo RequestBindService result: " << success
+  VLOG(2) << "DeviceInfo RequestBindService result: " << success
           << " for interface: " << interface_name;
 
   if (success) {
@@ -379,7 +379,7 @@ void DataAggregatorService::OnRequestBindDeviceInfoService(
     return;
   }
 
-  VLOG(3) << "Retrying service adaptor connection in "
+  VLOG(2) << "Retrying service adaptor connection in "
           << kServiceAdaptorRetryDelay;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -555,7 +555,7 @@ void DataAggregatorService::AppendEntriesToActivePayload(
 bool DataAggregatorService::IsPayloadReadyForUpload() const {
   // Flush the payload to the wire if it exceeds our max size.
   if (active_transport_payload_.ByteSizeLong() >= kPayloadMaxSizeBytes) {
-    VLOG(4) << "Payload reached maximum size; pushing to wire";
+    VLOG(2) << "Payload reached maximum size; pushing to wire";
     return true;
   }
 
@@ -563,7 +563,7 @@ bool DataAggregatorService::IsPayloadReadyForUpload() const {
   // always uploading data, even in the event of a data "stall", where
   // a small amount of data is available for an extended period of time.
   if ((base::TimeTicks::Now() - last_upload_time_) >= kPayloadEnqueueTimeout) {
-    VLOG(4) << "Payload timeout reached; force pushing";
+    VLOG(2) << "Payload timeout reached; force pushing";
     return true;
   }
 
@@ -596,7 +596,7 @@ void DataAggregatorService::AddActivePayloadToPendingQueue() {
     pending_transport_payloads_.pop();
   }
 
-  VLOG(3) << "Pushed payload into pending queue. New size: "
+  VLOG(2) << "Pushed payload into pending queue. New size: "
           << pending_transport_payloads_.size();
 }
 

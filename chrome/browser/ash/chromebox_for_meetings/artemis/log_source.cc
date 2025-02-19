@@ -125,7 +125,7 @@ std::vector<std::string> LogSource::GetNextData() {
   // new file. TODO(b/320996557): this might drop newest logs from old
   // rotated file.
   if (DidFileRotate()) {
-    VLOG(4) << "Detected rotation in file '" << log_file_.GetFilePath() << "'";
+    VLOG(1) << "Detected rotation in file '" << log_file_.GetFilePath() << "'";
     log_file_.CloseStream();
     log_file_.OpenAtOffset(0);
   }
@@ -137,7 +137,7 @@ std::vector<std::string> LogSource::GetNextData() {
   // NB: if the last read didn't cause an EOF, new lines will be
   // available immediately without the need to Refresh() first.
   if (log_file_.IsAtEOF()) {
-    VLOG(4) << "Refreshing log file '" << log_file_.GetFilePath() << "'";
+    VLOG(3) << "Refreshing log file '" << log_file_.GetFilePath() << "'";
     log_file_.Refresh();
   }
 
