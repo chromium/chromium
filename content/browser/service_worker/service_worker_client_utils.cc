@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -223,7 +224,11 @@ void AddWindowClient(
       url::Origin::Create(controller->script_url());
   auto* rfh =
       RenderFrameHostImpl::FromID(service_worker_client.GetRenderFrameHostId());
-  if (!controller_origin.IsSameOriginWith(rfh->GetLastCommittedOrigin())) {
+  if (!controller_origin.IsSameOriginWith(rfh->GetLastCommittedOrigin())
+      // TODO(crbug.com/396502398): find the reason why `Clients.matchAll()`
+      // is called by the Chrome extension ServiceWorker, and remove the
+      // following condition.
+      && controller_origin.scheme() != "chrome-extension") {
     SCOPED_CRASH_KEY_STRING256("AddWindowClient", "ctrler_origin",
                                controller_origin.GetURL().spec());
     SCOPED_CRASH_KEY_STRING256("AddWindowClient", "rfh_origin",
@@ -325,6 +330,11 @@ void GetNonWindowClients(
       AddNonWindowClient(*controllee.second, options->client_type, &clients);
     }
   }
+  if (controller->script_url().SchemeIs("chrome-extension")) {
+    base::UmaHistogramCounts1000(
+        "ServiceWorker.GetClients.ExtensionController.AllClients",
+        clients.size());
+  }
   DidGetClients(std::move(callback), std::move(clients));
 }
 
@@ -338,6 +348,11 @@ void DidGetWindowClients(
     GetNonWindowClients(controller, std::move(options), std::move(callback),
                         std::move(clients));
     return;
+  }
+  if (controller->script_url().SchemeIs("chrome-extension")) {
+    base::UmaHistogramCounts1000(
+        "ServiceWorker.GetClients.ExtensionController.WindowClients",
+        clients.size());
   }
   DidGetClients(std::move(callback), std::move(clients));
 }

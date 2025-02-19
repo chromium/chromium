@@ -558,6 +558,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.GetClients.ExtensionController.{type}"
+    units="clients" expires_after="2025-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The number of clients controlled by the Chrome Extension. It has been
+    measured when `Clients.matchAll()` is called by the Extension ServiceWorker.
+    This is a metrics that is counted for {type}.
+  </summary>
+  <token key="type">
+    <variant name="AllClients" summary="all clients"/>
+    <variant name="WindowClients" summary="window clients"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.InstallEvent.All.FetchCount" units="fetches"
     expires_after="2023-10-01">
   <owner>yyanagisawa@chromium.org</owner>
