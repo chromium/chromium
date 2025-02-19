@@ -438,6 +438,11 @@ void RecordPdfPageCount(uint32_t page_count) {
                                page_count);
 }
 
+void RecordOcrDomSimilarity(double similarity) {
+  base::UmaHistogramPercentage("Lens.Overlay.OcrDomSimilarity",
+                               similarity * 100);
+}
+
 void RecordSidePanelResultStatus(SidePanelResultStatus status) {
   base::UmaHistogramEnumeration("Lens.Overlay.SidePanelResultStatus", status);
 }
