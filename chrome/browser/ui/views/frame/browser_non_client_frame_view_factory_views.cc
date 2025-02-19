@@ -57,11 +57,11 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
           nav_button_provider.get(),
           base::BindRepeating(
               [](DesktopBrowserFrameAuraLinux* native_frame,
-                 ui::LinuxUiTheme* linux_ui_theme, bool tiled) {
+                 ui::LinuxUiTheme* linux_ui_theme, bool tiled, bool maximized) {
                 const bool solid_frame =
                     !native_frame->ShouldDrawRestoredFrameShadow();
                 return linux_ui_theme->GetWindowFrameProvider(solid_frame,
-                                                              tiled);
+                                                              tiled, maximized);
               },
               native_frame, linux_ui_theme));
       return std::make_unique<BrowserFrameViewLinuxNative>(

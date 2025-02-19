@@ -143,7 +143,8 @@ FallbackLinuxUi::CreateNavButtonProvider() {
 
 ui::WindowFrameProvider* FallbackLinuxUi::GetWindowFrameProvider(
     bool solid_frame,
-    bool tiled) {
+    bool tiled,
+    bool maximized) {
   return nullptr;
 }
 

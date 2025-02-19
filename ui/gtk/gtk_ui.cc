@@ -584,11 +584,12 @@ std::unique_ptr<ui::NavButtonProvider> GtkUi::CreateNavButtonProvider() {
 }
 
 ui::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame,
-                                                       bool tiled) {
-  auto& provider = frame_providers_[solid_frame][tiled];
+                                                       bool tiled,
+                                                       bool maximized) {
+  auto& provider = frame_providers_[solid_frame][tiled][maximized];
   if (!provider) {
-    provider =
-        std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame, tiled);
+    provider = std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame, tiled,
+                                                             maximized);
   }
   return provider.get();
 }

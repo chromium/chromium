@@ -16,7 +16,8 @@
 class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
  public:
   using FrameProviderGetter =
-      base::RepeatingCallback<ui::WindowFrameProvider*(bool /*tiled*/)>;
+      base::RepeatingCallback<ui::WindowFrameProvider*(bool /*tiled*/,
+                                                       bool /*maximized*/)>;
 
   BrowserFrameViewLayoutLinuxNative(ui::NavButtonProvider* nav_button_provider,
                                     FrameProviderGetter frame_provider_getter);
