@@ -76,6 +76,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewLimits);
 
 // If enabled, use the new wait loop, which is driven by
 // `PrefetchMatchResolver2` instead of `PrefetchService`.
+//
+// TODO(crbug.com/353490734): Remove this.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewWaitLoop);
 
 // Fix for prefetching a URL controlled by a ServiceWorker without fetch
