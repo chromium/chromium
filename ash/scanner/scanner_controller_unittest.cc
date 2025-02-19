@@ -413,23 +413,6 @@ TEST(ScannerControllerNoFixtureTest,
 }
 
 TEST_F(ScannerControllerTest,
-       CanShowUiFalseWhenFeatureAccessCheckFailsMetrics) {
-  base::HistogramTester histogram_tester;
-  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
-  ASSERT_TRUE(scanner_controller);
-  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
-              CheckFeatureAccess)
-      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
-          specialized_features::FeatureAccessFailure::kDisabledInSettings}));
-
-  ASSERT_FALSE(scanner_controller->CanShowUi());
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ScannerFeature.UserState",
-      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
-}
-
-TEST_F(ScannerControllerTest,
        CanShowUiFalseWhenEnterprisePolicyDisallowedMetrics) {
   base::HistogramTester histogram_tester;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
@@ -440,6 +423,23 @@ TEST_F(ScannerControllerTest,
   Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
       prefs::kScannerEnterprisePolicyAllowed,
       static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowUiFalseWhenFeatureAccessCheckFailsMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kDisabledInSettings}));
 
   ASSERT_FALSE(scanner_controller->CanShowUi());
 

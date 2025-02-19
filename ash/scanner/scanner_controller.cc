@@ -423,6 +423,20 @@ void ScannerController::OnActiveUserSessionChanged(
 }
 
 bool ScannerController::CanShowUi() {
+  // Check enterprise policy.
+  const AccountId& account_id = session_controller_->GetActiveAccountId();
+  PrefService* prefs =
+      session_controller_->GetUserPrefServiceForUser(account_id);
+  // We assume a default value of 1 (allowed without model improvement) if the
+  // value is invalid, or the pref service isn't valid.
+  if (prefs != nullptr &&
+      prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
+          static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
+    return false;
+  }
+
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
 
@@ -441,20 +455,6 @@ bool ScannerController::CanShowUi() {
   checks.Remove(
       specialized_features::FeatureAccessFailure::kConsentNotAccepted);
   if (!checks.empty()) {
-    RecordScannerFeatureUserState(
-        ScannerFeatureUserState::kCanShowUiReturnedFalse);
-    return false;
-  }
-
-  // Check enterprise policy.
-  const AccountId& account_id = session_controller_->GetActiveAccountId();
-  PrefService* prefs =
-      session_controller_->GetUserPrefServiceForUser(account_id);
-  // We assume a default value of 1 (allowed without model improvement) if the
-  // value is invalid, or the pref service isn't valid.
-  if (prefs != nullptr &&
-      prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
-          static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
@@ -492,17 +492,6 @@ bool ScannerController::CanShowFeatureSettingsToggle() {
 }
 
 bool ScannerController::CanStartSession() {
-  ScannerProfileScopedDelegate* profile_scoped_delegate =
-      delegate_->GetProfileScopedDelegate();
-
-  if (profile_scoped_delegate == nullptr) {
-    return false;
-  }
-
-  if (!profile_scoped_delegate->CheckFeatureAccess().empty()) {
-    return false;
-  }
-
   // Check enterprise policy.
   const AccountId& account_id = session_controller_->GetActiveAccountId();
   PrefService* prefs =
@@ -512,6 +501,17 @@ bool ScannerController::CanStartSession() {
   if (prefs != nullptr &&
       prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
           static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    return false;
+  }
+
+  ScannerProfileScopedDelegate* profile_scoped_delegate =
+      delegate_->GetProfileScopedDelegate();
+
+  if (profile_scoped_delegate == nullptr) {
+    return false;
+  }
+
+  if (!profile_scoped_delegate->CheckFeatureAccess().empty()) {
     return false;
   }
 
