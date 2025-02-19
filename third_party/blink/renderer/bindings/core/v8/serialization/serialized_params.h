@@ -113,12 +113,10 @@ enum class SerializedTextDirection : uint32_t {
 
 class SerializedImageDataSettings {
  public:
-  SerializedImageDataSettings(PredefinedColorSpace, ImageDataStorageFormat);
+  SerializedImageDataSettings(PredefinedColorSpace, V8ImageDataStorageFormat);
   SerializedImageDataSettings(SerializedPredefinedColorSpace,
                               SerializedImageDataStorageFormat);
 
-  PredefinedColorSpace GetColorSpace() const;
-  ImageDataStorageFormat GetStorageFormat() const;
   ImageDataSettings* GetImageDataSettings() const;
 
   SerializedPredefinedColorSpace GetSerializedPredefinedColorSpace() const {

@@ -171,12 +171,12 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* CreateForTest(const gfx::Size&,
                                   NotShared<DOMArrayBufferView>,
                                   PredefinedColorSpace,
-                                  ImageDataStorageFormat);
+                                  SkColorType);
 
   ImageData(const gfx::Size&,
             NotShared<DOMArrayBufferView>,
             PredefinedColorSpace,
-            ImageDataStorageFormat);
+            SkColorType);
 
   gfx::Size Size() const { return size_; }
   int width() const { return size_.width(); }
@@ -190,8 +190,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   const V8ImageDataArray* data() const { return data_.Get(); }
 
   bool IsBufferBaseDetached() const;
-  PredefinedColorSpace GetPredefinedColorSpace() const;
-  ImageDataStorageFormat GetImageDataStorageFormat() const;
+  PredefinedColorSpace GetPredefinedColorSpace() const { return color_space_; }
+  SkColorType GetSkColorType() const { return color_type_; }
 
   // Return an SkPixmap that references this data directly.
   SkPixmap GetSkPixmap() const;
@@ -220,11 +220,11 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
   PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
-  ImageDataStorageFormat storage_format_ = ImageDataStorageFormat::kUint8;
+  SkColorType color_type_ = kRGBA_8888_SkColorType;
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,
-      ImageDataStorageFormat,
+      SkColorType,
       bool initialize,
       ExceptionState&);
 };
