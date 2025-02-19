@@ -1869,9 +1869,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithChromeSigninIPH,
 
   // IPH shown after receiving the name.
   SimulateExtendedAccountInfoFetched();
-  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::
-          kIPHExplicitBrowserSigninPreferenceRememberedFeature));
+  RunTestSequence(
+      WaitForPromo(feature_engagement::
+                       kIPHExplicitBrowserSigninPreferenceRememberedFeature));
 
   // Sign-in once more, the IPH is not shown again.
   CloseIPH();
@@ -1904,9 +1904,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithChromeSigninIPH,
   SimulateWebSigninMainAccount();
   SimulateExtendedAccountInfoFetched();
   // IPH can now show again.
-  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::
-          kIPHExplicitBrowserSigninPreferenceRememberedFeature));
+  RunTestSequence(
+      WaitForPromo(feature_engagement::
+                       kIPHExplicitBrowserSigninPreferenceRememberedFeature));
 }
 
 // This test is not specifically related to DICE, but it extends
