@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_STRINGS_STRCAT_INTERNAL_H_
 #define BASE_STRINGS_STRCAT_INTERNAL_H_
 
 #include <concepts>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 namespace base {
@@ -66,7 +62,7 @@ void StrAppendT(std::basic_string<CharT>& dest, span<const StringT> pieces) {
   CharT* dest_char = &dest[initial_size];
   for (const auto& cur : pieces) {
     std::char_traits<CharT>::copy(dest_char, cur.data(), cur.size());
-    dest_char += cur.size();
+    UNSAFE_TODO(dest_char += cur.size());
   }
 }
 

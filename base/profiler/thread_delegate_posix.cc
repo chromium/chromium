@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/thread_delegate_posix.h"
 
 #include <inttypes.h>
@@ -15,6 +10,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
@@ -81,7 +77,8 @@ std::vector<uintptr_t*> ThreadDelegatePosix::GetRegistersToRewrite(
   // Standard section 5.1.1, plus the stack pointer.
   registers.push_back(reinterpret_cast<uintptr_t*>(&thread_context->sp));
   for (size_t i = 19; i <= 29; ++i) {
-    registers.push_back(reinterpret_cast<uintptr_t*>(&thread_context->regs[i]));
+    registers.push_back(
+        UNSAFE_TODO(reinterpret_cast<uintptr_t*>(&thread_context->regs[i])));
   }
   return registers;
 #elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_32_BITS)

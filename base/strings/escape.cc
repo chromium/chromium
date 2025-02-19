@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/escape.h"
 
 #include <ostream>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -29,7 +25,7 @@ namespace {
 // Does quick bit-flicking to lookup needed characters.
 struct Charmap {
   bool Contains(unsigned char c) const {
-    return ((map[c >> 5] & (1 << (c & 31))) != 0);
+    return UNSAFE_TODO((map[c >> 5] & (1 << (c & 31))) != 0);
   }
 
   uint32_t map[8];
@@ -229,8 +225,8 @@ bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
     // UnescapeUnsignedByteAtIndex checks lengths.
     while (num_bytes < std::size(bytes) &&
            UnescapeUnsignedByteAtIndex(escaped_text, index + num_bytes * 3,
-                                       &bytes[num_bytes]) &&
-           CBU8_IS_TRAIL(bytes[num_bytes])) {
+                                       UNSAFE_TODO(&bytes[num_bytes])) &&
+           CBU8_IS_TRAIL(UNSAFE_TODO(bytes[num_bytes]))) {
       ++num_bytes;
     }
   }
@@ -256,7 +252,7 @@ bool ShouldUnescapeCodePoint(UnescapeRule::Type rules,
                              base_icu::UChar32 code_point) {
   // If this is an ASCII character, use the lookup table.
   if (code_point >= 0 && code_point < 0x80) {
-    return kUrlUnescape[static_cast<size_t>(code_point)] ||
+    return UNSAFE_TODO(kUrlUnescape[static_cast<size_t>(code_point)]) ||
            // Allow some additional unescaping when flags are set.
            (code_point == ' ' && (rules & UnescapeRule::SPACES)) ||
            // Allow any of the prohibited but non-control characters when doing
@@ -655,13 +651,15 @@ std::u16string UnescapeForHTML(std::u16string_view input) {
       // Potential ampersand encode char.
       size_t index = static_cast<size_t>(iter - text.begin());
       for (size_t i = 0; i < std::size(kEscapeToChars); i++) {
-        if (ampersand_chars[i].empty()) {
-          ampersand_chars[i] = ASCIIToUTF16(kEscapeToChars[i].ampersand_code);
+        if (UNSAFE_TODO(ampersand_chars[i].empty())) {
+          UNSAFE_TODO(ampersand_chars[i] =
+                          ASCIIToUTF16(kEscapeToChars[i].ampersand_code));
         }
-        if (text.find(ampersand_chars[i], index) == index) {
-          text.replace(
-              iter, iter + static_cast<ptrdiff_t>(ampersand_chars[i].length()),
-              1, kEscapeToChars[i].replacement);
+        if (text.find(UNSAFE_TODO(ampersand_chars[i]), index) == index) {
+          text.replace(iter,
+                       iter + static_cast<ptrdiff_t>(
+                                  UNSAFE_TODO(ampersand_chars[i]).length()),
+                       1, UNSAFE_TODO(kEscapeToChars[i].replacement));
           break;
         }
       }

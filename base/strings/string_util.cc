@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/string_util.h"
 
 #include <errno.h>
@@ -27,6 +22,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util_impl_helpers.h"
 #include "base/strings/string_util_internal.h"
@@ -38,13 +34,14 @@
 namespace base {
 
 bool IsWprintfFormatPortable(const wchar_t* format) {
-  for (const wchar_t* position = format; *position != '\0'; ++position) {
+  for (const wchar_t* position = format; *position != '\0';
+       UNSAFE_TODO(++position)) {
     if (*position == '%') {
       bool in_specification = true;
       bool modifier_l = false;
       while (in_specification) {
         // Eat up characters until reaching a known specifier.
-        if (*++position == '\0') {
+        if (UNSAFE_TODO(*++position) == '\0') {
           // The format string ended in the middle of a specification.  Call
           // it portable because no unportable specifications were found.  The
           // string is equally broken on all platforms.
@@ -174,8 +171,8 @@ void TruncateUTF8ToByteSize(const std::string& input,
   while (char_index >= 0) {
     int32_t prev = char_index;
     base_icu::UChar32 code_point = 0;
-    CBU8_NEXT(reinterpret_cast<const uint8_t*>(data), char_index,
-              truncation_length, code_point);
+    UNSAFE_TODO(CBU8_NEXT(reinterpret_cast<const uint8_t*>(data), char_index,
+                          truncation_length, code_point));
     if (!IsValidCharacter(code_point)) {
       char_index = prev - 1;
     } else {
@@ -310,10 +307,10 @@ std::u16string FormatBytesUnlocalized(int64_t bytes) {
   char buf[64];
   if (bytes != 0 && dimension > 0 && unit_amount < 100) {
     base::snprintf(buf, std::size(buf), "%.1lf%s", unit_amount,
-                   kByteStringsUnlocalized[dimension]);
+                   UNSAFE_TODO(kByteStringsUnlocalized[dimension]));
   } else {
     base::snprintf(buf, std::size(buf), "%.0lf%s", unit_amount,
-                   kByteStringsUnlocalized[dimension]);
+                   UNSAFE_TODO(kByteStringsUnlocalized[dimension]));
   }
 
   return ASCIIToUTF16(buf);
