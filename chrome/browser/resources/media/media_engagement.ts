@@ -43,12 +43,12 @@ function createRow(rowInfo: MediaEngagementScoreDetails): DocumentFragment {
 
   td[1].textContent = rowInfo.visits.toString();
   td[2].textContent = rowInfo.mediaPlaybacks.toString();
-  td[3]!.textContent = rowInfo.lastMediaPlaybackTime ?
+  td[3].textContent = rowInfo.lastMediaPlaybackTime ?
       new Date(rowInfo.lastMediaPlaybackTime).toISOString() :
       '';
   td[4].textContent = rowInfo.isHigh ? 'Yes' : 'No';
   td[5].textContent = rowInfo.totalScore ? rowInfo.totalScore.toFixed(2) : '0';
-  td[6]!.querySelectorAll<HTMLElement>('.engagement-bar')[0]!.style.width =
+  td[6].querySelectorAll<HTMLElement>('.engagement-bar')[0].style.width =
       (rowInfo.totalScore * 50) + 'px';
   return document.importNode(template.content, true);
 }

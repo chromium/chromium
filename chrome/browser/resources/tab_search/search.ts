@@ -70,7 +70,7 @@ function exactSearch<T extends ItemData>(
   // Controls how heavily weighted the search field weights are relative to each
   // other in the scoring function.
   const searchFieldWeights = (options.keys).reduce((acc, {name, weight}) => {
-    acc[name as string] = weight;
+    acc[name] = weight;
     return acc;
   }, {} as {[key: string]: number});
 

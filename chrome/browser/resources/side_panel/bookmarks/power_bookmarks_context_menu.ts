@@ -209,7 +209,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
     } else if (
         this.bookmarks_[0].parentId ===
             loadTimeData.getString('otherBookmarksId') ||
-        this.bookmarks_[0]!.parentId ===
+        this.bookmarks_[0].parentId ===
             loadTimeData.getString('mobileBookmarksId')) {
       menuItems.push({
         id: MenuItemId.ADD_TO_BOOKMARKS_BAR,

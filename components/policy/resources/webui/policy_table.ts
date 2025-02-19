@@ -148,8 +148,8 @@ export class PolicyTableElement extends CustomElement {
     for (let i = 0; i < policies.length; i++) {
       const policyDisplay = policies[i] as PolicyRowElement;
       policyDisplay.hidden =
-          policyDisplay!.policy!.value === undefined && !showUnset ||
-          policyDisplay!.policy!.name.toLowerCase().indexOf(
+          policyDisplay.policy.value === undefined && !showUnset ||
+          policyDisplay.policy.name.toLowerCase().indexOf(
               this.filterPattern) === -1;
     }
     this.getRequiredElement<HTMLElement>('.no-policy').hidden =

@@ -448,15 +448,15 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       if (selector.exactText !== undefined) {
         return {
           exactTextSelector: {
-            text: selector.exactText!.text,
+            text: selector.exactText.text,
           },
         };
       }
       if (selector.textFragment !== undefined) {
         return {
           textFragmentSelector: {
-            textStart: selector.textFragment!.textStart,
-            textEnd: selector.textFragment!.textEnd,
+            textStart: selector.textFragment.textStart,
+            textEnd: selector.textFragment.textEnd,
           },
         };
       }
@@ -470,7 +470,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
     const {errorReason} = (await this.handler.scrollTo(mojoParams));
     if (errorReason !== null) {
-      throw new ErrorWithReasonImpl('scrollTo', errorReason! as number);
+      throw new ErrorWithReasonImpl('scrollTo', errorReason as number);
     }
     return {};
   }

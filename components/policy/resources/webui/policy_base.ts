@@ -123,7 +123,7 @@ export class Page {
     };
 
     const moreActionsButton = getRequiredElement('more-actions-button');
-    const moreActionsIcon = getRequiredElement('dropdown-icon') as HTMLElement;
+    const moreActionsIcon = getRequiredElement('dropdown-icon');
     const moreActionsList = getRequiredElement('more-actions-list');
     moreActionsButton.onclick = () => {
       moreActionsList.classList.toggle('more-actions-visibility');
@@ -290,7 +290,7 @@ export class Page {
     if (!this.policyTables[id]) {
       this.policyTables[id] = document.createElement('policy-table');
       this.mainSection.appendChild(this.policyTables[id]);
-      this.policyTables[id]!.addEventListeners();
+      this.policyTables[id].addEventListeners();
     }
     this.policyTables[id].updateDataModel(dataModel);
   }
@@ -331,8 +331,8 @@ export class Page {
   reloadPoliciesDone() {
     const reloadButton =
         getRequiredElement<HTMLButtonElement>('reload-policies');
-    if (reloadButton!.disabled) {
-      reloadButton!.disabled = false;
+    if (reloadButton.disabled) {
+      reloadButton.disabled = false;
       this.createToast(loadTimeData.getString('reloadPoliciesDone'));
     }
   }

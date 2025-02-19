@@ -46,7 +46,7 @@ function getBookmarkElement(path?: EventTarget[]): BookmarkElement|null {
   }
 
   for (let i = 0; i < path.length; i++) {
-    const element = path![i] as Element;
+    const element = path[i] as Element;
     if (isBookmarkItem(element) || isBookmarkFolderNode(element) ||
         isBookmarkList(element)) {
       return path[i] as BookmarkElement;
@@ -351,7 +351,7 @@ export class DndManager {
       for (const itemId of displayingItems) {
         for (const element of dragData.elements) {
           if (element.id === itemId) {
-            draggedNodes.push(element!.id);
+            draggedNodes.push(element.id);
             break;
           }
         }

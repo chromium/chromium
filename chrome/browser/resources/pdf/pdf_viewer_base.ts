@@ -163,14 +163,14 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
     // Create the viewport.
     const defaultZoom =
         this.browserApi.getZoomBehavior() === ZoomBehavior.MANAGE ?
-        this.browserApi!.getDefaultZoom() :
+        this.browserApi.getDefaultZoom() :
         1.0;
 
     assert(!this.viewport_);
     this.viewport_ = new Viewport(
         scroller, sizer, content, getScrollbarWidth(), defaultZoom);
     this.viewport_.setViewportChangedCallback(() => this.viewportChanged_());
-    this.viewport_!.setBeforeZoomCallback(
+    this.viewport_.setBeforeZoomCallback(
         () => this.currentController!.beforeZoom());
     this.viewport_.setAfterZoomCallback(() => {
       this.currentController!.afterZoom();
@@ -225,8 +225,8 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
         this.browserApi.getZoomBehavior(), () => this.viewport_!.getZoom(),
         zoom => this.browserApi!.setZoom(zoom),
         this.browserApi.getInitialZoom());
-    this.viewport_!.setZoomManager(this.zoomManager_);
-    this.browserApi!.addZoomEventListener(
+    this.viewport_.setZoomManager(this.zoomManager_);
+    this.browserApi.addZoomEventListener(
         (zoom: number) => this.zoomManager_!.onBrowserZoomChange(zoom));
 
     // Request translated strings.

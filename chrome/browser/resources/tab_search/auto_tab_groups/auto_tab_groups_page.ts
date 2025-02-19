@@ -234,7 +234,7 @@ export class AutoTabGroupsPageElement extends CrLitElement {
 
   protected onBackClick_() {
     if (this.session_ && this.state_ !== TabOrganizationState.kNotStarted) {
-      this.apiProxy_.rejectSession(this.session_!.sessionId);
+      this.apiProxy_.rejectSession(this.session_.sessionId);
     } else {
       this.fire('back-click');
     }

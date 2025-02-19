@@ -390,7 +390,7 @@ export class AppElement extends AppElementBase {
             const toast = $$<CrToastElement>(this, '#webstoreToast');
             if (toast) {
               toast.hidden = false;
-              toast!.show();
+              toast.show();
             }
           }
         });
