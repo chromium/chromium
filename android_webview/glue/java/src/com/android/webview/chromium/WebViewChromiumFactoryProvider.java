@@ -32,6 +32,7 @@ import android.webkit.WebViewFactory;
 import android.webkit.WebViewFactoryProvider;
 import android.webkit.WebViewProvider;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
@@ -42,6 +43,7 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserMainParts;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
+import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.BrowserSafeModeActionList;
 import org.chromium.android_webview.ManifestMetadataUtil;
@@ -183,12 +185,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     protected boolean mShouldDisableThreadChecking;
 
-    // Initialization guarded by mAwInit.getLock()
+    @GuardedBy("mAwInit.getLazyInitLock()")
     private Statics mStaticsAdapter;
 
-    private boolean mIsSafeModeEnabled;
-
+    @GuardedBy("mAwInit.getLazyInitLock()")
     private ServiceWorkerController mServiceWorkerController;
+
+    private boolean mIsSafeModeEnabled;
 
     public static class InitInfo {
         // Timestamp of init start and duration, used in the
@@ -202,10 +205,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         public long mTotalFactoryInitStartTime;
         public long mTotalFactoryInitDuration;
     }
-    ;
 
     private InitInfo mInitInfo = new InitInfo();
 
+    @GuardedBy("mAwInit.getLazyInitLock()")
     @RequiresApi(Build.VERSION_CODES.P)
     private ObjectHolderForP mObjectHolderForP =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? new ObjectHolderForP() : null;
@@ -697,8 +700,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public Statics getStatics() {
-        synchronized (mAwInit.getLock()) {
-            SharedStatics sharedStatics = mAwInit.getStatics();
+        SharedStatics sharedStatics = mAwInit.getStatics();
+        synchronized (mAwInit.getLazyInitLock()) {
             if (mStaticsAdapter == null) {
                 mStaticsAdapter =
                         new WebViewChromiumFactoryProvider.Statics() {
@@ -765,8 +768,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             }
                         };
             }
+            return mStaticsAdapter;
         }
-        return mStaticsAdapter;
     }
 
     @Override
@@ -847,14 +850,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public ServiceWorkerController getServiceWorkerController() {
-        synchronized (mAwInit.getLock()) {
+        AwServiceWorkerController serviceWorkerController =
+                mAwInit.getDefaultServiceWorkerController();
+        synchronized (mAwInit.getLazyInitLock()) {
             if (mServiceWorkerController == null) {
                 mServiceWorkerController =
-                        new ServiceWorkerControllerAdapter(
-                                mAwInit.getDefaultServiceWorkerController());
+                        new ServiceWorkerControllerAdapter(serviceWorkerController);
             }
+            return mServiceWorkerController;
         }
-        return mServiceWorkerController;
     }
 
     @Override
@@ -913,18 +917,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @RequiresApi(Build.VERSION_CODES.P)
     @Override
     public TracingController getTracingController() {
-        synchronized (mAwInit.mLock) {
-            mAwInit.ensureChromiumStartedLocked(
-                    true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
-            // ensureChromiumStartedLocked() can release the lock on first call while
-            // waiting for startup. Hence check the mTracingController here to ensure
-            // the singleton property.
+        mAwInit.ensureChromiumStartedLocked(
+                true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
+        synchronized (mAwInit.getLazyInitLock()) {
             if (mObjectHolderForP.mTracingController == null) {
                 mObjectHolderForP.mTracingController =
                         GlueApiHelperForP.createTracingControllerAdapter(this, mAwInit);
             }
+            return mObjectHolderForP.mTracingController;
         }
-        return mObjectHolderForP.mTracingController;
     }
 
     private static class FilteredClassLoader extends ClassLoader {
