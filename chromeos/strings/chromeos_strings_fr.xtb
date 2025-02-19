@@ -1468,6 +1468,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7828503206075800057">Un café <ph name="CAFE_STYLE" /> de type <ph name="CAFE_TYPE" /></translation>
 <translation id="7841134249932030522">Activer le mode sombre</translation>
 <translation id="7846634333498149051">Clavier</translation>
+<translation id="7847923465436619066">Outil de sélection de langue pour la transcription</translation>
 <translation id="7849030488395653706">aurore boréale</translation>
 <translation id="7849737607196682401">dentelle</translation>
 <translation id="7850320739366109486">Ne pas déranger</translation>
@@ -1654,6 +1655,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8749478549112817787">Arrière-plan de caméra</translation>
 <translation id="8755946156089753497">tour</translation>
 <translation id="8760616037557661287">Requêtes précédentes</translation>
+<translation id="876280838467039397">Télécharger et sélectionner le modèle de transcription <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8775713578693478175">APN du modem</translation>

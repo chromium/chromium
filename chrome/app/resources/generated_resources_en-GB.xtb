@@ -1193,6 +1193,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> can't continue using <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Casting <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Services</translation>
+<translation id="1813828404076816564">Select the feedback button to send feedback regarding the shared tab groups feature</translation>
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">Paste as Plain Text</translation>
 <translation id="1815097521077272760">You’ve been invited to try out keyboard control for this game.</translation>
@@ -4122,6 +4123,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3857807444929313943">Lift, then touch again</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="385939467708172187">Use strong password</translation>
+<translation id="3859869403161297890">Send your feedback about shared tab groups here</translation>
 <translation id="3859987779882450877">Automatically suggests and creates groups from your open tabs</translation>
 <translation id="386009056910366930">Manage '<ph name="GROUP_NAME" />' tab group</translation>
 <translation id="3861638017150647085">Username '<ph name="USERNAME" />' is not available</translation>
@@ -8174,6 +8176,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6805478749741295868">This is an experimental AI feature and won't always get it right.</translation>
 <translation id="6805647936811177813">Please sign in to <ph name="TOKEN_NAME" /> to import client certificate from <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Enable RLZ tracking on <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Shared tab groups feedback</translation>
 <translation id="6806089545527108739">Don’t allow but ask later</translation>
 <translation id="680644983456221885">Real-time, proactive protection against dangerous sites, downloads and extensions that are based on your browsing data being sent to Google</translation>
 <translation id="6806781719264274042">Only your contacts with a Google Account. <ph name="LINK_BEGIN" />View contacts<ph name="LINK_END" /></translation>

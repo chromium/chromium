@@ -1181,6 +1181,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />କୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିପାରିବ ନାହିଁ</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" />କୁ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="1813278315230285598">ସେବା</translation>
+<translation id="1813828404076816564">ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପ ଫିଚର ବିଷୟରେ ମତାମତ ପଠାଇବାକୁ ମତାମତ ବଟନ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="18139523105317219">EDI ପାର୍ଟି ନାମ</translation>
 <translation id="1815083418640426271">ସାଦା ଟେକ୍ସଟ୍ ଭାବରେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1815097521077272760">ଏହି ଗେମ ପାଇଁ କୀବୋର୍ଡ ନିୟନ୍ତ୍ରଣକୁ ବ୍ୟବହାର କରି ଦେଖିବା ପାଇଁ ଆପଣଙ୍କୁ ନିମନ୍ତ୍ରଣ କରାଯାଇଛି।</translation>
@@ -4107,6 +4108,7 @@
 <translation id="3857807444929313943">ଆଙ୍ଗୁଠି ଉଠାଇ ପୁଣି ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="385939467708172187">ଜଟିଳ ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="3859869403161297890">ଏଠାରେ ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପ ବିଷୟରେ ଆପଣଙ୍କର ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="3859987779882450877">ଆପଣଙ୍କ ଖୋଲା ଟାବଗୁଡ଼ିକରୁ ସ୍ୱତଃ ଗ୍ରୁପଗୁଡ଼ିକର ପ୍ରସ୍ତାବ ଦିଏ ଏବଂ ଏଗୁଡ଼ିକୁ ତିଆରି କରେ</translation>
 <translation id="386009056910366930">“<ph name="GROUP_NAME" />” ଟାବ ଗ୍ରୁପକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3861638017150647085">ଉପଯୋଗକର୍ତ୍ତାନାମ "<ph name="USERNAME" />" ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -8156,6 +8158,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6805478749741295868">ଏହା ଏକ ପରୀକ୍ଷାମୂଳକ AI ଫିଚର ଏବଂ ଏହା ସର୍ବଦା ସଠିକ ଭାବେ କାମ କରିବ ନାହିଁ।</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" />ରୁ କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ୍ ଇମ୍ପୋର୍ଟ କରିବାକୁ ଦୟାକରି <ph name="TOKEN_NAME" />ରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" />ରେ RLZ ଟ୍ରାକିଂ ସକ୍ଷମ କରନ୍ତୁ।</translation>
+<translation id="6805817411033102703">ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପର ମତାମତ</translation>
 <translation id="6806089545527108739">ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ କିନ୍ତୁ ପରେ ପଚାରନ୍ତୁ</translation>
 <translation id="680644983456221885">ବିପଦଜନକ ସାଇଟ, ଡାଉନଲୋଡ ଏବଂ ଏକ୍ସଟେନସନଗୁଡ଼ିକଠାରୁ ରିଅଲ-ଟାଇମ, ଅଧିକ ସକ୍ରିୟ ସୁରକ୍ଷା ଯାହା Googleକୁ ପଠାଯାଉଥିବା ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଡାଟା ଉପରେ ଆଧାରିତ ଅଟେ</translation>
 <translation id="6806781719264274042">କେବଳ ଏକ Google ଆକାଉଣ୍ଟ ଥିବା ଆପଣଙ୍କ କଣ୍ଟାକ୍ଟଗୁଡ଼ିକ। <ph name="LINK_BEGIN" />କଣ୍ଟାକ୍ଟଗୁଡ଼ିକ ଭ୍ୟୁ କରନ୍ତୁ<ph name="LINK_END" /></translation>

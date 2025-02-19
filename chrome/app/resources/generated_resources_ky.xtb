@@ -1193,6 +1193,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аркылуу уланта албайт</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> тышкы экранга чыгарылып турат</translation>
 <translation id="1813278315230285598">Кызматтар</translation>
+<translation id="1813828404076816564">Жалпы өтмөк топтору функциясы тууралуу пикириңизди жөнөтүү үчүн пикир билдирүү баскычын басыңыз</translation>
 <translation id="18139523105317219">EDI тарабынын аталышы</translation>
 <translation id="1815083418640426271">Жөнөкөй текст катары чапталсын</translation>
 <translation id="1815097521077272760">Бул оюнда баскычтоптогу башкаруу элементтерин колдонуп көрүүгө чакыруу алдыңыз.</translation>
@@ -4122,6 +4123,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3857807444929313943">Көтөрүп, кайра тийип коюңуз</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="385939467708172187">Татаал сырсөздү колдонуу</translation>
+<translation id="3859869403161297890">Жалпы өтмөк топтору тууралуу пикириңизди бул жерден жөнөтүңүз</translation>
 <translation id="3859987779882450877">Ачылып турган өтмөктөрдү топтоштуруп, сунуштап турат</translation>
 <translation id="386009056910366930">"<ph name="GROUP_NAME" />" өтмөктөр тобун башкаруу</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" колдонуучунун аты жеткиликсиз</translation>
@@ -8174,6 +8176,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6805478749741295868">Бул сынамык ЖИ функциясы жана ал ар дайым туура иштебейт.</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> дегенден кардар тастыктамасын импорттоо үчүн <ph name="TOKEN_NAME" /> кириңиз.</translation>
 <translation id="680572642341004180">Бул жерде <ph name="SHORT_PRODUCT_OS_NAME" /> RLZ байкоо салуу аракетин иштетүү.</translation>
+<translation id="6805817411033102703">Жалпы өтмөк топтору тууралуу пикир билдирүү</translation>
 <translation id="6806089545527108739">Тыюу салам, бирок кийинчерээк суралсын</translation>
 <translation id="680644983456221885">Google'га жөнөтүлгөн серептөө дайындарынын негизинде кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн анык убакытта майнаптуу коргоо</translation>
 <translation id="6806781719264274042">Google аккаунту бар байланыштарыңыз гана. <ph name="LINK_BEGIN" />Байланыштарды көрүү<ph name="LINK_END" /></translation>
