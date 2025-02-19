@@ -113,8 +113,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   Vector<uint8_t> CopyImageData(const SkImageInfo& info,
                                 bool apply_orientation);
 
-  // Return the SkImageInfo of the internal representation of this image.
-  virtual SkImageInfo GetSkImageInfo() const = 0;
   gfx::Size GetSize() const {
     return gfx::Size(GetSkImageInfo().width(), GetSkImageInfo().height());
   }
@@ -147,6 +145,10 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // AcceleratedStaticBitmapImage. To change this property, the call site would
   // have to call SetOriginClean().
   bool is_origin_clean_ = true;
+
+ private:
+  // Return the SkImageInfo of the internal representation of this image.
+  virtual SkImageInfo GetSkImageInfo() const = 0;
 };
 
 template <>
