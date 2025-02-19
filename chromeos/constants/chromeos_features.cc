@@ -325,6 +325,24 @@ const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsDomains{
     // https://<customer>-my.sharepoint.com).
     "https://sharepoint.com"};
 
+// Controls whether the PWA manifest on Microsoft 365 Urls should be overridden
+// with a static PWA manifest id.
+BASE_FEATURE(kMicrosoft365ManifestOverride,
+             "Microsoft365ManifestOverride",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Comma separated list of Urls where the M365 PWA manifest should be
+// overridden.
+const base::FeatureParam<std::string> kMicrosoft365ManifestUrls{
+    &kMicrosoft365ManifestOverride, "m365-manifest-urls",
+    /*default*/
+
+    // The current Microsoft 365 web app.
+    "https://www.microsoft365.com/,"
+
+    // The new branding for the Microsoft 365 web app.
+    "https://m365.cloud.microsoft/"};
+
 // Enables the Microsoft OneDrive integration workflow for enterprise users to
 // cloud integration support.
 BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
@@ -514,6 +532,10 @@ bool IsUploadOfficeToCloudSyncEnabled() {
 
 bool IsMicrosoft365ScopeExtensionsEnabled() {
   return base::FeatureList::IsEnabled(kMicrosoft365ScopeExtensions);
+}
+
+bool IsMicrosoft365ManifestOverrideEnabled() {
+  return base::FeatureList::IsEnabled(kMicrosoft365ManifestOverride);
 }
 
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
