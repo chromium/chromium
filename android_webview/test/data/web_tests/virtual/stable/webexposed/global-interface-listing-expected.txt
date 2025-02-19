@@ -2510,6 +2510,10 @@ interface FederatedCredential : Credential
     getter protocol
     getter provider
     method constructor
+interface FetchLaterResult
+    attribute @@toStringTag
+    getter activated
+    method constructor
 interface File : Blob
     attribute @@toStringTag
     getter lastModified
@@ -11125,6 +11129,7 @@ namespace console
     method confirm
     method createImageBitmap
     method fetch
+    method fetchLater
     method find
     method focus
     method getComputedStyle
