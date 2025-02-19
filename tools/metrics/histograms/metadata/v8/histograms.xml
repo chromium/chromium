@@ -2333,9 +2333,14 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
   <summary>
-    The number of deopts executed by the wasm engine so far. At each deopt a
-    sample is added, so if there were 3 deopts in total, there will be one
-    sample for 1, one for 2 and one for 3 deopts.
+    The number of deopts executed by the wasm engine so far. As a baseline, a 0
+    sample is added for each function that gets tiered-up with Turbofan if the
+    function contains at least one deopt-point, meaning functions which can
+    never deopt (or weren't tiered up), do not appear in this histogram at all.
+    At each deopt a sample is added, so if there were 2 deopts in total, there
+    will be one sample for 0 (for the initial tier-up), one for 1 and one for 2
+    deopts. If an optimized function is served from cache, it does not add a new
+    0 sample.
   </summary>
 </histogram>
 
