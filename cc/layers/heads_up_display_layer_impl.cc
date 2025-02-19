@@ -244,26 +244,14 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         internal_content_bounds_, raster_caps.tile_format, gfx::ColorSpace());
 
     if (!pool_resource.backing()) {
-      auto backing = std::make_unique<ResourcePool::Backing>();
       auto* sii = raster_context_provider->SharedImageInterface();
-      backing->overlay_candidate = raster_caps.tile_overlay_candidate;
 
-      gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-      if (raster_caps.use_gpu_rasterization) {
-        flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-      }
-      if (backing->overlay_candidate) {
-        flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      }
-      backing->set_shared_image(sii->CreateSharedImage(
-          {pool_resource.format(), pool_resource.size(),
-           pool_resource.color_space(), flags, "HeadsUpDisplayLayer"},
-          gpu::kNullSurfaceHandle));
-      CHECK(backing->shared_image());
+      pool_resource.InstallGpuBacking(sii, raster_caps.tile_overlay_candidate,
+                                      raster_caps.use_gpu_rasterization,
+                                      "HeadsUpDisplayLayer");
+
       auto* ri = raster_context_provider->RasterInterface();
       ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-      pool_resource.set_backing(std::move(backing));
       needs_clear = true;
     } else if (pool_resource.backing()->returned_sync_token.HasData()) {
       auto* ri = raster_context_provider->RasterInterface();
