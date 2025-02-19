@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -46,6 +47,41 @@ AIAvailability HandleModelAvailabilityCheckResult(
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAvailabilityMetricName(session_type), availability);
   return availability;
+}
+
+AIAvailability HandleTranslatorAvailabilityCheckResult(
+    ExecutionContext* execution_context,
+    mojom::blink::CanCreateTranslatorResult result) {
+  switch (result) {
+    case mojom::blink::CanCreateTranslatorResult::kReadily:
+      return HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kTranslator,
+          mojom::blink::ModelAvailabilityCheckResult::kAvailable);
+    case mojom::blink::CanCreateTranslatorResult::kAfterDownloadLibraryNotReady:
+    case mojom::blink::CanCreateTranslatorResult::
+        kAfterDownloadLanguagePackNotReady:
+    case mojom::blink::CanCreateTranslatorResult::
+        kAfterDownloadLibraryAndLanguagePackNotReady:
+      return HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kTranslator,
+          mojom::blink::ModelAvailabilityCheckResult::kDownloadable);
+    case mojom::blink::CanCreateTranslatorResult::kNoNotSupportedLanguage:
+      return HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kTranslator,
+          mojom::blink::ModelAvailabilityCheckResult::
+              kUnavailableUnsupportedLanguage);
+    case mojom::blink::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
+    case mojom::blink::CanCreateTranslatorResult::
+        kNoExceedsLanguagePackCountLimitation:
+    case mojom::blink::CanCreateTranslatorResult::kNoServiceCrashed:
+    case mojom::blink::CanCreateTranslatorResult::kNoDisallowedByPolicy:
+    case mojom::blink::CanCreateTranslatorResult::
+        kNoExceedsServiceCountLimitation:
+      return HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kTranslator,
+          mojom::blink::ModelAvailabilityCheckResult::
+              kUnavailableTranslationNotEligible);
+  }
 }
 
 V8AIAvailability AIAvailabilityToV8(AIAvailability availability) {

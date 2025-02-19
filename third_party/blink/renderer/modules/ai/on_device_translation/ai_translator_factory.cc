@@ -150,6 +150,39 @@ AITranslatorFactory::AITranslatorFactory(ExecutionContext* context)
     : ExecutionContextClient(context),
       task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)) {}
 
+ScriptPromise<V8AIAvailability> AITranslatorFactory::availability(
+    ScriptState* script_state,
+    AITranslatorCreateCoreOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<V8AIAvailability>();
+  }
+
+  ScriptPromiseResolver<V8AIAvailability>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
+          script_state);
+  ScriptPromise<V8AIAvailability> promise = resolver->Promise();
+  ExecutionContext* execution_context = GetExecutionContext();
+
+  GetTranslationManagerRemote()->TranslationAvailable(
+      options->sourceLanguage(), options->targetLanguage(),
+      WTF::BindOnce(
+          [](ExecutionContext* execution_context,
+             ScriptPromiseResolver<V8AIAvailability>* resolver,
+             mojom::blink::CanCreateTranslatorResult result) {
+            CHECK(resolver);
+
+            AIAvailability availability =
+                HandleTranslatorAvailabilityCheckResult(execution_context,
+                                                        result);
+            resolver->Resolve(AIAvailabilityToV8(availability));
+          },
+          WrapPersistent(execution_context), WrapPersistent(resolver)));
+
+  return promise;
+}
+
 ScriptPromise<AITranslator> AITranslatorFactory::create(
     ScriptState* script_state,
     AITranslatorCreateOptions* options,

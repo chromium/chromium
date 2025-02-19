@@ -64,6 +64,8 @@ enum ModelAvailabilityCheckResult {
   kUnavailableModelNotEligible = 17,
   // The device does not have sufficient disk space for the on-device model.
   kUnavailableInsufficientDiskSpace = 18,
+  // The on-device translation is not available for the given pair of languages.
+  kUnavailableTranslationNotEligible = 19,
 
   // Append new line here
 };

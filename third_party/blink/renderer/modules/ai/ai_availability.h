@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_AVAILABILITY_H_
 
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -31,6 +32,10 @@ AIAvailability HandleModelAvailabilityCheckResult(
     ExecutionContext* execution_context,
     AIMetrics::AISessionType session_type,
     mojom::blink::ModelAvailabilityCheckResult result);
+
+AIAvailability HandleTranslatorAvailabilityCheckResult(
+    ExecutionContext* execution_context,
+    mojom::blink::CanCreateTranslatorResult result);
 
 }  // namespace blink
 

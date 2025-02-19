@@ -148,7 +148,8 @@ struct TranslatorAvailabilityInfo {
   TranslationAvailability availability;
 };
 
-// The manager for on-device translation.
+// Interface to manage translation between languages on-device. Process called
+// from the renderer and used to implement the translation in the browser process.
 interface TranslationManager {
   // Returns if it is supported to create a translator that could translate
   // texts from `source_lang` to `target_lang`.
@@ -172,4 +173,8 @@ interface TranslationManager {
 
   // Get the necessary information to calculate translator availability.
   GetTranslatorAvailabilityInfo() => (TranslatorAvailabilityInfo info);
+
+  // Returns the availability of the language pair translation.
+  TranslationAvailable(string source_lang, string target_lang) =>
+      (CanCreateTranslatorResult result);
 };

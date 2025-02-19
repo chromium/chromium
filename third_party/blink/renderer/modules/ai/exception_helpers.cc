@@ -226,6 +226,9 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
         kUnavailableInsufficientDiskSpace:
       return "The device does not have enough space for downloading the "
              "on-device model";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableTranslationNotEligible:
+      return "The on-device translation is not available.";
     case mojom::blink::ModelAvailabilityCheckResult::kAvailable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloadable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloading:
@@ -235,6 +238,6 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
   }
   NOTREACHED();
 }
-// LINT.ThenChange(//third_party/blink/public/mojom/ai_manager.mojom:ModelAvailabilityCheckResult)
+// LINT.ThenChange(//third_party/blink/public/mojom/ai/ai_manager.mojom:ModelAvailabilityCheckResult)
 
 }  // namespace blink

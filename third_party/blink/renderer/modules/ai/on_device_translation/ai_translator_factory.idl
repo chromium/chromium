@@ -9,12 +9,18 @@ interface AITranslatorFactory {
     CallWith=ScriptState,
     RaisesException
   ]
+  Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
   Promise<AITranslator> create(AITranslatorCreateOptions options);
-  // TODO(crbug.com/390459310): Replace with availability.
   [
     CallWith=ScriptState,
     RaisesException
   ]
+  // TODO(crbug.com/392185835): Remove capabilities method.
   Promise<AITranslatorCapabilities> capabilities();
 };
 
