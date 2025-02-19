@@ -37,7 +37,7 @@ function resourceURL(data) {
   data.type ??= "application/javascript";
   data.counter = counter;
   let params = new URLSearchParams(data);
-  return "./resource.py?" + params.toString();
+  return "/subresource-integrity/signatures/resource.py?" + params.toString();
 }
 
 function generate_fetch_test(request_data, integrity, expectation, description) {
