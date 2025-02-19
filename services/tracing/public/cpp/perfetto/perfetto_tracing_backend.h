@@ -50,6 +50,12 @@ class PerfettoTracingBackend : public perfetto::TracingBackend {
   void SetConsumerConnectionFactory(ConsumerConnectionFactory,
                                     scoped_refptr<base::SequencedTaskRunner>);
 
+  // Only called at maximum once. When the platform thread running
+  // `muxer_task_runner_` restarts in sandbox, detaches
+  // `muxer_sequence_checker_` as well as `ProducerEndpoint`'s
+  // `sequence_checker_`.
+  void DetachFromMuxerSequence();
+
   // perfetto::TracingBackend implementation:
   std::unique_ptr<perfetto::ProducerEndpoint> ConnectProducer(
       const ConnectProducerArgs&) override;

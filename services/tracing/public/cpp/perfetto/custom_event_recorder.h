@@ -53,6 +53,9 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
                                       uint64_t name_hash,
                                       base::HistogramBase::Sample32 sample);
   bool IsPrivacyFilteringEnabled();
+  // Thread can restart in Linux and ChromeOS when entering sandbox, so rebind
+  // sequence checker.
+  void DetachFromSequence();
 
  private:
   friend class base::NoDestructor<CustomEventRecorder>;

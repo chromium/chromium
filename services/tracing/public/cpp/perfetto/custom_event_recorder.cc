@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/process/current_process.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
@@ -252,6 +253,10 @@ void CustomEventRecorder::LogHistograms() {
   for (const std::string& histogram_name : histograms_) {
     LogHistogram(base::StatisticsRecorder::FindHistogram(histogram_name));
   }
+}
+
+void CustomEventRecorder::DetachFromSequence() {
+  DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
 }
 
 // static

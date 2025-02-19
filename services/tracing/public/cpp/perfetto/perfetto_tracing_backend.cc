@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_switch.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/tracing/tracing_tls.h"
 #include "base/unguessable_token.h"
@@ -79,6 +80,8 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   base::WeakPtr<ProducerEndpoint> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  void DetachFromSequence() { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
   // perfetto::ProducerEndpoint implementation:
   void Disconnect() override {
@@ -757,10 +760,41 @@ void PerfettoTracingBackend::OnProducerConnected(
   }
 }
 
+void PerfettoTracingBackend::DetachFromMuxerSequence() {
+  DETACH_FROM_SEQUENCE(muxer_sequence_checker_);
+#if DCHECK_IS_ON()
+  perfetto::base::TaskRunner* task_runner;
+  {
+    base::AutoLock lock(task_runner_lock_);
+    task_runner = muxer_task_runner_;
+  }
+
+  // Must reset sequence_checker on `task_runner`, because `weak_this` and
+  // `producer_endpoint_` needs to bind there.
+  task_runner->PostTask([weak_this = weak_factory_.GetWeakPtr()] {
+    // Can be destroyed in testing.
+    if (weak_this && weak_this->producer_endpoint_) {
+      weak_this->producer_endpoint_->DetachFromSequence();
+    }
+  });
+#endif  // DCHECK_IS_ON()
+}
+
 void PerfettoTracingBackend::BindProducerConnectionIfNecessary() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(muxer_sequence_checker_);
-  if (!producer_endpoint_)
+  {
+    base::AutoLock lock(task_runner_lock_);
+    // Check service existence first because mojo is initialized after
+    // `muxer_task_runner_` resets. So we can avoid binding `sequence_checker`
+    // in `base::WeakPtr` of `producer_endpoint_` before task resets.
+    if (!perfetto_service_) {
+      return;
+    }
+  }
+
+  if (!producer_endpoint_) {
     return;
+  }
 
   mojo::PendingRemote<mojom::PerfettoService> perfetto_service;
   {
@@ -768,10 +802,8 @@ void PerfettoTracingBackend::BindProducerConnectionIfNecessary() {
     perfetto_service = std::move(perfetto_service_);
   }
 
-  if (perfetto_service) {
-    producer_endpoint_->BindConnection(muxer_task_runner_,
-                                       std::move(perfetto_service));
-  }
+  producer_endpoint_->BindConnection(muxer_task_runner_,
+                                     std::move(perfetto_service));
 }
 
 void PerfettoTracingBackend::CreateConsumerConnection(

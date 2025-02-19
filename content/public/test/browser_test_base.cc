@@ -617,8 +617,7 @@ void BrowserTestBase::SetUp() {
 
     StartBrowserThreadPool();
 
-    tracing::InitTracingPostThreadPoolStartAndFeatureList(
-        /* enable_consumer */ true);
+    tracing::InitTracingPostFeatureList(/*enable_consumer=*/true);
     InitializeBrowserMemoryInstrumentationClient();
   }
 

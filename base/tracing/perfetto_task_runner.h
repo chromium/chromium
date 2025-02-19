@@ -49,7 +49,7 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
                               std::function<void()>) override;
   void RemoveFileDescriptorWatch(perfetto::base::PlatformHandle) override;
 
-  void ResetTaskRunnerForTesting(scoped_refptr<base::SequencedTaskRunner>);
+  void ResetTaskRunner(scoped_refptr<base::SequencedTaskRunner>);
 
   WeakPtr<PerfettoTaskRunner> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

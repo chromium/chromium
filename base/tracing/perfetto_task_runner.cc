@@ -114,7 +114,7 @@ void PerfettoTaskRunner::RemoveFileDescriptorWatch(
 #endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 }
 
-void PerfettoTaskRunner::ResetTaskRunnerForTesting(
+void PerfettoTaskRunner::ResetTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   task_runner_ = std::move(task_runner);
 }

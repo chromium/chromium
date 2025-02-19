@@ -1233,8 +1233,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
     tracing::PerfettoTracedProcess::Get().SetAllowSystemTracingConsumerCallback(
         base::BindRepeating(&ShouldAllowSystemTracingConsumer));
-    tracing::InitTracingPostThreadPoolStartAndFeatureList(
-        /* enable_consumer */ true);
+    tracing::InitTracingPostFeatureList(/*enable_consumer=*/true);
 
     // PowerMonitor is needed in reduced mode. BrowserMainLoop will safely skip
     // initializing it again if it has already been initialized.

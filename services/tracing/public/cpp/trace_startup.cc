@@ -46,10 +46,10 @@ using base::trace_event::TraceLog;
 
 }  // namespace
 
-bool g_tracing_initialized_after_threadpool_and_featurelist = false;
+bool g_tracing_initialized_after_featurelist = false;
 
 bool IsTracingInitialized() {
-  return g_tracing_initialized_after_threadpool_and_featurelist;
+  return g_tracing_initialized_after_featurelist;
 }
 
 void EnableStartupTracingIfNeeded() {
@@ -98,11 +98,11 @@ bool EnableStartupTracingForProcess(
   return true;
 }
 
-void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
-  if (g_tracing_initialized_after_threadpool_and_featurelist)
+void InitTracingPostFeatureList(bool enable_consumer) {
+  if (g_tracing_initialized_after_featurelist) {
     return;
-  g_tracing_initialized_after_threadpool_and_featurelist = true;
-  DCHECK(base::ThreadPoolInstance::Get());
+  }
+  g_tracing_initialized_after_featurelist = true;
   DCHECK(base::FeatureList::GetInstance());
 
   // Create the PerfettoTracedProcess.
