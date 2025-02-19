@@ -5,7 +5,9 @@
 #include "services/device/media_transfer_protocol/media_transfer_protocol_daemon_client.h"
 
 #include <algorithm>
+#include <optional>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -43,14 +45,76 @@ mojom::MtpStorageInfo GetMojoMtpStorageInfoFromProtobuf(
       protobuf.serial_number());
 }
 
+// Helper to track the copying file from local requests.
+class CopyFileFromLocalHelper {
+ public:
+  using Callback = MediaTransferProtocolDaemonClient::CopyFileFromLocalCallback;
+  using ErrorCallback = MediaTransferProtocolDaemonClient::ErrorCallback;
+
+  CopyFileFromLocalHelper() = default;
+  ~CopyFileFromLocalHelper() = default;
+
+  // Invoked when `RequestCopyFileFromLocal` is responded.
+  void OnRequestStarted(int32_t request_id,
+                        Callback copy_file_callback,
+                        ErrorCallback copy_file_error_callback) {
+    CHECK(!current_request_id_.has_value());
+    current_request_id_ = request_id;
+
+    CHECK(!callback_);
+    callback_ = std::move(copy_file_callback);
+
+    CHECK(!error_callback_);
+    error_callback_ = std::move(copy_file_error_callback);
+  }
+
+  // Invoked on `CopyFileFromLocalCompleted` dbus signal is received.
+  void OnRequestCopyFileFromLocalCompletedSignal(
+      std::optional<int32_t> request_id,
+      bool success) {
+    if (!current_request_id_.has_value()) {
+      LOG(ERROR) << "Unexpected CopyFileFromLocalCompleted signal received"
+                 << ", request_id=" << request_id.value_or(-1);
+      return;
+    }
+
+    if (current_request_id_ != request_id || !success) {
+      LOG(ERROR) << "CopyFileFromLocal failed"
+                 << ", request_id=" << current_request_id_.value();
+      callback_.Reset();
+      std::move(error_callback_).Run();
+    } else {
+      error_callback_.Reset();
+      std::move(callback_).Run();
+    }
+    current_request_id_.reset();
+  }
+
+ private:
+  // Request id of the current copying file request.
+  std::optional<int32_t> current_request_id_;
+
+  // Callbacks to be invoked when the current copying file request finishes.
+  Callback callback_;
+  ErrorCallback error_callback_;
+};
+
 // The MediaTransferProtocolDaemonClient implementation.
 class MediaTransferProtocolDaemonClientImpl
     : public MediaTransferProtocolDaemonClient {
  public:
   explicit MediaTransferProtocolDaemonClientImpl(dbus::Bus* bus)
       : proxy_(bus->GetObjectProxy(mtpd::kMtpdServiceName,
-                                   dbus::ObjectPath(mtpd::kMtpdServicePath))),
-        listen_for_changes_called_(false) {}
+                                   dbus::ObjectPath(mtpd::kMtpdServicePath))) {
+    proxy_->ConnectToSignal(
+        mtpd::kMtpdInterface, mtpd::kCopyFileFromLocalCompleted,
+        base::BindRepeating(&MediaTransferProtocolDaemonClientImpl::
+                                OnCopyFileFromLocalCompletedSignal,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &MediaTransferProtocolDaemonClientImpl::OnSignalConnected,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 
   MediaTransferProtocolDaemonClientImpl(
       const MediaTransferProtocolDaemonClientImpl&) = delete;
@@ -226,23 +290,23 @@ class MediaTransferProtocolDaemonClientImpl
                        std::move(error_callback)));
   }
 
-  void CopyFileFromLocal(const std::string& handle,
-                         const int source_file_descriptor,
-                         const uint32_t parent_id,
-                         const std::string& file_name,
-                         CopyFileFromLocalCallback callback,
-                         ErrorCallback error_callback) override {
+  void RequestCopyFileFromLocal(const std::string& handle,
+                                const int source_file_descriptor,
+                                const uint32_t parent_id,
+                                const std::string& file_name,
+                                CopyFileFromLocalCallback callback,
+                                ErrorCallback error_callback) override {
     dbus::MethodCall method_call(mtpd::kMtpdInterface,
-                                 mtpd::kCopyFileFromLocal);
+                                 mtpd::kRequestCopyFileFromLocal);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(handle);
     writer.AppendFileDescriptor(source_file_descriptor);
     writer.AppendUint32(parent_id);
     writer.AppendString(file_name);
     proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(
-            &MediaTransferProtocolDaemonClientImpl::OnCopyFileFromLocal,
+            &MediaTransferProtocolDaemonClientImpl::OnRequestCopyFileFromLocal,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback),
             std::move(error_callback)));
   }
@@ -460,15 +524,24 @@ class MediaTransferProtocolDaemonClientImpl
     std::move(callback).Run();
   }
 
-  void OnCopyFileFromLocal(CopyFileFromLocalCallback callback,
-                           ErrorCallback error_callback,
-                           dbus::Response* response) {
+  void OnRequestCopyFileFromLocal(CopyFileFromLocalCallback callback,
+                                  ErrorCallback error_callback,
+                                  dbus::Response* response) {
     if (!response) {
       std::move(error_callback).Run();
       return;
     }
 
-    std::move(callback).Run();
+    int32_t request_id = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopInt32(&request_id)) {
+      LOG(ERROR) << "Failed to read request id.";
+      std::move(error_callback).Run();
+      return;
+    }
+
+    copy_file_helper_.OnRequestStarted(request_id, std::move(callback),
+                                       std::move(error_callback));
   }
 
   void OnDeleteObject(DeleteObjectCallback callback,
@@ -504,9 +577,27 @@ class MediaTransferProtocolDaemonClientImpl
         << "Connect to " << interface << " " << signal << " failed.";
   }
 
+  void OnCopyFileFromLocalCompletedSignal(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+
+    int32_t request_id = 0;
+    bool success = false;
+    if (!reader.PopInt32(&request_id) || !reader.PopBool(&success)) {
+      LOG(ERROR) << "Invalid signal: " << signal->ToString();
+      copy_file_helper_.OnRequestCopyFileFromLocalCompletedSignal(
+          /*request_id=*/std::nullopt, /*success=*/false);
+      return;
+    }
+
+    copy_file_helper_.OnRequestCopyFileFromLocalCompletedSignal(request_id,
+                                                                success);
+  }
+
   const raw_ptr<dbus::ObjectProxy, AcrossTasksDanglingUntriaged> proxy_;
 
-  bool listen_for_changes_called_;
+  bool listen_for_changes_called_ = false;
+
+  CopyFileFromLocalHelper copy_file_helper_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

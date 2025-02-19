@@ -234,7 +234,7 @@ void MtpDeviceManager::CopyFileFromLocal(const std::string& storage_handle,
     return;
   }
   copy_file_from_local_callbacks_.push(std::move(callback));
-  mtp_client_->CopyFileFromLocal(
+  mtp_client_->RequestCopyFileFromLocal(
       storage_handle, source_file_descriptor, parent_id, file_name,
       base::BindOnce(&MtpDeviceManager::OnCopyFileFromLocal,
                      weak_ptr_factory_.GetWeakPtr()),
