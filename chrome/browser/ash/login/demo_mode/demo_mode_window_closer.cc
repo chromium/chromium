@@ -120,6 +120,8 @@ void DemoModeWindowCloser::StartClosingApps() {
   // non-window/widget if open.
 }
 
+// TODO(crbug.com/302583338): Remove this function once
+// `DemoMode.GMSCoreDialogShown` never present.
 bool DemoModeWindowCloser::CloseGMSCoreWindowIfPresent(
     const apps::InstanceUpdate& update) {
   if (!gms_core_app_id_.empty()) {
