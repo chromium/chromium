@@ -55,6 +55,11 @@ class FakePdfListener : public pdf::mojom::PdfListener {
               (override));
 };
 
+class FakePdfLoadObserver : public PDFDocumentHelper::Observer {
+ public:
+  MOCK_METHOD(void, OnDocumentLoadComplete, (), (override));
+};
+
 class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
  public:
   TestPDFDocumentHelperClient() = default;
@@ -264,6 +269,19 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, DefaultImplementation) {
   EXPECT_FALSE(pdf_document_helper()->CreateDrawable());
   EXPECT_FALSE(pdf_document_helper()->ShouldShowQuickMenu());
   EXPECT_TRUE(pdf_document_helper()->GetSelectedText().empty());
+}
+
+IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, DocumentLoadComplete) {
+  NiceMock<FakePdfLoadObserver> listener;
+  EXPECT_FALSE(pdf_document_helper()->IsDocumentLoadComplete());
+  pdf_document_helper()->AddObserver(&listener);
+  EXPECT_CALL(listener, OnDocumentLoadComplete);
+  pdf_document_helper()->OnDocumentLoadComplete();
+  EXPECT_TRUE(pdf_document_helper()->IsDocumentLoadComplete());
+
+  // Subsequent load complete should not trigger listener calls.
+  EXPECT_CALL(listener, OnDocumentLoadComplete).Times(0);
+  pdf_document_helper()->OnDocumentLoadComplete();
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer

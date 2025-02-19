@@ -68,7 +68,11 @@ void RecordPdfPageCountMetrics(
 
 }  // namespace
 
-class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
+class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest
+#if BUILDFLAG(ENABLE_PDF)
+    : public pdf::PDFDocumentHelper::Observer
+#endif  // BUILDFLAG(ENABLE_PDF)
+{
  public:
   static std::unique_ptr<AnnotatedPageContentRequest> MaybeCreate(
       content::WebContents* web_contents) {
@@ -99,7 +103,11 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
             page_content_annotations::features::
                 ShouldAnnotatedPageContentStudyIncludeInnerText()) {}
 
+#if BUILDFLAG(ENABLE_PDF)
+  ~AnnotatedPageContentRequest() override = default;
+#else
   ~AnnotatedPageContentRequest() = default;
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   void PrimaryPageChanged() { ResetForNewNavigation(); }
 
@@ -237,8 +245,29 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
 
 #if BUILDFLAG(ENABLE_PDF)
   void RequestPdfPageCount() {
-    CHECK(web_contents_->GetContentsMimeType() == pdf::kPDFMimeType);
-    pdf::PDFDocumentHelper* pdf_helper =
+    CHECK_EQ(pdf::kPDFMimeType, web_contents_->GetContentsMimeType());
+    auto* pdf_helper =
+        pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
+    if (!pdf_helper) {
+      return;
+    }
+    if (!pdf_helper->IsDocumentLoadComplete()) {
+      // Wait for the PDF to load.
+      pdf_load_obseration_.Observe(pdf_helper);
+      return;
+    }
+    // Fetch zero PDF bytes to just receive the total page count.
+    pdf_helper->GetPdfBytes(
+        /*size_limit=*/0,
+        base::BindOnce(
+            &RecordPdfPageCountMetrics,
+            web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+  }
+
+  void OnDocumentLoadComplete() override {
+    CHECK_EQ(pdf::kPDFMimeType, web_contents_->GetContentsMimeType());
+    pdf_load_obseration_.Reset();
+    auto* pdf_helper =
         pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
     if (pdf_helper) {
       // Fetch zero PDF bytes to just receive the total page count.
@@ -261,6 +290,12 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
 
   bool waiting_for_load_ = false;
   bool waiting_for_fcp_ = false;
+
+#if BUILDFLAG(ENABLE_PDF)
+  base::ScopedObservation<pdf::PDFDocumentHelper,
+                          pdf::PDFDocumentHelper::Observer>
+      pdf_load_obseration_{this};
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   base::WeakPtrFactory<AnnotatedPageContentRequest> weak_factory_{this};
 };

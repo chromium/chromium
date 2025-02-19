@@ -5,17 +5,25 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_PAGE_DATA_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_PAGE_DATA_H_
 
+#include "base/scoped_observation.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/page_user_data.h"
 #include "pdf/buildflags.h"
 #include "pdf/mojom/pdf.mojom.h"
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 namespace contextual_cueing {
 
 // Decider for contextual cueing that is scoped to `Page`.
-class ContextualCueingPageData
-    : public content::PageUserData<ContextualCueingPageData> {
+class ContextualCueingPageData :
+#if BUILDFLAG(ENABLE_PDF)
+    public pdf::PDFDocumentHelper::Observer,
+#endif  // BUILDFLAG(ENABLE_PDF)
+    public content::PageUserData<ContextualCueingPageData> {
  public:
   using CueingDecisionCallback = base::OnceCallback<void(const std::string&)>;
 
@@ -48,11 +56,16 @@ class ContextualCueingPageData
       const optimization_guide::proto::GlicCueingConfiguration& config);
 
 #if BUILDFLAG(ENABLE_PDF)
+  // Requests for page count if this is a PDF page.
   void RequestPdfPageCount();
 
+  // Invoked when page count is received.
   void OnPdfPageCountReceived(pdf::mojom::PdfListener::GetPdfBytesStatus status,
                               const std::vector<uint8_t>& bytes,
                               uint32_t page_count);
+
+  // pdf::PDFDocumentHelper::Observer:
+  void OnDocumentLoadComplete() override;
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   const optimization_guide::proto::GlicContextualCueingMetadata metadata_;
@@ -63,6 +76,12 @@ class ContextualCueingPageData
   std::optional<size_t> pdf_page_count_;
 
   CueingDecisionCallback cueing_decision_callback_;
+
+#if BUILDFLAG(ENABLE_PDF)
+  base::ScopedObservation<pdf::PDFDocumentHelper,
+                          pdf::PDFDocumentHelper::Observer>
+      pdf_load_obseration_{this};
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   base::WeakPtrFactory<ContextualCueingPageData> weak_factory_{this};
 
