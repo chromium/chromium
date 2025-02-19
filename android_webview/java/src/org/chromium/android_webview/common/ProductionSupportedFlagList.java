@@ -878,9 +878,6 @@ public final class ProductionSupportedFlagList {
                 "Optimize handling of static properties during animations."),
         Flag.baseFeature("LazyBindJsInjection"),
         Flag.baseFeature(AwFeatures.WEBVIEW_MUTE_AUDIO, "Enables WebView audio to be muted."),
-        Flag.baseFeature(
-                BlinkFeatures.CONCURRENT_VIEW_TRANSITIONS_SPA,
-                "Allows concurrent transitions in local frames rendered in the same process"),
         Flag.baseFeature("WebViewVizUseThreadPool"),
         Flag.baseFeature("InProcessGpuUseIOThread"),
         Flag.baseFeature("EnableCustomInputStreamBufferSize"),

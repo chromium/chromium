@@ -906,10 +906,6 @@
       }
     },
     {
-      name: "ConcurrentViewTransitionsSPA",
-      status: "stable",
-    },
-    {
       name: "ConsiderFullChildNodeContentForListify",
       status: "stable",
     },

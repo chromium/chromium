@@ -23,47 +23,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
-namespace {
-
-bool HasActiveTransitionInAncestorFrame(LocalFrame* frame) {
-  auto* parent = frame ? frame->Parent() : nullptr;
-
-  while (parent && parent->IsLocalFrame()) {
-    if (To<LocalFrame>(parent)->GetDocument() &&
-        ViewTransitionUtils::GetTransition(
-            *To<LocalFrame>(parent)->GetDocument())) {
-      return true;
-    }
-
-    parent = parent->Parent();
-  }
-
-  return false;
-}
-
-// Skips transitions in all local frames underneath |curr_frame|'s local root
-// except |curr_frame| itself.
-void SkipTransitionInAllLocalFrames(LocalFrame* curr_frame) {
-  auto* root_view = curr_frame ? curr_frame->LocalFrameRoot().View() : nullptr;
-  if (!root_view)
-    return;
-
-  root_view->ForAllChildLocalFrameViews([curr_frame](LocalFrameView& child) {
-    if (child.GetFrame() == *curr_frame)
-      return;
-
-    auto* document = child.GetFrame().GetDocument();
-    auto* transition =
-        document ? ViewTransitionUtils::GetTransition(*document) : nullptr;
-    if (!transition)
-      return;
-
-    transition->SkipTransition();
-    DCHECK(!ViewTransitionUtils::GetTransition(*document));
-  });
-}
-
-}  // namespace
 
 // static
 const char ViewTransitionSupplement::kSupplementName[] = "ViewTransition";
@@ -174,24 +133,7 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
     return skipped_transition->GetScriptDelegate();
   }
 
-  // If there is a transition in a parent frame, give that precedence over a
-  // transition in a child frame.
-  if (!RuntimeEnabledFeatures::ConcurrentViewTransitionsSPAEnabled() &&
-      HasActiveTransitionInAncestorFrame(document.GetFrame())) {
-    auto skipped_transition = transition_;
-    skipped_transition->SkipTransition();
-
-    DCHECK(!transition_);
-    return skipped_transition->GetScriptDelegate();
-  }
-
-  // Skip transitions in all frames associated with this widget. We can only
-  // have one transition per widget/CC.
-  if (!RuntimeEnabledFeatures::ConcurrentViewTransitionsSPAEnabled()) {
-    SkipTransitionInAllLocalFrames(document.GetFrame());
-  }
   DCHECK(transition_);
-
   return transition_->GetScriptDelegate();
 }
 
