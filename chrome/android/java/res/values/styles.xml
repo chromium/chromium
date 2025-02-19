@@ -386,10 +386,8 @@ found in the LICENSE file.
         <item name="android:textColorHint">@macro/ntp_search_box_hint</item>
     </style>
 
-    <!-- Launcher widgets can't use theme attributes, so this should use the baseline colors for
-         android:textColorHint -->
     <style name="TextAppearance.SearchBoxText.Widget">
-        <item name="android:textColorHint">@color/search_box_hint_baseline</item>
+        <item name="android:textColorHint">@macro/default_text_color_secondary</item>
     </style>
 
     <!-- Bookmarks -->
@@ -498,4 +496,6 @@ found in the LICENSE file.
     <style name="ModernToolbarPopupTheme">
         <item name="android:listChoiceIndicatorSingle">@drawable/checkmark_selection_drawable</item>
     </style>
+
+    <style name="Theme.Chromium.Widget" parent="Theme.BrowserUI.DayNight" />
 </resources>
