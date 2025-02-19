@@ -900,6 +900,7 @@ component("base") {
     "types/same_as_any.h",
     "types/strong_alias.h",
     "types/supports_ostream_operator.h",
+    "types/supports_to_string.h",
     "types/to_address.h",
     "types/token_type.h",
     "types/variant_util.h",

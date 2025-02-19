@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/types/supports_ostream_operator.h"
+#include "base/types/supports_to_string.h"
 
 namespace base {
 
@@ -22,9 +23,6 @@ template <typename... Ts>
 std::string ToString(const Ts&... values);
 
 namespace internal {
-
-template <typename T>
-concept SupportsToString = requires(const T& t) { t.ToString(); };
 
 // I/O manipulators are function pointers, but should be sent directly to the
 // `ostream` instead of being cast to `const void*` like other function
