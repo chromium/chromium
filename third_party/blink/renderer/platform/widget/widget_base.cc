@@ -670,8 +670,7 @@ void WidgetBase::OnCommitRequested() {
 }
 
 void WidgetBase::DidBeginMainFrame() {
-  if (base::FeatureList::IsEnabled(features::kRunTextInputUpdatePostLifecycle))
-    UpdateTextInputState();
+  UpdateTextInputState();
   client_->DidBeginMainFrame();
 }
 
@@ -980,10 +979,6 @@ void WidgetBase::WillBeginMainFrame() {
   client_->SetSuppressFrameRequestsWorkaroundFor704763Only(true);
   client_->WillBeginMainFrame();
   UpdateSelectionBounds();
-  // UpdateTextInputState() will cause a forced style and layout update, which
-  // we would like to eliminate.
-  if (!base::FeatureList::IsEnabled(features::kRunTextInputUpdatePostLifecycle))
-    UpdateTextInputState();
 }
 
 void WidgetBase::RunPaintBenchmark(int repeat_count,

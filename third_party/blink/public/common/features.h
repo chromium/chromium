@@ -1500,10 +1500,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kResourceFetcherStoresStrongReferences);
 
-// If enabled, IME updates are computed at the end of a lifecycle update rather
-// than the beginning.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
-
 // When enabled, it adds FTP / FTPS / SFTP to the safe list for
 // registerProtocolHandler. This feature is enabled by default and meant to
 // be used as a killswitch.
