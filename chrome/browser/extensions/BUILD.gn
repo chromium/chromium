@@ -84,6 +84,7 @@ source_set("extensions") {
     "install_tracker_factory.h",
     "load_error_reporter.cc",
     "load_error_reporter.h",
+    "manifest_check_level.h",
     "permissions_url_constants.cc",
     "permissions_url_constants.h",
     "policy_handlers.cc",

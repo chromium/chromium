@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "chrome/browser/extensions/manifest_check_level.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
@@ -67,18 +68,6 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
     FAILURE_REASON_DEPENDENCY_NOT_FOUND,
     FAILURE_REASON_DEPENDENCY_NOT_SHARED_MODULE,
     FAILURE_REASON_OTHER
-  };
-
-  enum ManifestCheckLevel {
-    // Do not check for any manifest equality.
-    MANIFEST_CHECK_LEVEL_NONE,
-
-    // Only check that the expected and actual permissions have the same
-    // effective permissions.
-    MANIFEST_CHECK_LEVEL_LOOSE,
-
-    // All data in the expected and actual manifests must match.
-    MANIFEST_CHECK_LEVEL_STRICT,
   };
 
   using SuccessCallback = base::OnceCallback<void(const std::string&)>;
@@ -132,7 +121,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
 
     // Manifest check level for checking actual manifest against expected
     // manifest.
-    ManifestCheckLevel manifest_check_level = MANIFEST_CHECK_LEVEL_STRICT;
+    ManifestCheckLevel manifest_check_level = ManifestCheckLevel::kStrict;
 
     // Used to show the install dialog.
     ExtensionInstallPrompt::ShowDialogCallback show_dialog_callback;

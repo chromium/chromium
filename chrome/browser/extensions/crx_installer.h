@@ -426,7 +426,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
 
   // The level of checking when comparing the actual manifest against
   // the |expected_manifest_|.
-  WebstoreInstaller::ManifestCheckLevel expected_manifest_check_level_;
+  ManifestCheckLevel expected_manifest_check_level_ =
+      ManifestCheckLevel::kStrict;
 
   // If valid, specifies the minimum version we'll install. Installation will
   // fail if the actual version is smaller.

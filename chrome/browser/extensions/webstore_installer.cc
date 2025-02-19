@@ -35,6 +35,7 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/manifest_check_level.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -226,7 +227,7 @@ WebstoreInstaller::Approval::CreateForSharedModule(Profile* profile) {
   result->profile = profile;
   result->skip_install_dialog = true;
   result->skip_post_install_ui = true;
-  result->manifest_check_level = MANIFEST_CHECK_LEVEL_NONE;
+  result->manifest_check_level = ManifestCheckLevel::kNone;
   return result;
 }
 
@@ -243,8 +244,9 @@ WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
       std::make_unique<Manifest>(mojom::ManifestLocation::kInvalidLocation,
                                  std::move(parsed_manifest), extension_id);
   result->skip_install_dialog = true;
-  result->manifest_check_level = strict_manifest_check ?
-    MANIFEST_CHECK_LEVEL_STRICT : MANIFEST_CHECK_LEVEL_LOOSE;
+  result->manifest_check_level = strict_manifest_check
+                                     ? ManifestCheckLevel::kStrict
+                                     : ManifestCheckLevel::kLoose;
   return result;
 }
 

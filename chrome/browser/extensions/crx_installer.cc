@@ -112,8 +112,6 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
       install_directory_(service_weak->install_directory()),
       install_source_(mojom::ManifestLocation::kInternal),
       approved_(false),
-      expected_manifest_check_level_(
-          WebstoreInstaller::MANIFEST_CHECK_LEVEL_STRICT),
       fail_install_if_unexpected_version_(false),
       extensions_enabled_(service_weak->extensions_enabled()),
       delete_source_(false),
@@ -148,8 +146,7 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
     // so we can check that they match the CRX's.
     approved_ = true;
     expected_manifest_check_level_ = approval->manifest_check_level;
-    if (expected_manifest_check_level_ !=
-        WebstoreInstaller::MANIFEST_CHECK_LEVEL_NONE) {
+    if (expected_manifest_check_level_ != ManifestCheckLevel::kNone) {
       expected_manifest_ = std::make_unique<base::Value::Dict>(
           approval->manifest->value()->Clone());
     }
@@ -347,8 +344,7 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
   // Make sure the manifests match if we want to bypass the prompt.
   if (approved_) {
     bool valid = false;
-    if (expected_manifest_check_level_ ==
-        WebstoreInstaller::MANIFEST_CHECK_LEVEL_NONE) {
+    if (expected_manifest_check_level_ == ManifestCheckLevel::kNone) {
       // To skip manifest checking, the extension must be a shared module
       // and not request any permissions.
       if (SharedModuleInfo::IsSharedModule(extension) &&
@@ -357,8 +353,8 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
       }
     } else {
       valid = *expected_manifest_ == *original_manifest_;
-      if (!valid && expected_manifest_check_level_ ==
-          WebstoreInstaller::MANIFEST_CHECK_LEVEL_LOOSE) {
+      if (!valid &&
+          expected_manifest_check_level_ == ManifestCheckLevel::kLoose) {
         std::string error;
         scoped_refptr<Extension> dummy_extension = Extension::Create(
             base::FilePath(), install_source_, *expected_manifest_,
