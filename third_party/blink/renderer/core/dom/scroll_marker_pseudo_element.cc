@@ -10,13 +10,22 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
+
+ScrollMarkerPseudoElement::ScrollMarkerPseudoElement(
+    Element* originating_element)
+    : PseudoElement(originating_element, kPseudoIdScrollMarker) {
+  SetTabIndexExplicitly();
+  UseCounter::Count(GetDocument(), WebFeature::kScrollMarkerPseudoElement);
+}
 
 void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
   bool is_click =

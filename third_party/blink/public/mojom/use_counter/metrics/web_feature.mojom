@@ -4705,6 +4705,9 @@ enum WebFeature {
   kPrivateNetworkAccessInsecureResourceNotKnownPrivate = 5319,
   kGeolocationGetCurrentPositionHighAccuracy = 5320,
   kGeolocationWatchPositionHighAccuracy = 5321,
+  kColumnPseudoElement = 5322,
+  kScrollButtonPseudoElement = 5323,
+  kScrollMarkerPseudoElement = 5324,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

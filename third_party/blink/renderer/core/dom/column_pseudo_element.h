@@ -14,8 +14,7 @@ namespace blink {
 // will create one of these, during layout.
 class ColumnPseudoElement : public PseudoElement {
  public:
-  ColumnPseudoElement(Element* originating_element, wtf_size_t index)
-      : PseudoElement(originating_element, kPseudoIdColumn), index_(index) {}
+  ColumnPseudoElement(Element* originating_element, wtf_size_t index);
 
   bool IsColumnPseudoElement() const final { return true; }
   wtf_size_t Index() const { return index_; }
