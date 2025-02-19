@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/process/launch.h"
 
 #include <dirent.h>
@@ -764,7 +759,7 @@ NOINLINE pid_t CloneAndLongjmpInChild(int flags,
     defined(ARCH_CPU_PPC64_FAMILY) || defined(ARCH_CPU_LOONGARCH_FAMILY) || \
     defined(ARCH_CPU_RISCV_FAMILY)
   // The stack grows downward.
-  void* stack = stack_buf + sizeof(stack_buf);
+  void* stack = UNSAFE_TODO(stack_buf + sizeof(stack_buf));
 #else
 #error "Unsupported architecture"
 #endif

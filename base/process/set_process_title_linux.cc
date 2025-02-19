@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file implements BSD-style setproctitle() for Linux.
 // It is written such that it can easily be compiled outside Chromium.
 //
@@ -54,6 +49,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -96,7 +92,7 @@ void setproctitle(const char* fmt, ...) {
     // "\0\0\0...\0\0\0.\0" (on Linux 4.18--5.2)
     // "\0"                 (on Linux 5.3--)
     memset(g_argv_start, 0, avail_size + 1);
-    g_argv_end[-1] = '.';
+    UNSAFE_TODO(g_argv_end[-1]) = '.';
 
     std::string cmdline;
     if (!base::ReadFileToString(base::FilePath("/proc/self/cmdline"),
@@ -112,13 +108,13 @@ void setproctitle(const char* fmt, ...) {
   va_start(ap, fmt);
   if (fmt[0] == '-') {
     size = base::checked_cast<size_t>(
-        vsnprintf(g_argv_start, avail_size, &fmt[1], ap));
+        UNSAFE_TODO(vsnprintf(g_argv_start, avail_size, &fmt[1], ap)));
   } else {
     size = base::checked_cast<size_t>(
         snprintf(g_argv_start, avail_size, "%s ", g_orig_argv0));
     if (size < avail_size) {
-      size += base::checked_cast<size_t>(
-          vsnprintf(&g_argv_start[size], avail_size - size, fmt, ap));
+      size += base::checked_cast<size_t>(UNSAFE_TODO(
+          vsnprintf(&g_argv_start[size], avail_size - size, fmt, ap)));
     }
   }
   va_end(ap);
@@ -137,7 +133,7 @@ void setproctitle(const char* fmt, ...) {
   const size_t argv_size =
       base::checked_cast<size_t>(g_argv_end - g_argv_start - 1);
   if (!buggy_kernel && size < argv_size) {
-    g_argv_end[-1] = '.';
+    UNSAFE_TODO(g_argv_end[-1]) = '.';
   }
 }
 
@@ -158,19 +154,19 @@ void setproctitle_init(const char** main_argv) {
   char** argv = const_cast<char**>(main_argv);
   char* argv_start = argv[0];
   char* p = argv_start;
-  for (size_t i = 0; argv[i]; ++i) {
-    if (p != argv[i]) {
+  for (size_t i = 0; UNSAFE_TODO(argv[i]); ++i) {
+    if (p != UNSAFE_TODO(argv[i])) {
       return;
     }
-    p += strlen(p) + 1;
+    UNSAFE_TODO(p += strlen(p) + 1);
   }
   char* argv_end = p;
   size_t environ_size = 0;
-  for (size_t i = 0; environ[i]; ++i, ++environ_size) {
-    if (p != environ[i]) {
+  for (size_t i = 0; UNSAFE_TODO(environ[i]); ++i, ++environ_size) {
+    if (p != UNSAFE_TODO(environ[i])) {
       return;
     }
-    p += strlen(p) + 1;
+    UNSAFE_TODO(p += strlen(p) + 1);
   }
   char* envp_end = p;
 
@@ -181,9 +177,9 @@ void setproctitle_init(const char** main_argv) {
   // incrementally.
   static base::NoDestructor<std::vector<std::string>> environ_copy(
       environ_size);
-  for (size_t i = 0; environ[i]; ++i) {
-    (*environ_copy)[i] = environ[i];
-    environ[i] = &(*environ_copy)[i][0];
+  for (size_t i = 0; UNSAFE_TODO(environ[i]); ++i) {
+    (*environ_copy)[i] = UNSAFE_TODO(environ[i]);
+    UNSAFE_TODO(environ[i]) = &(*environ_copy)[i][0];
   }
 
   if (!argv[0]) {
