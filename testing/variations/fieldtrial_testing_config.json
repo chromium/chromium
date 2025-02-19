@@ -7011,11 +7011,31 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledGroupA",
+                    "name": "EnabledGroupA_20250123",
                     "params": {
                         "multiplier": "1.5"
                     },
                     "enable_features": [
+                        "CrOSLateBootSwapZramDisksize",
+                        "SkipDiscardDrivenByStaleSignal"
+                    ]
+                },
+                {
+                    "name": "EnabledGroupB_20250123",
+                    "params": {
+                        "multiplier": "1.25"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSwapZramDisksize",
+                        "SkipDiscardDrivenByStaleSignal"
+                    ]
+                },
+                {
+                    "name": "EnabledSkipDiscard_20250123",
+                    "enable_features": [
+                        "SkipDiscardDrivenByStaleSignal"
+                    ],
+                    "disable_features": [
                         "CrOSLateBootSwapZramDisksize"
                     ]
                 }
