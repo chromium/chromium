@@ -67,12 +67,6 @@ config("skia_config") {
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
     "SK_DISABLE_LEGACY_INIT_DECODERS",
-    "SK_DISABLE_LEGACY_BACKEND_TEXTURE_FUNCS",
-    "SK_DISABLE_LEGACY_TEXTURE_INFO_FUNCS",
-    "SK_DISABLE_LEGACY_BACKEND_SEMAPHORE_FUNCS",
-    "SK_DISABLE_LEGACY_GRAPHITE_IMAGES",
-    "SK_DISABLE_LEGACY_DAWN_TEXTURE_INFO_FUNCS",
-    "SK_DISABLE_LEGACY_DAWN_BACKEND_TEXTURE_FUNCS",
   ]
 
   include_dirs = [
@@ -84,9 +78,7 @@ config("skia_config") {
     # TODO(kjlubick) make these not necessary
     defines += [
       "SK_CODEC_DECODES_JPEG",
-      "SK_ENCODE_JPEG",
-      "SK_ENCODE_PNG",
-      "SK_ENCODE_WEBP",
+      "SK_CODEC_ENCODES_JPEG",
     ]
     include_dirs += [ "//third_party/wuffs/src/release/c" ]
   }
