@@ -3549,6 +3549,9 @@
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON" desc="The button to close the introduction dialog.">
           Got it
         </message>
+        <message name="IDS_SEA_PEN_ARIA_DESCRIPTION_GENERATED_IMAGE" desc="Informational text presented to screen readers to inform users that an image is generated">
+          Generated image
+        </message>
 
         <!-- Freeform prompts -->
         <message name="IDS_SEA_PEN_FREEFORM_WALLPAPER_LABEL" desc="Label for the Wallpaper AI freeform feature.">

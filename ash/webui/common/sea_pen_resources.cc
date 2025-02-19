@@ -62,6 +62,8 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
        IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON},
       {"seaPenFreeformWallpaperLabel", IDS_SEA_PEN_FREEFORM_WALLPAPER_LABEL},
       {"seaPenTemplatesWallpaperLabel", IDS_SEA_PEN_TEMPLATES_WALLPAPER_LABEL},
+      {"seaPenAriaDescriptionGeneratedImage",
+       IDS_SEA_PEN_ARIA_DESCRIPTION_GENERATED_IMAGE},
       {"seaPenFreeformSamplePromptsLabel",
        IDS_SEA_PEN_FREEFORM_SAMPLE_PROMPTS_LABEL},
       {"seaPenFreeformResultsLabel", IDS_SEA_PEN_FREEFORM_RESULTS_LABEL},
