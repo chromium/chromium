@@ -153,7 +153,6 @@ std::string ComputeUrlEncodedTokenPostDataForIssuers(
 
 std::string ComputeUrlEncodedTokenPostData(
     RenderFrameHost& render_frame_host,
-    const url::Origin& idp_origin,
     const std::string& client_id,
     const std::string& nonce,
     const std::string& account_id,
@@ -212,7 +211,7 @@ std::string ComputeUrlEncodedTokenPostData(
     query += "mode=" + rp_mode_str;
   }
 
-  if (webid::IsFedCmAuthzEnabled(render_frame_host, idp_origin)) {
+  if (webid::IsFedCmAuthzEnabled()) {
     std::vector<std::string> fields_to_use;
     if (fields) {
       fields_to_use = *fields;
@@ -941,7 +940,6 @@ void FederatedAuthRequestImpl::RequestToken(
               render_frame_host(), idp_ptr->config->config_url,
               permission_delegate_);
 
-      url::Origin idp_origin = url::Origin::Create(idp_ptr->config->config_url);
       if (has_failing_idp_signin_status) {
         if (idp_get_params_ptr->mode == blink::mojom::RpMode::kPassive) {
           if (IsFedCmMultipleIdentityProvidersEnabled()) {
@@ -986,7 +984,7 @@ void FederatedAuthRequestImpl::RequestToken(
         return;
       }
 
-      if (webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
+      if (webid::IsFedCmAuthzEnabled()) {
         any_idp_has_custom_scopes =
             any_idp_has_custom_scopes || GetDisclosureFields(*idp_ptr).empty();
         any_idp_has_parameters = any_idp_has_parameters || idp_ptr->params_json;
@@ -1102,7 +1100,7 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
     const std::optional<std::string>& account_id,
     const std::string& token,
     ResolveTokenRequestCallback callback) {
-  if (!webid::IsFedCmAuthzEnabled(render_frame_host(), origin())) {
+  if (!webid::IsFedCmAuthzEnabled()) {
     std::move(callback).Run(false);
     return;
   }
@@ -1450,8 +1448,7 @@ FederatedAuthRequestImpl::GetDisclosureFields(
        IdentityRequestDialogDisclosureField::kEmail,
        IdentityRequestDialogDisclosureField::kPicture};
 
-  url::Origin idp_origin = url::Origin::Create(provider.config->config_url);
-  if (!webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
+  if (!webid::IsFedCmAuthzEnabled()) {
     return kDefaultPermissions;
   }
 
@@ -1863,8 +1860,6 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     std::optional<bool> old_idp_signin_status,
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<TokenStatus> token_status) {
-  url::Origin idp_origin =
-      url::Origin::Create(idp_info->provider->config->config_url);
   if (!old_idp_signin_status.has_value()) {
     if (rp_mode_ == blink::mojom::RpMode::kActive) {
       MaybeShowActiveModeModalDialog(idp_info->provider->config->config_url,
@@ -2074,8 +2069,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       RecordRawAccountsSize(accounts.size());
-      if (webid::IsFedCmAuthzEnabled(render_frame_host(),
-                                     url::Origin::Create(idp_config_url))) {
+      if (webid::IsFedCmAuthzEnabled()) {
         if (!FilterAccountsWithLabel(idp_info->metadata.requested_label,
                                      accounts)) {
           // No accounts remain, so treat as account fetch failure.
@@ -2363,10 +2357,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   fedcm_metrics_->RecordContinueOnPopupTime(
       idp_config_url, select_account_time_ - accounts_dialog_display_time_);
 
-  url::Origin idp_origin = url::Origin::Create(idp_config_url);
-
   IdpNetworkRequestManager::ContinueOnCallback continue_on;
-  if (webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
+  if (webid::IsFedCmAuthzEnabled()) {
     continue_on = base::BindOnce(
         &FederatedAuthRequestImpl::OnContinueOnResponseReceived,
         weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
@@ -2406,7 +2398,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   } else {
     endpoint = idp_info.endpoints.token;
     query = ComputeUrlEncodedTokenPostData(
-        render_frame_host(), idp_origin, idp_info.provider->config->client_id,
+        render_frame_host(), idp_info.provider->config->client_id,
         idp_info.provider->nonce, account_id,
         identity_selection_type_ != kExplicit, rp_mode_,
         idp_info.provider->fields, disclosure_shown_for,
@@ -2594,15 +2586,15 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     IdpNetworkRequestManager::FetchStatus status,
     const GURL& continue_on) {
-  url::Origin idp_origin = url::Origin::Create(idp->config->config_url);
   // This is enforced by OnAccountSelected when we call SendTokenRequest.
-  DCHECK(webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin));
+  DCHECK(webid::IsFedCmAuthzEnabled());
 
   id_assertion_response_time_ = base::TimeTicks::Now();
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &render_frame_host(), blink::mojom::WebFeature::kFedCmContinueOnResponse);
 
+  url::Origin idp_origin = url::Origin::Create(idp->config->config_url);
   // We only allow loading continue_on urls that are same-origin
   // with the IdP.
   // This isn't necessarily final, but seemed like a safer

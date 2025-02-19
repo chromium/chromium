@@ -444,12 +444,10 @@ TEST(AuthenticationCredentialsContainerTest, PublicKeyConditionalMediationUkm) {
 
 class AuthenticationCredentialsContainerActiveModeMultiIdpTest
     : public testing::Test,
-      private ScopedFedCmMultipleIdentityProvidersForTest,
-      ScopedFedCmButtonModeForTest {
+      private ScopedFedCmMultipleIdentityProvidersForTest {
  protected:
   AuthenticationCredentialsContainerActiveModeMultiIdpTest()
-      : ScopedFedCmMultipleIdentityProvidersForTest(true),
-        ScopedFedCmButtonModeForTest(true) {}
+      : ScopedFedCmMultipleIdentityProvidersForTest(true) {}
 };
 
 TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,

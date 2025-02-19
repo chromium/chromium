@@ -103,7 +103,7 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
-bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin);
+bool IsFedCmAuthzEnabled();
 
 FederatedAuthRequestPageData* GetPageData(Page& page);
 
