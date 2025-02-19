@@ -2237,7 +2237,7 @@ Google Chrome is unable to recover your settings.
           Who's using Chrome?
         </message>
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE" desc="Profile picker main view subtitle">
-          With Chrome profiles you can separate all your Chrome stuff. Create profiles for friends and family, or split between work and fun.
+          With Chrome profiles, you can separate all your Chrome stuff. Create profiles for friends and family, or split between work and fun.
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
           Set up your new Chrome profile
