@@ -172,14 +172,11 @@ class FreezingDelegateImpl : public BatterySaverModeManager::FreezingDelegate {
   ~FreezingDelegateImpl() override = default;
 
   void ToggleFreezingOnBatterySaverMode(bool is_enabled) final {
-    PerformanceManagerImpl::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](bool is_enabled, performance_manager::Graph* graph) {
-              CHECK_DEREF(graph->GetRegisteredObjectAs<FreezingPolicy>())
-                  .ToggleFreezingOnBatterySaverMode(is_enabled);
-            },
-            is_enabled));
+    if (PerformanceManager::IsAvailable()) {
+      Graph* graph = PerformanceManager::GetGraph();
+      CHECK_DEREF(graph->GetRegisteredObjectAs<FreezingPolicy>())
+          .ToggleFreezingOnBatterySaverMode(is_enabled);
+    }
   }
 };
 
