@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/search/ntp_features.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_response_headers.h"
@@ -16,6 +17,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -25,8 +27,6 @@ const char kTrendingFilesEndpoint[] =
 const char kBaseIconUrl[] =
     "https://res.cdn.office.net/files/fabric-cdn-prod_20240925.001/assets/"
     "item-types/16/";
-
-const char kTrendingJustificationText[] = "Suggested for you";
 
 constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
     net::DefineNetworkTrafficAnnotation("microsoft_files_page_handler", R"(
@@ -528,7 +528,8 @@ void MicrosoftFilesPageHandler::CreateTrendingFiles(GetFilesCallback callback,
     file_suggestion::mojom::FilePtr created_file =
         file_suggestion::mojom::File::New();
     created_file->id = *id;
-    created_file->justification_text = kTrendingJustificationText;
+    created_file->justification_text = l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_MICROSOFT_FILES_TRENDING_JUSTIFICATION_TEXT);
     created_file->icon_url = GetFileIconUrl(file_extension);
     created_file->title = *title;
     created_file->item_url = GURL(*url);
