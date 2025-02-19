@@ -231,6 +231,7 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -593,7 +594,7 @@ enum class ToolbarKind {
   ToolbarCoordinator* _toolbarCoordinator;
   TabStripCoordinator* _tabStripCoordinator;
   TabStripLegacyCoordinator* _legacyTabStripCoordinator;
-  SideSwipeMediator* _sideSwipeMediator;
+  SideSwipeCoordinator* _sideSwipeCoordinator;
   raw_ptr<FullscreenController> _fullscreenController;
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
@@ -1056,9 +1057,6 @@ enum class ToolbarKind {
   _urlLoadingNotifierBrowserAgent =
       UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
 
-  feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile);
-
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (IsModernTabStripOrRaccoonEnabled()) {
       _tabStripCoordinator =
@@ -1089,21 +1087,19 @@ enum class ToolbarKind {
   _toolbarAccessoryPresenter.bottomToolbarLayoutGuide =
       [_layoutGuideCenter makeLayoutGuideNamed:kSecondaryToolbarGuide];
 
-  _sideSwipeMediator = [[SideSwipeMediator alloc]
-      initWithFullscreenController:_fullscreenController
-                      webStateList:self.browser->GetWebStateList()];
-  _sideSwipeMediator.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
-  _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
-  _sideSwipeMediator.toolbarSnapshotProvider = _toolbarCoordinator;
-  _sideSwipeMediator.engagementTracker = engagementTracker;
-  _sideSwipeMediator.helpHandler =
-      HandlerForProtocol(_dispatcher, HelpCommands);
+  _sideSwipeCoordinator = [[SideSwipeCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+
+  _sideSwipeCoordinator.toolbarInteractionHandler = _toolbarCoordinator;
+  _sideSwipeCoordinator.toolbarSnapshotProvider = _toolbarCoordinator;
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       !IsModernTabStripOrRaccoonEnabled()) {
-    [_sideSwipeMediator setTabStripDelegate:_legacyTabStripCoordinator];
+    [_sideSwipeCoordinator setTabStripDelegate:_legacyTabStripCoordinator];
   }
+
+  [_sideSwipeCoordinator start];
 
   _bookmarksCoordinator =
       [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
@@ -1157,7 +1153,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.tabStripCoordinator = _tabStripCoordinator;
   _viewControllerDependencies.legacyTabStripCoordinator =
       _legacyTabStripCoordinator;
-  _viewControllerDependencies.sideSwipeMediator = _sideSwipeMediator;
+  _viewControllerDependencies.sideSwipeCoordinator = _sideSwipeCoordinator;
   _viewControllerDependencies.bookmarksCoordinator = _bookmarksCoordinator;
   _viewControllerDependencies.fullscreenController = _fullscreenController;
   _viewControllerDependencies.textZoomHandler =
@@ -1237,7 +1233,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.toolbarCoordinator = nil;
   _viewControllerDependencies.tabStripCoordinator = nil;
   _viewControllerDependencies.legacyTabStripCoordinator = nil;
-  _viewControllerDependencies.sideSwipeMediator = nil;
+  _viewControllerDependencies.sideSwipeCoordinator = nil;
   _viewControllerDependencies.bookmarksCoordinator = nil;
   _viewControllerDependencies.fullscreenController = nil;
   _viewControllerDependencies.textZoomHandler = nil;
@@ -1265,8 +1261,10 @@ enum class ToolbarKind {
 
   _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
-  [_sideSwipeMediator disconnect];
-  _sideSwipeMediator = nil;
+
+  [_sideSwipeCoordinator stop];
+  _sideSwipeCoordinator = nil;
+
   _toolbarCoordinator = nil;
   _loadQueryCommandsHandler = nil;
   _omniboxCommandsHandler = nil;
@@ -2268,10 +2266,10 @@ enum class ToolbarKind {
 
   if (lensOverlayTabHelper &&
       lensOverlayTabHelper->IsLensOverlayInvokedOnMostRecentBackItem()) {
-    [_sideSwipeMediator
-        animateSwipe:SwipeType::CHANGE_PAGE
-         inDirection:UseRTLLayout() ? UISwipeGestureRecognizerDirectionLeft
-                                    : UISwipeGestureRecognizerDirectionRight];
+    [_sideSwipeCoordinator animatePageSideSwipeInDirection:
+                               UseRTLLayout()
+                                   ? UISwipeGestureRecognizerDirectionLeft
+                                   : UISwipeGestureRecognizerDirectionRight];
     return YES;
   }
 
@@ -2279,17 +2277,17 @@ enum class ToolbarKind {
 }
 
 - (void)animateLensOverlayNavigationToURL:(GURL)URL {
-  [_sideSwipeMediator
+  [_sideSwipeCoordinator
       prepareForSlideInDirection:UseRTLLayout()
                                      ? UISwipeGestureRecognizerDirectionRight
                                      : UISwipeGestureRecognizerDirectionLeft];
 
-  __weak SideSwipeMediator* weakSideSwipeMediator = _sideSwipeMediator;
+  __weak SideSwipeCoordinator* weakSideSwipeCoordinator = _sideSwipeCoordinator;
 
   [HandlerForProtocol(_dispatcher, LensOverlayCommands)
       hideLensUI:NO
       completion:^{
-        [weakSideSwipeMediator slideToCenterAnimated];
+        [weakSideSwipeCoordinator slideToCenterAnimated];
       }];
 
   [_loadQueryCommandsHandler loadQuery:base::SysUTF8ToNSString(URL.spec())
@@ -3764,8 +3762,7 @@ enum class ToolbarKind {
 - (void)bubblePresenter:(BubblePresenter*)bubblePresenter
     didPerformSwipeToNavigateInDirection:
         (UISwipeGestureRecognizerDirection)direction {
-  [_sideSwipeMediator animateSwipe:SwipeType::CHANGE_PAGE
-                       inDirection:direction];
+  [_sideSwipeCoordinator animatePageSideSwipeInDirection:direction];
 }
 
 #pragma mark - OverscrollActionsControllerDelegate methods.

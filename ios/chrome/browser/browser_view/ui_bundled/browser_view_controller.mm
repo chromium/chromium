@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/swipe_view.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -172,7 +173,7 @@ enum HeaderBehaviour {
   NSInteger _NTPAnimationIdentifier;
 
   // Mediator for edge swipe gestures for page and tab navigation.
-  SideSwipeMediator* _sideSwipeMediator;
+  SideSwipeCoordinator* _sideSwipeCoordinator;
 
   // Keyboard commands provider.  It offloads most of the keyboard commands
   // management off of the BVC.
@@ -354,8 +355,8 @@ enum HeaderBehaviour {
   if (self) {
     _browserContainerViewController = browserContainerViewController;
     _keyCommandsProvider = keyCommandsProvider;
-    _sideSwipeMediator = dependencies.sideSwipeMediator;
-    [_sideSwipeMediator setSwipeDelegate:self];
+    _sideSwipeCoordinator = dependencies.sideSwipeCoordinator;
+    [_sideSwipeCoordinator setSwipeDelegate:self];
     _bookmarksCoordinator = dependencies.bookmarksCoordinator;
     self.toolbarAccessoryPresenter = dependencies.toolbarAccessoryPresenter;
     self.ntpCoordinator = dependencies.ntpCoordinator;
@@ -804,7 +805,7 @@ enum HeaderBehaviour {
 
   [self.toolbarCoordinator stop];
   self.toolbarCoordinator = nil;
-  _sideSwipeMediator = nil;
+  _sideSwipeCoordinator = nil;
   [_voiceSearchController disconnect];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   _bookmarksCoordinator = nil;
@@ -896,7 +897,7 @@ enum HeaderBehaviour {
   [self setUpViewLayout:YES];
   [self addConstraintsToToolbar];
 
-  [_sideSwipeMediator addHorizontalGesturesToView:self.view];
+  [_sideSwipeCoordinator addHorizontalGesturesToView:self.view];
 
   // Add a tap gesture recognizer to save the last tap location for the source
   // location of the new tab animation.
@@ -1028,7 +1029,8 @@ enum HeaderBehaviour {
       self.legacyTabStripCoordinator = nil;
     }
     self.tabStripView = nil;
-    _sideSwipeMediator = nil;
+    [_sideSwipeCoordinator stop];
+    _sideSwipeCoordinator = nil;
   }
 }
 
@@ -1192,7 +1194,8 @@ enum HeaderBehaviour {
       };
     }
   }
-  [_sideSwipeMediator resetContentView];
+
+  [_sideSwipeCoordinator stopActiveSideSwipeAnimation];
 
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent
@@ -1218,8 +1221,8 @@ enum HeaderBehaviour {
       self.presentedViewController.beingDismissed) {
     // Don't rotate while a presentation or dismissal animation is occurring.
     return NO;
-  } else if (_sideSwipeMediator && ![_sideSwipeMediator shouldAutorotate]) {
-    // Don't auto rotate if side swipe controller view says not to.
+  } else if (_sideSwipeCoordinator.swipeInProgress) {
+    // Don't auto rotate if a side swipe is in progress.
     return NO;
   } else {
     return [super shouldAutorotate];
@@ -2118,7 +2121,7 @@ enum HeaderBehaviour {
   if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     [self.ntpCoordinator locationBarDidBecomeFirstResponder];
   }
-  [_sideSwipeMediator setEnabled:NO];
+  [_sideSwipeCoordinator setEnabled:NO];
 
   if (!IsVisibleURLNewTabPage(self.currentWebState) ||
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -2138,7 +2141,7 @@ enum HeaderBehaviour {
 }
 
 - (void)omniboxDidResignFirstResponder {
-  [_sideSwipeMediator setEnabled:YES];
+  [_sideSwipeCoordinator setEnabled:YES];
 
   [self.ntpCoordinator locationBarWillResignFirstResponder];
 
@@ -2554,7 +2557,7 @@ enum HeaderBehaviour {
 
   // Reset horizontal stack view.
   [sideSwipeView removeFromSuperview];
-  [_sideSwipeMediator setInSwipe:NO];
+  [_sideSwipeCoordinator setSwipeInProgress:NO];
 }
 
 - (UIView*)sideSwipeContentView {
