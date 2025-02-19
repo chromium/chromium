@@ -728,7 +728,7 @@ enum PositionType {
     IntentTextBoundaryType textBoundary;
 
     // A move direction associated with this AutomationIntent.
-    IntentMoveDirectionType moveDirection;
+    IntentMoveDirectionType? moveDirection;
   };
 
   // An event in the Automation tree.
