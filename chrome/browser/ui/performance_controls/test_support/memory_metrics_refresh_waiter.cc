@@ -17,14 +17,13 @@ void MemoryMetricsRefreshWaiter::Wait() {
   // kNestableTasksAllowed is used to prevent kombucha interactive tests from
   // hanging
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::OnceClosure quit_closure = run_loop.QuitClosure();
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindLambdaForTesting([&](performance_manager::Graph* graph) {
-        auto* const metrics_decorator = graph->GetRegisteredObjectAs<
-            performance_manager::ProcessMetricsDecorator>();
-        metrics_decorator->RequestImmediateMetrics(std::move(quit_closure));
-      }));
+
+  performance_manager::Graph* graph =
+      performance_manager::PerformanceManager::GetGraph();
+  auto* const metrics_decorator = graph->GetRegisteredObjectAs<
+      performance_manager::ProcessMetricsDecorator>();
+  metrics_decorator->RequestImmediateMetrics(run_loop.QuitClosure());
+
   run_loop.Run();
 }
 
