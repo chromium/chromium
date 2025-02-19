@@ -86,6 +86,9 @@ void NativeCursorManagerAsh::SetDisplay(
       ->window_tree_host_manager()
       ->cursor_window_controller()
       ->SetDisplay(display);
+
+  // Update cursor compositing based on the current display.
+  Shell::Get()->UpdateCursorCompositingEnabled();
 }
 
 void NativeCursorManagerAsh::SetCursor(
