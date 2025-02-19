@@ -7,14 +7,18 @@
 #include <map>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/masked_domain_list.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
@@ -155,39 +159,43 @@ constexpr std::string_view kTestDomain = "example.com";
 
 const char kFirstUpdateTimeHistogram[] =
     "NetworkService.MaskedDomainList.FirstUpdateTime";
-const char kDiskUsageHistogram[] =
-    "NetworkService.MaskedDomainList.DiskUsageInKB";
 
 }  // namespace
 
-class MaskedDomainListManagerBaseTest : public testing::Test {};
+class MaskedDomainListManagerBaseTest : public testing::Test {
+ protected:
+  virtual bool UseFlatbuffer() = 0;
 
-TEST_F(MaskedDomainListManagerBaseTest, IsNotEnabledByDefault) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      network::features::kMaskedDomainList);
+  // Call either `UpdateMaskedDomainList` or `UpdateMaskedDomainListFlatbuffer`,
+  // depending on  `UseFlatbuffer`.
+  void UpdateMaskedDomainList(masked_domain_list::MaskedDomainList& mdl,
+                              MaskedDomainListManager& mdl_manager) {
+    if (UseFlatbuffer()) {
+      base::FilePath default_mdl_file_path;
+      base::CreateTemporaryFile(&default_mdl_file_path);
+      base::FilePath regular_browsing_mdl_file_path;
+      base::CreateTemporaryFile(&regular_browsing_mdl_file_path);
+      EXPECT_TRUE(ip_protection::MaskedDomainList::BuildFromProto(
+          mdl, default_mdl_file_path, regular_browsing_mdl_file_path));
 
-  MaskedDomainListManager allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  MaskedDomainListManager allow_list_first_party_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::
-          kFirstPartyToTopLevelFrame);
-
-  EXPECT_FALSE(allow_list_no_bypass.IsEnabled());
-  EXPECT_FALSE(allow_list_first_party_bypass.IsEnabled());
-}
-
-TEST_F(MaskedDomainListManagerBaseTest, IsEnabledWhenManuallySet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({net::features::kEnableIpProtectionProxy,
-                                        network::features::kMaskedDomainList},
-                                       {});
-
-  MaskedDomainListManager allow_list(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-
-  EXPECT_TRUE(allow_list.IsEnabled());
-}
+      base::File default_mdl_file(default_mdl_file_path,
+                                  base::File::Flags::FLAG_OPEN |
+                                      base::File::Flags::FLAG_READ |
+                                      base::File::Flags::FLAG_DELETE_ON_CLOSE);
+      base::File regular_browsing_mdl_file(
+          regular_browsing_mdl_file_path,
+          base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ |
+              base::File::Flags::FLAG_DELETE_ON_CLOSE);
+      mdl_manager.UpdateMaskedDomainListFlatbuffer(
+          default_mdl_file.Duplicate(), default_mdl_file.GetLength(),
+          regular_browsing_mdl_file.Duplicate(),
+          regular_browsing_mdl_file.GetLength());
+    } else {
+      mdl_manager.UpdateMaskedDomainList(
+          mdl, /*exclusion_list=*/std::vector<std::string>());
+    }
+  }
+};
 
 class MaskedDomainListManagerTest
     : public MaskedDomainListManagerBaseTest,
@@ -210,10 +218,12 @@ class MaskedDomainListManagerTest
     resource_owner->set_owner_name("foo");
     resource_owner->add_owned_properties("property.com");
     resource_owner->add_owned_resources()->set_domain(std::string(kTestDomain));
-    allow_list_no_bypass_.UpdateMaskedDomainList(
-        mdl, /*exclusion_list=*/std::vector<std::string>());
-    allow_list_first_party_bypass_.UpdateMaskedDomainList(
-        mdl, /*exclusion_list=*/std::vector<std::string>());
+    UpdateMaskedDomainList(mdl, allow_list_no_bypass_);
+    UpdateMaskedDomainList(mdl, allow_list_first_party_bypass_);
+  }
+
+  bool UseFlatbuffer() override {
+    return GetParam() == MdlImpl::kFlatbufferImpl;
   }
 
  protected:
@@ -232,6 +242,33 @@ INSTANTIATE_TEST_SUITE_P(All,
                                       : "Flatbuffer";
                          });
 
+TEST_P(MaskedDomainListManagerTest, IsNotEnabledByDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      network::features::kMaskedDomainList);
+
+  MaskedDomainListManager allow_list_no_bypass(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainListManager allow_list_first_party_bypass(
+      network::mojom::IpProtectionProxyBypassPolicy::
+          kFirstPartyToTopLevelFrame);
+
+  EXPECT_FALSE(allow_list_no_bypass.IsEnabled());
+  EXPECT_FALSE(allow_list_first_party_bypass.IsEnabled());
+}
+
+TEST_P(MaskedDomainListManagerTest, IsEnabledWhenManuallySet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({net::features::kEnableIpProtectionProxy,
+                                        network::features::kMaskedDomainList},
+                                       {});
+
+  MaskedDomainListManager allow_list(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+
+  EXPECT_TRUE(allow_list.IsEnabled());
+}
+
 TEST_P(MaskedDomainListManagerTest, AllowListIsNotPopulatedByDefault) {
   MaskedDomainListManager allow_list(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
@@ -239,41 +276,20 @@ TEST_P(MaskedDomainListManagerTest, AllowListIsNotPopulatedByDefault) {
 }
 
 TEST_P(MaskedDomainListManagerTest, AllowlistIsPopulated_MdlHasResourceOwners) {
-  MaskedDomainListManager allow_list(
+  MaskedDomainListManager mdl_manager(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
   masked_domain_list::MaskedDomainList mdl;
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list.UpdateMaskedDomainList(
-      mdl,
-      /*exclusion_list=*/std::vector<std::string>());
+  UpdateMaskedDomainList(mdl, mdl_manager);
 
-  EXPECT_TRUE(allow_list.IsPopulated());
-}
-
-TEST_P(MaskedDomainListManagerTest, DiskSpaceTelemetry) {
-  base::HistogramTester histogram_tester;
-
-  MaskedDomainListManager allow_list(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  masked_domain_list::MaskedDomainList mdl;
-  auto* resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("foo");
-  resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list.UpdateMaskedDomainList(
-      mdl,
-      /*exclusion_list=*/std::vector<std::string>());
-
-  // When using the flatbuffer, UpdateMaskeDomainList generated two on-disk
-  // MDLs, one for each MdlType.
-  histogram_tester.ExpectTotalCount(
-      kDiskUsageHistogram, GetParam() == MdlImpl::kFlatbufferImpl ? 2 : 0);
+  EXPECT_TRUE(mdl_manager.IsPopulated());
 }
 
 TEST_P(MaskedDomainListManagerTest, AllowlistAcceptsMultipleUpdates) {
   base::HistogramTester histogram_tester;
-  MaskedDomainListManager allow_list(
+  MaskedDomainListManager mdl_manager(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
   masked_domain_list::MaskedDomainList mdl1;
   {
@@ -295,21 +311,19 @@ TEST_P(MaskedDomainListManagerTest, AllowlistAcceptsMultipleUpdates) {
   histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 0);
 
   // First update.
-  allow_list.UpdateMaskedDomainList(
-      mdl1, /*exclusion_list=*/std::vector<std::string>());
+  UpdateMaskedDomainList(mdl1, mdl_manager);
 
-  EXPECT_TRUE(allow_list.IsPopulated());
-  EXPECT_TRUE(allow_list.Matches(kHttpsRequestUrl1, kEmptyNak));
-  EXPECT_FALSE(allow_list.Matches(kHttpsRequestUrl2, kEmptyNak));
+  EXPECT_TRUE(mdl_manager.IsPopulated());
+  EXPECT_TRUE(mdl_manager.Matches(kHttpsRequestUrl1, kEmptyNak));
+  EXPECT_FALSE(mdl_manager.Matches(kHttpsRequestUrl2, kEmptyNak));
   histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 1);
 
   // Second update. Removes old rules, adds new ones.
-  allow_list.UpdateMaskedDomainList(
-      mdl2, /*exclusion_list=*/std::vector<std::string>());
+  UpdateMaskedDomainList(mdl2, mdl_manager);
 
-  EXPECT_TRUE(allow_list.IsPopulated());
-  EXPECT_FALSE(allow_list.Matches(kHttpsRequestUrl1, kEmptyNak));
-  EXPECT_TRUE(allow_list.Matches(kHttpsRequestUrl2, kEmptyNak));
+  EXPECT_TRUE(mdl_manager.IsPopulated());
+  EXPECT_FALSE(mdl_manager.Matches(kHttpsRequestUrl1, kEmptyNak));
+  EXPECT_TRUE(mdl_manager.Matches(kHttpsRequestUrl2, kEmptyNak));
   histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 1);
 }
 
@@ -507,8 +521,7 @@ TEST_P(MaskedDomainListManagerTest, Matches_MdlType_MatchesCorrectly) {
       Resource::Experiment::Resource_Experiment_EXPERIMENT_EXTERNAL_REGULAR);
   resource->set_exclude_default_group(true);
 
-  mdl_manager.UpdateMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
+  UpdateMaskedDomainList(mdl, mdl_manager);
 
   // The default MDL resource should ONLY match for mdl type kDefault.
   EXPECT_TRUE(
@@ -529,7 +542,11 @@ TEST_P(MaskedDomainListManagerTest, Matches_MdlType_MatchesCorrectly) {
 
 class MaskedDomainListManagerMatchTest
     : public MaskedDomainListManagerBaseTest,
-      public testing::WithParamInterface<std::tuple<MatchTest, MdlImpl>> {};
+      public testing::WithParamInterface<std::tuple<MatchTest, MdlImpl>> {
+  bool UseFlatbuffer() override {
+    return std::get<1>(GetParam()) == MdlImpl::kFlatbufferImpl;
+  }
+};
 
 TEST_P(MaskedDomainListManagerMatchTest, Match) {
   auto& [match_test, mdl_impl] = GetParam();
@@ -574,10 +591,8 @@ TEST_P(MaskedDomainListManagerMatchTest, Match) {
   resource = resource_owner->add_owned_resources();
   resource->set_domain("sub.co.jp");
 
-  allow_list_no_bypass.UpdateMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-  allow_list_first_party_bypass.UpdateMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
+  UpdateMaskedDomainList(mdl, allow_list_no_bypass);
+  UpdateMaskedDomainList(mdl, allow_list_first_party_bypass);
 
   GURL request_url(base::StrCat({"https://", match_test.req}));
   auto network_anonymization_key =

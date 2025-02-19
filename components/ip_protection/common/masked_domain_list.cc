@@ -4,8 +4,13 @@
 
 #include "components/ip_protection/common/masked_domain_list.h"
 
+#include <cstdint>
+#include <utility>
+
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/ip_protection/common/flat/masked_domain_list_generated.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
@@ -169,8 +174,15 @@ bool MaskedDomainList::GetResult::operator==(const GetResult& other) const {
   return owner_id == other.owner_id && is_resource == other.is_resource;
 }
 
-MaskedDomainList::MaskedDomainList(base::File file) {
-  if (!mdl_file_.Initialize(std::move(file))) {
+MaskedDomainList::MaskedDomainList(base::File file, uint64_t file_size)
+    : MaskedDomainList(std::move(file),
+                       base::MemoryMappedFile::Region{
+                           .offset = 0,
+                           .size = base::checked_cast<size_t>(file_size)}) {}
+
+MaskedDomainList::MaskedDomainList(base::File file,
+                                   base::MemoryMappedFile::Region region) {
+  if (!mdl_file_.Initialize(std::move(file), region)) {
     CHECK(!mdl_file_.IsValid());
   } else {
     mdl_ = flat::GetMaskedDomainList(mdl_file_.data());

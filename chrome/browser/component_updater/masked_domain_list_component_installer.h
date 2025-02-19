@@ -5,12 +5,23 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_H_
 
-#include "components/component_updater/component_installer.h"
+#include <optional>
+
+#include "mojo/public/cpp/base/proto_wrapper.h"
+
+namespace base {
+class Version;
+}
 
 namespace component_updater {
 
+class ComponentUpdateService;
+
+void OnMaskedDomainListReady(
+    base::Version version,
+    std::optional<mojo_base::ProtoWrapper> masked_domain_list);
 void RegisterMaskedDomainListComponent(ComponentUpdateService* cus);
 
-}
+}  // namespace component_updater
 
 #endif  // CHROME_BROWSER_COMPONENT_UPDATER_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_H_

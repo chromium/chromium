@@ -4,9 +4,12 @@
 
 #include "components/ip_protection/common/masked_domain_list.h"
 
+#include <cstdint>
 #include <string>
+#include <utility>
 
 #include "base/debug/crash_logging.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
@@ -28,9 +31,12 @@ class MaskedDomainListTest : public testing::Test {
         base::NumberToString(filename_suffix_++));
   }
 
-  base::File OpenFile(base::FilePath& path) {
-    return base::File(
+  MaskedDomainList OpenMdl(base::FilePath& path) {
+    base::File file(
         path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+    uint64_t size = file.GetLength();
+    EXPECT_NE(size, 0UL);
+    return MaskedDomainList(std::move(file), size);
   }
 
  private:
@@ -41,11 +47,7 @@ class MaskedDomainListTest : public testing::Test {
 TEST_F(MaskedDomainListTest, Invalid) {
   base::FilePath path = MakeTempPath();
 
-  base::File file(
-      path, base::File::Flags::FLAG_CREATE | base::File::Flags::FLAG_WRITE);
-  file.Close();
-
-  MaskedDomainList mdl((OpenFile(path)));
+  MaskedDomainList mdl(base::File(), 10UL);
   EXPECT_EQ(mdl.Verify(), false);
 }
 
@@ -58,7 +60,7 @@ TEST_F(MaskedDomainListTest, AddOwnerCollision) {
                              /*is_wildcard=*/true));
   CHECK(bldr.Finish(path));
 
-  MaskedDomainList mdl((OpenFile(path)));
+  MaskedDomainList mdl = OpenMdl(path);
 
   // Result matches the first call to AddOwner.
   EXPECT_EQ(mdl.Get("example.com"),
@@ -76,7 +78,7 @@ TEST_F(MaskedDomainListTest, GetSubdomainHandling) {
                             /*is_wildcard=*/true));
   CHECK(bldr.Finish(path));
 
-  MaskedDomainList mdl((OpenFile(path)));
+  MaskedDomainList mdl = OpenMdl(path);
   EXPECT_EQ(
       mdl.Get("sub.foo.example.com"),
       (MaskedDomainList::GetResult{.owner_id = 20U, .is_resource = true}));
@@ -118,7 +120,7 @@ TEST_F(MaskedDomainListTest, IsOwnedResource) {
                             /*is_wildcard=*/true));
   CHECK(bldr.Finish(path));
 
-  MaskedDomainList mdl((OpenFile(path)));
+  MaskedDomainList mdl = OpenMdl(path);
 
   EXPECT_FALSE(mdl.IsOwnedResource("initech.com"))
       << "Un-owned domain should not match";
@@ -158,7 +160,7 @@ TEST_F(MaskedDomainListTest, Matches) {
                             /*is_wildcard=*/true));
   CHECK(bldr.Finish(path));
 
-  MaskedDomainList mdl((OpenFile(path)));
+  MaskedDomainList mdl = OpenMdl(path);
 
   // 1P requests.
   EXPECT_FALSE(mdl.Matches("initech.com", "initech.com"))

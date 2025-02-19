@@ -5,14 +5,19 @@
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 
 #include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
@@ -196,53 +201,10 @@ bool MaskedDomainListManager::Matches(
 void MaskedDomainListManager::UpdateMaskedDomainList(
     const masked_domain_list::MaskedDomainList& mdl,
     const std::vector<std::string>& exclusion_list) {
-  if (creation_time_for_mdl_update_metric_.has_value()) {
-    Telemetry().MdlFirstUpdateTime(base::TimeTicks::Now() -
-                                   *creation_time_for_mdl_update_metric_);
-    creation_time_for_mdl_update_metric_.reset();
-  }
+  // Browser should only call this method when flatbuffer is disabled.
+  CHECK(!UseFlatbuffer());
 
-  if (UseFlatbuffer()) {
-    // Flatbuffer implementation is not compatible with the exclusion-list
-    // policy.
-    CHECK(proxy_bypass_policy_ !=
-          IpProtectionProxyBypassPolicy::kExclusionList);
-
-    base::FilePath default_mdl_file_path;
-    base::CreateTemporaryFile(&default_mdl_file_path);
-    base::FilePath regular_browsing_mdl_file_path;
-    base::CreateTemporaryFile(&regular_browsing_mdl_file_path);
-
-    if (!MaskedDomainList::BuildFromProto(mdl, default_mdl_file_path,
-                                          regular_browsing_mdl_file_path)) {
-      return;
-    }
-
-    base::File::Info info;
-    base::File default_mdl_file(default_mdl_file_path,
-                                base::File::Flags::FLAG_OPEN |
-                                    base::File::Flags::FLAG_READ |
-                                    base::File::Flags::FLAG_DELETE_ON_CLOSE);
-    if (default_mdl_file.GetInfo(&info)) {
-      Telemetry().MdlEstimatedDiskUsage(info.size);
-    }
-    default_mdl_ =
-        std::make_unique<MaskedDomainList>(std::move(default_mdl_file));
-
-    base::File regular_browsing_mdl_file(
-        regular_browsing_mdl_file_path,
-        base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ |
-            base::File::Flags::FLAG_DELETE_ON_CLOSE);
-    if (regular_browsing_mdl_file.GetInfo(&info)) {
-      Telemetry().MdlEstimatedDiskUsage(info.size);
-    }
-    regular_browsing_mdl_ = std::make_unique<MaskedDomainList>(
-        std::move(regular_browsing_mdl_file));
-
-    // Note that MdlEstimatedMemoryUsage is not recorded in this branch, as
-    // this data structure is not in-memory.
-    return;
-  }
+  RecordCreationTime();
 
   // Clear the existing matchers.
   url_matcher_with_bypass_.Clear();
@@ -264,6 +226,38 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
   }
 
   Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
+}
+
+void MaskedDomainListManager::UpdateMaskedDomainListFlatbuffer(
+    base::File default_file,
+    uint64_t default_file_size,
+    base::File regular_browsing_file,
+    uint64_t regular_browsing_file_size) {
+  // Browser should only call this Mojo method when flatbuffer is enabled.
+  CHECK(UseFlatbuffer());
+
+  // Flatbuffer implementation is not compatible with the exclusion-list
+  // policy.
+  CHECK_NE(proxy_bypass_policy_, IpProtectionProxyBypassPolicy::kExclusionList);
+
+  RecordCreationTime();
+
+  default_mdl_ = std::make_unique<MaskedDomainList>(std::move(default_file),
+                                                    default_file_size);
+  regular_browsing_mdl_ = std::make_unique<MaskedDomainList>(
+      std::move(regular_browsing_file), regular_browsing_file_size);
+
+  // Note that MdlEstimatedMemoryUsage is not recorded in this branch, as
+  // this data structure is not in-memory.
+  return;
+}
+
+void MaskedDomainListManager::RecordCreationTime() {
+  if (creation_time_for_mdl_update_metric_.has_value()) {
+    Telemetry().MdlFirstUpdateTime(base::TimeTicks::Now() -
+                                   *creation_time_for_mdl_update_metric_);
+    creation_time_for_mdl_update_metric_.reset();
+  }
 }
 
 const GURL& MaskedDomainListManager::SanitizeURLIfNeeded(

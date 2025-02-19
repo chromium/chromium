@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_NETWORK_SERVICE_H_
 #define SERVICES_NETWORK_NETWORK_SERVICE_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -18,6 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -225,6 +227,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void UpdateMaskedDomainList(
       mojo_base::ProtoWrapper masked_domain_list,
       const std::vector<std::string>& exclusion_list) override;
+
+  void UpdateMaskedDomainListFlatbuffer(
+      base::File default_file,
+      uint64_t default_file_size,
+      base::File regular_browsing_file,
+      uint64_t regular_browsing_file_size) override;
 
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;

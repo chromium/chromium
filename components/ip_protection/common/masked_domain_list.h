@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_H_
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -89,11 +91,13 @@ class MaskedDomainList {
     bool operator==(const GetResult& other) const;
   };
 
-  // Create a new MDL reading from the given file, as constructed by `Builder`.
-  explicit MaskedDomainList(base::File file);
+  // Create a new MDL reading from the given file, with a file size.
+  MaskedDomainList(base::File file, uint64_t file_size);
+  MaskedDomainList(base::File file, base::MemoryMappedFile::Region region);
 
   // Verify that the MDL was read correctly. This will be false if the file
-  // could not be read or is otherwise invalid.
+  // could not be read. This does not validate the contents of the file, as
+  // that would be a time-consuming process.
   bool Verify();
 
   // Determine whether the given request matches the MDL.

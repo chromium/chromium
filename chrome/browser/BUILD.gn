@@ -2141,6 +2141,8 @@ static_library("browser") {
     "//components/infobars/core",
     "//components/invalidation",
     "//components/invalidation/impl",
+    "//components/ip_protection/common:ip_protection_telemetry",
+    "//components/ip_protection/common:masked_domain_list",
     "//components/javascript_dialogs",
     "//components/keyed_service/content",
     "//components/language/content/browser",
