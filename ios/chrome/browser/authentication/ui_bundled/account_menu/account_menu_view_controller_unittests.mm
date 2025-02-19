@@ -163,9 +163,9 @@ class AccountMenuViewControllerTest : public PlatformTest,
       [[FakeAccountMenuDataSource alloc] init];
   NSIndexPath* path_for_secondary_account_ = [NSIndexPath indexPathForRow:0
                                                                 inSection:0];
-  NSIndexPath* path_for_sign_out_ = [NSIndexPath indexPathForRow:0 inSection:1];
   NSIndexPath* path_for_add_account_ = [NSIndexPath indexPathForRow:1
                                                           inSection:0];
+  NSIndexPath* path_for_sign_out_ = [NSIndexPath indexPathForRow:2 inSection:0];
   raw_ptr<AuthenticationService> authentication_service_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   base::UserActionTester user_actions_;
@@ -219,11 +219,9 @@ class AccountMenuViewControllerTest : public PlatformTest,
 
 // Test the view controller when it starts.
 TEST_P(AccountMenuViewControllerTest, TestDefaultSetting) {
-  EXPECT_EQ(3, TableView().numberOfSections);
-  // The secondary account and Add Account...
-  EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
-  // Sign Out
-  EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
+  EXPECT_EQ(2, TableView().numberOfSections);
+  // The secondary account, Add Account..., and Sign Out.
+  EXPECT_EQ(3, [TableView() numberOfRowsInSection:0]);
   UITableViewCell* secondary_account_cell =
       GetCell(path_for_secondary_account_);
   EXPECT_TRUE(
@@ -282,13 +280,11 @@ TEST_P(AccountMenuViewControllerTest, TestSetError) {
            buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON];
   data_source_.accountErrorUIInfo = errorInfo;
   [view_controller_ updateErrorSection:errorInfo];
-  EXPECT_EQ(4, TableView().numberOfSections);
+  EXPECT_EQ(3, TableView().numberOfSections);
   // The error section
   EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
-  // The secondary account and Add Account...
-  EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
-  // Sign Out
-  EXPECT_EQ(1, [TableView() numberOfRowsInSection:2]);
+  // The secondary account, Add Account..., and Sign Out.
+  EXPECT_EQ(3, [TableView() numberOfRowsInSection:1]);
 
   NSIndexPath* path_for_error_message = [NSIndexPath indexPathForRow:0
                                                            inSection:0];
@@ -318,11 +314,9 @@ TEST_P(AccountMenuViewControllerTest, TestAddAccount) {
       updateAccountListWithGaiaIDsToAdd:@[ kSecondaryIdentity2.gaiaID ]
                         gaiaIDsToRemove:@[]
                           gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]];
-  EXPECT_EQ(3, TableView().numberOfSections);
-  // The secondary accounts and Add Account...
-  EXPECT_EQ(3, [TableView() numberOfRowsInSection:0]);
-  // Sign Out
-  EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
+  EXPECT_EQ(2, TableView().numberOfSections);
+  // The secondary account, Add Account..., and Sign Out.
+  EXPECT_EQ(4, [TableView() numberOfRowsInSection:0]);
 }
 
 // Test that removing a secondary account remove a row in the secondary account
@@ -332,22 +326,18 @@ TEST_P(AccountMenuViewControllerTest, TestRemoveAccount) {
       updateAccountListWithGaiaIDsToAdd:@[]
                         gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]
                           gaiaIDsToKeep:@[]];
-  EXPECT_EQ(3, TableView().numberOfSections);
-  // No Secondary account. Just Add Account...
-  EXPECT_EQ(1, [TableView() numberOfRowsInSection:0]);
-  // Sign Out
-  EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
+  EXPECT_EQ(2, TableView().numberOfSections);
+  // No Secondary account. Just Add Account..., and Sign Out.
+  EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
 }
 
 // Test that updating the primary account has no discernable impact on the view
 // controller.
 TEST_P(AccountMenuViewControllerTest, TestUpdatePrimaryAccount) {
   [view_controller_ updatePrimaryAccount];
-  EXPECT_EQ(3, TableView().numberOfSections);
-  // The secondary account and Add Account...
-  EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
-  // Sign Out
-  EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
+  EXPECT_EQ(2, TableView().numberOfSections);
+  // The secondary account, Add Account..., and Sign Out.
+  EXPECT_EQ(3, [TableView() numberOfRowsInSection:0]);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

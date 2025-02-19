@@ -67,8 +67,6 @@ typedef NS_ENUM(NSUInteger, SectionIdentifier) {
   SyncErrorsSectionIdentifier = kSectionIdentifierEnumZero,
   // List of accounts.
   AccountsSectionIdentifier,
-  // Manage accounts and sign-out.
-  SignOutSectionIdentifier,
   // Settings.
   SettingsSectionIdentifier,
 };
@@ -472,10 +470,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [accountsIdentifiers addObject:@(RowIdentifierAddAccount)];
   [snapshot appendItemsWithIdentifiers:accountsIdentifiers
              intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
-
-  [snapshot appendSectionsWithIdentifiers:@[ @(SignOutSectionIdentifier) ]];
   [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
-             intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
+             intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
 
   [snapshot appendSectionsWithIdentifiers:@[ @(SettingsSectionIdentifier) ]];
   [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSettings) ]
