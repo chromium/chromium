@@ -60,7 +60,9 @@ bool GetIsGoogleDocs(const GURL& url) {
 
 }  // namespace
 
-ReadAnythingAppModel::ReadAnythingAppModel() = default;
+ReadAnythingAppModel::ReadAnythingAppModel() {
+  ResetTextSize();
+}
 
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
 
@@ -82,7 +84,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   line_spacing_ = static_cast<size_t>(line_spacing);
   letter_spacing_ = static_cast<size_t>(letter_spacing);
   font_name_ = font;
-  font_size_ = font_size;
+  SetFontSize(font_size);
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = static_cast<size_t>(color);
@@ -676,6 +678,14 @@ double ReadAnythingAppModel::GetLineSpacingValue(
   }
 }
 
+void ReadAnythingAppModel::AdjustTextSize(int increment) {
+  SetFontSize(font_size_, increment);
+}
+
+void ReadAnythingAppModel::ResetTextSize() {
+  SetFontSize(1.0f);
+}
+
 std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
 ReadAnythingAppModel::GetPendingUpdatesForTesting() {
   return pending_updates_map_;
@@ -1041,24 +1051,6 @@ void ReadAnythingAppModel::MaybeRunDataCollectionForScreen2xCallback() {
   std::move(data_collection_for_screen2x_callback_).Run();
 }
 
-void ReadAnythingAppModel::IncreaseTextSize() {
-  font_size_ += kReadAnythingFontScaleIncrement;
-  if (font_size_ > kReadAnythingMaximumFontScale) {
-    font_size_ = kReadAnythingMaximumFontScale;
-  }
-}
-
-void ReadAnythingAppModel::DecreaseTextSize() {
-  font_size_ -= kReadAnythingFontScaleIncrement;
-  if (font_size_ < kReadAnythingMinimumFontScale) {
-    font_size_ = kReadAnythingMinimumFontScale;
-  }
-}
-
-void ReadAnythingAppModel::ResetTextSize() {
-  font_size_ = kReadAnythingDefaultFontScale;
-}
-
 void ReadAnythingAppModel::ToggleLinksEnabled() {
   links_enabled_ = !links_enabled_;
 }
@@ -1079,4 +1071,8 @@ void ReadAnythingAppModel::AddObserver(ModelObserver* observer) {
 
 void ReadAnythingAppModel::RemoveObserver(ModelObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ReadAnythingAppModel::SetFontSize(double font_size, int increment) {
+  font_size_ = AdjustFontScale(font_size, increment);
 }

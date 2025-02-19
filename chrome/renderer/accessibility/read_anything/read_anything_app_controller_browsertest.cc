@@ -206,6 +206,9 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     Mock::VerifyAndClearExpectations(distiller_);
   }
 
+  ReadAnythingAppController& controller() { return *controller_; }
+  ReadAnythingAppModel& model() { return controller_->model_; }
+
   void SetIsPdf() {
     // Call OnActiveAXTreeIDChanged() to set is_pdf_ state.
     OnActiveAXTreeIDChanged(tree_id_, true /* is_pdf */);
@@ -393,8 +396,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   int LetterSpacing() { return controller_->LetterSpacing(); }
 
   int ColorTheme() { return controller_->ColorTheme(); }
-
-  void OnFontSizeReset() { controller_->OnFontSizeReset(); }
 
   void OnLinksEnabledToggled() { controller_->OnLinksEnabledToggled(); }
 
@@ -845,7 +846,7 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
   std::string font_name = "Roboto";
-  double font_size = 18.0;
+  double font_size = 3.0;
   bool links_enabled = false;
   bool images_enabled = true;
   auto color = read_anything::mojom::Colors::kDefaultValue;
@@ -2398,9 +2399,10 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnFontSizeReset_SetsFontSizeToDefault) {
-  EXPECT_CALL(page_handler_, OnFontSizeChange(kReadAnythingDefaultFontScale))
-      .Times(1);
-  OnFontSizeReset();
+  model().ResetTextSize();
+  const double default_font_size = model().font_size();
+  EXPECT_CALL(page_handler_, OnFontSizeChange(default_font_size)).Times(1);
+  controller().OnFontSizeReset();
 }
 
 TEST_F(ReadAnythingAppControllerTest,

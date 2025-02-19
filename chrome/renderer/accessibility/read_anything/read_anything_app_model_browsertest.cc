@@ -51,6 +51,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_ = std::make_unique<ReadAnythingAppModel>();
   }
 
+  ReadAnythingAppModel& model() { return *model_; }
   const ReadAnythingAppModel& model() const { return *model_; }
 
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
@@ -219,12 +220,6 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   bool IsDocs() { return model_->IsDocs(); }
 
-  void IncreaseTextSize() { model_->IncreaseTextSize(); }
-
-  void DecreaseTextSize() { model_->DecreaseTextSize(); }
-
-  void ResetTextSize() { model_->ResetTextSize(); }
-
   std::string LanguageCode() { return model_->base_language_code(); }
   void SetLanguageCode(std::string code) { model_->SetBaseLanguageCode(code); }
 
@@ -275,7 +270,7 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   auto line_spacing = read_anything::mojom::LineSpacing::kDefaultValue;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kDefaultValue;
   std::string font_name = "Roboto";
-  double font_size = 18.0;
+  double font_size = 3.0;
   bool links_enabled = false;
   bool images_enabled = true;
   auto color = read_anything::mojom::Colors::kDefaultValue;
@@ -1659,21 +1654,19 @@ TEST_F(
 }
 
 TEST_F(ReadAnythingAppModelTest, ResetTextSize_ReturnsTextSizeToDefault) {
-  IncreaseTextSize();
-  IncreaseTextSize();
-  IncreaseTextSize();
-  ASSERT_GT(FontSize(), kReadAnythingDefaultFontScale);
+  const double default_font_size = model().font_size();
 
-  ResetTextSize();
-  ASSERT_EQ(FontSize(), kReadAnythingDefaultFontScale);
+  model().AdjustTextSize(3);
+  EXPECT_GT(model().font_size(), default_font_size);
 
-  DecreaseTextSize();
-  DecreaseTextSize();
-  DecreaseTextSize();
-  ASSERT_LT(FontSize(), kReadAnythingDefaultFontScale);
+  model().ResetTextSize();
+  EXPECT_EQ(model().font_size(), default_font_size);
 
-  ResetTextSize();
-  ASSERT_EQ(FontSize(), kReadAnythingDefaultFontScale);
+  model().AdjustTextSize(-3);
+  EXPECT_LT(model().font_size(), default_font_size);
+
+  model().ResetTextSize();
+  EXPECT_EQ(model().font_size(), default_font_size);
 }
 
 TEST_F(ReadAnythingAppModelTest, LanguageCode_ReturnsCorrectCode) {

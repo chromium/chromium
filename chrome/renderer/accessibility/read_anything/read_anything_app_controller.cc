@@ -1472,12 +1472,7 @@ void ReadAnythingAppController::OnCopy() const {
 }
 
 void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
-  if (increase) {
-    model_.IncreaseTextSize();
-  } else {
-    model_.DecreaseTextSize();
-  }
-
+  model_.AdjustTextSize(increase ? 1 : -1);
   page_handler_->OnFontSizeChange(model_.font_size());
 }
 

@@ -18,4 +18,11 @@
 // Records `font_name` in histograms.
 void LogFontName(std::string_view font_name);
 
+// Adjusts `font_scale` up or down by `increment` steps and returns the
+// nearest valid font scale.
+[[nodiscard]] double AdjustFontScale(double font_scale, int increment);
+
+// Records `font_scale` in histograms.
+void LogFontScale(double font_scale);
+
 #endif  // CHROME_COMMON_READ_ANYTHING_READ_ANYTHING_UTIL_H_

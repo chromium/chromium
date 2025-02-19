@@ -4,6 +4,7 @@
 
 #include "chrome/common/read_anything/read_anything_util.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -11,6 +12,20 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
+
+namespace {
+
+// All values are in em.
+constexpr double kMinScale = 0.5;
+constexpr double kMaxScale = 4.5;
+constexpr double kScaleStepSize = 0.25;
+
+int AsSteps(double font_scale) {
+  return base::ClampRound((font_scale - kMinScale) / kScaleStepSize);
+}
+
+}  // namespace
 
 std::vector<std::string> GetSupportedFonts(std::string_view language_code) {
   // If you modify the set of fonts here, also change `LogFontName()` below.
@@ -112,4 +127,15 @@ void LogFontName(std::string_view font_name) {
     base::UmaHistogramEnumeration("Accessibility.ReadAnything.FontName",
                                   it->second);
   }
+}
+
+double AdjustFontScale(double font_scale, int increment) {
+  return std::clamp(
+      kMinScale + (AsSteps(font_scale) + increment) * kScaleStepSize, kMinScale,
+      kMaxScale);
+}
+
+void LogFontScale(double font_scale) {
+  base::UmaHistogramExactLinear("Accessibility.ReadAnything.FontScale",
+                                AsSteps(font_scale), AsSteps(kMaxScale) + 1);
 }

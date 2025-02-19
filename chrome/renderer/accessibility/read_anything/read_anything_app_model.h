@@ -120,7 +120,6 @@ class ReadAnythingAppModel {
   const std::string& font_name() const { return font_name_; }
   void set_font_name(const std::string& font) { font_name_ = font; }
   float font_size() const { return font_size_; }
-  void set_font_size(float font_size) { font_size_ = font_size; }
   bool links_enabled() const { return links_enabled_; }
   bool images_enabled() const { return images_enabled_; }
   int letter_spacing() const { return letter_spacing_; }
@@ -242,8 +241,7 @@ class ReadAnythingAppModel {
   double GetLetterSpacingValue(
       read_anything::mojom::LetterSpacing letter_spacing) const;
 
-  void IncreaseTextSize();
-  void DecreaseTextSize();
+  void AdjustTextSize(int increment);
   void ResetTextSize();
   void ToggleLinksEnabled();
   void ToggleImagesEnabled();
@@ -288,6 +286,8 @@ class ReadAnythingAppModel {
 
   void OnPageLoadTimerTriggered();
   void OnTreeChangeTimerTriggered();
+
+  void SetFontSize(double font_size, int increment = 0);
 
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
@@ -342,7 +342,7 @@ class ReadAnythingAppModel {
 
   // Theme information.
   std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
-  float font_size_ = kReadAnythingDefaultFontScale;
+  float font_size_;
   bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
   bool images_enabled_ = kReadAnythingDefaultImagesEnabled;
   int letter_spacing_ = (int)read_anything::mojom::LetterSpacing::kDefaultValue;

@@ -32,12 +32,6 @@ inline constexpr int kMaxLineWidth = 60;
 // Speech rate is a multiplicative scale where 1 is the baseline.
 inline constexpr double kReadAnythingDefaultSpeechRate = 1;
 
-// Font size in em
-inline constexpr double kReadAnythingDefaultFontScale = 1;
-inline constexpr double kReadAnythingMinimumFontScale = 0.5;
-inline constexpr double kReadAnythingMaximumFontScale = 4.5;
-inline constexpr double kReadAnythingFontScaleIncrement = 0.25;
-
 // Display settings.
 inline constexpr bool kReadAnythingDefaultLinksEnabled = true;
 inline constexpr bool kReadAnythingDefaultImagesEnabled = false;

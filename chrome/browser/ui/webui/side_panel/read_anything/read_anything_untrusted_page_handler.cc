@@ -100,13 +100,6 @@ namespace {
 constexpr ui::AXMode kReadAnythingAXMode =
     ui::kAXModeWebContentsOnly | ui::AXMode::kHTML;
 
-int GetNormalizedFontScale(double font_scale) {
-  DCHECK(font_scale >= kReadAnythingMinimumFontScale &&
-         font_scale <= kReadAnythingMaximumFontScale);
-  return (font_scale - kReadAnythingMinimumFontScale) *
-         (1 / kReadAnythingFontScaleIncrement);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 
 InstallationState GetInstallationStateFromStatusCode(
@@ -609,9 +602,8 @@ void ReadAnythingUntrustedPageHandler::OnFontChange(const std::string& font) {
 }
 
 void ReadAnythingUntrustedPageHandler::OnFontSizeChange(double font_size) {
-  double saved_font_size = std::min(font_size, kReadAnythingMaximumFontScale);
   profile_->GetPrefs()->SetDouble(prefs::kAccessibilityReadAnythingFontScale,
-                                  saved_font_size);
+                                  AdjustFontScale(font_size, 0));
 }
 
 void ReadAnythingUntrustedPageHandler::OnLinksEnabledChanged(bool enabled) {
@@ -928,13 +920,7 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
   // This is called when the side panel closes, so retrieving the values from
   // preferences won't happen very often.
   PrefService* prefs = profile_->GetPrefs();
-  int maximum_font_scale_logging =
-      GetNormalizedFontScale(kReadAnythingMaximumFontScale);
-  double font_scale =
-      prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale);
-  base::UmaHistogramExactLinear(string_constants::kFontScaleHistogramName,
-                                GetNormalizedFontScale(font_scale),
-                                maximum_font_scale_logging + 1);
+  LogFontScale(prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale));
   LogFontName(prefs->GetString(prefs::kAccessibilityReadAnythingFontName));
   read_anything::mojom::Colors color =
       static_cast<read_anything::mojom::Colors>(
