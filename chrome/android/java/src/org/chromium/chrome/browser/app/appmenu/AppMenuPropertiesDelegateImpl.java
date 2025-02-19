@@ -410,6 +410,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
             modelList.add(new MVCListAdapter.ListItem(menutype, propertyModel));
         }
+        int lastIndex = modelList.size() - 1;
+        int itemId = modelList.get(lastIndex).model.get(AppMenuItemProperties.MENU_ITEM_ID);
+        if (DividerLineMenuItemViewBinder.isDividerLineItemId(itemId)) {
+            modelList.removeAt(lastIndex);
+        }
         mModelList = modelList;
         return modelList;
     }
