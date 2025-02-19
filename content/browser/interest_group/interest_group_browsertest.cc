@@ -2304,7 +2304,7 @@ class InterestGroupRestrictedPermissionsPolicyBrowserTest
  public:
   InterestGroupRestrictedPermissionsPolicyBrowserTest() {
     feature_list_.InitAndEnableFeature(
-        blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
+        network::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
   }
 
  protected:
@@ -19840,7 +19840,7 @@ class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kFledgeLimitNumAuctions, {{"max_auctions_per_page", "2"}}},
-         {blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault, {}}},
+         {network::features::kAdInterestGroupAPIRestrictedPolicyByDefault, {}}},
         /*disabled_features=*/{});
     // TODO(crbug.com/40172488): When
     // kAdInterestGroupAPIRestrictedPolicyByDefault is the default, we won't
@@ -21920,7 +21920,7 @@ class InterestGroupBiddingAndAuctionServerRestrictedPermissionsPolicyBrowserTest
  public:
   InterestGroupBiddingAndAuctionServerRestrictedPermissionsPolicyBrowserTest() {
     feature_list_.InitAndEnableFeature(
-        blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
+        network::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
   }
 
  protected:

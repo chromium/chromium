@@ -7,14 +7,14 @@
 
 #include "base/no_destructor.h"
 #include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace blink {
 
 // Applies new defaults based on flags.
 void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList& mutable_feature_list) {
-  if (base::FeatureList::IsEnabled(features::kTestFlag)) {
+  if (base::FeatureList::IsEnabled(network::features::kTestFlag)) {
     mutable_feature_list.find(network::mojom::PermissionsPolicyFeature::kAccelerometer)->second =
       PermissionsPolicyFeatureDefault::EnableForSelf;
   } else {
