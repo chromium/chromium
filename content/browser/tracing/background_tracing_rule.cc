@@ -286,10 +286,9 @@ class HistogramRule : public BackgroundTracingRule,
       new_sample->set_sample(actual_value);
       perfetto::Flow::Global(flow_id)(ctx);
     };
-    TRACE_EVENT_INSTANT(
-        "toplevel,latency", "HistogramSampleTrigger",
-        perfetto::Track::FromPointer(this, perfetto::ProcessTrack::Current()),
-        base::TimeTicks::Now(), trace_details);
+    auto track = perfetto::NamedTrack("HistogramSamples");
+    TRACE_EVENT_INSTANT("toplevel,latency", "HistogramSampleTrigger", track,
+                        trace_details);
     OnRuleTriggered(actual_value, flow_id);
   }
 

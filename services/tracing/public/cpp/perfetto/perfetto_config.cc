@@ -24,6 +24,7 @@
 #include "build/chromecast_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "third_party/perfetto/protos/perfetto/config/chrome/histogram_samples.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
 namespace tracing {
@@ -124,6 +125,25 @@ void AddDataSourceConfigs(
                       chrome_config_string, privacy_filtering_enabled,
                       convert_to_legacy_json, client_priority,
                       json_agent_label_filter);
+
+  if (stripped_config.IsCategoryGroupEnabled(
+          TRACE_DISABLED_BY_DEFAULT("histogram_samples"))) {
+    auto* data_source = AddDataSourceConfig(
+        perfetto_config, tracing::mojom::kHistogramSampleSourceName,
+        chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
+        client_priority, json_agent_label_filter);
+
+    perfetto::protos::gen::ChromiumHistogramSamplesConfig histogram_config;
+    histogram_config.set_filter_histogram_names(privacy_filtering_enabled);
+    for (const auto& histogram_name : stripped_config.histogram_names()) {
+      perfetto::protos::gen::ChromiumHistogramSamplesConfig::HistogramSample
+          sample;
+      sample.set_histogram_name(histogram_name);
+      *histogram_config.add_histograms() = sample;
+    }
+    data_source->mutable_config()->set_chromium_histogram_samples_raw(
+        histogram_config.SerializeAsString());
+  }
 
   if (stripped_config.IsCategoryGroupEnabled(
           TRACE_DISABLED_BY_DEFAULT("cpu_profiler"))) {
@@ -283,6 +303,19 @@ void AdaptDataSourceConfig(
     chrome_config->set_convert_to_legacy_json(false);
     chrome_config->set_client_priority(client_priority);
     chrome_config->set_trace_config(chrome_config_string);
+  }
+
+  if (config->name() == tracing::mojom::kHistogramSampleSourceName) {
+    perfetto::protos::gen::ChromiumHistogramSamplesConfig histogram_config;
+    if (!config->chromium_histogram_samples_raw().empty() &&
+        !histogram_config.ParseFromString(
+            config->chromium_histogram_samples_raw())) {
+      DLOG(ERROR) << "Failed to parse chromium_histogram_samples";
+      return;
+    }
+    histogram_config.set_filter_histogram_names(privacy_filtering_enabled);
+    config->set_chromium_histogram_samples_raw(
+        histogram_config.SerializeAsString());
   }
 
   if (!config->track_event_config_raw().empty()) {

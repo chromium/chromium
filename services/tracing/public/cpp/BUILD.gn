@@ -60,6 +60,8 @@ target(tracing_lib_type, "cpp") {
     sources += [
       "perfetto/custom_event_recorder.cc",
       "perfetto/custom_event_recorder.h",
+      "perfetto/histogram_samples_data_source.cc",
+      "perfetto/histogram_samples_data_source.h",
       "perfetto/interning_index.h",
       "perfetto/metadata_data_source.cc",
       "perfetto/metadata_data_source.h",
