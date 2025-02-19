@@ -189,6 +189,7 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_fre_ui.h"
 #include "chrome/browser/glic/glic_ui.h"
 #endif
 
@@ -388,5 +389,6 @@ void RegisterChromeWebUIConfigs() {
 #endif  //  !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_GLIC)
   map.AddWebUIConfig(std::make_unique<glic::GlicUIConfig>());
+  map.AddWebUIConfig(std::make_unique<glic::GlicFreUIConfig>());
 #endif
 }

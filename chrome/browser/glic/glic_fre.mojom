@@ -1,0 +1,25 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module glic.mojom;
+
+import "url/mojom/url.mojom";
+
+// Factory for PageHandler used in chrome://glic-fre.
+interface FrePageHandlerFactory {
+  // Creates the PageHandler for chrome://glic-fre.
+  CreatePageHandler(pending_receiver<FrePageHandler> receiver);
+};
+
+// Page handler for the glic FRE WebUI.
+interface FrePageHandler {
+  // Closes the glic FRE modal dialog and opens the widget hosting the main
+  // glic WebUI.
+  AcceptFre();
+  // Closes the glic FRE modal dialog.
+  DismissFre();
+  // Opens `url` in a new backgrounded tab when a link is clicked in the FRE
+  // modal dialog if `url` uses the Google domain.
+  ValidateAndOpenLinkInNewTab(url.mojom.Url url);
+};

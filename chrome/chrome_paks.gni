@@ -520,11 +520,13 @@ template("chrome_extra_paks") {
     if (enable_glic) {
       sources += [
         "$root_gen_dir/chrome/browser/glic/resources/glic_browser_resources.pak",
+        "$root_gen_dir/chrome/glic_fre_resources.pak",
         "$root_gen_dir/chrome/glic_resources.pak",
       ]
       deps += [
         "//chrome/browser/glic/resources:browser_resources",
         "//chrome/browser/resources/glic:resources",
+        "//chrome/browser/resources/glic/fre:resources",
       ]
     }
 

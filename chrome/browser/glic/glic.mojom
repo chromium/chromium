@@ -23,8 +23,6 @@ interface PageHandlerFactory {
   // Creates the PageHandler for chrome://glic.
   CreatePageHandler(pending_receiver<PageHandler> receiver,
       pending_remote<Page> page);
-  // Creates the handler for chrome://glic/glic_fre.
-  CreateFrePageHandler(pending_receiver<FrePageHandler> receiver);
 };
 
 // It is used in the Glic.PanelWebUiState.FinishState histogram.
@@ -84,20 +82,6 @@ interface PageHandler {
 
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
-};
-
-// Handler for the glic FRE WebUI.
-// TODO(crbug.com/393399675): The FRE should be handled in a separate WebUI
-// and mojom.
-interface FrePageHandler {
-  // Closes the glic FRE modal dialog and opens the widget hosting the main
-  // glic WebUI.
-  AcceptFre();
-  // Closes the glic FRE modal dialog.
-  DismissFre();
-  // Opens `url` in a new backgrounded tab when a link is clicked in the FRE
-  // modal dialog if `url` uses the Google domain.
-  ValidateAndOpenLinkInNewTab(url.mojom.Url url);
 };
 
 // Reason for failure while extracting tab context. This MUST be kept in sync

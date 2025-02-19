@@ -13,7 +13,6 @@
 
 namespace glic {
 class GlicPageHandler;
-class GlicFrePageHandler;
 class GlicUI;
 
 class GlicUIConfig : public content::DefaultWebUIConfig<GlicUI> {
@@ -43,12 +42,7 @@ class GlicUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
       mojo::PendingRemote<glic::mojom::Page> page) override;
 
-  void CreateFrePageHandler(
-      mojo::PendingReceiver<glic::mojom::FrePageHandler> receiver) override;
-
   std::unique_ptr<GlicPageHandler> page_handler_;
-
-  std::unique_ptr<GlicFrePageHandler> fre_page_handler_;
 
   mojo::Receiver<glic::mojom::PageHandlerFactory> page_factory_receiver_{this};
 

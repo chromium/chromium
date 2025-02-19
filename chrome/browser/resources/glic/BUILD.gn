@@ -13,7 +13,6 @@ build_webui("build") {
   static_files = [
     "glic.css",
     "glic.html",
-    "glic_fre/fre.html",
   ]
 
   non_web_component_files = [
@@ -25,7 +24,6 @@ build_webui("build") {
     "glic_api_impl/request_types.ts",
     "glic_api/glic_api.ts",
     "glic_app_controller.ts",
-    "glic_fre/fre.ts",
     "icons.html.ts",
     "main.ts",
     "webview.ts",

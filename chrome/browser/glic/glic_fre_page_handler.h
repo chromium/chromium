@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_GLIC_GLIC_FRE_PAGE_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic_fre.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

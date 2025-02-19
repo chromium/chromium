@@ -47,9 +47,9 @@ content::StoragePartitionConfig GetGlicMainStoragePartitionConfig(
 content::StoragePartitionConfig GetGlicFreStoragePartitionConfig(
     content::BrowserContext* browser_context) {
   // This storage partition must match the partition attribute in
-  // chrome/browser/resources/glic/glic_fre/fre.html: "glicfrepart".
+  // chrome/browser/resources/glic_fre/fre.html: "glicfrepart".
   return content::StoragePartitionConfig::Create(
-      browser_context, "glic",
+      browser_context, "glic-fre",
       /*partition_name=*/"glicfrepart",
       /*in_memory=*/true);
 }

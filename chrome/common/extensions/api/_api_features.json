@@ -220,6 +220,7 @@
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
       "chrome://glic/*",
+      "chrome://glic-fre/*",
       "chrome://graduation/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",

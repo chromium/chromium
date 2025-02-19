@@ -4,13 +4,13 @@
 
 import '/strings.m.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {FrePageHandlerRemote, PageHandlerFactory} from '../glic.mojom-webui.js';
+import {FrePageHandlerFactory, FrePageHandlerRemote} from './glic_fre.mojom-webui.js';
 
 const freHandler = new FrePageHandlerRemote();
-PageHandlerFactory.getRemote().createFrePageHandler(
-    (freHandler).$.bindNewPipeAndPassReceiver());
+FrePageHandlerFactory.getRemote().createPageHandler(
+    (freHandler as FrePageHandlerRemote).$.bindNewPipeAndPassReceiver());
 
 const webview =
     document.getElementById('fre-guest-frame') as chrome.webviewTag.WebView;
