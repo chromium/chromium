@@ -42,6 +42,8 @@ ActivityDatabase::ActivityDatabase(ActivityDatabase::Delegate* delegate)
       db_(sql::DatabaseOptions()
               .set_page_size(4096)
               .set_cache_size(32)
+              .set_preload(base::FeatureList::IsEnabled(
+                  sql::features::kPreOpenPreloadDatabase))
               // TODO(pwnall): Add a meta table and remove this option.
               .set_mmap_alt_status_discouraged(true)
               .set_enable_views_discouraged(
@@ -98,7 +100,9 @@ void ActivityDatabase::Init(const base::FilePath& db_name) {
 
   // Pre-loads the first <cache-size> pages into the cache.
   // Doesn't do anything if the database is new.
-  db_.Preload();
+  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
+    db_.Preload();
+  }
 
   valid_db_ = true;
   timer_.Start(FROM_HERE,

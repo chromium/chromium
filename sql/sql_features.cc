@@ -13,4 +13,9 @@ BASE_FEATURE(kEnableWALModeByDefault,
              "EnableWALModeByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Preload database before opening the file.
+BASE_FEATURE(kPreOpenPreloadDatabase,
+             "PreOpenPreloadDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace sql::features

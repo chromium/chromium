@@ -513,6 +513,9 @@ void Database::Close() {
 void Database::Preload() {
   TRACE_EVENT0("sql", "Database::Preload");
 
+  // The database should not have been preloaded.
+  CHECK(!options_.preload_);
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
     DCHECK(poisoned_) << "Cannot preload null db";
