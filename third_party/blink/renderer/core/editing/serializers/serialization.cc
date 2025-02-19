@@ -128,13 +128,14 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
  public:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
-    // TODO(crbug.com/1413912): CreateSanitizedFragmentFromMarkupWithContext may
+    // TODO(crbug.com/1413912): CreateFragmentFromMarkupWithContext may
     // call this method for data: URL resources. But ResourceLoader::Start()
     // don't need to call GetURLLoaderFactory() for data: URL because
     // ResourceLoader handles the data: URL resource load without the returned
     // SharedURLLoaderFactory.
-    // Note: Non-data: URL resource can't be loaded because the CORS check in
-    // BaseFetchContext::CanRequestInternal fails for non-data: URL resources.
+    // Note: Non-data: URL resource can't be loaded because the security checks
+    // in BaseFetchContext::CanRequestInternal fails for non-data: URL
+    // resources.
     return base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
         WTF::BindOnce(
             [](const network::ResourceRequest& resource_request,

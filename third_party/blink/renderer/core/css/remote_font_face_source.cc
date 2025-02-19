@@ -363,6 +363,10 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
   if (IsLoaded()) {
     return;
   }
+  // Skip loading if the document is for markup sanitization.
+  if (GetDocument() && GetDocument()->IsForMarkupSanitization()) {
+    return;
+  }
   ExecutionContext* const execution_context =
       font_selector_->GetExecutionContext();
   if (!execution_context) {
