@@ -394,8 +394,7 @@ IOSChromePaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return payments_reauth_manager_.get();
 }
 
-const PaymentsDataManager&
-IOSChromePaymentsAutofillClient::GetPaymentsDataManager() const {
+PaymentsDataManager& IOSChromePaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }
 

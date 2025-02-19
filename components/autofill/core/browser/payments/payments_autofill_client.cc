@@ -234,6 +234,11 @@ bool PaymentsAutofillClient::ShowTouchToFillIban(
 
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
+const PaymentsDataManager& PaymentsAutofillClient::GetPaymentsDataManager()
+    const {
+  return const_cast<PaymentsAutofillClient*>(this)->GetPaymentsDataManager();
+}
+
 #if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 PaymentsAutofillClient::CreateCreditCardInternalAuthenticator(

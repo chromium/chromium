@@ -578,7 +578,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // synchronous retrieval.
   // - Posting changes to `AutofillTable` via the `AutofillWebDataService`
   //   and updating its state accordingly.
-  virtual const PaymentsDataManager& GetPaymentsDataManager() const = 0;
+  virtual PaymentsDataManager& GetPaymentsDataManager() = 0;
+  const PaymentsDataManager& GetPaymentsDataManager() const;
 
 #if !BUILDFLAG(IS_IOS)
   // Creates the appropriate implementation of InternalAuthenticator. May be

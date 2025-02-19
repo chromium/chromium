@@ -260,8 +260,7 @@ TestPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return mock_payments_mandatory_reauth_manager_.get();
 }
 
-const PaymentsDataManager& TestPaymentsAutofillClient::GetPaymentsDataManager()
-    const {
+PaymentsDataManager& TestPaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }
 

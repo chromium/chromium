@@ -214,7 +214,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
   payments::BnplManager* GetPaymentsBnplManager() override;
-  const PaymentsDataManager& GetPaymentsDataManager() const override;
+  PaymentsDataManager& GetPaymentsDataManager() final;
   void ShowCreditCardSaveAndFillDialog() override;
 
 #if BUILDFLAG(IS_ANDROID)

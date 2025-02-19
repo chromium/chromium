@@ -955,8 +955,7 @@ payments::BnplManager* ChromePaymentsAutofillClient::GetPaymentsBnplManager() {
   return bnpl_manager_.get();
 }
 
-const PaymentsDataManager&
-ChromePaymentsAutofillClient::GetPaymentsDataManager() const {
+PaymentsDataManager& ChromePaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }
 

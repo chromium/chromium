@@ -97,8 +97,8 @@ void IOSWebViewPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
       /*is_renderer_initiated=*/false));
 }
 
-const PaymentsDataManager&
-IOSWebViewPaymentsAutofillClient::GetPaymentsDataManager() const {
+PaymentsDataManager&
+IOSWebViewPaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }
 
