@@ -741,15 +741,8 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
   renderer_widget_created_ = true;
 
   mojo::PendingRemote<blink::mojom::RenderInputRouterClient> browser_remote;
-  mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_receiver =
-      mojo::NullReceiver();
-  if (input::IsTransferInputToVizSupported()) {
-    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> viz_remote;
-    viz_receiver = viz_remote.InitWithNewPipeAndPassReceiver();
-    viz_rir_client_remote_ = std::move(viz_remote);
-  }
-  blink_widget_->SetupRenderInputRouterConnections(
-      browser_remote.InitWithNewPipeAndPassReceiver(), std::move(viz_receiver));
+  blink_widget_->SetupBrowserRenderInputRouterConnections(
+      browser_remote.InitWithNewPipeAndPassReceiver());
 
   GetRenderInputRouter()->BindRenderInputRouterInterfaces(
       std::move(browser_remote));
@@ -3552,23 +3545,23 @@ void RenderWidgetHostImpl::CreateFrameSink(
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
         compositor_frame_sink_receiver,
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
-        compositor_frame_sink_client) {
+        compositor_frame_sink_client,
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient>
+        viz_rir_client_remote) {
   // Connects the viz process end of CompositorFrameSink message pipes. The
   // renderer compositor may request a new CompositorFrameSink on context
   // loss, which will destroy the existing CompositorFrameSink.
   create_frame_sink_callback_ = base::BindOnce(
       [](mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver,
          mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
-         std::optional<mojo::PendingRemote<
-             blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
+         mojo::PendingRemote<blink::mojom::RenderInputRouterClient>
+             viz_rir_client_remote,
          bool force_enable_zoom, base::UnguessableToken grouping_id,
          const viz::FrameSinkId& frame_sink_id) {
         input::mojom::RenderInputRouterConfigPtr config;
         if (input::IsTransferInputToVizSupported()) {
-          DCHECK(viz_rir_client_remote.has_value());
-
           config = input::mojom::RenderInputRouterConfig::New();
-          config->rir_client = std::move(viz_rir_client_remote.value());
+          config->rir_client = std::move(viz_rir_client_remote);
           config->grouping_id = grouping_id;
           config->force_enable_zoom = force_enable_zoom;
         }
@@ -3577,8 +3570,7 @@ void RenderWidgetHostImpl::CreateFrameSink(
             std::move(config));
       },
       std::move(compositor_frame_sink_receiver),
-      std::move(compositor_frame_sink_client),
-      std::move(viz_rir_client_remote_),
+      std::move(compositor_frame_sink_client), std::move(viz_rir_client_remote),
       GetRenderInputRouter()->GetForceEnableZoom());
 
   MaybeDispatchBufferedFrameSinkRequest();

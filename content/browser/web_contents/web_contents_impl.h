@@ -2165,6 +2165,10 @@ class CONTENT_EXPORT WebContentsImpl
   // JavascriptDialogManager.
   void CancelDialogManagerDialogs(bool reset_state);
 
+  // Sets up RenderInputRouterDelegate mojo connections with InputManager on
+  // the VizCompositorThread for input handling with InputVizard.
+  void SetupRenderInputRouterDelegateConnection();
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.

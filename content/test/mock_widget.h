@@ -71,11 +71,9 @@ class MockWidget : public blink::mojom::Widget,
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelSuccessfulPresentationTimeRequest() override;
-  void SetupRenderInputRouterConnections(
+  void SetupBrowserRenderInputRouterConnections(
       mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
-          browser_request,
-      mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_request)
-      override;
+          browser_request) override;
 
  private:
   std::optional<bool> is_hidden_;

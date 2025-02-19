@@ -71,7 +71,9 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
       mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
           compositor_frame_sink_receiver,
       mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
-          compositor_frame_sink_client) override;
+          compositor_frame_sink_client,
+      mojo::PendingRemote<blink::mojom::RenderInputRouterClient>
+          viz_rir_client_remote) override;
   void RegisterRenderFrameMetadataObserver(
       mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
           render_frame_metadata_observer_client_receiver,

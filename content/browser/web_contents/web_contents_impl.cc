@@ -1316,11 +1316,24 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   }
 
   if (input::IsTransferInputToVizSupported()) {
-    GetHostFrameSinkManager()->SetupRenderInputRouterDelegateConnection(
-        compositor_frame_sink_grouping_id_,
-        rir_delegate_client_receiver_.BindNewPipeAndPassRemote(),
-        rir_delegate_remote_.BindNewPipeAndPassReceiver());
+    SetupRenderInputRouterDelegateConnection();
   }
+}
+
+void WebContentsImpl::SetupRenderInputRouterDelegateConnection() {
+  // Handles setting up GPU mojo endpoint connections. In general, the number of
+  // retries for setting up these mojo connections is capped by the maximum
+  // number of attempts to restart the GPU process, see
+  // GpuProcessHost::GetFallbackCrashLimit().
+  rir_delegate_client_receiver_.reset();
+  rir_delegate_remote_.reset();
+  GetHostFrameSinkManager()->SetupRenderInputRouterDelegateConnection(
+      compositor_frame_sink_grouping_id_,
+      rir_delegate_client_receiver_.BindNewPipeAndPassRemote(),
+      rir_delegate_remote_.BindNewPipeAndPassReceiver());
+  rir_delegate_client_receiver_.set_disconnect_handler(
+      base::BindOnce(&WebContentsImpl::SetupRenderInputRouterDelegateConnection,
+                     weak_factory_.GetWeakPtr()));
 }
 
 WebContentsImpl::~WebContentsImpl() {

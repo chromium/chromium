@@ -203,7 +203,8 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     void CreateFrameSink(
         mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
             compositor_frame_sink_receiver,
-        mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>) override {}
+        mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>,
+        mojo::PendingRemote<blink::mojom::RenderInputRouterClient>) override {}
     void RegisterRenderFrameMetadataObserver(
         mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
             render_frame_metadata_observer_client_receiver,

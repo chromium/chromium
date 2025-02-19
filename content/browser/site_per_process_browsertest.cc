@@ -46,6 +46,7 @@
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/test_trace_processor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -60,6 +61,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/process_reuse_policy.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
@@ -95,6 +97,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/gpu_data_manager_observer.h"
+#include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host_priority_client.h"
@@ -11686,6 +11690,77 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, CheckForceEnableZoomValue) {
       .GetForceEnableZoomState(GetRenderWidgetHost()->GetFrameSinkId(),
                                &enabled);
   EXPECT_TRUE(enabled);
+}
+
+class GpuInfoUpdateObserver : public GpuDataManagerObserver {
+ public:
+  explicit GpuInfoUpdateObserver(base::OnceClosure callback)
+      : callback_(std::move(callback)) {
+    observation_.Observe(GpuDataManager::GetInstance());
+  }
+  ~GpuInfoUpdateObserver() override = default;
+
+  void OnGpuInfoUpdate() override {
+    if (callback_) {
+      std::move(callback_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure callback_;
+  base::ScopedObservation<GpuDataManager, GpuDataManagerObserver> observation_{
+      this};
+};
+
+// Checks if RenderInputRouterDelegate mojo connection is reset when GPU process
+// restarts.
+IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
+                       RestartingGPUProcessResetsMojoConnection) {
+  RenderFrameSubmissionObserver render_frame_submission_observer(
+      web_contents());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
+  if (render_frame_submission_observer.render_frame_count() == 0) {
+    render_frame_submission_observer.WaitForAnyFrameSubmission();
+  }
+
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz");
+
+  base::RunLoop run_loop;
+  // This observer is begin used here to signal if the GPU process has
+  // restarted.
+  GpuInfoUpdateObserver gpu_observer(run_loop.QuitClosure());
+
+  // Kill GPU process explicitly, this should trigger a restart.
+  KillGpuProcess();
+  run_loop.Run();
+
+  // Navigate to URL and wait for frame submission.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("bar.com", "/title2.html")));
+  if (render_frame_submission_observer.render_frame_count() == 0) {
+    render_frame_submission_observer.WaitForAnyFrameSubmission();
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+    SELECT COUNT(*) AS cnt
+    FROM slice
+    WHERE name = 'InputManager::SetupRenderInputRouterDelegateConnection'
+    ORDER BY ts ASC
+  )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value());
+
+  // `result.value()` would look something like this: {{"cnt"}, {"<num>"}}.
+  EXPECT_THAT(result.value(),
+              testing::ElementsAre(
+                  testing::ElementsAre("cnt"),
+                  testing::ElementsAre(
+                      input::IsTransferInputToVizSupported() ? "1" : "0")));
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
