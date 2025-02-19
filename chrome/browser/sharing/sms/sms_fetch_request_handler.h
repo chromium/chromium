@@ -40,7 +40,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   // SharingMessageHandler
   void OnMessage(components_sharing_message::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
-  virtual void AskUserPermission(const content::OriginList&,
+  virtual void AskUserPermission(const content::SmsFetcher::OriginList&,
                                  const std::string& one_time_code,
                                  const std::string& client_name);
   virtual void OnConfirm(JNIEnv*,
@@ -75,11 +75,13 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
 
     ~Request() override;
 
-    void OnReceive(const content::OriginList&,
+    void OnReceive(const content::SmsFetcher::OriginList&,
                    const std::string& one_time_code,
                    content::SmsFetcher::UserConsent) override;
     void OnFailure(FailureType failure_type) override;
-    const content::OriginList& origin_list() const { return origin_list_; }
+    const content::SmsFetcher::OriginList& origin_list() const {
+      return origin_list_;
+    }
     // OnReceive stashes the response and asks users for permission to send it
     // to remote. Based on user's interaction, we send different responses back.
     void SendSuccessMessage();
@@ -88,7 +90,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
    private:
     raw_ptr<SmsFetchRequestHandler> handler_;
     raw_ptr<content::SmsFetcher> fetcher_;
-    const content::OriginList origin_list_;
+    const content::SmsFetcher::OriginList origin_list_;
     std::string one_time_code_;
     std::string client_name_;
     SharingMessageHandler::DoneCallback respond_callback_;
