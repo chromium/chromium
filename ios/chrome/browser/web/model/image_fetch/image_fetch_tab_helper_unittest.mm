@@ -119,8 +119,9 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
           stringWithFormat:
               @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
                "function(id, url) { "
-               "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
-               "{'id': id, 'data': btoa('%s'), 'from':'canvas'}); }; true;",
+               "  window.webkit.messageHandlers['ImageFetchMessageHandler']."
+               "  postMessage({'id': id, 'data': btoa('%s'), 'from':'canvas'});"
+               "}; true;",
               kImageData],
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
@@ -152,8 +153,9 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
           stringWithFormat:
               @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
                "function(id, url) { "
-               "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
-               "{'id': id, 'data': btoa('%s'), 'from':'xhr'}); }; true;",
+               "  window.webkit.messageHandlers['ImageFetchMessageHandler']."
+               "  postMessage({'id': id, 'data': btoa('%s'), 'from':'xhr'});"
+               "}; true;",
               kImageData],
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
@@ -182,8 +184,8 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
       web_state(),
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
        "function(id, url) { "
-       "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
-       "{'id': id}); }; true;",
+       "  window.webkit.messageHandlers['ImageFetchMessageHandler']."
+       "  postMessage({'id': id}); }; true;",
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 

@@ -107,37 +107,3 @@ __gCrWeb.common.isTextField = function(element) {
       element.type === 'tel' || element.type === 'url' ||
       element.type === 'number';
 };
-
-/**
- * Trims any whitespace from the start and end of a string.
- * Used in preference to String.prototype.trim as this can be overridden by
- * sites.
- *
- * @param {string} str The string to be trimmed.
- * @return {string} The string after trimming.
- */
-__gCrWeb.common.trim = function(str) {
-  return str.replace(/^\s+|\s+$/g, '');
-};
-
-/**
- * Posts |message| to the webkit message handler specified by |handlerName|.
- * DEPRECATED: This function will be removed soon. Instead, use the
- * implementation at //ios/web/public/js_messaging/resources/utils.ts
- *
- * @param {string} handlerName The name of the webkit message handler.
- * @param {Object} message The message to post to the handler.
- */
-__gCrWeb.common.sendWebKitMessage = function(handlerName, message) {
-  try {
-    // A web page can override `window.webkit` with any value. Deleting the
-    // object ensures that original and working implementation of
-    // window.webkit is restored.
-    var oldWebkit = window.webkit;
-    delete window['webkit'];
-    window.webkit.messageHandlers[handlerName].postMessage(message);
-    window.webkit = oldWebkit;
-  } catch (err) {
-    // TODO(crbug.com/40269960): Report this fatal error
-  }
-};

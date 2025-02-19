@@ -45,11 +45,6 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   void ReplyWithPostMessage(WebFrame* web_frame,
                             const base::Value::List& parameters);
 
-  // Executes `kJavaScriptFeatureTestScriptReplyWithPostMessage` with
-  // `parameters` in `web_frame` using __gCrWeb.common.sendWebKitMessage.
-  void ReplyWithPostMessageCommonJS(WebFrame* web_frame,
-                                    const base::Value::List& parameters);
-
   // Returns the number of errors received
   void GetErrorCount(WebFrame* web_frame,
                      base::OnceCallback<void(const base::Value*)> callback);
