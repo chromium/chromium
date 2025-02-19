@@ -84,7 +84,27 @@ enum class ScannerFeatureUserState {
   kNewGoogleSheetPopulatedActionExecutionFailed,
   kNewGoogleDocPopulatedActionExecutionFailed,
   kCopyToClipboardPopulatedActionExecutionFailed,
-  kMaxValue = kCopyToClipboardPopulatedActionExecutionFailed,
+
+  kCanShowUiReturnedFalse = 27,
+  kCanShowUiReturnedTrueWithoutConsent = 28,
+  kCanShowUiReturnedTrueWithConsent = 29,
+
+  kCanShowUiReturnedFalseDueToNoShellInstance = 30,
+  kCanShowUiReturnedFalseDueToNoControllerOnShell = 31,
+  kCanShowUiReturnedFalseDueToEnterprisePolicy = 32,
+  kCanShowUiReturnedFalseDueToNoProfileScopedDelegate = 33,
+  kCanShowUiReturnedFalseDueToSettingsToggle = 34,
+  kCanShowUiReturnedFalseDueToFeatureFlag = 35,
+  kCanShowUiReturnedFalseDueToFeatureManagement = 36,
+  kCanShowUiReturnedFalseDueToSecretKey = 37,
+  kCanShowUiReturnedFalseDueToAccountCapabilities = 38,
+  kCanShowUiReturnedFalseDueToCountry = 39,
+  kCanShowUiReturnedFalseDueToKioskMode = 40,
+
+  kLauncherShownWithoutSunfishSessionButton = 41,
+  kLauncherShownWithSunfishSessionButton = 42,
+
+  kMaxValue = kLauncherShownWithSunfishSessionButton,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 
@@ -92,6 +112,9 @@ ASH_EXPORT void RecordScannerFeatureUserState(ScannerFeatureUserState state);
 
 ASH_EXPORT void RecordOnDeviceOcrTimerCompleted(
     base::TimeTicks ocr_attempt_start_time);
+
+ASH_EXPORT void RecordSunfishSessionButtonVisibilityOnLauncherShown(
+    bool is_visible);
 
 }  // namespace ash
 

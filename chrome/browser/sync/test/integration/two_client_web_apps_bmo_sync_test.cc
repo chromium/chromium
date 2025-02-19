@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
@@ -76,17 +75,6 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     if (!result) {
       return result;
     }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings.
-    // Enable the Apps toggle for both clients.
-    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    }
-#endif
-
     for (Profile* profile : GetAllProfiles()) {
       web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
           WebAppProvider::GetForTest(profile));
@@ -513,8 +501,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 }
 
 // Flaky on Linux TSan (crbug.com/1108172).
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_UninstallSynced DISABLED_UninstallSynced
 #else
 #define MAYBE_UninstallSynced UninstallSynced
@@ -646,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
     base::RunLoop loop;
     base::RepeatingCallback<void(const webapps::AppId&)> on_installed_closure;
     base::RepeatingCallback<void(const webapps::AppId&)> on_hooks_closure;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     on_installed_closure = base::DoNothing();
     on_hooks_closure = base::BindLambdaForTesting(
         [&](const webapps::AppId& installed_app_id) { loop.Quit(); });

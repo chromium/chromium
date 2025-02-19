@@ -66,20 +66,19 @@ void TabletVolumeController::ParseSideVolumeButtonLocationInfo() {
     return;
   }
 
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(location_info);
-  if (!parsed_json || !parsed_json->is_dict()) {
+  std::optional<base::Value::Dict> parsed_json =
+      base::JSONReader::ReadDict(location_info);
+  if (!parsed_json) {
     LOG(ERROR) << "JSONReader failed reading side volume button location info: "
                << location_info;
     return;
   }
 
-  const base::Value::Dict& info_in_dict = parsed_json->GetDict();
-  const std::string* region = info_in_dict.FindString(kVolumeButtonRegion);
+  const std::string* region = parsed_json->FindString(kVolumeButtonRegion);
   if (region)
     side_volume_button_location_.region = *region;
 
-  const std::string* side = info_in_dict.FindString(kVolumeButtonSide);
+  const std::string* side = parsed_json->FindString(kVolumeButtonSide);
   if (side)
     side_volume_button_location_.side = *side;
 }

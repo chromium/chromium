@@ -13,10 +13,7 @@ class ScrollMarkerGroupPseudoElement;
 
 class ScrollMarkerPseudoElement : public PseudoElement {
  public:
-  explicit ScrollMarkerPseudoElement(Element* originating_element)
-      : PseudoElement(originating_element, kPseudoIdScrollMarker) {
-    SetTabIndexExplicitly();
-  }
+  explicit ScrollMarkerPseudoElement(Element* originating_element);
 
   bool IsScrollMarkerPseudoElement() const final { return true; }
 

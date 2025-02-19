@@ -18,15 +18,17 @@
 
 namespace {
 
+using ::testing::ExpectationSet;
+using enum PrivacySandboxService::AdsDialogCallbackNoArgsEvents;
+
 constexpr char kCallbackId[] = "test-callback-id";
 
 class MockPrivacySandboxDialogView {
  public:
-  MOCK_METHOD(void, Close, ());
+  MOCK_METHOD(void,
+              AdsDialogNoArgsCallback,
+              (PrivacySandboxService::AdsDialogCallbackNoArgsEvents));
   MOCK_METHOD(void, ResizeNativeView, (int));
-  MOCK_METHOD(void, ShowNativeView, ());
-  MOCK_METHOD(void, OpenPrivacySandboxSettings, ());
-  MOCK_METHOD(void, OpenPrivacySandboxAdMeasurementSettings, ());
 };
 
 }  // namespace
@@ -62,7 +64,7 @@ class PrivacySandboxDialogHandlerTest : public testing::Test {
   // Used when validating those prompt types that only notify of a prompt action
   // on the WebUI side.
   void ShowDialog() {
-    EXPECT_CALL(*dialog_mock(), ShowNativeView());
+    EXPECT_CALL(*dialog_mock(), AdsDialogNoArgsCallback(kShowDialog));
     base::Value::List args;
     web_ui()->ProcessWebUIMessage(GURL(), "showDialog", std::move(args));
   }
@@ -119,17 +121,10 @@ class PrivacySandboxConsentDialogHandlerTest
     // base::Unretained is safe because the created handler does not outlive the
     // mock.
     return std::make_unique<PrivacySandboxDialogHandler>(
-        base::BindOnce(&MockPrivacySandboxDialogView::Close,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::ShowNativeView,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(
-            &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
+        base::BindRepeating(
+            &MockPrivacySandboxDialogView::AdsDialogNoArgsCallback,
             base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::
-                           OpenPrivacySandboxAdMeasurementSettings,
+        base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
                        base::Unretained(dialog_mock())),
         PrivacySandboxService::PromptType::kM1Consent);
   }
@@ -293,7 +288,7 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleClickPrivacyPolicy) {
 
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentAccepted) {
   ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);
-  EXPECT_CALL(*dialog_mock(), Close()).Times(0);
+  EXPECT_CALL(*dialog_mock(), AdsDialogNoArgsCallback(kCloseDialog)).Times(0);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
                   PrivacySandboxService::PromptAction::kConsentAccepted,
@@ -315,7 +310,7 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentAccepted) {
 
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentDeclined) {
   ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);
-  EXPECT_CALL(*dialog_mock(), Close()).Times(0);
+  EXPECT_CALL(*dialog_mock(), AdsDialogNoArgsCallback(kCloseDialog)).Times(0);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
                   PrivacySandboxService::PromptAction::kConsentDeclined,
@@ -342,17 +337,10 @@ class PrivacySandboxNoticeDialogHandlerTest
     // base::Unretained is safe because the created handler does not outlive the
     // mock.
     return std::make_unique<PrivacySandboxDialogHandler>(
-        base::BindOnce(&MockPrivacySandboxDialogView::Close,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::ShowNativeView,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(
-            &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
+        base::BindRepeating(
+            &MockPrivacySandboxDialogView::AdsDialogNoArgsCallback,
             base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::
-                           OpenPrivacySandboxAdMeasurementSettings,
+        base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
                        base::Unretained(dialog_mock())),
         PrivacySandboxService::PromptType::kM1NoticeROW);
   }
@@ -391,8 +379,9 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleShowDialog) {
 
 TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleOpenSettings) {
   ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
-  EXPECT_CALL(*dialog_mock(), OpenPrivacySandboxSettings());
-  EXPECT_CALL(*dialog_mock(), Close());
+  ExpectationSet es = EXPECT_CALL(
+      *dialog_mock(), AdsDialogNoArgsCallback(kOpenAdsPrivacySettings));
+  EXPECT_CALL(*dialog_mock(), AdsDialogNoArgsCallback(kCloseDialog)).After(es);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
                   PrivacySandboxService::PromptAction::kNoticeOpenSettings,
@@ -414,7 +403,7 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleOpenSettings) {
 
 TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleNoticeAcknowledge) {
   ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
-  EXPECT_CALL(*dialog_mock(), Close());
+  EXPECT_CALL(*dialog_mock(), AdsDialogNoArgsCallback(kCloseDialog));
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
                   PrivacySandboxService::PromptAction::kNoticeAcknowledge,
@@ -523,17 +512,10 @@ class PrivacySandboxNoticeRestrictedDialogHandlerTest
     // base::Unretained is safe because the created handler does not outlive the
     // mock.
     return std::make_unique<PrivacySandboxDialogHandler>(
-        base::BindOnce(&MockPrivacySandboxDialogView::Close,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::ShowNativeView,
-                       base::Unretained(dialog_mock())),
-        base::BindOnce(
-            &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
+        base::BindRepeating(
+            &MockPrivacySandboxDialogView::AdsDialogNoArgsCallback,
             base::Unretained(dialog_mock())),
-        base::BindOnce(&MockPrivacySandboxDialogView::
-                           OpenPrivacySandboxAdMeasurementSettings,
+        base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
                        base::Unretained(dialog_mock())),
         PrivacySandboxService::PromptType::kM1NoticeRestricted);
   }
@@ -541,8 +523,9 @@ class PrivacySandboxNoticeRestrictedDialogHandlerTest
 
 TEST_F(PrivacySandboxNoticeRestrictedDialogHandlerTest, HandleOpenSettings) {
   ShowDialog();
-  EXPECT_CALL(*dialog_mock(), OpenPrivacySandboxAdMeasurementSettings());
-  EXPECT_CALL(*dialog_mock(), Close());
+  ExpectationSet es = EXPECT_CALL(
+      *dialog_mock(), AdsDialogNoArgsCallback(kOpenMeasurementSettings));
+  EXPECT_CALL(*dialog_mock(), AdsDialogNoArgsCallback(kCloseDialog)).After(es);
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
@@ -565,7 +548,7 @@ TEST_F(PrivacySandboxNoticeRestrictedDialogHandlerTest, HandleOpenSettings) {
 
 TEST_F(PrivacySandboxNoticeRestrictedDialogHandlerTest, HandleAcknowledge) {
   ShowDialog();
-  EXPECT_CALL(*dialog_mock(), Close());
+  EXPECT_CALL(*dialog_mock(), AdsDialogNoArgsCallback(kCloseDialog));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(

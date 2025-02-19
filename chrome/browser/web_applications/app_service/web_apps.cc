@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -24,7 +24,7 @@
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
@@ -51,7 +51,7 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
     : apps::AppPublisher(proxy),
       profile_(proxy->profile()),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       instance_registry_(&proxy->InstanceRegistry()),
 #endif
       publisher_helper_(profile_, provider_, this) {
@@ -97,7 +97,7 @@ void WebApps::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebApps::GetCompressedIconData(const std::string& app_id,
                                     int32_t size_in_dip,
                                     ui::ResourceScaleFactor scale_factor,
@@ -167,7 +167,7 @@ void WebApps::Uninstall(const std::string& app_id,
                                      report_abuse);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebApps::GetMenuModel(const std::string& app_id,
                            apps::MenuType menu_type,
                            int64_t display_id,
@@ -264,7 +264,7 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (apps.empty()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // This is for prototyping and testing only. It is to provide an easy way to
   // simulate web app promise icon behaviour for the UI/ client development of
   // web app promise icons.
@@ -275,25 +275,25 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
       apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const WebApp* web_app = GetWebApp(ash::kChromeUIUntrustedProjectorSwaAppId);
   if (web_app) {
     proxy()->SetSupportedLinksPreference(
         ash::kChromeUIUntrustedProjectorSwaAppId);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebApps::PublishWebApp(apps::AppPtr app) {
   if (!is_ready_) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_projector = app->app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
 
   // This is for prototyping and testing only.
@@ -302,11 +302,11 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
   if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
     apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   apps::AppPublisher::Publish(std::move(app));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_projector) {
     // After OOBE, PublishWebApps() above could execute before the Projector app
     // has been registered. Since we need to call SetSupportedLinksPreference()
@@ -315,7 +315,7 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
     proxy()->SetSupportedLinksPreference(
         ash::kChromeUIUntrustedProjectorSwaAppId);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebApps::ModifyWebAppCapabilityAccess(
@@ -348,8 +348,7 @@ void WebApps::InitWebApps() {
                               /*should_notify_initialized=*/true);
 }
 
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebApps::PauseApp(const std::string& app_id) {
   publisher_helper().PauseApp(app_id);
 }

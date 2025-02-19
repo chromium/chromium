@@ -64,6 +64,7 @@ void GlicWindowResizeAnimation::AnimateToState(double state) {
   window_controller_->GetGlicWidget()->SetBounds(gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::EASE_IN_OUT_EMPHASIZED, state),
       initial_bounds_, new_bounds_));
+  duration_left_ = (1 - GetCurrentValue()) * duration();
 }
 
 void GlicWindowResizeAnimation::AnimationEnded(const Animation* animation) {
@@ -71,16 +72,10 @@ void GlicWindowResizeAnimation::AnimationEnded(const Animation* animation) {
   glic_window_animator_->ResizeFinished();
 }
 
-void GlicWindowResizeAnimation::UpdateTargetPosition(
-    const gfx::Point& point,
+void GlicWindowResizeAnimation::UpdateTargetBounds(
+    const gfx::Rect& target_bounds,
     base::OnceClosure callback) {
-  new_bounds_.set_origin(point);
-  destruction_callbacks_->AddUnsafe(std::move(callback));
-}
-
-void GlicWindowResizeAnimation::UpdateTargetSize(const gfx::Size& size,
-                                                 base::OnceClosure callback) {
-  new_bounds_.set_size(size);
+  new_bounds_ = target_bounds;
   destruction_callbacks_->AddUnsafe(std::move(callback));
 }
 

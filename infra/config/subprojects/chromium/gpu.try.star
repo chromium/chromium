@@ -236,6 +236,15 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-amd-rx-7600-rel",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Release (AMD RX 7600)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-exp",
     mirrors = [
         "ci/GPU FYI Linux Builder",
@@ -593,6 +602,15 @@ gpu_win_builder(
     mirrors = [
         "ci/GPU FYI Win x64 Builder",
         "ci/Win10 FYI x64 Release (NVIDIA)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+)
+
+gpu_win_builder(
+    name = "gpu-fyi-try-win11-amd-rel-64",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win11 FYI x64 Release (AMD RX 7600)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
 )

@@ -245,7 +245,6 @@ void ConfigureTabResumptionItemForShopCard(
 
   // The owning Browser.
   raw_ptr<Browser> _browser;
-  raw_ptr<PrefService> _localState;
   raw_ptr<PrefService> _profilePrefs;
   SceneState* _sceneState;
   // Loads favicons.
@@ -281,15 +280,14 @@ void ConfigureTabResumptionItemForShopCard(
   raw_ptr<commerce::ShoppingService> _shoppingService;
 }
 
-- (instancetype)initWithLocalState:(PrefService*)localState
-                       prefService:(PrefService*)prefService
-                   identityManager:(signin::IdentityManager*)identityManager
-                           browser:(Browser*)browser
-                   shoppingService:(commerce::ShoppingService*)shoppingService {
+- (instancetype)initWithPrefService:(PrefService*)prefService
+                    identityManager:(signin::IdentityManager*)identityManager
+                            browser:(Browser*)browser
+                    shoppingService:
+                        (commerce::ShoppingService*)shoppingService {
   self = [super init];
   if (self) {
     CHECK(IsTabResumptionEnabled());
-    _localState = localState;
     _profilePrefs = prefService;
     _browser = browser;
     _tabId = SessionID::InvalidValue();
@@ -306,8 +304,8 @@ void ConfigureTabResumptionItemForShopCard(
       [_tabResumptionDisabled setObserver:self];
     } else {
       _tabResumptionDisabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:_localState
-                     prefName:tab_resumption_prefs::kTabResumptioDisabledPref];
+          initWithPrefService:_profilePrefs
+                     prefName:tab_resumption_prefs::kTabResumptionDisabledPref];
       [_tabResumptionDisabled setObserver:self];
     }
 
@@ -430,8 +428,7 @@ void ConfigureTabResumptionItemForShopCard(
 }
 
 - (void)disableModule {
-  tab_resumption_prefs::DisableTabResumption(
-      IsHomeCustomizationEnabled() ? _profilePrefs : _localState);
+  tab_resumption_prefs::DisableTabResumption(_profilePrefs);
 }
 
 - (void)setDelegate:(id<TabResumptionHelperDelegate>)delegate {
@@ -527,8 +524,7 @@ void ConfigureTabResumptionItemForShopCard(
 
 // Fetches the item to display from the model.
 - (void)fetchLastTabResumptionItem {
-  if (tab_resumption_prefs::IsTabResumptionDisabled(
-          IsHomeCustomizationEnabled() ? _profilePrefs : _localState)) {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(_profilePrefs)) {
     return;
   }
   if (_visitedURLRankingService && IsTabResumption2_0Enabled()) {

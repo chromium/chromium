@@ -10,9 +10,6 @@
   # See //third_party/grpc/README.chromium for more information.
 
   declare_args() {
-    # Compiles with ares.
-    enable_grpc_ares = false
-
     # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
     # Keep using static linking for now.
     # In windows, mac and iOS use static linking.
@@ -44,6 +41,11 @@
     ]
 
     defines = [
+      # Override some unused functionality in config_protobuf.h to sidestep
+      # compilation errors.
+      "GRPC_CUSTOM_JSONUTIL=::google::protobuf",
+      "GRPC_CUSTOM_UTIL_STATUS=int",
+
       "GRPC_USE_PROTO_LITE",
       "HAVE_CONFIG_H",
       "PB_FIELD_16BIT",
@@ -76,12 +78,10 @@
       ]
     }
 
-    if (!enable_grpc_ares) {
-      defines += [
-        # Disable c-ares since it doesn't currently support Fuchsia
-        "GRPC_ARES=0",
-      ]
-    }
+    defines += [
+      # Disable c-ares since it doesn't currently support Fuchsia
+      "GRPC_ARES=0",
+    ]
   }
 
   config("grpc_config_private") {
@@ -304,16 +304,19 @@
 
 
   def strip_sources(sources):
-    exceptions = [
+    lb_policy_allowlist = [
       "src/src/core/ext/filters/client_channel/lb_policy/grpclb/grpclb_balancer_addresses.h",
       "src/src/core/ext/filters/client_channel/lb_policy/grpclb/grpclb_balancer_addresses.cc",
       "src/src/core/ext/filters/client_channel/lb_policy/pick_first/pick_first.cc",
     ]
 
     return [f for f in sources
-            if "ruby_generator" not in f
+            if not re.match("src/src/compiler/ruby_generator.*", f)
+            and not re.match("src/src/compiler/csharp_generator.*", f)
+            and not re.match("src/src/compiler/objective_c_generator.*", f)
+            and not re.match("src/src/compiler/php_generator.*", f)
             and not (re.match("src/src/core/ext/filters/client_channel/lb_policy/.*/.*",f)
-                and not f in exceptions)
+                and not f in lb_policy_allowlist)
             and not re.match("src/src/core/ext/filters/client_channel/resolver/xds/.*",f)
             and not re.match("src/src/core/ext/xds/.*",f)
             ]
@@ -602,15 +605,6 @@
       "src/third_party/cares/ares_build.h",
     ]
 
-    if (enable_grpc_ares) {
-      include_dirs = [ "//third_party/cares/include" ]
-      sources += [
-  % for src in cares_sources:
-        "${src}",
-  % endfor
-      ]
-    }
-
     if (is_android) {
       sources += [ "src/third_party/cares/config_android/ares_config.h" ]
       configs += [ ":cares_config" ]
@@ -624,18 +618,4 @@
     ]
 
     public_configs = [ ":grpc_config" ]
-  }
-
-  group("fuzzers") {}
-
-  if (is_android) {
-    # gRPC BinderTransport's Java API and internal code, which cannot be handled by GN's source_set
-    # and we need manually create a android_library target for them.
-    android_library("binder_java_helper") {
-      sources = [
-        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/GrpcBinderConnection.java",
-        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/GrpcCppServerBuilder.java",
-        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/NativeConnectionHelper.java",
-      ]
-    }
   }

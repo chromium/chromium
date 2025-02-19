@@ -957,12 +957,6 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
     state_descs.push_back(GetAriaCurrentStateDescription());
   }
 
-  // For nodes of any type that are required, add this to the end of the state.
-  if (IsRequired()) {
-    state_descs.push_back(
-        GetLocalizedString(IDS_AX_ARIA_REQUIRED_STATE_DESCRIPTION));
-  }
-
   // Concatenate all state descriptions and return.
   return base::JoinString(state_descs, u" ");
 }

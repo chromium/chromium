@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -50,9 +51,9 @@ class FakeServerAppChecker : public fake_server::FakeServerMatchStatusChecker {
   // are implicitly added to the expected set of ids.
   explicit FakeServerAppChecker(std::vector<std::string> expected_app_ids) {
     expected_app_ids.push_back(extensions::kWebStoreAppId);
-    #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     expected_app_ids.push_back(app_constants::kChromeAppId);
-    #endif
+#endif
     expected_app_ids_ = base::MakeFlatSet<std::string>(expected_app_ids);
   }
 
@@ -83,24 +84,7 @@ class SingleClientExtensionAppsSyncTest : public SyncTest {
   SingleClientExtensionAppsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientExtensionAppsSyncTest() override = default;
 
-  bool SetupClients() override {
-    if (!SyncTest::SetupClients()) {
-      return false;
-    }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings.
-    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    }
-#endif
-    return true;
-  }
-
  private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN)
   // This stops extension installation from creating a shortcut in the real
   // desktop startup dir. This prevents Chrome launching with the extension

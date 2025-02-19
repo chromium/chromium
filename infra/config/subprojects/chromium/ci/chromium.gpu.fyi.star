@@ -1481,7 +1481,48 @@ ci.thin_tester(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux|AMD",
-        short_name = "rel",
+        short_name = "5500",
+    ),
+)
+
+ci.thin_tester(
+    name = "Linux FYI Release (AMD RX 7600)",
+    description_html = "Runs release GPU tests on stable Linux/AMD RX 7600 configs",
+    triggered_by = ["GPU FYI Linux Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_noop_sleep_telemetry_test",
+            # TODO(crbug.com/396611134): Enable actual tests.
+            # "gpu_fyi_linux_release_gtests",
+            # "gpu_fyi_linux_release_telemetry_tests",
+        ],
+        mixins = [
+            "linux_amd_rx_7600_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|AMD",
+        short_name = "7600",
     ),
 )
 
@@ -2857,6 +2898,60 @@ ci.thin_tester(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|10|x64|Nvidia",
+        short_name = "rel",
+    ),
+)
+
+ci.thin_tester(
+    name = "Win11 FYI x64 Release (AMD RX 7600)",
+    description_html = "Runs release GPU tests on stable Windows 11/AMD RX 7600 configs",
+    triggered_by = ["GPU FYI Win x64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_noop_sleep_telemetry_test",
+            # TODO(crbug.com/396611135): Enable actual tests.
+            # "gpu_fyi_win_gtests",
+            # "gpu_fyi_win_amd_release_telemetry_tests",
+        ],
+        mixins = [
+            "win11_amd_rx_7600_stable",
+        ],
+        per_test_modifications = {
+            # "gl_unittests": targets.mixin(
+            #     args = [
+            #         "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_unittests.filter",
+            #     ],
+            # ),
+            # "media_foundation_browser_tests": targets.remove(
+            #     reason = [
+            #         "TODO(crbug.com/40912267): Enable Media Foundation browser tests on ",
+            #         "gpu bots once the Windows OS supports HW secure decryption.",
+            #     ],
+            # ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|11|x64|AMD",
         short_name = "rel",
     ),
 )

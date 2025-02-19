@@ -1377,6 +1377,9 @@ TEST_F(WebContentsImplTest, CrossSiteNotPreemptedDuringBeforeUnload) {
     GTEST_SKIP();
   }
   DisableProactiveBrowsingInstanceSwapFor(orig_rfh);
+  // This test assumes a beforeunload handler is present.
+  orig_rfh->SuddenTerminationDisablerChanged(
+      true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
   auto same_site_navigation = NavigationSimulator::CreateRendererInitiated(
       kSameSiteUrl, main_test_rfh());
   same_site_navigation->SetHasUserGesture(false);

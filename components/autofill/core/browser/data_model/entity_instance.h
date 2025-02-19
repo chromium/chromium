@@ -81,6 +81,12 @@ class AttributeInstance final : public FormGroup {
   // Typically a user-entered string, e.g., a date.
   const std::u16string& value() const { return value_; }
 
+  // Returns the normalized version of `this` attribute instance value. This
+  // normalization removes extra spaces, converts the value to lowercase and
+  // removes some special characters. Its underlying implementation is
+  // `AutofillProfileComparator::NormalizeForComparison()`.
+  std::u16string NormalizedValue() const;
+
   // Metadata from the saving moment of the value.
   const Context& context() const { return context_; }
 
@@ -195,7 +201,7 @@ class EntityInstance final {
     bool is_subset = false;
   };
 
-  // - If `newer` is a proper superset of `this`,
+  // - If `this` is a proper superset of `newer`,
   //   `EntityMergeability::mergeable_attributes` contains the list of
   //   attributes that `newer` has, but `this` does not. These attributes can be
   //   set on `this` to update it.
@@ -203,8 +209,10 @@ class EntityInstance final {
   //   `EntityMergeability::mergeable_attributes` is empty and
   //   `EntityMergeability::is_subset` is `true`. In this case no saving or
   //   updating is required.
-  // - Otherwise, we have a situation were `newer` should be considered an
-  //   independent entity.
+  // - If `newer` and `this` have a matching merge constraints, the values of
+  //   `newer` should be merged into `this` and
+  //   `EntityMergeability::mergeable_attributes` will not be empty.
+  // - Otherwise, `newer` should be considered an independent entity.
   // TODO(389629676): This does not yet properly handle names and possibly
   // dates.
   EntityMergeability GetEntityMergeability(const EntityInstance& newer) const;

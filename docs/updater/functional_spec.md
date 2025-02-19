@@ -521,6 +521,20 @@ button. Clicking the help button opens a web page in the user's default browser.
 The page is opened with a query string:
 `?product={AppId}&errorcode={ErrorCode}`.
 
+### Periodic detection of over-installed apps
+
+The updater periodically checks if application versions persisted to the system
+match its built-in `pv` value. If different, the updater sends an installation
+ping for the application indicating the actually installed version and updates
+the internal `pv` value to match.
+
+The application's version persisted to the system is determined via:
+
+* The plist file and key indicated by the `pv_path` and `pv_key` in the app's
+  updater registration on MacOS.
+* The `pv` registry key as described by the "App Registration" section on
+  Windows.
+
 ## Updates
 There is no limit for the number of retries to update an application if the
 update fails repeatedly.

@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
@@ -1175,7 +1176,7 @@ BnplIssuer GetTestLinkedBnplIssuer() {
   eligible_price_ranges.emplace_back(/*currency=*/"USD",
                                      /*price_lower_bound=*/50'000'000,
                                      /*price_upper_bound=*/200'000'000);
-  return BnplIssuer(12345, /*issuer_id=*/"test_issuer_id1",
+  return BnplIssuer(12345, std::string(kBnplAffirmIssuerId),
                     std::move(eligible_price_ranges));
 }
 
@@ -1185,7 +1186,7 @@ BnplIssuer GetTestUnlinkedBnplIssuer() {
   eligible_price_ranges.emplace_back(/*currency=*/"USD",
                                      /*price_lower_bound=*/35'000'000,
                                      /*price_upper_bound=*/100'000'000);
-  return BnplIssuer(std::nullopt, /*issuer_id=*/"test_issuer_id2",
+  return BnplIssuer(std::nullopt, std::string(kBnplZipIssuerId),
                     std::move(eligible_price_ranges));
 }
 
@@ -1196,7 +1197,7 @@ CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id) {
 
   sync_pb::BnplCreationOption* bnpl_option =
       payment_instrument_creation_option.mutable_buy_now_pay_later_option();
-  bnpl_option->set_issuer_id("issuer_id");
+  bnpl_option->set_issuer_id(kBnplAffirmIssuerId);
 
   sync_pb::EligiblePriceRange eligible_price_range;
   eligible_price_range.set_currency("USD");

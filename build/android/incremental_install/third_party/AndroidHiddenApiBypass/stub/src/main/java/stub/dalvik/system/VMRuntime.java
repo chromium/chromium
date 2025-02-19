@@ -1,4 +1,4 @@
-package dalvik.system;
+package stub.dalvik.system;
 
 @SuppressWarnings("unused")
 public class VMRuntime {

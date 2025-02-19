@@ -550,7 +550,7 @@ class ASH_EXPORT CaptureModeController
   void OnTextDetectionComplete(
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       base::TimeTicks ocr_attempt_start_time,
-      std::string detected_text);
+      std::optional<std::string> detected_text);
 
   // Called back when Lens-based text detection is complete to show the copy
   // text button if needed. `image_search_token` is a weak pointer which is
@@ -560,7 +560,7 @@ class ASH_EXPORT CaptureModeController
   // used in Sunfish capture mode sessions when a region is selected.
   void OnLensTextDetectionComplete(
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
-      std::string detected_text);
+      std::optional<std::string> detected_text);
 
   // Helper function that adds a Copy Text button and potentially a Smart
   // Actions button to the session. Called when both Lens-based and on-device

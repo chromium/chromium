@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_STRINGS_STRING_TOKENIZER_H_
 #define BASE_STRINGS_STRING_TOKENIZER_H_
 
@@ -16,6 +11,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -241,7 +237,7 @@ class StringTokenizerT {
   // policy.
   void SkipWhitespace() {
     while (token_end_ != end_ && ShouldSkip(*token_end_)) {
-      ++token_end_;
+      UNSAFE_TODO(++token_end_);
     }
   }
 
@@ -256,7 +252,7 @@ class StringTokenizerT {
         token_is_delim_ = true;
         return false;
       }
-      ++token_end_;
+      UNSAFE_TODO(++token_end_);
       if (delims_.find(*token_begin_) == str::npos &&
           !ShouldSkip(*token_begin_)) {
         break;
@@ -265,7 +261,7 @@ class StringTokenizerT {
     }
     while (token_end_ != end_ && delims_.find(*token_end_) == str::npos &&
            !ShouldSkip(*token_end_)) {
-      ++token_end_;
+      UNSAFE_TODO(++token_end_);
     }
     return true;
   }
@@ -293,7 +289,7 @@ class StringTokenizerT {
 
         // Slurp all non-delimiter characters into the token.
         while (token_end_ != end_ && AdvanceOne(&state, *token_end_)) {
-          ++token_end_;
+          UNSAFE_TODO(++token_end_);
         }
 
         // If it's non-empty, or empty tokens were requested, return the token.
@@ -325,7 +321,7 @@ class StringTokenizerT {
       }
 
       // Look at the delimiter.
-      ++token_end_;
+      UNSAFE_TODO(++token_end_);
       if (options_ & RETURN_DELIMS) {
         return true;
       }

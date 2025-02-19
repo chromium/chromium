@@ -11,7 +11,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -22,14 +22,10 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 namespace {
@@ -116,11 +112,7 @@ constexpr Translation kNameTranslations[] = {
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsDriveFsBulkPinningAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsDriveFsBulkPinningAvailable();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return drive::util::IsDriveFsBulkPinningAvailable();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

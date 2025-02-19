@@ -398,6 +398,29 @@ void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
 }
 
+// static
+bool ScannerController::CanShowUiForShell() {
+  if (!Shell::HasInstance()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalseDueToNoShellInstance);
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
+    return false;
+  }
+
+  ScannerController* controller = Shell::Get()->scanner_controller();
+  if (!controller) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kCanShowUiReturnedFalseDueToNoControllerOnShell);
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
+    return false;
+  }
+
+  return controller->CanShowUi();
+}
+
 void ScannerController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   scanner_session_ = nullptr;
@@ -405,22 +428,6 @@ void ScannerController::OnActiveUserSessionChanged(
 }
 
 bool ScannerController::CanShowUi() {
-  ScannerProfileScopedDelegate* profile_scoped_delegate =
-      delegate_->GetProfileScopedDelegate();
-
-  if (profile_scoped_delegate == nullptr) {
-    return false;
-  }
-
-  specialized_features::FeatureAccessFailureSet checks =
-      profile_scoped_delegate->CheckFeatureAccess();
-
-  checks.Remove(
-      specialized_features::FeatureAccessFailure::kConsentNotAccepted);
-  if (!checks.empty()) {
-    return false;
-  }
-
   // Check enterprise policy.
   const AccountId& account_id = session_controller_->GetActiveAccountId();
   PrefService* prefs =
@@ -430,9 +437,100 @@ bool ScannerController::CanShowUi() {
   if (prefs != nullptr &&
       prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
           static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalseDueToEnterprisePolicy);
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
 
+  ScannerProfileScopedDelegate* profile_scoped_delegate =
+      delegate_->GetProfileScopedDelegate();
+
+  if (profile_scoped_delegate == nullptr) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kCanShowUiReturnedFalseDueToNoProfileScopedDelegate);
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
+    return false;
+  }
+
+  specialized_features::FeatureAccessFailureSet checks =
+      profile_scoped_delegate->CheckFeatureAccess();
+
+  bool consent_accepted = true;
+  bool show_ui = true;
+
+  for (specialized_features::FeatureAccessFailure failure : checks) {
+    switch (failure) {
+      case specialized_features::FeatureAccessFailure::kConsentNotAccepted:
+        consent_accepted = false;
+        break;
+
+      case specialized_features::FeatureAccessFailure::kDisabledInSettings:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::
+                kCanShowUiReturnedFalseDueToSettingsToggle);
+        show_ui = false;
+        break;
+
+      case specialized_features::FeatureAccessFailure::kFeatureFlagDisabled:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::kCanShowUiReturnedFalseDueToFeatureFlag);
+        show_ui = false;
+        break;
+
+      case specialized_features::FeatureAccessFailure::
+          kFeatureManagementCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::
+                kCanShowUiReturnedFalseDueToFeatureManagement);
+        show_ui = false;
+        break;
+
+      case specialized_features::FeatureAccessFailure::kSecretKeyCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::kCanShowUiReturnedFalseDueToSecretKey);
+        show_ui = false;
+        break;
+
+      case specialized_features::FeatureAccessFailure::
+          kAccountCapabilitiesCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::
+                kCanShowUiReturnedFalseDueToAccountCapabilities);
+        show_ui = false;
+        break;
+
+      case specialized_features::FeatureAccessFailure::kCountryCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::kCanShowUiReturnedFalseDueToCountry);
+        show_ui = false;
+        break;
+
+      case specialized_features::FeatureAccessFailure::
+          kDisabledInKioskModeCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::kCanShowUiReturnedFalseDueToKioskMode);
+        show_ui = false;
+        break;
+    }
+  }
+
+  if (!show_ui) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
+    return false;
+  }
+
+  if (!consent_accepted) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedTrueWithoutConsent);
+  } else {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedTrueWithConsent);
+  }
   return true;
 }
 
@@ -458,17 +556,6 @@ bool ScannerController::CanShowFeatureSettingsToggle() {
 }
 
 bool ScannerController::CanStartSession() {
-  ScannerProfileScopedDelegate* profile_scoped_delegate =
-      delegate_->GetProfileScopedDelegate();
-
-  if (profile_scoped_delegate == nullptr) {
-    return false;
-  }
-
-  if (!profile_scoped_delegate->CheckFeatureAccess().empty()) {
-    return false;
-  }
-
   // Check enterprise policy.
   const AccountId& account_id = session_controller_->GetActiveAccountId();
   PrefService* prefs =
@@ -478,6 +565,17 @@ bool ScannerController::CanStartSession() {
   if (prefs != nullptr &&
       prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
           static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
+    return false;
+  }
+
+  ScannerProfileScopedDelegate* profile_scoped_delegate =
+      delegate_->GetProfileScopedDelegate();
+
+  if (profile_scoped_delegate == nullptr) {
+    return false;
+  }
+
+  if (!profile_scoped_delegate->CheckFeatureAccess().empty()) {
     return false;
   }
 

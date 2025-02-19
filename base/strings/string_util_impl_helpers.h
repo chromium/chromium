@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_STRINGS_STRING_UTIL_IMPL_HELPERS_H_
 #define BASE_STRINGS_STRING_UTIL_IMPL_HELPERS_H_
 
@@ -18,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -97,7 +93,7 @@ TrimPositions TrimStringT(T input,
   }
 
   // Trim.
-  output->assign(input.data() + first_good_char,
+  output->assign(UNSAFE_TODO(input.data() + first_good_char),
                  last_good_char - first_good_char + 1);
 
   // Return where we trimmed from.
@@ -174,11 +170,11 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
   constexpr MachineWord non_ascii_bit_mask = NonASCIIMasks[sizeof(Char)];
   static_assert(non_ascii_bit_mask, "Error: Invalid Mask");
   MachineWord all_char_bits = 0;
-  const Char* end = characters + length;
+  const Char* end = UNSAFE_TODO(characters + length);
 
   // Prologue: align the input.
   while (!IsMachineWordAligned(characters) && characters < end) {
-    all_char_bits |= static_cast<MachineWord>(*characters++);
+    all_char_bits |= UNSAFE_TODO(static_cast<MachineWord>(*characters++));
   }
   if (all_char_bits & non_ascii_bit_mask) {
     return false;
@@ -187,11 +183,11 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
   // Compare the values of CPU word size.
   constexpr size_t chars_per_word = sizeof(MachineWord) / sizeof(Char);
   constexpr int batch_count = 16;
-  while (characters <= end - batch_count * chars_per_word) {
+  while (characters <= UNSAFE_TODO(end - batch_count * chars_per_word)) {
     all_char_bits = 0;
     for (int i = 0; i < batch_count; ++i) {
       all_char_bits |= *(reinterpret_cast<const MachineWord*>(characters));
-      characters += chars_per_word;
+      UNSAFE_TODO(characters += chars_per_word);
     }
     if (all_char_bits & non_ascii_bit_mask) {
       return false;
@@ -200,14 +196,14 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
 
   // Process the remaining words.
   all_char_bits = 0;
-  while (characters <= end - chars_per_word) {
+  while (characters <= UNSAFE_TODO(end - chars_per_word)) {
     all_char_bits |= *(reinterpret_cast<const MachineWord*>(characters));
-    characters += chars_per_word;
+    UNSAFE_TODO(characters += chars_per_word);
   }
 
   // Process the remaining bytes.
   while (characters < end) {
-    all_char_bits |= static_cast<MachineWord>(*characters++);
+    all_char_bits |= UNSAFE_TODO(static_cast<MachineWord>(*characters++));
   }
 
   return !(all_char_bits & non_ascii_bit_mask);
@@ -221,7 +217,7 @@ inline bool DoIsStringUTF8(std::string_view str) {
 
   while (char_index < src_len) {
     base_icu::UChar32 code_point;
-    CBU8_NEXT(src, char_index, src_len, code_point);
+    UNSAFE_TODO(CBU8_NEXT(src, char_index, src_len, code_point));
     if (!Validator(code_point)) {
       return false;
     }
@@ -333,7 +329,8 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
     auto* buffer = &((*str)[0]);
     for (size_t offset = first_match; offset != std::basic_string<CharT>::npos;
          offset = matcher.Find(*str, offset + replace_length)) {
-      CharTraits::copy(buffer + offset, replace_with.data(), replace_length);
+      CharTraits::copy(UNSAFE_TODO(buffer + offset), replace_with.data(),
+                       replace_length);
     }
     return true;
   }
@@ -425,7 +422,7 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
   size_t read_offset = first_match + expansion;
   do {
     if (replace_length) {
-      CharTraits::copy(buffer + write_offset, replace_with.data(),
+      CharTraits::copy(UNSAFE_TODO(buffer + write_offset), replace_with.data(),
                        replace_length);
       write_offset += replace_length;
     }
@@ -437,7 +434,8 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
 
     size_t length = match - read_offset;
     if (length) {
-      CharTraits::move(buffer + write_offset, buffer + read_offset, length);
+      CharTraits::move(UNSAFE_TODO(buffer + write_offset),
+                       UNSAFE_TODO(buffer + read_offset), length);
       write_offset += length;
       read_offset += length;
     }
@@ -497,9 +495,9 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
   auto iter = parts.begin();
   CHECK(iter != parts.end(), base::NotFatalUntil::M125);
   result.append(*iter);
-  ++iter;
+  UNSAFE_TODO(++iter);
 
-  for (; iter != parts.end(); ++iter) {
+  for (; iter != parts.end(); UNSAFE_TODO(++iter)) {
     result.append(sep);
     result.append(*iter);
   }

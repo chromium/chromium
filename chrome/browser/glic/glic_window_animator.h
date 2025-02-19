@@ -27,11 +27,6 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   GlicWindowAnimator& operator=(const GlicWindowAnimator&) = delete;
   ~GlicWindowAnimator() override;
 
-  // Creates a new GlicWindowResizeAnimation instance and starts animating.
-  void CreateNewAnimationAndStart(gfx::Rect target_bounds,
-                                  base::TimeDelta duration,
-                                  base::OnceClosure callback);
-
   // Runs the attached open widget animation for the Glic widget.
   void RunOpenAttachedAnimation(GlicButton* glic_button,
                                 const gfx::Size& target_size,
@@ -67,6 +62,11 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   void ResizeFinished();
 
  private:
+  // Gets the bounds for the widget's resize animation. If there is an animation
+  // already ongoing, use the target bounds for that animation. Otherwise, use
+  // the widget's current bounds.
+  gfx::Rect GetCurrentTargetBounds();
+
   // GlicWindowController owns GlicWindowAnimator and will outlive it
   const raw_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;

@@ -347,6 +347,10 @@ enum WebDXFeature {
   kMediaPlaybackQuality = 289,
   kWebgpu = 290,
   kZstd = 291,
+  kColumnPseudo = 292,
+  kInteractivity = 293,
+  kScrollButtons = 294,
+  kScrollMarkers = 295,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -51,7 +51,7 @@ bool IsOverlayScrollbarOSSettingEnabled() {
 // development and disabled by default.
 BASE_FEATURE(kFluentScrollbar,
              "FluentScrollbar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Makes all native scrollbars behave as overlay scrollbars styled to fit the
 // Fluent design language.

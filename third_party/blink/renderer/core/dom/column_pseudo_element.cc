@@ -4,7 +4,17 @@
 
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+
 namespace blink {
+
+ColumnPseudoElement::ColumnPseudoElement(Element* originating_element,
+                                         wtf_size_t index)
+    : PseudoElement(originating_element, kPseudoIdColumn), index_(index) {
+  UseCounter::Count(GetDocument(), WebFeature::kColumnPseudoElement);
+}
 
 void ColumnPseudoElement::AttachLayoutTree(AttachContext& context) {
   // A ::column element can not have a box, but it may have a ::scroll-marker

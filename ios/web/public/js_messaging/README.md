@@ -162,9 +162,8 @@ subclass and returning a handler name in `GetScriptMessageHandlerName`.
 
 Any responses will be routed to `ScriptMessageReceived`.
 
-From the JavaScript side, these messages are sent using
-`__gCrWeb.common.sendWebKitMessage` in older scripts and `sendWebKitMessage`
-from `//ios/web/public/js_messaging/resources/utils.js` in modern scripts.
+From the JavaScript side, these messages are sent using `sendWebKitMessage`
+from `//ios/web/public/js_messaging/resources/utils.js`.
 
 Note that the handler name must be unique application-wide. WebKit will throw
 an exception while setting up the handler if a name is already registered.

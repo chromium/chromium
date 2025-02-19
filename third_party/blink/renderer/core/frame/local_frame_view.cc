@@ -996,10 +996,12 @@ void LocalFrameView::RunIntersectionObserverSteps() {
   bool was_dirty = NeedsLayout();
 #endif
   if ((intersection_observation_state_ < kRequired &&
-       ShouldThrottleRendering()) ||
+       ShouldThrottleRendering() && !needs_update_delayed_intersection_) ||
       Lifecycle().LifecyclePostponed() || !frame_->GetDocument()->IsActive()) {
     return;
   }
+
+  needs_update_delayed_intersection_ = false;
 
   if (frame_->IsOutermostMainFrame()) {
     EnsureOverlayInterstitialAdDetector().MaybeFireDetection(frame_.Get());
@@ -4329,20 +4331,24 @@ void LocalFrameView::DeliverSynchronousIntersectionObservations() {
 
 void LocalFrameView::ScheduleDelayedIntersection(base::TimeDelta delay) {
   if (RuntimeEnabledFeatures::ForceDelayedIntersectionUpdateEnabled()) {
-    if (!delayed_intersection_timer_.IsActive() ||
-        delayed_intersection_timer_.NextFireInterval() > delay) {
-      delayed_intersection_timer_.Stop();
-      delayed_intersection_timer_.StartOneShot(delay, FROM_HERE);
+    auto& timer = frame_->LocalFrameRoot().View()->delayed_intersection_timer_;
+    if (!timer.IsActive() || timer.NextFireInterval() > delay) {
+      timer.Stop();
+      timer.StartOneShot(delay, FROM_HERE);
     }
   } else {
     ScheduleAnimation(delay);
   }
 }
 
+bool LocalFrameView::HasScheduledDelayedIntersectionForTesting() const {
+  return delayed_intersection_timer_.IsActive();
+}
+
 void LocalFrameView::DelayedIntersectionTimerFired(TimerBase*) {
   CHECK(RuntimeEnabledFeatures::ForceDelayedIntersectionUpdateEnabled());
-  // Force an intersection update even if the frame is throttled.
-  SetIntersectionObservationState(LocalFrameView::kRequired);
+  DCHECK(frame_->IsLocalRoot());
+  needs_update_delayed_intersection_ = true;
   ScheduleAnimation();
 }
 

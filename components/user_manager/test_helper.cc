@@ -42,6 +42,18 @@ void TestHelper::RegisterKioskAppUser(PrefService& local_state,
 }
 
 // static
+void TestHelper::RegisterPublicAccountUser(PrefService& local_state,
+                                           std::string_view user_id) {
+  auto type = policy::GetDeviceLocalAccountType(user_id);
+  CHECK_EQ(type, policy::DeviceLocalAccountType::kPublicSession)
+      << user_id << " did not satisfy to be used for a public account user. "
+      << "See policy::GetDeviceLocalAccountType for details";
+  ScopedListPrefUpdate update(&local_state,
+                              prefs::kDeviceLocalAccountsWithSavedData);
+  update->Append(user_id);
+}
+
+// static
 std::string TestHelper::GetFakeUsernameHash(const AccountId& account_id) {
   CHECK(account_id.is_valid());
   return ash::UserDataAuthClient::GetStubSanitizedUsername(
@@ -91,6 +103,25 @@ User* TestHelper::AddKioskAppUser(std::string_view user_id) {
     return nullptr;
   }
 
+  return AddDeviceLocalAccountUserInternal(user_id, UserType::kKioskApp);
+}
+
+User* TestHelper::AddPublicAccountUser(std::string_view user_id) {
+  // Quick check that the `user_id` satisfies kiosk-app type.
+  auto type = policy::GetDeviceLocalAccountType(user_id);
+  if (type != policy::DeviceLocalAccountType::kPublicSession) {
+    LOG(ERROR)
+        << "user_id (" << user_id << ") did not satisfy to be used for "
+        << "a public account user. See policy::GetDeviceLocalAccountType "
+        << "for details.";
+    return nullptr;
+  }
+
+  return AddDeviceLocalAccountUserInternal(user_id, UserType::kPublicAccount);
+}
+
+User* TestHelper::AddDeviceLocalAccountUserInternal(std::string_view user_id,
+                                                    UserType user_type) {
   // Build DeviceLocalAccountInfo for the existing users.
   std::vector<UserManager::DeviceLocalAccountInfo> device_local_accounts;
   for (const auto& user : user_manager_->GetPersistedUsers()) {
@@ -110,7 +141,7 @@ User* TestHelper::AddKioskAppUser(std::string_view user_id) {
   }
 
   // Add the given `user_id`.
-  device_local_accounts.emplace_back(std::string(user_id), UserType::kKioskApp);
+  device_local_accounts.emplace_back(std::string(user_id), user_type);
   user_manager_->UpdateDeviceLocalAccountUser(device_local_accounts);
   return user_manager_->FindUserAndModify(AccountId::FromUserEmail(user_id));
 }

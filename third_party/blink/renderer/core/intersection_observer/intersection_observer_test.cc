@@ -3295,36 +3295,71 @@ TEST_F(IntersectionObserverTest, DelayedIntersection) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   observer->observe(target);
+  const IntersectionObservation* observation = observer->Observations().front();
+  const LocalFrameView* frame_view = GetDocument().View();
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 1);
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
 
   target->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
+  EXPECT_TRUE(frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
 
-  task_environment().FastForwardUntilNoTasksRemain();
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_TRUE(frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 2);
   EXPECT_EQ(observer_delegate->EntryCount(), 2);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
 
   target->SetInlineStyleProperty(CSSPropertyID::kTop, "0");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_TRUE(frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
 
-  task_environment().FastForwardUntilNoTasksRemain();
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_TRUE(frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 3);
   EXPECT_EQ(observer_delegate->EntryCount(), 3);
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
 }
 
 TEST_F(IntersectionObserverTest, DelayedAndNonDelayedIntersections) {
@@ -3339,11 +3374,16 @@ TEST_F(IntersectionObserverTest, DelayedAndNonDelayedIntersections) {
 
   TestIntersectionObserverDelegate* delayed_observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
-  IntersectionObserver* delayed_observer =
+  IntersectionObserver* delayed_observer1 =
       MakeGarbageCollected<IntersectionObserver>(
           *delayed_observer_delegate, std::nullopt,
           IntersectionObserver::Params{.thresholds = {0},
-                                       .delay = base::Seconds(1)});
+                                       .delay = base::Seconds(2)});
+  IntersectionObserver* delayed_observer2 =
+      MakeGarbageCollected<IntersectionObserver>(
+          *delayed_observer_delegate, std::nullopt,
+          IntersectionObserver::Params{.thresholds = {0},
+                                       .delay = base::Seconds(3)});
   TestIntersectionObserverDelegate* non_delayed_observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* non_delayed_observer =
@@ -3353,51 +3393,114 @@ TEST_F(IntersectionObserverTest, DelayedAndNonDelayedIntersections) {
 
   Element* delayed = GetDocument().getElementById(AtomicString("delayed"));
   ASSERT_TRUE(delayed);
-  delayed_observer->observe(delayed);
-  Element* non_delayed = GetDocument().getElementById(AtomicString("delayed"));
+  delayed_observer1->observe(delayed);
+  const IntersectionObservation* delayed_observation1 =
+      delayed_observer1->Observations().front();
+  delayed_observer2->observe(delayed);
+  const IntersectionObservation* delayed_observation2 =
+      delayed_observer2->Observations().front();
+  Element* non_delayed =
+      GetDocument().getElementById(AtomicString("non-delayed"));
   ASSERT_TRUE(non_delayed);
   non_delayed_observer->observe(non_delayed);
+  const IntersectionObservation* non_delayed_observation =
+      non_delayed_observer->Observations().front();
 
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-  EXPECT_EQ(delayed_observer_delegate->CallCount(), 1);
-  EXPECT_EQ(delayed_observer_delegate->EntryCount(), 1);
-  EXPECT_TRUE(delayed_observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 1);
-  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 1);
-  EXPECT_TRUE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
-
-  delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
-  non_delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-  EXPECT_EQ(delayed_observer_delegate->CallCount(), 1);
-  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 2);
-  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 2);
-  EXPECT_FALSE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
-
-  task_environment().FastForwardUntilNoTasksRemain();
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(delayed_observer_delegate->CallCount(), 2);
   EXPECT_EQ(delayed_observer_delegate->EntryCount(), 2);
-  EXPECT_FALSE(delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_TRUE(delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_FALSE(delayed_observation2->HasPendingUpdateForTesting());
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 1);
+  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
 
-  delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "0");
-  non_delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "0");
+  // Both elements move out of view.
+  delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
+  non_delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(delayed_observer_delegate->CallCount(), 2);
-  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 3);
-  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 3);
-  EXPECT_TRUE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_TRUE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_TRUE(delayed_observation2->HasPendingUpdateForTesting());
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 2);
+  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 2);
+  EXPECT_FALSE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(non_delayed_observation->HasPendingUpdateForTesting());
 
-  task_environment().FastForwardUntilNoTasksRemain();
+  task_environment().FastForwardBy(base::Seconds(2));
+  // observer1 updates and notifies "no intersection".
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(delayed_observer_delegate->CallCount(), 3);
   EXPECT_EQ(delayed_observer_delegate->EntryCount(), 3);
+  EXPECT_FALSE(delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_TRUE(delayed_observation2->HasPendingUpdateForTesting());
+
+  task_environment().FastForwardBy(base::Seconds(1));
+  // observer2 updates and notifies "no intersection".
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 4);
+  EXPECT_EQ(delayed_observer_delegate->EntryCount(), 4);
+  EXPECT_FALSE(delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_FALSE(delayed_observation2->HasPendingUpdateForTesting());
+
+  // Both elements move into the view.
+  delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "0");
+  non_delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "0");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 4);
+  EXPECT_TRUE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_TRUE(delayed_observation2->HasPendingUpdateForTesting());
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 3);
+  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 3);
+  EXPECT_TRUE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(non_delayed_observation->HasPendingUpdateForTesting());
+
+  task_environment().FastForwardBy(base::Seconds(2));
+  // observer1 updates and notifies intersection.
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 5);
+  EXPECT_EQ(delayed_observer_delegate->EntryCount(), 5);
+  EXPECT_FALSE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_TRUE(delayed_observation2->HasPendingUpdateForTesting());
   EXPECT_TRUE(delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 3);
+
+  // Before observer2 updates, the element moves out of view again.
+  delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 5);
+  EXPECT_TRUE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_TRUE(delayed_observation2->HasPendingUpdateForTesting());
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 3);
+
+  task_environment().FastForwardBy(base::Seconds(1));
+  // observer2 updates, but doesn't send notification because intersection is
+  // the same as its last update.
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 5);
+  EXPECT_TRUE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_FALSE(delayed_observation2->HasPendingUpdateForTesting());
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 3);
+
+  task_environment().FastForwardBy(base::Seconds(1));
+  // observer1 updates and notifies "no intersection".
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 6);
+  EXPECT_FALSE(delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(delayed_observation1->HasPendingUpdateForTesting());
+  EXPECT_FALSE(delayed_observation2->HasPendingUpdateForTesting());
   EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 3);
 }
 
@@ -3508,13 +3611,17 @@ TEST_F(IntersectionObserverTest,
   Element* target = iframe_document->getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   observer->observe(target);
+  const IntersectionObservation* observation = observer->Observations().front();
+  LocalFrameView* root_frame_view = GetDocument().View();
+  LocalFrameView* iframe_view = iframe_document->View();
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_FALSE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_FALSE(iframe_view->IsHiddenForThrottling());
   EXPECT_EQ(observer_delegate->CallCount(), 1);
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
 
   // Move the iframe out of view, but the target is still in the margin.
   GetDocument()
@@ -3522,21 +3629,24 @@ TEST_F(IntersectionObserverTest,
       ->SetInlineStyleProperty(CSSPropertyID::kTop, "600px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
   EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
-  task_environment().FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(
-      LocalFrameView::kRequired,
-      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_TRUE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
   // `target` is still in the intersection margin.
   EXPECT_EQ(observer_delegate->CallCount(), 1);
-  EXPECT_EQ(
-      LocalFrameView::kNotNeeded,
-      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
   // Move the iframe further down, to move the target out of the margin.
   GetDocument()
@@ -3544,22 +3654,25 @@ TEST_F(IntersectionObserverTest,
       ->SetInlineStyleProperty(CSSPropertyID::kTop, "1000px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
   EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
-  task_environment().FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(
-      LocalFrameView::kRequired,
-      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_TRUE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
   EXPECT_EQ(observer_delegate->CallCount(), 2);
   EXPECT_EQ(observer_delegate->EntryCount(), 2);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(
-      LocalFrameView::kNotNeeded,
-      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
   // Move the iframe up, still out of view, but the target will be in the
   // margin.
@@ -3568,46 +3681,52 @@ TEST_F(IntersectionObserverTest,
       ->SetInlineStyleProperty(CSSPropertyID::kTop, "600px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
   EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
-  task_environment().FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(
-      LocalFrameView::kRequired,
-      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_TRUE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
   EXPECT_EQ(observer_delegate->CallCount(), 3);
   EXPECT_EQ(observer_delegate->EntryCount(), 3);
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(
-      LocalFrameView::kNotNeeded,
-      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
   // Move the iframe down again and mark the iframe's view needs layout.
   GetDocument()
       .getElementById(AtomicString("iframe"))
       ->SetInlineStyleProperty(CSSPropertyID::kTop, "1000px");
-  iframe_document->View()->SetNeedsLayout();
+  iframe_view->SetNeedsLayout();
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
   EXPECT_EQ(observer_delegate->CallCount(), 3);
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
-  task_environment().FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(
-      LocalFrameView::kRequired,
-      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_TRUE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
   EXPECT_EQ(observer_delegate->CallCount(), 4);
   EXPECT_EQ(observer_delegate->EntryCount(), 4);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(
-      LocalFrameView::kNotNeeded,
-      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 }
 
 }  // namespace blink

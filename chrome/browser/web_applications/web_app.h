@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
@@ -48,7 +48,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #endif
 
@@ -131,7 +131,7 @@ class WebApp {
     ClientData(const ClientData& client_data);
     base::Value AsDebugValue() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     std::optional<ash::SystemWebAppData> system_web_app_data;
 #endif
   };

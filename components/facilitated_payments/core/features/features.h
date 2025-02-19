@@ -13,6 +13,7 @@ namespace payments::facilitated {
 BASE_DECLARE_FEATURE(kEnablePixPayments);
 BASE_DECLARE_FEATURE(kEnablePixPaymentsInLandscapeMode);
 #if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist);
 BASE_DECLARE_FEATURE(kEwalletPayments);
 #endif  // BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kSupportMultipleServerRequestsForPixPayments);

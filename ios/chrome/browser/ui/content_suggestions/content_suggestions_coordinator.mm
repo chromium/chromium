@@ -391,12 +391,11 @@ using segmentation_platform::TipIdentifier;
 
   if (IsTabResumptionEnabled()) {
     _tabResumptionMediator = [[TabResumptionMediator alloc]
-        initWithLocalState:GetApplicationContext()->GetLocalState()
-               prefService:prefs
-           identityManager:identityManager
-                   browser:self.browser
-           shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
-                               profile)];
+        initWithPrefService:prefs
+            identityManager:identityManager
+                    browser:self.browser
+            shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                profile)];
     _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     _tabResumptionMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;

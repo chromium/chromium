@@ -194,7 +194,8 @@ public class AccessibilityNodeInfoBuilder {
             boolean scrollable,
             boolean selected,
             boolean visibleToUser,
-            boolean hasCharacterLocations) {
+            boolean hasCharacterLocations,
+            boolean isRequired) {
         node.setCheckable(checkable);
         node.setChecked(checked);
         node.setClickable(clickable);
@@ -205,6 +206,7 @@ public class AccessibilityNodeInfoBuilder {
         node.setScrollable(scrollable);
         node.setSelected(selected);
         node.setVisibleToUser(visibleToUser);
+        node.setFieldRequired(isRequired);
 
         // In the special case that we have invalid content on a focused field, we only want to
         // report that to the user at most once per {@link CONTENT_INVALID_THROTTLE_DELAY} time

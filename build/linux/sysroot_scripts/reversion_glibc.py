@@ -39,6 +39,12 @@ def reversion_glibc(bin_file: str) -> None:
         ["readelf", "--dyn-syms", "--wide", bin_file])
     for line in stdout.decode("utf-8").split("\n"):
         cols = re.split("\s+", line)
+        # Remove localentry and next element which appears only in ppc64le
+        # readelf output. Keeping them causes incorrect symbol parsing
+        # leading to improper GLIBC version restrictions.
+        if len(cols) > 7 and cols[7] == "[<localentry>:":
+            cols.pop(7)
+            cols.pop(7)
         # Skip the preamble.
         if len(cols) < 9:
             continue

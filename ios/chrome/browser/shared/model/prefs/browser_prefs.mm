@@ -1188,6 +1188,13 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // profile Prefs.
   MigrateBooleanPrefFromLocalStatePrefsToProfilePrefs(
       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, prefs);
+
+  // Added 02/2025
+  // TODO(crbug.com/395840133): Remove migration call below after successfully
+  // migrating `tab_resumption_prefs::kTabResumptionDisabledPref` from
+  // local-state to profile Prefs.
+  MigrateBooleanPrefFromLocalStatePrefsToProfilePrefs(
+      tab_resumption_prefs::kTabResumptionDisabledPref, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

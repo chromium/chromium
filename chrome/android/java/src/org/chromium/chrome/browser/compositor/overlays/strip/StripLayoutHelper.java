@@ -2039,7 +2039,7 @@ public class StripLayoutHelper
         RectProvider anchorRectProvider = new RectProvider();
         getAnchorRect(groupTitle, anchorRectProvider);
         StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
-        mTabGroupContextMenuCoordinator.showMenu(anchorRectProvider, groupTitle.getRootId());
+        mTabGroupContextMenuCoordinator.showMenu(anchorRectProvider, groupTitle.getTabGroupId());
     }
 
     /**

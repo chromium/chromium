@@ -76,7 +76,6 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     return {.status = Result::Status::kTrusted};
   }
 
-  // TODO(crbug.com/292227137): Migrate Shimless RMA app to LaCrOS.
   if (ash::IsShimlessRmaAppBrowserContext(&*profile_) &&
       chromeos::Is3pDiagnosticsIwaId(web_bundle_id)) {
     return {.status = Result::Status::kTrusted};

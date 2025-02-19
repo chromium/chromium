@@ -165,6 +165,8 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
                          dict_example.Clone());
   local_state()->SetBoolean(
       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, true);
+  local_state()->SetBoolean(tab_resumption_prefs::kTabResumptionDisabledPref,
+                            true);
 
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
@@ -188,6 +190,10 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
             0ul);
   EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo),
             dict_example);
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      tab_resumption_prefs::kTabResumptionDisabledPref));
+  EXPECT_TRUE(local_state()->GetBoolean(
+      tab_resumption_prefs::kTabResumptionDisabledPref));
 
   MigrateObsoleteProfilePrefs(pref_service());
 
@@ -214,4 +220,8 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
   EXPECT_FALSE(local_state()->GetBoolean(
       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      tab_resumption_prefs::kTabResumptionDisabledPref));
+  EXPECT_FALSE(local_state()->GetBoolean(
+      tab_resumption_prefs::kTabResumptionDisabledPref));
 }

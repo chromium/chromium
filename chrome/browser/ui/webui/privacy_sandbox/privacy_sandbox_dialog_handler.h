@@ -12,11 +12,9 @@
 class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
  public:
   PrivacySandboxDialogHandler(
-      base::OnceClosure close_callback,
+      base::RepeatingCallback<void(
+          PrivacySandboxService::AdsDialogCallbackNoArgsEvents)> dialog_callback,
       base::OnceCallback<void(int)> resize_callback,
-      base::OnceClosure show_dialog_callback,
-      base::OnceClosure open_settings_callback,
-      base::OnceClosure open_measurement_settings_callback,
       PrivacySandboxService::PromptType prompt_type);
   ~PrivacySandboxDialogHandler() override;
 
@@ -38,11 +36,10 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
       const base::Value::List& args);
   void CloseDialog();
 
-  base::OnceClosure close_callback_;
+  base::RepeatingCallback<void(
+      PrivacySandboxService::AdsDialogCallbackNoArgsEvents)>
+      dialog_callback_;
   base::OnceCallback<void(int)> resize_callback_;
-  base::OnceClosure show_dialog_callback_;
-  base::OnceClosure open_settings_callback_;
-  base::OnceClosure open_measurement_settings_callback_;
   PrivacySandboxService::PromptType prompt_type_;
 
   raw_ptr<PrivacySandboxService> privacy_sandbox_service_;

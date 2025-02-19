@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -551,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
 
 // On ChromeOS, Sync-the-feature gets started automatically once a primary
 // account is signed in and the transport mode is not a thing.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Subclass that enables an additional feature, namely
 // `syncer::kReplaceSyncPromosWithSignInPromos`.
@@ -637,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTestWithTransportMode,
                   .Wait());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace tab_groups

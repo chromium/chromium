@@ -30,7 +30,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -91,7 +90,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
@@ -100,12 +99,7 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
@@ -131,19 +125,13 @@ void SetURLLoaderFactoryForTest(
       ChromeSigninClientFactory::GetForProfile(profile));
   signin_client->SetURLLoaderFactoryForTest(url_loader_factory);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AccountManagerFactory* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
   account_manager::AccountManager* account_manager =
       factory->GetAccountManager(profile->GetPath().value());
   account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  account_manager::AccountManager* account_manager =
-      MaybeGetAshAccountManagerForTests();
-  if (account_manager) {
-    account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -295,7 +283,7 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitch(switches::kDisableSyncInvalidationOptimizations);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
   cl->AppendSwitch(ash::switches::kDisableArcOptInVerification);
   arc::SetArcAvailableCommandLineForTesting(cl);
@@ -486,7 +474,7 @@ bool SyncTest::SetupClients() {
     cl->AppendSwitchASCII(syncer::kSyncDeferredStartupTimeoutSeconds, "0");
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Sets Arc flags, need to be called before create test profiles.
   ArcAppListPrefsFactory::SetFactoryForSyncTest();
 
@@ -529,7 +517,7 @@ bool SyncTest::SetupClients() {
     WaitForDataModels(verifier());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ArcAppListPrefsFactory::IsFactorySetForSyncTest()) {
     // Init SyncArcPackageHelper to ensure that the arc services are initialized
     // for each Profile, only can be called after test profiles are created.
@@ -1017,7 +1005,7 @@ void SyncTest::TriggerSyncForDataTypes(int index,
 }
 
 arc::SyncArcPackageHelper* SyncTest::sync_arc_helper() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return arc::SyncArcPackageHelper::GetInstance();
 #else
   return nullptr;
@@ -1154,17 +1142,13 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, Apps-related types may run in transport mode.
-  allowed_types.PutAll({syncer::APPS, syncer::APP_SETTINGS, syncer::WEB_APPS});
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // OS sync types run in transport mode.
   allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
                         syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
                         syncer::PRINTERS,
                         syncer::PRINTERS_AUTHORIZATION_SERVERS,
                         syncer::WIFI_CONFIGURATIONS, syncer::WORKSPACE_DESK});
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return allowed_types;
 }

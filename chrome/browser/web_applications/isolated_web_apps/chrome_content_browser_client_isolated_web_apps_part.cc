@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/prefs/pref_service.h"
@@ -14,7 +15,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
@@ -33,12 +34,12 @@ bool ChromeContentBrowserClientIsolatedWebAppsPart::AreIsolatedWebAppsEnabled(
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // IWAs should be enabled for ShimlessRMA app profile.
   if (ash::IsShimlessRmaAppBrowserContext(browser_context)) {
     return true;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
     return true;

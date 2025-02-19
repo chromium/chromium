@@ -242,14 +242,14 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
 bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
     const std::string& command_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::optional<base::Value> value = base::JSONReader::Read(command_payload);
-  if (!value.has_value() || !value->is_dict()) {
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(command_payload);
+  if (!value) {
     return false;
   }
 
-  const base::Value::Dict& dict = value->GetDict();
   const base::Value::Dict* details_dict =
-      dict.FindDict(kSupportPacketDetailsKey);
+      value->FindDict(kSupportPacketDetailsKey);
   if (!details_dict) {
     return false;
   }

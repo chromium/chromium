@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
+#include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "services/video_effects/calculators/video_effects_graph_webgpu.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
@@ -46,6 +47,7 @@ class VideoEffectsProcessorWebGpu {
   bool Initialize();
 
   void PostProcess(
+      const RuntimeConfig& runtime_config,
       media::mojom::VideoBufferHandlePtr input_frame_data,
       media::mojom::VideoFrameInfoPtr input_frame_info,
       media::mojom::VideoBufferHandlePtr result_frame_data,

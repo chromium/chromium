@@ -438,6 +438,15 @@ BASE_FEATURE(kContinuousOverviewScrollAnimation,
 // Controls enabling/disabling the coral feature.
 BASE_FEATURE(kCoralFeature, "CoralFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Since kCoralFeature is also controlled by login_manager, finch kill switch
+// could not effectively control it. The kCoralFeatureAllowed is designed to be
+// always enabled by default, but can be disabled by the finch kill switch. When
+// disabled, this overrides kCoralFeature's status and force disables the
+// feature.
+BASE_FEATURE(kCoralFeatureAllowed,
+             "CoralFeatureAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables execution of routine for copying client keys and certs from NSS DB to
 // software backed Chaps slot. It's only respected if the
 // EnableNssDbClientCertsRollback feature flag is disabled.
@@ -3421,7 +3430,8 @@ bool IsContinuousOverviewScrollAnimationEnabled() {
 }
 
 bool IsCoralFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kCoralFeature);
+  return base::FeatureList::IsEnabled(kCoralFeature) &&
+         base::FeatureList::IsEnabled(kCoralFeatureAllowed);
 }
 
 bool IsCryptauthAttestationSyncingEnabled() {

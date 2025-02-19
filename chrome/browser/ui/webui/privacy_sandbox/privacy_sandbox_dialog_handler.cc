@@ -12,6 +12,9 @@
 
 namespace {
 
+using enum PrivacySandboxService::AdsDialogCallbackNoArgsEvents;
+using enum PrivacySandboxService::PromptAction;
+
 bool IsConsent(PrivacySandboxService::PromptType prompt_type) {
   return prompt_type == PrivacySandboxService::PromptType::kM1Consent;
 }
@@ -23,7 +26,7 @@ bool IsRestrictedNotice(PrivacySandboxService::PromptType prompt_type) {
 void NotifyServiceAboutPromptAction(
     PrivacySandboxService::PromptAction action,
     PrivacySandboxService* privacy_sandbox_service) {
-  DCHECK(privacy_sandbox_service);
+  CHECK(privacy_sandbox_service);
   privacy_sandbox_service->PromptActionOccurred(
       action, PrivacySandboxService::SurfaceType::kDesktop);
 }
@@ -31,23 +34,14 @@ void NotifyServiceAboutPromptAction(
 }  // namespace
 
 PrivacySandboxDialogHandler::PrivacySandboxDialogHandler(
-    base::OnceClosure close_callback,
+    base::RepeatingCallback<void(
+        PrivacySandboxService::AdsDialogCallbackNoArgsEvents)> dialog_callback,
     base::OnceCallback<void(int)> resize_callback,
-    base::OnceClosure show_dialog_callback,
-    base::OnceClosure open_settings_callback,
-    base::OnceClosure open_measurement_settings_callback,
     PrivacySandboxService::PromptType prompt_type)
-    : close_callback_(std::move(close_callback)),
+    : dialog_callback_(std::move(dialog_callback)),
       resize_callback_(std::move(resize_callback)),
-      show_dialog_callback_(std::move(show_dialog_callback)),
-      open_settings_callback_(std::move(open_settings_callback)),
-      open_measurement_settings_callback_(
-          std::move(open_measurement_settings_callback)),
       prompt_type_(prompt_type) {
-  DCHECK(close_callback_);
-  DCHECK(resize_callback_);
-  DCHECK(show_dialog_callback_);
-  DCHECK(open_settings_callback_);
+  DCHECK(dialog_callback_);
 }
 
 PrivacySandboxDialogHandler::~PrivacySandboxDialogHandler() {
@@ -133,17 +127,14 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
 
   // If user hasn't made a decision, notify the service.
   if (IsConsent(prompt_type_)) {
-    NotifyServiceAboutPromptAction(
-        PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
-        privacy_sandbox_service_);
+    NotifyServiceAboutPromptAction(kConsentClosedNoDecision,
+                                   privacy_sandbox_service_);
   } else if (IsRestrictedNotice(prompt_type_)) {
-    NotifyServiceAboutPromptAction(PrivacySandboxService::PromptAction::
-                                       kRestrictedNoticeClosedNoInteraction,
+    NotifyServiceAboutPromptAction(kRestrictedNoticeClosedNoInteraction,
                                    privacy_sandbox_service_);
   } else {
-    NotifyServiceAboutPromptAction(
-        PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
-        privacy_sandbox_service_);
+    NotifyServiceAboutPromptAction(kNoticeClosedNoInteraction,
+                                   privacy_sandbox_service_);
   }
 }
 
@@ -158,24 +149,24 @@ void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
       static_cast<PrivacySandboxService::PromptAction>(args[0].GetInt());
 
   switch (action) {
-    case PrivacySandboxService::PromptAction::kNoticeAcknowledge:
-    case PrivacySandboxService::PromptAction::kRestrictedNoticeAcknowledge:
-    case PrivacySandboxService::PromptAction::kNoticeDismiss: {
+    case kNoticeAcknowledge:
+    case kRestrictedNoticeAcknowledge:
+    case kNoticeDismiss: {
       CloseDialog();
       break;
     }
-    case PrivacySandboxService::PromptAction::kNoticeOpenSettings: {
-      std::move(open_settings_callback_).Run();
+    case kNoticeOpenSettings: {
+      dialog_callback_.Run(kOpenAdsPrivacySettings);
       CloseDialog();
       break;
     }
-    case PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings: {
-      std::move(open_measurement_settings_callback_).Run();
+    case kRestrictedNoticeOpenSettings: {
+      dialog_callback_.Run(kOpenMeasurementSettings);
       CloseDialog();
       break;
     }
-    case PrivacySandboxService::PromptAction::kConsentAccepted:
-    case PrivacySandboxService::PromptAction::kConsentDeclined: {
+    case kConsentAccepted:
+    case kConsentDeclined: {
       did_user_make_decision_ = true;
       break;
     }
@@ -202,12 +193,12 @@ void PrivacySandboxDialogHandler::HandleShowDialog(
     const base::Value::List& args) {
   AllowJavascript();
 
-  DCHECK(show_dialog_callback_);
-  std::move(show_dialog_callback_).Run();
+  CHECK(dialog_callback_);
+  dialog_callback_.Run(kShowDialog);
 }
 
 void PrivacySandboxDialogHandler::CloseDialog() {
   did_user_make_decision_ = true;
   DisallowJavascript();
-  std::move(close_callback_).Run();
+  dialog_callback_.Run(kCloseDialog);
 }

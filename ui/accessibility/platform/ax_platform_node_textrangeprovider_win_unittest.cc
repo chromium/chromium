@@ -4514,18 +4514,15 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     // |text_node| has a grammar error on "some text", a highlight for the
     // first word, a spelling error for the second word, a "spelling-error"
     // highlight for the fourth word, and a "grammar-error" highlight for the
-    // fifth word. So the range has both spelling and grammar error and also
-    // highlighted text.
+    // fifth word. So the range has mixed attributes.
     base::win::ScopedVariant annotation_types_variant;
     EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
         UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
 
-    EXPECT_EQ(annotation_types_variant.type(), VT_ARRAY | VT_I4);
-    std::vector<int> expected_annotations = {AnnotationType_SpellingError,
-                                             AnnotationType_GrammarError,
-                                             AnnotationType_Highlighted};
-    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
-                            expected_annotations);
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider,
+                            L"some text and some other text");
+    EXPECT_UIA_TEXTATTRIBUTE_MIXED(text_range_provider,
+                                   UIA_AnnotationTypesAttributeId);
   }
 
   {
@@ -4636,15 +4633,15 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   {
     // |heading_text_node| has a a spelling error for one word, and no
-    // annotations for the remaining text, so the range has spelling error.
+    // annotations for the remaining text, so the entire range has mixed
+    // annotations.
     base::win::ScopedVariant annotation_types_variant;
     EXPECT_HRESULT_SUCCEEDED(heading_text_range_provider->GetAttributeValue(
         UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
 
-    EXPECT_EQ(annotation_types_variant.type(), VT_ARRAY | VT_I4);
-    std::vector<int> expected_annotations = {AnnotationType_SpellingError};
-    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
-                            expected_annotations);
+    EXPECT_UIA_TEXTRANGE_EQ(heading_text_range_provider, L"more text");
+    EXPECT_UIA_TEXTATTRIBUTE_MIXED(heading_text_range_provider,
+                                   UIA_AnnotationTypesAttributeId);
   }
 
   {
@@ -4675,9 +4672,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     // |heading_text_node| = "more text" (without quotes)
     // In this, 'text' is annotated with a spelling error.
     //
-    // We want to test for spelling errors in 'text' selection combined with
-    // character(s) from adjacent anchor(s) which do not have any such
-    // annotations.
+    // We want to test for mixed annotation in 'text' selection for spelling
+    // error text combined with character(s) from adjacent anchor(s) which do
+    // not have any such annotations.
     //
     // start: TextPosition, anchor_id=4, text_offset=5,
     //        annotated_text=more <t>ext marked text
@@ -4685,21 +4682,17 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     //        annotated_text=more text m<a>rked text
     AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
         AXPlatformNodeFromNode(heading_text_node));
-    ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
+    ComPtr<AXPlatformNodeTextRangeProviderWin> mixed_text_range_provider;
     CreateTextRangeProviderWin(
-        range_with_annotations, owner,
+        mixed_text_range_provider, owner,
         /*start_anchor=*/heading_text_node, /*start_offset=*/5,
         /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor=*/mark_text_node, /*end_offset=*/1,
+        /*end_anchor=*/mark_text_node, /*end_offset=*/4,
         /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
-    base::win::ScopedVariant annotation_types_variant;
-    EXPECT_HRESULT_SUCCEEDED(range_with_annotations->GetAttributeValue(
-        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
-
-    std::vector<int> expected_annotations = {AnnotationType_SpellingError};
-    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
-                            expected_annotations);
+    EXPECT_UIA_TEXTRANGE_EQ(mixed_text_range_provider, L"textmark");
+    EXPECT_UIA_TEXTATTRIBUTE_MIXED(mixed_text_range_provider,
+                                   UIA_AnnotationTypesAttributeId);
   }
 
   {

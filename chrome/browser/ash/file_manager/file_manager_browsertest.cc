@@ -665,7 +665,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("directoryTreeExpandFolderOnDelayExpansionVolume"),
         TestCase("directoryTreeExpandAndSelectedOnDragMove"),
         TestCase("directoryTreeClickDriveRootWhenMyDriveIsActive"),
+#if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+        // TODO(crbug.com/339374326): Flaking on
+        // "Linux Chromium OS ASan LSan Tests (1)"
         TestCase("directoryTreeHideExpandIconWhenLastSubFolderIsRemoved"),
+#endif
         TestCase("directoryTreeKeepDriveOrderAfterReconnected")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

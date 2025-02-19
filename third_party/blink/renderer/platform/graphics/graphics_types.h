@@ -29,7 +29,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathTypes.h"
 
 namespace gfx {
 class ColorSpace;

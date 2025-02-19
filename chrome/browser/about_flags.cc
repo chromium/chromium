@@ -11688,6 +11688,15 @@ const FeatureEntry kFeatureEntries[] = {
                                     "MaliciousApkDownloadCheck")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"disable-facilitated-payments-merchant-allowlist",
+     flag_descriptions::kDisableFacilitatedPaymentsMerchantAllowlistName,
+     flag_descriptions::kDisableFacilitatedPaymentsMerchantAllowlistDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         payments::facilitated::kDisableFacilitatedPaymentsMerchantAllowlist)},
+#endif  // BUILDFLAF(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

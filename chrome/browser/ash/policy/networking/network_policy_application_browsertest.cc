@@ -790,11 +790,12 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
         properties->FindString(shill::kUIDataProperty);
     if (!ui_data_json)
       return {};
-    std::optional<base::Value> ui_data_value =
-        base::JSONReader::Read(*ui_data_json);
-    if (!ui_data_value || !ui_data_value->is_dict())
+    std::optional<base::Value::Dict> ui_data_value =
+        base::JSONReader::ReadDict(*ui_data_json);
+    if (!ui_data_value) {
       return {};
-    return std::move(*ui_data_value).TakeDict();
+    }
+    return std::move(*ui_data_value);
   }
 
   // Sets the shill UIData property of the service `service_path` to the

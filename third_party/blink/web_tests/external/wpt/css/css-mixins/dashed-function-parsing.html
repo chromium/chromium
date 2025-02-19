@@ -40,4 +40,31 @@ test_invalid_value('top', '--func( ,)');
 test_invalid_value('top', '--func( , )');
 test_invalid_value('top', '--func(a,,b)');
 test_invalid_value('top', '--func(a, ,b)');
+
+// Tests related to comma-containing productions:
+// https://drafts.csswg.org/css-values-5/#component-function-commas
+test_valid_value('top', '--func({1}, 2)');
+test_valid_value('top', '--func({ 1}, 2)');
+test_valid_value('top', '--func({1 }, 2)');
+test_valid_value('top', '--func({ 1 }, 2)');
+test_valid_value('top', '--func({1},{2})');
+test_valid_value('top', '--func({1, 2, 3},{4})');
+test_valid_value('top', '--func({,},{4})');
+test_valid_value('top', '--func({{}},{4})');
+test_valid_value('top', '--func({[]},{4})');
+// A non-{}-wrapped argument may not contain {}.
+test_invalid_value('top', '--func(123 {})');
+test_invalid_value('top', '--func(1{})');
+test_invalid_value('top', '--func({}1)');
+test_invalid_value('top', '--func( {}1)');
+test_invalid_value('top', '--func({}1 )');
+test_invalid_value('top', '--func({} 1)');
+test_invalid_value('top', '--func(1, 2{})');
+test_invalid_value('top', '--func(1,2{})');
+test_invalid_value('top', '--func(1,2{} )');
+test_invalid_value('top', '--func(1, {}2)');
+// Empty values are not allowed (the {}-wrapper not being part of the value):
+test_invalid_value('top', '--func({})');
+test_invalid_value('top', '--func(1, {})');
+test_invalid_value('top', '--func(1, { })');
 </script>

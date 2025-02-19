@@ -538,7 +538,7 @@ std::string BrowserTypeToString(Browser::Type type) {
       return "TYPE_DEVTOOLS";
     case Browser::Type::TYPE_APP_POPUP:
       return "TYPE_APP_POPUP";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case Browser::Type::TYPE_CUSTOM_TAB:
       return "TYPE_CUSTOM_TAB";
 #endif
@@ -1725,7 +1725,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     if (type == "TYPE_APP_POPUP") {
       return Browser::Type::TYPE_APP_POPUP;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (type == "TYPE_CUSTOM_TAB") {
       return Browser::Type::TYPE_CUSTOM_TAB;
     }

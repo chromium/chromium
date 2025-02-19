@@ -7,8 +7,9 @@
 #include <vector>
 
 #include "base/notreached.h"
+#include "build/build_config.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
@@ -32,7 +33,7 @@ std::string TestProfileTypeToString(
 }
 
 void ConfigureCommandLineForGuestMode(base::CommandLine* command_line) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   command_line->AppendSwitch(ash::switches::kGuestSession);
   command_line->AppendSwitch(::switches::kIncognito);
   command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "hash");

@@ -4547,6 +4547,9 @@ interface HTMLSelectElement : HTMLElement
     setter selectedIndex
     setter size
     setter value
+interface HTMLSelectedContentElement : HTMLElement
+    attribute @@toStringTag
+    method constructor
 interface HTMLSlotElement : HTMLElement
     attribute @@toStringTag
     getter name

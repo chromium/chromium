@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -87,7 +86,7 @@ MATCHER(AddressHasConverted, "") {
 const char kLocalGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kDifferentBillingAddressId[] = "another address entity ID";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::vector<std::unique_ptr<CreditCard>> GetServerCards(
     scoped_refptr<autofill::AutofillWebDataService> service) {
   base::test::TestFuture<WebDataServiceBase::Handle,
@@ -124,7 +123,7 @@ GetCreditCardCloudTokenData(
              *future.Get<1>())
       .GetValue();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Waits until local changes are committed or an auth error is encountered.
 class TestForAuthError : public UpdatedProgressMarkerChecker {
@@ -223,7 +222,7 @@ class SingleClientWalletWithImprovedSigninUISyncTest
 
 // ChromeOS does not support late signin after profile creation, so the test
 // below does not apply, at least in the current form.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
                        DownloadAccountStorage_Card) {
   ASSERT_TRUE(SetupClients());
@@ -442,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   EXPECT_EQ("data-2",
             paydm->GetCreditCardCloudTokenData()[0]->instrument_token);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EnabledByDefault) {
   ASSERT_TRUE(SetupSync());
@@ -456,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EnabledByDefault) {
 }
 
 // ChromeOS does not sign out, so the test below does not apply.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSignOut) {
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncPaymentsCustomerData(),
@@ -481,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSignOut) {
   EXPECT_EQ(0uL, paydm->GetCreditCardCloudTokenData().size());
   EXPECT_EQ(0U, GetServerCardsMetadata(0).size());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Wallet data should get cleared from the database when the user enters the
 // sync paused state (e.g. persistent auth error).
@@ -1014,9 +1013,9 @@ class SingleClientWalletSecondaryAccountSyncTest
   }
 
   void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     secondary_account_helper::InitNetwork();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     SyncTest::SetUpOnMainThread();
   }
 
@@ -1028,7 +1027,7 @@ class SingleClientWalletSecondaryAccountSyncTest
 
 // ChromeOS doesn't support changes to the primary account after startup, so
 // these tests don't apply.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
                        SwitchesFromAccountToProfileStorageOnSyncOptIn) {
   ASSERT_TRUE(SetupClients());
@@ -1074,10 +1073,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   // complete.
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
   GetSyncService(0)->SetSyncFeatureRequested();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Wait for Sync to get reconfigured into feature mode.
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -1159,10 +1158,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::CONFIGURING,
             GetSyncService(0)->GetTransportState());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Wait for Sync to get reconfigured into feature mode.
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -1185,4 +1184,4 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(account_data).size());
   EXPECT_EQ(1U, GetCreditCardCloudTokenData(profile_data).size());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

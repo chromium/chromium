@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/sys_string_conversions.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
@@ -113,7 +109,7 @@ std::wstring SysNativeMBToWide(std::string_view native_mb) {
   size_t num_out_chars = 0;
   memset(&ps, 0, sizeof(ps));
   for (size_t i = 0; i < native_mb.size();) {
-    const char* src = native_mb.data() + i;
+    const char* src = UNSAFE_TODO(native_mb.data() + i);
     size_t res = mbrtowc(nullptr, src, native_mb.size() - i, &ps);
     switch (res) {
       // Handle any errors and return an empty string.
@@ -142,7 +138,7 @@ std::wstring SysNativeMBToWide(std::string_view native_mb) {
   // We walk the input string again, with |i| tracking the index of the
   // multi-byte input, and |j| tracking the wide output.
   for (size_t i = 0, j = 0; i < native_mb.size(); ++j) {
-    const char* src = native_mb.data() + i;
+    const char* src = UNSAFE_TODO(native_mb.data() + i);
     wchar_t* dst = &out[j];
     size_t res = mbrtowc(dst, src, native_mb.size() - i, &ps);
     switch (res) {

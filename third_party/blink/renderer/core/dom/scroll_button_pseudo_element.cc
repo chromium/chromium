@@ -14,11 +14,13 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
@@ -54,6 +56,7 @@ ScrollButtonPseudoElement::ScrollButtonPseudoElement(
     : PseudoElement(originating_element, pseudo_id),
       ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
   SetTabIndexExplicitly();
+  UseCounter::Count(GetDocument(), WebFeature::kScrollButtonPseudoElement);
 }
 
 void ScrollButtonPseudoElement::Trace(Visitor* v) const {

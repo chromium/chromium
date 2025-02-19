@@ -11,14 +11,14 @@ visibility = [
 ]
 
 android_library("stub_java") {
-  sources = [ "stub/src/main/java/dalvik/system/VMRuntime.java" ]
+  sources = [ "stub/src/main/java/stub/dalvik/system/VMRuntime.java" ]
   jar_excluded_patterns = [ "*" ]
 }
 
 android_library("hidden_api_bypass_java") {
   sources = [
     "library/src/main/java/org/lsposed/hiddenapibypass/Helper.java",
-    "library/src/main/java/org/lsposed/hiddenapibypass/HiddenApiBypass.java",
+    "library/src/main/java/org/lsposed/hiddenapibypass/LSPass.java",
     "local_modifications/org/lsposed/hiddenapibypass/library/BuildConfig.java",
   ]
   deps = [

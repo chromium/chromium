@@ -8,8 +8,10 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
@@ -70,11 +72,11 @@ MantisUntrustedServiceManager::~MantisUntrustedServiceManager() = default;
 specialized_features::FeatureAccessConfig
 MantisUntrustedServiceManager::GetFeatureAccessConfig() {
   specialized_features::FeatureAccessConfig access_config;
-  // TODO(crbug.com/362993438): Check region restriction.
   access_config.capability_callback =
       base::BindRepeating([](AccountCapabilities capabilities) {
         return capabilities.can_use_generative_ai_photo_editing();
       });
+  access_config.country_codes = ash::GetGenerativeAiCountryAllowlist();
   return access_config;
 }
 
@@ -99,6 +101,10 @@ void MantisUntrustedServiceManager::IsAvailable(
     base::OnceCallback<void(bool)> callback) {
   if (switches::IsMantisSecretKeyMatched()) {
     std::move(callback).Run(true);
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantisModel)) {
+    std::move(callback).Run(false);
     return;
   }
 

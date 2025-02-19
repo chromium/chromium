@@ -1054,9 +1054,6 @@ virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-scr
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
 virtual/url-non-special/external/wpt/url/failure.html
-virtual/verify-minimal-resource-request-kill-switch/external/wpt/content-security-policy/report-hash/*
-virtual/verify-minimal-resource-request-kill-switch/external/wpt/fetch/fetch-later/new-window.tentative.https.window.html
-virtual/verify-minimal-resource-request-kill-switch/external/wpt/fetch/stale-while-revalidate/stale-*
 virtual/view-transition-layered-capture/*
 virtual/view-transition-mpa-serialization/*
 virtual/view-transition-mpa-serialization/wpt_internal/*

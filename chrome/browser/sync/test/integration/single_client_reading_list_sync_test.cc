@@ -4,6 +4,7 @@
 
 #include "base/location.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -312,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
 // ChromeOS doesn't have the concept of sign-out, so this only exists on other
 // platforms.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                        ShouldDeleteAccountDataUponSignout) {
@@ -724,6 +725,6 @@ IN_PROC_BROWSER_TEST_F(
               Eq("entry_title"));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

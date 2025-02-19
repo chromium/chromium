@@ -252,8 +252,13 @@ static constexpr auto kFloatsAndInt32DataTypes =
          CoreML::Specification::MILSpec::DataType::FLOAT32,
          CoreML::Specification::MILSpec::DataType::INT32});
 
+using MilDataTypes =
+    base::EnumSet<CoreML::Specification::MILSpec::DataType,
+                  CoreML::Specification::MILSpec::DataType::UNUSED_TYPE,
+                  CoreML::Specification::MILSpec::DataType::UINT3>;
+
 // Maps to types defined in
-// https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/mlmodel/src/MILBlob/Blob/BlobDataType.hpp#L14
+// https://github.com/apple/coremltools/blob/605ac1c7f06c19a09853e1757f7f3379d7d4e9fd/mlmodel/src/MILBlob/Blob/BlobDataType.hpp#L16
 enum class BlobDataType : uint32_t {
   Float16 = 1,
   Float32 = 2,
@@ -262,6 +267,16 @@ enum class BlobDataType : uint32_t {
   BFloat16 = 5,
   Int16 = 6,
   UInt16 = 7,
+  Int4 = 8,
+  UInt1 = 9,
+  UInt2 = 10,
+  UInt4 = 11,
+  UInt3 = 12,
+  UInt6 = 13,
+  Int32 = 14,
+  UInt32 = 15,
+  Float8E4M3FN = 16,
+  Float8E5M2 = 17,
 };
 
 // The weights format follows the definition in
@@ -318,16 +333,20 @@ std::optional<BlobDataType> OperandTypeToDataTypeInWeightFile(
       return BlobDataType::Float16;
     case OperandDataType::kFloat32:
       return BlobDataType::Float32;
+    case OperandDataType::kInt4:
+      return BlobDataType::Int4;
+    case OperandDataType::kUint4:
+      return BlobDataType::UInt4;
     case OperandDataType::kUint8:
       return BlobDataType::UInt8;
     case OperandDataType::kInt8:
       return BlobDataType::Int8;
     case OperandDataType::kInt32:
+      return BlobDataType::Int32;
     case OperandDataType::kUint32:
+      return BlobDataType::UInt32;
     case OperandDataType::kInt64:
     case OperandDataType::kUint64:
-    case OperandDataType::kInt4:
-    case OperandDataType::kUint4:
       return std::nullopt;
   }
 }
@@ -351,8 +370,10 @@ CoreML::Specification::MILSpec::DataType OperandTypeToMILDataType(
       return CoreML::Specification::MILSpec::DataType::INT8;
     case OperandDataType::kUint8:
       return CoreML::Specification::MILSpec::DataType::UINT8;
-    default:
-      NOTREACHED() << "Unsupported data type.";
+    case OperandDataType::kInt4:
+      return CoreML::Specification::MILSpec::DataType::INT4;
+    case OperandDataType::kUint4:
+      return CoreML::Specification::MILSpec::DataType::UINT4;
   }
 }
 
@@ -377,7 +398,25 @@ OperandDataType MILDataTypeToOperandType(
       return OperandDataType::kInt8;
     case CoreML::Specification::MILSpec::DataType::UINT8:
       return OperandDataType::kUint8;
-    default:
+    case CoreML::Specification::MILSpec::DataType::INT4:
+      return OperandDataType::kInt4;
+    case CoreML::Specification::MILSpec::DataType::UINT4:
+      return OperandDataType::kUint4;
+    case CoreML::Specification::MILSpec::UNUSED_TYPE:
+    case CoreML::Specification::MILSpec::BOOL:
+    case CoreML::Specification::MILSpec::STRING:
+    case CoreML::Specification::MILSpec::FLOAT8E4M3FN:
+    case CoreML::Specification::MILSpec::FLOAT8E5M2:
+    case CoreML::Specification::MILSpec::FLOAT64:
+    case CoreML::Specification::MILSpec::BFLOAT16:
+    case CoreML::Specification::MILSpec::INT16:
+    case CoreML::Specification::MILSpec::UINT16:
+    case CoreML::Specification::MILSpec::UINT2:
+    case CoreML::Specification::MILSpec::UINT1:
+    case CoreML::Specification::MILSpec::UINT6:
+    case CoreML::Specification::MILSpec::UINT3:
+    case CoreML::Specification::MILSpec::DataType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case CoreML::Specification::MILSpec::DataType_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED() << "Unsupported data type.";
   }
 }
@@ -424,16 +463,6 @@ struct MilDataTypeMap<int32_t> {
       CoreML::Specification::MILSpec::DataType::INT32;
 };
 template <>
-struct MilDataTypeMap<int8_t> {
-  static constexpr CoreML::Specification::MILSpec::DataType value =
-      CoreML::Specification::MILSpec::DataType::INT8;
-};
-template <>
-struct MilDataTypeMap<uint8_t> {
-  static constexpr CoreML::Specification::MILSpec::DataType value =
-      CoreML::Specification::MILSpec::DataType::UINT8;
-};
-template <>
 struct MilDataTypeMap<Float16> {
   static constexpr CoreML::Specification::MILSpec::DataType value =
       CoreML::Specification::MILSpec::DataType::FLOAT16;
@@ -461,8 +490,8 @@ void SetTensorValueForImmediateValue(
     base::span<const DataType> value);
 
 // As per
-// https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/backend/mil/helper.py#L23,
-// float16, int8, uint8, uint32 are stored in bytes.
+// https://github.com/apple/coremltools/blob/605ac1c7f06c19a09853e1757f7f3379d7d4e9fd/coremltools/converters/mil/mil/types/__init__.py#L79
+// float16 is stored in bytes.
 template <>
 void SetTensorValueForImmediateValue<Float16>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
@@ -470,13 +499,7 @@ void SetTensorValueForImmediateValue<Float16>(
   tensor.mutable_bytes()->mutable_values()->assign(
       base::as_string_view(base::as_bytes(value)));
 }
-template <>
-void SetTensorValueForImmediateValue<int8_t>(
-    CoreML::Specification::MILSpec::TensorValue& tensor,
-    base::span<const int8_t> value) {
-  tensor.mutable_bytes()->mutable_values()->assign(
-      base::as_string_view(base::as_bytes(value)));
-}
+
 template <>
 void SetTensorValueForImmediateValue<uint8_t>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
@@ -542,6 +565,29 @@ void PopulateValueTypeFromOperandInfo(
     CoreML::Specification::MILSpec::ValueType& value_type) {
   PopulateValueType(operand_info.mil_data_type, operand_info.dimensions,
                     value_type);
+}
+
+CoreML::Specification::MILSpec::Value CreateTensorImmediateValueFromBytes(
+    base::span<const uint32_t> dimensions,
+    CoreML::Specification::MILSpec::DataType mil_data_type,
+    base::span<const uint8_t> value) {
+  // These types are stored in bytes.
+  // https://github.com/apple/coremltools/blob/605ac1c7f06c19a09853e1757f7f3379d7d4e9fd/coremltools/converters/mil/mil/types/__init__.py#L79
+  static constexpr MilDataTypes kByteTypes{
+      CoreML::Specification::MILSpec::DataType::FLOAT16,
+      CoreML::Specification::MILSpec::DataType::INT4,
+      CoreML::Specification::MILSpec::DataType::UINT4,
+      CoreML::Specification::MILSpec::DataType::INT8,
+      CoreML::Specification::MILSpec::DataType::UINT8,
+      CoreML::Specification::MILSpec::DataType::UINT32,
+  };
+  CHECK(kByteTypes.Has(mil_data_type));
+
+  CoreML::Specification::MILSpec::Value immediate_value{};
+  PopulateValueType(mil_data_type, dimensions, *immediate_value.mutable_type());
+  auto* tensor = immediate_value.mutable_immediatevalue()->mutable_tensor();
+  SetTensorValueForImmediateValue(*tensor, value);
+  return immediate_value;
 }
 
 template <typename DataType>
@@ -754,14 +800,6 @@ CoreML::Specification::MILSpec::Value CreateConstantImmediateValue(
       }
       return CreateTensorImmediateValue<float>(dimensions, floats);
     }
-    case OperandDataType::kFloat16: {
-      base::FixedArray<Float16> float16s(value.size() / sizeof(Float16));
-      for (size_t i = 0u; i < float16s.size(); ++i) {
-        float16s[i].data = base::U16FromNativeEndian(
-            value.subspan(i * sizeof(Float16)).first<2u>());
-      }
-      return CreateTensorImmediateValue<Float16>(dimensions, float16s);
-    }
     case OperandDataType::kInt32: {
       base::FixedArray<int32_t> ints(value.size() / sizeof(int32_t));
       for (size_t i = 0u; i < ints.size(); ++i) {
@@ -770,27 +808,17 @@ CoreML::Specification::MILSpec::Value CreateConstantImmediateValue(
       }
       return CreateTensorImmediateValue<int32_t>(dimensions, ints);
     }
-    case OperandDataType::kInt8: {
-      base::FixedArray<int8_t> int8s(value.size() / sizeof(int8_t));
-      for (size_t i = 0u; i < int8s.size(); ++i) {
-        int8s[i] = base::I8FromNativeEndian(
-            value.subspan(i * sizeof(int8_t)).first<1u>());
-      }
-      return CreateTensorImmediateValue<int8_t>(dimensions, int8s);
-    }
-    case OperandDataType::kUint8: {
-      base::FixedArray<uint8_t> uint8s(value.size() / sizeof(uint8_t));
-      for (size_t i = 0u; i < uint8s.size(); ++i) {
-        uint8s[i] = base::U8FromNativeEndian(
-            value.subspan(i * sizeof(uint8_t)).first<1u>());
-      }
-      return CreateTensorImmediateValue<uint8_t>(dimensions, uint8s);
-    }
+    case OperandDataType::kFloat16:
     case OperandDataType::kUint32:
-    case OperandDataType::kInt64:
-    case OperandDataType::kUint64:
+    case OperandDataType::kInt8:
+    case OperandDataType::kUint8:
     case OperandDataType::kInt4:
     case OperandDataType::kUint4: {
+      return CreateTensorImmediateValueFromBytes(
+          dimensions, OperandTypeToMILDataType(data_type), value);
+    }
+    case OperandDataType::kInt64:
+    case OperandDataType::kUint64: {
       NOTREACHED() << "Unsupported data type.";
     }
   }
@@ -888,14 +916,12 @@ GraphBuilderCoreml::WeightsFileHandle::Write(
                                      : constant_operand.descriptor().shape();
 
   // CoreML allows writing constants directly into the model file as
-  // `ImmediateValue` or to a separate weight file. It does not support int32
-  // serialization to the weight file. Therefore, int32 values are written as
-  // `ImmediateValue`, as are scalar values for efficiency.
+  // `ImmediateValue` or to a separate weight file. Therefore write scalar
+  // values as `ImmediateValue`s for efficiency.
 
   // TODO(crbug.com/395934168): Consider also saving small constants as
   // immediate values.
-  if (constant_operand.descriptor().shape().empty() ||
-      constant_operand.descriptor().data_type() == OperandDataType::kInt32) {
+  if (constant_operand.descriptor().shape().empty()) {
     return CreateConstantImmediateValue(
         dimensions, constant_operand.descriptor().data_type(),
         constant_operand.ByteSpan());
@@ -1074,6 +1100,11 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
                                                       OperandDataType::kFloat32,
                                                       OperandDataType::kInt32};
 
+  static constexpr SupportedDataTypes kConstantSupportedDataTypes{
+      OperandDataType::kFloat32, OperandDataType::kFloat16,
+      OperandDataType::kInt32,   OperandDataType::kUint32,
+      OperandDataType::kInt8,    OperandDataType::kUint8,
+      OperandDataType::kInt4,    OperandDataType::kUint4};
   static constexpr SupportedDataTypes kFloat16To32Int8To32AndUint8{
       OperandDataType::kFloat32, OperandDataType::kFloat16,
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
@@ -1099,15 +1130,13 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(5);
   static constexpr SupportedRanks kNonScalarMaxRank =
       SupportedRanks::NonScalarUpTo(5);
-  static constexpr SupportedDataTypes k8BitInts{OperandDataType::kInt8,
-                                                OperandDataType::kUint8};
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/kFloatsAndInt32,
-       /*constant=*/kFloat16To32Int8To32AndUint8,
+       /*constant=*/kConstantSupportedDataTypes,
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.reduction.reduce_argmax
        /*arg_min_max_input=*/
        {arg_min_max_input_supported_data_types, kNonScalarMaxRank},
@@ -1132,10 +1161,11 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // input.
        // TODO(crbug.com/361603703): Support constant (u)int4 inputs via
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS18.compression.constexpr_blockwise_shift_scale
-       /*dequantize_linear_input=*/{k8BitInts, kMaxRank},
+       /*dequantize_linear_input=*/{DataTypeConstraint::kInts8, kMaxRank},
        /*dequantize_linear_scale=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(1)},
-       /*dequantize_linear_zero_point=*/{k8BitInts, SupportedRanks::UpTo(1)},
+       /*dequantize_linear_zero_point=*/
+       {DataTypeConstraint::kInts8, SupportedRanks::UpTo(1)},
        /*add_input=*/{kFloatsAndInt32, kMaxRank},
        /*sub_input=*/{kFloatsAndInt32, kMaxRank},
        /*mul_input=*/{kFloatsAndInt32, kMaxRank},
@@ -1312,8 +1342,11 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   if (__builtin_available(macOS 15, *)) {
     properties.data_type_limits.dequantize_linear_scale.ranks = kMaxRank;
     properties.data_type_limits.dequantize_linear_zero_point.ranks = kMaxRank;
+    properties.data_type_limits.dequantize_linear_input.data_types =
+        DataTypeConstraint::kInts4ToInts8;
+    properties.data_type_limits.dequantize_linear_zero_point.data_types =
+        DataTypeConstraint::kInts4ToInts8;
   }
-
   return properties;
 }
 
@@ -2277,10 +2310,19 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
   CHECK_EQ(scale_operand_info.mil_data_type,
            GetOperandInfo(operation.output_operand_id).mil_data_type);
 
+  // TODO(crbug.com/338529226): Emulate unsupported paths when input is not
+  // constant.
   bool is_constant_input =
       constant_operands_->contains(operation.input_operand_id);
-  if (support_blockwise_dequantize_ && is_constant_input) {
-    return AddOperationForDequantizeLinearConstBlockwise(operation, block);
+  if (support_blockwise_dequantize_) {
+    if (is_constant_input) {
+      return AddOperationForDequantizeLinearConstBlockwise(operation, block);
+    } else if (input_operand_data_type == OperandDataType::kInt4 ||
+               input_operand_data_type == OperandDataType::kUint4) {
+      return NewNotSupportedError(
+          "Unsupported input to dequantizeLinear. 'input' must be constant "
+          "for int4/uint4 types.");
+    }
   }
 
   if (scale_operand_info.dimensions.size() == 1 &&

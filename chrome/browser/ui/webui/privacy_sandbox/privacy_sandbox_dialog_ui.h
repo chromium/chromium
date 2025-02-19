@@ -33,13 +33,12 @@ class PrivacySandboxDialogUI : public content::WebUIController {
   explicit PrivacySandboxDialogUI(content::WebUI* web_ui);
   ~PrivacySandboxDialogUI() override;
 
-  void Initialize(Profile* profile,
-                  base::OnceClosure close_callback,
-                  base::OnceCallback<void(int)> resize_callback,
-                  base::OnceClosure show_dialog_callback,
-                  base::OnceClosure open_settings_callback,
-                  base::OnceClosure open_measurement_settings_callback,
-                  PrivacySandboxService::PromptType prompt_type);
+  void Initialize(
+      Profile* profile,
+      base::RepeatingCallback<void(
+          PrivacySandboxService::AdsDialogCallbackNoArgsEvents)> dialog_callback,
+      base::OnceCallback<void(int)> resize_callback,
+      PrivacySandboxService::PromptType prompt_type);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

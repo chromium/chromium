@@ -22,8 +22,6 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(features::kUiaProvider);
-
     widget_ = std::make_unique<Widget>();
 
     Widget::InitParams params =

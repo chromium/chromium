@@ -45,6 +45,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/feedback/system_logs/log_sources/ozone_platform_state_dump_source.h"
+#endif
+
 namespace system_logs {
 
 SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
@@ -97,6 +101,10 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
   fetcher->AddSource(std::make_unique<ShillLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));
 #endif
+
+#if BUILDFLAG(IS_LINUX)
+  fetcher->AddSource(std::make_unique<OzonePlatformStateDumpSource>());
+#endif  // BUILDFLAG(IS_LINUX)
 
   return fetcher;
 }

@@ -116,17 +116,14 @@ em::RemoteCommand_Type DeviceCommandGetRoutineUpdateJob::GetType() const {
 
 bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root.has_value()) {
-    return false;
-  }
-  if (!root->is_dict()) {
+  std::optional<base::Value::Dict> root =
+      base::JSONReader::ReadDict(command_payload);
+  if (!root) {
     return false;
   }
 
-  const base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid integer for the routine ID.
-  std::optional<int> id = dict.FindInt(kIdFieldName);
+  std::optional<int> id = root->FindInt(kIdFieldName);
   if (!id.has_value()) {
     return false;
   }
@@ -134,7 +131,7 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
 
   // Make sure the command payload specified a valid
   // DiagnosticRoutineCommandEnum.
-  std::optional<int> command_enum = dict.FindInt(kCommandFieldName);
+  std::optional<int> command_enum = root->FindInt(kCommandFieldName);
   if (!command_enum.has_value()) {
     return false;
   }
@@ -145,7 +142,7 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
   }
 
   // Make sure the command payload specified a boolean for include_output.
-  std::optional<bool> include_output = dict.FindBool(kIncludeOutputFieldName);
+  std::optional<bool> include_output = root->FindBool(kIncludeOutputFieldName);
   if (!include_output.has_value()) {
     return false;
   }

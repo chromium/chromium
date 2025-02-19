@@ -14,7 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
 // Regression test for crbug.com/1456872.
 // ChromeOS does not support signing out of a primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
                        ShouldHandleWalletSideEffectsWhenSyncDisabled) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   // Enabling sync again should work, without crashes.
   EXPECT_TRUE(SetupSync());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 
@@ -1501,7 +1501,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Preference tracking is not required on android and chromeos.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 const char* kProtectedPrefName = prefs::kShowHomeButton;
 const char* kUnprotectedPrefName = prefs::kShowForwardButton;
@@ -1806,6 +1806,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTestWithAttack,
       << "Incorrect key " << account_pref_name << " in " << *prefs;
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

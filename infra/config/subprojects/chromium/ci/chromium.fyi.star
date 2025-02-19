@@ -858,6 +858,7 @@ ci.builder(
     executable = "recipe:chromium_rr/test_launcher",
     schedule = "triggered",
     triggered_by = [],
+    builderless = False,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",

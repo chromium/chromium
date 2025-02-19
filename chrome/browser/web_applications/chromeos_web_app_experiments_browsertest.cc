@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -37,10 +38,6 @@
 #include "third_party/blink/public/mojom/input/input_event.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif
 
 static_assert(BUILDFLAG(IS_CHROMEOS), "For Chrome OS only");
 
@@ -80,12 +77,6 @@ class ChromeOsWebAppExperimentsBrowserTest
         browser(), embedded_test_server()->GetURL(
                        "/web_apps/get_manifest.html?theme_color.json"));
     apps::AppReadinessWaiter(profile(), app_id_).Await();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_upload_office_to_cloud_enabled = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif
   }
   void TearDownOnMainThread() override {
     WebAppNavigationBrowserTest::TearDownOnMainThread();
@@ -96,8 +87,6 @@ class ChromeOsWebAppExperimentsBrowserTest
   webapps::AppId app_id_;
   GURL extended_scope_;
   GURL extended_scope_page_;
-  // This has no effect in Lacros, the feature is enabled via
-  // `chromeos::BrowserInitParams` instead.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -109,10 +98,6 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
   NavigateViaLinkClickToURLAndWait(app_browser, extended_scope_page_);
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
-
-// TODO(https://issuetracker.google.com/248979304): Deflake these tests on
-// Lacros + Ash.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
                        LinkCaptureScopeExtension) {
@@ -422,7 +407,5 @@ INSTANTIATE_TEST_SUITE_P(
     ChromeOsWebAppExperimentsNavigationBrowserTest,
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
     apps::test::LinkCapturingVersionToString);
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

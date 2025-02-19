@@ -8,11 +8,13 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
@@ -35,6 +37,7 @@ using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsToolbarAddButton;
 using chrome_test_util::TabGridEditButton;
+using policy_test_utils::SetPolicy;
 
 namespace {
 
@@ -160,7 +163,9 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector(testBottomToolbarAddButtonVisibility)]) {
+  if ([self isRunningTest:@selector(testBottomToolbarAddButtonVisibility)] ||
+      [self isRunningTest:@selector(testToggleToolbarAddButtonBySwitch)] ||
+      [self isRunningTest:@selector(testToggleToolbarAddButtonByPolicy)]) {
     config.features_enabled.push_back(kAddAddressManually);
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
@@ -350,6 +355,59 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
   // Verify the "Add" button is visible.
   [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks that the toolbar "Add" button's enabled state changes based on the
+// "Autofill profiles" switch.
+- (void)testToggleToolbarAddButtonBySwitch {
+  [AutofillAppInterface saveExampleProfile];
+  [self openAutofillProfilesSettings];
+
+  // Toggle the "Autofill profiles" switch off.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/YES, /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Verify the "Add" button is disabled.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Toggle the "Autofill profiles" switch back on.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/NO, /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+
+  // Verify the "Add" button is enabled.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_enabled()];
+}
+
+// Checks that the toolbar "Add" button's enabled state changes based on the
+// AutofillAddressEnabled Enterprise Policy.
+- (void)testToggleToolbarAddButtonByPolicy {
+  // Force the preference off via policy.
+  SetPolicy(false, policy::key::kAutofillAddressEnabled);
+
+  [self openAutofillProfilesSettings];
+
+  // Verify the "Add" button is disabled.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  [self exitSettingsMenu];
+
+  // Force the preference on via policy.
+  SetPolicy(true, policy::key::kAutofillAddressEnabled);
+
+  [self openAutofillProfilesSettings];
+
+  // Verify the "Add" button is enabled.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 // Checks that the Autofill profile switch can be toggled on/off and the list of

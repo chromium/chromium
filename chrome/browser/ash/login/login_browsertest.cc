@@ -55,6 +55,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_system.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"

@@ -244,9 +244,9 @@ BASE_EXPORT extern const char16_t
     kWhitespaceNoCrLfUTF16[];  // Unicode w/o CR/LF.
 BASE_EXPORT extern const char kWhitespaceASCII[];
 BASE_EXPORT extern const char16_t kWhitespaceASCIIAs16[];  // No unicode.
-                                                           //
+
 // https://infra.spec.whatwg.org/#ascii-whitespace
-BASE_EXPORT extern const char kInfraAsciiWhitespace[];
+inline constexpr char kInfraAsciiWhitespace[] = {0x09, 0x0A, 0x0C, 0x0D, 0x20};
 
 // Null-terminated string representing the UTF-8 byte order mark.
 BASE_EXPORT extern const char kUtf8ByteOrderMark[];

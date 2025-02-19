@@ -17,7 +17,6 @@ namespace ash {
 
 CrosSafetyService::CrosSafetyService(manta::MantaService* manta_service)
     : manta_service_(manta_service) {
-  CHECK(manta_service_);
   CHECK(mojo_service_manager::IsServiceManagerBound())
       << "CrosSafetyService requires mojo service manager.";
   mojo_service_manager::GetServiceManagerProxy()->Register(
@@ -107,6 +106,12 @@ void CrosSafetyService::CreateCloudSafetySession(
     CreateCloudSafetySessionCallback callback) {
   // initialize cloud_safety_session_ if not previously done.
   if (!cloud_safety_session_) {
+    if (!manta_service_) {
+      std::move(callback).Run(cros_safety::mojom::GetCloudSafetySessionResult::
+                                  kMantaServiceFailedToCreate);
+      return;
+    }
+
     auto provider = manta_service_->CreateWalrusProvider();
     if (!provider) {
       std::move(callback).Run(cros_safety::mojom::GetCloudSafetySessionResult::

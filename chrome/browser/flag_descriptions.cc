@@ -314,6 +314,13 @@ const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
 const char kDataSharingJoinOnlyDescription[] =
     "Enabled Data Sharing Joining flow related UI and features.";
 
+const char kDisableFacilitatedPaymentsMerchantAllowlistName[] =
+    "Disable the merchant allowlist check for facilitated payments";
+const char kDisableFacilitatedPaymentsMerchantAllowlistDescription[] =
+    "When enabled, disable the merchant allowlist check for facilitated "
+    "payments, so that merchants that are not on the allowlist can also be "
+    "tested for the supported features.";
+
 const char kHistorySyncAlternativeIllustrationName[] =
     "History Sync Alternative Illustration";
 const char kHistorySyncAlternativeIllustrationDescription[] =

@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -712,10 +713,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   autofill_client_.GetPersonalDataManager()
       .payments_data_manager()
       .AddCreditCard(expired_card);
-  std::vector<const CreditCard*> credit_cards =
-      autofill_client_.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCardsToSuggest();
+  std::vector<const CreditCard*> credit_cards = GetCreditCardsToSuggest(
+      autofill_client_.GetPersonalDataManager().payments_data_manager());
 
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(
@@ -868,10 +867,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   autofill_client_.GetPersonalDataManager()
       .payments_data_manager()
       .AddCreditCard(credit_card2);
-  std::vector<const CreditCard*> credit_cards =
-      autofill_client_.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCardsToSuggest();
+  std::vector<const CreditCard*> credit_cards = GetCreditCardsToSuggest(
+      autofill_client_.GetPersonalDataManager().payments_data_manager());
 
   EXPECT_CALL(
       payments_autofill_client(),

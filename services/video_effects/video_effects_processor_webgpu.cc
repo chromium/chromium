@@ -305,6 +305,7 @@ void VideoEffectsProcessorWebGpu::OnFrameProcessed(wgpu::Texture texture) {
 // to make it more clear which part of the code corresponds to which step from
 // the diagram.
 void VideoEffectsProcessorWebGpu::PostProcess(
+    const RuntimeConfig& runtime_config,
     media::mojom::VideoBufferHandlePtr input_frame_data,
     media::mojom::VideoFrameInfoPtr input_frame_info,
     media::mojom::VideoBufferHandlePtr result_frame_data,
@@ -380,7 +381,7 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   // ImportSI(s1)
   scoped_refptr<gpu::ClientSharedImage> in_plane =
       shared_image_interface_->ImportSharedImage(
-          input_frame_data->get_shared_image_handle()->shared_image);
+          std::move(input_frame_data->get_shared_image_handle()->shared_image));
   CHECK(in_plane);
   // s3=CreateSI()
   auto in_image =
@@ -398,7 +399,7 @@ void VideoEffectsProcessorWebGpu::PostProcess(
       result_frame_data->get_shared_image_handle()->sync_token);
   // ImportSI(s2)
   auto out_plane = shared_image_interface_->ImportSharedImage(
-      result_frame_data->get_shared_image_handle()->shared_image);
+      std::move(result_frame_data->get_shared_image_handle()->shared_image));
   CHECK(out_plane);
   // s4=CreateSI()
   auto out_image =
@@ -543,10 +544,9 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   // that `ProcessFrame()` returned does not mean that the frame was already
   // processed - just that the appropriate commands have been scheduled to run
   // on the GPU. Same for `WaitUntilIdle()`.
-  RuntimeConfig config = {.blur_state = BlurState::kEnabled};
   CHECK(graph_->ProcessFrame(input_frame_info->timestamp, in_texture,
                              in_texture_downscaled_float32, out_texture,
-                             config));
+                             runtime_config));
   // We can block since all the graph does is it schedules more work on the GPU.
   // This itself should be near-instant, so the call won't block for long.
   CHECK(graph_->WaitUntilIdle());

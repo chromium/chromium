@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, FastEnableDisableEnable) {
 // the following tests.
 //
 // ChromeOS does not support signing out of a primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, RedownloadsAfterSignout) {
   ASSERT_TRUE(SetupClients());
   ASSERT_FALSE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, RedownloadsAfterSignout) {
       GURL(kSyncedBookmarkURL)));
   EXPECT_EQ(GetNumUpdatesDownloadedInLastCycle(), initial_updates_downloaded);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
                        DoesNotRedownloadAfterSyncUnpaused) {

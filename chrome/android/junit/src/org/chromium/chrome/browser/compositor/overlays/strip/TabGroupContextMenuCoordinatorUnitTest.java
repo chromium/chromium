@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -82,7 +82,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
-    private OnItemClickedCallback mOnItemClickedCallback;
+    private OnItemClickedCallback<Token> mOnItemClickedCallback;
     private MockTabModel mTabModel;
     @Mock private TabRemover mTabRemover;
     @Mock private TabUngrouper mTabUngrouper;

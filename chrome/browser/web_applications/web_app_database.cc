@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
@@ -71,7 +72,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #endif
 
@@ -581,7 +582,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         chromeos_data.handles_file_open_intents);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (web_app.client_data().system_web_app_data.has_value()) {
     auto& swa_data = web_app.client_data().system_web_app_data.value();
 
@@ -1107,7 +1108,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (local_data.client_data().has_system_web_app_data()) {
     ash::SystemWebAppData& swa_data =
         web_app->client_data()->system_web_app_data.emplace();

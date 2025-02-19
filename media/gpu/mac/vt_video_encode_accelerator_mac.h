@@ -44,6 +44,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
                   Client* client,
                   std::unique_ptr<MediaLog> media_log = nullptr) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void Encode(scoped_refptr<VideoFrame> frame,
+              const VideoEncoder::EncodeOptions& options) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,

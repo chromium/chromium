@@ -88,6 +88,27 @@ suite('SeaPenFreeformElementTest', function() {
         'sea-pen-images is not shown');
   });
 
+  test(
+      'shows freeform page with tab container if thumbnails exist',
+      async () => {
+        // Initialize |freeformElement|.
+        personalizationStore.data.wallpaper.seaPen.thumbnails =
+            seaPenProvider.thumbnails;
+
+        freeformElement = initElement(SeaPenFreeformElement);
+        await waitAfterNextRender(freeformElement);
+
+        const tabContainer =
+            freeformElement.shadowRoot!.querySelector<HTMLElement>(
+                '#tabContainer');
+        assertTrue(!!tabContainer);
+        assertFalse(!!tabContainer.hidden, 'tab container is shown');
+        assertTrue(
+            !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
+                SeaPenImagesElement.is),
+            'sea-pen-images is shown');
+      });
+
   test('shows 6 sample prompts in freeform freeform page', async () => {
     // Initialize |freeformElement|.
     freeformElement = initElement(SeaPenFreeformElement);

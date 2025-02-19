@@ -9,6 +9,7 @@ package feedwire;
 import "components/feed/core/proto/v2/wire/capabilities_debug_data.proto";
 import "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.proto";
 import "components/feed/core/proto/v2/wire/content_lifetime.proto";
+import "components/feed/core/proto/v2/wire/cui_server_metadata.proto";
 import "components/feed/core/proto/v2/wire/data_operation.proto";
 import "components/feed/core/proto/v2/wire/eventid.proto";
 import "components/feed/core/proto/v2/wire/info_card.proto";
@@ -28,5 +29,7 @@ message FeedResponseMetadata {
   optional ContentLifetime content_lifetime = 6;
   optional InfoCardServingInfo info_card_serving_info = 7;
   optional CapabilitiesDebugData capabilities_debug_data = 8;
+  optional int32 feed_end_status = 9;
+  optional CuiServerMetadata feed_launch_cui_server_metadata = 13;
   optional ChromeFeedResponseMetadata chrome_feed_response_metadata = 326233599;
 }

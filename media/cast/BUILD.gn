@@ -98,7 +98,6 @@ source_set("encoding") {
 
   deps = [
     ":common",
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/openscreen/src/cast/streaming:common",
     "//third_party/opus",
   ]

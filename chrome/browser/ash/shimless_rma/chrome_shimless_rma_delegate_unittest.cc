@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper_constants.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile_manager.h"

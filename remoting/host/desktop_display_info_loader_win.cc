@@ -48,6 +48,15 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
       is_default = true;
     }
 
+    // Make a second call to get the monitor name for the device.
+    DISPLAY_DEVICE monitor = {};
+    monitor.cb = sizeof(monitor);
+    std::string monitor_name;
+    if (EnumDisplayDevices(device.DeviceName, 0, &monitor, 0)) {
+      // Call succeeded, DeviceString should contain the monitor name.
+      monitor_name = base::WideToUTF8(monitor.DeviceString);
+    }
+
     // Get additional info about device.
     DEVMODE devmode;
     devmode.dmSize = sizeof(devmode);
@@ -59,7 +68,7 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
     displays.emplace_back(
         /* id */ device_index, x, y, devmode.dmPelsWidth, devmode.dmPelsHeight,
         /* dpi */ devmode.dmLogPixels, devmode.dmBitsPerPel, is_default,
-        base::WideToUTF8(devmode.dmDeviceName));
+        monitor_name);
 
     lowest_x = std::min(x, lowest_x);
     lowest_y = std::min(y, lowest_y);

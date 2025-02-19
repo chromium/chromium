@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/safe_sprintf.h"
 
 #include <errno.h>
@@ -15,6 +10,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -338,11 +334,12 @@ bool Buffer::IToASCII(bool sign,
         if (padding) {
           --padding;
         }
-        Out(*prefix++);
+        UNSAFE_TODO(Out(*prefix++));
       }
       prefix = nullptr;
     } else {
-      for (reverse_prefix = prefix; *reverse_prefix; ++reverse_prefix) {
+      for (reverse_prefix = prefix; *reverse_prefix;
+           UNSAFE_TODO(++reverse_prefix)) {
       }
     }
   } else {
@@ -367,8 +364,8 @@ bool Buffer::IToASCII(bool sign,
         // them. This is essentially equivalent to:
         //   memmove(buffer_ + start, buffer_ + start + 1, size_ - start - 1)
         for (char *move = buffer_ + start, *end = buffer_ + size_ - 1;
-             move < end; ++move) {
-          *move = move[1];
+             move < end; UNSAFE_TODO(++move)) {
+          *move = UNSAFE_TODO(move[1]);
         }
         ++discarded;
         --count_;
@@ -390,14 +387,14 @@ bool Buffer::IToASCII(bool sign,
     // integer always ends in 2, 4, 6, or 8.
     if (!num && started) {
       if (reverse_prefix > prefix) {
-        Out(*--reverse_prefix);
+        UNSAFE_TODO(Out(*--reverse_prefix));
       } else {
         Out(pad);
       }
     } else {
       started = true;
-      Out((upcase ? kUpCaseHexDigits
-                  : kDownCaseHexDigits)[num % base + minint]);
+      UNSAFE_TODO(Out((upcase ? kUpCaseHexDigits
+                              : kDownCaseHexDigits)[num % base + minint]));
     }
 
     minint = 0;
@@ -428,11 +425,13 @@ bool Buffer::IToASCII(bool sign,
     // So, now, we reverse the string (except for the possible '-' sign).
     char* front = buffer_ + start;
     char* back = GetInsertionPoint();
-    while (--back > front) {
-      char ch = *back;
-      *back = *front;
-      *front++ = ch;
-    }
+    UNSAFE_TODO({
+      while (--back > front) {
+        char ch = *back;
+        *back = *front;
+        *front++ = ch;
+      }
+    });
   }
   IncrementCount(discarded);
   return !discarded;
@@ -462,10 +461,10 @@ ssize_t SafeSNPrintf(char* buf,
   size_t padding;
   char pad;
   for (unsigned int cur_arg = 0; *fmt && !buffer.OutOfAddressableSpace();) {
-    if (*fmt++ == '%') {
+    if (UNSAFE_TODO(*fmt++) == '%') {
       padding = 0;
       pad = ' ';
-      char ch = *fmt++;
+      char ch = UNSAFE_TODO(*fmt++);
     format_character_found:
       switch (ch) {
         case '0':
@@ -496,7 +495,7 @@ ssize_t SafeSNPrintf(char* buf,
               // handling.
             padding_overflow:
               padding = max_padding;
-              while ((ch = *fmt++) >= '0' && ch <= '9') {
+              while ((ch = UNSAFE_TODO(*fmt++)) >= '0' && ch <= '9') {
               }
               if (cur_arg < max_args) {
                 ++cur_arg;
@@ -512,7 +511,7 @@ ssize_t SafeSNPrintf(char* buf,
               DEBUG_CHECK(padding <= max_padding);
               goto padding_overflow;
             }
-            ch = *fmt++;
+            ch = UNSAFE_TODO(*fmt++);
             if (ch < '0' || ch > '9') {
               // Reached the end of the width parameter. This is where the
               // format character is found.
@@ -527,7 +526,7 @@ ssize_t SafeSNPrintf(char* buf,
           }
 
           // Check that the argument has the expected type.
-          const Arg& arg = args[cur_arg++];
+          const Arg& arg = UNSAFE_TODO(args[cur_arg++]);
           if (arg.type != Arg::INT && arg.type != Arg::UINT) {
             DEBUG_CHECK(arg.type == Arg::INT || arg.type == Arg::UINT);
             goto fail_to_expand;
@@ -555,7 +554,7 @@ ssize_t SafeSNPrintf(char* buf,
             goto fail_to_expand;
           }
 
-          const Arg& arg = args[cur_arg++];
+          const Arg& arg = UNSAFE_TODO(args[cur_arg++]);
           int64_t i;
           const char* prefix = nullptr;
           if (ch != 'p') {
@@ -617,7 +616,7 @@ ssize_t SafeSNPrintf(char* buf,
           }
 
           // Check that the argument has the expected type.
-          const Arg& arg = args[cur_arg++];
+          const Arg& arg = UNSAFE_TODO(args[cur_arg++]);
           const char* s;
           if (arg.type == Arg::STRING) {
             s = arg.str ? arg.str : "<NULL>";
@@ -634,7 +633,7 @@ ssize_t SafeSNPrintf(char* buf,
           // length of the string that we are outputting.
           if (padding) {
             size_t len = 0;
-            for (const char* src = s; *src++;) {
+            for (const char* src = s; UNSAFE_TODO(*src++);) {
               ++len;
             }
             buffer.Pad(' ', padding, len);
@@ -644,7 +643,7 @@ ssize_t SafeSNPrintf(char* buf,
           // output buffer and making sure we don't output more bytes than
           // available space; Out() takes care of doing that.
           for (const char* src = s; *src;) {
-            buffer.Out(*src++);
+            buffer.Out(UNSAFE_TODO(*src++));
           }
           break;
         }
@@ -675,7 +674,7 @@ ssize_t SafeSNPrintf(char* buf,
       }
     } else {
     copy_verbatim:
-      buffer.Out(fmt[-1]);
+      buffer.Out(UNSAFE_TODO(fmt[-1]));
     }
   }
 end_of_format_string:
@@ -702,13 +701,15 @@ ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt) {
   // SafeSPrintf() function always degenerates to a version of strncpy() that
   // de-duplicates '%' characters.
   const char* src = fmt;
-  for (; *src; ++src) {
-    buffer.Out(*src);
-    DEBUG_CHECK(src[0] != '%' || src[1] == '%');
-    if (src[0] == '%' && src[1] == '%') {
-      ++src;
+  UNSAFE_TODO({
+    for (; *src; ++src) {
+      buffer.Out(*src);
+      DEBUG_CHECK(src[0] != '%' || src[1] == '%');
+      if (src[0] == '%' && src[1] == '%') {
+        ++src;
+      }
     }
-  }
+  });
   return buffer.GetCount();
 }
 

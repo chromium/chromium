@@ -28,7 +28,7 @@ message EnhancedCalendarLoggingData {
 }
 
 // The request to execute an Enhanced Calendar query.
-// Next ID: 4
+// Next ID: 5
 message EnhancedCalendarRequest {
   // The start date of the event. Ideally in the format of HH:MM MM/DD/YYYY
   // (E.g. 10:00 AM 01/01/2024) but because this is an LLM output, the format is
@@ -44,6 +44,10 @@ message EnhancedCalendarRequest {
   // contain calendar event dates or related information to populate the
   // calendar description.
   PageContext page_context = 3;
+
+  // The prompt used for generating the event. If the prompt is not provided,
+  // the default prompt from the feature config will be used.
+  string prompt = 4;
 }
 
 // The response from executing a Enhanced Calendar query.

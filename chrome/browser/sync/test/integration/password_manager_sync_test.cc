@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -150,11 +149,11 @@ class SyncActiveWithoutPasswordsChecker
 
 // Note: This helper applies to ChromeOS too, but is currently unused there. So
 // define it out to prevent a compile error due to the unused function.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 content::WebContents* GetNewTab(Browser* browser) {
   return PasswordManagerBrowserTestBase::GetNewTab(browser);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // This test fixture is similar to SingleClientPasswordsSyncTest, but it also
 // sets up all the necessary test hooks etc for PasswordManager code (like
@@ -425,7 +424,7 @@ class PasswordManagerSyncTest : public SyncTest {
   AccountInfo signed_in_account_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInProfileStore) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
@@ -794,8 +793,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   bubble_observer.WaitForAutomaticUpdatePrompt();
 }
 
-// Signing out on Lacros is not possible,
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        SignOutWithUnsyncedPasswordsOpensBubble) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -821,7 +818,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   SignOut();
   bubble_observer.WaitForSaveUnsyncedCredentialsPrompt();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -1023,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
               ElementsAre(MatchesLogin("localuser", "localpass")));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
   ASSERT_TRUE(SetupSync());
@@ -1065,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
             SyncTest::kDefaultUserEmail);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class PasswordManagerSyncTestWithPolicy : public PasswordManagerSyncTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -1130,6 +1126,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
     waiter.Wait();
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

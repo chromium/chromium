@@ -74,13 +74,14 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
       response_body = std::move(*body);
     }
 
-    std::optional<base::Value> value = base::JSONReader::Read(response_body);
-    if (!value || !value->is_dict()) {
+    std::optional<base::Value::Dict> value =
+        base::JSONReader::ReadDict(response_body);
+    if (!value) {
       LOG(ERROR) << __func__ << " Bad response format";
       std::move(failure_callback_).Run();
       return;
     }
-    base::Value::List* locales_list = value->GetDict().FindList("locales");
+    base::Value::List* locales_list = value->FindList("locales");
     if (!locales_list) {
       LOG(ERROR) << __func__ << " No locales available";
       std::move(failure_callback_).Run();

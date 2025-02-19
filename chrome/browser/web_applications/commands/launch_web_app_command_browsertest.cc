@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,15 +46,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/startup/first_run_service.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -71,72 +61,12 @@ const base::FilePath::CharType kCurrentDirectory[] =
 const base::FilePath::CharType kCurrentDirectory[] = FILE_PATH_LITERAL("/path");
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class FirstRunServiceMock : public FirstRunService {
- public:
-  FirstRunServiceMock(Profile& profile,
-                      signin::IdentityManager& identity_manager)
-      : FirstRunService(profile, identity_manager) {}
-
-  MOCK_METHOD(bool, ShouldOpenFirstRun, (), (const, override));
-  MOCK_METHOD(void,
-              OpenFirstRunIfNeeded,
-              (EntryPoint entry_point, ResumeTaskCallback callback),
-              (override));
-};
-
-std::unique_ptr<KeyedService> BuildTestFirstRunService(
-    bool create_first_run_service,
-    content::BrowserContext* context) {
-  if (!create_first_run_service) {
-    return nullptr;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(context);
-  CHECK(profile);
-  return std::make_unique<FirstRunServiceMock>(
-      *profile, *IdentityManagerFactory::GetForProfile(profile));
-}
-
-class FirstRunServiceOverrideHelper {
- public:
-  explicit FirstRunServiceOverrideHelper(bool create_first_run_service)
-      : create_first_run_service_(create_first_run_service) {
-    CHECK(BrowserContextDependencyManager::GetInstance());
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&FirstRunServiceOverrideHelper::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
- private:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    FirstRunServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(BuildTestFirstRunService,
-                                     create_first_run_service_));
-  }
-
-  bool create_first_run_service_ = false;
-
-  base::CallbackListSubscription create_services_subscription_;
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class LaunchWebAppWithFirstRunServiceBrowserTest
     : public WebAppBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
   LaunchWebAppWithFirstRunServiceBrowserTest() = default;
   ~LaunchWebAppWithFirstRunServiceBrowserTest() override = default;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetUpInProcessBrowserTestFixture() override {
-    first_run_service_override_helper_ =
-        std::make_unique<FirstRunServiceOverrideHelper>(GetParam());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  protected:
   WebAppProvider& GetProvider() {
@@ -163,12 +93,6 @@ class LaunchWebAppWithFirstRunServiceBrowserTest
     run_loop.Run();
     return app_id;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
- private:
-  std::unique_ptr<FirstRunServiceOverrideHelper>
-      first_run_service_override_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 IN_PROC_BROWSER_TEST_P(
@@ -176,20 +100,6 @@ IN_PROC_BROWSER_TEST_P(
     LaunchInWindowWithFirstRunServiceRequiredSetupSuccessful) {
   webapps::AppId app_id =
       InstallWebApp(https_server()->GetURL("/banners/manifest_test_page.html"));
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  FirstRunServiceMock* first_run_service = static_cast<FirstRunServiceMock*>(
-      FirstRunServiceFactory::GetForBrowserContextIfExists(profile()));
-
-  if (GetParam()) {
-    EXPECT_CALL(*first_run_service, OpenFirstRunIfNeeded(_, _))
-        .WillOnce(WithArg<1>(Invoke([](ResumeTaskCallback callback) {
-          std::move(callback).Run(/*proceed=*/true);
-        })));
-  } else {
-    ASSERT_FALSE(first_run_service);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   ASSERT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
             GetProvider().registrar_unsafe().GetInstallState(app_id));
@@ -203,75 +113,12 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
   webapps::AppId app_id =
       InstallWebApp(https_server()->GetURL("/banners/manifest_test_page.html"));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  FirstRunServiceMock* first_run_service = static_cast<FirstRunServiceMock*>(
-      FirstRunServiceFactory::GetForBrowserContextIfExists(profile()));
-
-  if (GetParam()) {
-    EXPECT_CALL(*first_run_service, OpenFirstRunIfNeeded(_, _))
-        .WillOnce(WithArg<1>(Invoke([](ResumeTaskCallback callback) {
-          std::move(callback).Run(/*proceed=*/true);
-        })));
-  } else {
-    ASSERT_FALSE(first_run_service);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   ASSERT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
             GetProvider().registrar_unsafe().GetInstallState(app_id));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   ASSERT_TRUE(browser);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
-                       LaunchInWindowWithFirstRunServiceRequiredSetupSkipped) {
-  webapps::AppId app_id =
-      InstallWebApp(https_server()->GetURL("/banners/manifest_test_page.html"));
-
-  FirstRunServiceMock* first_run_service = static_cast<FirstRunServiceMock*>(
-      FirstRunServiceFactory::GetForBrowserContextIfExists(profile()));
-  if (GetParam()) {
-    EXPECT_CALL(*first_run_service, OpenFirstRunIfNeeded(_, _))
-        .WillOnce(WithArg<1>(Invoke([](ResumeTaskCallback callback) {
-          std::move(callback).Run(/*proceed=*/false);
-        })));
-  } else {
-    ASSERT_FALSE(first_run_service);
-  }
-
-  ASSERT_EQ(GetProvider().registrar_unsafe().GetInstallState(app_id),
-            proto::INSTALLED_WITH_OS_INTEGRATION);
-
-  Browser* browser = LaunchWebAppBrowser(app_id);
-  ASSERT_EQ(browser == nullptr, GetParam());
-}
-
-IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
-                       LaunchInTabWithFirstRunServiceRequiredSetupSkipped) {
-  webapps::AppId app_id =
-      InstallWebApp(https_server()->GetURL("/banners/manifest_test_page.html"));
-
-  FirstRunServiceMock* first_run_service = static_cast<FirstRunServiceMock*>(
-      FirstRunServiceFactory::GetForBrowserContextIfExists(profile()));
-
-  if (GetParam()) {
-    EXPECT_CALL(*first_run_service, OpenFirstRunIfNeeded(_, _))
-        .WillOnce(WithArg<1>(Invoke([](ResumeTaskCallback callback) {
-          std::move(callback).Run(/*proceed=*/true);
-        })));
-  } else {
-    ASSERT_FALSE(first_run_service);
-  }
-
-  ASSERT_EQ(GetProvider().registrar_unsafe().GetInstallState(
-      app_id), proto::INSTALLED_WITH_OS_INTEGRATION));
-
-  Browser* browser = LaunchBrowserForWebAppInTab(app_id);
-  ASSERT_TRUE(browser);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LaunchWebAppWithFirstRunServiceBrowserTest,

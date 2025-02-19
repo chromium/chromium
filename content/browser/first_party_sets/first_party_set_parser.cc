@@ -391,14 +391,10 @@ class ParseContext {
 
   // Removes invalid site entries and fixes up any lingering singletons.
   // Modifies the lists in-place.
-  void PostProcessSetLists(
-      base::expected<ParsedPolicySetLists, FirstPartySetsHandler::ParseError>&
-          lists_or_error) {
-    if (!lists_or_error.has_value() || invalid_keys_.empty()) {
+  void PostProcessSetLists(ParsedPolicySetLists& lists) {
+    if (invalid_keys_.empty()) {
       return;
     }
-
-    ParsedPolicySetLists& lists = lists_or_error.value();
 
     // Erase invalid members/primaries.
     const auto is_invalid_entry =
@@ -769,7 +765,9 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
     return ParsedPolicySetLists(std::move(replacements), std::move(additions));
   }();
 
-  context.PostProcessSetLists(set_lists);
+  if (set_lists.has_value()) {
+    context.PostProcessSetLists(set_lists.value());
+  }
 
   return FirstPartySetParser::PolicyParseResult(
       std::move(set_lists).transform([](ParsedPolicySetLists lists) {

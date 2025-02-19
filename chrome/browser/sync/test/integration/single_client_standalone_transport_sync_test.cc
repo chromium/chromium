@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -26,7 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -40,7 +39,7 @@ base::FilePath GetTestFilePathForCacheGuid() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class SyncDisabledViaDashboardChecker : public SingleClientStatusChangeChecker {
  public:
   explicit SyncDisabledViaDashboardChecker(syncer::SyncServiceImpl* service)
@@ -62,7 +61,7 @@ class SyncConsentDisabledChecker : public SingleClientStatusChangeChecker {
     return !service()->HasSyncConsent();
   }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class SingleClientStandaloneTransportSyncTest : public SyncTest {
  public:
@@ -70,7 +69,7 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
 };
 
 // On Chrome OS sync auto-starts on sign-in.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        StartsSyncTransportOnSignin) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -104,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        AllowedTypesInStandaloneTransportMode());
   EXPECT_TRUE(bad_types.empty()) << syncer::DataTypeSetToDebugString(bad_types);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
@@ -160,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   // involves clearing the server data so that the birthday gets incremented.
   GetFakeServer()->ClearServerData();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Ash, the primary account should remain, and Sync should start up
   // again in standalone transport mode, but report this specific case via
   // IsSyncFeatureDisabledViaDashboard().
@@ -184,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   // up again in standalone transport mode. However, since we haven't set up
   // cookies in this test, the account is *not* considered primary anymore
   // (not even "unconsented").
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // TODO(crbug.com/40200835): Android currently doesn't support PRE_ tests.
@@ -203,12 +202,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   // On platforms where Sync starts automatically (in practice, Android and
   // ChromeOS), IsInitialSyncFeatureSetupComplete gets set automatically, and so
   // the full Sync feature will start upon sign-in to a primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(GetSyncService(0)
                    ->GetUserSettings()
                    ->IsInitialSyncFeatureSetupComplete());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   syncer::SyncTransportDataPrefs transport_data_prefs(
       GetProfile(0)->GetPrefs(),
@@ -235,12 +234,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   // On platforms where Sync starts automatically (in practice, Android and
   // ChromeOS), IsInitialSyncFeatureSetupComplete gets set automatically, and so
   // the full Sync feature will start upon sign-in to a primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(GetSyncService(0)
                    ->GetUserSettings()
                    ->IsInitialSyncFeatureSetupComplete());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   syncer::SyncTransportDataPrefs transport_data_prefs(
       GetProfile(0)->GetPrefs(),

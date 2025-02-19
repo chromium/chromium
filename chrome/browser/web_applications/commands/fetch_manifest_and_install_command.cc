@@ -17,6 +17,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -55,35 +56,21 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/strings/utf_string_conversions.h"
 #include "net/base/url_util.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/arc.mojom.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace web_app {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr bool kAddAppsToQuickLaunchBarByDefault = false;
-#else
-constexpr bool kAddAppsToQuickLaunchBarByDefault = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr bool kAddAppsToQuickLaunchBarByDefault = !BUILDFLAG(IS_CHROMEOS);
 
 #if BUILDFLAG(IS_CHROMEOS)
 const char kChromeOsPlayPlatform[] = "chromeos_play";
@@ -127,29 +114,6 @@ std::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
   return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShouldInteractWithArc() {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  return lacros_service &&
-         // Only use ARC installation flow if we know that remote ash-chrome is
-         // capable of installing from Play Store in lacros-chrome, to avoid
-         // redirecting users to the Play Store if they cannot install
-         // anything.
-         lacros_service->IsAvailable<crosapi::mojom::WebAppService>();
-}
-
-mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
-    uint32_t minVersion) {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service && lacros_service->IsAvailable<crosapi::mojom::Arc>() &&
-      lacros_service->GetInterfaceVersion<crosapi::mojom::Arc>() >=
-          static_cast<int>(minVersion)) {
-    return &lacros_service->GetRemote<crosapi::mojom::Arc>();
-  }
-  return nullptr;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void LogInstallInfo(base::Value::Dict& dict,
                     const WebAppInstallInfo& install_info) {
@@ -543,7 +507,7 @@ void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons() {
   bool skip_store = is_create_shortcut || !opt_manifest_;
 
   if (!skip_store) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     std::optional<PlayStoreIntent> intent =
         GetPlayStoreIntentFromManifest(*opt_manifest_);
     if (intent) {
@@ -561,25 +525,7 @@ void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons() {
         }
       }
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (ShouldInteractWithArc()) {
-      std::optional<PlayStoreIntent> intent =
-          GetPlayStoreIntentFromManifest(*opt_manifest_);
-      mojo::Remote<crosapi::mojom::Arc>* opt_arc = GetArcRemoteWithMinVersion(
-          crosapi::mojom::Arc::MethodMinVersions::kIsInstallableMinVersion);
-      if (opt_arc && intent) {
-        mojo::Remote<crosapi::mojom::Arc>& arc = *opt_arc;
-        arc->IsInstallable(
-            intent->app_id,
-            base::BindOnce(&FetchManifestAndInstallCommand::
-                               OnDidCheckForIntentToPlayStoreLacros,
-                           weak_ptr_factory_.GetWeakPtr(), intent->intent));
-        return;
-      }
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   OnDidCheckForIntentToPlayStore(/*intent=*/"",
                                  /*should_intent_to_store=*/false);
@@ -592,7 +538,7 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (should_intent_to_store && !intent.empty()) {
     auto* arc_service_manager = arc::ArcServiceManager::Get();
     if (arc_service_manager) {
@@ -606,20 +552,7 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (ShouldInteractWithArc() && should_intent_to_store && !intent.empty()) {
-    mojo::Remote<crosapi::mojom::Arc>* opt_arc = GetArcRemoteWithMinVersion(
-        crosapi::mojom::Arc::MethodMinVersions::kHandleUrlMinVersion);
-    if (opt_arc) {
-      mojo::Remote<crosapi::mojom::Arc>& arc = *opt_arc;
-      arc->HandleUrl(intent, kPlayStorePackage);
-      Abort(webapps::InstallResultCode::kIntentToPlayStore);
-      return;
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   data_retriever_->GetIcons(
       web_contents_.get(), icons_from_manifest_,
@@ -629,15 +562,6 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
           &FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog,
           weak_ptr_factory_.GetWeakPtr()));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStoreLacros(
-    const std::string& intent,
-    crosapi::mojom::IsInstallableResult result) {
-  OnDidCheckForIntentToPlayStore(
-      intent, result == crosapi::mojom::IsInstallableResult::kInstallable);
-}
-#endif
 
 void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
     IconsDownloadedResult result,

@@ -82,7 +82,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #endif
 
@@ -1262,7 +1262,7 @@ void ApplyParamsToFinalizeOptions(
   options.add_to_quick_launch_bar = install_params.add_to_quick_launch_bar;
   options.skip_origin_association_validation =
       install_params.skip_origin_association_validation;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (install_params.system_app_type.has_value()) {
     options.system_web_app_data.emplace();
     options.system_web_app_data->system_app_type =
@@ -1297,7 +1297,7 @@ bool IsSyncEnabledForApps(Profile* profile) {
   }
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return sync_service->GetUserSettings()->GetSelectedOsTypes().Has(
       syncer::UserSelectableOsType::kOsApps);
 #else

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +46,7 @@ ExternalInstallOptions ConvertParamsToExternalInstallOptions(
 
   install_options.launch_query_params = install_params.launch_query_params;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   install_options.system_app_type = install_params.system_app_type;
 #endif
 
@@ -99,7 +100,7 @@ TEST(WebAppExternalInstallOptions,
 
   install_options.launch_query_params = "param";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   install_options.system_app_type = ash::SystemWebAppType::SAMPLE;
 #endif
 

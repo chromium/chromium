@@ -98,6 +98,7 @@ ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
 ci/Linux FYI GPU TSAN Release
 ci/Linux FYI Release (AMD RX 5500 XT)
+ci/Linux FYI Release (AMD RX 7600)
 ci/Linux FYI Release (Intel UHD 630)
 ci/Linux FYI Release (Intel UHD 770)
 ci/Linux FYI Release (NVIDIA)
@@ -137,6 +138,7 @@ ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
+ci/Win11 FYI x64 Release (AMD RX 7600)
 ci/Win11 FYI x64 Release (NVIDIA RTX 4070 Super)
 ci/linux-swangle-chromium-x64
 ci/linux-swangle-chromium-x64-exp
@@ -192,6 +194,7 @@ try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
 try/gpu-fyi-try-chromeos-skylab-volteer
 try/gpu-fyi-try-linux-amd-rel
+try/gpu-fyi-try-linux-amd-rx-7600-rel
 try/gpu-fyi-try-linux-intel-exp
 try/gpu-fyi-try-linux-intel-rel
 try/gpu-fyi-try-linux-intel-uhd770-rel
@@ -226,6 +229,7 @@ try/gpu-fyi-try-win10-nvidia-dx12vk-rel-64
 try/gpu-fyi-try-win10-nvidia-exp-64
 try/gpu-fyi-try-win10-nvidia-rel-32
 try/gpu-fyi-try-win10-nvidia-rel-64
+try/gpu-fyi-try-win11-amd-rel-64
 try/gpu-fyi-try-win11-nvidia-4070-rel-64
 try/gpu-fyi-try-win11-qualcomm-rel-64
 try/gpu-try-android-m-nexus-5x-64

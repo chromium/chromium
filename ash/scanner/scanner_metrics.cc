@@ -26,4 +26,11 @@ void RecordOnDeviceOcrTimerCompleted(base::TimeTicks ocr_attempt_start_time) {
       kOnDeviceTextDetection, base::TimeTicks::Now() - ocr_attempt_start_time);
 }
 
+void RecordSunfishSessionButtonVisibilityOnLauncherShown(bool is_visible) {
+  RecordScannerFeatureUserState(
+      is_visible
+          ? ScannerFeatureUserState::kLauncherShownWithSunfishSessionButton
+          : ScannerFeatureUserState::kLauncherShownWithoutSunfishSessionButton);
+}
+
 }  // namespace ash

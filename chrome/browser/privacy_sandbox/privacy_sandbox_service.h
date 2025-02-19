@@ -215,6 +215,16 @@ class PrivacySandboxService : public KeyedService {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacySandboxPromptStartupState)
 
+  // Enum for the different events that can be triggered from the
+  // PrivacySandboxApis Dialog. It used to bubble up some Dialog events to other
+  // components.
+  enum class AdsDialogCallbackNoArgsEvents {
+    kShowDialog,
+    kCloseDialog,
+    kOpenAdsPrivacySettings,
+    kOpenMeasurementSettings,
+  };
+
   // Returns whether |url| is suitable to display the Privacy Sandbox prompt
   // over. Only about:blank and certain chrome:// URLs are considered
   // suitable.

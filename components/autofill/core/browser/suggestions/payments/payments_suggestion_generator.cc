@@ -98,6 +98,29 @@ Suggestion CreateUndoOrClearFormSuggestion() {
   return suggestion;
 }
 
+// The priority ranking for deduplicating a duplicate card is:
+// 1. RecordType::kMaskedServerCard
+// 2. RecordType::kLocalCard
+std::vector<const CreditCard*> DeduplicateCreditCardsForSuggestions(
+    base::span<const CreditCard* const> cards_to_suggest) {
+  std::vector<const CreditCard*> deduplicated_cards;
+  for (const CreditCard* card : cards_to_suggest) {
+    // Full server cards should never be suggestions, as they exist only as a
+    // cached state post-fill.
+    CHECK_NE(card->record_type(), CreditCard::RecordType::kFullServerCard);
+    // Masked server cards are preferred over their local duplicates.
+    if (!CreditCard::IsLocalCard(card) ||
+        std::ranges::none_of(
+            cards_to_suggest, [&card](const CreditCard* other_card) {
+              return card != other_card &&
+                     card->IsLocalOrServerDuplicateOf(*other_card);
+            })) {
+      deduplicated_cards.push_back(card);
+    }
+  }
+  return deduplicated_cards;
+}
+
 // Returns the card-linked offers map with credit card guid as the key and the
 // pointer to the linked AutofillOfferData as the value.
 std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
@@ -747,10 +770,9 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
     bool require_non_empty_value_on_trigger_field,
     bool include_virtual_cards,
     bool use_legacy_algorithm = false) {
-  std::vector<const CreditCard*> available_cards =
-      client.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCardsToSuggest(use_legacy_algorithm);
+  std::vector<const CreditCard*> available_cards = GetCreditCardsToSuggest(
+      client.GetPersonalDataManager().payments_data_manager(),
+      use_legacy_algorithm);
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
   if (std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
@@ -981,6 +1003,34 @@ BnplSuggestionUpdateResult& BnplSuggestionUpdateResult::operator=(
     BnplSuggestionUpdateResult&&) = default;
 
 BnplSuggestionUpdateResult::~BnplSuggestionUpdateResult() = default;
+
+std::vector<const CreditCard*> GetCreditCardsToSuggest(
+    const PaymentsDataManager& payments_data_manager,
+    bool should_use_legacy_algorithm) {
+  if (!payments_data_manager.IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
+
+  std::vector<const CreditCard*> cards_to_suggest =
+      DeduplicateCreditCardsForSuggestions(
+          payments_data_manager.ShouldSuggestServerPaymentMethods()
+              ? payments_data_manager.GetCreditCards()
+              : payments_data_manager.GetLocalCreditCards());
+  // Rank the cards by ranking score (see UsageHistoryInformation for details).
+  // All expired cards should be suggested last, also by ranking score.
+  std::ranges::sort(
+      cards_to_suggest,
+      [comparison_time = base::Time::Now(), should_use_legacy_algorithm](
+          const CreditCard* a, const CreditCard* b) {
+        if (const bool a_is_expired = a->IsExpired(comparison_time);
+            a_is_expired != b->IsExpired(comparison_time)) {
+          return !a_is_expired;
+        }
+        return a->HasGreaterRankingThan(*b, comparison_time,
+                                        should_use_legacy_algorithm);
+      });
+  return cards_to_suggest;
+}
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillClient& client,

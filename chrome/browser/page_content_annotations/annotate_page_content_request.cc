@@ -146,10 +146,6 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
   waiting_for_fcp_ = true;
   waiting_for_load_ = true;
 
-#if BUILDFLAG(ENABLE_PDF)
-  pdf_load_obseration_.Reset();
-#endif  // BUILDFLAG(ENABLE_PDF)
-
   // Drop pending extraction request for the previous page, if any.
   weak_factory_.InvalidateWeakPtrs();
 }
@@ -235,26 +231,15 @@ void AnnotatedPageContentRequest::RequestPdfPageCount() {
   CHECK_EQ(pdf::kPDFMimeType, web_contents_->GetContentsMimeType());
   auto* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
-  if (!pdf_helper) {
-    return;
+  if (pdf_helper) {
+    pdf_helper->RegisterForDocumentLoadComplete(
+        base::BindOnce(&AnnotatedPageContentRequest::OnPdfDocumentLoadComplete,
+                       weak_factory_.GetWeakPtr()));
   }
-  if (!pdf_helper->IsDocumentLoadComplete()) {
-    // Wait for the PDF to load.
-    pdf_load_obseration_.Observe(pdf_helper);
-    return;
-  }
-  // Fetch zero PDF bytes to just receive the total page count.
-  pdf_helper->GetPdfBytes(
-      /*size_limit=*/0,
-      base::BindOnce(
-          &RecordPdfPageCountMetrics,
-          web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 }
 
-void AnnotatedPageContentRequest::OnDocumentLoadComplete() {
+void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
   CHECK_EQ(pdf::kPDFMimeType, web_contents_->GetContentsMimeType());
-  pdf_load_obseration_.Reset();
-
   auto* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
   if (pdf_helper) {

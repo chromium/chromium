@@ -33,7 +33,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      */
     public TabListGroupMenuCoordinator(
-            OnItemClickedCallback onItemClicked,
+            OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @NonNull CollaborationService collaborationService) {

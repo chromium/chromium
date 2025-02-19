@@ -5922,6 +5922,9 @@ Called by update_use_counter_feature_enum.py.-->
       label="PrivateNetworkAccessInsecureResourceNotKnownPrivate"/>
   <int value="5320" label="GeolocationGetCurrentPositionHighAccuracy"/>
   <int value="5321" label="GeolocationWatchPositionHighAccuracy"/>
+  <int value="5322" label="ColumnPseudoElement"/>
+  <int value="5323" label="ScrollButtonPseudoElement"/>
+  <int value="5324" label="ScrollMarkerPseudoElement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -7836,6 +7839,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="289" label="MediaPlaybackQuality"/>
   <int value="290" label="Webgpu"/>
   <int value="291" label="Zstd"/>
+  <int value="292" label="ColumnPseudo"/>
+  <int value="293" label="Interactivity"/>
+  <int value="294" label="ScrollButtons"/>
+  <int value="295" label="ScrollMarkers"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

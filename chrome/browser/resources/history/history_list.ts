@@ -197,6 +197,11 @@ export class HistoryListElement extends HistoryListElementBase {
    * @param results A list of results.
    */
   historyResult(info: HistoryQuery, results: HistoryEntry[]) {
+    if (!info) {
+      // Canceled results for an outdated query has null query info.
+      return;
+    }
+
     this.initializeResults_(info, results);
     this.closeMenu_();
 

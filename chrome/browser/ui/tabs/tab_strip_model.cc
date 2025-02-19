@@ -1269,29 +1269,6 @@ void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
-    const std::vector<int> indices,
-    const tab_groups::TabGroupId group_id,
-    tab_groups::TabGroupVisualData visual_data) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  CHECK(SupportsTabGroups());
-
-  // Ensure that the indices are nonempty, sorted, and unique.
-  CHECK_GT(indices.size(), 0u);
-  CHECK(std::ranges::is_sorted(indices));
-  CHECK(std::ranges::adjacent_find(indices) == indices.end());
-  CHECK(!group_model_->ContainsTabGroup(group_id));
-
-  AddToNewGroupImpl(indices, group_id, visual_data);
-  delegate_->GroupAdded(group_id);
-
-  for (TabStripModelObserver& observer : observers_) {
-    observer.OnTabGroupAdded(group_id);
-  }
-
-  return group_id;
-}
-
-tab_groups::TabGroupId TabStripModel::AddToNewGroup(
     const std::vector<int> indices) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CHECK(SupportsTabGroups());

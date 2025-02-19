@@ -7,10 +7,12 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
@@ -148,6 +150,18 @@ TEST_F(MantisUntrustedServiceManagerTest, IsAvailable) {
   manager.IsAvailable(&pref_, result_future.GetCallback());
 
   EXPECT_TRUE(result_future.Take());
+}
+
+TEST_F(MantisUntrustedServiceManagerTest, IsNotAvailableByFeatureFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({}, {features::kMediaAppImageMantisModel});
+
+  MantisUntrustedServiceManager manager(std::move(access_checker_));
+
+  TestFuture<bool> result_future;
+  manager.IsAvailable(&pref_, result_future.GetCallback());
+
+  EXPECT_FALSE(result_future.Take());
 }
 
 TEST_F(MantisUntrustedServiceManagerTest, IsNotAvailableByAccountCapabilities) {

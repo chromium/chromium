@@ -418,6 +418,9 @@ TEST_F(NavigatorTest, BeforeUnloadDenialCancelNavigation) {
   const GURL kUrl2("http://www.chromium.org/");
 
   contents()->NavigateAndCommit(kUrl1);
+  // This test assumes a beforeunload handler is present.
+  main_test_rfh()->SuddenTerminationDisablerChanged(
+      true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
 
   // Start a new navigation.
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
@@ -451,6 +454,9 @@ TEST_F(NavigatorTest, BeginNavigation) {
   FrameTreeNode* root_node = contents()->GetPrimaryFrameTree().root();
   TestRenderFrameHost* subframe_rfh = main_test_rfh()->AppendChild("Child");
   ASSERT_TRUE(subframe_rfh);
+  // This test assumes a beforeunload handler is present on the subframe.
+  subframe_rfh->SuddenTerminationDisablerChanged(
+      true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
 
   // Start a navigation at the subframe.
   FrameTreeNode* subframe_node = subframe_rfh->frame_tree_node();

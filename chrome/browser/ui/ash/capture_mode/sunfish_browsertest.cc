@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SendSearchRequests) {
   ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
   delegate->SendRegionSearch(SkBitmap(), gfx::Rect(),
                              base::BindRepeating([](GURL url) {}),
-                             base::BindRepeating([](std::string string) {}));
+                             base::DoNothing());
 
   // Send a multimodal search.
   delegate->SendMultimodalSearch(SkBitmap(), gfx::Rect(), "Search",
@@ -147,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SendSearchRequests) {
   // region.
   delegate->SendRegionSearch(SkBitmap(), gfx::Rect(10, 10, 400, 400),
                              base::BindRepeating([](GURL url) {}),
-                             base::BindRepeating([](std::string string) {}));
+                             base::DoNothing());
 
   // Simulate sending a multimodal search with the adjusted region.
   delegate->SendMultimodalSearch(SkBitmap(), gfx::Rect(10, 10, 400, 400),

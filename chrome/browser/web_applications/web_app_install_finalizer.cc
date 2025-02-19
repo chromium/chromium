@@ -27,7 +27,6 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
@@ -69,7 +68,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #endif
 
@@ -371,7 +370,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     web_app->SetWebAppChromeOsData(std::move(cros_data));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // `WebApp::system_web_app_data` has a default value already. Only override if
   // the caller provided a new value.
   if (options.system_web_app_data.has_value()) {

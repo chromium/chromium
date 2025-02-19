@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // SampleVector implements HistogramSamples interface. It is used by all
 // Histogram based classes to store samples.
 
@@ -102,7 +97,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
     if (data == nullptr) {
       return std::nullopt;
     }
-    return span(data, counts_size_);
+    return UNSAFE_TODO(span(data, counts_size_));
   }
 
   std::optional<span<const HistogramBase::AtomicCount>> counts() const {
@@ -111,7 +106,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
     if (data == nullptr) {
       return std::nullopt;
     }
-    return span(data, counts_size_);
+    return UNSAFE_TODO(span(data, counts_size_));
   }
 
   void set_counts(span<HistogramBase::AtomicCount> counts) const {

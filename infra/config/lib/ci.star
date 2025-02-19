@@ -130,7 +130,7 @@ def ci_builder(
         for platform, platform_settings in settings.platforms.items()
         if branches.matches(branch_selector, platform = platform)
     })
-    gardener_rotations = args.listify(gardener_rotations, branch_gardener_rotations)
+    branch_gardener_rotations = args.listify(gardener_rotations, branch_gardener_rotations)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -139,7 +139,7 @@ def ci_builder(
         branch_selector = branch_selector,
         console_view_entry = console_view_entry,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
-        gardener_rotations = gardener_rotations,
+        gardener_rotations = branch_gardener_rotations,
         resultdb_index_by_timestamp = settings.project.startswith("chromium"),
         **kwargs
     )
@@ -185,6 +185,14 @@ def ci_builder(
                 luci.console_view_entry(
                     builder = builder,
                     console_view = cq_mirrors_console_view,
+                    category = overview_console_category,
+                    short_name = entry.short_name,
+                )
+            gardener_rotations = defaults.get_value("gardener_rotations", gardener_rotations, merge = args.MERGE_LIST)
+            for rotation in gardener_rotations:
+                luci.console_view_entry(
+                    builder = builder,
+                    console_view = builders.gardener_rotation_name(rotation),
                     category = overview_console_category,
                     short_name = entry.short_name,
                 )

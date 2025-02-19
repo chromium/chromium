@@ -215,6 +215,42 @@ export class SettingsMenu extends ReactiveLitElement {
     });
   }
 
+  private renderSummaryModelDownloadStatus() {
+    const state = this.platformHandler.summaryModelLoader.state.value.kind;
+    switch (state) {
+      case 'unavailable':
+        return assertNotReached(
+          'Summary model unavailable but the setting is rendered.',
+        );
+      case 'notInstalled':
+        return nothing;
+      case 'error':
+        // TODO: b/395788668 - Render error state.
+        return nothing;
+      case 'installed':
+        if (!this.summaryDownloadRequested.value) {
+          return nothing;
+        }
+        return html`
+          <spoken-message
+            slot="status"
+            role="status"
+            aria-live="polite"
+          >
+            ${i18n.summaryDownloadFinishedStatusMessage}
+          </spoken-message>
+        `;
+      case 'installing':
+        return html`
+          <spoken-message slot="status" role="status" aria-live="polite">
+            ${i18n.summaryDownloadStartedStatusMessage}
+          </spoken-message>
+        `;
+      default:
+        return assertExhaustive(state);
+    }
+  }
+
   private renderSummaryModelDescriptionAndAction() {
     const state = this.platformHandler.summaryModelLoader.state.value;
     if (state.kind === 'notInstalled') {
@@ -255,13 +291,6 @@ export class SettingsMenu extends ReactiveLitElement {
     if (!this.summaryEnabled) {
       return summaryToggle;
     }
-    const downloadedStatus = html`<spoken-message
-      slot="status"
-      role="status"
-      aria-live="polite"
-    >
-      ${i18n.summaryDownloadFinishedStatusMessage}
-    </spoken-message>`;
 
     switch (state.kind) {
       case 'unavailable':
@@ -269,7 +298,7 @@ export class SettingsMenu extends ReactiveLitElement {
           'Summary model unavailable but the setting is rendered.',
         );
       case 'error':
-        // TODO: b/344784638 - Render error state.
+        // TODO: b/395788668 - Render error state.
         return nothing;
       case 'installing': {
         const progressDescription =
@@ -287,16 +316,10 @@ export class SettingsMenu extends ReactiveLitElement {
             <md-circular-progress indeterminate slot="leading-icon">
             </md-circular-progress>
           </cra-button>
-          <spoken-message slot="status" role="status" aria-live="polite">
-            ${i18n.summaryDownloadStartedStatusMessage}
-          </spoken-message>
         `;
       }
       case 'installed':
-        return [
-          summaryToggle,
-          this.summaryDownloadRequested.value ? downloadedStatus : nothing,
-        ];
+        return summaryToggle;
       default:
         assertExhaustive(state.kind);
     }
@@ -311,6 +334,7 @@ export class SettingsMenu extends ReactiveLitElement {
       <settings-row>
         <span slot="label">${i18n.settingsOptionsSummaryLabel}</span>
         ${this.renderSummaryModelDescriptionAndAction()}
+        ${this.renderSummaryModelDownloadStatus()}}
       </settings-row>
     `;
   }

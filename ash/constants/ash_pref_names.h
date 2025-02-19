@@ -95,6 +95,16 @@ inline constexpr char kGenAIPhotoEditingSettings[] =
 // A boolean pref of whether Lobster is enabled.
 inline constexpr char kLobsterEnabled[] = "settings.lobster_enabled";
 
+// An integer pref that records whether Lobster is allowed by enterprise
+// policy.
+// This integer has three valid values:
+// - 0: Allowed with model improvement.
+// - 1: Allowed without model improvement.
+// - 2: Disallowed.
+// Any other value outside of the range should behave identically to 1.
+inline constexpr char kLobsterEnterprisePolicySettings[] =
+    "settings.lobster.enterprise_settings";
+
 // A boolean pref used by an admin policy to enable/disable particular
 // features on the physical keyboard. See the policy at
 // PhysicalKeyboardAutocorrect.yml.

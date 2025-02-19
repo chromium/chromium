@@ -21,7 +21,7 @@ option java_outer_classname = "FormsClassificationsProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
-// Next ID: 5
+// Next ID: 6
 message FormsClassificationsLoggingData {
   AutofillAiTypeRequest request = 1;
 
@@ -30,6 +30,8 @@ message FormsClassificationsLoggingData {
   FormTypeQuality quality = 3;
 
   ModelExecutionInfo model_execution_info = 4;
+
+  PageContent page_content = 5;
 }
 
 message AutofillAiTypeRequest {
@@ -77,4 +79,18 @@ message FieldTypeResponse {
 message FormTypeQuality {
   // User-provided feedback on the predictions.
   UserFeedback user_feedback = 1;
+}
+
+// Next ID: 4
+message PageContent {
+  // The form data extracted from the page, including form and field names,
+  // types, and other relevant information.
+  repeated FormInfo forms = 1;
+
+  // Information about unowned form control elements found on the page.
+  repeated FormControlData unowned_form_controls = 2;
+
+  // The page content represented as a tree of semantic chunks and (in the
+  // future) annotated with additional information about the page.
+  AnnotatedPageContent annotated_page_content = 3;
 }

@@ -63,14 +63,14 @@ std::optional<base::TimeDelta> ExtractUserSessionDelayFromCommandLine() {
 
 std::optional<base::TimeDelta> ExtractUserSessionDelayFromPayload(
     const std::string& command_payload) {
-  const std::optional<base::Value> root =
-      base::JSONReader::Read(command_payload);
-  if (!root || !root->is_dict()) {
+  const std::optional<base::Value::Dict> root =
+      base::JSONReader::ReadDict(command_payload);
+  if (!root) {
     return std::nullopt;
   }
 
   std::optional<int> delay_in_seconds =
-      root->GetDict().FindInt(kPayloadUserSessionRebootDelayField);
+      root->FindInt(kPayloadUserSessionRebootDelayField);
   if (!delay_in_seconds || delay_in_seconds.value() < 0) {
     return std::nullopt;
   }

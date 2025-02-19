@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -221,13 +220,7 @@ class ProtocolHandlingExecuteTest : public ProtocolHandlingSubManagerTestBase {
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  bool AreProtocolsRegisteredWithOs() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    return false;
-#else
-    return true;
-#endif
-  }
+  bool AreProtocolsRegisteredWithOs() { return !BUILDFLAG(IS_CHROMEOS); }
 };
 
 TEST_F(ProtocolHandlingExecuteTest, Register) {

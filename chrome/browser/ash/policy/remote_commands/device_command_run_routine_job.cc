@@ -90,17 +90,14 @@ em::RemoteCommand_Type DeviceCommandRunRoutineJob::GetType() const {
 
 bool DeviceCommandRunRoutineJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root.has_value()) {
-    return false;
-  }
-  if (!root->is_dict()) {
+  std::optional<base::Value::Dict> root =
+      base::JSONReader::ReadDict(command_payload);
+  if (!root) {
     return false;
   }
 
-  base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid DiagnosticRoutineEnum.
-  std::optional<int> routine_enum = dict.FindInt(kRoutineEnumFieldName);
+  std::optional<int> routine_enum = root->FindInt(kRoutineEnumFieldName);
   if (!routine_enum.has_value()) {
     return false;
   }
@@ -113,7 +110,7 @@ bool DeviceCommandRunRoutineJob::ParseCommandPayload(
   // Make sure there's a dictionary with parameter values for the routine.
   // Validation of routine-specific parameters will be done before running the
   // routine, so here we just check that any dictionary was given to us.
-  auto* params_dict = dict.FindDict(kParamsFieldName);
+  auto* params_dict = root->FindDict(kParamsFieldName);
   if (!params_dict) {
     return false;
   }

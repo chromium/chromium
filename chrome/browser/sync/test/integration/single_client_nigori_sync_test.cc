@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -79,7 +79,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
@@ -87,7 +87,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -1199,12 +1199,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string.
   ASSERT_THAT(
       GetAvatarSyncErrorType(GetProfile(0)),
       Eq(AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Verify the string that would be displayed in settings.
   ASSERT_THAT(GetSyncStatusLabels(GetProfile(0)),
@@ -1239,10 +1239,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                                 IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
                                 SyncStatusActionType::kNoAction));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string is empty.
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 // Regression test for crbug.com/1479879: test verifies that client is able to
@@ -1307,7 +1307,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class SingleClientNigoriWithWebApiAndDialogUIParamTest
     : public SingleClientNigoriWithWebApiTest {
  public:
@@ -1433,7 +1433,7 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        ShouldAcceptEncryptionKeysFromSubFrameIfSyncEnabled) {
@@ -1526,10 +1526,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                                 IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
                                 SyncStatusActionType::kNoAction));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string is empty.
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1734,11 +1734,11 @@ IN_PROC_BROWSER_TEST_F(
   // reproduces a more realistic case of the first-time turn-sync-on experience,
   // with a temporary stage where the user is signed in without sync-the-feature
   // being enabled. Except on Ash where the two steps happen at once.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40914333): SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE) (e.g.
   // with default argument) causes test flakiness here due to unrelated issue in
   // SharingService. From this test perspective it doesn't matter whether to use
@@ -1862,12 +1862,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string.
   EXPECT_THAT(GetAvatarSyncErrorType(GetProfile(0)),
               Eq(AvatarSyncErrorType::
                      kTrustedVaultRecoverabilityDegradedForPasswordsError));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // No messages expected in settings.
   EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
@@ -1893,10 +1893,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->IsTrustedVaultRecoverabilityDegraded());
   EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string is empty.
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
@@ -2250,7 +2250,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 }
 
 // ChromeOS doesn't have unconsented primary accounts.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        ShouldAcceptEncryptionKeysFromTheWebInTransportMode) {
   // Mimic the account using a trusted vault passphrase.
@@ -2349,6 +2349,6 @@ IN_PROC_BROWSER_TEST_F(
       /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

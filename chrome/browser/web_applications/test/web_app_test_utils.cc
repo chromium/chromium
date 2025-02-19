@@ -1300,15 +1300,4 @@ std::vector<web_package::SignedWebBundleSignatureInfo> CreateSignatures() {
   return signatures;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-ScopedSkipMainProfileCheck::ScopedSkipMainProfileCheck() {
-  EXPECT_FALSE(IsMainProfileCheckSkippedForTesting());
-  SetSkipMainProfileCheckForTesting(/*skip_check=*/true);
-}
-
-ScopedSkipMainProfileCheck::~ScopedSkipMainProfileCheck() {
-  SetSkipMainProfileCheckForTesting(/*skip_check=*/false);
-}
-#endif
-
 }  // namespace web_app::test

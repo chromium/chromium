@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/exponential_backoff_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -37,13 +37,7 @@ class SyncExponentialBackoffTest : public SyncTest {
   }
 };
 
-// TODO(crbug.com/40854025): Test fails on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OfflineToOnline DISABLED_OfflineToOnline
-#else
-#define MAYBE_OfflineToOnline OfflineToOnline
-#endif
-IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
+IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, OfflineToOnline) {
   const std::u16string kFolderTitle1 = u"folder1";
   const std::u16string kFolderTitle2 = u"folder2";
 

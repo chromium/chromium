@@ -39,16 +39,12 @@ source_set("app_service") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/apps/browser_instance" ]
-    allow_circular_includes_from += [ "//chrome/browser/apps/browser_instance" ]
-  }
-
-  if (is_chromeos_ash) {
     deps += [
       "//ash/public/cpp",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/apps/almanac_api_client",
+      "//chrome/browser/apps/browser_instance",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/login/demo_mode",
@@ -60,6 +56,7 @@ source_set("app_service") {
       "//components/services/app_service/public/cpp:instance_update",
       "//extensions/browser/api/file_handlers",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/apps/browser_instance" ]
   }
 }
 
@@ -89,7 +86,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/system" ]
   }
 }

@@ -11,7 +11,8 @@
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
-#include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
+#include "third_party/blink/renderer/core/css/if_test.h"
+#include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
@@ -232,14 +233,17 @@ static bool ConsumeIfCondition(CSSParserTokenStream& stream,
     return true;
   }
 
-  ContainerQueryParser parser(context);
+  CSSIfParser parser(context);
 
-  const MediaQueryExpNode* exp_node = parser.ConsumeIfTest(stream);
-  if (!exp_node) {
+  std::optional<IfTest> if_test = parser.ConsumeIfTest(stream);
+  if (!if_test.has_value()) {
     return false;
   }
-
   stream.ConsumeWhitespace();
+
+  if (if_test->GetMediaTest()) {
+    return RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled();
+  }
   return true;
 }
 
@@ -334,13 +338,32 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
 
   // Consume the arguments.
   while (!stream.AtEnd()) {
-    // TODO(crbug.com/390205875): Handle {}-wrapped values.
+    // Commas and "{}" blocks are normally not allowed in argument values
+    // (at the top level), unless the whole value is wrapped in a "{}" block.
+    //
     // https://drafts.csswg.org/css-values-5/#component-function-commas
-    if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
-                              /*comma_ends_declaration=*/true, has_references,
-                              has_font_units, has_root_font_units,
-                              has_line_height_units, context)) {
-      return false;
+    if (stream.Peek().GetType() == kLeftBraceToken) {
+      CSSParserTokenStream::BlockGuard brace_guard(stream);
+      stream.ConsumeWhitespace();
+      if (stream.AtEnd()) {
+        // Empty values are not allowed. (The "{}" wrapper is not part
+        // of the value.)
+        return false;
+      }
+      if (!ConsumeUnparsedValue(
+              stream, /*restricted_value=*/false,
+              /*comma_ends_declaration=*/false, has_references, has_font_units,
+              has_root_font_units, has_line_height_units, context)) {
+        return false;
+      }
+    } else {
+      // Passing restricted_value=true effectively disallows "{}".
+      if (!ConsumeUnparsedValue(stream, /*restricted_value=*/true,
+                                /*comma_ends_declaration=*/true, has_references,
+                                has_font_units, has_root_font_units,
+                                has_line_height_units, context)) {
+        return false;
+      }
     }
     if (stream.Peek().GetType() == kCommaToken) {
       stream.ConsumeIncludingWhitespace();  // kCommaToken

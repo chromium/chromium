@@ -18,6 +18,7 @@ namespace blink {
 class MediaQuerySet;
 class CSSParserContext;
 class ContainerQueryParser;
+class CSSIfParser;
 
 class CORE_EXPORT MediaQueryParser {
   STACK_ALLOCATED();
@@ -57,6 +58,7 @@ class CORE_EXPORT MediaQueryParser {
 
  private:
   friend class ContainerQueryParser;
+  friend class CSSIfParser;
 
   enum ParserType {
     kMediaQuerySetParser,

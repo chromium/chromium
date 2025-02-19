@@ -245,15 +245,15 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
 
 void ExtensionGarbageCollector::OnBeginCrxInstall(
     content::BrowserContext* context,
-    const CrxInstaller& installer,
     const ExtensionId& extension_id) {
   crx_installs_in_progress_++;
 }
 
 void ExtensionGarbageCollector::OnFinishCrxInstall(
     content::BrowserContext* context,
-    const CrxInstaller& installer,
+    const base::FilePath& source_file,
     const ExtensionId& extension_id,
+    const Extension* extension,
     bool success) {
   crx_installs_in_progress_--;
   if (crx_installs_in_progress_ < 0) {

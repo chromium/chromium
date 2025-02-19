@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // The unconsented primary account isn't supported on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 class SingleClientWebAuthnCredentialsSyncTestExplicitParamTest
     : public SingleClientWebAuthnCredentialsSyncTest,
@@ -1074,6 +1074,6 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<bool>& info) {
       return info.param ? "Explicit" : "Implicit";
     });
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

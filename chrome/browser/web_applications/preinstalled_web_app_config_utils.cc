@@ -11,13 +11,14 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -30,12 +31,12 @@ GetPreinstalledWebAppConfigDirMutableForTesting() {
   return *g_config_dir_for_testing.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The sub-directory of the extensions directory in which to scan for external
 // web apps (as opposed to external extensions or external ARC apps).
 const base::FilePath::CharType kWebAppsSubDirectory[] =
     FILE_PATH_LITERAL("web_apps");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -60,7 +61,7 @@ base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile) {
   if (!command_line_directory.empty())
     return base::FilePath::FromUTF8Unsafe(command_line_directory);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // As of mid 2018, only Chrome OS has default/external web apps, and
   // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
   // which includes OS_CHROMEOS.
@@ -85,14 +86,14 @@ base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile) {
   }
 
   LOG(ERROR) << "base::PathService::Get failed";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return {};
 }
 
 base::FilePath GetPreinstalledWebAppExtraConfigDirFromCommandLine(
     Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::FilePath config_dir =
       GetPreinstalledWebAppConfigDirFromCommandLine(profile);
   std::string extra_config_subdir =
@@ -103,7 +104,7 @@ base::FilePath GetPreinstalledWebAppExtraConfigDirFromCommandLine(
   return config_dir.AppendASCII(extra_config_subdir);
 #else
   return base::FilePath();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 base::FilePath GetPreinstalledWebAppConfigDir(Profile* profile) {

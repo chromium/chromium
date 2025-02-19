@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -202,7 +203,7 @@ bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void UserUninstalledPreinstalledWebAppPrefs::ClearAllApps() {
   pref_service_->ClearPref(prefs::kUserUninstalledPreinstalledWebAppPref);
 }

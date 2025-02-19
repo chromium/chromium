@@ -7011,11 +7011,31 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledGroupA",
+                    "name": "EnabledGroupA_20250123",
                     "params": {
                         "multiplier": "1.5"
                     },
                     "enable_features": [
+                        "CrOSLateBootSwapZramDisksize",
+                        "SkipDiscardDrivenByStaleSignal"
+                    ]
+                },
+                {
+                    "name": "EnabledGroupB_20250123",
+                    "params": {
+                        "multiplier": "1.25"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSwapZramDisksize",
+                        "SkipDiscardDrivenByStaleSignal"
+                    ]
+                },
+                {
+                    "name": "EnabledSkipDiscard_20250123",
+                    "enable_features": [
+                        "SkipDiscardDrivenByStaleSignal"
+                    ],
+                    "disable_features": [
                         "CrOSLateBootSwapZramDisksize"
                     ]
                 }
@@ -11498,30 +11518,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "HttpsFirstBalancedModeAutoEnable"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HttpsFirstModeV2ForEngagedSites": [
-        {
-            "platforms": [
-                "windows",
-                "chromeos",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "http-add-threshold": "1",
-                        "http-remove-threshold": "5",
-                        "https-add-threshold": "80",
-                        "https-remove-threshold": "75"
-                    },
-                    "enable_features": [
-                        "HttpsFirstModeV2ForEngagedSites"
                     ]
                 }
             ]
@@ -18909,6 +18905,21 @@
             ]
         }
     ],
+    "QuickShareV2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickShareV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "RTCAlignReceivedEncodedVideoTransforms": [
         {
             "platforms": [
@@ -22527,6 +22538,7 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "fuchsia",
                 "linux",

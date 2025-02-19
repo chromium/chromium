@@ -12,8 +12,7 @@ export class InstanceChecker {
     // extension. One in an incognito context; the other not. In guest mode, the
     // extension system runs only the extension in an incognito context. To
     // prevent doubling of this extension, only continue for one context.
-    const manifest =
-            chrome.runtime.getManifest();
+    const manifest = chrome.runtime.getManifest();
     return manifest['incognito'] !== 'split' ||
         chrome.extension.inIncognitoContext;
   }

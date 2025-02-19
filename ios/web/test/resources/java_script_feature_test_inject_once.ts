@@ -27,12 +27,6 @@ function replyWithPostMessage(messageBody: object) {
   sendWebKitMessage('FakeHandlerName', messageBody);
 }
 
-// This function offers the same functionality as `replyWithPostMessage`, but
-// uses the sendWebKitMessage implementation in __gCrWeb.common.
-function replyWithPostMessageCommonHelper(messageBody: object) {
-  sendWebKitMessage('FakeHandlerName', messageBody);
-}
-
 const body = document.getElementsByTagName('body')[0];
 if (body) {
   body.appendChild(document.createTextNode('injected_script_loaded'));
@@ -42,6 +36,5 @@ gCrWeb.javaScriptFeatureTest = {
   errorReceivedCount,
   getErrorCount,
   replaceDivContents,
-  replyWithPostMessage,
-  replyWithPostMessageCommonHelper
+  replyWithPostMessage
 };

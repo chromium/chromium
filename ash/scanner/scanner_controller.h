@@ -46,6 +46,10 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Returns `CanShowUi` for the `ScannerController` on the global singleton
+  // `Shell` instance. If it does not exist, returns false.
+  static bool CanShowUiForShell();
+
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 

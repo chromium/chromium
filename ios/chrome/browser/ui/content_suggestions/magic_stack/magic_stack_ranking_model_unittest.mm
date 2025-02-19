@@ -325,11 +325,10 @@ class MagicStackRankingModelTest : public PlatformTest {
          URLLoadingBrowserAgent:url_loader_
                     prefService:GetLocalState()];
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]
-        initWithLocalState:GetLocalState()
-               prefService:GetProfile()->GetPrefs()
-           identityManager:identityManager
-                   browser:browser_.get()
-           shoppingService:nil];
+        initWithPrefService:GetProfile()->GetPrefs()
+            identityManager:identityManager
+                    browser:browser_.get()
+            shoppingService:nil];
     favicon::LargeIconService* large_icon_service =
         IOSChromeLargeIconServiceFactory::GetForProfile(GetProfile());
     LargeIconCache* cache =

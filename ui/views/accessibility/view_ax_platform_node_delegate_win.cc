@@ -150,14 +150,4 @@ gfx::Point ViewAXPlatformNodeDelegateWin::ScreenToDIPPoint(
       display::win::ScreenWin::ScreenToDIPPoint(gfx::PointF(screen_point)));
 }
 
-void ViewAXPlatformNodeDelegateWin::EnsureAtomicViewAXTreeManager() {
-  DCHECK(needs_ax_tree_manager());
-  if (atomic_view_ax_tree_manager_) {
-    return;
-  }
-
-  atomic_view_ax_tree_manager_ =
-      views::AtomicViewAXTreeManager::Create(this, data());
-}
-
 }  // namespace views

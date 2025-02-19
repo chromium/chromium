@@ -10,16 +10,16 @@
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Profile type to test. Provided to subclasses of TestProfileTypeMixin via
 // get_profile().
@@ -83,7 +83,7 @@ class TestProfileTypeMixin
 #define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(SUITE, PARAMS) \
   INSTANTIATE_TEST_SUITE_P(All, SUITE, PARAMS, TestProfileTypeToString)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Instantiates 3 versions of each test in |SUITE| to ensure coverage of
 // Guest and Incognito profiles, as well as regular profiles. This is currently
 // only used on ChromeOS. Other platforms will likely need a differently defined

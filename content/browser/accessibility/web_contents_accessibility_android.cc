@@ -1125,7 +1125,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->IsEnabled(), node->IsFocusable(), node->IsFocused(),
       node->HasImage(), node->IsPasswordField(), node->IsScrollable(),
       node->IsSelected(), node->IsVisibleToUser(),
-      node->HasCharacterLocations());
+      node->HasCharacterLocations(), node->IsRequired());
 
   Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions(
       env, obj, info, unique_id, node->CanScrollForward(),

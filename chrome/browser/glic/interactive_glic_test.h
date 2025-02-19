@@ -157,8 +157,6 @@ class InteractiveGlicTestT : public T {
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
 
-    ForceSigninAndModelExecutionCapability(T::browser()->profile());
-
     Test::embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));

@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -155,7 +156,7 @@ bool CreditCardAccessManager::ShouldClearPreviewedForm() {
 void CreditCardAccessManager::PrepareToFetchCreditCard() {
 #if !BUILDFLAG(IS_IOS)
   // No need to fetch details if there are no server cards.
-  if (std::ranges::all_of(payments_data_manager().GetCreditCardsToSuggest(),
+  if (std::ranges::all_of(GetCreditCardsToSuggest(payments_data_manager()),
                           &CreditCard::IsLocalCard)) {
     return;
   }

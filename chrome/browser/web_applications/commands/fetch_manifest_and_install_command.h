@@ -32,10 +32,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/arc.mojom.h"
-#endif
-
 namespace content {
 class WebContents;
 class NavigationHandle;
@@ -116,15 +112,6 @@ class FetchManifestAndInstallCommand
   // should be made returns.
   void OnDidCheckForIntentToPlayStore(const std::string& intent,
                                       bool should_intent_to_store);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Called when the asynchronous check for whether an intent to the Play Store
-  // should be made returns (Lacros adapter that calls
-  // |OnDidCheckForIntentToPlayStore| based on |result|).
-  void OnDidCheckForIntentToPlayStoreLacros(
-      const std::string& intent,
-      crosapi::mojom::IsInstallableResult result);
-#endif
 
   void OnIconsRetrievedShowDialog(
       IconsDownloadedResult result,

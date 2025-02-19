@@ -583,29 +583,6 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, UIAGetPropertyValue_Histograms) {
       "Accessibility.Performance.WinAPIs2.View.UMA_API_GET_PROPERTY_VALUE", 1);
 }
 
-TEST_F(ViewAXPlatformNodeDelegateWinTest, TextPositionAt) {
-  auto widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
-  widget->Init(std::move(init_params));
-
-  View* content = widget->SetContentsView(std::make_unique<View>());
-
-  Label* label = new Label(u"Label's Name");
-  content->AddChildView(label);
-  label->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
-  ViewAXPlatformNodeDelegate* label_accessibility =
-      static_cast<ViewAXPlatformNodeDelegate*>(&label->GetViewAccessibility());
-  label_accessibility->GetData();
-
-  ui::AXNodePosition::AXPositionInstance actual_position =
-      label_accessibility->CreateTextPositionAt(
-          0, ax::mojom::TextAffinity::kDownstream);
-  EXPECT_NE(nullptr, actual_position.get());
-  EXPECT_EQ(0, actual_position->text_offset());
-  EXPECT_EQ(u"Label's Name", actual_position->GetText());
-}
-
 //
 // TableView tests.
 //

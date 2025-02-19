@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -62,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   info->title = u"Test name";
 
   const webapps::WebappInstallSource install_source =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       webapps::WebappInstallSource::SYSTEM_DEFAULT;
 #else
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;

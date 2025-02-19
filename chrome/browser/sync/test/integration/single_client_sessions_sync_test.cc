@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SessionStartTime) {
   EXPECT_TRUE(found_header);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Regression test for crbug.com/361256057.
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
                                        SessionHeader(second_cache_guid)))
                   .Wait());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateInTab) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";

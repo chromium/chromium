@@ -1185,7 +1185,6 @@ TEST_F(ExternalAppResolutionCommandTest,
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
   GURL old_app_url("http://old-app.com");
   const webapps::AppId old_app =
@@ -1225,7 +1224,6 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
   EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
             proto::RunOnOsLoginMode::WINDOWED);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(ExternalAppResolutionCommandTest, WriteDataToDiskFailed) {
   ExternalInstallOptions install_options(

@@ -19,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -68,7 +69,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -101,7 +102,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
     web_contents_manager().SetUrlLoaded(web_contents(), kWebAppUrl);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     arc_test_.SetUp(profile());
 
     auto* arc_bridge_service =
@@ -117,7 +118,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     arc_test_.arc_service_manager()
         ->arc_bridge_service()
         ->intent_helper()
@@ -143,7 +144,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     return *fake_provider().file_utils()->AsTestFileUtils();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ArcAppTest& arc_test() { return arc_test_; }
 #endif
 
@@ -232,7 +233,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
  private:
   base::HistogramTester histogram_tester_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ArcAppTest arc_test_;
   std::unique_ptr<arc::FakeIntentHelperHost> fake_intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> fake_intent_helper_instance_;
@@ -738,7 +739,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(FetchManifestAndInstallCommandTest, IntentToPlayStore) {
   arc_test().app_instance()->set_is_installable(true);
 

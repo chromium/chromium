@@ -24,6 +24,7 @@
 #include "base/strings/to_string.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -869,7 +870,7 @@ WebApp::ClientData::ClientData(const ClientData& client_data) = default;
 
 base::Value WebApp::ClientData::AsDebugValue() const {
   base::Value::Dict root;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   root.Set("system_web_app_data", OptionalAsDebugValue(system_web_app_data));
 #endif
   return base::Value(std::move(root));
@@ -979,7 +980,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.capture_links_,
         app.manifest_url_,
         app.manifest_id_,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         app.client_data_.system_web_app_data,
 #endif
         app.file_handler_approval_state_,

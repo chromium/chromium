@@ -86,7 +86,6 @@ void MediaEffectsService::BindVideoEffectsProcessor(
                                                     std::move(gpu_receiver)));
   }
 
-  LOG(WARNING) << "Calling CreateEffectsProcessor";
   video_effects_service->CreateEffectsProcessor(
       device_id, std::move(gpu_remote),
       std::move(readonly_video_effects_manager),

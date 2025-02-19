@@ -4,10 +4,7 @@
 # found in the LICENSE file.
 """Siso configuration for clang."""
 
-load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
-load("./ar.star", "ar")
-load("./config.star", "config")
 load("./mac_sdk.star", "mac_sdk")
 load("./win_sdk.star", "win_sdk")
 
@@ -124,75 +121,8 @@ __input_deps = {
     ],
 }
 
-def __lld_link(ctx, cmd):
-    # Replace thin archives with /start-lib ... /end-lib in rsp file.
-    new_lines = []
-    for line in str(cmd.rspfile_content).split("\n"):
-        new_elems = []
-        for elem in line.split(" "):
-            # Parse only .lib files.
-            if not elem.endswith(".lib"):
-                new_elems.append(elem)
-                continue
-
-            # Parse files under the out dir.
-            fname = ctx.fs.canonpath(elem)
-            if not ctx.fs.exists(fname):
-                new_elems.append(elem)
-                continue
-
-            # Check if the library is generated or not.
-            # The source libs are not under the build dir.
-            build_dir = ctx.fs.canonpath("./")
-            if path.rel(build_dir, fname).startswith("../../"):
-                new_elems.append(elem)
-                continue
-
-            ents = ar.entries(ctx, fname, build_dir)
-            if not ents:
-                new_elems.append(elem)
-                continue
-
-            new_elems.append("-start-lib")
-            new_elems.extend(ents)
-            new_elems.append("-end-lib")
-        new_lines.append(" ".join(new_elems))
-
-    ctx.actions.fix(rspfile_content = "\n".join(new_lines))
-
-def __thin_archive(ctx, cmd):
-    # TODO: This handler can be used despite remote linking?
-    if not config.get(ctx, "remote-link"):
-        return
-    if "lld-link" in cmd.args[0]:
-        if not "/llvmlibthin" in cmd.args:
-            print("not thin archive")
-            return
-    else:
-        # check command line to see "-T" and "-S".
-        # rm -f obj/third_party/angle/libangle_common.a && "../../third_party/llvm-build/Release+Asserts/bin/llvm-ar" -T -S -r -c -D obj/third_party/angle/libangle_common.a @"obj/third_party/angle/libangle_common.a.rsp"
-        if not ("-T" in cmd.args[-1] and "-S" in cmd.args[-1]):
-            print("not thin archive without symbol table")
-            return
-
-    # create thin archive without symbol table by handler.
-    rspfile_content = str(cmd.rspfile_content)
-    inputs = []
-    for line in rspfile_content.split("\n"):
-        for fname in line.split(" "):
-            inputs.append(ctx.fs.canonpath(fname))
-    data = ar.create(ctx, path.dir(cmd.outputs[0]), inputs)
-    ctx.actions.write(cmd.outputs[0], data)
-    ctx.actions.exit(exit_status = 0)
-
-__handlers = {
-    "lld_link": __lld_link,
-    "lld_thin_archive": __thin_archive,
-}
-
 clang_all = module(
     "clang_all",
     filegroups = __filegroups,
     input_deps = __input_deps,
-    handlers = __handlers,
 )

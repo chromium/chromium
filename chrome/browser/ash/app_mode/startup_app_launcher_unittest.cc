@@ -257,9 +257,9 @@ class TestKioskLoaderVisitor
     extension_service_->OnExtensionInstalled(
         extension, syncer::StringOrdinal::CreateInitialOrdinal(),
         extensions::kInstallFlagInstallImmediately);
-    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnFinishCrxInstall(*installer, extension->id(), true);
+        ->OnFinishCrxInstall(base::FilePath(), extension->id(), extension,
+                             true);
     return true;
   }
 
@@ -276,9 +276,8 @@ class TestKioskLoaderVisitor
 
     pending_crx_files_.erase(extension_id);
     pending_update_urls_.erase(extension_id);
-    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnFinishCrxInstall(*installer, extension_id, false);
+        ->OnFinishCrxInstall(base::FilePath(), extension_id, nullptr, false);
     extension_service_->pending_extension_manager()->Remove(extension_id);
     return true;
   }
@@ -301,9 +300,8 @@ class TestKioskLoaderVisitor
     }
 
     pending_crx_files_.insert(info.extension_id);
-    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnBeginCrxInstall(*installer, info.extension_id);
+        ->OnBeginCrxInstall(info.extension_id);
     return true;
   }
   bool OnExternalExtensionUpdateUrlFound(
@@ -323,9 +321,8 @@ class TestKioskLoaderVisitor
     }
 
     pending_update_urls_.insert(info.extension_id);
-    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnBeginCrxInstall(*installer, info.extension_id);
+        ->OnBeginCrxInstall(info.extension_id);
     return true;
   }
   void OnExternalProviderReady(

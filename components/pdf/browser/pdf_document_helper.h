@@ -39,15 +39,6 @@ class PDFDocumentHelper
       public ui::TouchSelectionMenuClient,
       public content::TouchSelectionControllerClientManager::Observer {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    // Invoked when the document load is completed successfully. Will not be
-    // invoked when the PDF is already loaded. Will not be invoked when the load
-    // fails. This is useful to wait for document metadata to be loaded, before
-    // calls to `GetPdfBytes`, `GetPageText` can be made.
-    virtual void OnDocumentLoadComplete() {}
-  };
-
   PDFDocumentHelper(const PDFDocumentHelper&) = delete;
   PDFDocumentHelper& operator=(const PDFDocumentHelper&) = delete;
 
@@ -116,8 +107,12 @@ class PDFDocumentHelper
   void GetMostVisiblePageIndex(
       pdf::mojom::PdfListener::GetMostVisiblePageIndexCallback callback);
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // Registers `callback` to be run when document load completes successfully.
+  // When the PDF is already loaded, `callback` is invoked immediately. Will not
+  // be invoked when the load fails. This is useful to wait for document
+  // metadata to be loaded, before calls to `GetPdfBytes`, and `GetPageText` can
+  // be made.
+  void RegisterForDocumentLoadComplete(base::OnceClosure callback);
 
  private:
   friend class content::DocumentUserData<PDFDocumentHelper>;
@@ -150,12 +145,13 @@ class PDFDocumentHelper
 
   bool is_document_load_complete_ = false;
 
+  // Callbacks to invoke when document load is completed.
+  std::vector<base::OnceClosure> document_load_complete_callbacks_;
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   bool searchify_started_ = false;
 #endif
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
-
-  base::ObserverList<Observer> observers_;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 };

@@ -143,6 +143,85 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
       kSaveCreditCardPromptResultHistogramStringForLocalSave,
       SaveCreditCardPromptResultIOS::kAccepted, 1);
 
+  // Verify that local save banner's button when pressed is not recorded as user
+  // initiated dismissal.
+  [mediator_ dismissInfobarBannerForUserInteraction:YES];
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForLocalSave,
+      SaveCreditCardPromptResultIOS::kSwiped, 0);
+
+  histogram_tester.ExpectTotalCount(
+      kSaveCreditCardPromptResultHistogramStringForLocalSave, 2);
+}
+
+// Verifies histogram entries for server save banner shown and gets swiped up.
+TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
+       LogInfoBarBannerShownAndSwipedForUploadSave) {
+  base::HistogramTester histogram_tester;
+  InitInfobar(/*for_upload=*/true);
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kShown, 1);
+
+  [mediator_ dismissInfobarBannerForUserInteraction:YES];
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kSwiped, 1);
+
+  histogram_tester.ExpectTotalCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave, 2);
+}
+
+// Verifies histogram entries for local save banner shown and gets swiped up.
+TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
+       LogInfoBarBannerShownAndSwipedForLocalSave) {
+  base::HistogramTester histogram_tester;
+  InitInfobar(/*for_upload=*/false);
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForLocalSave,
+      SaveCreditCardPromptResultIOS::kShown, 1);
+
+  [mediator_ dismissInfobarBannerForUserInteraction:YES];
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForLocalSave,
+      SaveCreditCardPromptResultIOS::kSwiped, 1);
+
+  histogram_tester.ExpectTotalCount(
+      kSaveCreditCardPromptResultHistogramStringForLocalSave, 2);
+}
+
+// Verifies histogram entries for server save banner shown and then times out.
+TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
+       LogInfoBarBannerShownAndTimedOutForUploadSave) {
+  base::HistogramTester histogram_tester;
+  InitInfobar(/*for_upload=*/true);
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kShown, 1);
+
+  [mediator_ dismissInfobarBannerForUserInteraction:NO];
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::KTimedOut, 1);
+
+  histogram_tester.ExpectTotalCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave, 2);
+}
+
+// Verifies histogram entries for local save banner shown and then times out.
+TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
+       LogInfoBarBannerShownAndTimedOutForLocalSave) {
+  base::HistogramTester histogram_tester;
+  InitInfobar(/*for_upload=*/false);
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForLocalSave,
+      SaveCreditCardPromptResultIOS::kShown, 1);
+
+  [mediator_ dismissInfobarBannerForUserInteraction:NO];
+  histogram_tester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForLocalSave,
+      SaveCreditCardPromptResultIOS::KTimedOut, 1);
+
   histogram_tester.ExpectTotalCount(
       kSaveCreditCardPromptResultHistogramStringForLocalSave, 2);
 }

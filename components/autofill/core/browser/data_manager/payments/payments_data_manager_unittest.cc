@@ -41,7 +41,9 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
@@ -1091,7 +1093,7 @@ TEST_F(PaymentsDataManagerTest, GetCreditCardsToSuggest_LocalCardsRanking) {
   // Sublabel is card number when filling name (exact format depends on
   // the platform, but the last 4 digits should appear).
   std::vector<const CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(3U, card_to_suggest.size());
 
   // Ordered as expected.
@@ -1134,7 +1136,7 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_EQ(5U, payments_data_manager().GetCreditCards().size());
 
   std::vector<const CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(5U, card_to_suggest.size());
 
   // All cards should be ordered as expected.
@@ -1185,10 +1187,10 @@ TEST_F(PaymentsDataManagerTest,
   // Check that profiles were saved.
   EXPECT_EQ(5U, payments_data_manager().GetCreditCards().size());
   // Expect no autofilled values or suggestions.
-  EXPECT_EQ(0U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(0U, GetCreditCardsToSuggest(payments_data_manager()).size());
 
   std::vector<const CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(0U, card_to_suggest.size());
 }
 
@@ -1230,10 +1232,10 @@ TEST_F(PaymentsDataManagerTest,
   ResetPaymentsDataManager();
 
   // Expect no credit card values or suggestions were loaded.
-  EXPECT_EQ(0U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(0U, GetCreditCardsToSuggest(payments_data_manager()).size());
 
   std::vector<const CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(0U, card_to_suggest.size());
 }
 
@@ -1276,7 +1278,7 @@ TEST_F(PaymentsDataManagerTest,
   WaitForOnPaymentsDataChanged();
 
   std::vector<const CreditCard*> credit_cards =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(1U, credit_cards.size());
   EXPECT_EQ(0, credit_cards.front()->Compare(masked_card));
 }
@@ -1298,7 +1300,7 @@ TEST_F(PaymentsDataManagerTest,
   WaitForOnPaymentsDataChanged();
 
   std::vector<const CreditCard*> credit_cards =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   EXPECT_EQ(2U, credit_cards.size());
 }
 
@@ -1322,7 +1324,7 @@ TEST_F(PaymentsDataManagerTest,
   WaitForOnPaymentsDataChanged();
 
   std::vector<const CreditCard*> credit_cards =
-      payments_data_manager().GetCreditCardsToSuggest();
+      GetCreditCardsToSuggest(payments_data_manager());
   ASSERT_EQ(1U, credit_cards.size());
 
   // Verify `masked_card` is returned after deduping `credit_cards` list.
@@ -1481,7 +1483,7 @@ TEST_F(PaymentsDataManagerTest, UsePersistentServerStorage) {
   SetUpTwoCardTypes();
 
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(2U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(2U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 }
@@ -1585,7 +1587,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Check that the server card is available for suggestion.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(2U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(2U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 
@@ -1596,7 +1598,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Check that server cards are unavailable.
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(1U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(1U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(0U, payments_data_manager().GetServerCreditCards().size());
 }
@@ -1614,7 +1616,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   // The server card should not be available at first. The user needs to
   // accept the opt-in offer.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(1U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(1U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 
@@ -1623,7 +1625,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Check that the server card is available for suggestion.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(2U, payments_data_manager().GetCreditCardsToSuggest().size());
+  EXPECT_EQ(2U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 }
@@ -2335,7 +2337,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_FlagOff) {
       features::kAutofillEnableBuyNowPayLaterSyncing);
   sync_pb::PaymentInstrument payment_instrument =
       test::CreatePaymentInstrumentWithLinkedBnplIssuer(
-          1234L, /*issuer_id=*/"some_bnpl_issuer", "USD",
+          1234L, std::string(kBnplAffirmIssuerId), "USD",
           /*min_price_in_micros=*/0,
           /*max_price_in_micros=*/35000000);
   ASSERT_TRUE(
@@ -2365,12 +2367,13 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_PaymentMethodsDisabled) {
       features::kAutofillEnableBuyNowPayLaterSyncing);
   sync_pb::PaymentInstrument payment_instrument_1 =
       test::CreatePaymentInstrumentWithLinkedBnplIssuer(
-          1234L, /*issuer_id=*/"some_bnpl_issuer", "USD",
+          1234L, std::string(kBnplAffirmIssuerId), "USD",
           /*min_price_in_micros=*/0,
           /*max_price_in_micros=*/35000000);
   sync_pb::PaymentInstrument payment_instrument_2 =
       test::CreatePaymentInstrumentWithLinkedBnplIssuer(
-          2345L, /*issuer_id=*/"zip", "USD", /*min_price_in_micros=*/0,
+          2345L, std::string(kBnplZipIssuerId), "USD",
+          /*min_price_in_micros=*/0,
           /*max_price_in_micros=*/35000000);
   ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
       {payment_instrument_1, payment_instrument_2}));
@@ -2388,13 +2391,36 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_PaymentMethodsDisabled) {
   EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
 }
 
+// Tests that no linked BNPL issuers are cached if the only issuer synced is
+// unsupported.
+TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_UnsupportedIssuer) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          1234L, "unsupported_issuer_id", "USD",
+          /*min_price_in_micros=*/0,
+          /*max_price_in_micros=*/35000000);
+  ASSERT_TRUE(
+      GetServerDataTable()->SetPaymentInstruments({payment_instrument_1}));
+
+  // `Refresh()` must be called to ensure that the linked BNPL issuer payment
+  // instruments are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Verify that no linked BNPL issuers are cached into PaymentsDataManager
+  // because the only issuer synced was unsupported.
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
 // If the conditions are met to return a linked BNPL issuer, this test ensures
 // it is returned and verifies that they had the expected values upon returning.
 TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
   int64_t instrument_id = 1234L;
-  std::string issuer_id = "some_bnpl_issuer";
+  std::string issuer_id = std::string(kBnplAffirmIssuerId);
   std::string currency = "USD";
   uint64_t min_price_in_micros = 50000000;
   uint64_t max_price_in_micros = 35000000;
@@ -2434,7 +2460,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NoEligiblePriceRange) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
   int64_t instrument_id = 1234L;
-  std::string issuer_id = "some_bnpl_issuer";
+  std::string issuer_id = std::string(kBnplAffirmIssuerId);
   std::string currency = "USD";
   uint64_t min_price_in_micros = 50000000;
   uint64_t max_price_in_micros = 35000000;
@@ -3613,7 +3639,7 @@ TEST_F(PaymentsDataManagerTest,
 
   sync_pb::BnplCreationOption* bnpl_option =
       creation_option.mutable_buy_now_pay_later_option();
-  bnpl_option->set_issuer_id("issuer_id");
+  bnpl_option->set_issuer_id(kBnplAffirmIssuerId);
 
   sync_pb::EligiblePriceRange eligible_price_range;
   eligible_price_range.set_currency("USD");
@@ -3636,14 +3662,78 @@ TEST_F(PaymentsDataManagerTest,
 
   // Must match the BnplCreationOption in the payment instrument creation
   // option.
-  std::vector<BnplIssuer> want_bnpl_issuers = {
-      BnplIssuer(/*instrument_id=*/std::nullopt, "issuer_id",
-                 {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
-                                                 /*price_lower_bound=*/50,
-                                                 /*price_upper_bound=*/200)})};
+  std::vector<BnplIssuer> want_bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/std::nullopt, std::string(kBnplAffirmIssuerId),
+      {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
+                                      /*price_lower_bound=*/50,
+                                      /*price_upper_bound=*/200)})};
 
   EXPECT_THAT(payments_data_manager().GetUnlinkedBnplIssuers(),
               testing::UnorderedElementsAreArray(want_bnpl_issuers));
+}
+
+// Tests that no unlinked BNPL issuers are cached if the only synced unlinked
+// issuer is not supported.
+TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_UnsupportedIssuerId) {
+  // Create a BNPL payment creation option.
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+
+  sync_pb::BnplCreationOption* bnpl_option =
+      creation_option.mutable_buy_now_pay_later_option();
+  bnpl_option->set_issuer_id("unsupported_issuer_id");
+
+  sync_pb::EligiblePriceRange eligible_price_range;
+  eligible_price_range.set_currency("USD");
+  eligible_price_range.set_min_price_in_micros(50);
+  eligible_price_range.set_max_price_in_micros(200);
+  *bnpl_option->add_eligible_price_range() = eligible_price_range;
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option}));
+
+  // Since the PaymentsDataManager was initialized before adding the unlinked
+  // BNPL issuer payment instrument creation options to the WebDatabase, we
+  // expect GetUnlinkedBnplIssuers to return an empty list.
+  EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 0u);
+
+  // We need to call `Refresh()` to ensure that the BNPL issuer payment
+  // instrument creation options are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // The only Issuer ID present is for an unsupported issuer, so no BNPL issuers
+  // should be cached.
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+}
+
+// Tests that no unlinked BNPL issuers are cached if the only synced unlinked
+// issuer does not have an eligible price range.
+TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_NoEligiblePriceRange) {
+  // Create a BNPL payment creation option.
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+
+  sync_pb::BnplCreationOption* bnpl_option =
+      creation_option.mutable_buy_now_pay_later_option();
+  bnpl_option->set_issuer_id(kBnplAffirmIssuerId);
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option}));
+
+  // Since the PaymentsDataManager was initialized before adding the unlinked
+  // BNPL issuer payment instrument creation options to the WebDatabase, we
+  // expect GetUnlinkedBnplIssuers to return an empty list.
+  EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 0u);
+
+  // We need to call `Refresh()` to ensure that the BNPL issuer payment
+  // instrument creation options are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // No unlinked BNPL issuers should be cached as there is no eligible price
+  // range present.
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
 }
 
 TEST_F(
@@ -3668,21 +3758,15 @@ TEST_F(
 // Tests that `GetBnplIssuers` returns all linked and unlinked buy-now-pay-later
 // issuers.
 TEST_F(PaymentsDataManagerTest, GetBnplIssuers) {
-  // Add two linked issuers and one unlinked issuer to payments data manager.
-  BnplIssuer linked_issuer1 = test::GetTestLinkedBnplIssuer();
-  BnplIssuer linked_issuer2 =
-      BnplIssuer(/*instrument_id=*/5678, /*issuer_id=*/"dummy",
-                 {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
-                                                 /*price_lower_bound=*/50,
-                                                 /*price_upper_bound=*/200)});
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
-  test_api(payments_data_manager()).AddBnplIssuer(linked_issuer1);
-  test_api(payments_data_manager()).AddBnplIssuer(linked_issuer2);
+  test_api(payments_data_manager()).AddBnplIssuer(linked_issuer);
   test_api(payments_data_manager()).AddBnplIssuer(unlinked_issuer);
 
-  EXPECT_THAT(payments_data_manager().GetBnplIssuers(),
-              testing::UnorderedElementsAreArray(
-                  {linked_issuer1, linked_issuer2, unlinked_issuer}));
+  EXPECT_THAT(
+      payments_data_manager().GetBnplIssuers(),
+      testing::UnorderedElementsAreArray({linked_issuer, unlinked_issuer}));
 }
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if

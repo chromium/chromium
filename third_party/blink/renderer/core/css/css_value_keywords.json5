@@ -1997,5 +1997,6 @@
     // inline conditional
     "if",
     "else",
+    "media",
   ],
 }

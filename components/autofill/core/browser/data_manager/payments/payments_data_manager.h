@@ -242,14 +242,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns all virtual card usage data linked to the credit card.
   base::span<const VirtualCardUsageData> GetVirtualCardUsageData() const;
 
-  // Returns the credit cards to suggest to the user. Those have been deduped
-  // and ordered by frecency with the expired cards put at the end of the
-  // vector. `should_use_legacy_algorithm` indicates if we should rank credit
-  // cards using the legacy ranking algorithm.
-  // TODO(crbug.com/326408802): Move to payments_suggestion_generator.
-  std::vector<const CreditCard*> GetCreditCardsToSuggest(
-      bool should_use_legacy_algorithm = false) const;
-
   // Returns the unlinked buy-now-pay-later issuers. This is a list of BNPL
   // issuers that are available to be used but have NOT been linked to the
   // payments account by the user.
@@ -510,12 +502,12 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the value of the FacilitatedPaymentsEwallet user pref.
   bool IsFacilitatedPaymentsEwalletUserPrefEnabled() const;
 
- protected:
-  friend class PaymentsDataManagerTestApi;
-
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
   virtual bool ShouldSuggestServerPaymentMethods() const;
+
+ protected:
+  friend class PaymentsDataManagerTestApi;
 
   // Loads the saved credit cards from the web database.
   virtual void LoadCreditCards();

@@ -13,6 +13,7 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/video_effects_processor_webgpu.h"
 #include "services/video_effects/video_effects_service_impl.h"
@@ -30,6 +31,7 @@ VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
     : device_(device),
       manager_remote_(std::move(manager_remote)),
       processor_receiver_(this, std::move(processor_receiver)),
+      configuration_observer_receiver_(this),
       gpu_channel_host_provider_(gpu_channel_host_provider),
       on_unrecoverable_error_(std::move(on_unrecoverable_error)) {
   CHECK(gpu_channel_host_provider_);
@@ -120,7 +122,13 @@ void VideoEffectsProcessorImpl::OnPermanentError(
 void VideoEffectsProcessorImpl::OnConfigurationChanged(
     media::mojom::VideoEffectsConfigurationPtr configuration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/374149033): save configuration, to be passed to `processor_webgpu_`.
+
+  // We've seen a config, so let's make sure `runtime_config_` isn't nullopt.
+  // Existence or absence of `configuration->blur` controls whether blur effect
+  // is enabled or not:
+  runtime_config_.emplace(RuntimeConfig{
+      .blur_state =
+          !!configuration->blur ? BlurState::kEnabled : BlurState::kDisabled});
 }
 
 void VideoEffectsProcessorImpl::OnMojoDisconnected() {
@@ -150,15 +158,16 @@ void VideoEffectsProcessorImpl::PostProcess(
     return;
   }
 
-  if (!initialized_) {
+  if (!initialized_ || !runtime_config_.has_value()) {
     std::move(callback).Run(
         mojom::PostProcessResult::NewError(mojom::PostProcessError::kNotReady));
     return;
   }
 
-  processor_webgpu_->PostProcess(
-      std::move(input_frame_data), std::move(input_frame_info),
-      std::move(result_frame_data), result_pixel_format, std::move(callback));
+  processor_webgpu_->PostProcess(*runtime_config_, std::move(input_frame_data),
+                                 std::move(input_frame_info),
+                                 std::move(result_frame_data),
+                                 result_pixel_format, std::move(callback));
 }
 
 void VideoEffectsProcessorImpl::MaybeCallOnUnrecoverableError() {

@@ -1407,7 +1407,6 @@ test("views_unittests") {
     ]
 
     sources += [
-      "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/test_list_grid_view.cc",
       "accessibility/test_list_grid_view.h",
       "accessibility/view_ax_platform_node_delegate_win_unittest.cc",
@@ -1425,6 +1424,7 @@ test("views_unittests") {
 
   if (has_native_accessibility) {
     sources += [
+      "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/ax_virtual_view_unittest.cc",
       "accessibility/view_accessibility_unittest.cc",
       "accessibility/view_ax_platform_node_delegate_unittest.cc",

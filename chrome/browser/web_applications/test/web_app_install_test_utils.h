@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

@@ -16,6 +16,7 @@
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/ime_controller.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -287,6 +288,10 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
   registry->RegisterBooleanPref(prefs::kManagedOrcaEnabled, true);
   registry->RegisterBooleanPref(prefs::kLobsterEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kLobsterEnterprisePolicySettings,
+      base::to_underlying(
+          ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
   registry->RegisterBooleanPref(
       prefs::kManagedPhysicalKeyboardAutocorrectAllowed, true);
   registry->RegisterBooleanPref(

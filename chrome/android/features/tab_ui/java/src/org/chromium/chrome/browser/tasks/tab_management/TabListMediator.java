@@ -333,8 +333,8 @@ class TabListMediator implements TabListNotificationHandler {
 
     private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
-    private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
-            this::onMenuItemClicked;
+    private final TabListGroupMenuCoordinator.OnItemClickedCallback<Token>
+            mOnMenuItemClickedCallback = this::onMenuItemClicked;
     private final Activity mActivity;
     private final TabListModel mModelList;
     private final @TabListMode int mMode;

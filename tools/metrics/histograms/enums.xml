@@ -10661,6 +10661,8 @@ from previous Chrome versions.
   <int value="-1374377956" label="SeparateWebAppShortcutBadgeIcon:disabled"/>
   <int value="-1374048865" label="CpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-1373942769" label="WebAuthenticationCtap2:disabled"/>
+  <int value="-1373772799"
+      label="DisableFacilitatedPaymentsMerchantAllowlist:disabled"/>
   <int value="-1373705581" label="ManualSaving:enabled"/>
   <int value="-1373048294"
       label="ChromeCleanupScanCompletedNotification:enabled"/>
@@ -19201,6 +19203,8 @@ from previous Chrome versions.
   <int value="1975657253" label="ScalableAppList:disabled"/>
   <int value="1976644015" label="enable-forbid-sync-xhr-in-page-dismissal"/>
   <int value="1976885976" label="DefaultChatWebApp:disabled"/>
+  <int value="1978453875"
+      label="DisableFacilitatedPaymentsMerchantAllowlist:enabled"/>
   <int value="1978548617" label="FilesZipMount:enabled"/>
   <int value="1978570295" label="RawDraw:disabled"/>
   <int value="1978633725" label="EnableWifiQos:disabled"/>

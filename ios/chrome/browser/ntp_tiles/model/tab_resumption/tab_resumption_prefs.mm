@@ -19,17 +19,21 @@ namespace tab_resumption_prefs {
 // The maximum length of the last distant tab URL.
 size_t kMaxLengthTabURL = 2 * 1024;
 
-const char kTabResumptioDisabledPref[] = "tab_resumption.disabled";
+const char kTabResumptionDisabledPref[] = "tab_resumption.disabled";
 const char kTabResumptionLastOpenedTabURLPref[] =
     "tab_resumption.last_opened_tab_url";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kTabResumptioDisabledPref, false);
+  // TODO(crbug.com/395840133): Remove `kTabResumptionDisabledPref` registration
+  // from local-state Prefs after successfully migrating to profile Prefs.
+  registry->RegisterBooleanPref(kTabResumptionDisabledPref, false);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kTabResumptionLastOpenedTabURLPref,
                                std::string());
+  // Added 02/2025
+  registry->RegisterBooleanPref(kTabResumptionDisabledPref, false);
 }
 
 bool IsTabResumptionDisabled(PrefService* prefs) {
@@ -37,7 +41,7 @@ bool IsTabResumptionDisabled(PrefService* prefs) {
     return !prefs->GetBoolean(
         prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
   }
-  return prefs->GetBoolean(kTabResumptioDisabledPref);
+  return prefs->GetBoolean(kTabResumptionDisabledPref);
 }
 
 void DisableTabResumption(PrefService* prefs) {
@@ -47,7 +51,7 @@ void DisableTabResumption(PrefService* prefs) {
     prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
                       false);
   } else {
-    prefs->SetBoolean(kTabResumptioDisabledPref, true);
+    prefs->SetBoolean(kTabResumptionDisabledPref, true);
   }
 }
 

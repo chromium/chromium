@@ -882,8 +882,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.HISTORY", 1);
 }
 
-// Signing out or turning off Sync isn't possible in ChromeOS-Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Signing out or turning off Sync isn't possible on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
                        ClearsForeignHistoryOnTurningSyncOff) {
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_EQ(history_helper::GetVisitsFromClient(0, row.id()).size(), 1u);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // On Android, switches::kSyncUserForTest isn't supported (the passed-in
 // username gets ignored in SyncSigninDelegateAndroid::SigninFake()), so it's

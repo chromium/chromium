@@ -5,7 +5,6 @@
 #include "content/browser/web_contents/immediate_accessibility_mode_policy.h"
 
 #include "base/functional/callback.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {
 

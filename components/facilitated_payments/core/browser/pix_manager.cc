@@ -89,6 +89,13 @@ void PixManager::RegisterPixAllowlist() const {
 }
 
 bool PixManager::IsMerchantAllowlisted(const GURL& url) const {
+  if (base::FeatureList::IsEnabled(
+          kDisableFacilitatedPaymentsMerchantAllowlist)) {
+    // If the merchant allowlist check is disabled, simply return true. This is
+    // mainly used for manual testing of new domains before being added to the
+    // allowlist.
+    return true;
+  }
   // Since the optimization guide decider integration corresponding to PIX
   // merchant lists are allowlists for the question "Can this site be
   // optimized?", a match on the allowlist answers the question with "yes".

@@ -85,7 +85,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private WindowAndroid mWindowAndroid;
     private boolean mIsMenuShowing;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
-    private CollaborationService mCollaborationService;
+    protected CollaborationService mCollaborationService;
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {
                 @Override
@@ -170,7 +170,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     @VisibleForTesting
-    static OnItemClickedCallback getMenuItemClickedCallback(
+    static OnItemClickedCallback<Token> getMenuItemClickedCallback(
             Activity activity,
             TabGroupModelFilter tabGroupModelFilter,
             ActionConfirmationManager actionConfirmationManager,
@@ -254,11 +254,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      *
      * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
      *     coordinates.
-     * @param rootId The root id of the interacting tab group.
+     * @param tabGroupId The tab group ID of the interacting tab group.
      */
-    protected void showMenu(RectProvider anchorViewRectProvider, int rootId) {
-        mGroupRootId = rootId;
-        Token tabGroupId = mTabGroupModelFilter.getStableIdFromRootId(rootId);
+    protected void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId) {
+        mGroupRootId = mTabGroupModelFilter.getRootIdFromStableId(tabGroupId);
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,

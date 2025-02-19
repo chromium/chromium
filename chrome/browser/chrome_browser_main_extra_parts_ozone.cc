@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,10 +28,7 @@ void ChromeBrowserMainExtraPartsOzone::PostCreateMainMessageLoop() {
 }
 
 void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopRun() {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_LINUX)
-  // Lacros's `PostMainMessageLoopRun` must be called at the very end of
-  // `PostMainMessageLoopRun` in
-  // `ChromeBrowserMainPartsLacros::PostMainMessageLoopRun`.
+#if !BUILDFLAG(IS_LINUX)
   ui::OzonePlatform::GetInstance()->PostMainMessageLoopRun();
 #endif
 }

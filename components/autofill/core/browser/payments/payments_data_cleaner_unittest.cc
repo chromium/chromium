@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_base.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -219,25 +220,21 @@ TEST_F(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
 
   // The first three profiles' origin should be cleared and the fourth one still
   // be the settings origin.
-  EXPECT_TRUE(personal_data()
-                  .payments_data_manager()
-                  .GetCreditCardsToSuggest()[0]
-                  ->origin()
-                  .empty());
-  EXPECT_TRUE(personal_data()
-                  .payments_data_manager()
-                  .GetCreditCardsToSuggest()[1]
-                  ->origin()
-                  .empty());
-  EXPECT_TRUE(personal_data()
-                  .payments_data_manager()
-                  .GetCreditCardsToSuggest()[2]
-                  ->origin()
-                  .empty());
-  EXPECT_EQ(kSettingsOrigin, personal_data()
-                                 .payments_data_manager()
-                                 .GetCreditCardsToSuggest()[3]
-                                 ->origin());
+  EXPECT_TRUE(
+      GetCreditCardsToSuggest(personal_data().payments_data_manager())[0]
+          ->origin()
+          .empty());
+  EXPECT_TRUE(
+      GetCreditCardsToSuggest(personal_data().payments_data_manager())[1]
+          ->origin()
+          .empty());
+  EXPECT_TRUE(
+      GetCreditCardsToSuggest(personal_data().payments_data_manager())[2]
+          ->origin()
+          .empty());
+  EXPECT_EQ(kSettingsOrigin,
+            GetCreditCardsToSuggest(personal_data().payments_data_manager())[3]
+                ->origin());
 }
 
 }  // namespace autofill

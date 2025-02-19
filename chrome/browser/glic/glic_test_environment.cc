@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 
 namespace glic {
@@ -55,6 +56,7 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
 GlicTestEnvironment::GlicTestEnvironment(Profile* profile) {
   cookie_synchronizer_ =
       internal::TestCookieSynchronizer::InjectForProfile(profile)->GetWeakPtr();
+  ForceSigninAndModelExecutionCapability(profile);
 }
 
 GlicTestEnvironment::~GlicTestEnvironment() = default;

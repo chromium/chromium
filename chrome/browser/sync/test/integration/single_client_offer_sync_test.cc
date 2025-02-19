@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/offer_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -103,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSyncPaused) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // ChromeOS does not sign out, so the test below does not apply.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Offer data should get cleared from the database when the user signs out.
 IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
   GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
@@ -118,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
   WaitForNumberOfOffers(0, paydm);
   EXPECT_EQ(0uL, paydm->GetAutofillOffers().size());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Offer is not using incremental updates. Make sure existing data gets
 // replaced when synced down.

@@ -164,6 +164,12 @@ public class AccessibilityNodeInfoUtils {
             builder.append(" notVisibleToUser");
         }
 
+        if (node.isFieldRequired()) {
+            // Use "required" rather than "fieldRequired" to match the chromium side naming:
+            // ax::mojom::State::kRequired.
+            builder.append(" required");
+        }
+
         // Integer properties - Only print when not default values.
         if (node.getInputType() != InputType.TYPE_NULL) {
             builder.append(" inputType:").append(node.getInputType());

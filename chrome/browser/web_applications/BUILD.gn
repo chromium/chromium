@@ -2,7 +2,6 @@
 # Copyright 2018 The Chromium Authors
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -495,7 +494,6 @@ source_set("web_applications") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
@@ -972,7 +970,6 @@ source_set("web_applications_unit_tests") {
     ":web_applications",
     ":web_applications_test_support",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",

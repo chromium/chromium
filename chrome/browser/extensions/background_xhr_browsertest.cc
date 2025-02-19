@@ -416,8 +416,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundFetchWebstoreTest, FetchToWebstore) {
 IN_PROC_BROWSER_TEST_P(BackgroundFetchWebstoreTest, FetchToWebstorePolicy) {
   {
     ExtensionManagementPolicyUpdater pref(&policy_provider_);
-    pref.AddPolicyAllowedHost(
-        "*", "*://" + extension_urls::GetWebstoreLaunchURL().host());
+    pref.AddPolicyAllowedHost("*", "*://" + GetParam().host());
   }
 
   const Extension* extension = LoadFetchExtension("<all_urls>");

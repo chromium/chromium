@@ -31,6 +31,10 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_test_util.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 class FakeGlicTabStripController : public FakeBaseTabStripController {
  public:
   Profile* GetProfile() const override {
@@ -83,6 +87,9 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
         profile_.get(), nullptr);
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
+#if BUILDFLAG(ENABLE_GLIC)
+    glic::ForceSigninAndModelExecutionCapability(profile_.get());
+#endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
   void TearDown() override {

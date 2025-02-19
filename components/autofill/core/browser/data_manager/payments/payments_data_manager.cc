@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -115,27 +116,6 @@ bool FindByContents(const C& container, const T& needle) {
   return std::ranges::any_of(container, [&needle](const auto& element) {
     return element->Compare(needle) == 0;
   });
-}
-
-// TODO(crbug.com/326408802): Move to payments_suggestion_generator.
-std::vector<const CreditCard*> DeduplicatedCreditCardsForSuggestions(
-    base::span<const CreditCard* const> cards_to_suggest) {
-  std::vector<const CreditCard*> deduplicated_cards;
-  for (const CreditCard* card : cards_to_suggest) {
-    // Full server cards should never be suggestions, as they exist only as a
-    // cached state post-fill.
-    CHECK_NE(card->record_type(), CreditCard::RecordType::kFullServerCard);
-    // Masked server cards are preferred over their local duplicates.
-    if (!CreditCard::IsLocalCard(card) ||
-        std::ranges::none_of(
-            cards_to_suggest, [&card](const CreditCard* other_card) {
-              return card != other_card &&
-                     card->IsLocalOrServerDuplicateOf(*other_card);
-            })) {
-      deduplicated_cards.push_back(card);
-    }
-  }
-  return deduplicated_cards;
 }
 
 }  // namespace
@@ -1296,31 +1276,6 @@ PaymentsDataManager::GetVirtualCardUsageData() const {
   return autofill_virtual_card_usage_data_;
 }
 
-std::vector<const CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
-    bool should_use_legacy_algorithm) const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
-    return {};
-  }
-  std::vector<const CreditCard*> cards_to_suggest =
-      DeduplicatedCreditCardsForSuggestions(ShouldSuggestServerPaymentMethods()
-                                                ? GetCreditCards()
-                                                : GetLocalCreditCards());
-  // Rank the cards by ranking score (see UsageHistoryInformation for details).
-  // All expired cards should be suggested last, also by ranking score.
-  std::ranges::sort(
-      cards_to_suggest,
-      [comparison_time = base::Time::Now(), should_use_legacy_algorithm](
-          const CreditCard* a, const CreditCard* b) {
-        if (const bool a_is_expired = a->IsExpired(comparison_time);
-            a_is_expired != b->IsExpired(comparison_time)) {
-          return !a_is_expired;
-        }
-        return a->HasGreaterRankingThan(*b, comparison_time,
-                                        should_use_legacy_algorithm);
-      });
-  return cards_to_suggest;
-}
-
 std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
   CHECK_EQ(iban.record_type(), Iban::kUnknown);
   // IBAN shares the same pref with payment methods enablement toggle.
@@ -2218,6 +2173,12 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
   sync_pb::BnplIssuerDetails bnpl_issuer_details =
       payment_instrument.bnpl_issuer_details();
 
+  // If `payment_instrument` has an unsupported issuer ID, do not cache it.
+  if (!base::Contains(payments::BnplManager::GetSupportedBnplIssuerIds(),
+                      bnpl_issuer_details.issuer_id())) {
+    return;
+  }
+
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   eligible_price_ranges.reserve(
       bnpl_issuer_details.eligible_price_range_size());
@@ -2284,6 +2245,14 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
 
   const sync_pb::BnplCreationOption& bnpl_issuer =
       payment_instrument_creation_option.buy_now_pay_later_option();
+
+  // If `payment_instrument_creation_option` has an unsupported issuer ID, do
+  // not cache it.
+  if (!base::Contains(payments::BnplManager::GetSupportedBnplIssuerIds(),
+                      bnpl_issuer.issuer_id())) {
+    return;
+  }
+
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   eligible_price_ranges.reserve(bnpl_issuer.eligible_price_range_size());
   for (const sync_pb::EligiblePriceRange& eligible_price_range :
@@ -2292,6 +2261,12 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
         eligible_price_range.currency(),
         eligible_price_range.min_price_in_micros(),
         eligible_price_range.max_price_in_micros());
+  }
+
+  // An unlinked BNPL issuer is only valid if there is at least one eligible
+  // price range.
+  if (eligible_price_ranges.empty()) {
+    return;
   }
 
   unlinked_bnpl_issuers_.emplace_back(std::nullopt, bnpl_issuer.issuer_id(),

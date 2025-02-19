@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
@@ -212,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
 }
 
 // ChromeOS does not support signing out of a primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
@@ -226,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
                   &GetPersonalDataManager()->address_data_manager(), IsEmpty())
                   .Wait());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Specialized fixture to test the behavior for custom passphrase users with and
 // without kSyncEnableContactInfoDataTypeForCustomPassphraseUsers enabled.
@@ -287,12 +288,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                   UnorderedElementsAre(profile))
                   .Wait());
   // ChromeOS doesn't have the concept of sign-out.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   GetClient(0)->SignOutPrimaryAccount();
   EXPECT_TRUE(AddressDataManagerProfileChecker(
                   &GetPersonalDataManager()->address_data_manager(), IsEmpty())
                   .Wait());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -426,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                    ->address_data_manager()
                    .IsAutofillSyncToggleAvailable());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Sign out.
   GetClient(0)->SignOutPrimaryAccount();
 

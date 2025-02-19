@@ -548,14 +548,6 @@ class TabStripModel : public TabGroupController {
   // the new group. |indices| must be sorted in ascending order.
   tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices);
 
-  // Creates a new group from an `group_id` and `visual_data`. This is used in
-  // cases to re-create a deleted group like restore and tab dragging. All the
-  // tabs at `indices` are moved to the group created.
-  tab_groups::TabGroupId AddToNewGroup(
-      const std::vector<int> indices,
-      const tab_groups::TabGroupId group_id,
-      tab_groups::TabGroupVisualData visual_data);
-
   // Add the set of tabs pointed to by |indices| to the given tab group |group|.
   // The tabs take on the pinnedness of the tabs already in the group. Tabs
   // before the group will move to the start, while tabs after the group will

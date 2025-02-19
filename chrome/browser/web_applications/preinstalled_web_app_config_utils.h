@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
-#include "build/chromeos_buildflags.h"
 
 class Profile;
 
@@ -24,7 +23,6 @@ ConfigDirAutoReset SetPreinstalledWebAppConfigDirForTesting(
 
 }  // namespace test
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // The directory where default web app configs are stored.
 // Empty if not applicable.
 base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile);
@@ -34,7 +32,6 @@ base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile);
 // devices. Empty if not applicable.
 base::FilePath GetPreinstalledWebAppExtraConfigDirFromCommandLine(
     Profile* profile);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // The directory where default web app configs are stored.
 // Empty if not applicable.

@@ -1114,6 +1114,13 @@
       status: "stable",
     },
     {
+      // CSS if() function for custom properties. Flag is used only for media
+      // queries support in conditions.
+      // https://drafts.csswg.org/css-values-5/#if-notation.
+      name: "CSSInlineIfForMediaQueries",
+      status: "test",
+    },
+    {
       // CSS if() function for custom properties. Flag is used only for style
       // queries support in conditions.
       // https://drafts.csswg.org/css-values-5/#if-notation.
@@ -1410,7 +1417,7 @@
       // rendering using alternate content in the UA shadowroot which is
       // customizable.
       name: "CustomizableSelect",
-      status: "experimental",
+      status: "stable",
       // SelectParserRelaxation is needed to allow more content in <select>
       // than just <option>s etc.
       depends_on: ["SelectParserRelaxation"],
@@ -2870,11 +2877,6 @@
       name: "MiddleClickAutoscroll",
       status: "test",
     },
-    // Killswitch. Remove after 1 or 2 stable releases.
-    {
-      name: "MinimimalResourceRequestPrepBeforeCacheLookup",
-      status: "stable",
-    },
     {
       name: "MobileLayoutTheme",
     },
@@ -3975,7 +3977,7 @@
       // only <option>, <optgroup>, and <hr>.
       // https://github.com/whatwg/html/issues/10310
       name: "SelectParserRelaxation",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {

@@ -4,7 +4,10 @@
 
 #include "media/gpu/h264_rate_controller.h"
 
+#include <algorithm>
 #include <array>
+#include <limits>
+#include <memory>
 
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -336,7 +339,7 @@ void H264RateController::EstimateIntraFrameQP(base::TimeDelta frame_timestamp) {
                H264RateController::FrameType::kPFrame) {
       // Limit QP for IDR frames based on the QP estimated for the previous P
       // frame. The offset for the minimum value is a constant, while the offset
-      // for the maximum value is calclated as a linear function of the frame
+      // for the maximum value is calculated as a linear function of the frame
       // rate. The constants are chosen arbitrarily, based on the analysis of
       // the real use cases.
       constexpr float kMinQPOffsetForIDR = -3.0f;
@@ -513,7 +516,7 @@ void H264RateController::FinishLayerData(size_t temporal_id,
                                          FrameType frame_type,
                                          size_t frame_bytes,
                                          base::TimeDelta frame_timestamp) {
-  // Update HRDs for all temporal leyars.
+  // Update HRDs for all temporal layers.
   for (size_t tl = temporal_id; tl < num_temporal_layers_; ++tl) {
     temporal_layers_[tl]->AddFrameBytes(frame_bytes, frame_timestamp);
     temporal_layers_[tl]->update_last_frame_qp(
@@ -525,7 +528,7 @@ void H264RateController::FinishLayerData(size_t temporal_id,
 void H264RateController::FinishLayerPreviousFrameTimestamp(
     size_t temporal_id,
     base::TimeDelta frame_timestamp) {
-  // Update timestamps for all tamporal layers.
+  // Update timestamps for all temporal layers.
   for (size_t tl = temporal_id; tl < num_temporal_layers_; ++tl) {
     temporal_layers_[tl]->update_previous_frame_timestamp(frame_timestamp);
   }

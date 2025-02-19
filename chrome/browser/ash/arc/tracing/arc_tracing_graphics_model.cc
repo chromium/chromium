@@ -618,11 +618,11 @@ std::string ArcTracingGraphicsModel::SerializeToJson() const {
 
 bool ArcTracingGraphicsModel::LoadFromJson(const std::string& json_data) {
   Reset();
-  std::optional<base::Value> root = base::JSONReader::Read(json_data);
-  if (!root || !root->is_dict()) {
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(json_data);
+  if (!root) {
     return false;
   }
-  return LoadFromValue(root->GetDict());
+  return LoadFromValue(*root);
 }
 
 bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
