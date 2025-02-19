@@ -13,6 +13,14 @@
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+namespace {
+
+// Enum for use in NewTabPage.MicrosoftAuth.AuthError histogram.
+// Must match the NTPMicrosoftAuthError enum.
+enum class MicrosoftAuthError { kOther = 0, kMaxValue = kOther };
+
+}  // namespace
+
 MicrosoftAuthUntrustedPageHandler::MicrosoftAuthUntrustedPageHandler(
     mojo::PendingReceiver<
         new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler> handler,
@@ -53,6 +61,8 @@ void MicrosoftAuthUntrustedPageHandler::SetAccessToken(
 
 void MicrosoftAuthUntrustedPageHandler::SetAuthStateError() {
   auth_service_->SetAuthStateError();
+  base::UmaHistogramEnumeration("NewTabPage.MicrosoftAuth.AuthError",
+                                MicrosoftAuthError::kOther);
 }
 
 void MicrosoftAuthUntrustedPageHandler::OnAuthStateUpdated() {

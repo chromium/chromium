@@ -168,6 +168,8 @@ TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, SetAuthStateError) {
   EXPECT_CALL(mock_auth_service(), SetAuthStateError);
 
   handler().SetAuthStateError();
+  histogram_tester().ExpectBucketCount("NewTabPage.MicrosoftAuth.AuthError", 0,
+                                       1);
 }
 
 TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, OnAuthStateUpdated) {
