@@ -42,6 +42,18 @@ void TestHelper::RegisterKioskAppUser(PrefService& local_state,
 }
 
 // static
+void TestHelper::RegisterPublicAccountUser(PrefService& local_state,
+                                           std::string_view user_id) {
+  auto type = policy::GetDeviceLocalAccountType(user_id);
+  CHECK_EQ(type, policy::DeviceLocalAccountType::kPublicSession)
+      << user_id << " did not satisfy to be used for a public account user. "
+      << "See policy::GetDeviceLocalAccountType for details";
+  ScopedListPrefUpdate update(&local_state,
+                              prefs::kDeviceLocalAccountsWithSavedData);
+  update->Append(user_id);
+}
+
+// static
 std::string TestHelper::GetFakeUsernameHash(const AccountId& account_id) {
   CHECK(account_id.is_valid());
   return ash::UserDataAuthClient::GetStubSanitizedUsername(

@@ -34,6 +34,10 @@ class TestHelper {
   static void RegisterKioskAppUser(PrefService& local_state,
                                    std::string_view user_id);
 
+  // Records the `user_id` as a Public Account user to the given `local_state`.
+  static void RegisterPublicAccountUser(PrefService& local_state,
+                                        std::string_view user_id);
+
   // Returns the fake username hash for testing.
   // Valid AccountId must be used, otherwise CHECKed.
   static std::string GetFakeUsernameHash(const AccountId& account_id);
