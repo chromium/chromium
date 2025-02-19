@@ -173,7 +173,7 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
     webdata_helper_.WaitUntilIdle();
   }
 
-  std::vector<autofill::EntityInstance> GetEntityInstances() {
+  base::span<const autofill::EntityInstance> GetEntityInstances() {
     webdata_helper_.WaitUntilIdle();
     return entity_data_manager_.GetEntityInstances();
   }
@@ -384,16 +384,17 @@ TEST_F(AutofillAiManagerImportFormTest,
       .Run(AutofillAiClient::SavePromptAcceptanceResult(
           /*did_user_interact=*/true, new_entity));
   // Tests that the expected entity was saved.
-  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
+  base::span<const autofill::EntityInstance> saved_entities =
+      GetEntityInstances();
   ASSERT_EQ(saved_entities.size(), 1u);
-  EXPECT_EQ(saved_entities[0], *new_entity);
+  const autofill::EntityInstance& saved_entity = *saved_entities.begin();
+  EXPECT_EQ(saved_entity, *new_entity);
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entities[0], autofill::AttributeTypeName::kPassportName),
+                saved_entity, autofill::AttributeTypeName::kPassportName),
             u"Jon Doe");
-  EXPECT_EQ(
-      GetValueFromEntityForAttributeTypeName(
-          saved_entities[0], autofill::AttributeTypeName::kPassportNumber),
-      u"1234321");
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entity, autofill::AttributeTypeName::kPassportNumber),
+            u"1234321");
 }
 
 TEST_F(AutofillAiManagerImportFormTest,
@@ -418,7 +419,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   // Decline the bubble.
   std::move(save_callback).Run(AutofillAiClient::SavePromptAcceptanceResult());
   // Tests that the no entity was saved.
-  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
+  base::span<const autofill::EntityInstance> saved_entities =
+      GetEntityInstances();
   EXPECT_EQ(saved_entities.size(), 0u);
 }
 
@@ -439,7 +441,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_FALSE(autofill_ai_shows_bubble);
 
   // Tests that no entity was saved.
-  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
+  base::span<const autofill::EntityInstance> saved_entities =
+      GetEntityInstances();
   EXPECT_EQ(saved_entities.size(), 0u);
 }
 
@@ -466,7 +469,8 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
   EXPECT_FALSE(autofill_ai_shows_bubble);
 
   // Tests that no entity was saved.
-  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
+  base::span<const autofill::EntityInstance> saved_entities =
+      GetEntityInstances();
   EXPECT_EQ(saved_entities.size(), 1u);
 }
 
@@ -503,16 +507,20 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
       .Run(AutofillAiClient::SavePromptAcceptanceResult(
           /*did_user_interact=*/true, entity));
   // Tests that the expected entity was saved.
-  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
+  base::span<const autofill::EntityInstance> saved_entities =
+      GetEntityInstances();
   ASSERT_EQ(saved_entities.size(), 2u);
-  EXPECT_EQ(saved_entities[1], *entity);
+  autofill::EntityInstance saved_entity = *saved_entities.begin();
+  if (saved_entity == existing_entity) {
+    saved_entity = *(saved_entities.begin() + 1);
+  }
+  EXPECT_EQ(saved_entity, *entity);
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entities[1], autofill::AttributeTypeName::kPassportName),
+                saved_entity, autofill::AttributeTypeName::kPassportName),
             u"Jon Doe");
-  EXPECT_EQ(
-      GetValueFromEntityForAttributeTypeName(
-          saved_entities[1], autofill::AttributeTypeName::kPassportNumber),
-      u"1234321");
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entity, autofill::AttributeTypeName::kPassportNumber),
+            u"1234321");
 }
 
 TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
@@ -523,13 +531,9 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
        autofill::PASSPORT_EXPIRATION_DATE_TAG});
 
   // The current entity however does not.
-  autofill::test::PassportEntityOptions
-      passport_without_issue_date_and_expiry_date;
-  passport_without_issue_date_and_expiry_date.issue_date = nullptr;
-  passport_without_issue_date_and_expiry_date.expiry_date = u"";
   autofill::EntityInstance existing_entity_without_issue_and_expiry_dates =
       autofill::test::GetPassportEntityInstance(
-          passport_without_issue_date_and_expiry_date);
+          {.expiry_date = u"", .issue_date = nullptr});
   AddOrUpdateEntityInstance(existing_entity_without_issue_and_expiry_dates);
 
   // Set the filled values to be the same as the ones already stored in the
@@ -568,21 +572,21 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
       .Run(AutofillAiClient::SavePromptAcceptanceResult(
           /*did_user_interact=*/true, entity));
   // Tests that the expected entity was updated.
-  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
+  base::span<const autofill::EntityInstance> saved_entities =
+      GetEntityInstances();
 
   // Only one entity should exist, as it was updated.
   ASSERT_EQ(saved_entities.size(), 1u);
-  EXPECT_EQ(saved_entities[0], *entity);
-  EXPECT_EQ(saved_entities[0].guid(),
+  const autofill::EntityInstance& saved_entity = *saved_entities.begin();
+  EXPECT_EQ(saved_entity, *entity);
+  EXPECT_EQ(saved_entity.guid(),
             existing_entity_without_issue_and_expiry_dates.guid());
-  EXPECT_EQ(
-      GetValueFromEntityForAttributeTypeName(
-          saved_entities[0], autofill::AttributeTypeName::kPassportIssueDate),
-      u"01/02/2016");
-  EXPECT_EQ(
-      GetValueFromEntityForAttributeTypeName(
-          saved_entities[0], autofill::AttributeTypeName::kPassportExpiryDate),
-      u"01/02/2020");
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entity, autofill::AttributeTypeName::kPassportIssueDate),
+            u"01/02/2016");
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entity, autofill::AttributeTypeName::kPassportExpiryDate),
+            u"01/02/2020");
 }
 
 // Tests that `import_form_callback` is run with an empty list of entries when
