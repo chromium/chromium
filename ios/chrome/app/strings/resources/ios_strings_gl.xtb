@@ -975,6 +975,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> agora pode utilizar o teu nome de usuario e contrasinal para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> se usa o xestor de contrasinais de Google.</translation>
 <translation id="5242899254250321823">Cambiar contrasinal no sitio web</translation>
 <translation id="5248640482715684545">Este sitio está tentando abrir outra aplicación.</translation>
+<translation id="5250371859659394278">Dunha fonte descoñecida</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.}other{Algúns campos obrigatorios están en branco. Cúbreos antes de gardar o formulario.}}</translation>
 <translation id="5271549068863921519">Gardar contrasinal</translation>
 <translation id="5279214046729249716">Si, mantelos separados</translation>

@@ -1468,6 +1468,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" />es <ph name="CAFE_TYPE" />-Café</translation>
 <translation id="7841134249932030522">Dunklen Modus aktivieren</translation>
 <translation id="7846634333498149051">Tastatur</translation>
+<translation id="7847923465436619066">Sprachauswahl für das Transkript</translation>
 <translation id="7849030488395653706">Polarlichter</translation>
 <translation id="7849737607196682401">Spitze</translation>
 <translation id="7850320739366109486">Bitte nicht stören</translation>
@@ -1654,6 +1655,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8749478549112817787">Kamerahintergrund</translation>
 <translation id="8755946156089753497">Turm</translation>
 <translation id="8760616037557661287">Vorherige Prompts</translation>
+<translation id="876280838467039397">Transkriptionsmodell für <ph name="LANGUAGE_NAME" /> herunterladen und auswählen</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-Album</translation>
 <translation id="8775713578693478175">Modem‑APN</translation>

@@ -1185,6 +1185,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1812027881030482584">Sait <ph name="SITE_ETLD_PLUS_ONE" /> ei saa teenuse <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kasutamisega jätkata</translation>
 <translation id="1812284620455788548">Vahelehe <ph name="TAB_NAME" /> ülekandmine</translation>
 <translation id="1813278315230285598">Teenused</translation>
+<translation id="1813828404076816564">Jagatud vahelehegruppide funktsiooni kohta tagasiside saatmiseks valige tagasiside nupp</translation>
 <translation id="18139523105317219">EDI-osapoole nimi</translation>
 <translation id="1815083418640426271">Kleebi lihttekstina</translation>
 <translation id="1815097521077272760">Saite kutse proovida selles mängus klaviatuuriga juhtimist.</translation>
@@ -4113,6 +4114,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="3857807444929313943">Tõstke sõrm andurilt ja seejärel puudutage uuesti</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="385939467708172187">Kasutage tugevat parooli</translation>
+<translation id="3859869403161297890">Tagasisidet jagatud vahelehegruppide kohta saate saata siin</translation>
 <translation id="3859987779882450877">Soovitab teie avatud vahelehtede põhjal automaatselt gruppe ja loob need</translation>
 <translation id="386009056910366930">Vahelehegrupi „<ph name="GROUP_NAME" />“ haldamine</translation>
 <translation id="3861638017150647085">Kasutajanime „<ph name="USERNAME" />” pole saadaval</translation>
@@ -8165,6 +8167,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6805478749741295868">See on katsejärgus AI funktsioon ega saa alati õigeid tulemusi.</translation>
 <translation id="6805647936811177813">Logige sisse rakendusse <ph name="TOKEN_NAME" /> rakendusest <ph name="HOST_NAME" /> kliendi sertifikaadi importimiseks.</translation>
 <translation id="680572642341004180">Lubage RLZ-i jälgimine rakenduses <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Tagasiside jagatud vahelehegruppide kohta</translation>
 <translation id="6806089545527108739">Ära luba, aga küsi hiljem</translation>
 <translation id="680644983456221885">Reaalajas ja ennetav kaitse ohtlike saitide, allalaadimiste ja laienduste eest, mis põhineb teie sirvimisandmetel, mis saadetakse Google'ile</translation>
 <translation id="6806781719264274042">Ainult teie kontaktid, kellel on Google'i konto. <ph name="LINK_BEGIN" />Vaadake kontakte<ph name="LINK_END" />.</translation>
