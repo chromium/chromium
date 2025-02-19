@@ -176,8 +176,8 @@ For an example of image processing, we have the pure-Java class
 [BaseGifImage](https://cs.chromium.org/chromium/src/third_party/gif_player/src/jp/tomorrowkey/android/gifplayer/BaseGifImage.java?rcl=27febd503d1bab047d73df26db83184fff8d6620&l=27).
 On Android, where we can use Java and also face a particularly high cost for
 creating new processes (necessary for sandboxing), using Java to decode tricky
-formats can be a great approach. We do a similar thing with the pure-Java
-[JsonSanitizer](https://cs.chromium.org/chromium/src/services/data_decoder/public/cpp/android/java/src/org/chromium/services/data_decoder/JsonSanitizer.java),
+formats can be a great approach. Before switching to a Rust-based parser, we
+used a Java [JsonSanitizer](https://cs.chromium.org/chromium/src/services/data_decoder/public/cpp/android/java/src/org/chromium/services/data_decoder/JsonSanitizer.java),
 to 'vet' incoming JSON in a memory-safe way before passing the input to the C++
 JSON implementation.
 
@@ -334,7 +334,7 @@ part of the threat model against which it's been tested for years. It is **not**
 the case, however, that text matched by an RE2 regular expression is necessarily
 "sanitized" or "safe". That requires additional security judgment.
 
-## Safe Types
+## Safe Types and Abstractions
 
 As discussed above in [Normalization](#normalization), there are some types that
 are considered "safe," even though they are deserialized from an untrustworthy
@@ -358,6 +358,9 @@ represent potentially complex data, such as:
 The deserialization of these is safe, though it is important to remember that
 the value itself is still untrustworthy (e.g. a malicious path trying to escape
 its parent using `../`).
+
+The JSON parser in `//base/json` is implemented in Rust and considered safe for
+use at high privilege with untrusted data.
 
 ## Existing Code That Violates The Rule
 
