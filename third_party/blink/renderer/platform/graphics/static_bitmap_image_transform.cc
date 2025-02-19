@@ -120,7 +120,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
     scoped_refptr<StaticBitmapImage> source,
     const StaticBitmapImageTransform::Params& options) {
   auto source_paint_image = source->PaintImageForCurrentFrame();
-  auto source_info = source->GetSkImageInfo();
   const auto source_orientation = GetSourceOrientation(source, options);
 
   // Compute the unoriented source and dest rects and sizes.
@@ -147,7 +146,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
                                     ? options.dest_color_space
                                     : source->GetSkColorSpace();
     const auto bm_info = SkImageInfo::Make(
-        source_rect.size(), GetDestColorType(source_info.colorType()),
+        source_rect.size(), GetDestColorType(source->GetSkColorType()),
         bm_alpha_type, bm_color_space);
     if (!bm.tryAllocPixels(bm_info)) {
       return nullptr;

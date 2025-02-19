@@ -118,6 +118,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return gfx::Size(GetSkImageInfo().width(), GetSkImageInfo().height());
   }
   SkAlphaType GetAlphaType() { return GetSkImageInfo().alphaType(); }
+  SkColorType GetSkColorType() { return GetSkImageInfo().colorType(); }
   sk_sp<SkColorSpace> GetSkColorSpace() {
     return GetSkImageInfo().refColorSpace();
   }
