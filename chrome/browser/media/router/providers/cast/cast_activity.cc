@@ -5,9 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -177,8 +175,7 @@ void CastActivity::CloseConnectionOnReceiver(
   if (!session) {
     return;
   }
-  if (reason == blink::mojom::PresentationConnectionCloseReason::CLOSED ||
-      !base::FeatureList::IsEnabled(kCastSilentlyRemoveVcOnNavigation)) {
+  if (reason == blink::mojom::PresentationConnectionCloseReason::CLOSED) {
     message_handler_->CloseConnection(cast_channel_id(), client_id,
                                       session->destination_id());
 

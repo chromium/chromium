@@ -72,10 +72,6 @@ BASE_FEATURE(kFallbackToAudioTabMirroring,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-BASE_FEATURE(kCastSilentlyRemoveVcOnNavigation,
-             "CastSilentlyRemoveVcOnNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
