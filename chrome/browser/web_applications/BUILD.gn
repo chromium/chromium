@@ -204,8 +204,6 @@ source_set("web_applications") {
     "jobs/uninstall/uninstall_job.cc",
     "jobs/uninstall/uninstall_job.h",
     "jobs/uninstall/web_app_uninstall_and_replace_job.h",
-    "link_capturing_features.cc",
-    "link_capturing_features.h",
     "locks/all_apps_lock.cc",
     "locks/all_apps_lock.h",
     "locks/app_lock.cc",
@@ -492,6 +490,7 @@ source_set("web_applications") {
   ]
 
   deps = [
+    ":features",
     "//base",
     "//build:branding_buildflags",
     "//chrome/app/resources:platform_locale_settings",
@@ -643,6 +642,18 @@ source_set("web_applications") {
     "//components/permissions:permissions",
     "//components/services/app_service",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "link_capturing_features.cc",
+    "link_capturing_features.h",
+  ]
+  deps = [
+    "//chrome/common:chrome_features",
+    "//content/public/common",
+  ]
+  public_deps = [ "//base" ]
 }
 
 if (!is_android) {

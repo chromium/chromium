@@ -4323,6 +4323,7 @@ static_library("browser") {
       "//chrome/browser/upgrade_detector:build_state_observer",
       "//chrome/browser/user_annotations",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:web_applications_metrics",
       "//chrome/browser/web_applications/app_service",
       "//chrome/common/importer:interfaces",
