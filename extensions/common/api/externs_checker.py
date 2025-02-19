@@ -3,9 +3,10 @@
 # found in the LICENSE file.
 
 class ExternsChecker(object):
-  _UPDATE_MESSAGE = """To update the externs, run:
- src/ $ python3 tools/json_schema_compiler/compiler.py\
- %s --root=. --generator=externs > %s"""
+  _UPDATE_MESSAGE_HDR = 'To update the externs, run:\n'
+  _UPDATE_MESSAGE_CMD = (
+    ' src/ $ python3 tools/json_schema_compiler/compiler.py %s'
+    ' --root=. --generator=externs > %s')
 
   def __init__(self, input_api, output_api, api_pairs=None, api_root=None):
     if api_pairs is None:
@@ -54,9 +55,9 @@ class ExternsChecker(object):
         bad_files.append({'source': path, 'extern': pair})
     results = []
     if bad_files:
-      replacements = (('<source_file>', '<output_file>') if len(bad_files) > 1
-          else (bad_files[0]['source'], bad_files[0]['extern']))
-      long_text = self._UPDATE_MESSAGE % replacements
+      long_text = self._UPDATE_MESSAGE_HDR + '\n'.join(
+          self._UPDATE_MESSAGE_CMD % (f['source'], f['extern'])
+          for f in bad_files)
       results.append(self._output_api.PresubmitPromptWarning(
           str('Found updated extension api files without updated extern files. '
               'Please update the extern files.'),
