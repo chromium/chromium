@@ -239,9 +239,6 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                   CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 
-#if !BUILDFLAG(IS_LINUX)
-// This appears to be flaky on Linux. Perhaps Minimizing isn't synchronous
-// on Linux.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyOpensDetachedWithMinimizedBrowser) {
   RunTestSequence(
@@ -250,12 +247,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                               kActivateSurfaceIncompatibilityNotice),
       ActivateSurface(kBrowserViewElementId));
   browser()->window()->Minimize();
+  ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
   RunTestSequence(SimulateGlicHotkey(),
                   InAnyContext(WaitForShow(kGlicViewElementId)),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
-#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
