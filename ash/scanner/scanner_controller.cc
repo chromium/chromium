@@ -402,12 +402,17 @@ void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 bool ScannerController::CanShowUiForShell() {
   if (!Shell::HasInstance()) {
     RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalseDueToNoShellInstance);
+    RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
 
   ScannerController* controller = Shell::Get()->scanner_controller();
   if (!controller) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kCanShowUiReturnedFalseDueToNoControllerOnShell);
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
@@ -433,6 +438,8 @@ bool ScannerController::CanShowUi() {
       prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
           static_cast<int>(ScannerEnterprisePolicy::kDisallowed)) {
     RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalseDueToEnterprisePolicy);
+    RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
@@ -441,6 +448,9 @@ bool ScannerController::CanShowUi() {
       delegate_->GetProfileScopedDelegate();
 
   if (profile_scoped_delegate == nullptr) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kCanShowUiReturnedFalseDueToNoProfileScopedDelegate);
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
@@ -455,6 +465,54 @@ bool ScannerController::CanShowUi() {
   checks.Remove(
       specialized_features::FeatureAccessFailure::kConsentNotAccepted);
   if (!checks.empty()) {
+    for (specialized_features::FeatureAccessFailure failure : checks) {
+      switch (failure) {
+        case specialized_features::FeatureAccessFailure::kConsentNotAccepted:
+          NOTREACHED();
+
+        case specialized_features::FeatureAccessFailure::kDisabledInSettings:
+          RecordScannerFeatureUserState(
+              ScannerFeatureUserState::
+                  kCanShowUiReturnedFalseDueToSettingsToggle);
+          break;
+
+        case specialized_features::FeatureAccessFailure::kFeatureFlagDisabled:
+          RecordScannerFeatureUserState(
+              ScannerFeatureUserState::kCanShowUiReturnedFalseDueToFeatureFlag);
+          break;
+
+        case specialized_features::FeatureAccessFailure::
+            kFeatureManagementCheckFailed:
+          RecordScannerFeatureUserState(
+              ScannerFeatureUserState::
+                  kCanShowUiReturnedFalseDueToFeatureManagement);
+          break;
+
+        case specialized_features::FeatureAccessFailure::kSecretKeyCheckFailed:
+          RecordScannerFeatureUserState(
+              ScannerFeatureUserState::kCanShowUiReturnedFalseDueToSecretKey);
+          break;
+
+        case specialized_features::FeatureAccessFailure::
+            kAccountCapabilitiesCheckFailed:
+          RecordScannerFeatureUserState(
+              ScannerFeatureUserState::
+                  kCanShowUiReturnedFalseDueToAccountCapabilities);
+          break;
+
+        case specialized_features::FeatureAccessFailure::kCountryCheckFailed:
+          RecordScannerFeatureUserState(
+              ScannerFeatureUserState::kCanShowUiReturnedFalseDueToCountry);
+          break;
+
+        case specialized_features::FeatureAccessFailure::
+            kDisabledInKioskModeCheckFailed:
+          RecordScannerFeatureUserState(
+              ScannerFeatureUserState::kCanShowUiReturnedFalseDueToKioskMode);
+          break;
+      }
+    }
+
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;

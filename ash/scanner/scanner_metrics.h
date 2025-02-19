@@ -89,7 +89,19 @@ enum class ScannerFeatureUserState {
   kCanShowUiReturnedTrueWithoutConsent = 28,
   kCanShowUiReturnedTrueWithConsent = 29,
 
-  kMaxValue = kCanShowUiReturnedTrueWithConsent,
+  kCanShowUiReturnedFalseDueToNoShellInstance = 30,
+  kCanShowUiReturnedFalseDueToNoControllerOnShell = 31,
+  kCanShowUiReturnedFalseDueToEnterprisePolicy = 32,
+  kCanShowUiReturnedFalseDueToNoProfileScopedDelegate = 33,
+  kCanShowUiReturnedFalseDueToSettingsToggle = 34,
+  kCanShowUiReturnedFalseDueToFeatureFlag = 35,
+  kCanShowUiReturnedFalseDueToFeatureManagement = 36,
+  kCanShowUiReturnedFalseDueToSecretKey = 37,
+  kCanShowUiReturnedFalseDueToAccountCapabilities = 38,
+  kCanShowUiReturnedFalseDueToCountry = 39,
+  kCanShowUiReturnedFalseDueToKioskMode = 40,
+
+  kMaxValue = kCanShowUiReturnedFalseDueToKioskMode,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 

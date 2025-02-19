@@ -380,6 +380,9 @@ TEST(ScannerControllerNoFixtureTest, CanShowUiForShellFalseWhenNoShellMetrics) {
 
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToNoShellInstance, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
 }
 
@@ -390,6 +393,10 @@ TEST_F(ScannerControllerDisabledTest,
   ASSERT_FALSE(Shell::Get()->scanner_controller());
   ASSERT_FALSE(ScannerController::CanShowUiForShell());
 
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToNoControllerOnShell,
+      1);
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
@@ -407,6 +414,11 @@ TEST(ScannerControllerNoFixtureTest,
 
   ASSERT_FALSE(scanner_controller.CanShowUi());
 
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kCanShowUiReturnedFalseDueToNoProfileScopedDelegate,
+      1);
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
@@ -428,11 +440,13 @@ TEST_F(ScannerControllerTest,
 
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToEnterprisePolicy, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
 }
 
-TEST_F(ScannerControllerTest,
-       CanShowUiFalseWhenFeatureAccessCheckFailsMetrics) {
+TEST_F(ScannerControllerTest, CanShowUiFalseWhenSettingsToggleDisabledMetrics) {
   base::HistogramTester histogram_tester;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
@@ -443,6 +457,173 @@ TEST_F(ScannerControllerTest,
 
   ASSERT_FALSE(scanner_controller->CanShowUi());
 
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToSettingsToggle, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest, CanShowUiFalseWhenFeatureFlagDisabledMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kFeatureFlagDisabled}));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToFeatureFlag, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowUiFalseWhenFeatureManagementCheckFailedMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::
+              kFeatureManagementCheckFailed}));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToFeatureManagement,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest, CanShowUiFalseWhenSecretKeyCheckFailedMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kSecretKeyCheckFailed}));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToSecretKey, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest, CanShowUiFalseWhenCountryCheckFailedMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kCountryCheckFailed}));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToCountry, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest, CanShowUiFalseWhenKioskModeMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::
+              kDisabledInKioskModeCheckFailed}));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToKioskMode, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowUiFalseMultipleFeatureAccessCheckFailsWithoutConsentMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::
+              kFeatureManagementCheckFailed,
+          specialized_features::FeatureAccessFailure::
+              kAccountCapabilitiesCheckFailed,
+          specialized_features::FeatureAccessFailure::kCountryCheckFailed}));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToFeatureManagement,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToAccountCapabilities,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToCountry, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowUiFalseMultipleFeatureAccessCheckFailsWithConsentMetrics) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              CheckFeatureAccess)
+      .WillRepeatedly(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kConsentNotAccepted,
+          specialized_features::FeatureAccessFailure::
+              kFeatureManagementCheckFailed,
+          specialized_features::FeatureAccessFailure::
+              kAccountCapabilitiesCheckFailed,
+          specialized_features::FeatureAccessFailure::kCountryCheckFailed}));
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToFeatureManagement,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToAccountCapabilities,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToCountry, 1);
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);

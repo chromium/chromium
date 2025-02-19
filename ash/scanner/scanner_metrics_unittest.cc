@@ -54,6 +54,17 @@ INSTANTIATE_TEST_SUITE_P(
         kCanShowUiReturnedFalse,
         kCanShowUiReturnedTrueWithoutConsent,
         kCanShowUiReturnedTrueWithConsent,
+        kCanShowUiReturnedFalseDueToNoShellInstance,
+        kCanShowUiReturnedFalseDueToNoControllerOnShell,
+        kCanShowUiReturnedFalseDueToEnterprisePolicy,
+        kCanShowUiReturnedFalseDueToNoProfileScopedDelegate,
+        kCanShowUiReturnedFalseDueToSettingsToggle,
+        kCanShowUiReturnedFalseDueToFeatureFlag,
+        kCanShowUiReturnedFalseDueToFeatureManagement,
+        kCanShowUiReturnedFalseDueToSecretKey,
+        kCanShowUiReturnedFalseDueToAccountCapabilities,
+        kCanShowUiReturnedFalseDueToCountry,
+        kCanShowUiReturnedFalseDueToKioskMode,
     }));
 
 TEST_P(ScannerMetricsTest, Record) {

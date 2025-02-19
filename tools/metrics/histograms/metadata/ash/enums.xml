@@ -2039,6 +2039,27 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="29"
       label="UI access checks resulted in &quot;show UI and user
              consented&quot;"/>
+  <int value="30"
+      label="&quot;Do not show UI&quot; resulted from no Shell instance"/>
+  <int value="31"
+      label="&quot;Do not show UI&quot; resulted from no ScannerController on
+             Shell"/>
+  <int value="32"
+      label="&quot;Do not show UI&quot; resulted from enterprise policy"/>
+  <int value="33"
+      label="&quot;Do not show UI&quot; resulted from no profile scoped
+             delegate"/>
+  <int value="34"
+      label="&quot;Do not show UI&quot; resulted from settings toggle"/>
+  <int value="35"
+      label="&quot;Do not show UI&quot; resulted from feature flag"/>
+  <int value="36"
+      label="&quot;Do not show UI&quot; resulted from feature management"/>
+  <int value="37" label="&quot;Do not show UI&quot; resulted from secret key"/>
+  <int value="38"
+      label="&quot;Do not show UI&quot; resulted from account capabilities"/>
+  <int value="39" label="&quot;Do not show UI&quot; resulted from country"/>
+  <int value="40" label="&quot;Do not show UI&quot; resulted from kiosk mode"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->
