@@ -572,9 +572,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Switch Callbacks
 
 - (void)autofillAddressSwitchChanged:(UISwitch*)switchView {
-  [self setSwitchItemOn:[switchView isOn]
-               itemType:ItemTypeAutofillAddressSwitch];
-  [self setAutofillProfileEnabled:[switchView isOn]];
+  BOOL switchOn = [switchView isOn];
+  [self setSwitchItemOn:switchOn itemType:ItemTypeAutofillAddressSwitch];
+  [self setAutofillProfileEnabled:switchOn];
+  _addButtonInToolbar.enabled = switchOn;
 }
 
 #pragma mark - Switch Helpers
@@ -659,9 +660,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_addButtonInToolbar) {
     _addButtonInToolbar =
         [self addButtonWithAction:@selector(handleAddAddress)];
-    _addButtonInToolbar.enabled = YES;
-    // TODO(crbug.com/395114433): Change the status of the Button based on
-    // Enterprise Policy and Save Address Toggle.
+    _addButtonInToolbar.enabled = [self isAutofillProfileEnabled];
   }
   return _addButtonInToolbar;
 }
