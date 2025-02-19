@@ -27,6 +27,8 @@ source_set("extensions") {
   # TODO(https://crbug.com/356905053): When files support being built on
   # desktop android, move them here, outside the if (enable_extensions) block.
   sources = [
+    "active_install_data.cc",
+    "active_install_data.h",
     "activity_log/activity_action_constants.cc",
     "activity_log/activity_action_constants.h",
     "activity_log/activity_actions.cc",
@@ -74,6 +76,12 @@ source_set("extensions") {
     "forced_extensions/install_stage_tracker.h",
     "forced_extensions/install_stage_tracker_factory.cc",
     "forced_extensions/install_stage_tracker_factory.h",
+    "install_observer.cc",
+    "install_observer.h",
+    "install_tracker.cc",
+    "install_tracker.h",
+    "install_tracker_factory.cc",
+    "install_tracker_factory.h",
     "load_error_reporter.cc",
     "load_error_reporter.h",
     "permissions_url_constants.cc",
@@ -122,8 +130,6 @@ source_set("extensions") {
     sources += [
       "account_extension_tracker.cc",
       "account_extension_tracker.h",
-      "active_install_data.cc",
-      "active_install_data.h",
       "permissions/active_tab_permission_granter.cc",
       "permissions/active_tab_permission_granter.h",
 
@@ -561,16 +567,10 @@ source_set("extensions") {
       "forced_extensions/force_installed_tracker.cc",
       "forced_extensions/force_installed_tracker.h",
       "install_gate.h",
-      "install_observer.cc",
-      "install_observer.h",
       "install_prompt_permissions.cc",
       "install_prompt_permissions.h",
       "install_signer.cc",
       "install_signer.h",
-      "install_tracker.cc",
-      "install_tracker.h",
-      "install_tracker_factory.cc",
-      "install_tracker_factory.h",
       "install_verifier.cc",
       "install_verifier.h",
       "install_verifier_factory.cc",

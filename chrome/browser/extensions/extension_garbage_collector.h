@@ -46,11 +46,11 @@ class ExtensionGarbageCollector : public KeyedService, public InstallObserver {
 
   // InstallObserver:
   void OnBeginCrxInstall(content::BrowserContext* context,
-                         const CrxInstaller& installer,
                          const ExtensionId& extension_id) override;
   void OnFinishCrxInstall(content::BrowserContext* context,
-                          const CrxInstaller& installer,
+                          const base::FilePath& source_file,
                           const ExtensionId& extension_id,
+                          const Extension* extension,
                           bool success) override;
 
  protected:

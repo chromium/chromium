@@ -1075,7 +1075,7 @@ void CrxInstaller::NotifyCrxInstallBegin() {
       profile_, ProfileKeepAliveOrigin::kCrxInstaller);
 
   InstallTrackerFactory::GetForBrowserContext(profile())->OnBeginCrxInstall(
-      *this, expected_id_);
+      expected_id_);
 }
 
 void CrxInstaller::NotifyCrxInstallComplete(
@@ -1118,7 +1118,8 @@ void CrxInstaller::NotifyCrxInstallComplete(
   }
 
   InstallTrackerFactory::GetForBrowserContext(profile())->OnFinishCrxInstall(
-      *this, success ? extension()->id() : expected_id_, success);
+      source_file_, success ? extension()->id() : expected_id_, extension(),
+      success);
 
   if (success)
     ConfirmReEnable();

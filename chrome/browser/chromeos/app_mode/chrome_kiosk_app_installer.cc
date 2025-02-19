@@ -284,8 +284,9 @@ void ChromeKioskAppInstaller::FinalizeAppInstall() {
 
 void ChromeKioskAppInstaller::OnFinishCrxInstall(
     content::BrowserContext* context,
-    const extensions::CrxInstaller& installer,
+    const base::FilePath& source_file,
     const std::string& extension_id,
+    const extensions::Extension* extension,
     bool success) {
   DCHECK(!install_complete_);
 
@@ -300,7 +301,7 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
   waiting_ids_.erase(extension_id);
 
   // Also wait for updates on any shared modules the extension imports.
-  if (auto* extension = installer.extension(); extension != nullptr) {
+  if (extension != nullptr) {
     InsertPendingSharedModules(profile_.get(), waiting_ids_, *extension);
   }
 
