@@ -292,6 +292,10 @@ extern const char kIOSOverflowMenuSetTabReminderTapped[];
 
 // The Reminder Notifications Overflow Menu New Badge IPH was triggered.
 extern const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[];
+
+// The user has executed an action that is a trigger for the Auto-deletion IPH.
+extern const char kIOSDownloadAutoDeletionIPHCriterionMet[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

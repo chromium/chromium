@@ -152,6 +152,8 @@ const char kIOSOverflowMenuSetTabReminderTapped[] =
     "ios_overflow_menu_set_tab_reminder_tapped";
 const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[] =
     "ios_reminder_notifications_overflow_menu_new_badge_iph_trigger";
+const char kIOSDownloadAutoDeletionIPHCriterionMet[] =
+    "ios_download_auto_deletion_iph_criterion_met";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

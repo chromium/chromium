@@ -291,6 +291,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,
 DEFINE_VARIATION_PARAM(
     kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
     "IPH_iOSReminderNotificationsOverflowMenuNewBadgeFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSDownloadAutoDeletionFeature,
+                       "IPH_iOSDownloadAutoDeletion");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -670,6 +672,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature),
         VARIATION_ENTRY(
             kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature),
+        VARIATION_ENTRY(kIPHiOSDownloadAutoDeletionFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

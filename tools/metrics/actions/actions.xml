@@ -47710,6 +47710,8 @@ should be able to be added at any place in this file.
       label="For Default browser promo in Chrome settings."/>
   <suffix name="IPH_iOSDefaultBrowserBannerPromoFeature"
       label="For iOS Default browser banner promo."/>
+  <suffix name="IPH_iOSDownloadAutoDeletionFeature"
+      label="For iOS Auto-deletion half-sheet IPH."/>
   <suffix name="KeyboardAccessoryAddressFilling"
       label="For KeyboardAccessoryAddressFilling feature."/>
   <suffix name="KeyboardAccessoryBarSwiping"
