@@ -1053,7 +1053,7 @@ void Compositor::OnSetPreferredRefreshRate(float refresh_rate) {
 Compositor::ScopedKeepSurfaceAliveCallback
 Compositor::TakeScopedKeepSurfaceAliveCallback(
     const viz::SurfaceId& surface_id) {
-  DCHECK(surface_id.is_valid());
+  CHECK(surface_id.is_valid()) << "Compositor Visible: " << IsVisible();
   CHECK(!pending_surface_copies_.contains(pending_surface_copy_id_));
   pending_surface_copies_[pending_surface_copy_id_] =
       host_->CreateScopedKeepSurfaceAlive(surface_id);
