@@ -23,6 +23,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/mojom/sea_pen_generated.mojom-shared.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -215,6 +216,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
 
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 

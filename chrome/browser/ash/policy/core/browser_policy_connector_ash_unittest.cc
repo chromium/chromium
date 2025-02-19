@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 
+#include "base/check_deref.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -33,6 +34,7 @@ TEST(BrowserPolicyConnectorAshTest, UserManager) {
 
   TestWallpaperController test_wallpaper_controller;
   WallpaperControllerClientImpl wallpaper_controller_client{
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
       std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>()};
   wallpaper_controller_client.InitForTesting(&test_wallpaper_controller);
 

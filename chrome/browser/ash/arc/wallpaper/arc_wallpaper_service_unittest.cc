@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -90,6 +91,7 @@ class ArcWallpaperServiceTest : public testing::Test {
     // Wallpaper
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 

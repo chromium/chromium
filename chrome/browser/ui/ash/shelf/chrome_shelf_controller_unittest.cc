@@ -38,6 +38,7 @@
 #include "ash/shelf/shelf_application_menu_model.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -144,6 +145,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window_aura.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -514,6 +516,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     // after profile creation.
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
     wallpaper_controller_client_->Init();
 
