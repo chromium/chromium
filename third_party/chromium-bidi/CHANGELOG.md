@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v1.3.0...chromium-bidi-v2.0.0) (2025-02-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 135.0.7000.0 ([#3081](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3081))
+
+### Features
+
+* **chrome:** update the pinned browser version to 135.0.7000.0 ([#3081](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3081)) ([6061a41](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6061a4173460ebc355f0818414b3819aa0bf20b9))
+* wait `none` waits for navigation to be committed ([#3086](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3086)) ([b8f30b1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b8f30b179c4c336c131741de900a19b67ed4c5f0))
+
+
+### Bug Fixes
+
+* **network:** propagate unsafe header error as invalid  ([#3100](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3100)) ([0a2ce3b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0a2ce3bb95da7b2c78b19add74dd5c6788c2190b))
+
 ## [1.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v1.2.0...chromium-bidi-v1.3.0) (2025-02-05)
 
 
