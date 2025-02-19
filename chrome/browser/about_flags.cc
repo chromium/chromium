@@ -1888,9 +1888,14 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
 
 const FeatureEntry::FeatureParam kNtpOutlookCalendarModuleFakeData[] = {
     {ntp_features::kNtpOutlookCalendarModuleDataParam, "fake"}};
+const FeatureEntry::FeatureParam
+    kNtpOutlookCalendarModuleFakeAttachmentsData[] = {
+        {ntp_features::kNtpOutlookCalendarModuleDataParam, "fake-attachments"}};
 const FeatureEntry::FeatureVariation kNtpOutlookCalendarModuleVariations[] = {
     {"- Fake Data", kNtpOutlookCalendarModuleFakeData,
      std::size(kNtpOutlookCalendarModuleFakeData), nullptr},
+    {"- Fake Attachments Data", kNtpOutlookCalendarModuleFakeAttachmentsData,
+     std::size(kNtpOutlookCalendarModuleFakeAttachmentsData), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpMiddleSlotPromoDismissalFakeData[] = {
