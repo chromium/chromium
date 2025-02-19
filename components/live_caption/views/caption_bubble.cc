@@ -1588,6 +1588,7 @@ void CaptionBubble::UpdateContentSize() {
   auto left_header_width = width - 2 * button_size.width();
   left_header_container_->SetPreferredSize(
       gfx::Size(left_header_width, button_size.height()));
+  download_progress_label_->SetPreferredSize(gfx::Size(width, content_height));
 
   if (caption_bubble_settings_->IsLiveTranslateFeatureEnabled() ||
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
