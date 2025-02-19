@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -140,18 +139,7 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
-  bool add_scanout_usage = true;
-
-  // Scanout usage should be added only if scanout of SharedImages is supported.
-  // However, historically this was not checked.
-  // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
-  if (base::FeatureList::IsEnabled(
-          ::features::
-              kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    add_scanout_usage &= sii->GetCapabilities().supports_scanout_shared_images;
-  }
-
-  if (add_scanout_usage) {
+  if (sii->GetCapabilities().supports_scanout_shared_images) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 

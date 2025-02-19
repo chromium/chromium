@@ -388,16 +388,6 @@ BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// If enabled, SharedImages created for the impacted clients have SCANOUT usage
-// added only if SharedImageCapabilities indicates that there is support. Serve
-// as killswitches for these rollouts. Live in //gpu as backings that are
-// rolling out restrictions on supporting SCANOUT usage must check the value of
-// these base::Features.
-// TODO(crbug.com/330865436): Remove post-safe rollout.
-BASE_FEATURE(kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage,
-             "FastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable persistent storage of VkPipelineCache data.
 BASE_FEATURE(kEnableVkPipelineCache,
              "EnableVkPipelineCache",
