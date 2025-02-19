@@ -340,7 +340,7 @@ void DOMTimer::Stop() {
   }
 
   async_task_context_.Cancel();
-  const bool is_interval = !RepeatInterval().is_zero();
+  const bool is_interval = RepeatInterval().has_value();
   probe::BreakableLocation(GetExecutionContext(),
                            is_interval ? "clearInterval" : "clearTimeout");
 
@@ -368,7 +368,7 @@ void DOMTimer::Fired() {
 
   DEVTOOLS_TIMELINE_TRACE_EVENT("TimerFire", inspector_timer_fire_event::Data,
                                 context, timeout_id_);
-  const bool is_interval = !RepeatInterval().is_zero();
+  const bool is_interval = RepeatInterval().has_value();
 
   probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);
@@ -387,6 +387,7 @@ void DOMTimer::Fired() {
   // Simple case for non-one-shot timers.
   if (IsActive()) {
     DCHECK(is_interval);
+    DCHECK(RepeatInterval());
 
     // Steps 12 and 13:
     IncrementNestingLevel();
@@ -394,8 +395,8 @@ void DOMTimer::Fired() {
     // Step 11:
     // Make adjustments when the nesting level becomes > |kMaxNestingLevel|.
     if (nesting_level_ == max_timer_nesting_level + 1 &&
-        RepeatInterval() < kMinimumInterval) {
-      AugmentRepeatInterval(kMinimumInterval - RepeatInterval());
+        (*RepeatInterval() < kMinimumInterval)) {
+      AugmentRepeatInterval(kMinimumInterval - *RepeatInterval());
     }
     if (nesting_level_ == max_timer_nesting_level + 1) {
       // Move to the TaskType that corresponds to nesting level >=
@@ -405,7 +406,7 @@ void DOMTimer::Fired() {
     }
 
     DCHECK(nesting_level_ <= max_timer_nesting_level ||
-           RepeatInterval() >= kMinimumInterval);
+           (is_interval && *RepeatInterval() >= kMinimumInterval));
 
     // No access to member variables after this point, it can delete the timer.
     action_->Execute(context);

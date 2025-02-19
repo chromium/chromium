@@ -228,17 +228,12 @@ TEST_F(BackgroundPageThrottlingTest, NestedSetIntervalZero) {
                      console_message.Utf8().c_str()));
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
+  // Immediate tasks are not throttled until reaching the nesting level
+  // threshold.
   platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(1, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(2, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(3, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
-  platform_->RunForPeriod(base::Milliseconds(995));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(6, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
+  // But once that threshold is reached, throttling should kick in.
+  platform_->RunForPeriod(base::Seconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(7, console_message));
 }
 

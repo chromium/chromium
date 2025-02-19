@@ -2334,7 +2334,7 @@ BASE_FEATURE(kSetLowPriorityForBeacon,
 // Tracking bug: https://crbug.com/402694.
 BASE_FEATURE(kSetIntervalWithoutClamp,
              "SetIntervalWithoutClamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be
