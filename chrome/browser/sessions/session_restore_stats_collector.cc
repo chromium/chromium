@@ -187,14 +187,10 @@ void SessionRestoreStatsCollector::TrackTabs(
                        HasLowSiteEngagement(tab.contents()),
                        HasNotificationPermission(tab.contents()));
 
-    PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(&performance_manager::WaitForSiteDataReader,
-                       PerformanceManager::GetPrimaryPageNodeForWebContents(
-                           tab.contents()),
-                       std::move(on_site_data_ready)
-                           .Then(base::BindPostTaskToCurrentDefault(
-                               std::move(on_tab_updates_in_background)))));
+    performance_manager::WaitForSiteDataReader(
+        PerformanceManager::GetPrimaryPageNodeForWebContents(tab.contents()),
+        std::move(on_site_data_ready)
+            .Then(std::move(on_tab_updates_in_background)));
   }
 
   // If we were not able to register observers for any tab, report stats.
