@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 
 /** A wrapper class around {@link Window} to change the system bar colors. */
 @NullMarked
-public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
+public class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     private final Window mWindow;
 
     /**
@@ -47,7 +47,7 @@ public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
 
     /** Wrapper call to {@link Window#setNavigationBarColor(int)}. */
     @Override
-    protected void applyNavBarColor() {
+    public void applyNavBarColor() {
         mWindow.setNavigationBarColor(mNavBarColor);
     }
 
