@@ -52,7 +52,13 @@ union Entity {
 
 // Configurable options of the embedding engine.
 [Stable]
-struct EmbeddingOptions {};
+struct EmbeddingOptions {
+  // When set to true, the embedding engine will validate whether the entity is
+  // considered "safe" by querying the SafetyService, and "unsafe" entities
+  // won't get clustered.
+  [MinVersion=1]
+  bool? check_safety_filter@0;
+};
 
 // Configurable options of the clustering engine.
 // TODO(b/358531135): Decide the cluster algorithm we want to use and add

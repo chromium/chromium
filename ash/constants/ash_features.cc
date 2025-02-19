@@ -3453,7 +3453,7 @@ bool IsCrosPrivacyHubLocationEnabled() {
 
 bool IsCrosSafetyServiceEnabled() {
   return base::FeatureList::IsEnabled(kCrosSafetyService) ||
-         switches::IsMantisSecretKeyMatched();
+         switches::IsMantisSecretKeyMatched() || IsCoralFeatureEnabled();
 }
 
 bool IsCrossDeviceFeatureSuiteAllowed() {
