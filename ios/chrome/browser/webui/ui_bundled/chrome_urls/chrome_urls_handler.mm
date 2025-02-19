@@ -26,7 +26,7 @@ bool IsWebUIInternal(const std::string& host) {
          host == optimization_guide_internals::
                      kChromeUIOptimizationGuideInternalsHost ||
          host == kChromeUIDownloadInternalsHost ||
-         host == kChromeUIInterstitialsHost;
+         host == kChromeUIInterstitialsHost || host == kChromeUILocalStateHost;
 }
 }  // namespace
 

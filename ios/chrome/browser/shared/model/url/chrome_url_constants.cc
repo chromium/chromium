@@ -79,6 +79,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIHistogramHost,
     kChromeUIInspectHost,
     kChromeUIInterstitialsHost,
+    kChromeUILocalStateHost,
     kChromeUIManagementHost,
     kChromeUINetExportHost,
     kChromeUINewTabHost,
