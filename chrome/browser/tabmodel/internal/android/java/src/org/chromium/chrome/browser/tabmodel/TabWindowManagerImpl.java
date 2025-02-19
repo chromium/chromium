@@ -21,6 +21,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
@@ -322,6 +323,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
 
     private ActivityStateListener getActivityStateListenerForPreAssignedActivity(
             @PreAssignedActivityState int state) {
+        long mismatchReportTime = TimeUtils.elapsedRealtimeMillis();
         return (activityAtIndex, newState) -> {
             final int localTaskId = ApplicationStatus.getTaskId(activityAtIndex);
             Log.i(
@@ -336,6 +338,10 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                             + state);
 
             if (newState == ActivityState.DESTROYED) {
+                long timeToDestruction = TimeUtils.elapsedRealtimeMillis() - mismatchReportTime;
+                RecordHistogram.recordTimesHistogram(
+                        "Android.MultiWindowMode.MismatchedIndices.TimeToPreExistingActivityDestruction",
+                        timeToDestruction);
                 RecordHistogram.recordEnumeratedHistogram(
                         "Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed",
                         state,
