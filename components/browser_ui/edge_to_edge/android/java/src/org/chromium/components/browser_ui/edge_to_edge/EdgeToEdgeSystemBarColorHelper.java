@@ -25,7 +25,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
     private final ObservableSupplier<Boolean> mDoesContentFitWindowSupplier;
     private final OneshotSupplier<SystemBarColorHelper> mEdgeToEdgeDelegateHelperSupplier;
     private final Window mWindow;
-    private WindowSystemBarColorHelper mWindowColorHelper;
+    private final WindowSystemBarColorHelper mWindowColorHelper;
     private final Callback<Boolean> mOnEdgeToEdgeChanged = this::onContentFitsWindowChanged;
 
     protected boolean mIsActivityEdgeToEdge;
@@ -134,12 +134,8 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         updateStatusBarIconColor(mWindow.getDecorView(), mStatusBarColor);
     }
 
-    public WindowSystemBarColorHelper getWindowHelperForTesting() {
+    WindowSystemBarColorHelper getWindowHelperForTesting() {
         return mWindowColorHelper;
-    }
-
-    public void setWindowHelperForTesting(WindowSystemBarColorHelper helper) {
-        mWindowColorHelper = helper;
     }
 
     SystemBarColorHelper getEdgeToEdgeDelegateHelperForTesting() {
