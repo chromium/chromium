@@ -3079,7 +3079,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddAppId) {
   CreateBackendAndDatabase();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 69);
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 70);
 
   VisitRow visit_row;
   db_->GetRowForVisit(visit_id, &visit_row);

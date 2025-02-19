@@ -38,7 +38,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 69;
+const int kCurrentVersionNumber = 70;
 const int kCompatibleVersionNumber = 16;
 
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
@@ -605,10 +605,9 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
 
   if (cur_version == 21) {
     // The android_urls table's data schemal was changed in version 21.
-#if BUILDFLAG(IS_ANDROID)
-    if (!MigrateToVersion22())
-      return LogMigrationFailure(21);
-#endif
+
+    // The android_urls table ceased usage in 91.0.4438.0 and is dropped in
+    // version 70. The migration code was removed along with version 70.
     ++cur_version;
     // TODO(crbug.com/40891923): Handle failure instead of ignoring it.
     std::ignore = meta_table_.SetVersionNumber(cur_version);
@@ -1004,6 +1003,19 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
     std::ignore = meta_table_.SetVersionNumber(cur_version);
   }
 
+  if (cur_version == 69) {
+    // The android_urls table's stopped being read in 91.0.4438.0. Delete it if
+    // it still exists.
+#if BUILDFLAG(IS_ANDROID)
+    if (!DropAndroidUrlsTable()) {
+      return LogMigrationFailure(69);
+    }
+#endif
+    cur_version++;
+    // TODO(crbug.com/40891923): Handle failure instead of ignoring it.
+    std::ignore = meta_table_.SetVersionNumber(cur_version);
+  }
+
   // =========================       ^^ new migration code goes here ^^
   // ADDING NEW MIGRATION CODE
   // =========================
@@ -1055,5 +1067,14 @@ bool HistoryDatabase::MigrateRemoveTypedUrlMetadata() {
   }
   return true;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool HistoryDatabase::DropAndroidUrlsTable() {
+  if (!db_.Execute("DROP TABLE IF EXISTS android_urls;")) {
+    return false;
+  }
+  return true;
+}
+#endif
 
 }  // namespace history
