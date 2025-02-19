@@ -1544,13 +1544,13 @@ LayoutUnit ContentDistributionSpace(const StyleContentAlignmentData& data,
   }
   switch (data.Distribution()) {
     case ContentDistributionType::kDefault:
+    case ContentDistributionType::kStretch:
       return LayoutUnit();
     case ContentDistributionType::kSpaceBetween:
       return free_space / (number_of_items - 1);
     case ContentDistributionType::kSpaceEvenly:
       return free_space / (number_of_items + 1);
     case ContentDistributionType::kSpaceAround:
-    case ContentDistributionType::kStretch:
       return free_space / number_of_items;
   }
 }
