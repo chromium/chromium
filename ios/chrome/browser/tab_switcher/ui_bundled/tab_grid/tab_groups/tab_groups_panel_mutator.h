@@ -19,6 +19,16 @@
 - (void)deleteTabGroupsPanelItem:(TabGroupsPanelItem*)item
                       sourceView:(UIView*)sourceView;
 
+// Tells the receiver to leave the shared group associated with `item`.
+// `sourceView` is the view that the delete action originated from.
+- (void)leaveSharedTabGroupsPanelItem:(TabGroupsPanelItem*)item
+                           sourceView:(UIView*)sourceView;
+
+// Tells the receiver to delete the shared group associated with `item`.
+// `sourceView` is the view that the delete action originated from.
+- (void)deleteSharedTabGroupsPanelItem:(TabGroupsPanelItem*)item
+                            sourceView:(UIView*)sourceView;
+
 // Tells the receiver to remove the notifications associated with `item`.
 - (void)deleteNotificationItem:(TabGroupsPanelItem*)item;
 

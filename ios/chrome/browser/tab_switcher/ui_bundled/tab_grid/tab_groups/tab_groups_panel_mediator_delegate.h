@@ -20,8 +20,24 @@
 // bottom on iPhone to confirm that the group with `syncID` is going to be
 // deleted.
 - (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
-    showDeleteConfirmationWithSyncID:(const base::Uuid)syncID
-                          sourceView:(UIView*)sourceView;
+    showDeleteGroupConfirmationWithSyncID:(const base::Uuid)syncID
+                               sourceView:(UIView*)sourceView;
+
+// Displays a confirmation dialog anchoring to `sourceView` on iPad or at the
+// bottom on iPhone to confirm that the shared group with `syncID` is going to
+// be deleted.
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+    showDeleteSharedGroupConfirmationWithSyncID:(const base::Uuid)syncID
+                                     groupTitle:(NSString*)groupTitle
+                                     sourceView:(UIView*)sourceView;
+
+// Displays a confirmation dialog anchoring to `sourceView` on iPad or at the
+// bottom on iPhone to confirm that the shared group with `syncID` is going to
+// be leaved.
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+    showLeaveSharedGroupConfirmationWithSyncID:(const base::Uuid)syncID
+                                    groupTitle:(NSString*)groupTitle
+                                    sourceView:(UIView*)sourceView;
 
 @end
 

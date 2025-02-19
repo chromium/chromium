@@ -156,8 +156,8 @@ using collaboration::messaging::MessagingBackendServiceFactory;
 }
 
 - (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
-    showDeleteConfirmationWithSyncID:(const base::Uuid)syncID
-                          sourceView:(UIView*)sourceView {
+    showDeleteGroupConfirmationWithSyncID:(const base::Uuid)syncID
+                               sourceView:(UIView*)sourceView {
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -171,11 +171,61 @@ using collaboration::messaging::MessagingBackendServiceFactory;
   [_tabGroupConfirmationCoordinator start];
 }
 
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+    showDeleteSharedGroupConfirmationWithSyncID:(const base::Uuid)syncID
+                                     groupTitle:(NSString*)groupTitle
+                                     sourceView:(UIView*)sourceView {
+  _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                      actionType:TabGroupActionType::kDeleteSharedTabGroup
+                      sourceView:sourceView];
+  _tabGroupConfirmationCoordinator.tabGroupName = groupTitle;
+  __weak TabGroupsPanelCoordinator* weakSelf = self;
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
+    [weakSelf deleteSharedTabGroup:syncID];
+  };
+
+  [_tabGroupConfirmationCoordinator start];
+}
+
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+    showLeaveSharedGroupConfirmationWithSyncID:(const base::Uuid)syncID
+                                    groupTitle:(NSString*)groupTitle
+                                    sourceView:(UIView*)sourceView {
+  _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                      actionType:TabGroupActionType::kLeaveSharedTabGroup
+                      sourceView:sourceView];
+  _tabGroupConfirmationCoordinator.tabGroupName = groupTitle;
+  __weak TabGroupsPanelCoordinator* weakSelf = self;
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
+    [weakSelf leaveSharedTabGroup:syncID];
+  };
+
+  [_tabGroupConfirmationCoordinator start];
+}
+
 #pragma mark - Private
 
 // Deletes a synced tab group and dismisses the confirmation coordinator.
 - (void)deleteSyncedTabGroup:(const base::Uuid&)syncID {
   [_mediator deleteSyncedTabGroup:syncID];
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
+}
+
+// Deletes a shared tab group and dismisses the confirmation coordinator.
+- (void)deleteSharedTabGroup:(const base::Uuid&)syncID {
+  [_mediator deleteSharedTabGroup:syncID];
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
+}
+
+// Leaves a shared tab group and dismisses the confirmation coordinator.
+- (void)leaveSharedTabGroup:(const base::Uuid&)syncID {
+  [_mediator leaveSharedTabGroup:syncID];
   [_tabGroupConfirmationCoordinator stop];
   _tabGroupConfirmationCoordinator = nil;
 }
