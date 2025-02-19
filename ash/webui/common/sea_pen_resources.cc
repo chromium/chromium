@@ -93,6 +93,10 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenDismissError", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
       {"seaPenManagedLabel", IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT},
+      {"ariaAnnounceSamplePromptsShuffled",
+       IDS_SEA_PEN_ARIA_ANNOUNCE_SAMPLE_PROMPTS_SHUFFLED},
+      {"ariaAnnouncePromptSuggestionsShuffled",
+       IDS_SEA_PEN_ARIA_ANNOUNCE_SUGGESTIONS_SHUFFLED},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 }
