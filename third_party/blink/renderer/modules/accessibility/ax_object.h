@@ -1475,7 +1475,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void PreSerializationConsistencyCheck() const;
 
   // Returns a string representation of this object.
-  String ToString(bool verbose = true) const;
+  virtual String ToString(bool verbose = true) const;
 
   void PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
                                 bool* clips_children) const;

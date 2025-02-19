@@ -170,6 +170,8 @@ class MockAXObject : public AXObject {
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override {
     return ax::mojom::blink::Role::kUnknown;
   }
+
+  String ToString(bool verbose) const override { return "mock"; }
 };
 
 unsigned MockAXObject::num_children_changed_calls_ = 0;
