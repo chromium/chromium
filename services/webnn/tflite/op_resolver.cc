@@ -4,6 +4,7 @@
 
 #include "services/webnn/tflite/op_resolver.h"
 
+#include "services/webnn/buildflags.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
@@ -17,7 +18,7 @@
 #include "third_party/tflite/src/tensorflow/lite/tflite_with_xnnpack_optional.h"
 #endif
 
-#if defined(WEBNN_USE_CHROME_ML_API)
+#if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
 #include "services/on_device_model/ml/chrome_ml.h"  // nogncheck
 #include "services/on_device_model/ml/chrome_ml_api.h"  // nogncheck
 #endif
@@ -289,7 +290,7 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
   }
 #endif
 
-#if defined(WEBNN_USE_CHROME_ML_API)
+#if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
   if (options.device == mojom::CreateContextOptions::Device::kGpu) {
     // TODO(crbug.com/394119734): Simplify this check once these functions are
     // always available.
