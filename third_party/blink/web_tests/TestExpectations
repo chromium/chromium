@@ -2806,7 +2806,7 @@ crbug.com/385918134 [ Linux ] external/wpt/wasm/core/memory_grow.wast.js.html [ 
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/memory_trap.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_address.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.htm [ Crash Pass ]
-crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.htm [ Crash Pass ]
+crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.htm [ Crash Pass Timeout ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_extend.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_splat.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_zero.wast.js.html [ Crash ]
@@ -9128,3 +9128,6 @@ crbug.com/396564890 [ Mac12 ] external/wpt/css/css-scroll-snap/input/snap-area-o
 
 #Gardener 2025-12-14
 crbug.com/41378979 [ Mac ] external/wpt/client-hints/viewport-size/viewport-size-subresource.https.html [ Failure Pass ]
+
+#Gardener 2025-02-19
+crbug.com/396687592 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importScripts/report-error-same-origin.sub.any.worker.html [ Failure Pass ]
