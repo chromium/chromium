@@ -18,10 +18,8 @@
 #include "ui/views/view.h"
 
 namespace views {
-class Checkbox;
 class ImageButton;
 class Label;
-class MdTextButton;
 }  // namespace views
 
 namespace webid {
@@ -155,15 +153,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // View containing the bubble title.
   raw_ptr<views::Label> title_label_ = nullptr;
-
-  // View containing the continue button.
-  raw_ptr<views::MdTextButton> continue_button_ = nullptr;
-
-  // Auto re-authn opt-out checkbox.
-  raw_ptr<views::Checkbox> auto_reauthn_checkbox_ = nullptr;
-
-  // Whether to show the auto re-authn opt-out checkbox;
-  bool show_auto_reauthn_checkbox_{false};
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.

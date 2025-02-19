@@ -907,8 +907,7 @@ void AccountSelectionModalView::
       children();
   for (views::View* child_view : child_views) {
     if (child_view != header_view_) {
-      RemoveChildView(child_view);
-      delete child_view;
+      RemoveChildViewT(child_view);
     }
   }
 }

@@ -67,22 +67,7 @@ bool AutofillFieldPromoViewImpl::OverlapsWithPictureInPictureWindow() const {
 }
 
 void AutofillFieldPromoViewImpl::Close() {
-  views::View* contents_web_view = GetContentsWebView(web_contents_);
-  // If the contents web view no longer exists, neither do its children.
-  if (!contents_web_view) {
-    return;
-  }
-  if (contents_web_view->Contains(this)) {
-    contents_web_view->RemoveChildView(this);
-  }
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
-  // The deletion of the view is asynchronous, so it can die after
-  // `web_contents_` is destroyed. In order to avoid dangling pointers,
-  // `web_contents_` is set to null.
-  web_contents_ = nullptr;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
+  parent()->RemoveChildViewT(this);
 }
 
 base::WeakPtr<AutofillFieldPromoView> AutofillFieldPromoViewImpl::GetWeakPtr() {

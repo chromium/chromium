@@ -578,7 +578,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
                           base::Unretained(owner_), account),
       button_title, this, idp_metadata, base::UTF8ToUTF16(account->email));
-  continue_button_ = row->AddChildView(std::move(button));
+  row->AddChildView(std::move(button));
 
   // Do not add disclosure text if this is a sign in or if we were requested
   // to skip it.
@@ -890,16 +890,11 @@ void AccountSelectionBubbleView::UpdateHeader(const gfx::Image& idp_image,
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
-  // Make sure not to keep dangling pointers around first.
-  continue_button_ = nullptr;
-  auto_reauthn_checkbox_ = nullptr;
-
   const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
       children();
   for (views::View* child_view : child_views) {
     if (child_view != header_view_) {
-      RemoveChildView(child_view);
-      delete child_view;
+      RemoveChildViewT(child_view);
     }
   }
 }
