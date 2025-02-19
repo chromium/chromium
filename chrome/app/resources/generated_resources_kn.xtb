@@ -5639,7 +5639,6 @@
 <translation id="4946998421534856407">ಲಾಂಚರ್ + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="4947376546135294974">ನೀವು ಭೇಟಿ ನೀಡುತ್ತಿರುವ ಸೈಟ್‌ನಿಂದ ಡೇಟಾ</translation>
 <translation id="4950100687509657457">ಪ್ರೊಫೈಲ್ ರಚಿಸಿ</translation>
-<translation id="4950360215042327246">[ಪ್ಲೇಸ್‌ಹೋಲ್ಡರ್‌ ಸ್ಟ್ರಿಂಗ್]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ಒಂದು ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4951966678293618079">ಈ ಸೈಟ್‌ಗಾಗಿ ಎಂದಿಗೂ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಬೇಡಿ</translation>
@@ -7999,7 +7998,6 @@
 <translation id="6679947539429331601">12 ಗಂಟೆಗಳ ಕಾಲ ಮರೆಮಾಡಿ</translation>
 <translation id="6680442031740878064">ಲಭ್ಯವಿದೆ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ದರ</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [ಪ್ಲೇಸ್‌ಹೋಲ್ಡರ್‌ ಸ್ಟ್ರಿಂಗ್]</translation>
 <translation id="6683022854667115063">ಹೆಡ್‌ಫೋನ್‌ಗಳು</translation>
 <translation id="6683087162435654533">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6683433919380522900">ಅನುಮತಿ <ph name="PERMISSION_STATE" /> ನಲ್ಲಿದೆ</translation>
@@ -9220,7 +9218,6 @@
 <translation id="7561196759112975576">ಯಾವಾಗಲೂ</translation>
 <translation id="7561759921596375678">ವಾಲ್ಯೂಮ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="7561982940498449837">ಮೆನು ಮುಚ್ಚಿರಿ</translation>
-<translation id="7563970324931922582">[ಪ್ಲೇಸ್‌ಹೋಲ್ಡರ್‌ ಪಠ್ಯ]</translation>
 <translation id="756445078718366910">ಬ್ರೌಸರ್ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7564847347806291057">ಪ್ರಕ್ರಿಯೆ ಕೊನೆಗೊಳಿಸಿ</translation>
 <translation id="756503097602602175">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ Google ಖಾತೆಗಳನ್ನು <ph name="LINK_BEGIN" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ<ph name="LINK_END" /> ನಿರ್ವಹಿಸಬಹುದು. ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ನೀವು ನೀಡಿದ ಅನುಮತಿಗಳು ಎಲ್ಲಾ ಖಾತೆಗಳಿಗೆ ಅನ್ವಯಿಸಬಹುದು. ಸೈಟ್‌ಗಳು ಅಥವಾ ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ ಖಾತೆಯ ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸಲು ನೀವು ಬಯಸದಿದ್ದಲ್ಲಿ, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನೀವು ಅತಿಥಿಯಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು ಅಥವಾ <ph name="LINK_2_BEGIN" />ಅಜ್ಞಾತ ವಿಂಡೋ<ph name="LINK_2_END" />ದಲ್ಲಿ ವೆಬ್ ಅನ್ನು ಬ್ರೌಸ್ ಮಾಡಬಹುದು.</translation>

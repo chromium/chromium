@@ -5632,7 +5632,6 @@
 <translation id="4946998421534856407">գործարկիչ + վերև սլաք</translation>
 <translation id="4947376546135294974">Տվյալներ կայքից, որն այցելում եք</translation>
 <translation id="4950100687509657457">Ստեղծել պրոֆիլ</translation>
-<translation id="4950360215042327246">[Տեղապահի տող]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4951966678293618079">Երբեք չպահել գաղտնաբառեր այս կայքի համար</translation>
@@ -7988,7 +7987,6 @@
 <translation id="6679947539429331601">Թաքցնել 12 ժամով</translation>
 <translation id="6680442031740878064">Հասանելի է <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Խոսքի արագությունը</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Տեղապահի տող]</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>
 <translation id="6683087162435654533">Վերականգնել բոլոր ներդիրները</translation>
 <translation id="6683433919380522900">Թույլտվության տեսակը՝ <ph name="PERMISSION_STATE" /></translation>
@@ -9208,7 +9206,6 @@
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="7561759921596375678">Միացնել ձայնը</translation>
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
-<translation id="7563970324931922582">[տեղապահ տեքստ]</translation>
 <translation id="756445078718366910">Բացել դիտարկիչի պատուհան</translation>
 <translation id="7564847347806291057">Ավարտել գործընթացը</translation>
 <translation id="756503097602602175">Դուք կարող եք <ph name="LINK_BEGIN" />Կարգավորումներում<ph name="LINK_END" /> կառավարել Google հաշիվները, որոնցում մուտք եք գործել։ Կայքերին ու հավելվածներին տրված ձեր թույլտվությունները կարող են կիրառվել բոլոր հաշիվների համար։ Եթե չեք ուզում, որ ձեր հաշվի տվյալները հասանելի լինեն կայքերին ու հավելվածներին, կարող եք <ph name="DEVICE_TYPE" /> սարքում մուտք գործել որպես հյուր կամ կայքերը բացել <ph name="LINK_2_BEGIN" />ինկոգնիտո պատուհանում<ph name="LINK_2_END" />։</translation>

@@ -5635,7 +5635,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4946998421534856407">Launcher + seta para cima</translation>
 <translation id="4947376546135294974">Dados do site que está a visitar</translation>
 <translation id="4950100687509657457">Criar perfil</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{um ficheiro}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4951966678293618079">Nunca guarde palavras-passe para este site</translation>
@@ -7994,7 +7993,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6679947539429331601">Ocultar durante 12 horas</translation>
 <translation id="6680442031740878064">Disponível: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidade</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Placeholder String]</translation>
 <translation id="6683022854667115063">Auscultadores</translation>
 <translation id="6683087162435654533">Restaurar todos os separadores</translation>
 <translation id="6683433919380522900">A autorização está definida como <ph name="PERMISSION_STATE" /></translation>
@@ -9215,7 +9213,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561759921596375678">Ative o volume</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Abrir janela do navegador</translation>
 <translation id="7564847347806291057">Concluir processo</translation>
 <translation id="756503097602602175">Pode gerir Contas Google com sessão iniciada nas <ph name="LINK_BEGIN" />Definições<ph name="LINK_END" />. As autorizações que concedeu aos Websites e às apps podem aplicar-se a todas as contas. Se não pretender que os sites ou as apps acedam às informações da sua conta, pode iniciar sessão no dispositivo <ph name="DEVICE_TYPE" /> como convidado ou navegar na Web numa <ph name="LINK_2_BEGIN" />janela de navegação anónima<ph name="LINK_2_END" />.</translation>

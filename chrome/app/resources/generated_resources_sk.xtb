@@ -5635,7 +5635,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4946998421534856407">kláves spúšťača + šípka nahor</translation>
 <translation id="4947376546135294974">Dáta z webu, ktorý navštevujete</translation>
 <translation id="4950100687509657457">Vytvoriť profil</translation>
-<translation id="4950360215042327246">[Reťazec zástupného symbolu]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{súbor}few{# súbory}many{# files}other{# súborov}}</translation>
 <translation id="495170559598752135">Akcie</translation>
 <translation id="4951966678293618079">Nikdy neukladať heslá tohto webu</translation>
@@ -7996,7 +7995,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6679947539429331601">Skryť na 12 hodín</translation>
 <translation id="6680442031740878064">K dispozícii: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Ohodnotiť</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Reťazec zástupného symbolu]</translation>
 <translation id="6683022854667115063">Slúchadlá</translation>
 <translation id="6683087162435654533">O&amp;bnoviť všetky karty</translation>
 <translation id="6683433919380522900">Povolenie je <ph name="PERMISSION_STATE" /></translation>
@@ -9216,7 +9214,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7561759921596375678">Zapnutie zvuku</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
-<translation id="7563970324931922582">[zástupný text]</translation>
 <translation id="756445078718366910">Otvoriť okno prehliadača</translation>
 <translation id="7564847347806291057">Ukončiť proces</translation>
 <translation id="756503097602602175">Účty Google prihlásených používateľov môžete spravovať v <ph name="LINK_BEGIN" />Nastaveniach<ph name="LINK_END" />. Povolenia, ktoré ste udelili webom a aplikáciám, môžu platiť pre všetky účty. Ak nechcete, aby mali weby či aplikácie prístup k informáciám o vašom účte, môžete sa v zariadení <ph name="DEVICE_TYPE" /> prihlásiť ako hosť alebo prehliadať internet v <ph name="LINK_2_BEGIN" />okne inkognito<ph name="LINK_2_END" />.</translation>

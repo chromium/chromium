@@ -5646,7 +5646,6 @@
 <translation id="4946998421534856407">लॉन्चर + अप ऐरो</translation>
 <translation id="4947376546135294974">जिस साइट को विज़िट किया जा रहा है उसका डेटा</translation>
 <translation id="4950100687509657457">प्रोफ़ाइल बनाएं</translation>
-<translation id="4950360215042327246">[प्लेसहोल्डर स्ट्रिंग]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{एक फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4951966678293618079">इस साइट के लिए कभी भी पासवर्ड सेव न करें</translation>
@@ -8005,7 +8004,6 @@
 <translation id="6679947539429331601">12 घंटों के लिए छिपाएं</translation>
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">दर</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [प्लेसहोल्डर स्ट्रिंग]</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6683087162435654533">सभी टैब पहले जैसे करें</translation>
 <translation id="6683433919380522900">अनुमति <ph name="PERMISSION_STATE" /> पर सेट है</translation>
@@ -9225,7 +9223,6 @@
 <translation id="7561196759112975576">हमेशा</translation>
 <translation id="7561759921596375678">आवाज़ चालू करें</translation>
 <translation id="7561982940498449837">मेन्यू बंद करें</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">ब्राउज़र विंडो खोलें</translation>
 <translation id="7564847347806291057">प्रक्रिया खत्म करें</translation>
 <translation id="756503097602602175">आप <ph name="LINK_BEGIN" />सेटिंग<ph name="LINK_END" /> में जाकर, साइन-इन किए गए Google खाते मैनेज कर सकते हैं. आपने वेबसाइटों और ऐप्लिकेशन को जो अनुमतियां दी हैं वे सभी खातों पर लागू हो सकती हैं. अगर आप नहीं चाहते कि साइटें या ऐप्लिकेशन आपके खाते की जानकारी को ऐक्सेस करें, तो आप अपने <ph name="DEVICE_TYPE" /> में मेहमान के तौर पर साइन इन कर सकते हैं. इसके अलावा, आप वेब को <ph name="LINK_2_BEGIN" />गुप्त विंडो<ph name="LINK_2_END" /> में भी ब्राउज़ कर सकते हैं.</translation>

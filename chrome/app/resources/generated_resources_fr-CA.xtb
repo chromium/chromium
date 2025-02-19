@@ -5636,7 +5636,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4946998421534856407">lanceur+flèche vers le haut</translation>
 <translation id="4947376546135294974">Données du site que vous visitez</translation>
 <translation id="4950100687509657457">Créer le profil</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4951966678293618079">Ne jamais enregistrer les mots de passe pour ce site</translation>
@@ -7995,7 +7994,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6679947539429331601">Masquer pendant 12 heures</translation>
 <translation id="6680442031740878064">Disponible : <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Vitesse</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Placeholder String]</translation>
 <translation id="6683022854667115063">Écouteurs</translation>
 <translation id="6683087162435654533">R&amp;estaurer tous les onglets</translation>
 <translation id="6683433919380522900">L'autorisation est <ph name="PERMISSION_STATE" /></translation>
@@ -9215,7 +9213,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7561759921596375678">Activer le volume</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Ouvrir une fenêtre du navigateur</translation>
 <translation id="7564847347806291057">Supprimer le processus</translation>
 <translation id="756503097602602175">Vous pouvez gérer les comptes Google auxquels vous êtes connecté dans le menu <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" />. Les autorisations que vous avez accordées aux sites Web et aux applications peuvent s'appliquer à tous les comptes. Si vous ne souhaitez pas que les sites ou les applications accèdent aux données de votre compte, vous pouvez vous connecter à votre <ph name="DEVICE_TYPE" /> comme invité ou bien naviguer sur le Web dans une <ph name="LINK_2_BEGIN" />fenêtre de navigation privée<ph name="LINK_2_END" />.</translation>

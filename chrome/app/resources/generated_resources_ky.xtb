@@ -5647,7 +5647,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4946998421534856407">жүргүзгүч + өйдө жебе</translation>
 <translation id="4947376546135294974">Сиз кирип турган сайттагы маалымат</translation>
 <translation id="4950100687509657457">Профиль түзүү</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="495170559598752135">Аракеттер</translation>
 <translation id="4951966678293618079">Бул сайттагы сырсөздөр эч качан сакталбасын</translation>
@@ -8005,7 +8004,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6679947539429331601">12 саатка жашыруу</translation>
 <translation id="6680442031740878064">Бош орун: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Баалоо</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Гарнитура</translation>
 <translation id="6683087162435654533">Бардык өтмөктөрдү калыбына келтирүү</translation>
 <translation id="6683433919380522900">Уруксат абалы: <ph name="PERMISSION_STATE" /></translation>
@@ -9225,7 +9223,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7561196759112975576">Ар дайым</translation>
 <translation id="7561759921596375678">Үнүн күйгүзүү</translation>
 <translation id="7561982940498449837">Менюну жабуу</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Серепчи терезесин ачуу</translation>
 <translation id="7564847347806291057">Процессти бүтүрүү</translation>
 <translation id="756503097602602175">Кирип турган Google аккаунттарын <ph name="LINK_BEGIN" />Параметрлерден<ph name="LINK_END" /> башкара аласыз. Вебсайттарга жана колдонмолорго берилген уруксаттар бардык аккаунттарга карата колдонулушу мүмкүн. Эгер сайттар менен колдонмолордун аккаунтуңуздагы маалыматты колдонушун каалабасаңыз, <ph name="DEVICE_TYPE" /> түзмөгүңүзгө конок режиминде же <ph name="LINK_2_BEGIN" />жашыруун терезеден<ph name="LINK_2_END" /> кирсеңиз болот.</translation>

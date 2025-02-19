@@ -5631,7 +5631,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4946998421534856407">Exekutatzeko tresnaren tekla + gora egiteko gezi-tekla</translation>
 <translation id="4947376546135294974">Bisitatzen ari zaren webguneko datuak</translation>
 <translation id="4950100687509657457">Sortu profil bat</translation>
-<translation id="4950360215042327246">[Leku-markaren katea]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fitxategi bat}other{# fitxategi}}</translation>
 <translation id="495170559598752135">Ekintzak</translation>
 <translation id="4951966678293618079">Ez gorde webgune honetako pasahitzak inoiz</translation>
@@ -7985,7 +7984,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6679947539429331601">Ezkutatu 12 orduz</translation>
 <translation id="6680442031740878064">Libre: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Abiadura</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Leku-markaren katea]</translation>
 <translation id="6683022854667115063">Entzungailuak</translation>
 <translation id="6683087162435654533">&amp;Leheneratu fitxa guztiak</translation>
 <translation id="6683433919380522900">Baimena hau da: <ph name="PERMISSION_STATE" /></translation>
@@ -9204,7 +9202,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7561759921596375678">Aktibatu bolumena</translation>
 <translation id="7561982940498449837">Itxi menua</translation>
-<translation id="7563970324931922582">[leku-markaren testua]</translation>
 <translation id="756445078718366910">Ireki arakatzailearen leihoa</translation>
 <translation id="7564847347806291057">Amaitu prozesua</translation>
 <translation id="756503097602602175"><ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalean kudea ditzakezu saioa hasita daukaten Google-ko kontuak. Baliteke webguneei eta aplikazioei emandako baimenak kontu guztiei aplikatzea. Webguneek eta aplikazioek zure kontuko informazioa atzitzerik nahi ez baduzu, hasi saioa gonbidatu gisa <ph name="DEVICE_TYPE" /> gailuan edo arakatu sarea <ph name="LINK_2_BEGIN" />ezkutuko moduko leiho<ph name="LINK_2_END" /> bat erabilita.</translation>

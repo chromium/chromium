@@ -5630,7 +5630,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4946998421534856407">başlatıcı  + yukarı ok</translation>
 <translation id="4947376546135294974">Ziyaret ettiğiniz sitedeki veriler</translation>
 <translation id="4950100687509657457">Profil oluştur</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{bir dosya}other{# dosya}}</translation>
 <translation id="495170559598752135">İşlemler</translation>
 <translation id="4951966678293618079">Bu sitedeki şifreleri hiçbir zaman kaydetme</translation>
@@ -7988,7 +7987,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6679947539429331601">12 saat boyunca gizle</translation>
 <translation id="6680442031740878064">Kullanılabilir alan: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hız</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Kulaklık</translation>
 <translation id="6683087162435654533">Tüm Sekmeleri Geri Yükle</translation>
 <translation id="6683433919380522900">İzin durumu: <ph name="PERMISSION_STATE" /></translation>
@@ -9208,7 +9206,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7561759921596375678">Sesi aç</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Tarayıcı Penceresini Aç</translation>
 <translation id="7564847347806291057">İşlemi bitir</translation>
 <translation id="756503097602602175">Oturum açılmış Google Hesaplarınızı <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" />'dan yönetebilirsiniz. Web sitelerine ve uygulamalara verdiğiniz izinler, tüm hesaplar için geçerli olabilir. Sitelerin veya uygulamaların hesap bilgilerinize erişmesini istemiyorsanız <ph name="DEVICE_TYPE" /> cihazınızda misafir olarak oturum açabilir ya da internette gezinmek için <ph name="LINK_2_BEGIN" />Gizli pencere<ph name="LINK_2_END" /> kullanabilirsiniz.</translation>

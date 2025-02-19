@@ -5647,7 +5647,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4946998421534856407">Appstartaren + uppåtpil</translation>
 <translation id="4947376546135294974">Data från webbplatsen du besöker</translation>
 <translation id="4950100687509657457">Skapa profil</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
 <translation id="495170559598752135">Åtgärder</translation>
 <translation id="4951966678293618079">Spara aldrig lösenord för den här webbplatsen</translation>
@@ -8005,7 +8004,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6679947539429331601">Dölj i 12 timmar</translation>
 <translation id="6680442031740878064">Tillgängligt: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Placeholder String]</translation>
 <translation id="6683022854667115063">Hörlurar</translation>
 <translation id="6683087162435654533">Åt&amp;erställ alla flikar</translation>
 <translation id="6683433919380522900">Behörigheten är <ph name="PERMISSION_STATE" /></translation>
@@ -9226,7 +9224,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7561759921596375678">Sätt på ljudet</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
-<translation id="7563970324931922582">[platshållartext]</translation>
 <translation id="756445078718366910">Öppna webbläsarfönster</translation>
 <translation id="7564847347806291057">Avsluta process</translation>
 <translation id="756503097602602175">Du kan hantera inloggade Google-konton i <ph name="LINK_BEGIN" />inställningarna<ph name="LINK_END" />. Behörigheter som du har gett webbplatser och appar kan gälla för alla konton. Om du inte vill ge webbplatser och appar åtkomst till information i ditt konto kan du logga in på <ph name="DEVICE_TYPE" /> som gäst eller surfa i ett <ph name="LINK_2_BEGIN" />inkognitofönster<ph name="LINK_2_END" />.</translation>

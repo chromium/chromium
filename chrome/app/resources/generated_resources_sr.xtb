@@ -5632,7 +5632,6 @@
 <translation id="4946998421534856407">тастер покретача + стрелица нагоре</translation>
 <translation id="4947376546135294974">Подаци са сајта који посећујете</translation>
 <translation id="4950100687509657457">Прављење профила</translation>
-<translation id="4950360215042327246">[стринг чувара места]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="495170559598752135">Радње</translation>
 <translation id="4951966678293618079">Никада не чувај лозинке за овај сајт</translation>
@@ -7993,7 +7992,6 @@
 <translation id="6679947539429331601">Сакриј на 12 сати</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Оцените</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [стринг чувара места]</translation>
 <translation id="6683022854667115063">Слушалице</translation>
 <translation id="6683087162435654533">Врати све картице</translation>
 <translation id="6683433919380522900">Дозвола је <ph name="PERMISSION_STATE" /></translation>
@@ -9214,7 +9212,6 @@
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7561759921596375678">Укључите звук</translation>
 <translation id="7561982940498449837">Затвори мени</translation>
-<translation id="7563970324931922582">[текст чувара места]</translation>
 <translation id="756445078718366910">Отвори прозор прегледача</translation>
 <translation id="7564847347806291057">Заврши процес</translation>
 <translation id="756503097602602175">Можете да управљате Google налозима на које сте пријављени у <ph name="LINK_BEGIN" />Подешавањима<ph name="LINK_END" />. Дозволе које сте дали веб-сајтовима и апликацијама могу да важе за све налоге. Ако не желите да сајтови или апликације приступају информацијама о налогу, можете да се пријавите на <ph name="DEVICE_TYPE" /> као гост или да прегледате веб у <ph name="LINK_2_BEGIN" />прозору без архивирања<ph name="LINK_2_END" />.</translation>

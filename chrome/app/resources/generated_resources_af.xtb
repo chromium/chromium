@@ -5647,7 +5647,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4946998421534856407">lanseerder + oppyl</translation>
 <translation id="4947376546135294974">Data van die webwerf wat jy besoek</translation>
 <translation id="4950100687509657457">Skep profiel</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{’n lêer}other{# lêers}}</translation>
 <translation id="495170559598752135">Handelinge</translation>
 <translation id="4951966678293618079">Moet nooit wagwoorde vir hierdie werf stoor nie</translation>
@@ -8006,7 +8005,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6679947539429331601">Versteek vir 12 uur</translation>
 <translation id="6680442031740878064">Beskikbaar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Gradeer</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Oorfone</translation>
 <translation id="6683087162435654533">Stel alle oortjies terug</translation>
 <translation id="6683433919380522900">Toestemming is <ph name="PERMISSION_STATE" /></translation>
@@ -9226,7 +9224,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7561196759112975576">Altyd</translation>
 <translation id="7561759921596375678">Skakel volume aan</translation>
 <translation id="7561982940498449837">Maak kieslys toe</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Maak blaaivenster oop</translation>
 <translation id="7564847347806291057">Beëindig proses</translation>
 <translation id="756503097602602175">Jy kan aangemelde Google-rekeninge in <ph name="LINK_BEGIN" />Instellings<ph name="LINK_END" /> bestuur. Toestemmings wat jy vir webwerwe en apps gegee het, kan op alle rekeninge van toepassing wees. As jy nie wil hê dat werwe of programme toegang tot jou rekeninginligting moet hê nie, kan jy as 'n gas by jou <ph name="DEVICE_TYPE" /> aanmeld of in 'n <ph name="LINK_2_BEGIN" />Incognito-venster<ph name="LINK_2_END" /> deur die web blaai.</translation>

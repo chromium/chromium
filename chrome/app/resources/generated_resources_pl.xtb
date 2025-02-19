@@ -5615,7 +5615,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4946998421534856407">Menu z aplikacjami + strzałka w górę</translation>
 <translation id="4947376546135294974">Dane z odwiedzanej witryny</translation>
 <translation id="4950100687509657457">Utwórz profil</translation>
-<translation id="4950360215042327246">[ciąg znaków obiektu zastępczego]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="495170559598752135">Czynności</translation>
 <translation id="4951966678293618079">Nigdy nie zapisuj haseł do tej witryny</translation>
@@ -7975,7 +7974,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6679947539429331601">Ukryj na 12 godzin</translation>
 <translation id="6680442031740878064">Dostępne: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Szybkość</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [ciąg znaków obiektu zastępczego]</translation>
 <translation id="6683022854667115063">Słuchawki</translation>
 <translation id="6683087162435654533">&amp;Przywróć wszystkie karty</translation>
 <translation id="6683433919380522900">Ustawienie uprawnienia: <ph name="PERMISSION_STATE" /></translation>
@@ -9193,7 +9191,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="7561759921596375678">Włącz dźwięk</translation>
 <translation id="7561982940498449837">Zamknij menu</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Otwórz okno przeglądarki</translation>
 <translation id="7564847347806291057">Zakończ proces</translation>
 <translation id="756503097602602175">Kontami Google, na które się logujesz, możesz zarządzać w <ph name="LINK_BEGIN" />Ustawieniach<ph name="LINK_END" />. Uprawnienia przyznane stronom i aplikacjom mogą obowiązywać na wszystkich kontach. Jeśli nie chcesz, aby strony lub aplikacje uzyskiwały dostęp do informacji o Twoim koncie, możesz logować się na urządzeniu <ph name="DEVICE_TYPE" /> jako gość lub przeglądać internet w <ph name="LINK_2_BEGIN" />oknie incognito<ph name="LINK_2_END" />.</translation>

@@ -5630,7 +5630,6 @@
 <translation id="4946998421534856407">ലോഞ്ചർ + മുകളിലേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4947376546135294974">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിൽ നിന്നുള്ള ഡാറ്റ</translation>
 <translation id="4950100687509657457">പ്രൊഫൈൽ സൃഷ്‌ടിക്കുക</translation>
-<translation id="4950360215042327246">[പ്ലെയ്‌സ്‌ഹോൾഡർ സ്ട്രിംഗ്]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="495170559598752135">പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="4951966678293618079">ഈ സൈറ്റിനായി പാസ്‌വേഡുകൾ ഒരിക്കലും സംരക്ഷിക്കരുത്</translation>
@@ -7988,7 +7987,6 @@
 <translation id="6679947539429331601">12 മണിക്കൂർ മറയ്‌ക്കുക</translation>
 <translation id="6680442031740878064">ലഭ്യമായ ഇടം: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">റേറ്റ് ചെയ്യുക</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [പ്ലെയ്‌സ്‌ഹോൾഡർ സ്ട്രിംഗ്]</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
 <translation id="6683087162435654533">എല്ലാ ടാബുകളും പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6683433919380522900"><ph name="PERMISSION_STATE" /> എന്നതാണ് അനുമതി</translation>
@@ -9208,7 +9206,6 @@
 <translation id="7561196759112975576">എല്ലായ്പ്പോഴും</translation>
 <translation id="7561759921596375678">ശബ്ദം ഓണാക്കുക</translation>
 <translation id="7561982940498449837">മെനു അടയ്ക്കുക</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">ബ്രൗസര്‍‌ വിന്‍‌ഡോ തുറക്കുക</translation>
 <translation id="7564847347806291057">പ്രക്രിയയുടെ അവസാനം</translation>
 <translation id="756503097602602175">സൈൻ ഇൻ ചെയ്‌ത Google അക്കൗണ്ടുകൾ നിങ്ങൾക്ക് <ph name="LINK_BEGIN" />ക്രമീകരണത്തിലൂടെ<ph name="LINK_END" /> മാനേജ് ചെയ്യാനാകും. വെബ്‌സൈറ്റുകൾക്കും ആപ്പുകൾക്കും നിങ്ങൾ നൽകിയ അനുമതികൾ എല്ലാ അക്കൗണ്ടുകൾക്കും ബാധകമായേക്കാം. സൈറ്റുകളോ ആപ്പുകളോ നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ ആക്‌സസ് ചെയ്യണമെന്നില്ലെങ്കിൽ, നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ അതിഥിയായി സൈൻ ചെയ്യാം അല്ലെങ്കിൽ <ph name="LINK_2_BEGIN" />അദൃശ്യ വിൻഡോയിൽ<ph name="LINK_2_END" /> വെബ് ബ്രൗസ് ചെയ്യാം.</translation>

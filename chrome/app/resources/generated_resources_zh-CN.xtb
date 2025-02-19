@@ -5622,7 +5622,6 @@
 <translation id="4946998421534856407">启动器键 + 向上键</translation>
 <translation id="4947376546135294974">来自您正在访问的网站的数据</translation>
 <translation id="4950100687509657457">创建个人资料</translation>
-<translation id="4950360215042327246">[占位符字符串]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4951966678293618079">一律不为此网站保存密码</translation>
@@ -7976,7 +7975,6 @@
 <translation id="6679947539429331601">隐藏 12 小时</translation>
 <translation id="6680442031740878064">可用空间：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">语速</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [占位符字符串]</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6683087162435654533">恢复所有标签页(&amp;E)</translation>
 <translation id="6683433919380522900">权限已<ph name="PERMISSION_STATE" /></translation>
@@ -9197,7 +9195,6 @@
 <translation id="7561196759112975576">永远</translation>
 <translation id="7561759921596375678">开启声音</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">打开浏览器窗口</translation>
 <translation id="7564847347806291057">结束进程</translation>
 <translation id="756503097602602175">您可从<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />中管理已登录的 Google 账号。您向网站和应用授予的权限可能会应用于所有账号。如果不想让网站或应用获取您的账号信息，您不妨以访客身份登录 <ph name="DEVICE_TYPE" />，或者在<ph name="LINK_2_BEGIN" />无痕式窗口<ph name="LINK_2_END" />中浏览网页。</translation>

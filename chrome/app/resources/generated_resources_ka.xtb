@@ -5634,7 +5634,6 @@
 <translation id="4946998421534856407">launcher + ზემოთ მიმართული ისარი</translation>
 <translation id="4947376546135294974">მონაცემები თქვენ მიერ მონახულებული საიტიდან</translation>
 <translation id="4950100687509657457">პროფილის შექმნა</translation>
-<translation id="4950360215042327246">[ჩანაცვლების ველის ფრაზა]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4951966678293618079">არასოდეს შეინახოს პაროლები ამ საიტისთვის</translation>
@@ -7992,7 +7991,6 @@
 <translation id="6679947539429331601">12 საათით დამალვა</translation>
 <translation id="6680442031740878064">ხელმისაწვდომია: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">სიხშირე</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> — [ჩანაცვლების ველის ფრაზა]</translation>
 <translation id="6683022854667115063">ყურსასმენები</translation>
 <translation id="6683087162435654533">ყველა ჩანართის &amp;აღდგენა</translation>
 <translation id="6683433919380522900">ნებართვად განსაზღვრულია „<ph name="PERMISSION_STATE" />“</translation>
@@ -9211,7 +9209,6 @@
 <translation id="7561196759112975576">ყოველთვის</translation>
 <translation id="7561759921596375678">ხმის ჩართვა</translation>
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
-<translation id="7563970324931922582">[ჩანაცვლების ველის ტექსტი]</translation>
 <translation id="756445078718366910">გახსენით ბრაუზერის ფანჯარა</translation>
 <translation id="7564847347806291057">პროცესის დასასრული</translation>
 <translation id="756503097602602175">სისტემაში შესული Google ანგარიშების მართვა შეგიძლიათ <ph name="LINK_BEGIN" />პარამეტრებიდან<ph name="LINK_END" />. ვებსაიტებისა და აპებისთვის მინიჭებული ნებართვები, შესაძლოა, ყველა ანგარიშზე ვრცელდებოდეს. თუ არ გსურთ, რომ საიტებსა თუ აპებს წვდომა ჰქონდეს თქვენი ანგარიშის ინფორმაციაზე, <ph name="DEVICE_TYPE" />-ში შესვლა შეგიძლიათ სტუმრის სტატუსით, ან ვები <ph name="LINK_2_BEGIN" />ინკოგნიტო რეჟიმში<ph name="LINK_2_END" /> დაათვალიეროთ.</translation>

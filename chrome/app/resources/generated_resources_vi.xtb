@@ -5647,7 +5647,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4946998421534856407">trình chạy + mũi tên lên</translation>
 <translation id="4947376546135294974">Dữ liệu từ trang web mà bạn đang truy cập</translation>
 <translation id="4950100687509657457">Tạo hồ sơ</translation>
-<translation id="4950360215042327246">[Chuỗi phần giữ chỗ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{một tệp}other{# tệp}}</translation>
 <translation id="495170559598752135">Tác vụ</translation>
 <translation id="4951966678293618079">Không bao giờ lưu mật khẩu cho trang web này</translation>
@@ -8005,7 +8004,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6679947539429331601">Ẩn trong 12 giờ</translation>
 <translation id="6680442031740878064">Còn trống: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Tốc độ</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Chuỗi phần giữ chỗ]</translation>
 <translation id="6683022854667115063">Tai nghe</translation>
 <translation id="6683087162435654533">K&amp;hôi phục tất cả các thẻ</translation>
 <translation id="6683433919380522900">Trạng thái cấp quyền hiện tại là <ph name="PERMISSION_STATE" /></translation>
@@ -9228,7 +9226,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7561196759112975576">Luôn luôn</translation>
 <translation id="7561759921596375678">Bật âm lượng</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
-<translation id="7563970324931922582">[văn bản phần giữ chỗ]</translation>
 <translation id="756445078718366910">Mở Cửa sổ Trình duyệt</translation>
 <translation id="7564847347806291057">Kết thúc quá trình</translation>
 <translation id="756503097602602175">Bạn có thể quản lý các Tài khoản Google đã đăng nhập trong phần <ph name="LINK_BEGIN" />Cài đặt<ph name="LINK_END" />. Những quyền mà bạn đã cấp cho các trang web và ứng dụng có thể áp dụng cho tất cả các tài khoản. Nếu không muốn các trang web hoặc ứng dụng truy cập vào thông tin tài khoản của mình, thì bạn có thể đăng nhập vào <ph name="DEVICE_TYPE" /> ở chế độ khách hoặc duyệt web trong một <ph name="LINK_2_BEGIN" />cửa sổ Ẩn danh<ph name="LINK_2_END" />.</translation>

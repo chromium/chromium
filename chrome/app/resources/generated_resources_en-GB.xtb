@@ -5647,7 +5647,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4946998421534856407">launcher + up arrow</translation>
 <translation id="4947376546135294974">Data from the site that you're visiting</translation>
 <translation id="4950100687509657457">Create profile</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{a file}other{# files}}</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4951966678293618079">Never save passwords for this site</translation>
@@ -8005,7 +8004,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6679947539429331601">Hide for 12 hours</translation>
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Rate</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Placeholder String]</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6683087162435654533">R&amp;estore All Tabs</translation>
 <translation id="6683433919380522900">Permission is <ph name="PERMISSION_STATE" /></translation>
@@ -9226,7 +9224,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7561196759112975576">Always</translation>
 <translation id="7561759921596375678">Turn on volume</translation>
 <translation id="7561982940498449837">Close menu</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Open Browser Window</translation>
 <translation id="7564847347806291057">End process</translation>
 <translation id="756503097602602175">You can manage signed-in Google Accounts from <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" />. Permissions that you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign in to your <ph name="DEVICE_TYPE" /> as a guest or browse the web in an <ph name="LINK_2_BEGIN" />Incognito window<ph name="LINK_2_END" />.</translation>

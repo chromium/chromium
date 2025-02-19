@@ -5646,7 +5646,6 @@
 <translation id="4946998421534856407">ຕົວເປີດໃຊ້ + ລູກສອນຂຶ້ນ</translation>
 <translation id="4947376546135294974">ຂໍ້ມູນຈາກເວັບໄຊທີ່ທ່ານກຳລັງເຂົ້າເບິ່ງ</translation>
 <translation id="4950100687509657457">ສ້າງໂປຣໄຟລ໌</translation>
-<translation id="4950360215042327246">[ສະຕຣິງຕົວຍຶດບ່ອນ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ໄຟລ໌}other{# ໄຟລ໌}}</translation>
 <translation id="495170559598752135">ການກະທໍາ</translation>
 <translation id="4951966678293618079">ບໍ່ບັນທຶກລະຫັດຜ່ານສຳລັບເວັບໄຊນີ້ເດັດຂາດ</translation>
@@ -8003,7 +8002,6 @@
 <translation id="6679947539429331601">ເຊື່ອງເປັນເວລາ 12 ຊົ່ວໂມງ</translation>
 <translation id="6680442031740878064">ມີໃຫ້: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ໃຫ້ຄະແນນ</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [ສະຕຣິງຕົວຍຶດບ່ອນ]</translation>
 <translation id="6683022854667115063">ຫູຟັງ</translation>
 <translation id="6683087162435654533">ກູ້&amp;ທຸກແຖບຄືນມາ</translation>
 <translation id="6683433919380522900">ການອະນຸຍາດແມ່ນ <ph name="PERMISSION_STATE" /></translation>
@@ -9222,7 +9220,6 @@
 <translation id="7561196759112975576">ຢູ່ສະເໝີ</translation>
 <translation id="7561759921596375678">ເປີດລະດັບສຽງ</translation>
 <translation id="7561982940498449837">ປິດເມນູ</translation>
-<translation id="7563970324931922582">[ຂໍ້ຄວາມຕົວຍຶດບ່ອນ]</translation>
 <translation id="756445078718366910">ເປີດໜ້າ​ຕ່າງບຣາວ​ເຊີ</translation>
 <translation id="7564847347806291057">ສິ້ນສຸດຂະບວນການ</translation>
 <translation id="756503097602602175">ທ່ານສາມາດຈັດການບັນຊີ Google ທີ່ເຂົ້າສູ່ລະບົບແລ້ວໄດ້ຈາກ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ<ph name="LINK_END" />. ການອະນຸຍາດທີ່ທ່ານໃຫ້ເວັບໄຊ ແລະ ແອັບອາດຈະນຳໃຊ້ກັບບັນຊີທັງໝົດ. ຖ້າທ່ານບໍ່ຕ້ອງການໃຫ້ເວັບໄຊ ຫຼື ແອັບເຂົ້າເຖິງຂໍ້ມູນບັນຊີຂອງທ່ານ, ທ່ານສາມາດເຂົ້າສູ່ລະບົບຫາ <ph name="DEVICE_TYPE" /> ຂອງທ່ານເປັນແຂກ ຫຼື ທ່ອງເວັບໃນ <ph name="LINK_2_BEGIN" />ໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ<ph name="LINK_2_END" /> ໄດ້.</translation>

@@ -5630,7 +5630,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4946998421534856407">menú d'aplicacions+fletxa amunt</translation>
 <translation id="4947376546135294974">Dades del lloc web que estàs visitant</translation>
 <translation id="4950100687509657457">Creació d'un perfil</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="495170559598752135">Accions</translation>
 <translation id="4951966678293618079">No desis mai les contrasenyes d'aquest lloc web</translation>
@@ -5928,7 +5927,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5164530241085602114">No es permeten les notificacions per a <ph name="SITE" /></translation>
 <translation id="516747639689914043">Protocol de transferència d'hipertext (HTTP)</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
-<translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
+<translation id="5171045022955879922">Cerca o escriu l'URL</translation>
 <translation id="5171343362375269016">Memòria intercanviada</translation>
 <translation id="5172855596271336236">Hi ha 1 impressora gestionada.</translation>
 <translation id="5173668317844998239">Suprimeix empremtes digitals desades a la clau de seguretat i afegeix-ne</translation>
@@ -7986,7 +7985,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6679947539429331601">Amaga durant 12 hores</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocitat</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Auriculars</translation>
 <translation id="6683087162435654533">R&amp;estaura totes les pestanyes</translation>
 <translation id="6683433919380522900">El permís és <ph name="PERMISSION_STATE" /></translation>
@@ -9207,7 +9205,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561759921596375678">Activa el volum</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
-<translation id="7563970324931922582">[text d'espai reservat]</translation>
 <translation id="756445078718366910">Obre una finestra del navegador</translation>
 <translation id="7564847347806291057">Finalitza el procés</translation>
 <translation id="756503097602602175">A <ph name="LINK_BEGIN" />Configuració<ph name="LINK_END" /> pots gestionar els Comptes de Google en què tens la sessió iniciada. És possible que els permisos que hagis concedit a llocs web i aplicacions s'apliquin a tots els comptes. Si no vols que els llocs web o les aplicacions accedeixin a la informació del teu compte, pots iniciar la sessió al <ph name="DEVICE_TYPE" /> com a convidat o navegar pel web en una <ph name="LINK_2_BEGIN" />finestra d'incògnit<ph name="LINK_2_END" />.</translation>

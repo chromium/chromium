@@ -5629,7 +5629,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4946998421534856407">nisësi + shigjeta lart</translation>
 <translation id="4947376546135294974">Të dhënat nga sajti që po viziton</translation>
 <translation id="4950100687509657457">Krijo një profil</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{një skedar}other{# skedarë}}</translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4951966678293618079">Mos i ruaj asnjëherë fjalëkalimet për këtë sajt</translation>
@@ -7986,7 +7985,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6679947539429331601">Fshihe për 12 orë</translation>
 <translation id="6680442031740878064">Në dispozicion: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Shpejtësia</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Kufje</translation>
 <translation id="6683087162435654533">R&amp;estauro të gjitha skedat</translation>
 <translation id="6683433919380522900">Leja është "<ph name="PERMISSION_STATE" />"</translation>
@@ -9206,7 +9204,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="7561759921596375678">Aktivizo volumin</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Hap dritaren e shfletuesit</translation>
 <translation id="7564847347806291057">Përfundo procesin</translation>
 <translation id="756503097602602175">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar nga <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" />. Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për të gjitha llogaritë. Nëse nuk dëshiron që sajtet ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, mund të identifikohesh në pajisjen <ph name="DEVICE_TYPE" /> si vizitor ose të shfletosh në ueb në një <ph name="LINK_2_BEGIN" />dritare të fshehtë<ph name="LINK_2_END" />.</translation>

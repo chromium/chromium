@@ -5645,7 +5645,6 @@
 <translation id="4946998421534856407">Launcher + အပေါ်ညွှန်မြား</translation>
 <translation id="4947376546135294974">သင်ဝင်ကြည့်နေသော ဝဘ်ဆိုက်မှဒေတာ</translation>
 <translation id="4950100687509657457">ပရိုဖိုင် ပြုလုပ်ရန်</translation>
-<translation id="4950360215042327246">[နေရာအစားထိုး အက္ခရာတွဲ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ဖိုင်တစ်ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="495170559598752135">လုပ်ဆောင်ချက်များ</translation>
 <translation id="4951966678293618079">ဤဝဘ်ဆိုက်အတွက် စကားဝှက်များ ဘယ်တော့မှ မသိမ်းပါနှင့်</translation>
@@ -8001,7 +8000,6 @@
 <translation id="6679947539429331601">၁၂ နာရီကြာ ဖျောက်ရန်</translation>
 <translation id="6680442031740878064">ရနိုင်သည့် နေရာလွတ်− <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">အဆင့်သတ်မှတ်ရန်</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [နေရာအစားထိုး အက္ခရာတွဲ]</translation>
 <translation id="6683022854667115063">နားကြပ်</translation>
 <translation id="6683087162435654533">တဘ်အားလုံး ပြန်&amp;ယူရန်</translation>
 <translation id="6683433919380522900">ခွင့်ပြုချက်မှာ <ph name="PERMISSION_STATE" /> ဖြစ်သည်</translation>
@@ -9221,7 +9219,6 @@
 <translation id="7561196759112975576">အမြဲတမ်း</translation>
 <translation id="7561759921596375678">အသံဖွင့်ရန်</translation>
 <translation id="7561982940498449837">မီနူးကို ပိတ်ရန်</translation>
-<translation id="7563970324931922582">[နေရာအစားထိုး စာသား]</translation>
 <translation id="756445078718366910">ဘရောင်ဇာဝင်းဒိုး ဖွင့်</translation>
 <translation id="7564847347806291057">လုပ်ငန်းစဉ် အဆုံးသတ်ရန်</translation>
 <translation id="756503097602602175">လက်မှတ်ထိုးဝင်ထားသော Google Accounts များကို <ph name="LINK_BEGIN" />ဆက်တင်များ<ph name="LINK_END" /> မှ စီမံနိုင်သည်။ ဝဘ်ဆိုက်များနှင့် အက်ပ်များကို ပေးထားသော ခွင့်ပြုချက်များက အကောင့်အားလုံးတွင် အကျုံးဝင်နိုင်သည်။ သင့်အကောင့်အချက်အလက်ကို ဝဘ်ဆိုက်များနှင့် အက်ပ်များက ဝင်မကြည့်စေလိုလျှင် <ph name="DEVICE_TYPE" /> တွင် ဧည့်သည်အဖြစ် လက်မှတ်ထိုးဝင်နိုင်သည် (သို့) <ph name="LINK_2_BEGIN" />ရုပ်ဖျက် ဝင်ဒိုး<ph name="LINK_2_END" /> တွင် ဝဘ်ကို ကြည့်ရှုနိုင်သည်။</translation>

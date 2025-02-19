@@ -5644,7 +5644,6 @@
 <translation id="4946998421534856407">লঞ্চাৰ + আপ এৰ'</translation>
 <translation id="4947376546135294974">আপুনি চোৱা ছাইটটোৰ পৰা পোৱা ডেটা</translation>
 <translation id="4950100687509657457">প্ৰ’ফাইল সৃষ্টি কৰক</translation>
-<translation id="4950360215042327246">[প্লে’চহ’ল্ডাৰ ষ্ট্ৰিং]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{এটা ফাইল}one{# টা ফাইল}other{# টা ফাইল}}</translation>
 <translation id="495170559598752135">কাৰ্যসমূহ</translation>
 <translation id="4951966678293618079">এই ছাইটটোৰ বাবে কেতিয়াও পাছৱৰ্ড ছেভ নকৰিব</translation>
@@ -8004,7 +8003,6 @@
 <translation id="6679947539429331601">১২ ঘণ্টাৰ বাবে লুকুৱাওক</translation>
 <translation id="6680442031740878064">উপলব্ধ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">হাৰ</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [প্লে’চহ’ল্ডাৰ ষ্ট্ৰিং]</translation>
 <translation id="6683022854667115063">হেডফ’ন</translation>
 <translation id="6683087162435654533">আটাইবোৰ টেব পুনঃস্থাপন কৰক</translation>
 <translation id="6683433919380522900">অনুমতিটো হৈছে <ph name="PERMISSION_STATE" /></translation>
@@ -9224,7 +9222,6 @@
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="7561759921596375678">ভলিউম অন কৰক</translation>
 <translation id="7561982940498449837">মেনু বন্ধ কৰক</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">ব্ৰাউজাৰ ৱিণ্ড’ খোলক</translation>
 <translation id="7564847347806291057">প্ৰক্ৰিয়া সমাপ্ত কৰক</translation>
 <translation id="756503097602602175">আপুনি ছাইন ইন কৰি ৰখা Google একাউণ্টসমূহ <ph name="LINK_BEGIN" />ছেটিঙ<ph name="LINK_END" />ৰ পৰা পৰিচালনা কৰিব পাৰে। আপুনি ৱেবছাইট আৰু এপক দিয়া অনুমতি আটাইবোৰ একাউণ্টত প্ৰযোজ্য হ’ব পাৰে। যদি আপুনি আপোনাৰ একাউণ্টৰ তথ্য কোনো ছাইট অথবা এপে এক্সেছ কৰাটো নিবিচাৰে, তেন্তে আপুনি আপোনাৰ <ph name="DEVICE_TYPE" />ত অতিথি হিচাপে ছাইন ইন কৰিব পাৰে অথবা এখন <ph name="LINK_2_BEGIN" />ইনক’গনিট’ ৱিণ্ড’<ph name="LINK_2_END" />ত ৱেব ব্ৰাউজ কৰিব পাৰে।</translation>

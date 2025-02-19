@@ -5638,7 +5638,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4946998421534856407">Appoversikt-tasten + oppoverpil</translation>
 <translation id="4947376546135294974">Data fra nettstedet du besøker</translation>
 <translation id="4950100687509657457">Opprett profil</translation>
-<translation id="4950360215042327246">[plassholderstreng]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4951966678293618079">Lagre aldri passord for dette nettstedet</translation>
@@ -7994,7 +7993,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6679947539429331601">Skjul i 12 timer</translation>
 <translation id="6680442031740878064">Tilgjengelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [plassholderstreng]</translation>
 <translation id="6683022854667115063">Hodetelefoner</translation>
 <translation id="6683087162435654533">Gjenopprett alle faner</translation>
 <translation id="6683433919380522900">Tillatelsen er <ph name="PERMISSION_STATE" /></translation>
@@ -9215,7 +9213,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7561759921596375678">Slå på lyd</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
-<translation id="7563970324931922582">[plassholdertekst]</translation>
 <translation id="756445078718366910">Åpne nettleservindu</translation>
 <translation id="7564847347806291057">Avslutt prosessen</translation>
 <translation id="756503097602602175">Du kan administrere påloggede Google-kontoer i <ph name="LINK_BEGIN" />Innstillinger<ph name="LINK_END" />. Tillatelser du har gitt nettsteder og apper, kan gjelde for alle kontoer. Hvis du ikke vil at nettsteder eller apper skal ha tilgang til kontoinformasjonen din, kan du logge på <ph name="DEVICE_TYPE" /> som gjest eller surfe på nettet i et <ph name="LINK_2_BEGIN" />inkognitovindu<ph name="LINK_2_END" />.</translation>

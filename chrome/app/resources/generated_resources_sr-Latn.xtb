@@ -5632,7 +5632,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4946998421534856407">taster pokretača + strelica nagore</translation>
 <translation id="4947376546135294974">Podaci sa sajta koji posećujete</translation>
 <translation id="4950100687509657457">Pravljenje profila</translation>
-<translation id="4950360215042327246">[string čuvara mesta]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4951966678293618079">Nikada ne čuvaj lozinke za ovaj sajt</translation>
@@ -7993,7 +7992,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6679947539429331601">Sakrij na 12 sati</translation>
 <translation id="6680442031740878064">Dostupno: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Ocenite</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [string čuvara mesta]</translation>
 <translation id="6683022854667115063">Slušalice</translation>
 <translation id="6683087162435654533">Vrati sve kartice</translation>
 <translation id="6683433919380522900">Dozvola je <ph name="PERMISSION_STATE" /></translation>
@@ -9214,7 +9212,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7561196759112975576">Uvek</translation>
 <translation id="7561759921596375678">Uključite zvuk</translation>
 <translation id="7561982940498449837">Zatvori meni</translation>
-<translation id="7563970324931922582">[tekst čuvara mesta]</translation>
 <translation id="756445078718366910">Otvori prozor pregledača</translation>
 <translation id="7564847347806291057">Završi proces</translation>
 <translation id="756503097602602175">Možete da upravljate Google nalozima na koje ste prijavljeni u <ph name="LINK_BEGIN" />Podešavanjima<ph name="LINK_END" />. Dozvole koje ste dali veb-sajtovima i aplikacijama mogu da važe za sve naloge. Ako ne želite da sajtovi ili aplikacije pristupaju informacijama o nalogu, možete da se prijavite na <ph name="DEVICE_TYPE" /> kao gost ili da pregledate veb u <ph name="LINK_2_BEGIN" />prozoru bez arhiviranja<ph name="LINK_2_END" />.</translation>

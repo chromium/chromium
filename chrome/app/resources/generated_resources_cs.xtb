@@ -3051,7 +3051,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3109724472072898302">Sbaleno</translation>
 <translation id="310979712355504754">Smazat vše</translation>
 <translation id="3112292765614504292">Velikost aplikace: <ph name="APP_SIZE" /></translation>
-<translation id="311347022006935575">Přidáno na tuto kartu</translation>
+<translation id="311347022006935575">Přidal(a) tuto kartu</translation>
 <translation id="311394601889664316">Nepovolovat webům upravovat soubory a složky v zařízení</translation>
 <translation id="3113970906450647715">Tlačítko odepnuto</translation>
 <translation id="3115147772012638511">Čekání na mezipaměť</translation>
@@ -5632,7 +5632,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4946998421534856407">spouštěč + šipka nahoru</translation>
 <translation id="4947376546135294974">Data z navštíveného webu</translation>
 <translation id="4950100687509657457">Vytvořit profil</translation>
-<translation id="4950360215042327246">[Zástupný řetězec]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="495170559598752135">Akce</translation>
 <translation id="4951966678293618079">Pro tento web hesla nikdy neukládat</translation>
@@ -7990,7 +7989,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6679947539429331601">Na 12 hodin skrýt</translation>
 <translation id="6680442031740878064">Volné místo: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Ohodnotit</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [zástupný řetězec]</translation>
 <translation id="6683022854667115063">Sluchátka</translation>
 <translation id="6683087162435654533">&amp;Obnovit všechny karty</translation>
 <translation id="6683433919380522900">Oprávnění je <ph name="PERMISSION_STATE" /></translation>
@@ -9210,7 +9208,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7561759921596375678">Zapnout zvuk</translation>
 <translation id="7561982940498449837">Zavřít nabídku</translation>
-<translation id="7563970324931922582">[zástupný text]</translation>
 <translation id="756445078718366910">Otevřít okno prohlížeče</translation>
 <translation id="7564847347806291057">Ukončit proces</translation>
 <translation id="756503097602602175">Přihlášené účty Google můžete spravovat v <ph name="LINK_BEGIN" />Nastavení<ph name="LINK_END" />. Oprávnění, která jste udělili webům a aplikacím, se mohou vztahovat na všechny účty. Pokud nechcete, aby weby nebo aplikace měly přístup k informacím o vašem účtu, můžete se do zařízení <ph name="DEVICE_TYPE" /> přihlásit jako host nebo web procházet v <ph name="LINK_2_BEGIN" />anonymním okně<ph name="LINK_2_END" />.</translation>

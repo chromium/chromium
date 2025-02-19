@@ -5633,7 +5633,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4946998421534856407">Tecla del menú de aplicaciones + flecha hacia arriba</translation>
 <translation id="4947376546135294974">Datos del sitio que estás visitando</translation>
 <translation id="4950100687509657457">Crear perfil</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un archivo}other{# archivos}}</translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4951966678293618079">Nunca guardar contraseñas de este sitio</translation>
@@ -7990,7 +7989,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6679947539429331601">Ocultar durante 12 horas</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidad</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" />: [Placeholder String]</translation>
 <translation id="6683022854667115063">Auriculares</translation>
 <translation id="6683087162435654533">R&amp;estaurar todas las pestañas</translation>
 <translation id="6683433919380522900">El permiso es <ph name="PERMISSION_STATE" /></translation>
@@ -9211,7 +9209,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7561759921596375678">Activar volumen</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
-<translation id="7563970324931922582">[texto genérico]</translation>
 <translation id="756445078718366910">Abrir ventana del navegador</translation>
 <translation id="7564847347806291057">Finalizar proceso</translation>
 <translation id="756503097602602175">Puedes gestionar las cuentas de Google con las que se haya iniciado sesión en <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />. Es posible que los permisos que hayas dado a sitios web y aplicaciones se apliquen a todas las cuentas. Si no quieres que los sitios ni las aplicaciones accedan a la información de tu cuenta, puedes iniciar sesión en tu <ph name="DEVICE_TYPE" /> como invitado o navegar por Internet en una <ph name="LINK_2_BEGIN" />ventana de Incógnito<ph name="LINK_2_END" />.</translation>

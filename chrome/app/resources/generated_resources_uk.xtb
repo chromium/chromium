@@ -5649,7 +5649,6 @@
 <translation id="4946998421534856407">клавіша Панелі запуску + стрілка вгору</translation>
 <translation id="4947376546135294974">Дані із сайту, який ви відвідуєте</translation>
 <translation id="4950100687509657457">Створити профіль</translation>
-<translation id="4950360215042327246">[Рядок-заповнювач]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4951966678293618079">Ніколи не зберігати паролі для цього сайту</translation>
@@ -8009,7 +8008,6 @@
 <translation id="6679947539429331601">Сховати на 12 годин</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Оцінити</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [рядок-заповнювач]</translation>
 <translation id="6683022854667115063">Навушники</translation>
 <translation id="6683087162435654533">Відновити всі вкладки</translation>
 <translation id="6683433919380522900">Дозвіл: <ph name="PERMISSION_STATE" /></translation>
@@ -9229,7 +9227,6 @@
 <translation id="7561196759112975576">Завжди</translation>
 <translation id="7561759921596375678">Увімкнути звук</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
-<translation id="7563970324931922582">[текст заповнювача]</translation>
 <translation id="756445078718366910">Відкрити вікно веб-переглядача</translation>
 <translation id="7564847347806291057">Завершити процес</translation>
 <translation id="756503097602602175">Усіма обліковими записами Google, у які ви ввійшли, можна керувати в <ph name="LINK_BEGIN" />Налаштуваннях<ph name="LINK_END" />. Дозволи, надані веб-сайтам і додаткам, можуть діяти для всіх облікових записів. Якщо ви не хочете, щоб сайти чи додатки мали доступ до даних облікового запису, можете ввійти на пристрої <ph name="DEVICE_TYPE" /> як гість або переглядати веб-сторінки у <ph name="LINK_2_BEGIN" />вікні в режимі анонімного перегляду<ph name="LINK_2_END" />.</translation>

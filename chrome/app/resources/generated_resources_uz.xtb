@@ -5633,7 +5633,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4946998421534856407">launcher + tepaga strelka</translation>
 <translation id="4947376546135294974">Ochilgan sayt maʼlumotlari</translation>
 <translation id="4950100687509657457">Profil yaratish</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fayl}other{# ta fayl}}</translation>
 <translation id="495170559598752135">Harakatlar</translation>
 <translation id="4951966678293618079">Bu sayt uchun parollar hech qachon saqlanmasin</translation>
@@ -7991,7 +7990,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6679947539429331601">12 soat chiqmasin</translation>
 <translation id="6680442031740878064">Bo‘sh: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Nutq tezligi</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Quloqliklar</translation>
 <translation id="6683087162435654533">Barcha varaqlarni tiklash</translation>
 <translation id="6683433919380522900">Ruxsat: <ph name="PERMISSION_STATE" /></translation>
@@ -9211,7 +9209,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7561196759112975576">Har doim</translation>
 <translation id="7561759921596375678">Tovushni yoqish</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Brauzer oynasini ochish</translation>
 <translation id="7564847347806291057">Jarayonni yakunlash</translation>
 <translation id="756503097602602175">Google hisoblarini <ph name="LINK_BEGIN" />Sozlamalar<ph name="LINK_END" /> orqali boshqarishingiz mumkin. Sayt va ilovalarga berilgan ruxsatlar barcha hisoblarga tatbiq etiladi. Sayt va ilovalarni hisob axborotingizga kirishini istamasangiz, <ph name="DEVICE_TYPE" /> qurilmangizga mehmon sifatida kiring yoki internetda <ph name="LINK_2_BEGIN" />inkognito oynasida<ph name="LINK_2_END" /> ishlang.</translation>

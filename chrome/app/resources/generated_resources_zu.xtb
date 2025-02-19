@@ -5647,7 +5647,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4946998421534856407">Isiqalisi + umcibisholo waphezulu</translation>
 <translation id="4947376546135294974">Idatha evela kusayithi oyivakashelayo</translation>
 <translation id="4950100687509657457">Sungula iphrofayela</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ifayela}one{amafayela angu-#}other{amafayela angu-#}}</translation>
 <translation id="495170559598752135">Izenzo</translation>
 <translation id="4951966678293618079">Ungalokothi ulondoloze amaphasiwedi ale sayithi</translation>
@@ -8008,7 +8007,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="6679947539429331601">Fihla amahora ayi-12</translation>
 <translation id="6680442031740878064">Otholakalayo: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Linganisela</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Ama-headphone</translation>
 <translation id="6683087162435654533">Phindisela Wonke Amathebhu</translation>
 <translation id="6683433919380522900">Imvume ithi <ph name="PERMISSION_STATE" /></translation>
@@ -9228,7 +9226,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7561196759112975576">Njalo</translation>
 <translation id="7561759921596375678">Vula ivolumu</translation>
 <translation id="7561982940498449837">Vala imenyu</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Vula iwindi lesiphequluli</translation>
 <translation id="7564847347806291057">Qeda inqubo</translation>
 <translation id="756503097602602175">Ungaphatha ama-akhawunti we-Google ongene kuwo ngemvume kusuka kokuthi <ph name="LINK_BEGIN" />Amasethingi<ph name="LINK_END" />. Izimvume ozinike amawebhusayithi nezinhlelo zokusebenza zingase zisebenze kuwo wonke ama-akhawunti. Uma ungafuni ukuthi amasayithi noma ama-app kufinyelele ulwazi lwe-akhawunti yakho, ungangena ngemvume ku-<ph name="DEVICE_TYPE" /> yakho njengesivakashi noma uphequlule iwebhu <ph name="LINK_2_BEGIN" />ewindini le-incognito<ph name="LINK_2_END" />.</translation>

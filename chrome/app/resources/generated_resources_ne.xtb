@@ -5629,7 +5629,6 @@
 <translation id="4946998421534856407">लन्चर + अप एरो</translation>
 <translation id="4947376546135294974">तपाईंले भ्रमण गरिरहेको साइटको डेटा</translation>
 <translation id="4950100687509657457">प्रोफाइल बनाउनुहोस्</translation>
-<translation id="4950360215042327246">[प्लेसहोल्डर स्ट्रिङ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4951966678293618079">यो साइटका पासवर्ड कहिले पनि सेभ नगर्नुहोस्</translation>
@@ -7986,7 +7985,6 @@
 <translation id="6679947539429331601">१२ घण्टासम्म लुकाउनुहोस्</translation>
 <translation id="6680442031740878064">उपलब्ध खाली ठाउँ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">मूल्याङ्कन गर्नुहोस्</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [प्लेसहोल्डर स्ट्रिङ]</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6683087162435654533">सबै ट्याबहरू रिस्टोर गर्नुहोस्</translation>
 <translation id="6683433919380522900">अनुमतिअन्तर्गत <ph name="PERMISSION_STATE" /> तोकिएको छ</translation>
@@ -9206,7 +9204,6 @@
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="7561759921596375678">भोल्युम अन गर्नुहोस्</translation>
 <translation id="7561982940498449837">मेनु बन्द गर्नुहोस्</translation>
-<translation id="7563970324931922582">[प्लेसहोल्डर टेक्स्ट]</translation>
 <translation id="756445078718366910">खुल्ला ब्राउजर सन्झ्याल</translation>
 <translation id="7564847347806291057">प्रक्रियालाई अन्त गर्नुहोस्</translation>
 <translation id="756503097602602175">तपाईं <ph name="LINK_BEGIN" />सेटिङ<ph name="LINK_END" />मा गई साइन इन गरिएका Google खाताहरू व्यवस्थापन गर्न सक्नुहुन्छ। तपाईंले वेबसाइट तथा एपहरूलाई दिनुभएका अनुमति सबै खाताहरूमा लागू हुन सक्छन्। तपाईं साइट वा एपहरूलाई तपाईंको खातासम्बन्धी जानकारी हेर्न तथा प्रयोग गर्न दिन चाहनुहुन्न भने तपाईं आफ्नो <ph name="DEVICE_TYPE" /> मा अतिथिका रूपमा साइन इन गर्न सक्नुहुन्छ वा <ph name="LINK_2_BEGIN" />इन्कोग्निटो विन्डो<ph name="LINK_2_END" />मा वेब प्रयोग गरी ब्राउज गर्न सक्नुहुन्छ।</translation>

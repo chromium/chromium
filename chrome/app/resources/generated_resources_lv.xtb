@@ -5634,7 +5634,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4946998421534856407">palaidēja taustiņš + augšupvērstās bultiņas taustiņš</translation>
 <translation id="4947376546135294974">Dati no jūsu apmeklētās vietnes</translation>
 <translation id="4950100687509657457">Profila izveide</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="495170559598752135">Darbības</translation>
 <translation id="4951966678293618079">Nekad nesaglabāt šīs vietnes paroles</translation>
@@ -7992,7 +7991,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6679947539429331601">Paslēpt uz 12 stundām</translation>
 <translation id="6680442031740878064">Pieejamā vieta: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Ātrums</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> — [Placeholder String]</translation>
 <translation id="6683022854667115063">Austiņas</translation>
 <translation id="6683087162435654533">Atjaunot visas cilnes</translation>
 <translation id="6683433919380522900">Atļaujas statuss: <ph name="PERMISSION_STATE" /></translation>
@@ -9213,7 +9211,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7561196759112975576">Vienmēr</translation>
 <translation id="7561759921596375678">Ieslēgt skaņu</translation>
 <translation id="7561982940498449837">Aizvērt izvēlni</translation>
-<translation id="7563970324931922582">[viettura teksts]</translation>
 <translation id="756445078718366910">Atvērt pārlūkprogrammas logu</translation>
 <translation id="7564847347806291057">Pārtraukt procesu</translation>
 <translation id="756503097602602175">Varat pārvaldīt Google kontus, kuros esat pierakstījies, sadaļā <ph name="LINK_BEGIN" />Iestatījumi<ph name="LINK_END" />. Jūsu piešķirtās atļaujas vietnēm un lietotnēm var būt spēkā visos kontos. Ja nevēlaties atļaut vietnēm vai lietotnēm piekļūt jūsu konta informācijai, varat pierakstīties <ph name="DEVICE_TYPE" /> ierīcē kā viesis vai pārlūkot tīmekli <ph name="LINK_2_BEGIN" />inkognito režīma logā<ph name="LINK_2_END" />.</translation>

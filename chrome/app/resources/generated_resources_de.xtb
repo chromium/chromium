@@ -5628,7 +5628,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4946998421534856407">Launcher-Taste + Aufwärtspfeil</translation>
 <translation id="4947376546135294974">Daten von der Website, die du besuchst</translation>
 <translation id="4950100687509657457">Profil erstellen</translation>
-<translation id="4950360215042327246">[Platzhalterstring]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{eine Datei}other{# Dateien}}</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4951966678293618079">Passwörter für diese Website niemals speichern</translation>
@@ -7982,7 +7981,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6679947539429331601">12 Stunden lang ausblenden</translation>
 <translation id="6680442031740878064">Verfügbar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Geschwindigkeit</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Platzhalterstring]</translation>
 <translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6683087162435654533">Alle Tabs wi&amp;ederherstellen</translation>
 <translation id="6683433919380522900">Aktivierte Berechtigung: <ph name="PERMISSION_STATE" /></translation>
@@ -9203,7 +9201,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7561196759112975576">Immer</translation>
 <translation id="7561759921596375678">Ton einschalten</translation>
 <translation id="7561982940498449837">Menü schließen</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Browserfenster öffnen</translation>
 <translation id="7564847347806291057">Prozess beenden</translation>
 <translation id="756503097602602175">Angemeldete Google-Konten können in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwaltet werden. Berechtigungen, die du Websites und Anwendungen gewährt hast, gelten möglicherweise für alle Konten. Wenn du nicht möchtest, dass Websites oder Anwendungen Zugriff auf deine Kontoinformationen haben, kannst du dich auf <ph name="DEVICE_TYPE" /> als Gast anmelden oder in einem <ph name="LINK_2_BEGIN" />Inkognitofenster<ph name="LINK_2_END" /> im Web surfen.</translation>

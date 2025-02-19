@@ -5633,7 +5633,6 @@
 <translation id="4946998421534856407">‏launcher + اوپر تیر کا نشان</translation>
 <translation id="4947376546135294974">آپ جس سائٹ پر جا رہے ہیں اس کا ڈیٹا</translation>
 <translation id="4950100687509657457">پروفائل بنائیں</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ایک فائل}other{# فائلز}}</translation>
 <translation id="495170559598752135">کارروائیاں</translation>
 <translation id="4951966678293618079">اس سائٹ کے لیے کبھی بھی پاس ورڈز محفوظ نہ کریں</translation>
@@ -7989,7 +7988,6 @@
 <translation id="6679947539429331601">‫12 گھنٹے کیلئے چھپائیں</translation>
 <translation id="6680442031740878064">دستیاب ہے: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">درجہ بندی کریں</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">ہیڈ فونز</translation>
 <translation id="6683087162435654533">تمام ٹیبز کو بحال کریں</translation>
 <translation id="6683433919380522900">اجازت <ph name="PERMISSION_STATE" /> ہے</translation>
@@ -9209,7 +9207,6 @@
 <translation id="7561196759112975576">ہمیشہ</translation>
 <translation id="7561759921596375678">والیوم کو آن کریں</translation>
 <translation id="7561982940498449837">مینیو بند کریں</translation>
-<translation id="7563970324931922582">پلیس ہولڈر کا ٹیکسٹ</translation>
 <translation id="756445078718366910">براؤزر ونڈو کھولیں</translation>
 <translation id="7564847347806291057">کارروائی ختم کریں</translation>
 <translation id="756503097602602175">‏آپ <ph name="LINK_BEGIN" />ترتیبات<ph name="LINK_END" /> سے سائن ان کردہ Google اکاؤنٹس کا نظم کر سکتے ہیں۔ ویب سائٹس اور ایپس کو آپ کی دی گئی اجازتیں سبھی اکاؤنٹس پر لاگو ہو سکتی ہیں۔ اگر آپ نہیں چاہتے ہیں کہ سائٹس یا ایپس کو آپ کے اکاؤنٹ کی معلومات تک رسائی حاصل ہو تو آپ بطور مہمان <ph name="DEVICE_TYPE" /> میں سائن ان یا <ph name="LINK_2_BEGIN" />پوشیدگی ونڈو<ph name="LINK_2_END" /> میں ویب براؤز کر سکتے ہیں۔</translation>
