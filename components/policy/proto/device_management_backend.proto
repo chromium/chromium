@@ -4483,8 +4483,7 @@ message CertProvBackendError {
     // connection.
     CA_CONNECTION_NOT_FOUND = 12;
     // The CA connection referenced by the certificate provisioning profile
-    // is referencing a non-existent PubSub topic, or the system does not have
-    // permission to publish to that PubSub topic.
+    // is referencing a non-existent PubSub topic.
     PUBSUB_TOPIC_NOT_FOUND = 13;
     // The Adapter uploaded a certificate that cannot be parsed or was issued
     // for a wrong public key.
@@ -4501,6 +4500,11 @@ message CertProvBackendError {
     IMMEDIATE_RETRY_ERROR_2 = 18;
     IMMEDIATE_RETRY_ERROR_3 = 19;
     IMMEDIATE_RETRY_ERROR_4 = 20;
+    // Google's well-known borg service account used for sending out the initial
+    // Pub/Sub notification to Certificate Provisioning Adapters was not granted
+    // the necessary Pub/Sub Publisher permission in the Google Cloud project
+    // which owns the Pub/Sub topic specified in the CA connection.
+    MISSING_PUBSUB_PUBLISHER_PERMISSION = 21;
   }
 
   // The specific error type.
