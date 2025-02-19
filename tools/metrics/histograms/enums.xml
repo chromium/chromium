@@ -9952,6 +9952,7 @@ from previous Chrome versions.
       label="AutofillEnableUpdateVirtualCardEnrollment:disabled"/>
   <int value="-1643224308"
       label="OmniboxMostVisitedTilesTitleWrapAround:disabled"/>
+  <int value="-1642482834" label="AutofillEnableBuyNowPayLater:disabled"/>
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
   <int value="-1641656402"
       label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
@@ -10252,6 +10253,7 @@ from previous Chrome versions.
   <int value="-1535608870" label="JourneysLabel:enabled"/>
   <int value="-1534970225" label="FilesArchivemount:disabled"/>
   <int value="-1534702850" label="RenderPassDrawnRect:disabled"/>
+  <int value="-1533989961" label="AutofillEnableBuyNowPayLater:enabled"/>
   <int value="-1533450851" label="EnablePerDeskZOrder:enabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>

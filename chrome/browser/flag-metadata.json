@@ -571,12 +571,7 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-buy-now-pay-later-for-affirm",
-    "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "autofill-enable-buy-now-pay-later-for-zip",
+    "name": "autofill-enable-buy-now-pay-later",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
   },

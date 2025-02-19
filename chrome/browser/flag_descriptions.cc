@@ -553,17 +553,11 @@ const char kAutofillEnableAmountExtractionDesktopDescription[] =
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-const char kAutofillEnableBuyNowPayLaterForAffirmName[] =
-    "Enable buy now pay later on Autofill for Affirm";
-const char kAutofillEnableBuyNowPayLaterForAffirmDescription[] =
-    "When enabled, users will have the option to pay with buy now pay later "
-    "with Affirm on specific merchant webpages.";
-
-const char kAutofillEnableBuyNowPayLaterForZipName[] =
-    "Enable buy now pay later on Autofill for Zip";
-const char kAutofillEnableBuyNowPayLaterForZipDescription[] =
-    "When enabled, users will have the option to pay with buy now pay later "
-    "with Zip on specific merchant webpages.";
+const char kAutofillEnableBuyNowPayLaterName[] =
+    "Enable buy now pay later on Autofill";
+const char kAutofillEnableBuyNowPayLaterDescription[] =
+    "When enabled, users will have the option to pay with buy now pay later on "
+    "specific merchant webpages.";
 
 const char kAutofillEnableBuyNowPayLaterSyncingName[] =
     "Enable syncing buy now pay later user data.";

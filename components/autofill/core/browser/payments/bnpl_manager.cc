@@ -27,21 +27,10 @@ namespace {
 // `bnpl_issuer`.
 bool ShouldShowBnplOptionForIssuer(const BnplIssuer& bnpl_issuer,
                                    uint64_t extracted_amount_in_micros) {
-  // Check Affirm eligibility with currency set to USD.
-  // For MVP, BNPL will only targeting to US users and support USD.
-  if (bnpl_issuer.issuer_id() == kBnplAffirmIssuerId &&
-      bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros, "USD") &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableBuyNowPayLaterForAffirm)) {
-    return true;
-  }
-
-  // Check Zip eligibility with currency set to USD.
-  // For MVP, BNPL will only targeting to US users and support USD.
-  if (bnpl_issuer.issuer_id() == kBnplZipIssuerId &&
-      bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros, "USD") &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableBuyNowPayLaterForZip)) {
+  // For MVP, BNPL will only target US users and support USD.
+  if (bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros,
+                                   /*currency=*/"USD") &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater)) {
     return true;
   }
 
@@ -207,10 +196,7 @@ bool BnplManager::ShouldShowBnplSettingsToggle() const {
   return !payments_autofill_client_->GetPaymentsDataManager()
               .GetBnplIssuers()
               .empty() &&
-         (base::FeatureList::IsEnabled(
-              features::kAutofillEnableBuyNowPayLaterForAffirm) ||
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableBuyNowPayLaterForZip));
+         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
 }
 
 }  // namespace autofill::payments
