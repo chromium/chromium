@@ -361,6 +361,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   bool IsForcedColorsModeEnabled() const;
 
+  void ExpandInheritedVisitedProperties(StyleResolverState& state);
+
   enum UASheetCacheKeyIndex {
     kHTMLUASheet,
     kSVGUASheet,

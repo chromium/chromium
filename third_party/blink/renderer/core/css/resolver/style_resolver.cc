@@ -2635,12 +2635,14 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     InitStyle(element, style_request, initial_style, state.ParentStyle(),
               state);
 
+    ExpandInheritedVisitedProperties(state);
+
     // contenteditable attribute (implemented by -webkit-user-modify) should
     // be propagated from shadow host to distributed node.
     //
-    // This can be overridden by matched properties, so we don't want to do it
-    // when we have a cache hit; both this fixup and any overriding of it have
-    // already been applied in the cached data.
+    // This can be overridden by matched properties, so we don't want to do
+    // it when we have a cache hit; both this fixup and any overriding of it
+    // have already been applied in the cached data.
     if (!IsForPseudoElement(element, style_request) && element.AssignedSlot()) {
       if (Element* parent = element.parentElement()) {
         if (!RuntimeEnabledFeatures::
@@ -3026,6 +3028,35 @@ void StyleResolver::Trace(Visitor* visitor) const {
 
 bool StyleResolver::IsForcedColorsModeEnabled() const {
   return GetDocument().InForcedColorsMode();
+}
+
+// Expand inherited visited properties at visited-link boundaries.
+//
+// This expansion normally happens cascade-time (see ExpandCascade),
+// but for performance reasons we only do this when we're inside
+// a visited link. This causes problems when inheriting colors (or
+// other affected properties) into a visited link, since (once inside
+// that visited link), we'll start using the visited color field
+// for rendering, which wasn't expanded higher up in the ancestor chain.
+void StyleResolver::ExpandInheritedVisitedProperties(
+    StyleResolverState& state) {
+  if (state.ParentStyle() &&
+      state.ParentStyle()->InsideLink() == EInsideLink::kNotInsideLink &&
+      state.InsideLink() == EInsideLink::kInsideVisitedLink) {
+    state.StyleBuilder().SetInternalVisitedColor(state.StyleBuilder().Color());
+    state.StyleBuilder().SetInternalVisitedCaretColor(
+        state.StyleBuilder().CaretColor());
+    state.StyleBuilder().SetInternalVisitedFillPaint(
+        state.StyleBuilder().FillPaint());
+    state.StyleBuilder().SetInternalVisitedStrokePaint(
+        state.StyleBuilder().StrokePaint());
+    state.StyleBuilder().SetInternalVisitedTextEmphasisColor(
+        state.StyleBuilder().TextEmphasisColor());
+    state.StyleBuilder().SetInternalVisitedTextFillColor(
+        state.StyleBuilder().TextFillColor());
+    state.StyleBuilder().SetInternalVisitedTextStrokeColor(
+        state.StyleBuilder().TextStrokeColor());
+  }
 }
 
 ComputedStyleBuilder StyleResolver::CreateAnonymousStyleBuilderWithDisplay(

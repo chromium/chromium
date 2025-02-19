@@ -2705,6 +2705,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   friend class LayoutTheme;
   friend class StyleAdjuster;
   friend class StyleResolverState;
+  friend class StyleResolver;
   // Access to UserModify().
   friend class MatchedPropertiesCache;
 
