@@ -241,7 +241,7 @@ class ReadAnythingAppController
   v8::Local<v8::Value> GetImageBitmap(ui::AXNodeID node_id);
   void OnSpeechPlayingStateChanged(bool is_speech_active);
   std::string GetValidatedFontName(const std::string& font) const;
-  std::vector<std::string> GetAllFonts();
+  std::vector<std::string> GetAllFonts() const;
   void OnScrolledToBottom();
   bool IsDocsLoadMoreButtonVisible() const;
 

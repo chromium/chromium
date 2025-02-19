@@ -14,12 +14,15 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/base/l10n/l10n_util.h"
+
+using ::testing::ElementsAre;
 
 class ReadAnythingAppModelTest : public ChromeRenderViewTest {
  public:
@@ -47,6 +50,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   void SetUpWithoutInitialization() {
     model_ = std::make_unique<ReadAnythingAppModel>();
   }
+
+  const ReadAnythingAppModel& model() const { return *model_; }
 
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
     test::SetUpdateTreeID(update, tree_id_);
@@ -222,10 +227,6 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   std::string LanguageCode() { return model_->base_language_code(); }
   void SetLanguageCode(std::string code) { model_->SetBaseLanguageCode(code); }
-
-  std::vector<std::string> GetSupportedFonts() {
-    return model_->GetSupportedFonts();
-  }
 
   void set_is_pdf(bool is_pdf) { return model_->set_is_pdf(is_pdf); }
 
@@ -1685,64 +1686,36 @@ TEST_F(ReadAnythingAppModelTest, LanguageCode_ReturnsCorrectCode) {
 TEST_F(ReadAnythingAppModelTest,
        SupportedFonts_InvalidLanguageCode_ReturnsDefaultFonts) {
   SetLanguageCode("qr");
-  std::vector<std::string> expectedFonts = {"Sans-serif", "Serif"};
-  std::vector<std::string> fonts = GetSupportedFonts();
-
-  EXPECT_EQ(fonts.size(), expectedFonts.size());
-  for (size_t i = 0; i < fonts.size(); i++) {
-    ASSERT_EQ(fonts[i], expectedFonts[i]);
-  }
+  EXPECT_THAT(model().supported_fonts(), ElementsAre("Sans-serif", "Serif"));
 }
 
 TEST_F(ReadAnythingAppModelTest,
        SupportedFonts_BeforeLanguageSet_ReturnsDefaultFonts) {
-  std::vector<std::string> expectedFonts = {
-      "Poppins",       "Sans-serif",  "Serif",
-      "Comic Neue",    "Lexend Deca", "EB Garamond",
-      "STIX Two Text", "Andika",      "Atkinson Hyperlegible"};
-  std::vector<std::string> fonts = GetSupportedFonts();
-
-  EXPECT_EQ(fonts.size(), expectedFonts.size());
-  for (size_t i = 0; i < fonts.size(); i++) {
-    ASSERT_EQ(fonts[i], expectedFonts[i]);
-  }
+  EXPECT_THAT(model().supported_fonts(),
+              ElementsAre("Poppins", "Sans-serif", "Serif", "Comic Neue",
+                          "Lexend Deca", "EB Garamond", "STIX Two Text",
+                          "Andika", "Atkinson Hyperlegible"));
 }
 
 TEST_F(ReadAnythingAppModelTest,
        SupportedFonts_SetLanguageCode_ReturnsExpectedDefaultFonts) {
   // Spanish
   SetLanguageCode("es");
-  std::vector<std::string> expectedFonts = {
-      "Poppins",       "Sans-serif",  "Serif",
-      "Comic Neue",    "Lexend Deca", "EB Garamond",
-      "STIX Two Text", "Andika",      "Atkinson Hyperlegible"};
-  std::vector<std::string> fonts = GetSupportedFonts();
-
-  EXPECT_EQ(fonts.size(), expectedFonts.size());
-  for (size_t i = 0; i < fonts.size(); i++) {
-    ASSERT_EQ(fonts[i], expectedFonts[i]);
-  }
+  EXPECT_THAT(model().supported_fonts(),
+              ElementsAre("Poppins", "Sans-serif", "Serif", "Comic Neue",
+                          "Lexend Deca", "EB Garamond", "STIX Two Text",
+                          "Andika", "Atkinson Hyperlegible"));
 
   // Bulgarian
   SetLanguageCode("bg");
-  expectedFonts = {"Sans-serif", "Serif", "EB Garamond", "STIX Two Text",
-                   "Andika"};
-  fonts = GetSupportedFonts();
-
-  EXPECT_EQ(fonts.size(), expectedFonts.size());
-  for (size_t i = 0; i < fonts.size(); i++) {
-    ASSERT_EQ(fonts[i], expectedFonts[i]);
-  }
+  EXPECT_THAT(model().supported_fonts(),
+              ElementsAre("Sans-serif", "Serif", "EB Garamond", "STIX Two Text",
+                          "Andika"));
 
   // Hindi
   SetLanguageCode("hi");
-  expectedFonts = {"Poppins", "Sans-serif", "Serif"};
-  fonts = GetSupportedFonts();
-
-  EXPECT_EQ(fonts.size(), expectedFonts.size());
-  for (size_t i = 0; i < fonts.size(); i++) {
-    ASSERT_EQ(fonts[i], expectedFonts[i]);
-  }
+  EXPECT_THAT(model().supported_fonts(),
+              ElementsAre("Poppins", "Sans-serif", "Serif"));
 }
 
 TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {

@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "content/public/renderer/render_thread.h"
@@ -59,13 +60,7 @@ bool GetIsGoogleDocs(const GURL& url) {
 
 }  // namespace
 
-ReadAnythingAppModel::ReadAnythingAppModel() {
-  // We default to true since base_language_code_ is en by default and that
-  // supports all these fonts.
-  for (const auto* font : fonts::kReadAnythingFonts) {
-    supported_fonts_[font] = true;
-  }
-}
+ReadAnythingAppModel::ReadAnythingAppModel() = default;
 
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
 
@@ -1075,26 +1070,7 @@ void ReadAnythingAppModel::ToggleImagesEnabled() {
 void ReadAnythingAppModel::SetBaseLanguageCode(const std::string& code) {
   DCHECK(!code.empty());
   base_language_code_ = code;
-  // Update whether each font is supported by the new language code.
-  for (const auto& [font, font_info] : fonts::kFontInfos) {
-    if (font_info.num_langs_supported > 0) {
-      supported_fonts_[font] =
-          (std::find(font_info.langs_supported,
-                     font_info.langs_supported + font_info.num_langs_supported,
-                     code) !=
-           font_info.langs_supported + font_info.num_langs_supported);
-    }
-  }
-}
-
-std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() {
-  std::vector<std::string> font_choices_;
-  for (const auto* font : fonts::kReadAnythingFonts) {
-    if (supported_fonts_[font]) {
-      font_choices_.emplace_back(font);
-    }
-  }
-  return font_choices_;
+  supported_fonts_ = GetSupportedFonts(base_language_code_);
 }
 
 void ReadAnythingAppModel::AddObserver(ModelObserver* observer) {

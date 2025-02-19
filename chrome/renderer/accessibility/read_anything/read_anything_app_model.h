@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -111,7 +112,9 @@ class ReadAnythingAppModel {
 
   void SetBaseLanguageCode(const std::string& code);
 
-  std::vector<std::string> GetSupportedFonts();
+  const std::vector<std::string>& supported_fonts() const {
+    return supported_fonts_;
+  }
 
   // Theme
   const std::string& font_name() const { return font_name_; }
@@ -371,8 +374,11 @@ class ReadAnythingAppModel {
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;
 
-  // Maps fonts to whether the current base_language_code_ supports that font.
-  std::map<std::string_view, bool> supported_fonts_;
+  // Cached set of fonts that support `base_language_code_`, updated whenever
+  // that is changed.
+  std::vector<std::string> supported_fonts_ =
+      GetSupportedFonts(base_language_code_);
+
   // If the page language can't be determined by the model, we can check the
   // AX tree to see if it has that information, but the ax tree is created
   // asynchronously from the language determination so we need to keep track of
