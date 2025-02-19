@@ -147,14 +147,14 @@ void MessengerImpl::OnMessageReceived(const std::string& payload) {
 
 void MessengerImpl::HandleMessage(const std::string& message) {
   // The decoded message should be a JSON string.
-  std::optional<base::Value> message_value = base::JSONReader::Read(message);
-  if (!message_value || !message_value->is_dict()) {
+  std::optional<base::Value::Dict> message_value =
+      base::JSONReader::ReadDict(message);
+  if (!message_value) {
     PA_LOG(ERROR) << "Unable to parse message as JSON:\n" << message;
     return;
   }
 
-  const base::Value::Dict& message_dictionary = message_value->GetDict();
-  const std::string* type = message_dictionary.FindString(kTypeKey);
+  const std::string* type = message_value->FindString(kTypeKey);
   if (!type) {
     PA_LOG(ERROR) << "Missing '" << kTypeKey << "' key in message:\n "
                   << message;
@@ -163,7 +163,7 @@ void MessengerImpl::HandleMessage(const std::string& message) {
 
   // Remote status updates can be received out of the blue.
   if (*type == kMessageTypeRemoteStatusUpdate) {
-    HandleRemoteStatusUpdateMessage(message_dictionary);
+    HandleRemoteStatusUpdateMessage(*message_value);
     return;
   }
 
@@ -193,7 +193,7 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   }
 
   if (*type == kMessageTypeUnlockResponse) {
-    HandleUnlockResponseMessage(message_dictionary);
+    HandleUnlockResponseMessage(*message_value);
   } else {
     NOTREACHED();  // There are no other message types that expect a response.
   }

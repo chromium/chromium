@@ -366,18 +366,16 @@ RollbackNetworkConfig::Importer::~Importer() {
 
 void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
                                              ImportCallback callback) {
-  std::optional<base::Value> managed_onc_network_config =
-      base::JSONReader::Read(network_config);
+  std::optional<base::Value::Dict> managed_onc_network_config =
+      base::JSONReader::ReadDict(network_config);
 
-  if (!managed_onc_network_config.has_value() ||
-      !managed_onc_network_config->is_dict()) {
+  if (!managed_onc_network_config) {
     std::move(callback).Run(false);
     return;
   }
 
-  base::Value::List* network_list =
-      managed_onc_network_config->GetDict().FindList(
-          onc::toplevel_config::kNetworkConfigurations);
+  base::Value::List* network_list = managed_onc_network_config->FindList(
+      onc::toplevel_config::kNetworkConfigurations);
   if (!network_list) {
     std::move(callback).Run(false);
     return;

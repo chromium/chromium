@@ -450,18 +450,18 @@ FakeSamlIdpMixin::BuildHTMLResponse(const std::string& response_html) const {
 
 void FakeSamlIdpMixin::SaveChallengeResponse(const std::string& response) {
   EXPECT_EQ(challenge_response_, std::nullopt);
-  auto parsed_value = base::JSONReader::Read(
+  auto parsed_value = base::JSONReader::ReadDict(
       response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
-  if (!parsed_value || !parsed_value->is_dict()) {
+  if (!parsed_value) {
     // Most likely given a V1, no need to try parsing the values out.
     challenge_response_ = response;
     return;
   }
 
   const std::string* challenge_response_string =
-      parsed_value->GetDict().FindString("challengeResponse");
-  const std::string* error_string = parsed_value->GetDict().FindString("error");
+      parsed_value->FindString("challengeResponse");
+  const std::string* error_string = parsed_value->FindString("error");
 
   // Only one of those values should be set.
   EXPECT_NE(!!challenge_response_string, !!error_string);

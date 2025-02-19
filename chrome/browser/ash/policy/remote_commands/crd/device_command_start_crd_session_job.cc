@@ -191,8 +191,9 @@ DeviceCommandStartCrdSessionJob::GetType() const {
 
 bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root || !root->is_dict()) {
+  std::optional<base::Value::Dict> root =
+      base::JSONReader::ReadDict(command_payload);
+  if (!root) {
     LOG(WARNING) << "Rejecting remote command with invalid payload: "
                  << std::quoted(command_payload);
     return false;
@@ -200,22 +201,19 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   CRD_VLOG(1) << "Received remote command with payload "
               << std::quoted(command_payload);
 
-  const base::Value::Dict& root_dict = root->GetDict();
-
   idleness_cutoff_ =
-      base::Seconds(root_dict.FindInt(kIdlenessCutoffFieldName).value_or(0));
+      base::Seconds(root->FindInt(kIdlenessCutoffFieldName).value_or(0));
 
   acked_user_presence_ =
-      root_dict.FindBool(kAckedUserPresenceFieldName).value_or(false);
+      root->FindBool(kAckedUserPresenceFieldName).value_or(false);
 
   CrdSessionType crd_session_type =
-      ToCrdSessionTypeOrDefault(root_dict.FindInt(kCrdSessionTypeFieldName),
+      ToCrdSessionTypeOrDefault(root->FindInt(kCrdSessionTypeFieldName),
                                 CrdSessionType::REMOTE_SUPPORT_SESSION);
 
-  admin_email_ = FindString(root_dict, kAdminEmailFieldName);
+  admin_email_ = FindString(*root, kAdminEmailFieldName);
 
-  show_confirmation_dialog_ =
-      root_dict.FindBool(kShowConfirmationDialogFieldName);
+  show_confirmation_dialog_ = root->FindBool(kShowConfirmationDialogFieldName);
 
   curtain_local_user_session_ =
       (crd_session_type == CrdSessionType::REMOTE_ACCESS_SESSION);
