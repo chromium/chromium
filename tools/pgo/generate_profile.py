@@ -488,7 +488,6 @@ def main():
             f'rendering.{platform}',
             '--also-run-disabled-tests',
             '--story-tag-filter=motionmark_fixed_2_seconds',
-            '--story-filter-exclude=motionmark_fixed_2_seconds_images',
         ])
 
     fail_count = run_benchmarks(benchmarks, args)
