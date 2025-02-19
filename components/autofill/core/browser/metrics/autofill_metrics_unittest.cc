@@ -212,10 +212,12 @@ TEST_F(AutofillMetricsTest, PerfectFilling_Addresses_CreditCards) {
   autofill_manager().AddSeenForm(payments_form,
                                  {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
   autofill_manager()
-      .GetAutofillField(address_form, address_form.fields().front())
+      .GetAutofillField(address_form.global_id(),
+                        address_form.fields().front().global_id())
       ->set_filling_product(FillingProduct::kAddress);
   autofill_manager()
-      .GetAutofillField(payments_form, payments_form.fields().front())
+      .GetAutofillField(payments_form.global_id(),
+                        payments_form.fields().front().global_id())
       ->set_filling_product(FillingProduct::kCreditCard);
 
   base::HistogramTester histogram_tester;

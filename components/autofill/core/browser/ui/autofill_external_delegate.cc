@@ -299,7 +299,8 @@ void AutofillExternalDelegate::OnQuery(
 }
 
 const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
-  return manager_->GetAutofillField(query_form_, query_field_);
+  return manager_->GetAutofillField(query_form_.global_id(),
+                                    query_field_.global_id());
 }
 
 void AutofillExternalDelegate::OnSuggestionsReturned(

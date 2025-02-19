@@ -664,7 +664,8 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
     return false;
   }
 
-  AutofillField* autofill_field = GetAutofillField(form, field);
+  AutofillField* autofill_field =
+      GetAutofillField(form.global_id(), field.global_id());
   if (!autofill_field) {
     return false;
   }
@@ -698,7 +699,8 @@ bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     return false;
   }
   // Check whether we are dealing with a credit card field.
-  AutofillField* autofill_field = GetAutofillField(form, field);
+  AutofillField* autofill_field =
+      GetAutofillField(form.global_id(), field.global_id());
   if (!autofill_field ||
       autofill_field->Type().group() != FieldTypeGroup::kCreditCard ||
       // Exclude CVC and card type fields, because these will not have
@@ -2075,7 +2077,8 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
   client().GetSingleFieldFillRouter().OnSingleFieldSuggestionSelected(
       suggestion);
 
-  AutofillField* autofill_trigger_field = GetAutofillField(form, field);
+  AutofillField* autofill_trigger_field =
+      GetAutofillField(form.global_id(), field.global_id());
   if (!autofill_trigger_field) {
     return;
   }
@@ -2567,12 +2570,12 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
 }
 
 AutofillField* BrowserAutofillManager::GetAutofillField(
-    const FormData& form,
-    const FormFieldData& field) const {
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) const {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
-                             &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form_id, field_id, &form_structure,
+                             &autofill_field)) {
     return nullptr;
   }
 

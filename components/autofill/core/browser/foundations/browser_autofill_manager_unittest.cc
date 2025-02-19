@@ -3202,7 +3202,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
                                      .is_autofilled = true}}});
   FormsSeen({form});
   manager()
-      .GetAutofillField(form, form.fields()[0])
+      .GetAutofillField(form.global_id(), form.fields()[0].global_id())
       ->set_autofilled_type(NAME_FULL);
   personal_data().test_address_data_manager().ClearProfiles();
   personal_data().test_address_data_manager().AddProfile(
@@ -4283,7 +4283,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
   FormSubmitted(form);
 
   const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
-      manager().GetAutofillField(form, form.fields()[0])->field_log_events();
+      manager()
+          .GetAutofillField(form.global_id(), form.fields()[0].global_id())
+          ->field_log_events();
   ASSERT_EQ(CountEventOfType<FillFieldLogEvent>(fill_field_log_events), 1u);
   EXPECT_THAT(
       *FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events),

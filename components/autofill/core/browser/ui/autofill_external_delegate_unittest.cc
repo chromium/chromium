@@ -387,8 +387,8 @@ class AutofillExternalDelegateTest : public testing::Test {
   // Returns the triggering `AutofillField`. This is the only field in the form
   // created in `IssueOnQuery()`.
   AutofillField* get_triggering_autofill_field() {
-    return manager().GetAutofillField(queried_form(),
-                                      queried_form().fields()[0]);
+    return manager().GetAutofillField(queried_form().global_id(),
+                                      queried_form().fields()[0].global_id());
   }
 
   Matcher<const FormData&> HasQueriedFormId() {
