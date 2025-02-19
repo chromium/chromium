@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_api.pb.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
@@ -84,6 +85,22 @@ google::internal::identity::passwords::leak::check::v1::
   NOTREACHED();
 }
 
+std::string InitiatorToRequestCriticality(LeakDetectionInitiator initiator) {
+  switch (initiator) {
+    case LeakDetectionInitiator::kSignInCheck:
+    case LeakDetectionInitiator::kBulkSyncedPasswordsCheck:
+    case LeakDetectionInitiator::kEditCheck:
+    case LeakDetectionInitiator::kIGABulkSyncedPasswordsCheck:
+    case LeakDetectionInitiator::kClientUseCaseUnspecified:
+    case LeakDetectionInitiator::kIOSWebViewSignInCheck:
+      return LeakDetectionRequest::kRequestCriticalityCritical;
+    case LeakDetectionInitiator::kDesktopProactivePasswordCheckup:
+    case LeakDetectionInitiator::kIosProactivePasswordCheckup:
+      return LeakDetectionRequest::kRequestCriticalitySheddablePlus;
+  }
+  NOTREACHED();
+}
+
 google::internal::identity::passwords::leak::check::v1::LookupSingleLeakRequest
 MakeLookupSingleLeakRequest(LookupSingleLeakPayload payload) {
   google::internal::identity::passwords::leak::check::v1::
@@ -96,8 +113,6 @@ MakeLookupSingleLeakRequest(LookupSingleLeakPayload payload) {
 }
 
 }  // namespace
-
-constexpr char LeakDetectionRequest::kLookupSingleLeakEndpoint[];
 
 LeakDetectionRequest::LeakDetectionRequest() = default;
 
@@ -172,6 +187,15 @@ void LeakDetectionRequest::LookupSingleLeak(
   }
   if (api_key.has_value()) {
     resource_request->headers.SetHeader(kAuthHeaderApiKey, api_key.value());
+  }
+
+  // TODO: crbug.com/375211530 - clean up kill switch once change is in stable
+  // release for a month.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSetLeakCheckRequestCriticality)) {
+    resource_request->headers.SetHeader(
+        kRequestCriticalityHeader,
+        InitiatorToRequestCriticality(payload.initiator));
   }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(

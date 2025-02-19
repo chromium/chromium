@@ -118,6 +118,10 @@ BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 BASE_DECLARE_FEATURE(kBiometricsAuthForPwdFill);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Sets request criticality when calling leak check service to detect leaked
+// passwords.
+BASE_DECLARE_FEATURE(kSetLeakCheckRequestCriticality);
+
 // Displays at least the decryptable and never saved logins in the password
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
