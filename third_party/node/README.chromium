@@ -563,7 +563,7 @@ Local Modifications:
 Name: Microsoft Authentication Library for JavaScript (MSAL.js) for Browser-Based Single-Page Applications
 Short Name: msal-browser
 URL: https://www.npmjs.com/package/@azure/msal-browser
-Version: 3.27.0
+Version: 4.2.1
 License: MIT
 License File: MSAL_LICENSE
 Security Critical: yes
