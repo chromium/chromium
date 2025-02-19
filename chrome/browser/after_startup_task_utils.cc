@@ -155,19 +155,11 @@ class StartupObserver : public performance_manager::GraphOwned,
   StartupObserver() = default;
 
   void OnStartupComplete() {
-    if (!PerformanceManager::IsAvailable()) {
-      // Already shutting down before startup finished. Do not notify.
-      return;
-    }
+    CHECK(PerformanceManager::IsAvailable());
 
-    // This should only be called once.
-    if (!startup_complete_) {
-      startup_complete_ = true;
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete));
-      // This will result in delete getting called.
-      TakeFromGraph();
-    }
+    SetBrowserStartupIsComplete();
+    // This will result in delete getting called.
+    TakeFromGraph();
   }
 
   // GraphOwned overrides
@@ -191,35 +183,22 @@ class StartupObserver : public performance_manager::GraphOwned,
     }
   }
 
-  void PassToGraph() {
-    // Pass to the performance manager so we can get notified when
-    // loading completes.  Ownership of this object is passed to the
-    // performance manager.
-    DCHECK(PerformanceManager::IsAvailable());
-    PerformanceManager::PassToGraph(FROM_HERE, base::WrapUnique(this));
-  }
-
   void TakeFromGraph() {
     // Remove this object from the performance manager.  This will
     // cause the object to be deleted.
-    DCHECK(PerformanceManager::IsAvailable());
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(
-                       [](performance_manager::GraphOwned* observer,
-                          performance_manager::Graph* graph) {
-                         graph->TakeFromGraph(observer);
-                       },
-                       base::Unretained(this)));
+    CHECK(PerformanceManager::IsAvailable());
+    PerformanceManager::GetGraph()->TakeFromGraph(this);
   }
-
-  bool startup_complete_ = false;
 };
 
 // static
 void StartupObserver::Start() {
-  // Create the StartupObserver and pass it to the Performance Manager which
-  // will own it going forward.
-  (new StartupObserver)->PassToGraph();
+  CHECK(PerformanceManager::IsAvailable());
+
+  // Pass a new StartupObserver to the performance manager so we can get
+  // notified when loading completes. The performance manager takes ownership.
+  PerformanceManager::GetGraph()->PassToGraph(
+      base::WrapUnique(new StartupObserver()));
 }
 
 }  // namespace
