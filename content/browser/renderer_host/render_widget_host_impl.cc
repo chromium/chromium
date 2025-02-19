@@ -447,6 +447,14 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   agent_scheduling_group_->GetProcess()->AddPriorityClient(this);
 
   SetupRenderInputRouter();
+  if (!frame_tree || !frame_tree->is_primary()) {
+    // We are preserving the old behavior for non-primary frames because the
+    // paint-holding signal seems missing in non-primary frames, and more
+    // importantly, releasing input early is fine in this case because the page
+    // either does not receive an input (kPrerender) or is a non-top-frame
+    // (where holding back input is not needed, crbug.com/40074208).
+    input_router()->MakeActive();
+  }
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kDisableNewContentRenderingTimeout)) {
@@ -584,6 +592,15 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
     MaybeDispatchBufferedFrameSinkRequest();
     is_topmost_frame_widget_with_view_ =
         !view->IsRenderWidgetHostViewChildFrame() && !self_owned_;
+
+    if (!is_topmost_frame_widget_with_view_) {
+      // We need to drop input only for the topmost frame shown to the user, see
+      // crbug.com/40074208.
+      //
+      // TODO(https://crbug.com/397701273): What happens to the input events to
+      // a subframe in the navigated page?
+      input_router()->MakeActive();
+    }
 
     // SendScreenRects() and SynchronizeVisualProperties() delay until a view
     // is set, however we come here with a newly created `view` that is not
@@ -2449,6 +2466,8 @@ void RenderWidgetHostImpl::ClearDisplayedGraphics() {
   // we will release input events at this point anyway.  So for our purpose,
   // this is equivalent to receiving the signal.
   first_content_metadata_received_ = true;
+
+  input_router()->MakeActive();
 }
 
 void RenderWidgetHostImpl::OnKeyboardEventAck(
@@ -3757,6 +3776,7 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
   if (!first_content_metadata_received_) {
     first_content_metadata_received_ = true;
     first_content_metadata_time_ = base::TimeTicks::Now();
+    input_router()->MakeActive();
   }
 
   const auto& metadata =

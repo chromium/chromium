@@ -16,6 +16,7 @@
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "components/input/input_constants.h"
 #include "components/input/input_router_config_helper.h"
+#include "components/input/input_router_impl.h"
 #include "components/input/render_input_router_client.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/render_widget_host_view_input.h"

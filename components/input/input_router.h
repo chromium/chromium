@@ -38,6 +38,12 @@ class InputRouter {
 
   virtual ~InputRouter() = default;
 
+  // The input router starts in an inactive state and becomes active when the
+  // browser gets the notification that the renderer has produced content.  All
+  // input events are dropped during the inactive state.
+  bool IsActive() const { return active_; }
+  void MakeActive() { active_ = true; }
+
   // Note: if the event is processed immediately, the supplied callback is run
   // *synchronously*. If |this| is destroyed while waiting on a result from
   // the renderer, then callbacks are *not* run.
@@ -113,6 +119,9 @@ class InputRouter {
   // OOPIF hit-testing will need to wait until updated CompositorFrames have
   // been submitted to the browser.
   virtual void WaitForInputProcessed(base::OnceClosure callback) = 0;
+
+ private:
+  bool active_ = false;
 };
 
 }  // namespace input

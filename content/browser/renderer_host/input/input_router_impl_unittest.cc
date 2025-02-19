@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
@@ -108,14 +109,18 @@ class InputRouterImplTestBase : public testing::Test {
 
  protected:
   using DispatchedMessages = MockWidgetInputHandler::MessageVector;
-  // testing::Test
-  void SetUp() override {
+
+  void SetUpWithInputRouterActiveState(bool active) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(input::switches::kValidateInputEventStream);
     client_ = std::make_unique<MockInputRouterClient>();
     disposition_handler_ = std::make_unique<MockInputDispositionHandler>();
+
     input_router_ = std::make_unique<input::InputRouterImpl>(
         client_.get(), disposition_handler_.get(), client_.get(), config_);
+    if (active) {
+      input_router_->MakeActive();
+    }
 
     client_->set_input_router(input_router());
     disposition_handler_->set_input_router(input_router());
@@ -131,6 +136,9 @@ class InputRouterImplTestBase : public testing::Test {
         new MockRenderWidgetHostViewForStylusWriting(widget_host_.get());
     client_->set_render_widget_host_view(mock_view_.get());
   }
+
+  // testing::Test
+  void SetUp() override { SetUpWithInputRouterActiveState(true); }
 
   std::unique_ptr<RenderWidgetHostImpl> MakeNewWidgetHost() {
     int32_t routing_id = process_host_->GetNextRoutingID();
@@ -2133,6 +2141,50 @@ TEST_F(InputRouterImplTest,
       HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
   OnHasTouchEventConsumers(std::move(touch_event_consumers));
   StopTimeoutMonitorTest();
+}
+
+namespace {
+
+class InputRouterImplPaintHoldingStateTest : public InputRouterImplTestBase {
+ public:
+  InputRouterImplPaintHoldingStateTest() = default;
+
+  // testing::Test
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kDropInputEventsWhilePaintHolding);
+    SetUpWithInputRouterActiveState(false);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+TEST_F(InputRouterImplPaintHoldingStateTest, InactiveThenActive) {
+  // Before getting activated by the paint-holding signal, the input router
+  // should not send an input event to the renderer.
+  SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
+  DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(0u, dispatched_messages.size());
+  EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+  EXPECT_EQ(WebInputEvent::Type::kRawKeyDown,
+            disposition_handler_->acked_keyboard_event().GetType());
+
+  // The input router gets activated by the paint-holding signal after a while.
+  input_router_->MakeActive();
+
+  // Now the input router should send an input event to the renderer.
+  SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
+  dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(1u, dispatched_messages.size());
+  ASSERT_TRUE(dispatched_messages[0]->ToEvent());
+  dispatched_messages[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+  EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+  EXPECT_EQ(WebInputEvent::Type::kRawKeyDown,
+            disposition_handler_->acked_keyboard_event().GetType());
 }
 
 namespace {
