@@ -203,7 +203,7 @@ Locale& ColorChooserPopupUIController::GetLocale() {
 void ColorChooserPopupUIController::SetValueAndClosePopup(
     int num_value,
     const String& string_value,
-    const bool is_keyboard_event) {
+    bool is_keyboard_event) {
   DCHECK(popup_);
   DCHECK(client_);
   if (num_value == kColorPickerPopupActionSetValue)

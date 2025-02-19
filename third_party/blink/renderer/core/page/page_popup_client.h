@@ -84,7 +84,7 @@ class CORE_EXPORT PagePopupClient {
   // ChromeClient::closePagePopup().
   virtual void SetValueAndClosePopup(int num_value,
                                      const String& string_value,
-                                     const bool is_keyboard_event) = 0;
+                                     bool is_keyboard_event) = 0;
 
   // This is called by the content HTML of a PagePopup.
   virtual void SetValue(const String&) = 0;

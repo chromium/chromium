@@ -3962,6 +3962,8 @@
     {
       // If enabled, the select element will not dispatch a mouseup event when
       // an option is selected using the keyboard.
+      // This should ship in M135, and it can be removed after M137.
+      // http://crbug.com/396611142
       name: "SelectNoMouseUpForKeyboardSelection",
       status: "stable",
     },

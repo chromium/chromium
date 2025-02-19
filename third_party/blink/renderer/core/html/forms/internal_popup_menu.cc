@@ -580,7 +580,7 @@ CSSFontSelector* InternalPopupMenu::CreateCSSFontSelector(
 
 void InternalPopupMenu::SetValueAndClosePopup(int num_value,
                                               const String& string_value,
-                                              const bool is_keyboard_event) {
+                                              bool is_keyboard_event) {
   DCHECK(popup_);
   DCHECK(owner_element_);
   if (!string_value.empty()) {
