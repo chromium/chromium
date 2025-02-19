@@ -59,6 +59,11 @@ extern const char kAutofillEnableCardBenefitsForBmoDescription[];
 extern const char kAutofillEnableCardBenefitsSyncName[];
 extern const char kAutofillEnableCardBenefitsSyncDescription[];
 
+// Title and description for the flag to enable "expired" text on expired cards
+// for autofill Payments UI.
+extern const char kAutofillEnableCardExpiredTextName[];
+extern const char kAutofillEnableCardExpiredTextDescription[];
+
 // Title and description for the flag to enable dynamically loading the fields
 // for address input based on the country value.
 extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];

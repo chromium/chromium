@@ -2484,6 +2484,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kBestFeaturesScreenInFirstRun,
                                     kBestFeaturesScreenInFirstRunVariations,
                                     "BestFeaturesScreenInFirstRun")},
+    {"autofill-enable-card-expired-text",
+     flag_descriptions::kAutofillEnableCardExpiredTextName,
+     flag_descriptions::kAutofillEnableCardExpiredTextDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardExpiredText)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
