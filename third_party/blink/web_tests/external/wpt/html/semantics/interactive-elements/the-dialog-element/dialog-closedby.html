@@ -27,18 +27,21 @@
 <script>
   function openDialog(dialog,modal) {
     assert_false(dialog.open);
+    assert_false(dialog.matches(':open'));
     if (modal) {
       dialog.showModal();
     } else {
       dialog.show();
     }
     assert_true(dialog.open);
+    assert_true(dialog.matches(':open'));
     assert_equals(dialog.matches(':modal'),modal);
   }
   function runTest(dialog) {
     for(modal of [false,true]) {
       promise_test(async (t) => {
         assert_false(dialog.open);
+        assert_false(dialog.matches(':open'));
         t.add_cleanup(() => dialog.close());
         // Try hitting ESC
         openDialog(dialog,modal);
@@ -46,11 +49,13 @@
         const ESC = '\uE00C';
         await new test_driver.send_keys(document.documentElement,ESC);
         const respondsToEsc = !dialog.open;
+        const respondsToEsc2 = !dialog.matches(':open');
         dialog.close();
         // Try clicking outside
         openDialog(dialog,modal);
         await clickOn(outside);
         const respondsToLightDismiss = !dialog.open;
+        const respondsToLightDismiss2 = !dialog.matches(':open');
         dialog.close();
         // See if expectations match
         let expectedReflectionWhileOpen = dialog.dataset.behavior;
@@ -58,15 +63,21 @@
         switch (dialog.dataset.behavior) {
           case 'any':
             assert_true(respondsToEsc,'Dialog should respond to ESC');
+            assert_true(respondsToEsc2,'Dialog should respond to ESC (:open)');
             assert_true(respondsToLightDismiss,'Dialog should respond to light dismiss');
+            assert_true(respondsToLightDismiss2,'Dialog should respond to light dismiss (:open)');
             break;
           case 'closerequest':
             assert_true(respondsToEsc,'Dialog should respond to ESC');
+            assert_true(respondsToEsc2,'Dialog should respond to ESC (:open)');
             assert_false(respondsToLightDismiss,'Dialog should NOT respond to light dismiss');
+            assert_false(respondsToLightDismiss2,'Dialog should NOT respond to light dismiss (:open)');
             break;
           case 'none':
             assert_false(respondsToEsc,'Dialog should NOT respond to ESC');
+            assert_false(respondsToEsc2,'Dialog should NOT respond to ESC (:open)');
             assert_false(respondsToLightDismiss,'Dialog should NOT respond to light dismiss');
+            assert_false(respondsToLightDismiss2,'Dialog should NOT respond to light dismiss (:open)');
             break;
           case 'auto':
             if (modal) {
