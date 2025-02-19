@@ -357,7 +357,9 @@ class LensOverlayQueryController {
   // Creates the PageContentRequest that is sent to the server and performs the
   // request. Prefer to use PrepareAndFetchPageContentRequest() directly since
   // it calls this method after doing the necessary preprocessing.
-  void PrepareAndFetchPageContentRequestPart2(lens::Payload payload);
+  void PrepareAndFetchPageContentRequestPart2(
+      lens::LensOverlayRequestId request_id,
+      lens::Payload payload);
 
   // Performs the page content request. This is a send and forget request, so we
   // are not expecting a response.
@@ -623,6 +625,11 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       interaction_access_token_fetcher_;
 
+  // The request id to use for the first batch of requests. The requests sent on
+  // the start of the query flow will use this request id. Subsequent requests
+  // will use the request id generator.
+  std::unique_ptr<lens::LensOverlayRequestId> initial_request_id_;
+
   // The data for the full image request in progress. Is null if no full image
   // request has been made.
   std::unique_ptr<LensServerFetchRequest> latest_full_image_request_data_;
@@ -702,8 +709,15 @@ class LensOverlayQueryController {
   // content request to finish uploading.
   base::OnceClosure pending_contextual_query_callback_;
 
-  // Whether or not a page contents request has been sent.
-  bool page_contents_request_sent_ = false;
+  // Whether or not this is the first page contents request being sent to the
+  // server. Used to determine whether or not to generate a new request id for
+  // the next request.
+  bool is_first_page_contents_request_ = true;
+
+  // Whether or not this is the first partial page contents request being sent
+  // to the server. Used to determine whether or not to generate a new request
+  // id for the next request.
+  bool is_first_partial_page_contents_request_ = true;
 
   // The invocation source that triggered the query flow.
   lens::LensOverlayInvocationSource invocation_source_;
