@@ -36,6 +36,8 @@ import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -205,7 +207,10 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
 
-        if (!signinManager.isSigninAllowed()) {
+        IdentityManager identityManager = signinManager.getIdentityManager();
+
+        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                && !signinManager.isSigninAllowed()) {
             // The signin option is disabled manually by the user in settings.
             openSigninSettingsModel(resultCallback);
             return;

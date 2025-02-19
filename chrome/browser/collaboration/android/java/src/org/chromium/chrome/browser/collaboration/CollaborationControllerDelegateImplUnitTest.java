@@ -46,6 +46,7 @@ import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -81,6 +82,7 @@ public class CollaborationControllerDelegateImplUnitTest {
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private Callback<Runnable> mSwitchToTabSwitcherCallback;
+    @Mock private IdentityManager mIdentityManager;
 
     @Mock
     private CollaborationControllerDelegateImpl.Natives
@@ -98,6 +100,8 @@ public class CollaborationControllerDelegateImplUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
 
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
+        doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
+        doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
         doReturn(true).when(mSigninManager).isSigninAllowed();
         doReturn((long) 0)
                 .when(mCollaborationControllerDelegateImplNativeMock)
