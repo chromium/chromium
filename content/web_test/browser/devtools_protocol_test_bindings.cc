@@ -27,7 +27,7 @@
 #include "content/web_test/common/web_test_switches.h"
 #include "ipc/ipc_channel.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "content/public/browser/devtools_frontend_host.h"
 #endif
 
@@ -95,7 +95,7 @@ void DevToolsProtocolTestBindings::ParseLog(std::string_view log) {
 
 void DevToolsProtocolTestBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
   if (frame->GetParent())
     return;

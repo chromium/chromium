@@ -3484,7 +3484,7 @@ source_set("browser") {
     ]
   }
 
-  if (!is_android && !is_ios) {
+  if (!is_android && !is_ios && !is_fuchsia) {
     sources += [
       # Devtools frontend not included in Android and iOS
       "devtools/devtools_frontend_host_impl.cc",
