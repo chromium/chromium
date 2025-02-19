@@ -492,6 +492,7 @@ void BidderWorklet::BeginGenerateBid(
     const url::Origin& browser_signal_seller_origin,
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const base::TimeDelta browser_signal_recency,
+    bool browser_signal_for_debugging_only_sampling,
     blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
@@ -513,6 +514,8 @@ void BidderWorklet::BeginGenerateBid(
   generate_bid_task->browser_signal_top_level_seller_origin =
       browser_signal_top_level_seller_origin;
   generate_bid_task->browser_signal_recency = browser_signal_recency;
+  generate_bid_task->browser_signal_for_debugging_only_sampling =
+      browser_signal_for_debugging_only_sampling;
   generate_bid_task->bidding_browser_signals =
       std::move(bidding_browser_signals);
   generate_bid_task->auction_start_time = auction_start_time;
@@ -1360,6 +1363,7 @@ void BidderWorklet::V8State::GenerateBid(
     const url::Origin& browser_signal_seller_origin,
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const base::TimeDelta browser_signal_recency,
+    bool browser_signal_for_debugging_only_sampling,
     blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
@@ -1387,9 +1391,9 @@ void BidderWorklet::V8State::GenerateBid(
       direct_from_seller_auction_signals_header_ad_slot, per_buyer_timeout,
       expected_buyer_currency, browser_signal_seller_origin,
       base::OptionalToPtr(browser_signal_top_level_seller_origin),
-      browser_signal_recency, bidding_browser_signals, auction_start_time,
-      requested_ad_size, multi_bid_limit, trusted_bidding_signals_result,
-      trace_id,
+      browser_signal_recency, browser_signal_for_debugging_only_sampling,
+      bidding_browser_signals, auction_start_time, requested_ad_size,
+      multi_bid_limit, trusted_bidding_signals_result, trace_id,
       /*context_recycler_for_rerun=*/nullptr,
       /*restrict_to_kanon_ads=*/false);
 
@@ -1459,9 +1463,9 @@ void BidderWorklet::V8State::GenerateBid(
             per_buyer_timeout, expected_buyer_currency,
             browser_signal_seller_origin,
             base::OptionalToPtr(browser_signal_top_level_seller_origin),
-            browser_signal_recency, bidding_browser_signals, auction_start_time,
-            requested_ad_size, /* multi_bid_limit=*/1,
-            trusted_bidding_signals_result, trace_id,
+            browser_signal_recency, browser_signal_for_debugging_only_sampling,
+            bidding_browser_signals, auction_start_time, requested_ad_size,
+            /* multi_bid_limit=*/1, trusted_bidding_signals_result, trace_id,
             std::move(result->context_recycler_for_rerun),
             /*restrict_to_kanon_ads=*/true);
       } else {
@@ -1562,6 +1566,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     const url::Origin& browser_signal_seller_origin,
     const url::Origin* browser_signal_top_level_seller_origin,
     const base::TimeDelta browser_signal_recency,
+    bool browser_signal_for_debugging_only_sampling,
     const blink::mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
@@ -1884,6 +1889,12 @@ BidderWorklet::V8State::RunGenerateBidOnce(
            "forDebuggingOnlyInCooldownOrLockout",
            bidding_browser_signals
                ->for_debugging_only_in_cooldown_or_lockout)) ||
+      (base::FeatureList::IsEnabled(
+           blink::features::kBiddingAndScoringDebugReportingAPI) &&
+       base::FeatureList::IsEnabled(
+           blink::features::kFledgeEnableSampleDebugReportOnCookieSetting) &&
+       !browser_signals_dict.Set("forDebuggingOnlySampling",
+                                 browser_signal_for_debugging_only_sampling)) ||
       // `adComponentsLimit` is reported only when the corresponding change
       // is rolled out, to avoid affecting behavior if it's not.
       (base::FeatureList::IsEnabled(
@@ -2699,6 +2710,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           std::move(task->browser_signal_seller_origin),
           std::move(task->browser_signal_top_level_seller_origin),
           std::move(task->browser_signal_recency),
+          task->browser_signal_for_debugging_only_sampling,
           std::move(task->bidding_browser_signals), task->auction_start_time,
           std::move(task->requested_ad_size), task->multi_bid_limit,
           std::move(task->trusted_bidding_signals_result),

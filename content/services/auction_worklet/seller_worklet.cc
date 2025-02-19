@@ -563,6 +563,7 @@ void SellerWorklet::ScoreAd(
         browser_signal_buyer_and_seller_reporting_id,
     uint32_t browser_signal_bidding_duration_msecs,
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
+    bool browser_signal_for_debugging_only_sampling,
     const std::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
     const url::Origin& bidder_joining_origin,
@@ -600,6 +601,8 @@ void SellerWorklet::ScoreAd(
       browser_signal_bidding_duration_msecs;
   score_ad_task->browser_signal_for_debugging_only_in_cooldown_or_lockout =
       browser_signal_for_debugging_only_in_cooldown_or_lockout;
+  score_ad_task->browser_signal_for_debugging_only_sampling =
+      browser_signal_for_debugging_only_sampling;
   score_ad_task->seller_timeout = seller_timeout;
   score_ad_task->trace_id = trace_id;
   score_ad_task->score_ad_client.Bind(std::move(score_ad_client));
@@ -977,6 +980,7 @@ void SellerWorklet::V8State::ScoreAd(
         browser_signal_buyer_and_seller_reporting_id,
     uint32_t browser_signal_bidding_duration_msecs,
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
+    bool browser_signal_for_debugging_only_sampling,
     const std::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
     base::ScopedClosureRunner cleanup_score_ad_task,
@@ -1174,6 +1178,12 @@ void SellerWorklet::V8State::ScoreAd(
        !browser_signals_dict.Set(
            "forDebuggingOnlyInCooldownOrLockout",
            browser_signal_for_debugging_only_in_cooldown_or_lockout)) ||
+      (base::FeatureList::IsEnabled(
+           blink::features::kBiddingAndScoringDebugReportingAPI) &&
+       base::FeatureList::IsEnabled(
+           blink::features::kFledgeEnableSampleDebugReportOnCookieSetting) &&
+       !browser_signals_dict.Set("forDebuggingOnlySampling",
+                                 browser_signal_for_debugging_only_sampling)) ||
       (ad->creative_scanning_metadata.has_value() &&
        creative_scanning_enabled_ &&
        !browser_signals_dict.Set("creativeScanningMetadata",
@@ -2367,6 +2377,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           std::move(task->browser_signal_buyer_and_seller_reporting_id),
           task->browser_signal_bidding_duration_msecs,
           task->browser_signal_for_debugging_only_in_cooldown_or_lockout,
+          task->browser_signal_for_debugging_only_sampling,
           std::move(task->seller_timeout), task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_score_ad_task)),
           /*task_enqueued_time=*/base::TimeTicks::Now(),
