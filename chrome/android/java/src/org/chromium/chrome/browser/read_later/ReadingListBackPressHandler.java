@@ -77,7 +77,7 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
                 && mBookmarkModelSupplier.get().areAccountBookmarkFoldersActive()) {
             BookmarkUtils.showBookmarkManager(null, mLastUsedParent, tab.getProfile());
         } else {
-            ReadingListUtils.showReadingList(tab.getProfile());
+            BookmarkUtils.showReadingList(tab.getProfile());
         }
 
         WebContents webContents = tab.getWebContents();

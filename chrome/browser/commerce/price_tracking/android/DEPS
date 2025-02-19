@@ -4,12 +4,12 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/ShortcutHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkModelObserver.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/TabBookmarker.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/init/ChromeBrowserInitializer.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java",
+  "+chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/TabBookmarker.java",
   "+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcher.java",
   "+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcherFactory.java",
 ]

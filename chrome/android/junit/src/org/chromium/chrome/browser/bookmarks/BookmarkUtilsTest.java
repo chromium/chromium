@@ -53,6 +53,7 @@ import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link BookmarkUtils}. */
 @Batch(Batch.UNIT_TESTS)
@@ -235,5 +236,21 @@ public class BookmarkUtilsTest {
         BookmarkId managedFolder =
                 mBookmarkModel.addManagedFolder(mBookmarkModel.getMobileFolderId(), "managed");
         assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, managedFolder));
+    }
+
+    @Test
+    public void isReadingListSupported() {
+        assertFalse(BookmarkUtils.isReadingListSupported(null));
+        assertFalse(BookmarkUtils.isReadingListSupported(GURL.emptyGURL()));
+        assertFalse(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.NTP_URL));
+        assertTrue(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.EXAMPLE_URL));
+        assertTrue(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.HTTP_URL));
+
+        // empty url
+        GURL testUrl = GURL.emptyGURL();
+        assertFalse(BookmarkUtils.isReadingListSupported(testUrl));
+
+        // invalid url
+        assertFalse(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.INVALID_URL));
     }
 }

@@ -67,7 +67,7 @@
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
+#include "chrome/browser/bookmarks/android/jni_headers/BookmarkBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
