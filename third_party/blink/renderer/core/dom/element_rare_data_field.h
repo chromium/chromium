@@ -10,19 +10,9 @@
 
 namespace blink {
 
-class Node;
-
 class ElementRareDataField : public GarbageCollectedMixin {
  public:
   void Trace(Visitor* visitor) const override {}
-};
-
-template <typename T>
-struct ThreadingTrait<
-    T,
-    std::enable_if_t<std::is_base_of_v<blink::ElementRareDataField, T> &&
-                     !std::is_base_of_v<blink::Node, T>>> {
-  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 
 }  // namespace blink
