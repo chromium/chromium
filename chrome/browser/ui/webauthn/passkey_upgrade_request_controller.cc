@@ -39,7 +39,6 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/fido_discovery_base.h"
@@ -48,18 +47,23 @@
 
 using RenderFrameHost = content::RenderFrameHost;
 
-DOCUMENT_USER_DATA_KEY_IMPL(PasskeyUpgradeRequestController);
+PasskeyUpgradeRequestController::PasskeyUpgradeRequestController(
+    RenderFrameHost* rfh,
+    EnclaveRequestCallback enclave_request_callback)
+    : frame_host_id_(rfh->GetGlobalId()),
+      enclave_manager_(
+          EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile())),
+      enclave_request_callback_(enclave_request_callback) {
+  if (enclave_manager_->is_loaded()) {
+    OnEnclaveLoaded();
+    return;
+  }
+  enclave_manager_->Load(
+      base::BindOnce(&PasskeyUpgradeRequestController::OnEnclaveLoaded,
+                     weak_factory_.GetWeakPtr()));
+}
 
 PasskeyUpgradeRequestController::~PasskeyUpgradeRequestController() = default;
-
-void PasskeyUpgradeRequestController::InitializeEnclaveRequestCallback(
-    device::FidoDiscoveryFactory* discovery_factory) {
-  using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
-      std::unique_ptr<device::enclave::CredentialRequest>>;
-  std::unique_ptr<EnclaveEventStream> event_stream;
-  std::tie(enclave_request_callback_, event_stream) = EnclaveEventStream::New();
-  discovery_factory->set_enclave_ui_request_stream(std::move(event_stream));
-}
 
 void PasskeyUpgradeRequestController::TryUpgradePasswordToPasskey(
     std::string rp_id,
@@ -120,7 +124,7 @@ void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
     return;
   }
 
-  GURL url = origin().GetURL();
+  GURL url = render_frame_host().GetLastCommittedOrigin().GetURL();
   password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml,
       password_manager::GetSignonRealm(url), url);
@@ -211,6 +215,13 @@ void PasskeyUpgradeRequestController::OnPasskeyCreated(
   std::move(pending_callback_).Run(true);
 }
 
+content::RenderFrameHost& PasskeyUpgradeRequestController::render_frame_host()
+    const {
+  auto* rfh = content::RenderFrameHost::FromID(frame_host_id_);
+  CHECK(rfh);
+  return *rfh;
+}
+
 Profile* PasskeyUpgradeRequestController::profile() const {
   return Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
 }
@@ -223,18 +234,4 @@ void PasskeyUpgradeRequestController::OnEnclaveLoaded() {
   if (pending_upgrade_request_) {
     ContinuePendingUpgradeRequest();
   }
-}
-
-PasskeyUpgradeRequestController::PasskeyUpgradeRequestController(
-    RenderFrameHost* rfh)
-    : content::DocumentUserData<PasskeyUpgradeRequestController>(rfh),
-      enclave_manager_(
-          EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile())) {
-  if (enclave_manager_->is_loaded()) {
-    OnEnclaveLoaded();
-    return;
-  }
-  enclave_manager_->Load(
-      base::BindOnce(&PasskeyUpgradeRequestController::OnEnclaveLoaded,
-                     weak_factory_.GetWeakPtr()));
 }
