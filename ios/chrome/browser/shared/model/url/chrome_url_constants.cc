@@ -74,6 +74,7 @@ const char* const kChromeHostURLs[] = {
     commerce::kChromeUICommerceInternalsHost,
     kChromeUIChromeURLsHost,
     kChromeUICreditsHost,
+    kChromeUIDownloadInternalsHost,
     kChromeUIFlagsHost,
     kChromeUIHistogramHost,
     kChromeUIInspectHost,

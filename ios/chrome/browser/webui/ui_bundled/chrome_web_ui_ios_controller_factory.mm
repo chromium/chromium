@@ -123,7 +123,9 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<CrashesUI>;
   }
   if (url_host == kChromeUIDownloadInternalsHost) {
-    return &NewWebUIIOS<DownloadInternalsUI>;
+    return InternalDebugPagesEnabled()
+               ? &NewWebUIIOS<DownloadInternalsUI>
+               : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
   }
   if (url_host == kChromeUIFlagsHost) {
     return &NewWebUIIOS<FlagsUI>;
