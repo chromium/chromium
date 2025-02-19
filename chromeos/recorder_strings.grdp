@@ -119,6 +119,15 @@
   <message desc="Accessibility label of error language row in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_ERROR_ARIA_LABEL">
     Can't download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model. Try again or restart your Chromebook
   </message>
+  <message desc="Status message for screen reader to announce the language download failure in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_ERROR_STATUS_MESSAGE">
+    Can't download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model. Try again or restart your Chromebook
+  </message>
+  <message desc="Status message for screen reader to announce the language download completion in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_FINISHED_STATUS_MESSAGE">
+    <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model download completed
+  </message>
+  <message desc="Status message for screen reader to announce the language download start in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_STARTED_STATUS_MESSAGE">
+    <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model download in progress
+  </message>
   <message desc="Description of language error state in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_ERROR_DESCRIPTION">
     Can’t download. Try again or restart your Chromebook.
   </message>

@@ -228,6 +228,9 @@ const withArgsStringNames = {
   // then `i18n.fooBar(1, '2')` works.
   languagePickerLanguageDownloadButtonAriaLabel: withArgs<[string]>(),
   languagePickerLanguageDownloadErrorAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageDownloadErrorStatusMessage: withArgs<[string]>(),
+  languagePickerLanguageDownloadFinishedStatusMessage: withArgs<[string]>(),
+  languagePickerLanguageDownloadStartedStatusMessage: withArgs<[string]>(),
   languagePickerLanguageDownloadingAriaLabel: withArgs<[string, number]>(),
   languagePickerLanguageDownloadingProgressDescription: withArgs<[number]>(),
   languagePickerLanguageNotDownloadedAriaLabel: withArgs<[string]>(),
