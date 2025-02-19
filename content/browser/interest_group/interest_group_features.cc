@@ -94,7 +94,7 @@ BASE_FEATURE(kFledgeStoreBandAKeysInDB,
 // feature also requires blink::features::kFledgeTrustedSignalsKVv2Support to
 // also be enabled for KVv2 to be enabled.
 BASE_FEATURE(kFledgeUseKVv2SignalsCache,
-             "kFledgeUseKVv2SignalsCache",
+             "FledgeUseKVv2SignalsCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables preconnecting to interest group owner origins and a bidding signals
