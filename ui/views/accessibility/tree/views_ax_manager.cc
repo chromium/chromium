@@ -34,11 +34,6 @@
 
 namespace views {
 
-ViewsAXManager* ViewsAXManager::GetInstance() {
-  static base::NoDestructor<ViewsAXManager> instance;
-  return instance.get();
-}
-
 void ViewsAXManager::Enable() {
   is_enabled_ = true;
   Reset(/*reset_serializer=*/false);
@@ -62,6 +57,10 @@ void ViewsAXManager::Enable() {
   // Intentionally not reset at shutdown since we cannot rely on the shutdown
   // ordering of two base::Singletons.
   cache_->SetDelegate(this);
+
+  if (!display::Screen::GetScreen()) {
+    return;
+  }
 
   const display::Display& display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
@@ -94,15 +93,6 @@ void ViewsAXManager::Disable() {
   tree_serializer_.reset();
   alert_window_.reset();
   cache_ = std::make_unique<views::AXAuraObjCache>();
-}
-
-void ViewsAXManager::InitIfNeeded() {
-  if (is_enabled_ || !ui::AXPlatform::GetInstance().GetMode().has_mode(
-                         ui::AXMode::kNativeAPIs)) {
-    return;
-  }
-
-  Enable();
 }
 
 void ViewsAXManager::HandleAlert(const std::string& text) {

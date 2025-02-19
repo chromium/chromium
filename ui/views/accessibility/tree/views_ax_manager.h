@@ -52,15 +52,11 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
   ViewsAXManager(const ViewsAXManager&) = delete;
   ViewsAXManager& operator=(const ViewsAXManager&) = delete;
 
-  static ViewsAXManager* GetInstance();
-
   // Enables platform accessibility support for views.
   virtual void Enable();
 
   // Disables platform accessibility support for views.
   virtual void Disable();
-
-  void InitIfNeeded();
 
   // Handle a textual alert.
   void HandleAlert(const std::string& text);
@@ -94,7 +90,7 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
 
   // Resets internal state, optionally resetting the serializer too to save
   // memory.
-  void Reset(bool reset_serializer);
+  virtual void Reset(bool reset_serializer);
 
   void PostEvent(int id,
                  ax::mojom::Event event_type,
