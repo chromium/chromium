@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.feedback;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
 /** Interface for launching a help and feedback page. */
+@NullMarked
 public interface HelpAndFeedbackLauncher {
     /**
      * Starts an activity showing a help page for the specified context ID.
@@ -38,9 +40,9 @@ public interface HelpAndFeedbackLauncher {
     void showFeedback(
             final Activity activity,
             @Nullable String url,
-            @Nullable final String categoryTag,
+            final @Nullable String categoryTag,
             int screenshotMode,
-            @Nullable final String feedbackContext);
+            final @Nullable String feedbackContext);
 
     /**
      * Starts an activity prompting the user to enter feedback.
@@ -68,6 +70,6 @@ public interface HelpAndFeedbackLauncher {
     void showFeedback(
             final Activity activity,
             @Nullable String url,
-            @Nullable final String categoryTag,
-            @Nullable final Map<String, String> feedContext);
+            final @Nullable String categoryTag,
+            final @Nullable Map<String, String> feedContext);
 }

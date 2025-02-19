@@ -13,6 +13,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.io.File;
@@ -21,10 +23,11 @@ import java.util.Map;
 
 /** Grabs feedback about the current system. */
 @JNINamespace("chrome::android")
+@NullMarked
 public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs> {
     // AsyncFeedbackSourceAdapter implementation.
     @Override
-    protected StatFs doInBackground(Context context) {
+    protected @Nullable StatFs doInBackground(Context context) {
         File directory = Environment.getDataDirectory();
         if (!directory.exists()) return null;
 
