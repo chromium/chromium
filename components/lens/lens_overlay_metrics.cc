@@ -57,6 +57,14 @@ std::string MimeTypeToMetricString(lens::MimeType mime_type) {
       return "Html";
     case lens::MimeType::kPlainText:
       return "PlainText";
+    case lens::MimeType::kImage:
+      return "Image";
+    case lens::MimeType::kVideo:
+      return "Video";
+    case lens::MimeType::kAudio:
+      return "Audio";
+    case lens::MimeType::kJson:
+      return "Json";
     default:
       return "Unknown";
   }
@@ -137,7 +145,8 @@ void RecordContextualSearchboxSessionEndMetrics(
     bool contextual_zps_shown_in_session,
     bool contextual_zps_used_in_session,
     bool contextual_query_issued_in_session,
-    lens::MimeType page_content_type) {
+    lens::MimeType page_content_type,
+    lens::MimeType document_content_type) {
   // Only record if the contextual search box feature is enabled.
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     return;
@@ -147,11 +156,18 @@ void RecordContextualSearchboxSessionEndMetrics(
   base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.ShownInSession",
                             contextual_searchbox_shown_in_session);
 
-  // UMA contextual searchbox shown in session sliced by document type.
-  const auto sliced_invoked_histogram_name =
+  // UMA contextual searchbox shown in session sliced by page content type.
+  const auto sliced_page_content_invoked_histogram_name =
       "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
       MimeTypeToMetricString(page_content_type) + ".ShownInSession";
-  base::UmaHistogramBoolean(sliced_invoked_histogram_name,
+  base::UmaHistogramBoolean(sliced_page_content_invoked_histogram_name,
+                            contextual_searchbox_shown_in_session);
+
+  // UMA contextual searchbox shown in session sliced by document type.
+  const auto sliced_document_invoked_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType." +
+      MimeTypeToMetricString(document_content_type) + ".ShownInSession";
+  base::UmaHistogramBoolean(sliced_document_invoked_histogram_name,
                             contextual_searchbox_shown_in_session);
 
   // Record UKM for contextual search box shown in session.
