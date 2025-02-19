@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
@@ -99,6 +100,10 @@ void MantisUntrustedServiceManager::IsAvailable(
     base::OnceCallback<void(bool)> callback) {
   if (switches::IsMantisSecretKeyMatched()) {
     std::move(callback).Run(true);
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantisModel)) {
+    std::move(callback).Run(false);
     return;
   }
 
