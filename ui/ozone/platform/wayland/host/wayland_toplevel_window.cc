@@ -84,6 +84,11 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   SetUpShellIntegration();
   OnDecorationModeChanged();
 
+  if (!initial_icon_.isNull()) {
+    SetWindowIcons(gfx::ImageSkia(), initial_icon_);
+    initial_icon_ = gfx::ImageSkia();
+  }
+
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
   // during the call to WaylandWindow::Initialize().
@@ -309,8 +314,14 @@ void WaylandToplevelWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
   // Let the app icon take precedence over the window icon.
   if (!app_icon.isNull()) {
     shell_toplevel_->SetIcon(app_icon);
-  } else {
+  } else if (!window_icon.isNull()) {
     shell_toplevel_->SetIcon(window_icon);
+  } else {
+    // Don't reset the icon if a null icon is passed in. There are callers
+    // that attempt to set a null icon after the initial icon has been set,
+    // but don't intend to reset the icon. This matches the behavior of the
+    // X11 backend.
+    return;
   }
   root_surface()->Commit(/*flush=*/true);
 }
@@ -539,6 +550,9 @@ bool WaylandToplevelWindow::OnInitialize(
     workspace_ = kVisibleOnAllWorkspaces;
   }
   SetSystemModalExtension(this, static_cast<SystemModalExtension*>(this));
+  if (properties.icon) {
+    initial_icon_ = *properties.icon;
+  }
   return true;
 }
 

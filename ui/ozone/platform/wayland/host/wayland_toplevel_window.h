@@ -220,6 +220,8 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 
+  gfx::ImageSkia initial_icon_;
+
   base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};
 };
 
