@@ -38,8 +38,9 @@ chrome-unsafe-rust-reviews@google.com
 # Gerrit will preferentially suggest the gwsq review alias above.
 #
 # Please keep this list alphabetized and in sync with the gwsq config (see
-# go/chrome-ipc-review).
+# go/chrome-unsafe-rust-reviews).
 dcheng@chromium.org            #{LAST_RESORT_SUGGESTION}
+djmitche@chromium.org          #{LAST_RESORT_SUGGESTION}
+liza@chromium.org              #{LAST_RESORT_SUGGESTION}
 lukasza@chromium.org           #{LAST_RESORT_SUGGESTION}
-# TODO: Announce gwsq alias to `unsafe-rust-in-chrome@google.com` and add
-# other volunteers here.
+phao@chromium.org              #{LAST_RESORT_SUGGESTION}
