@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "h264_ratectrl_rtc.h"
+#include "media/gpu/h264_ratectrl_rtc.h"
+
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
