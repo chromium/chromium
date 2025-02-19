@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] focusin removes and reinserts, modeless
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] focusin closes dialog, modeless
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] focusin calls showModal, modeless
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] requestIdleCallback calls showModal, modeless
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] beforetoggle closes dialog, modeless
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] beforetoggle calls showModal, modeless
+  assert_equals: Dialog should respond to light dismiss expected true but got false
+[FAIL] focusin removes and reinserts, modal
+  assert_equals: Dialog should respond to light dismiss expected true but got false
+[FAIL] focusin closes dialog, modal
+  assert_equals: Dialog should respond to light dismiss expected true but got false
+[FAIL] requestIdleCallback calls showModal, modal
+  assert_equals: Dialog should respond to light dismiss expected true but got false
+[FAIL] beforetoggle closes dialog, modal
+  assert_equals: Dialog should respond to light dismiss expected true but got false
+[FAIL] beforetoggle calls showModal, modal
+  assert_equals: Dialog should respond to light dismiss expected true but got false
+[FAIL] focusin removes and reinserts, open
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] focusin closes dialog, open
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] focusin calls showModal, open
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] requestIdleCallback calls showModal, open
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] beforetoggle closes dialog, open
+  assert_equals: Dialog should respond to ESC expected true but got false
+[FAIL] beforetoggle calls showModal, open
+  assert_equals: Dialog should respond to ESC expected true but got false
+Harness: the test ran to completion.
+
