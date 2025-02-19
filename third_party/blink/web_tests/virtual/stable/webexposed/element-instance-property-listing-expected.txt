@@ -992,6 +992,7 @@ html element select
     property validity
     property value
     property willValidate
+html element selectedcontent
 html element slot
     property assign
     property assignedElements

@@ -1417,7 +1417,7 @@
       // rendering using alternate content in the UA shadowroot which is
       // customizable.
       name: "CustomizableSelect",
-      status: "experimental",
+      status: "stable",
       // SelectParserRelaxation is needed to allow more content in <select>
       // than just <option>s etc.
       depends_on: ["SelectParserRelaxation"],
@@ -3982,7 +3982,7 @@
       // only <option>, <optgroup>, and <hr>.
       // https://github.com/whatwg/html/issues/10310
       name: "SelectParserRelaxation",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {
