@@ -3790,7 +3790,7 @@ Détails supplémentaires :
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798389633136518089">Cette politique est ignorée parce qu'elle n'est pas définie par une source infonuagique.</translation>
 <translation id="7800304661137206267">La connexion est chiffrée au moyen de <ph name="CIPHER" />, avec <ph name="MAC" /> pour l'authentification des messages et <ph name="KX" /> pour la méthode d'échange de clés.</translation>
-<translation id="7800977246388195491">Chrome enregistre les sujets d'intérêt en fonction de votre historique de navigation récent. De plus, les sites que vous visitez peuvent déterminer ce qui vous intéresse. Par la suite, les sites peuvent demander ces renseignements pour vous montrer des annonces personnalisées. Vous pouvez choisir sites et les sujets qui sont utilisés pour vous montrer des annonces.</translation>
+<translation id="7800977246388195491">Chrome enregistre les sujets d'intérêt en fonction de votre historique de navigation récent. De plus, les sites que vous visitez peuvent déterminer ce qui vous intéresse. Par la suite, les sites peuvent demander ces renseignements pour vous montrer des annonces personnalisées. Vous pouvez choisir les sites et les sujets qui sont utilisés pour vous montrer des annonces.</translation>
 <translation id="7802523362929240268">Site officiel</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres sur le <ph name="SIDE_OF_CARD" /> afin que votre banque puisse vérifier qu'il s'agit bien de vous</translation>
 <translation id="780301667611848630">Non merci</translation>
