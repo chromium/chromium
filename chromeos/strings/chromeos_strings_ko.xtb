@@ -1468,6 +1468,7 @@
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> 느낌의 <ph name="CAFE_TYPE" /> 카페</translation>
 <translation id="7841134249932030522">어두운 모드 사용</translation>
 <translation id="7846634333498149051">키보드</translation>
+<translation id="7847923465436619066">스크립트 작성 언어 선택 도구</translation>
 <translation id="7849030488395653706">북극광</translation>
 <translation id="7849737607196682401">레이스</translation>
 <translation id="7850320739366109486">알림 일시중지</translation>
@@ -1654,6 +1655,7 @@
 <translation id="8749478549112817787">카메라 배경</translation>
 <translation id="8755946156089753497">탑</translation>
 <translation id="8760616037557661287">이전 프롬프트</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> 스크립트 작성 모델 다운로드 및 선택</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 포토 앨범</translation>
 <translation id="8775713578693478175">모뎀 APN</translation>

@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">Допълнителното хранилище е в лошо състояние</translation>
 <translation id="5019293549442035120">Можете да използвате запазените адреси в различни продукти на Google. Този адрес ще бъде запазен в профила ви в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625">Правилото <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> е зададено. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> няма да контролира наличността на режима за програмисти на страницата с разширения.</translation>
+<translation id="5021500396464456616">Свържете се с човека, изпратил тази връзка</translation>
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
 <translation id="5023310440958281426">Проверете правилата на администратора</translation>
 <translation id="5024171724744627792">Плащайте по-бързо, когато картата ви е запазена. Данните за нея се шифроват в профила ви в Google.</translation>
@@ -4665,6 +4666,7 @@
 <translation id="963837307749850257">Всички потребители</translation>
 <translation id="964050462028070434">Управление на паролите и кодовете за достъп…</translation>
 <translation id="969892804517981540">Официално издание</translation>
+<translation id="973788791897303708">Тази група раздели е пълна</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Няма}=1{1 елемент}other{# елемента}}</translation>
 <translation id="976522784004777030">5 x 8 инча</translation>
 <translation id="977502174772294970">Сватби</translation>

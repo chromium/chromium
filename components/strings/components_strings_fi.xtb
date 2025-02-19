@@ -2278,6 +2278,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5019198164206649151">Tallennustila on virheellisessä tilassa</translation>
 <translation id="5019293549442035120">Voit käyttää tallennettuja osoitteita kaikissa Googlen tuotteissa. Osoite tallennetaan Google-tilillesi (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />-käytäntö on asetettu. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ei vaikuta kehittäjätilan saatavuuteen laajennussivulla.</translation>
+<translation id="5021500396464456616">Ota yhteyttä linkin lähettäjään</translation>
 <translation id="5021557570875267742">Seuraa hintoja Chromen avulla</translation>
 <translation id="5023310440958281426">Tarkista järjestelmänvalvojan käytännöt</translation>
 <translation id="5024171724744627792">Maksa nopeammin, kun kortti on tallennettu. Kortin tiedot salataan Google-tililläsi.</translation>
@@ -4667,6 +4668,7 @@ Lisätietoja:
 <translation id="963837307749850257">Kaikki käyttäjät</translation>
 <translation id="964050462028070434">Muokkaa salasanoja ja avainkoodeja…</translation>
 <translation id="969892804517981540">Virallinen koontiversio</translation>
+<translation id="973788791897303708">Välilehtiryhmä on täynnä</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ei mitään}=1{1 kohde}other{# kohdetta}}</translation>
 <translation id="976522784004777030">5 x 8 tuumaa</translation>
 <translation id="977502174772294970">Häät</translation>

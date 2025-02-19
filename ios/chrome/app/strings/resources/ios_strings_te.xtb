@@ -194,6 +194,7 @@
 <translation id="1780152987505130652">గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="178400879184240105">మీ పాస్‌వర్డ్‌లు భిన్నంగా ఉన్నాయి</translation>
 <translation id="17906873777101817">పాస్‌వర్డ్‌లను, పాస్-కీలను సేవ్ చేసే ఆప్షన్</translation>
+<translation id="1794893174442046596">ట్యాబ్ గ్రూప్</translation>
 <translation id="1807893857950749072">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను అనుమతించండి…</translation>
 <translation id="1810976980198522421">రద్దు చేయండి</translation>
 <translation id="1815941218935345331">పాస్‌కోడ్</translation>
@@ -656,6 +657,7 @@
 <translation id="3897092660631435901">మెనూ</translation>
 <translation id="3904270275864974753">స్క్రోల్ బార్‌ను ఎడిట్ చేయండి</translation>
 <translation id="3909222758573607742">ఖాతాలో పాస్‌వర్డ్‌లను, ఇతర ఐటెమ్‌లను సేవ్ చేయండి</translation>
+<translation id="3913463964270756493">Google Lensతో సెర్చ్ స్క్రీన్‌ను దాచండి</translation>
 <translation id="3914640181019354363">అడ్రస్‌లను గుర్తించండి</translation>
 <translation id="3922185497376658606">ముందుగా లోడ్ చేయబడిన వెబ్‌పేజీలు</translation>
 <translation id="3922395466317605522">మెనూను అనుకూలంగా మార్చుకోండి</translation>
@@ -973,6 +975,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="5242899254250321823">వెబ్‌సైట్‌లో పాస్‌వర్డ్‌ను మార్చండి</translation>
 <translation id="5248640482715684545">ఈ సైట్ మరొక యాప్‌ను తెరవడానికి ట్రై చేస్తోంది.</translation>
+<translation id="5250371859659394278">తెలియని సోర్స్ నుండి డౌన్‌లోడ్ అవుతోంది</translation>
 <translation id="5271265092610673171">{count,plural, =1{అవసరమైన ఫీల్డ్ ఖాళీగా ఉంది. సేవ్ చేయడానికి ముందు దాన్ని పూరించండి.}other{కొన్ని అవసరమైన ఫీల్డ్స్ ఖాళీగా ఉన్నాయి. సేవ్ చేయడానికి ముందు వాటిని పూరించండి.}}</translation>
 <translation id="5271549068863921519">పాస్‌వర్డ్‌ను సేవ్ చేయండి</translation>
 <translation id="5279214046729249716">అవును, దానిని వేరుగా ఉంచండి</translation>

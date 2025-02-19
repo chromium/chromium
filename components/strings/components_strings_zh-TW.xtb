@@ -2275,6 +2275,7 @@
 <translation id="5019198164206649151">備份儲存狀態不佳</translation>
 <translation id="5019293549442035120">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="USER_EMAIL" />) 中。</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策已設定。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不會控管能否在擴充功能頁面上使用開發人員模式。</translation>
+<translation id="5021500396464456616">請與傳送這個連結的使用者聯絡</translation>
 <translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
 <translation id="5023310440958281426">請查看你的管理員政策</translation>
 <translation id="5024171724744627792">預先儲存卡片，就能加快付款速度。卡片資料會在 Google 帳戶中加密保存。</translation>
@@ -4662,6 +4663,7 @@
 <translation id="963837307749850257">所有使用者</translation>
 <translation id="964050462028070434">管理密碼和密碼金鑰…</translation>
 <translation id="969892804517981540">正式版本</translation>
+<translation id="973788791897303708">這個分頁群組已額滿</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{無}=1{1 個項目}other{# 個項目}}</translation>
 <translation id="976522784004777030">5 x 8 吋</translation>
 <translation id="977502174772294970">婚禮</translation>

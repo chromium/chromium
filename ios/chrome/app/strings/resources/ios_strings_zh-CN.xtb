@@ -15,7 +15,6 @@
 <translation id="1041322626941363065">密码遭遇数据泄露时向您发出警告</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="104491362976654916">离线网页</translation>
-<translation id="1049200476149974839">邀请您加入一个标签页分组。知道链接的任何人都能修改所有标签页，因此请谨慎加入。链接将在 48 小时后失效。</translation>
 <translation id="1049743911850919806">无痕</translation>
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />《服务条款》<ph name="END_LINK" />。</translation>
@@ -976,6 +975,7 @@
 <translation id="5238596603078743134">现在，<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。</translation>
 <translation id="5242899254250321823">更改网站上的密码</translation>
 <translation id="5248640482715684545">此网站正在尝试打开另一款应用。</translation>
+<translation id="5250371859659394278">来自未知来源</translation>
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
 <translation id="5279214046729249716">是，单独保留</translation>

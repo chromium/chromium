@@ -2273,6 +2273,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5019198164206649151">Záložní úložiště je ve špatném stavu</translation>
 <translation id="5019293549442035120">Uložené adresy můžete používat ve službách Google. Tato adresa bude uložena ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Je nastavena zásada <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nebude kontrolovat dostupnost režimu pro vývojáře na stránce rozšíření.</translation>
+<translation id="5021500396464456616">Kontaktujte osobu, která poslala tento odkaz</translation>
 <translation id="5021557570875267742">Sledování cen v prohlížeči Chrome</translation>
 <translation id="5023310440958281426">Zkontrolujte zásady svého správce</translation>
 <translation id="5024171724744627792">Když si kartu uložíte, budete moct platit rychleji. Údaje o kartě jsou ve vašem účtu Google zašifrovány.</translation>
@@ -4659,6 +4660,7 @@ Další podrobnosti:
 <translation id="963837307749850257">Všichni uživatelé</translation>
 <translation id="964050462028070434">Spravovat hesla a přístupové klíče…</translation>
 <translation id="969892804517981540">Oficiální sestavení</translation>
+<translation id="973788791897303708">Tato skupina karet je plná</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Žádné}=1{1 položka}few{# položky}many{# položky}other{# položek}}</translation>
 <translation id="976522784004777030">5 × 8″</translation>
 <translation id="977502174772294970">Svatby</translation>

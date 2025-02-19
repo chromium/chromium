@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">Резервний носій пошкоджено</translation>
 <translation id="5019293549442035120">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу буде збережено у вашому обліковому записі Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625">Правило <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> налаштовано. Правило <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> не керуватиме доступністю режиму розробника на сторінці розширень.</translation>
+<translation id="5021500396464456616">Зв’яжіться з користувачем, який надіслав це посилання</translation>
 <translation id="5021557570875267742">Відстежуйте ціни за допомогою Chrome</translation>
 <translation id="5023310440958281426">Перегляньте правила свого адміністратора</translation>
 <translation id="5024171724744627792">Збережіть картку, щоб платити швидше. Дані картки шифруються у вашому обліковому записі Google.</translation>
@@ -4666,6 +4667,7 @@
 <translation id="963837307749850257">Усі користувачі</translation>
 <translation id="964050462028070434">Керувати паролями та ключами доступу…</translation>
 <translation id="969892804517981540">Офіційне складання</translation>
+<translation id="973788791897303708">Ця група вкладок заповнена</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Немає}=1{1 запис}one{# запис}few{# записи}many{# записів}other{# запису}}</translation>
 <translation id="976522784004777030">5 x 8 дюйм.</translation>
 <translation id="977502174772294970">Весілля</translation>

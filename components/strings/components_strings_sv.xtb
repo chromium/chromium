@@ -2277,6 +2277,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5019198164206649151">Säkerhetskopian har dålig status</translation>
 <translation id="5019293549442035120">Du kan använda sparade adresser i Googles produkter. Den här adressen sparas i ditt Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Principen <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> har ställts in. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> styr inte tillgängligheten för utvecklarläget på sidan för tillägg.</translation>
+<translation id="5021500396464456616">Kontakta personen som skickade den här länken</translation>
 <translation id="5021557570875267742">Bevaka priser med Chrome</translation>
 <translation id="5023310440958281426">Kontrollera administratörsprinciperna</translation>
 <translation id="5024171724744627792">Betala snabbare med ett sparat kort. Kortuppgifterna krypteras i ditt Google-konto.</translation>
@@ -4666,6 +4667,7 @@ Mer information:
 <translation id="963837307749850257">Alla användare</translation>
 <translation id="964050462028070434">Hantera lösenord och nycklar …</translation>
 <translation id="969892804517981540">Officiell version</translation>
+<translation id="973788791897303708">Den här flikgruppen är full</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 objekt}other{# objekt}}</translation>
 <translation id="976522784004777030">5 x 8 tum</translation>
 <translation id="977502174772294970">Bröllop</translation>

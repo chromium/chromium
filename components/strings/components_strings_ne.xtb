@@ -2275,6 +2275,7 @@
 <translation id="5019198164206649151">खराब स्थितिमा भण्डार ब्याकिङ गर्दै</translation>
 <translation id="5019293549442035120">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता <ph name="USER_EMAIL" /> मा सेभ गरिने छ।</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> नीति तय गरिएको छ। <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ले "एक्स्टेन्सनहरू" पेजमा "विकासकर्ता" मोडको उपलब्धता नियन्त्रण गर्ने छैन।</translation>
+<translation id="5021500396464456616">यो लिंक पठाउने व्यक्तिलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="5021557570875267742">Chrome मार्फत मूल्य ट्र्याक गर्नुहोस्</translation>
 <translation id="5023310440958281426">तपाईंको व्यवस्थापकको नीतिहरु जाँच्नुहोस्</translation>
 <translation id="5024171724744627792">तपाईंको कार्ड सेभ गरिएका बेला अझ छिटो भुक्तानी गर्नुहोस्। कार्डसम्बन्धी जानकारी तपाईंको Google खातामा इन्क्रिप्ट गरिन्छ।</translation>
@@ -4662,6 +4663,7 @@
 <translation id="963837307749850257">सबै प्रयोगकर्ताहरू</translation>
 <translation id="964050462028070434">पासवर्ड तथा पासकीहरू व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="969892804517981540">आधिकारिक निर्माण</translation>
+<translation id="973788791897303708">यो ट्याब समूह भरिएको छ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{कुनै पनि होइन}=1{१ वस्तु}other{# वस्तुहरू}}</translation>
 <translation id="976522784004777030">५ x ८ इन्च</translation>
 <translation id="977502174772294970">विवाहसम्बन्धी सेवाहरू</translation>

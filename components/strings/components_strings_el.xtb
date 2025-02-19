@@ -2278,6 +2278,7 @@
 <translation id="5019198164206649151">Η αποθήκευση αντιγράφων ασφαλείας είναι σε κακή κατάσταση</translation>
 <translation id="5019293549442035120">Μπορείτε να χρησιμοποιήσετε τις αποθηκευμένες διευθύνσεις σε όλα τα προϊόντα Google. Αυτή η διεύθυνση θα αποθηκευτεί στον Λογαριασμό σας Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Έχει οριστεί η πολιτική <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. Το <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> δεν θα ελέγχει τη διαθεσιμότητα της λειτουργίας προγραμματιστή στη σελίδα επεκτάσεων.</translation>
+<translation id="5021500396464456616">Επικοινωνήστε με το άτομο που έστειλε αυτόν τον σύνδεσμο</translation>
 <translation id="5021557570875267742">Παρακολούθηση τιμών με το Chrome</translation>
 <translation id="5023310440958281426">Ελέγξτε τις πολιτικές του διαχειριστή</translation>
 <translation id="5024171724744627792">Πληρώστε πιο γρήγορα με την αποθήκευση της κάρτας σας. Τα στοιχεία της κάρτας κρυπτογραφούνται στον Λογαριασμό σας Google.</translation>
@@ -4668,6 +4669,7 @@
 <translation id="963837307749850257">Όλοι οι χρήστες</translation>
 <translation id="964050462028070434">Διαχείριση κωδικών πρόσβασης και κλειδιών πρόσβασης…</translation>
 <translation id="969892804517981540">Επίσημη έκδοση</translation>
+<translation id="973788791897303708">Αυτή η ομάδα καρτελών είναι πλήρης</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Κανένα}=1{1 στοιχείο}other{# στοιχεία}}</translation>
 <translation id="976522784004777030">5 x 8 ίντσες</translation>
 <translation id="977502174772294970">Γάμοι</translation>

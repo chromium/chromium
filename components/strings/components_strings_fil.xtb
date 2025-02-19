@@ -2277,6 +2277,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5019198164206649151">Hindi maganda ang katayuan ng backing store</translation>
 <translation id="5019293549442035120">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Mase-save ang address na ito sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Nakatakda ang patakarang <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. Hindi kokontrolin ng <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ang availability ng developer mode sa page ng mga extension.</translation>
+<translation id="5021500396464456616">Makipag-ugnayan sa taong nagpadala ng link na ito</translation>
 <translation id="5021557570875267742">I-track ang mga presyo gamit ang Chrome</translation>
 <translation id="5023310440958281426">Suriin ang mga patakaran ng iyong administrator</translation>
 <translation id="5024171724744627792">Mas mabilis na magbayad kapag naka-save ang iyong card. Naka-encrypt sa iyong Google Account ang mga detalye ng card.</translation>
@@ -4665,6 +4666,7 @@ Mga karagdagang detalye:
 <translation id="963837307749850257">Lahat ng user</translation>
 <translation id="964050462028070434">Pamahalaan ang Mga Password at Passkey…</translation>
 <translation id="969892804517981540">Official Build</translation>
+<translation id="973788791897303708">Puno na ang grupo ng tab na ito</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Wala}=1{1 item}one{# item}other{# na item}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>
 <translation id="977502174772294970">Mga Kasalan</translation>

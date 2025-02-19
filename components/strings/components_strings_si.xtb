@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">උපස්ථ ගබඩාව දුර්වල තත්වයක</translation>
 <translation id="5019293549442035120">ඔබට Google නිෂ්පාදන හරහා සුරැකි ලිපින භාවිතා කළ හැක. මෙම ලිපිනය ඔබේ Google ගිණුමේ, <ph name="USER_EMAIL" /> සුරකිනු ඇත.</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> ප්‍රතිපත්තිය සකසා ඇත. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> දිගු පිටුව මත සංවර්ධක ප්‍රකාරය ලැබීම පාලන නොකරයි.</translation>
+<translation id="5021500396464456616">මෙම සබැඳිය එවූ පුද්ගලයා අමතන්න</translation>
 <translation id="5021557570875267742">Chrome සමග මිල ගණන් නිරීක්ෂණය කරන්න</translation>
 <translation id="5023310440958281426">ඔබේ පරිපාලකගේ ප්‍රතිපත්ති විමසන්න</translation>
 <translation id="5024171724744627792">ඔබේ කාඩ්පත සුරකින විට වේගයෙන් ගෙවන්න. කාඩ්පත් විස්තර ඔබේ Google ගිණුමේ සංකේතනය කර ඇත.</translation>
@@ -4663,6 +4664,7 @@
 <translation id="963837307749850257">සියලු පරිශීලකයන්</translation>
 <translation id="964050462028070434">මුරපද සහ මුරයතුරු කළමනාකරණය කරන්න…</translation>
 <translation id="969892804517981540">නිල තැනුම</translation>
+<translation id="973788791897303708">මෙම පටිති සමූහය පිරී ඇත</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{කිසිවක් නැත}=1{අයිතම 1ක්}one{අයිතම #ක්}other{අයිතම #ක්}}</translation>
 <translation id="976522784004777030">අඟ 5 x 8</translation>
 <translation id="977502174772294970">මංගල උත්සව</translation>

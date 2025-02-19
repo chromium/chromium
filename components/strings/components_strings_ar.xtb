@@ -2279,6 +2279,7 @@
 <translation id="5019198164206649151">التخزين المساعد في حالة سيئة</translation>
 <translation id="5019293549442035120">‏يمكنك استخدام العناوين المحفوظة مع جميع منتجات Google. سيتم حفظ هذا العنوان في حسابك على Google‏، <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">تم ضبط سياسة <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. ولن تتحكّم سياسة <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> في مدى توفّر وضع المطوِّر في صفحة الإضافات.</translation>
+<translation id="5021500396464456616">يُرجى التواصل مع الشخص الذي أرسلَ هذا الرابط</translation>
 <translation id="5021557570875267742">‏تتبُّع الأسعار باستخدام Chrome</translation>
 <translation id="5023310440958281426">التحقق من سياسات المشرف</translation>
 <translation id="5024171724744627792">‏يمكنك الدفع بسرعة أكبر بعد حفظ بطاقتك. يتم تشفير تفاصيل البطاقة في حسابك على Google.</translation>
@@ -4670,6 +4671,7 @@
 <translation id="963837307749850257">كل المستخدمين</translation>
 <translation id="964050462028070434">إدارة كلمات المرور ومفاتيح المرور…</translation>
 <translation id="969892804517981540">البنية الرسمية</translation>
+<translation id="973788791897303708">مجموعة علامات التبويب هذه ممتلئة</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{بدون}=1{عنصر واحد}two{عنصران (#)}few{# عناصر}many{# عنصرًا}other{# عنصر}}</translation>
 <translation id="976522784004777030">5 × 8 بوصة</translation>
 <translation id="977502174772294970">حفلات زفاف</translation>

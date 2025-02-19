@@ -15,7 +15,6 @@
 <translation id="1041322626941363065">Nitahadharishe ikiwa manenosiri Yamefichuliwa katika tukio la Ufichuzi Haramu wa data</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
 <translation id="104491362976654916">Ukurasa wa nje ya mtandao</translation>
-<translation id="1049200476149974839">angependa ujiunge na kikundi cha vichupo. Yeyote aliye na kiungo anaweza kubadilisha vichupo vyote, kwa hivyo jiunge kwa uangalifu. Muda wa kutumia kiungo huisha baada ya saa 48.</translation>
 <translation id="1049743911850919806">Kichupo fiche</translation>
 <translation id="1053651653201045802">Umeondoka kwenye akaunti. Ingia tena katika akaunti ili utumie alamisho, manenosiri na zaidi kwenye akaunti yako.</translation>
 <translation id="1054745118061919935">Kwa kuendelea, unakubali <ph name="BEGIN_LINK" />Sheria na Masharti<ph name="END_LINK" />.</translation>
@@ -658,6 +657,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3904270275864974753">Kubadilisha utepe</translation>
 <translation id="3909222758573607742">Hifadhi manenosiri na vipengee vingine kwenye akaunti</translation>
+<translation id="3913463964270756493">Ficha 'Skrini ya kutafutia' ukitumia Lenzi ya Google</translation>
 <translation id="3914640181019354363">Kutambua anwani</translation>
 <translation id="3922185497376658606">Pakia mapema kurasa za wavuti</translation>
 <translation id="3922395466317605522">Kubadilisha Menyu Upendavyo</translation>
@@ -975,6 +975,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5238596603078743134">Sasa <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> anaweza kutumia jina la mtumiaji na nenosiri lako anapotumia Kidhibiti cha Manenosiri cha Google kuingia katika akaunti kwenye <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5242899254250321823">Badilisha nenosiri kwenye tovuti</translation>
 <translation id="5248640482715684545">Tovuti hii inajaribu kufungua programu nyingine.</translation>
+<translation id="5250371859659394278">Kutoka chanzo kisichojulikana</translation>
 <translation id="5271265092610673171">{count,plural, =1{Sehemu ambayo sharti ijazwe iko tupu. Ijaze kabla ya kuhifadhi.}other{Baadhi ya sehemu ambazo sharti zijazwe ziko tupu. Zijaze kabla ya kuhifadhi.}}</translation>
 <translation id="5271549068863921519">Hifadhi nenosiri</translation>
 <translation id="5279214046729249716">Ndiyo, itenganishe</translation>

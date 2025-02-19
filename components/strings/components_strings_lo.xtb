@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">ໜ່ວຍ​ເກັບ​ໜູນ​ຢູ່​ໃນ​ສະພາບ​ບໍ່​ດີ</translation>
 <translation id="5019293549442035120">ທ່ານສາມາດໃຊ້ທີ່ຢູ່ທີ່ບັນທຶກໄວ້ທົ່ວຜະລິດຕະພັນ Google ໄດ້. ທີ່ຢູ່ນີ້ຈະຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">ມີການຕັ້ງຄ່ານະໂຍບາຍ <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> ໄວ້. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ຈະບໍ່ຄວບຄຸມຄວາມພ້ອມນຳໃຊ້ຂອງໂໝດຜູ້ພັດທະນາໃນໜ້າສ່ວນຂະຫຍາຍ.</translation>
+<translation id="5021500396464456616">ກະລຸນາຕິດຕໍ່ຜູ້ທີ່ສົ່ງລິ້ງນີ້</translation>
 <translation id="5021557570875267742">ຕິດຕາມລາຄາດ້ວຍ Chrome</translation>
 <translation id="5023310440958281426">ກວດ​ເບິ່ງ​ນະ​ໂຍ​ບາຍ​ຂອງຜູ້ຄຸ້ມຄອງ​ຂອງ​ທ່ານ</translation>
 <translation id="5024171724744627792">ຈ່າຍເງິນໄດ້ໄວຂຶ້ນເມື່ອບັນທຶກບັດຂອງທ່ານໄວ້. ລະບົບຈະເຂົ້າລະຫັດລາຍລະອຽດບັດໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -4664,6 +4665,7 @@
 <translation id="963837307749850257">ຜູ້ໃຊ້ທັງໝົດ</translation>
 <translation id="964050462028070434">ຈັດການລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານ…</translation>
 <translation id="969892804517981540">ສ້າງເປັນທາງການ</translation>
+<translation id="973788791897303708">ກຸ່ມແຖບນີ້ເຕັມແລ້ວ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ລາຍການ}other{# ລາຍການ}}</translation>
 <translation id="976522784004777030">5 x 8 ນິ້ວ</translation>
 <translation id="977502174772294970">ງານດອງ</translation>

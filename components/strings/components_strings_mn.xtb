@@ -2278,6 +2278,7 @@
 <translation id="5019198164206649151">Муу нөхцөл байдал үүссэн үед хадгалалт хийх</translation>
 <translation id="5019293549442035120">Та Google-н бүтээгдэхүүнүүд дээр хадгалсан хаягуудыг ашиглах боломжтой. Энэ хаягийг таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгална.</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> бодлогыг тохируулсан. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> өргөтгөлийн хуудсан дээрх хөгжүүлэгч горимын боломжтой байдлыг хянахгүй.</translation>
+<translation id="5021500396464456616">Энэ холбоосыг илгээсэн хүнтэй холбогдоно уу</translation>
 <translation id="5021557570875267742">Chrome-р үнэ хянах</translation>
 <translation id="5023310440958281426">Админимтраторын журмыг шалгах</translation>
 <translation id="5024171724744627792">Картаа хадгалсан үед илүү хурдан төлөөрэй. Картын дэлгэрэнгүйг таны Google Бүртгэлд шифрлэдэг.</translation>
@@ -4664,6 +4665,7 @@
 <translation id="963837307749850257">Бүх хэрэглэгч</translation>
 <translation id="964050462028070434">Нууц үг болон Passkey-г удирдах…</translation>
 <translation id="969892804517981540">Албан ёсоор бий болгох</translation>
+<translation id="973788791897303708">Энэ табын бүлэг дүүрсэн байна</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Байхгүй}=1{1 зүйл}other{# зүйл}}</translation>
 <translation id="976522784004777030">5 x 8 инч</translation>
 <translation id="977502174772294970">Хуримын үйлчилгээ</translation>

@@ -2274,6 +2274,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5019198164206649151">Archivio di backup in stato non valido</translation>
 <translation id="5019293549442035120">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo verrà salvato nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Il criterio <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> è impostato. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> non controllerà la disponibilità della modalità sviluppatore nella pagina delle estensioni.</translation>
+<translation id="5021500396464456616">Contatta la persona che ha inviato questo link</translation>
 <translation id="5021557570875267742">Monitora i prezzi con Chrome</translation>
 <translation id="5023310440958281426">Consulta le norme dell'amministratore</translation>
 <translation id="5024171724744627792">Se salvi la carta paghi più velocemente. I dati della carta vengono criptati nel tuo Account Google.</translation>
@@ -4661,6 +4662,7 @@ Ulteriori dettagli:
 <translation id="963837307749850257">Tutti gli utenti</translation>
 <translation id="964050462028070434">Gestisci password e passkey…</translation>
 <translation id="969892804517981540">Build ufficiale</translation>
+<translation id="973788791897303708">Questo gruppo di schede è al completo</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nessuno}=1{1 elemento}other{# elementi}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>
 <translation id="977502174772294970">Matrimoni</translation>

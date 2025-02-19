@@ -15,7 +15,6 @@
 <translation id="1041322626941363065">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="1044891598689252897">Webbplatser fungerar som de ska</translation>
 <translation id="104491362976654916">Offlinesida</translation>
-<translation id="1049200476149974839">vill att du ska gå med i en flikgrupp. Alla som har länken kan redigera alla flikar, så tänk efter innan du går med. Länken löper ut om 48 timmar.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Utloggad. Logga in igen om du vill använda bokmärken, lösenord med mera i kontot.</translation>
 <translation id="1054745118061919935">Genom att fortsätta godkänner du <ph name="BEGIN_LINK" />användarvillkoren<ph name="END_LINK" />.</translation>
@@ -658,6 +657,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3904270275864974753">Redigera snurra</translation>
 <translation id="3909222758573607742">Spara lösenord och andra objekt i kontot</translation>
+<translation id="3913463964270756493">Dölj sökskärmen med Google Lens</translation>
 <translation id="3914640181019354363">Identifiera adresser</translation>
 <translation id="3922185497376658606">Läs in webbsidor i förväg</translation>
 <translation id="3922395466317605522">Anpassa meny</translation>

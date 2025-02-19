@@ -15,7 +15,6 @@
 <translation id="1041322626941363065">Få en advarsel hvis passord blir avdekket i databrudd</translation>
 <translation id="1044891598689252897">Nettsteder kommer til å fungere som normalt</translation>
 <translation id="104491362976654916">Side uten nett</translation>
-<translation id="1049200476149974839">vil ha deg med i en fanegruppe. Alle som har linken, kan endre alle fanene, så vær forsiktig hvis du velger å bli med. Linken utløper om 48 timer.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget av. Logg på igjen for å bruke blant annet bokmerkene og passordene i kontoen din.</translation>
 <translation id="1054745118061919935">Ved å fortsette godtar du <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" />.</translation>
@@ -976,6 +975,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5238596603078743134">Nå kan <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> bruke brukernavnet og passordet ditt når hen bruker Google Passordlagring til å logge på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5242899254250321823">Bytt passord på nettstedet</translation>
 <translation id="5248640482715684545">Dette nettstedet prøver å åpne en annen app.</translation>
+<translation id="5250371859659394278">Fra en ukjent kilde</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
 <translation id="5279214046729249716">Ja, hold dem atskilt</translation>

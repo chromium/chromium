@@ -2277,6 +2277,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5019198164206649151">Varusalves esineb probleeme</translation>
 <translation id="5019293549442035120">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625">Reegel <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> on määratud. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ei juhi arendajarežiimi saadavust laienduste lehel.</translation>
+<translation id="5021500396464456616">Võtke ühendust inimesega, kes selle lingi saatis</translation>
 <translation id="5021557570875267742">Hindade jälgimine Chrome'iga</translation>
 <translation id="5023310440958281426">Tutvuge administraatori reeglitega</translation>
 <translation id="5024171724744627792">Kui teie kaart on salvestatud, saate kiiremini maksta. Kaardi üksikasjad on teie Google'i kontol krüpteeritud.</translation>
@@ -4665,6 +4666,7 @@ Lisateave:
 <translation id="963837307749850257">Kõik kasutajad</translation>
 <translation id="964050462028070434">Paroolide ja pääsukoodide haldamine …</translation>
 <translation id="969892804517981540">Ametlik järk</translation>
+<translation id="973788791897303708">See vahelehegrupp on täis</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ühtegi}=1{1 üksus}other{# üksust}}</translation>
 <translation id="976522784004777030">5 × 8 tolli</translation>
 <translation id="977502174772294970">Pulmad</translation>

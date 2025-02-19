@@ -2278,6 +2278,7 @@
 <translation id="5019198164206649151">နောက်ခံ စတိုး အခြေအနေ ဆိုးနေ</translation>
 <translation id="5019293549442035120">သိမ်းထားသောလိပ်စာများကို Google ထုတ်ကုန်များအနှံ့တွင် သုံးနိုင်သည်။ ဤလိပ်စာကို သင့် Google Account <ph name="USER_EMAIL" /> တွင် သိမ်းမည်။</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> မူဝါဒ သတ်မှတ်ထားသည်။ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> သည် နောက်ဆက်တွဲများ စာမျက်နှာတွင် ထုတ်လုပ်သူမုဒ် အသုံးပြုနိုင်မှုကို ထိန်းချုပ်မည်မဟုတ်ပါ။</translation>
+<translation id="5021500396464456616">ဤလင့်ခ်ပို့သူကို ဆက်သွယ်ပါ</translation>
 <translation id="5021557570875267742">Chrome ဖြင့် ဈေးနှုန်းစောင့်ကြည့်ခြင်း</translation>
 <translation id="5023310440958281426">သင့် စီမံအုပ်ချုပ်သူ၏ မူဝါဒများကို စစ်ဆေးကြည့်ရန်</translation>
 <translation id="5024171724744627792">သင့်ကတ်ကို သိမ်းထားသောအခါ ပိုမိုလျင်မြန်စွာ ပေးချေနိုင်သည်။ ကတ်အသေးစိတ်အချက်များကို သင့် Google Account တွင် အသွင်ဝှက်ထားသည်။</translation>
@@ -4666,6 +4667,7 @@
 <translation id="963837307749850257">အသုံးပြုသူအားလုံး</translation>
 <translation id="964050462028070434">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ စီမံရန်…</translation>
 <translation id="969892804517981540">တရားဝင် တည်ဆောက်မှု</translation>
+<translation id="973788791897303708">ဤတဘ်အုပ်စု ပြည့်နေသည်</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{အကြောင်းအရာ ၁ ခု}other{အကြောင်းအရာ # ခု}}</translation>
 <translation id="976522784004777030">၅ x ၈ လက်မ</translation>
 <translation id="977502174772294970">မင်္ဂလာပွဲများ</translation>

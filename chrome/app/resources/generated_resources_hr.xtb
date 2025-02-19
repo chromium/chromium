@@ -2671,7 +2671,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2832124733806557606">Vaše se dijete može prijaviti na uređaj ili ga otključati PIN-om.</translation>
 <translation id="2833144527504272627">Krećite se pomoću pokazivača teksta</translation>
 <translation id="2833727845850279275">Ova datoteka sadrži zlonamjerni softver ili dolazi sa sumnjive web-lokacije.</translation>
-<translation id="2834091109531651093">Pogledajte svoj Outlook kalendar i Sharepoint datoteke</translation>
 <translation id="2835177225987815960">Vaše će se trenutačne postavke skeniranja poništiti, uključujući sve dodijeljene prekidače i preferencije za brzinu automatskog skeniranja.</translation>
 <translation id="2835547721736623118">Usluga prepoznavanja govora</translation>
 <translation id="2835761321523638096">Čitanje i promjena unosa na popisu za čitanje</translation>
@@ -3050,7 +3049,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3109724472072898302">Sažeto</translation>
 <translation id="310979712355504754">Izbriši sve</translation>
 <translation id="3112292765614504292">Veličina aplikacije: <ph name="APP_SIZE" /></translation>
-<translation id="311347022006935575">Dodana je ova kartica</translation>
+<translation id="311347022006935575">Dodaje ovu karticu</translation>
 <translation id="311394601889664316">Ne dopuštaj web-lokacijama uređivanje datoteka ili mapa na uređaju</translation>
 <translation id="3113970906450647715">Gumb je otkvačen</translation>
 <translation id="3115147772012638511">Čekanje predmemorije...</translation>
@@ -5800,7 +5799,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="508059534790499809">Osvježite Kerberosov tiket</translation>
 <translation id="5081124414979006563">&amp;Otvori profil gosta</translation>
 <translation id="5081974595802103358">Kopiranje veze nije uspjelo</translation>
-<translation id="508209203623347828">Ako se kartica onemogući, onemogućit će se i vaše Microsoftove kartice kao što su Sharepoint i Outlook kalendar.</translation>
 <translation id="5083035541015925118">Ctrl + Alt + strelica prema gore</translation>
 <translation id="5084328598860513926">Prekinuo se tijek davanja pristupa. Pokušajte ponovo ili se obratite vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Vjerojatnije je da će web-lokacije funkcionirati kao što očekujete</translation>

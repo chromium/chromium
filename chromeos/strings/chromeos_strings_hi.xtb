@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
 <translation id="2161656808144014275">लेख संदेश</translation>
 <translation id="2163937499206714165">गहरे रंग वाला मोड चालू करें</translation>
+<translation id="2164131940279488868">ऑडियो रिकॉर्ड करने के लिए, पक्का करें कि माइक कनेक्ट किया गया हो</translation>
 <translation id="2173302385160625112">अपना इंटरनेट कनेक्शन जाँचें</translation>
 <translation id="2180197493692062006">कोई गड़बड़ी हुई. ऐप्लिकेशन को फिर से खोलने की कोशिश करें.</translation>
 <translation id="2189104374785738357">एपीएन की जानकारी में बदलाव करना</translation>
@@ -1467,6 +1468,7 @@
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> कैफ़े</translation>
 <translation id="7841134249932030522">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
+<translation id="7847923465436619066">बोले जा रहे शब्दों को टेक्स्ट में बदलने के लिए भाषा चुनने की सुविधा</translation>
 <translation id="7849030488395653706">नॉर्दर्न लाइट्स</translation>
 <translation id="7849737607196682401">लेस</translation>
 <translation id="7850320739366109486">परेशान न करें</translation>
@@ -1653,6 +1655,7 @@
 <translation id="8749478549112817787">कैमरे का बैकग्राउंड</translation>
 <translation id="8755946156089753497">टावर</translation>
 <translation id="8760616037557661287">पिछले प्रॉम्प्ट</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> में बोले गए शब्दों को टेक्स्ट में बदलने का मॉडल चुनें और डाउनलोड करें</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos की एल्बम</translation>
 <translation id="8775713578693478175">मॉडम एपीएन</translation>
@@ -1683,6 +1686,7 @@
 <translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>
 <translation id="8882789155418924367">उल्लू</translation>
+<translation id="8885038613856655272">माइक कनेक्ट करें</translation>
 <translation id="8892443466059986410">शॉर्टकट में बदलाव करना रद्द करें</translation>
 <translation id="8897043028305808902">फ़ाइल का नाम बदला गया</translation>
 <translation id="8898840733695078011">सिग्‍नल शक्ति</translation>

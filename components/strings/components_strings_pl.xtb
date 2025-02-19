@@ -2277,6 +2277,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5019198164206649151">Nieprawidłowy stan magazynu wspomagającego</translation>
 <translation id="5019293549442035120">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Zasada <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> jest skonfigurowana. Zasada <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nie będzie sterować dostępnością trybu programisty na stronie rozszerzeń.</translation>
+<translation id="5021500396464456616">Skontaktuj się z osobą, która wysłała ten link</translation>
 <translation id="5021557570875267742">Monitorowanie cen w Chrome</translation>
 <translation id="5023310440958281426">Sprawdź zasady administratora</translation>
 <translation id="5024171724744627792">Zapisz kartę, aby płacić szybciej. Dane karty zostaną zaszyfrowane na koncie Google.</translation>
@@ -4664,6 +4665,7 @@ Dodatkowe informacje:
 <translation id="963837307749850257">Wszyscy użytkownicy</translation>
 <translation id="964050462028070434">Zarządzaj hasłami i kluczami dostępu…</translation>
 <translation id="969892804517981540">Oficjalna wersja</translation>
+<translation id="973788791897303708">Ta grupa kart jest pełna</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Brak}=1{1 element}few{# elementy}many{# elementów}other{# elementu}}</translation>
 <translation id="976522784004777030">5 x 8 cali</translation>
 <translation id="977502174772294970">Wesela</translation>

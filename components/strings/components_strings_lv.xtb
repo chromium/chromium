@@ -2275,6 +2275,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5019198164206649151">Dublējumu krātuve nav labā stāvoklī.</translation>
 <translation id="5019293549442035120">Saglabātās adreses varat izmantot dažādos Google produktos. Šī adrese tiks saglabāta jūsu Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625">Ir iestatīta politika šāda politika: <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. Politika <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nekontrolēs izstrādātāja režīma pieejamību paplašinājumu lapā.</translation>
+<translation id="5021500396464456616">Sazinieties ar personu, kura nosūtīja šo saiti</translation>
 <translation id="5021557570875267742">Cenu izsekošana, izmantojot pārlūku Chrome</translation>
 <translation id="5023310440958281426">Administratora politiku pārbaude</translation>
 <translation id="5024171724744627792">Maksājiet ērtāk, izmantojot saglabāto karti. Kartes informācija jūsu Google kontā tiek šifrēta.</translation>
@@ -4663,6 +4664,7 @@ Papildu informācija:
 <translation id="963837307749850257">Visi lietotāji</translation>
 <translation id="964050462028070434">Pārvaldīt paroles un piekļuves atslēgas…</translation>
 <translation id="969892804517981540">Oficiālā Uzbūve</translation>
+<translation id="973788791897303708">Šī ciļņu grupa ir pilna</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nav}=1{1 vienums}zero{# vienumi}one{# vienums}other{# vienumi}}</translation>
 <translation id="976522784004777030">5 x 8 collas</translation>
 <translation id="977502174772294970">Kāzas</translation>

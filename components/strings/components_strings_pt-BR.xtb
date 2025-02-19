@@ -2277,6 +2277,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5019198164206649151">Armazenamento de backup em estado inválido</translation>
 <translation id="5019293549442035120">Os endereços salvos podem ser usados em vários produtos do Google. Esse endereço será salvo na sua conta <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">A política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> foi definida. A <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não vai controlar a disponibilidade do modo de desenvolvedor na página de extensões.</translation>
+<translation id="5021500396464456616">Entre em contato com a pessoa que enviou o link</translation>
 <translation id="5021557570875267742">Monitore preços com o Chrome</translation>
 <translation id="5023310440958281426">Verifique as políticas do administrador</translation>
 <translation id="5024171724744627792">Salve seu cartão para pagar mais rápido. Os detalhes do cartão são criptografados na sua Conta do Google.</translation>
@@ -4667,6 +4668,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="963837307749850257">Todos os usuários</translation>
 <translation id="964050462028070434">Gerenciar senhas e chaves de acesso…</translation>
 <translation id="969892804517981540">Versão oficial</translation>
+<translation id="973788791897303708">Este grupo de guias está cheio</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nenhum}=1{1 item}one{# item}other{# itens}}</translation>
 <translation id="976522784004777030">5 x 8 pol.</translation>
 <translation id="977502174772294970">Casamentos</translation>

@@ -1193,6 +1193,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> tidak dapat melanjutkan dengan menggunakan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Mentransmisikan <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Layanan</translation>
+<translation id="1813828404076816564">Pilih tombol masukan untuk mengirimkan masukan terkait fitur grup tab bersama</translation>
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">Tempel Sebagai Teks Biasa</translation>
 <translation id="1815097521077272760">Anda telah diundang untuk mencoba kontrol keyboard untuk game ini.</translation>
@@ -2680,7 +2681,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2832124733806557606">Anak Anda dapat menggunakan PIN untuk login atau membuka kunci perangkat.</translation>
 <translation id="2833144527504272627">Navigasi dengan kursor teks</translation>
 <translation id="2833727845850279275">File ini berisi malware atau berasal dari situs yang mencurigakan.</translation>
-<translation id="2834091109531651093">Lihat file Outlook Calendar dan Sharepoint Anda</translation>
 <translation id="2835177225987815960">Penyiapan pemindaian saat ini akan direset, termasuk semua preferensi tombol akses yang ditetapkan dan kecepatan pemindaian otomatis.</translation>
 <translation id="2835547721736623118">Layanan pengenalan ucapan</translation>
 <translation id="2835761321523638096">Membaca dan mengubah entri dalam daftar bacaan</translation>
@@ -4123,6 +4123,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3857807444929313943">Angkat jari, lalu sentuhkan lagi</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="385939467708172187">Gunakan Sandi Kuat</translation>
+<translation id="3859869403161297890">Kirim masukan Anda terkait grup tab bersama di sini</translation>
 <translation id="3859987779882450877">Otomatis menyarankan dan membuat grup dari tab yang terbuka</translation>
 <translation id="386009056910366930">Kelola Grup Tab “<ph name="GROUP_NAME" />”</translation>
 <translation id="3861638017150647085">Nama pengguna "<ph name="USERNAME" />" tidak tersedia</translation>
@@ -5810,7 +5811,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="508059534790499809">Perbarui tiket Kerberos</translation>
 <translation id="5081124414979006563">&amp;Buka Profil Tamu</translation>
 <translation id="5081974595802103358">Gagal menyalin link</translation>
-<translation id="508209203623347828">Jika kartu ini dinonaktifkan, kartu Microsoft Anda seperti SharePoint dan Kalender Outlook juga akan dinonaktifkan.</translation>
 <translation id="5083035541015925118">ctrl + alt + panah atas</translation>
 <translation id="5084328598860513926">Alur penyediaan terganggu. Coba lagi atau hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Situs biasanya berfungsi seperti yang Anda harapkan</translation>
@@ -8176,6 +8176,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6805478749741295868">Fitur ini adalah fitur AI eksperimental dan tidak selalu memberikan hasil yang tepat.</translation>
 <translation id="6805647936811177813">Harap masuk ke <ph name="TOKEN_NAME" /> untuk mengimpor sertifikat dari <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Aktifkan pelacakan RLZ pada <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Masukan terkait grup tab bersama</translation>
 <translation id="6806089545527108739">Jangan izinkan tetapi tanyakan nanti</translation>
 <translation id="680644983456221885">Perlindungan proaktif secara real time terhadap situs, download, dan ekstensi berbahaya yang didasarkan pada data penjelajahan yang dikirim ke Google</translation>
 <translation id="6806781719264274042">Hanya kontak Anda yang memiliki Akun Google. <ph name="LINK_BEGIN" />Lihat kontak<ph name="LINK_END" /></translation>

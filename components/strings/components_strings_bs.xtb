@@ -2277,6 +2277,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5019198164206649151">Pohrana za sigurnosnu kopiju je u lošem stanju</translation>
 <translation id="5019293549442035120">Možete koristiti sačuvane adrese na Googleovim proizvodima. Adresa će se sačuvati na Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Postavljeno je pravilo "<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />". <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> neće upravljati dostupnošću načina rada za programere na stranici s ekstenzijama.</translation>
+<translation id="5021500396464456616">Kontaktirajte pošiljaoca ovog linka</translation>
 <translation id="5021557570875267742">Pratite cijene uz Chrome</translation>
 <translation id="5023310440958281426">Provjerite pravila administratora</translation>
 <translation id="5024171724744627792">Možete plaćati brže kada je kartica sačuvana. Detalji kartice su šifrirani na Google računu.</translation>
@@ -4665,6 +4666,7 @@ Dodatni detalji:
 <translation id="963837307749850257">Svi korisnici</translation>
 <translation id="964050462028070434">Upravljajte lozinkama i pristupnim ključevima…</translation>
 <translation id="969892804517981540">Zvanična verzija</translation>
+<translation id="973788791897303708">Grupa kartica je puna</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nijedna}=1{1 stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>
 <translation id="977502174772294970">Svadbe</translation>

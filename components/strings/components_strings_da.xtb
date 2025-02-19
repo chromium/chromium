@@ -2277,6 +2277,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5019198164206649151">Sikkerhedskopien er fejlbehæftet</translation>
 <translation id="5019293549442035120">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse gemmes på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Politikken <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> er konfigureret. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> styrer ikke tilgængeligheden af udviklertilstand på siden med udvidelser.</translation>
+<translation id="5021500396464456616">Kontakt den person, der har sendt dette link</translation>
 <translation id="5021557570875267742">Hold øje med priser ved hjælp af Chrome</translation>
 <translation id="5023310440958281426">Læs din administrators politikker</translation>
 <translation id="5024171724744627792">Betal hurtigere, når dit kort er gemt. Kortoplysningerne krypteres på din Google-konto.</translation>
@@ -4666,6 +4667,7 @@ Yderligere oplysninger:
 <translation id="963837307749850257">Alle brugere</translation>
 <translation id="964050462028070434">Administrer adgangskoder og adgangsnøgler…</translation>
 <translation id="969892804517981540">Officiel version</translation>
+<translation id="973788791897303708">Denne fanegruppe er fuld</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 element}one{# element}other{# elementer}}</translation>
 <translation id="976522784004777030">5 x 8 tommer</translation>
 <translation id="977502174772294970">Bryllupper</translation>

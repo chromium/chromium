@@ -1193,6 +1193,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 사용하여 계속할 수 없음</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> 전송 중</translation>
 <translation id="1813278315230285598">서비스</translation>
+<translation id="1813828404076816564">공유 탭 그룹 기능에 관한 의견을 보내려면 의견 버튼을 선택하세요</translation>
 <translation id="18139523105317219">EDI측 이름</translation>
 <translation id="1815083418640426271">일반 텍스트로 붙여넣기</translation>
 <translation id="1815097521077272760">이 게임의 키보드 컨트롤을 사용해 보세요.</translation>
@@ -2682,7 +2683,6 @@
 <translation id="2832124733806557606">자녀가 PIN을 사용해 로그인하거나 기기를 잠금 해제할 수 있습니다</translation>
 <translation id="2833144527504272627">텍스트 커서로 탐색</translation>
 <translation id="2833727845850279275">멀웨어가 포함되어 있거나 의심스러운 사이트에서 가져온 파일입니다.</translation>
-<translation id="2834091109531651093">Outlook Calendar 및 SharePoint 파일 보기</translation>
 <translation id="2835177225987815960">할당된 스위치 및 자동 스캔 속도 환경설정을 포함하여 현재의 스캔 설정이 재설정됩니다.</translation>
 <translation id="2835547721736623118">음성 인식 서비스</translation>
 <translation id="2835761321523638096">읽기 목록의 항목 읽기 및 변경</translation>
@@ -4125,6 +4125,7 @@
 <translation id="3857807444929313943">손가락을 뗀 후 다시 터치하세요</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="385939467708172187">안전한 비밀번호 사용</translation>
+<translation id="3859869403161297890">여기에서 공유 탭 그룹에 관한 의견을 보내 주세요.</translation>
 <translation id="3859987779882450877">열려 있는 탭에서 자동으로 그룹을 제안하고 생성합니다.</translation>
 <translation id="386009056910366930">'<ph name="GROUP_NAME" />' 탭 그룹 관리</translation>
 <translation id="3861638017150647085">사용자 이름 ‘<ph name="USERNAME" />’은(는) 사용할 수 없습니다.</translation>
@@ -5811,7 +5812,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="508059534790499809">Kerberos 티켓 새로고침</translation>
 <translation id="5081124414979006563">게스트 프로필 열기(&amp;O)</translation>
 <translation id="5081974595802103358">링크를 복사할 수 없음</translation>
-<translation id="508209203623347828">이 카드가 사용 중지되면 SharePoint 및 Outlook Calendar와 같은 Microsoft 카드도 사용 중지됩니다.</translation>
 <translation id="5083035541015925118">Ctrl + Alt + 위쪽 화살표</translation>
 <translation id="5084328598860513926">프로비저닝 흐름이 중단되었습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5084622689760736648">사이트가 제대로 작동할 가능성이 높습니다.</translation>
@@ -8177,6 +8177,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6805478749741295868">실험용 AI 기능이므로 정확하지 않을 수 있습니다.</translation>
 <translation id="6805647936811177813"><ph name="TOKEN_NAME" />에 로그인하여 <ph name="HOST_NAME" />에서 클라이언트 인증서를 가져오세요.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" />에서 RLZ 추적을 사용합니다.</translation>
+<translation id="6805817411033102703">공유 탭 그룹에 관한 의견</translation>
 <translation id="6806089545527108739">허용하지 않고 나중에 묻기</translation>
 <translation id="680644983456221885">Google로 전송되는 인터넷 사용 기록을 토대로 위험한 사이트, 다운로드 항목, 확장 프로그램에 대한 실시간 선제적 보호 조치를 적용합니다.</translation>
 <translation id="6806781719264274042">Google 계정이 있는 연락처만. <ph name="LINK_BEGIN" />연락처 보기<ph name="LINK_END" /></translation>

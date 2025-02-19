@@ -2273,6 +2273,7 @@
 <translation id="5019198164206649151">தவறான நிலையில் மீட்பு சேமிப்பு உள்ளது</translation>
 <translation id="5019293549442035120">சேமிக்கப்படும் முகவரிகளை Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்தலாம். இந்த முகவரி உங்கள் Google கணக்கில் (<ph name="USER_EMAIL" />) சேமிக்கப்படும்.</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> கொள்கை அமைக்கப்பட்டுள்ளது. நீட்டிப்புகள் பக்கத்தில் டெவெலப்பர் பயன்முறை கிடைக்கும் நிலையை <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> கட்டுப்படுத்தாது.</translation>
+<translation id="5021500396464456616">இந்த இணைப்பை அனுப்பியவரைத் தொடர்புகொள்ளவும்</translation>
 <translation id="5021557570875267742">Chrome மூலம் விலைகளைக் கண்காணித்தல்</translation>
 <translation id="5023310440958281426">உங்கள் நிர்வாகியின் கொள்கைகளைச் சரிபார்க்கவும்</translation>
 <translation id="5024171724744627792">உங்கள் கார்டு சேமிக்கப்பட்டிருந்தால் விரைவாகப் பணம் செலுத்தலாம். கார்டு விவரங்கள் உங்கள் Google கணக்கில் என்க்ரிப்ஷன் செய்யப்பட்டிருக்கும்.</translation>
@@ -4661,6 +4662,7 @@
 <translation id="963837307749850257">எல்லாப் பயனர்களுக்கும்</translation>
 <translation id="964050462028070434">கடவுச்சொற்களையும் கடவுக்குறியீடுகளையும் நிர்வகியுங்கள்…</translation>
 <translation id="969892804517981540">அதிகாரப்பூர்வ கட்டமைப்பு</translation>
+<translation id="973788791897303708">இந்தப் பக்கக் குழு நிரம்பிவிட்டது</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ஏதுமில்லை}=1{1 உருப்படி}other{# உருப்படிகள்}}</translation>
 <translation id="976522784004777030">5 x 8 இன்ச்</translation>
 <translation id="977502174772294970">திருமணங்கள்</translation>

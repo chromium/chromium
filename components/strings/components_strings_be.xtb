@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">Рэзервовае сховішча ў кепскім стане</translation>
 <translation id="5019293549442035120">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас будзе захаваны ў вашым Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625">Дзейнічае палітыка <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> не кантралюе даступнасць рэжыму распрацоўшчыка на старонцы пашырэнняў.</translation>
+<translation id="5021500396464456616">Звяжыцеся з карыстальнікам, які адправіў спасылку</translation>
 <translation id="5021557570875267742">Адсочвайце цэны з Chrome</translation>
 <translation id="5023310440958281426">Праверце палітыкі адміністратара</translation>
 <translation id="5024171724744627792">Пасля захавання карткі аплата выконваецца хутчэй. Рэквізіты карткі захоўваюцца ва Уліковым запісе Google ў зашыфраванай форме.</translation>
@@ -4664,6 +4665,7 @@
 <translation id="963837307749850257">Усе карыстальнікі</translation>
 <translation id="964050462028070434">Кіраваць паролямі і ключамі доступу…</translation>
 <translation id="969892804517981540">Афіцыйная зборка</translation>
+<translation id="973788791897303708">Гэта група ўкладак запоўнена</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Няма}=1{1 элемент}one{# элемент}few{# элементы}many{# элементаў}other{# элемента}}</translation>
 <translation id="976522784004777030">5 x 8 цаляў</translation>
 <translation id="977502174772294970">Вяселлі</translation>

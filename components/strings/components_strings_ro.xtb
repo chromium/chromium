@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">Depozit de fundal în stare nevalidă</translation>
 <translation id="5019293549442035120">Poți folosi adresele salvate în toate produsele Google. Această adresă se va salva în Contul tău Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Politica <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> este setată. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nu va controla disponibilitatea modului pentru dezvoltatori în pagina de extensii.</translation>
+<translation id="5021500396464456616">Contactează persoana care ți-a trimis acest link</translation>
 <translation id="5021557570875267742">Urmărește prețurile cu Chrome</translation>
 <translation id="5023310440958281426">Consultați politicile administratorului</translation>
 <translation id="5024171724744627792">Plătește mai rapid după salvarea cardului. Detaliile cardului sunt criptate în Contul Google.</translation>
@@ -4666,6 +4667,7 @@ Detalii suplimentare:
 <translation id="963837307749850257">Toți utilizatorii</translation>
 <translation id="964050462028070434">Gestionează parolele și cheile de acces…</translation>
 <translation id="969892804517981540">Versiune oficială</translation>
+<translation id="973788791897303708">Acest grup de file este plin</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Niciunul}=1{1 element}few{# elemente}other{# de elemente}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>
 <translation id="977502174772294970">Nunți</translation>

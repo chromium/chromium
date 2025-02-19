@@ -2277,6 +2277,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5019198164206649151">Mae'r storfa wrth gefn mewn cyflwr gwael</translation>
 <translation id="5019293549442035120">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Bydd y cyfeiriad hwn yn cael ei gadw yn eich Cyfrif Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Mae'r polisi <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> wedi'i osod. Ni fydd <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> yn rheoli argaeledd y modd datblygwr ar y dudalen estyniadau.</translation>
+<translation id="5021500396464456616">Cysylltwch â'r person a anfonodd y ddolen hon</translation>
 <translation id="5021557570875267742">Olrhain prisiau gyda Chrome</translation>
 <translation id="5023310440958281426">Gwiriwch bolisïau’ch gweinyddwr</translation>
 <translation id="5024171724744627792">Talwch yn gyflymach pan fydd eich cerdyn wedi'i gadw. Mae manylion cerdyn wedi'u hamgryptio yn eich Cyfrif Google.</translation>
@@ -4664,6 +4665,7 @@ Manylion ychwanegol:
 <translation id="963837307749850257">Pob defnyddiwr</translation>
 <translation id="964050462028070434">Rheoli Cyfrineiriau a Chodau Pas…</translation>
 <translation id="969892804517981540">Datblygiad Swyddogol</translation>
+<translation id="973788791897303708">Mae'r grŵp tabiau hwn yn llawn</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Dim}=1{1 eitem}two{# eitem}few{# eitem}many{# eitem}other{# eitem}}</translation>
 <translation id="976522784004777030">5 x 8 modfedd</translation>
 <translation id="977502174772294970">Priodasau</translation>

@@ -15,7 +15,6 @@
 <translation id="1041322626941363065">Enviar-lhe um aviso se as palavras-passe forem expostas numa violação de dados</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="104491362976654916">Página offline</translation>
-<translation id="1049200476149974839">quer que adira a um grupo de separadores. Qualquer pessoa com o link pode editar todos os separadores, por isso adira com cuidado. O link expira em 48 horas.</translation>
 <translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="1053651653201045802">Sessão terminada. Volte a iniciar sessão para usar os marcadores, as palavras-passe e muito mais na sua conta.</translation>
 <translation id="1054745118061919935">Ao continuar, aceita os <ph name="BEGIN_LINK" />Termos de Utilização<ph name="END_LINK" />.</translation>
@@ -976,6 +975,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> já pode usar o seu nome de utilizador e palavra-passe quando usar o Gestor de Palavras-passe da Google para iniciar sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5242899254250321823">Alterar palavra-passe no Website</translation>
 <translation id="5248640482715684545">Este site está a tentar abrir outra aplicação.</translation>
+<translation id="5250371859659394278">A partir de uma fonte desconhecida</translation>
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está vazio. Preencha-o antes de guardar.}other{Alguns campos obrigatórios estão vazios. Preencha-os antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar palavra-passe</translation>
 <translation id="5279214046729249716">Sim, mantê-los separados</translation>

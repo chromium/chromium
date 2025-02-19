@@ -475,7 +475,7 @@
 <translation id="1791415068765905273">Ցույց տալ համեմատման բոլոր աղյուսակները</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google հաշվում ձեր տվյալները, գաղտնիությունն ու անվտանգությունը կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
-<translation id="1793473605302304726">Վճարման ժամանակը</translation>
+<translation id="1793473605302304726">Տարաժամկետ վճարում</translation>
 <translation id="1793631236004319016">Վերջին անգամ օգտագործվել է <ph name="NUM_HOURS_MINUTES_SECONDS" /> առաջ</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Հասանելի են բազմաթիվ գործողություններ։ Դրանք ընտրելու համար սեղմեք Tab:</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -2284,6 +2284,7 @@
 <translation id="5019198164206649151">Պահեստի տվյալները վնասված են</translation>
 <translation id="5019293549442035120">Դուք կարող եք օգտագործել պահված հասցեները Google-ի արտադրանքներում։ Այս հասցեն կպահվի ձեր Google հաշվում, <ph name="USER_EMAIL" />։</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> կանոնը կարգավորված է։ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> կանոնը չի կառավարի մշակողի ռեժիմի հասանելիությունը ընդլայնումների էջում։</translation>
+<translation id="5021500396464456616">Կապվեք հղումն ուղարկած մարդու հետ</translation>
 <translation id="5021557570875267742">Հետագծեք գները Chrome-ի միջոցով</translation>
 <translation id="5023310440958281426">Կարդացեք ադմինիստրատորի սահմանած կանոնները</translation>
 <translation id="5024171724744627792">Պահեք ձեր քարտի տվյալներն ու վճարեք ավելի արագ։ Քարտի տվյալները գաղտնագրվում են ձեր Google հաշվում։</translation>
@@ -3418,7 +3419,7 @@
 <translation id="7042616127917168121">Որոնման պայմանների հստակեցում</translation>
 <translation id="7043552168914147882">Բաժանարար</translation>
 <translation id="7044081119134178347">Տրվել է տեսախցիկն օգտագործելու մեկանգամյա թույլտվություն</translation>
-<translation id="704738887031336226">Ցույց տալ <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />վճարման ժամանակը<ph name="PAY_OVER_TIME_HELP_LINK_END" /> տարբերակները վճարման հաստատման էջին</translation>
+<translation id="704738887031336226">Վճարելիս ցույց տալ <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />տարաժամկետ վճարման<ph name="PAY_OVER_TIME_HELP_LINK_END" /> տարբերակները</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Դուք փորձում էիք մտնել <ph name="DOMAIN" />, սակայն սերվերի կողմից ներկայացված վկայականի վավերականության ժամկետը չափազանց երկար է, ինչը վստահություն չի ներշնչում:</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Քարտն այս պահին չի կարող պահվել}one{Քարտն այս պահին չի կարող պահվել}other{Քարտերն այս պահին չեն կարող պահվել}}</translation>
@@ -4672,6 +4673,7 @@
 <translation id="963837307749850257">Բոլոր օգտատերերը</translation>
 <translation id="964050462028070434">Կառավարել գաղտնաբառերն ու մուտքի բանալիները…</translation>
 <translation id="969892804517981540">Պաշտոնական տարբերակ</translation>
+<translation id="973788791897303708">Ներդիրների այս խումբը լցված է</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ոչինչ չկա}=1{1 տարր}one{# տարր}other{# տարր}}</translation>
 <translation id="976522784004777030">5 x 8 դյույմ</translation>
 <translation id="977502174772294970">Հարսանիքներ</translation>

@@ -2272,6 +2272,7 @@
 <translation id="5019198164206649151">బ్యాకింగ్ స్టోరేజ్‌ చెల్లని స్థితిలో ఉంది</translation>
 <translation id="5019293549442035120">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="USER_EMAIL" />‌లో సేవ్ చేయబడుతుంది.</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> పాలసీ సెట్ చేయబడింది. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, ఎక్స్‌టెన్షన్‌ల పేజీలో డెవలపర్ మోడ్ లభ్యతను కంట్రోల్ చేయదు.</translation>
+<translation id="5021500396464456616">ఈ లింక్ పంపిన వ్యక్తిని సంప్రదించండి</translation>
 <translation id="5021557570875267742">Chromeతో ధరలు ట్రాక్ చేయండి</translation>
 <translation id="5023310440958281426">మీ నిర్వాహకుని విధానాలను చూడండి</translation>
 <translation id="5024171724744627792">మీ కార్డ్ సేవ్ అయినప్పుడు వేగంగా పేమెంట్ చేయండి. కార్డ్ వివరాలు మీ Google ఖాతాలో ఎన్‌క్రిప్ట్ చేసి ఉంటాయి.</translation>
@@ -4660,6 +4661,7 @@
 <translation id="963837307749850257">యూజర్‌లందరికి</translation>
 <translation id="964050462028070434">పాస్‌వర్డ్‌లను, పాస్-కీలను మేనేజ్ చేయండి…</translation>
 <translation id="969892804517981540">అధికారిక బిల్డ్</translation>
+<translation id="973788791897303708">ఈ ట్యాబ్ గ్రూప్ నిండింది</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ఏమీ లేవు}=1{1 అంశం}other{# అంశాలు}}</translation>
 <translation id="976522784004777030">5 x 8 అంగుళాలు</translation>
 <translation id="977502174772294970">వివాహాలు</translation>

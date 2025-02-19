@@ -15,7 +15,6 @@
 <translation id="1041322626941363065">የይለፍ ቃላት በውሂብ ጥሰት ተጋላጭ ከሆነ ያስጠንቅቅዎታል</translation>
 <translation id="1044891598689252897">ጣቢያዎች እንደተለመደው ሆነው ይሠራሉ</translation>
 <translation id="104491362976654916">ከመስመር ውጭ ገፅ</translation>
-<translation id="1049200476149974839">እርስዎ የትር ቡድንን መቀላቀል ይፈልጋሉ። አገናኙ ያላቸው ማንኛውም ሰው ሁሉንም ትሮች ማርትዕ ይችላሉ፣ ስለዚህ በጥንቃቄ ይቀላቀሉ። አገናኙ በ48 ሰዓት ውስጥ የአገልግሎት ጊዜው ያበቃል።</translation>
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
 <translation id="1053651653201045802">ዘግተው ወጥተዋል። በመለያዎ ውስጥ ዕልባቶችን፣ የይለፍ ቃላትን እና ሌሎችንም ለመጠቀም በመለያ መልሰው ይግቡ።</translation>
 <translation id="1054745118061919935">በመቀጠል፣ በ<ph name="BEGIN_LINK" />የአገልግሎት ውል<ph name="END_LINK" /> ይስማማሉ።</translation>
@@ -976,6 +975,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ውስጥ በመለያ ለመግባት Google የይለፍ ቃል አስተዳዳሪ ሲጠቀሙ አሁን የእርስዎን የተጠቃሚ ስም እና የይለፍ ቃል መጠቀም ይችላሉ።</translation>
 <translation id="5242899254250321823">ድር ጣቢያ ላይ የይለፍ ቃል ይቀይሩ</translation>
 <translation id="5248640482715684545">ይህ ጣቢያ ሌላ መተግበሪያ ለመክፈት እየሞከረ ነው።</translation>
+<translation id="5250371859659394278">ከማይታወቅ ምንጭ</translation>
 <translation id="5271265092610673171">{count,plural, =1{አስፈላጊ መስክ ባዶ ነው። ከማስቀመጥ በፊት ይሙሉት።}one{አንዳንድ አስፈላጊ መስክ ባዶ ነው። ከማስቀመጥ በፊት ይሙሉት።}other{አንዳንድ አስፈላጊ መስኮች ባዶ ናቸው። ከማስቀመጥ በፊት ይሙሏቸው።}}</translation>
 <translation id="5271549068863921519">የይለፍ ቃሉን አስቀምጥ</translation>
 <translation id="5279214046729249716">አዎ፣ የተለየ አድርገው</translation>

@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">보조 기억 장치 상태가 잘못됨</translation>
 <translation id="5019293549442035120">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. 이 주소는 Google 계정(<ph name="USER_EMAIL" />)에 저장됩니다.</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 정책이 설정되었습니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />로 확장 프로그램 페이지의 개발자 모드 사용 가능 여부를 제어할 수 없습니다.</translation>
+<translation id="5021500396464456616">이 링크를 보낸 사용자에게 문의하세요.</translation>
 <translation id="5021557570875267742">Chrome으로 가격 추적</translation>
 <translation id="5023310440958281426">관리자 정책을 확인하세요.</translation>
 <translation id="5024171724744627792">카드를 저장하면 더 빠르게 결제할 수 있습니다. 카드 세부정보는 Google 계정에 암호화되어 저장됩니다.</translation>
@@ -4663,6 +4664,7 @@
 <translation id="963837307749850257">모든 사용자</translation>
 <translation id="964050462028070434">비밀번호 및 패스키 관리…</translation>
 <translation id="969892804517981540">공식 빌드</translation>
+<translation id="973788791897303708">탭 그룹이 가득 참</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{없음}=1{항목 1개}other{항목 #개}}</translation>
 <translation id="976522784004777030">5x8인치</translation>
 <translation id="977502174772294970">결혼식</translation>

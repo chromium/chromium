@@ -2274,6 +2274,7 @@
 <translation id="5019198164206649151">ବ୍ୟାକିଂ ଷ୍ଟୋର୍‌ ଖରାପ ସ୍ଥିତିରେ ଅଛି</translation>
 <translation id="5019293549442035120">ସେଭ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକୁ ଆପଣ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିପାରିବେ। ଏହି ଠିକଣାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="USER_EMAIL" />ରେ ସେଭ କରାଯିବ।</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> ନୀତି ସେଟ କରାଯାଇଛି। <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ଏକ୍ସଟେନସନ ପୃଷ୍ଠାରେ ଡେଭେଲପର ମୋଡର ଉପଲବ୍ଧତାକୁ ନିୟନ୍ତ୍ରଣ କରିବ ନାହିଁ।</translation>
+<translation id="5021500396464456616">ଏହି ଲିଙ୍କ ପଠାଇଥିବା ବ୍ୟକ୍ତିଙ୍କୁ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="5021557570875267742">Chrome ମାଧ୍ୟମରେ ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="5023310440958281426">ଆପଣଙ୍କର ବ୍ଯବସ୍ଥାପକଙ୍କ ନୀତି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="5024171724744627792">ଆପଣଙ୍କ କାର୍ଡକୁ ସେଭ କରାଗଲେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରନ୍ତୁ। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ କାର୍ଡ ବିବରଣୀକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
@@ -4659,6 +4660,7 @@
 <translation id="963837307749850257">ସମସ୍ତ ୟୁଜର</translation>
 <translation id="964050462028070434">ପାସୱାର୍ଡ ଏବଂ ପାସକୀ'ଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ…</translation>
 <translation id="969892804517981540">ଅଫିସିଆଲ୍ ବିଲ୍ଡ</translation>
+<translation id="973788791897303708">ଏହି ଟାବ ଗ୍ରୁପ ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆଇଟମ୍}other{#ଟି ଆଇଟମ୍}}</translation>
 <translation id="976522784004777030">5 x 8 ଇଞ୍ଚ</translation>
 <translation id="977502174772294970">ବିବାହ ଉତ୍ସବ</translation>
