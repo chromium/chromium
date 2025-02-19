@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -199,7 +200,27 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
                response.CurrentRequestUrl(), DefaultManifest()));
     return;
   }
-  ParseManifestFromPage(document_url, response.CurrentRequestUrl(), data);
+
+  // 3** range, redirects, should not be considered as failure, load still can
+  // be successful. Test to see this:
+  // PwaInstallViewBrowserTest.ListedRelatedChromeAppInstalled
+  if (response.HttpStatusCode() >= 200 && response.HttpStatusCode() < 400) {
+    ParseManifestFromPage(document_url, response.CurrentRequestUrl(), data);
+  } else {
+    const String message = WTF::String::Format(
+        "Manifest fetch from %s failed, code %d",
+        response.CurrentRequestUrl().GetString().Utf8().c_str(),
+        response.HttpStatusCode());
+
+    GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError, message,
+        CaptureSourceLocation()));
+
+    ResolveCallbacks(
+        Result(mojom::blink::ManifestRequestResult::kManifestFailedToFetch,
+               response.CurrentRequestUrl(), DefaultManifest()));
+  }
 }
 
 void ManifestManager::ParseManifestFromPage(const KURL& document_url,
