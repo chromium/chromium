@@ -789,12 +789,14 @@ source_set("platform_base_util") {
     ":nearby_defines",
   ]
   sources = [
-    "src/internal/platform/base_input_stream.cc",
     "src/internal/platform/byte_utils.cc",
+    "src/internal/platform/stream_reader.cc",
+    "src/internal/platform/stream_writer.cc",
   ]
   public = [
-    "src/internal/platform/base_input_stream.h",
     "src/internal/platform/byte_utils.h",
+    "src/internal/platform/stream_reader.h",
+    "src/internal/platform/stream_writer.h",
   ]
   public_deps = [
     ":platform_base",
