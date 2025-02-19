@@ -1179,6 +1179,7 @@ void GlicWindowController::Shutdown() {
   ForceClose();
   contents_.reset();
   fre_controller_->Shutdown();
+  window_activation_callback_list_.Notify(false);
 }
 
 void GlicWindowController::ResetPresentationTimingState() {
