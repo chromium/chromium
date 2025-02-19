@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -2172,6 +2173,12 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
   sync_pb::BnplIssuerDetails bnpl_issuer_details =
       payment_instrument.bnpl_issuer_details();
 
+  // If `payment_instrument` has an unsupported issuer ID, do not cache it.
+  if (!base::Contains(payments::BnplManager::GetSupportedBnplIssuerIds(),
+                      bnpl_issuer_details.issuer_id())) {
+    return;
+  }
+
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   eligible_price_ranges.reserve(
       bnpl_issuer_details.eligible_price_range_size());
@@ -2238,6 +2245,14 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
 
   const sync_pb::BnplCreationOption& bnpl_issuer =
       payment_instrument_creation_option.buy_now_pay_later_option();
+
+  // If `payment_instrument_creation_option` has an unsupported issuer ID, do
+  // not cache it.
+  if (!base::Contains(payments::BnplManager::GetSupportedBnplIssuerIds(),
+                      bnpl_issuer.issuer_id())) {
+    return;
+  }
+
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   eligible_price_ranges.reserve(bnpl_issuer.eligible_price_range_size());
   for (const sync_pb::EligiblePriceRange& eligible_price_range :
@@ -2246,6 +2261,12 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
         eligible_price_range.currency(),
         eligible_price_range.min_price_in_micros(),
         eligible_price_range.max_price_in_micros());
+  }
+
+  // An unlinked BNPL issuer is only valid if there is at least one eligible
+  // price range.
+  if (eligible_price_ranges.empty()) {
+    return;
   }
 
   unlinked_bnpl_issuers_.emplace_back(std::nullopt, bnpl_issuer.issuer_id(),
