@@ -154,6 +154,11 @@ source_set("browser_tests") {
       "signin/profile_picker_browsertest.cc",
       "signin/signin_browsertest.cc",
     ]
+
+    if (enable_dice_support) {
+      sources +=
+          [ "signin/signout_confirmation/signout_confirmation_browsertest.cc" ]
+    }
   }
 
   if (enable_dice_support || is_chromeos) {
@@ -721,6 +726,12 @@ generate_grd("build_grd") {
       "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
     ]
+
+    if (enable_dice_support) {
+      deps += [ "signin/signout_confirmation:build_grdp" ]
+      grdp_files +=
+          [ "$target_gen_dir/signin/signout_confirmation/resources.grdp" ]
+    }
   }
 
   if (enable_compose) {

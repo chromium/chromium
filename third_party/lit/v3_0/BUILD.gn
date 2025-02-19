@@ -78,6 +78,7 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/test/data/webui/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/test/data/webui/signin:build_ts",
+    "//chrome/test/data/webui/signin/signout_confirmation:build_ts",
     "//chrome/test/data/webui/tab_search:build_ts",
     "//components/commerce/core/internals/resources:build_ts",
     "//components/download/resources/download_internals:build_ts",
