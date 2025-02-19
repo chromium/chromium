@@ -147,18 +147,6 @@ void ElementAnimations::RecalcCompositedStatusForKeyframeChange(
 }
 
 void ElementAnimations::RecalcCompositedStatus(Element* element) {
-  // Must not run during paint or pre-paint. Can be run post-paint via JS,
-  // during stop due to detach, and post-layout from the post style animation
-  // update.
-  if ((element->GetDocument().Lifecycle().GetState() ==
-       DocumentLifecycle::kInPrePaint) ||
-      (element->GetDocument().Lifecycle().GetState() ==
-       DocumentLifecycle::kInPaint)) {
-    DCHECK(false) << "Composited status must not be reset during "
-                  << "prepaint/paint";
-    base::debug::DumpWithoutCrashing();
-  }
-
   clip_path_paint_worklet_candidate_ = nullptr;
   Animation::NativePaintWorkletReasons reasons = Animation::kNoPaintWorklet;
   // Multiple animations targeting the same property cannot be compsoited as
@@ -194,6 +182,23 @@ void ElementAnimations::RecalcCompositedStatus(Element* element) {
     ElementAnimations::CompositedPaintStatus status =
         CalculateStatusFromNativePaintReasons(Animation::kClipPathPaintWorklet,
                                               reasons, overlapping_reasons);
+    // Must not run during paint or pre-paint. Can be run post-paint via JS,
+    // during stop due to detach, and post-layout from the post style animation
+    // update.
+    if ((element->GetDocument().Lifecycle().GetState() ==
+         DocumentLifecycle::kInPaint) ||
+        (((composited_clip_path_status_ ==
+           static_cast<unsigned>(
+               ElementAnimations::CompositedPaintStatus::kComposited)) ||
+          (composited_clip_path_status_ ==
+           static_cast<unsigned>(
+               ElementAnimations::CompositedPaintStatus::kNotComposited))) &&
+         (element->GetDocument().Lifecycle().GetState() ==
+          DocumentLifecycle::kInPrePaint))) {
+      DCHECK(false) << "Composited clip path status must not be reset "
+                    << "once it has been resolved in pre-paint.";
+      base::debug::DumpWithoutCrashing();
+    }
     if (SetCompositedClipPathStatus(status) && element->GetLayoutObject()) {
       element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
       // For clip paths, we also need to update the paint properties to switch
