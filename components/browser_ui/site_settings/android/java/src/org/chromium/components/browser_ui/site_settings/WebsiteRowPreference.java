@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -21,11 +23,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Used by {@link AllSiteSettings} to display a row for a group of sites or a single site. */
+@NullMarked
 public class WebsiteRowPreference extends ChromeImageViewPreference {
     private final SiteSettingsDelegate mSiteSettingsDelegate;
     private final WebsiteEntry mSiteEntry;
@@ -35,7 +40,7 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
 
-    private Dialog mConfirmationDialog;
+    private @Nullable Dialog mConfirmationDialog;
 
     private LayoutInflater mLayoutInflater;
 
@@ -99,6 +104,7 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
         // Manually apply ListItemStartIcon style to draw the outer circle in the right size.
         ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
+        assumeNonNull(icon);
         FaviconViewUtils.formatIconForFavicon(getContext().getResources(), icon);
 
         if (!mFaviconFetched) {

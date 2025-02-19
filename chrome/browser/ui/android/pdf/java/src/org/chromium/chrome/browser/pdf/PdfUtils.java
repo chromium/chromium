@@ -10,14 +10,14 @@ import android.os.ext.SdkExtensions;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
@@ -33,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
 
 /** Utilities for inline pdf support. */
+@NullMarked
 public class PdfUtils {
     @IntDef({
         PdfPageType.NONE,
@@ -109,7 +110,7 @@ public class PdfUtils {
                 || scheme.equals(UrlConstants.CONTENT_SCHEME);
     }
 
-    private static String getDecodedScheme(String url) {
+    private static @Nullable String getDecodedScheme(String url) {
         String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         if (decodedUrl == null) {
             return null;
@@ -164,7 +165,7 @@ public class PdfUtils {
      * @param nativePage The NativePage being used to retrieve pdf information.
      * @return Pdf information including filename, filepath etc.
      */
-    public static PdfInfo getPdfInfo(NativePage nativePage) {
+    public static @Nullable PdfInfo getPdfInfo(NativePage nativePage) {
         if (nativePage == null || !nativePage.isPdf()) {
             return null;
         }
@@ -174,7 +175,7 @@ public class PdfUtils {
                 nativePage.isDownloadSafe());
     }
 
-    static String getFileNameFromUrl(String url, String defaultTitle) {
+    static String getFileNameFromUrl(@Nullable String url, String defaultTitle) {
         if (url == null) {
             return defaultTitle;
         }
@@ -202,7 +203,7 @@ public class PdfUtils {
         return fileName;
     }
 
-    static String getFilePathFromUrl(String url) {
+    static @Nullable String getFilePathFromUrl(@Nullable String url) {
         if (url == null) {
             return null;
         }
@@ -247,7 +248,7 @@ public class PdfUtils {
         sShouldOpenPdfInlineForTesting = shouldOpenPdfInlineForTesting;
     }
 
-    static Uri getUriFromFilePath(@NonNull String pdfFilePath) {
+    static @Nullable Uri getUriFromFilePath(String pdfFilePath) {
         Uri uri = Uri.parse(pdfFilePath);
         String scheme = uri.getScheme();
         try {
@@ -289,7 +290,7 @@ public class PdfUtils {
      * @param downloadUrl The url which is interpreted as download.
      * @return The pdf page url including the encoded downloadUrl.
      */
-    public static String encodePdfPageUrl(String downloadUrl) {
+    public static @Nullable String encodePdfPageUrl(String downloadUrl) {
         try {
             String pdfPageUrl =
                     UrlConstants.PDF_URL
@@ -310,7 +311,7 @@ public class PdfUtils {
      * @param originalUrl The url to be decoded.
      * @return the decoded download url; or null if the original url is not a pdf page url.
      */
-    public static String decodePdfPageUrl(String originalUrl) {
+    public static @Nullable String decodePdfPageUrl(String originalUrl) {
         if (originalUrl == null || !originalUrl.startsWith(UrlConstants.PDF_URL)) {
             return null;
         }

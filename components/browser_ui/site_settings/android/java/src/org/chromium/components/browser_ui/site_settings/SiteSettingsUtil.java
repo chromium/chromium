@@ -4,12 +4,14 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.text.format.Formatter;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -18,6 +20,7 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 
 /** Util class for site settings UI. */
+@NullMarked
 public class SiteSettingsUtil {
     // Defining the order for content settings based on http://crbug.com/610358
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -66,7 +69,7 @@ public class SiteSettingsUtil {
      *     when called with empty list or only with entries not represented in this UI.
      */
     public static @ContentSettingsType.EnumType int getHighestPriorityPermission(
-            @ContentSettingsType.EnumType @NonNull int[] types) {
+            @ContentSettingsType.EnumType int[] types) {
         for (@ContentSettingsType.EnumType int setting : SETTINGS_ORDER) {
             for (@ContentSettingsType.EnumType int type : types) {
                 if (setting == type) {
@@ -137,6 +140,8 @@ public class SiteSettingsUtil {
                 PageZoomUtils.getDefaultZoomLevelAsZoomFactor(browserContextHandle);
         // Propagate the change through HostZoomMap.
         HostZoomMap.setZoomLevelForHost(
-                browserContextHandle, site.getAddress().getHost(), defaultZoomFactor);
+                browserContextHandle,
+                assertNonNull(site.getAddress().getHost()),
+                defaultZoomFactor);
     }
 }

@@ -13,6 +13,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -95,7 +96,7 @@ public class UrlUtilities {
      *
      * @return True if the GURL's scheme is one that ContentView can handle.
      */
-    public static boolean isAcceptedScheme(GURL url) {
+    public static boolean isAcceptedScheme(@Nullable GURL url) {
         if (GURL.isEmptyOrInvalid(url)) return false;
         return SUPPORTED_SCHEMES.contains(url.getScheme());
     }
@@ -213,7 +214,9 @@ public class UrlUtilities {
      *     registry identifier.
      */
     // TODO(crbug.com/40549331): Convert to GURL.
-    public static String getDomainAndRegistry(String uri, boolean includePrivateRegistries) {
+    @Contract("null, _ -> null")
+    public static @Nullable String getDomainAndRegistry(
+            @Nullable String uri, boolean includePrivateRegistries) {
         if (TextUtils.isEmpty(uri)) return uri;
         return UrlUtilitiesJni.get().getDomainAndRegistry(uri, includePrivateRegistries);
     }

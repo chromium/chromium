@@ -6,14 +6,17 @@ package org.chromium.components.browser_ui.site_settings;
 
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
 /** Preference fragment for showing the Site Settings UI. */
+@NullMarked
 public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
         implements FragmentSettingsNavigation {
-    private SiteSettingsDelegate mSiteSettingsDelegate;
-    private SettingsNavigation mSettingsNavigation;
+    private @Nullable SiteSettingsDelegate mSiteSettingsDelegate;
+    private @Nullable SettingsNavigation mSettingsNavigation;
 
     /**
      * Sets the SiteSettingsDelegate instance this Fragment should use.
@@ -50,7 +53,7 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
     }
 
     /** Returns the associated {@link SettingsNavigation}. */
-    public SettingsNavigation getSettingsNavigation() {
+    public @Nullable SettingsNavigation getSettingsNavigation() {
         return mSettingsNavigation;
     }
 }

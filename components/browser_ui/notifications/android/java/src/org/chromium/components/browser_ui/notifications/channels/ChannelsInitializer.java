@@ -206,7 +206,7 @@ public class ChannelsInitializer {
      * This calls ensureInitialized after checking this isn't null.
      * @param channelId Id of the channel to be initialized.
      */
-    public void safeInitialize(String channelId) {
+    public void safeInitialize(@Nullable String channelId) {
         // The channelId may be null if the notification will be posted by another app that
         // does not target O or sets its own channels, e.g. WebAPK notifications.
         if (channelId == null) {

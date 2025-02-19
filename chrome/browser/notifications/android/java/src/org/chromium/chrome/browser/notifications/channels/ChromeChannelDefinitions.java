@@ -12,6 +12,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.R;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -39,6 +41,7 @@ import java.util.Set;
  * <br>
  * See the README.md in this directory for more information before adding or changing any channels.
  */
+@NullMarked
 public class ChromeChannelDefinitions extends ChannelDefinitions {
     /**
      * Version number identifying the current set of channels. This must be incremented whenever the
@@ -432,12 +435,12 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     }
 
     @Override
-    public PredefinedChannelGroup getChannelGroup(@ChannelGroupId String groupId) {
+    public @Nullable PredefinedChannelGroup getChannelGroup(@ChannelGroupId String groupId) {
         return PredefinedChannelGroups.MAP.get(groupId);
     }
 
     @Override
-    public PredefinedChannel getChannelFromId(@ChannelId String channelId) {
+    public @Nullable PredefinedChannel getChannelFromId(@ChannelId String channelId) {
         return PredefinedChannels.MAP.get(channelId);
     }
 

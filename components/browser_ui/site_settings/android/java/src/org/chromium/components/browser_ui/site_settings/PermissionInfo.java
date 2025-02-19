@@ -4,8 +4,8 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
@@ -14,9 +14,10 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import java.io.Serializable;
 
 /** Permission information for a given origin. */
+@NullMarked
 public class PermissionInfo implements Serializable {
     private final boolean mIsEmbargoed;
-    private final String mEmbedder;
+    private final @Nullable String mEmbedder;
     private final String mOrigin;
     private final @ContentSettingsType.EnumType int mContentSettingsType;
     private final @SessionModel.EnumType int mSessionModel;
@@ -24,7 +25,7 @@ public class PermissionInfo implements Serializable {
     public PermissionInfo(
             @ContentSettingsType.EnumType int type,
             String origin,
-            String embedder,
+            @Nullable String embedder,
             boolean isEmbargoed,
             @SessionModel.EnumType int sessionModel) {
         assert WebsitePermissionsFetcher.getPermissionsType(type)
@@ -45,7 +46,7 @@ public class PermissionInfo implements Serializable {
         return mOrigin;
     }
 
-    public String getEmbedder() {
+    public @Nullable String getEmbedder() {
         return mEmbedder;
     }
 

@@ -5,15 +5,17 @@
 package org.chromium.components.signin.identitymanager;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class groups all the {@link AccountInfoService} instance manipulation
  * methods in one place.
  */
+@NullMarked
 public final class AccountInfoServiceProvider {
     private static @Nullable Promise<AccountInfoService> sInstancePromise;
 

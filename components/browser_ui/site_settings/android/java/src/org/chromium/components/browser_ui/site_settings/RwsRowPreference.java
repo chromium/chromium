@@ -4,12 +4,16 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.preference.PreferenceViewHolder;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Preference for websites which belongs to the RWS (Related website sets).
@@ -19,6 +23,7 @@ import androidx.preference.PreferenceViewHolder;
  * <p>Note: We leverage the existing implementation of the {@link WebsiteRowPreference} limiting its
  * functionality for now (remove delete button) + make it not selectable.
  */
+@NullMarked
 public class RwsRowPreference extends WebsiteRowPreference {
 
     RwsRowPreference(
@@ -34,7 +39,8 @@ public class RwsRowPreference extends WebsiteRowPreference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        ImageView mButton = (ImageView) holder.findViewById(R.id.image_view_widget);
-        mButton.setVisibility(View.INVISIBLE);
+        ImageView button = (ImageView) holder.findViewById(R.id.image_view_widget);
+        assumeNonNull(button);
+        button.setVisibility(View.INVISIBLE);
     }
 }

@@ -4,12 +4,14 @@
 
 package org.chromium.components.external_intents;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.RequiredCallback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -18,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A container object for passing navigation parameters to {@link ExternalNavigationHandler}. */
+@NullMarked
 public class ExternalNavigationParams {
     /** A container for parameters passed to the AsyncActionTakenCallback. */
     public static class AsyncActionTakenParams {
@@ -41,15 +44,16 @@ public class ExternalNavigationParams {
         // Whether the async action taken allows the tab to be closed.
         public boolean canCloseTab;
 
+        @SuppressWarnings("NullAway.Init")
         public ExternalNavigationParams externalNavigationParams;
 
-        public GURL targetUrl;
+        public @Nullable GURL targetUrl;
 
         private AsyncActionTakenParams() {
             this.actionType = AsyncActionTakenType.NO_ACTION;
         }
 
-        private AsyncActionTakenParams(GURL targetUrl, ExternalNavigationParams params) {
+        private AsyncActionTakenParams(@Nullable GURL targetUrl, ExternalNavigationParams params) {
             this.actionType = AsyncActionTakenType.NAVIGATE;
             this.targetUrl = targetUrl;
             this.externalNavigationParams = params;
@@ -66,7 +70,7 @@ public class ExternalNavigationParams {
         }
 
         public static AsyncActionTakenParams forNavigate(
-                GURL targetUrl, ExternalNavigationParams params) {
+                @Nullable GURL targetUrl, ExternalNavigationParams params) {
             return new AsyncActionTakenParams(targetUrl, params);
         }
 
@@ -86,33 +90,33 @@ public class ExternalNavigationParams {
     private final boolean mOpenInNewTab;
     private final boolean mIsBackgroundTabNavigation;
     private final boolean mIsMainFrame;
-    private final String mNativeClientPackageName;
+    private final @Nullable String mNativeClientPackageName;
     private final boolean mHasUserGesture;
     private final boolean mIsInitialNavigationInFrame;
     private final boolean mIsHiddenCrossFrameNavigation;
     private final boolean mIsSandboxedMainFrame;
-    private final Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
+    private final @Nullable Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
     private boolean mIsRendererInitiated;
-    private Origin mInitiatorOrigin;
+    private @Nullable Origin mInitiatorOrigin;
     private final long mNavigationId;
 
     // Populated when an async action is taken, ensuring the callback gets called.
-    private RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
+    private @Nullable RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
 
     private ExternalNavigationParams(
-            @NonNull GURL url,
+            GURL url,
             boolean isIncognito,
-            GURL referrerUrl,
+            @Nullable GURL referrerUrl,
             int pageTransition,
             boolean isRedirect,
             boolean appMustBeInForeground,
-            @NonNull RedirectHandler redirectHandler,
+            RedirectHandler redirectHandler,
             boolean openInNewTab,
             boolean isBackgroundTabNavigation,
             boolean isMainFrame,
-            String nativeClientPackageName,
+            @Nullable String nativeClientPackageName,
             boolean hasUserGesture,
-            Callback<AsyncActionTakenParams> asyncActionTakenCallback,
+            @Nullable Callback<AsyncActionTakenParams> asyncActionTakenCallback,
             boolean isRendererInitiated,
             @Nullable Origin initiatorOrigin,
             boolean isInitialNavigationInFrame,
@@ -147,7 +151,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The URL to potentially open externally. */
-    public @NonNull GURL getUrl() {
+    public GURL getUrl() {
         return mUrl;
     }
 
@@ -157,7 +161,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The referrer URL. */
-    public @NonNull GURL getReferrerUrl() {
+    public GURL getReferrerUrl() {
         return mReferrerUrl;
     }
 
@@ -177,7 +181,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The redirect handler. */
-    public @NonNull RedirectHandler getRedirectHandler() {
+    public RedirectHandler getRedirectHandler() {
         return mRedirectHandler;
     }
 
@@ -205,7 +209,7 @@ public class ExternalNavigationParams {
      * @return The package name of the TWA or WebAPK within which the navigation is happening.
      *         Null if the navigation is not within one of these wrapping APKs.
      */
-    public String nativeClientPackageName() {
+    public @Nullable String nativeClientPackageName() {
         return mNativeClientPackageName;
     }
 
@@ -215,7 +219,8 @@ public class ExternalNavigationParams {
     }
 
     /** @return A callback to be run when an async action is taken. */
-    public RequiredCallback<AsyncActionTakenParams> getRequiredAsyncActionTakenCallback() {
+    public @Nullable
+            RequiredCallback<AsyncActionTakenParams> getRequiredAsyncActionTakenCallback() {
         return mRequiredAsyncActionTakenCallback;
     }
 
@@ -225,8 +230,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The origin that initiates the navigation. */
-    @Nullable
-    public Origin getInitiatorOrigin() {
+    public @Nullable Origin getInitiatorOrigin() {
         return mInitiatorOrigin;
     }
 
@@ -261,19 +265,19 @@ public class ExternalNavigationParams {
     public static class Builder {
         private GURL mUrl;
         private boolean mIsIncognito;
-        private GURL mReferrerUrl;
+        private @Nullable GURL mReferrerUrl;
         private int mPageTransition;
         private boolean mIsRedirect;
         private boolean mApplicationMustBeInForeground;
-        private RedirectHandler mRedirectHandler;
+        private @Nullable RedirectHandler mRedirectHandler;
         private boolean mOpenInNewTab;
         private boolean mIsBackgroundTabNavigation;
         private boolean mIsMainFrame;
-        private String mNativeClientPackageName;
+        private @Nullable String mNativeClientPackageName;
         private boolean mHasUserGesture;
-        private Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
+        private @Nullable Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
         private boolean mIsRendererInitiated;
-        private Origin mInitiatorOrigin;
+        private @Nullable Origin mInitiatorOrigin;
         private boolean mIsInitialNavigationInFrame;
         private boolean mIsHiddenCrossFrameNavigation;
         private boolean mIsSandboxedMainFrame;
@@ -391,7 +395,7 @@ public class ExternalNavigationParams {
                     mPageTransition,
                     mIsRedirect,
                     mApplicationMustBeInForeground,
-                    mRedirectHandler,
+                    assertNonNull(mRedirectHandler),
                     mOpenInNewTab,
                     mIsBackgroundTabNavigation,
                     mIsMainFrame,

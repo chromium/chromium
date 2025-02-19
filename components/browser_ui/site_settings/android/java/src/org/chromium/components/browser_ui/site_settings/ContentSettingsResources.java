@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -17,9 +19,9 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.FeatureList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -35,6 +37,7 @@ import org.chromium.device.DeviceFeatureMap;
 // because our key is an int but we're changing the key to a string soon so
 // suppress the lint warning for now.
 @SuppressLint("UseSparseArrays")
+@NullMarked
 public class ContentSettingsResources {
     /** An inner class contains all the resources for a ContentSettingsType */
     private static class ResourceItem {
@@ -80,12 +83,14 @@ public class ContentSettingsResources {
         }
 
         private int getEnabledSummary() {
+            assumeNonNull(mDefaultEnabledValue);
             return mEnabledSummary == 0
                     ? getCategorySummary(mDefaultEnabledValue, /* isOneTime= */ false)
                     : mEnabledSummary;
         }
 
         private int getDisabledSummary() {
+            assumeNonNull(mDefaultDisabledValue);
             return mDisabledSummary == 0
                     ? getCategorySummary(mDefaultDisabledValue, /* isOneTime= */ false)
                     : mDisabledSummary;
@@ -446,7 +451,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_vr_a11y);
         }
         assert false; // NOTREACHED
-        return null;
+        return assumeNonNull(null);
     }
 
     /** Returns the resource id of the 24dp icon for a content type. */
@@ -464,7 +469,7 @@ public class ContentSettingsResources {
      *     returned icon will have a strike through it.
      * @return A grey 24dp {@link Drawable} for this content setting.
      */
-    public static Drawable getContentSettingsIcon(
+    public static @Nullable Drawable getContentSettingsIcon(
             Context context,
             @ContentSettingsType.EnumType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value) {
@@ -486,7 +491,7 @@ public class ContentSettingsResources {
      * @param isIncognito Whether this icon should use the incognito color scheme.
      * @return A blue 24dp {@link Drawable} for this content setting.
      */
-    public static Drawable getIconForOmnibox(
+    public static @Nullable Drawable getIconForOmnibox(
             Context context,
             @ContentSettingsType.EnumType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value,
@@ -506,7 +511,7 @@ public class ContentSettingsResources {
      * @return A {@link Drawable} that is the blocked version of the square icon passed in.
      *         Achieved by adding a diagonal strike through the icon.
      */
-    private static Drawable getBlockedSquareIcon(Resources resources, Drawable icon) {
+    private static @Nullable Drawable getBlockedSquareIcon(Resources resources, Drawable icon) {
         if (icon == null) return null;
         // Save color filter in order to re-apply later
         ColorFilter filter = icon.getColorFilter();
@@ -631,7 +636,7 @@ public class ContentSettingsResources {
      * @param contentSettingsType The ContentSettingsType for this string resource id.
      */
     public static int getSiteSummary(
-            @ContentSettingValues @Nullable Integer value,
+            @ContentSettingValues Integer value,
             @ContentSettingsType.EnumType int contentSettingsType) {
         switch (value) {
             case ContentSettingValues.ALLOW:
@@ -775,7 +780,7 @@ public class ContentSettingsResources {
      * @return An array of 3 resource IDs for descriptions for Allowed, Ask and
      *         Blocked states, in that order.
      */
-    public static int[] getTriStateSettingDescriptionIDs(int contentType) {
+    public static int @Nullable [] getTriStateSettingDescriptionIDs(int contentType) {
         if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
             int[] descriptionIDs = {
                 R.string.website_settings_category_protected_content_allowed_recommended,

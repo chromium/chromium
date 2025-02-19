@@ -28,9 +28,9 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setContentIntent(@Nullable PendingIntentProvider contentIntent);
 
-    NotificationWrapperBuilder setContentTitle(CharSequence title);
+    NotificationWrapperBuilder setContentTitle(@Nullable CharSequence title);
 
-    NotificationWrapperBuilder setContentText(CharSequence text);
+    NotificationWrapperBuilder setContentText(@Nullable CharSequence text);
 
     NotificationWrapperBuilder setSmallIcon(int icon);
 
@@ -38,7 +38,7 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setColor(int argb);
 
-    NotificationWrapperBuilder setTicker(CharSequence text);
+    NotificationWrapperBuilder setTicker(@Nullable CharSequence text);
 
     NotificationWrapperBuilder setLocalOnly(boolean localOnly);
 
@@ -76,11 +76,12 @@ public interface NotificationWrapperBuilder {
             NotificationCompat.Action action, int flags, int actionType, int requestCode);
 
     @Deprecated
-    NotificationWrapperBuilder setDeleteIntent(PendingIntent intent);
+    NotificationWrapperBuilder setDeleteIntent(@Nullable PendingIntent intent);
 
-    NotificationWrapperBuilder setDeleteIntent(PendingIntentProvider intent);
+    NotificationWrapperBuilder setDeleteIntent(@Nullable PendingIntentProvider intent);
 
-    NotificationWrapperBuilder setDeleteIntent(PendingIntentProvider intent, int actionType);
+    NotificationWrapperBuilder setDeleteIntent(
+            @Nullable PendingIntentProvider intent, int actionType);
 
     /**
      * Sets the priority of single notification on Android versions prior to Oreo.
@@ -90,11 +91,11 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setProgress(int max, int percentage, boolean indeterminate);
 
-    NotificationWrapperBuilder setSubText(CharSequence text);
+    NotificationWrapperBuilder setSubText(@Nullable CharSequence text);
 
     NotificationWrapperBuilder setWhen(long time);
 
-    NotificationWrapperBuilder setLargeIcon(Bitmap icon);
+    NotificationWrapperBuilder setLargeIcon(@Nullable Bitmap icon);
 
     NotificationWrapperBuilder setVibrate(long[] vibratePattern);
 
@@ -106,13 +107,14 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setOnlyAlertOnce(boolean onlyAlertOnce);
 
-    NotificationWrapperBuilder setPublicVersion(Notification publicNotification);
+    NotificationWrapperBuilder setPublicVersion(@Nullable Notification publicNotification);
 
     NotificationWrapperBuilder setContent(RemoteViews views);
 
-    NotificationWrapperBuilder setBigPictureStyle(Bitmap bigPicture, CharSequence summaryText);
+    NotificationWrapperBuilder setBigPictureStyle(
+            Bitmap bigPicture, @Nullable CharSequence summaryText);
 
-    NotificationWrapperBuilder setBigTextStyle(CharSequence bigText);
+    NotificationWrapperBuilder setBigTextStyle(@Nullable CharSequence bigText);
 
     NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions);
 

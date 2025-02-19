@@ -7,15 +7,17 @@ package org.chromium.chrome.browser.pdf;
 import android.app.Activity;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Native page that displays pdf file. */
+@NullMarked
 public class PdfPage extends BasicNativePage {
     @VisibleForTesting final PdfCoordinator mPdfCoordinator;
     private String mTitle;
@@ -81,7 +83,7 @@ public class PdfPage extends BasicNativePage {
     }
 
     @Override
-    public String getCanonicalFilepath() {
+    public @Nullable String getCanonicalFilepath() {
         return mPdfCoordinator.getFilepath();
     }
 
@@ -146,7 +148,7 @@ public class PdfPage extends BasicNativePage {
      *
      * @param isWorkProfile Whether Chrome is running in the Android work profile.
      */
-    public String requestAssistContent(boolean isWorkProfile) {
+    public @Nullable String requestAssistContent(boolean isWorkProfile) {
         return mPdfCoordinator.requestAssistContent(getTitle(), isWorkProfile);
     }
 }

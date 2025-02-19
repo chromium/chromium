@@ -8,10 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -19,6 +19,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** A delegate for {@link ExternalNavigationHandler}. */
+@NullMarked
 public interface ExternalNavigationDelegate {
     /**
      * Returns the Context with which this delegate is associated, or null if there is no such
@@ -131,8 +132,7 @@ public interface ExternalNavigationDelegate {
      * Returns the scheme (or null) used by web pages to start up the browser (Chrome Stable for
      * Chrome) without an explicit Intent.
      */
-    @Nullable
-    String getSelfScheme();
+    @Nullable String getSelfScheme();
 
     /** Returns whether all the external intents are supposed to be disabled per embedder. */
     boolean shouldDisableAllExternalIntents();

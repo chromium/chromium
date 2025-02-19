@@ -4,10 +4,13 @@
 
 package org.chromium.components.signin;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * AccessTokenData encapsulates result of getToken method call from GoogleAuthUtil. It is a
  * holder that contains the access token and its expiration time.
  */
+@NullMarked
 public class AccessTokenData {
     /** The expiration time value when there's no known expiration time for the token. */
     public static final long NO_KNOWN_EXPIRATION_TIME = 0;

@@ -4,11 +4,14 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /** File editing information for a given origin. */
+@NullMarked
 public class FileEditingInfo implements Serializable {
 
     public static class Grant implements Serializable {

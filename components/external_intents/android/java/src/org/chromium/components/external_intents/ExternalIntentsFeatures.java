@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Features;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Java accessor for base/feature_list.h state.
@@ -17,6 +18,7 @@ import org.chromium.base.Features;
  *
  */
 @JNINamespace("external_intents")
+@NullMarked
 public class ExternalIntentsFeatures extends Features {
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
     public static final String BLOCK_FRAME_RENAVIGATIONS_NAME = "BlockFrameRenavigations3";

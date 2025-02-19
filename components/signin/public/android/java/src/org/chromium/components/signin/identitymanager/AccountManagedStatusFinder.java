@@ -4,13 +4,12 @@
 
 package org.chromium.components.signin.identitymanager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.time.Duration;
@@ -19,8 +18,9 @@ import java.time.Duration;
  * AccountManagedStatusFinder waits for the account managed status to be fetched. This is a Java
  * version of the C++ AccountManagedStatusFinder class.
  */
+@NullMarked
 public class AccountManagedStatusFinder {
-    private final @NonNull Callback<Integer> mAsyncCallback;
+    private final Callback<Integer> mAsyncCallback;
 
     private long mNativeAccountManagedStatusFinder;
 
@@ -48,9 +48,9 @@ public class AccountManagedStatusFinder {
      * period.
      */
     public AccountManagedStatusFinder(
-            @NonNull IdentityManager identityManager,
-            @NonNull CoreAccountInfo account,
-            @NonNull Callback<Integer> asyncCallback,
+            IdentityManager identityManager,
+            CoreAccountInfo account,
+            Callback<Integer> asyncCallback,
             @Nullable Duration timeout) {
         assert identityManager != null && account != null && asyncCallback != null;
         mAsyncCallback = asyncCallback;

@@ -4,6 +4,8 @@
 
 package org.chromium.components.find_in_page;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -20,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
@@ -34,6 +38,7 @@ import java.util.List;
  * The view that shows the positions of the find in page matches and allows scrubbing
  * between the entries.
  */
+@NullMarked
 public class FindResultBar extends View {
     private static final int VISIBILITY_ANIMATION_DURATION_MS = 200;
 
@@ -52,12 +57,12 @@ public class FindResultBar extends View {
     private final int mMinGapBetweenStacks;
     private final int mStackedResultHeight;
 
-    private FindInPageBridge mFindInPageBridge;
+    private @Nullable FindInPageBridge mFindInPageBridge;
     private final WindowAndroid mWindowAndroid;
 
     private int mRectsVersion = -1;
     private RectF[] mMatches = new RectF[0];
-    private RectF mActiveMatch;
+    private @Nullable RectF mActiveMatch;
 
     private ArrayList<Tickmark> mTickmarks = new ArrayList<Tickmark>(0);
     private int mBarHeightForWhichTickmarksWereCached = -1;
@@ -171,7 +176,7 @@ public class FindResultBar extends View {
     }
 
     /** Setup the tickmarks to draw using the rects of the find results. */
-    public void setMatchRects(int version, RectF[] rects, RectF activeRect) {
+    public void setMatchRects(int version, RectF[] rects, @Nullable RectF activeRect) {
         if (mRectsVersion != version) {
             mRectsVersion = version;
             assert rects != null;
@@ -238,6 +243,7 @@ public class FindResultBar extends View {
             // it will activate whatever find result is currently closest to
             // that point (which will usually be the same one).
             mWaitingForActivateAck = true;
+            assumeNonNull(mFindInPageBridge);
             mFindInPageBridge.activateNearestFindResult(
                     mMatches[closest].centerX(), mMatches[closest].centerY());
         }
@@ -249,6 +255,7 @@ public class FindResultBar extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         // Check for new rects, as they may move if the document size changes.
         if (!mDismissing && mMatches.length > 0) {
+            assumeNonNull(mFindInPageBridge);
             mFindInPageBridge.requestFindMatchRects(mRectsVersion);
         }
     }

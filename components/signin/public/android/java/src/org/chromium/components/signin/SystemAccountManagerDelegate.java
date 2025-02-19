@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -22,8 +24,6 @@ import android.os.PatternMatcher;
 import android.os.Process;
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
-
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 
@@ -33,6 +33,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.FetchAccountCapabilitiesFromSystemLibraryResult;
@@ -43,9 +46,10 @@ import java.io.IOException;
  * Default implementation of {@link AccountManagerDelegate} which delegates all calls to the
  * Android account manager.
  */
+@NullMarked
 public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     private final AccountManager mAccountManager;
-    private AccountsChangeObserver mObserver;
+    private @Nullable AccountsChangeObserver mObserver;
 
     private static final String TAG = "Auth";
 
@@ -68,7 +72,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
                 new BroadcastReceiver() {
                     @Override
                     public void onReceive(final Context context, final Intent intent) {
-                        mObserver.onCoreAccountInfosChanged();
+                        assumeNonNull(mObserver).onCoreAccountInfosChanged();
                     }
                 };
         IntentFilter accountsChangedIntentFilter = new IntentFilter();
@@ -106,6 +110,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
+    @NullUnmarked
     public AccessTokenData getAccessToken(Account account, String authTokenScope)
             throws AuthException {
         ThreadUtils.assertOnBackgroundThread();
@@ -154,7 +159,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public @CapabilityResponse int hasCapability(Account account, String capability) {
+    public @CapabilityResponse int hasCapability(@Nullable Account account, String capability) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.AccountCapabilities.GetFromSystemLibraryResult",
                 FetchAccountCapabilitiesFromSystemLibraryResult.API_NOT_AVAILABLE,
@@ -165,7 +170,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     // No permission is needed on 23+ and Chrome always has MANAGE_ACCOUNTS permission on lower APIs
     @SuppressLint("MissingPermission")
     @Override
-    public void createAddAccountIntent(Callback<Intent> callback) {
+    public void createAddAccountIntent(Callback<@Nullable Intent> callback) {
         AccountManagerCallback<Bundle> accountManagerCallback =
                 accountManagerFuture -> {
                     try {
@@ -190,7 +195,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     @SuppressLint("MissingPermission")
     @Override
     public void updateCredentials(
-            Account account, Activity activity, final Callback<Boolean> callback) {
+            Account account, Activity activity, final @Nullable Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
         AccountManagerCallback<Bundle> realCallback =
                 future -> {
@@ -215,9 +220,8 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
                 account, "android", emptyOptions, activity, realCallback, null);
     }
 
-    @Nullable
     @Override
-    public GaiaId getAccountGaiaId(String accountEmail) {
+    public @Nullable GaiaId getAccountGaiaId(String accountEmail) {
         try {
             return new GaiaId(
                     GoogleAuthUtil.getAccountId(
@@ -229,7 +233,8 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
+    public void confirmCredentials(
+            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback) {
         AccountManagerCallback<Bundle> accountManagerCallback =
                 (accountManagerFuture) -> {
                     @Nullable Bundle result = null;

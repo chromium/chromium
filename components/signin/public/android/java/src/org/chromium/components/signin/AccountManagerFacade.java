@@ -12,10 +12,11 @@ import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -23,6 +24,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import java.util.List;
 
 /** Interface for {@link AccountManagerFacadeImpl}. */
+@NullMarked
 public interface AccountManagerFacade {
     /** A callback for getAccessToken. */
     interface GetAccessTokenCallback {
@@ -187,7 +189,8 @@ public interface AccountManagerFacade {
      *     knowledge of the account's credentials.
      */
     @AnyThread
-    void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback);
+    void confirmCredentials(
+            Account account, @Nullable Activity activity, Callback<Bundle> callback);
 
     /** Whether fetching the list of accounts from the device eventually succeeded. */
     // TODO(crbug.com/330304719): Handle this with exceptions rather than a boolean.

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -23,7 +25,7 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
     public NotificationWrapper build(NotificationMetadata metadata) {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        mChannelId, metadata);
+                        assumeNonNull(mChannelId), metadata);
 
         builder.setContentTitle(mTitle);
         builder.setContentText(mBody);

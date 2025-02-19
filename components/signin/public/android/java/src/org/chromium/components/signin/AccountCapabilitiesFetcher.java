@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -16,6 +17,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
  * passes them to native. It has a C++ counterpart located in
  * account_capabilities_fetcher_android.{h,cc}.
  */
+@NullMarked
 public class AccountCapabilitiesFetcher {
     private static final long INVALID_NATIVE_CALLBACK = 0;
     private final CoreAccountInfo mCoreAccountInfo;

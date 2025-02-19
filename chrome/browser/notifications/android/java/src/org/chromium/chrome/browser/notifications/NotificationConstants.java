@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants used in more than a single Notification class, e.g. intents and extra names. */
+@NullMarked
 public class NotificationConstants {
     // These actions have to be synchronized with the receiver defined in AndroidManifest.xml.
     static final String ACTION_CLICK_NOTIFICATION =

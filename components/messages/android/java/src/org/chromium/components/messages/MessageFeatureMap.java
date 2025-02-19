@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for base::Features listed in {@link MessageFeatureList} */
 @JNINamespace("messages")
+@NullMarked
 public final class MessageFeatureMap extends FeatureMap {
     private static final MessageFeatureMap sInstance = new MessageFeatureMap();
 

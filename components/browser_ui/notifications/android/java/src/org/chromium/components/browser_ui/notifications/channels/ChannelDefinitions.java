@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.notifications.channels;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.content.res.Resources;
@@ -11,6 +13,7 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +49,7 @@ public abstract class ChannelDefinitions {
     public Set<String> getStartupChannelGroupIds() {
         Set<String> groupIds = new HashSet<>();
         for (String id : getStartupChannelIds()) {
-            groupIds.add(getChannelFromId(id).mGroupId);
+            groupIds.add(assumeNonNull(getChannelFromId(id)).mGroupId);
         }
         return groupIds;
     }
@@ -58,12 +61,12 @@ public abstract class ChannelDefinitions {
     public abstract List<String> getLegacyChannelIds();
 
     public PredefinedChannelGroup getChannelGroupForChannel(PredefinedChannel channel) {
-        return getChannelGroup(channel.mGroupId);
+        return assumeNonNull(getChannelGroup(channel.mGroupId));
     }
 
-    public abstract PredefinedChannelGroup getChannelGroup(String groupId);
+    public abstract @Nullable PredefinedChannelGroup getChannelGroup(String groupId);
 
-    public abstract PredefinedChannel getChannelFromId(String channelId);
+    public abstract @Nullable PredefinedChannel getChannelFromId(String channelId);
 
     /**
      * @param channelId a channel ID which may or may not correlate to a PredefinedChannel.

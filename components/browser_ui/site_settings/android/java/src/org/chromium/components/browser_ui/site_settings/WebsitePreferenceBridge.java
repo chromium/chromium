@@ -4,10 +4,13 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Utility class that interacts with native to retrieve and set website settings. */
+@NullMarked
 public class WebsitePreferenceBridge {
     public static final String SITE_WILDCARD = "*";
 
@@ -63,7 +67,8 @@ public class WebsitePreferenceBridge {
         if (type == ContentSettingsType.MEDIASTREAM_CAMERA
                 || type == ContentSettingsType.MEDIASTREAM_MIC) {
             for (PermissionInfo info : list) {
-                if (info.getOrigin().equals(origin) && info.getEmbedder().equals(embedder)) {
+                if (info.getOrigin().equals(origin)
+                        && assumeNonNull(info.getEmbedder()).equals(embedder)) {
                     return;
                 }
             }

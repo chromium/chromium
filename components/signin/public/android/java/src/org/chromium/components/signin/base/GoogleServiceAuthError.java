@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  * This class mirrors the native GoogleServiceAuthError class State enum from:
  * google_apis/gaia/google_service_auth_error.h.
  */
+@NullMarked
 public class GoogleServiceAuthError {
     @IntDef({
         State.NONE,

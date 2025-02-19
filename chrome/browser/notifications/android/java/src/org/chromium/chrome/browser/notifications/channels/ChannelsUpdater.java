@@ -4,17 +4,18 @@
 
 package org.chromium.chrome.browser.notifications.channels;
 
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /** Contains helper methods for checking if we should update channels and updating them if so. */
+@NullMarked
 public class ChannelsUpdater {
     private static final Object sLock = new Object();
 
