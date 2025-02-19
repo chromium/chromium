@@ -38,6 +38,9 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // Runs the attached close animation for the Glic widget.
   void RunCloseAnimation(GlicButton* glic_button, base::OnceClosure callback);
 
+  // Sets the background color and corner radius of the Glic widget.
+  void SetRoundedRectBackground();
+
   // Animate the window size, maintaining the position of the top right corner.
   // If there is already a running bounds change animation, update that
   // animation's target size.
