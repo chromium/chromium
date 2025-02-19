@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
@@ -121,7 +122,8 @@ class CC_EXPORT FrameSequenceMetrics {
   bool HasEnoughDataForReporting() const;
   bool HasDataLeftForReporting() const;
   // Report related metrics: throughput, checkboarding...
-  void ReportMetrics();
+  // Returns PercentDroppedFrames4.AllSequences metric.
+  int ReportMetrics();
 
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info);

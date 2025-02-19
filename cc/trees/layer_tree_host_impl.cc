@@ -75,6 +75,7 @@
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 #include "cc/metrics/submit_info.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_worklet_job.h"
@@ -5772,6 +5773,13 @@ void LayerTreeHostImpl::SetUkmSmoothnessDestination(
   dropped_frame_counter_.SetUkmSmoothnessDestination(
       ukm_smoothness_data.GetMemoryAs<UkmSmoothnessDataShared>());
   ukm_smoothness_mapping_ = std::move(ukm_smoothness_data);
+}
+
+void LayerTreeHostImpl::SetUkmDroppedFramesDestination(
+    base::WritableSharedMemoryMapping ukm_dropped_frames_data) {
+  frame_trackers_.SetUkmDroppedFramesDestination(
+      ukm_dropped_frames_data.GetMemoryAs<UkmDroppedFramesDataShared>());
+  ukm_dropped_frames_mapping_ = std::move(ukm_dropped_frames_data);
 }
 
 void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(

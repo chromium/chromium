@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -1123,11 +1124,13 @@ void PageLoadTracker::UpdateFeaturesUsage(
   }
 }
 
-void PageLoadTracker::SetUpSharedMemoryForSmoothness(
-    base::ReadOnlySharedMemoryRegion shared_memory) {
-  DCHECK(shared_memory.IsValid());
+void PageLoadTracker::SetUpSharedMemoryForUkms(
+    base::ReadOnlySharedMemoryRegion smoothness_memory,
+    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
+  DCHECK(smoothness_memory.IsValid() && dropped_frames_memory.IsValid());
   for (auto& observer : observers_) {
-    observer->SetUpSharedMemoryForSmoothness(shared_memory);
+    observer->SetUpSharedMemoryForUkms(smoothness_memory,
+                                       dropped_frames_memory);
   }
 }
 

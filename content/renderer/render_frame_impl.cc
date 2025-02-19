@@ -2142,17 +2142,19 @@ void RenderFrameImpl::OnAssociatedInterfaceRequest(
   }
 }
 
-void RenderFrameImpl::SetUpSharedMemoryForSmoothness(
-    base::ReadOnlySharedMemoryRegion shared_memory) {
+void RenderFrameImpl::SetUpSharedMemoryForUkms(
+    base::ReadOnlySharedMemoryRegion smoothness_memory,
+    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
   TRACE_EVENT_WITH_FLOW0("navigation",
-                         "RenderFrameImpl::SetUpSharedMemoryForSmoothness",
+                         "RenderFrameImpl::SetUpSharedMemoryForUkms",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  DCHECK(shared_memory.IsValid());
+  DCHECK(smoothness_memory.IsValid() && dropped_frames_memory.IsValid());
   for (auto& observer : observers_) {
-    DCHECK(shared_memory.IsValid());
-    if (observer.SetUpSmoothnessReporting(shared_memory))
+    DCHECK(smoothness_memory.IsValid() && dropped_frames_memory.IsValid());
+    if (observer.SetUpUkmReporting(smoothness_memory, dropped_frames_memory)) {
       break;
+    }
   }
 }
 

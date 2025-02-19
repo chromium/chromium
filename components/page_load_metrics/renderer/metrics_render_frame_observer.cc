@@ -74,11 +74,13 @@ class MojoPageTimingSender : public PageTimingSender {
         subresource_load_metrics, soft_navigation_metrics->Clone());
   }
 
-  void SetUpSmoothnessReporting(
-      base::ReadOnlySharedMemoryRegion shared_memory) override {
+  void SetUpUkmReporting(
+      base::ReadOnlySharedMemoryRegion shared_memory_smoothness,
+      base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames) override {
     DCHECK(page_load_metrics_);
-    page_load_metrics_->SetUpSharedMemoryForSmoothness(
-        std::move(shared_memory));
+    page_load_metrics_->SetUpSharedMemoryForUkms(
+        std::move(shared_memory_smoothness),
+        std::move(shared_memory_dropped_frames));
   }
 
   void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) override {
@@ -419,13 +421,16 @@ void MetricsRenderFrameObserver::OnFrameDetached() {
   WillDetach(blink::DetachReason::kNavigation);
 }
 
-bool MetricsRenderFrameObserver::SetUpSmoothnessReporting(
-    base::ReadOnlySharedMemoryRegion& shared_memory) {
+bool MetricsRenderFrameObserver::SetUpUkmReporting(
+    base::ReadOnlySharedMemoryRegion& shared_memory_smoothness,
+    base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames) {
   if (page_timing_metrics_sender_) {
-    page_timing_metrics_sender_->SetUpSmoothnessReporting(
-        std::move(shared_memory));
+    page_timing_metrics_sender_->SetUpUkmReporting(
+        std::move(shared_memory_smoothness),
+        std::move(shared_memory_dropped_frames));
   } else {
-    ukm_smoothness_data_ = std::move(shared_memory);
+    ukm_smoothness_data_ = std::move(shared_memory_smoothness);
+    ukm_dropped_frames_data_ = std::move(shared_memory_dropped_frames);
   }
   return true;
 }
@@ -479,9 +484,9 @@ void MetricsRenderFrameObserver::SendMetrics() {
 }
 
 void MetricsRenderFrameObserver::OnMetricsSenderCreated() {
-  if (ukm_smoothness_data_.IsValid()) {
-    page_timing_metrics_sender_->SetUpSmoothnessReporting(
-        std::move(ukm_smoothness_data_));
+  if (ukm_smoothness_data_.IsValid() && ukm_dropped_frames_data_.IsValid()) {
+    page_timing_metrics_sender_->SetUpUkmReporting(
+        std::move(ukm_smoothness_data_), std::move(ukm_dropped_frames_data_));
   }
 
   // Send the latest the frame intersection update, as otherwise we may miss

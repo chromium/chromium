@@ -9695,6 +9695,8 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
   void SetupTree() override {
     LayerTreeTest::SetupTree();
     shmem_region_ = layer_tree_host()->CreateSharedMemoryForSmoothnessUkm();
+    shmem_region_dropped_frames_ =
+        layer_tree_host()->CreateSharedMemoryForDroppedFramesUkm();
   }
 
   void BeginTest() override {
@@ -9710,6 +9712,9 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
     // It is not always possible to guarantee an exact number of dropped frames.
     // So validate that there are non-zero dropped frames.
     EXPECT_GT(smoothness->data.avg_smoothness, 0);
+
+    ASSERT_TRUE(shmem_region_dropped_frames_.IsValid());
+    // TODO(crbug.com/395868899): Test that values are exported here.
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
@@ -9744,6 +9749,7 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
   bool fcp_sent_ = false;
   viz::BeginFrameArgs last_args_;
   base::ReadOnlySharedMemoryRegion shmem_region_;
+  base::ReadOnlySharedMemoryRegion shmem_region_dropped_frames_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostUkmSmoothnessMetric);

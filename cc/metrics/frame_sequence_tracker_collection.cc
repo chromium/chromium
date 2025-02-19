@@ -9,8 +9,13 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
+#include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
+#include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
 
@@ -262,8 +267,10 @@ void FrameSequenceTrackerCollection::DestroyTrackers() {
         accumulated_metrics_.erase(key);
       }
 
-      if (metrics->HasEnoughDataForReporting())
+      if (metrics->HasEnoughDataForReporting()) {
         metrics->ReportMetrics();
+        // TODO(crbug.com/395868899): Write PDF4 metric here
+      }
       if (metrics->HasDataLeftForReporting())
         accumulated_metrics_[key] = std::move(metrics);
     }
@@ -352,6 +359,11 @@ void FrameSequenceTrackerCollection::AddSortedFrame(
   }
 
   DestroyTrackers();
+}
+
+void FrameSequenceTrackerCollection::SetUkmDroppedFramesDestination(
+    UkmDroppedFramesDataShared* dropped_frames_data) {
+  ukm_dropped_frames_data_ = dropped_frames_data;
 }
 
 }  // namespace cc
