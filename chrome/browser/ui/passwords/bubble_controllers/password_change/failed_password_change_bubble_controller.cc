@@ -57,7 +57,9 @@ void FailedPasswordChangeBubbleController::FinishPasswordChange() {
   if (dismissal_reason_ == metrics_util::NO_DIRECT_INTERACTION) {
     dismissal_reason_ = metrics_util::CLICKED_CANCEL;
   }
-  password_change_delegate_->Stop();
+  if (password_change_delegate_) {
+    password_change_delegate_->Stop();
+  }
 }
 
 void FailedPasswordChangeBubbleController::NavigateToPasswordChangeSettings() {
