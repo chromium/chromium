@@ -131,12 +131,18 @@ bool EscapeJSONString(std::u16string_view str,
 
 std::string GetQuotedJSONString(std::string_view str) {
   std::string dest;
+  // The output will always be at least str.size() + 2 bytes for the quote
+  // characters.
+  dest.reserve(str.size() + 2);
   EscapeJSONStringImpl(str, true, &dest);
   return dest;
 }
 
 std::string GetQuotedJSONString(std::u16string_view str) {
   std::string dest;
+  // The output will always be at least str.size() + 2 bytes for the quote
+  // characters.
+  dest.reserve(str.size() + 2);
   EscapeJSONStringImpl(str, true, &dest);
   return dest;
 }
