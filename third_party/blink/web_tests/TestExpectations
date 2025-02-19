@@ -2649,6 +2649,20 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?5-6 [ Crash ]
+[ Mac12-arm64 ] external/wpt/notifications/tag.https.html [ Crash Failure ]
+[ Mac11-arm64 ] external/wpt/notifications/tag.https.html [ Crash Failure ]
+[ Win10.20h2 ] external/wpt/trusted-types/modify-attributes-in-callback.html [ Crash ]
+[ Mac14 ] external/wpt/trusted-types/modify-attributes-in-callback.html [ Crash ]
+[ Linux ] external/wpt/trusted-types/modify-attributes-in-callback.html [ Crash ]
+[ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Timeout ]
+[ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Timeout ]
+virtual/threaded/external/wpt/css/css-view-transitions/window-resize-aborts-transition-before-ready.html [ Timeout ]
+virtual/threaded/external/wpt/css/css-view-transitions/window-resize-aborts-transition.html [ Timeout ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/window-resize-aborts-transition-before-ready.html [ Timeout ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/window-resize-aborts-transition.html [ Timeout ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/window-resize-aborts-transition-before-ready.html [ Timeout ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/window-resize-aborts-transition.html [ Timeout ]
 crbug.com/397150490 external/wpt/speech-api/SpeechSynthesis-speak-without-activation-fails.tentative.html [ Failure Timeout ]
 crbug.com/396958489 [ Win10.20h2 ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
 crbug.com/396958489 [ Mac14 ] external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
@@ -9060,8 +9074,8 @@ crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ F
 crbug.com/41493642 external/wpt/html/semantics/embedded-content/the-canvas-element/toBlob-cross-realm-callback-report-exception.html [ Failure Pass ]
 
 #Disable due to high frequency flakiness
-crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchable.js [ Failure Timeout Pass ]
-crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Timeout Pass ]
+crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchable.js [ Failure Pass Timeout ]
+crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Pass Timeout ]
 
 # Gardener 2025-01-21
 crbug.com/391126821 [ Win11-arm64 ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]

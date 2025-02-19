@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] View timeline with start and end scroll offsets that do not align with the scroll boundaries
+  assert_equals: Effect is in the after phase at effect end time expected "0.7" but got "1"
+[FAIL] View timeline does not clamp starting scroll offset at 0
+  assert_equals: Effect at the end of the active phase expected "0.7" but got "1"
+[FAIL] View timeline with container having RTL layout
+  assert_equals: Effect is in the after phase at effect end time expected "0.7" but got "1"
+Harness: the test ran to completion.
+
