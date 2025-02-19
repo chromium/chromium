@@ -38,6 +38,10 @@
 #include "chrome/browser/ash/system_logs/ui_hierarchy_log_source.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/feedback/system_logs/log_sources/ozone_platform_state_dump_source.h"
+#endif
+
 namespace system_logs {
 
 SystemLogsFetcher* BuildAboutSystemLogsFetcher(content::WebUI* web_ui) {
@@ -80,6 +84,10 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher(content::WebUI* web_ui) {
   fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<KeyboardInfoLogSource>());
 #endif
+
+#if BUILDFLAG(IS_LINUX)
+  fetcher->AddSource(std::make_unique<OzonePlatformStateDumpSource>());
+#endif  // BUILDFLAG(IS_LINUX)
 
   return fetcher;
 }

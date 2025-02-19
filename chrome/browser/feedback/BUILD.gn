@@ -148,4 +148,11 @@ source_set("feedback_impl") {
   if (is_win || is_mac) {
     deps += [ "//chrome/browser/updater:browser_updater_client" ]
   }
+  if (is_linux) {
+    sources += [
+      "system_logs/log_sources/ozone_platform_state_dump_source.cc",
+      "system_logs/log_sources/ozone_platform_state_dump_source.h",
+    ]
+    deps += [ "//ui/ozone" ]
+  }
 }
