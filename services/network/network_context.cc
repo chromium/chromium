@@ -1554,6 +1554,14 @@ void NetworkContext::QueueSignedExchangeReport(
   if (!logging_service) {
     return;
   }
+
+  // Reporting is disallowed if network access is disabled for the nonce.
+  if (network_anonymization_key.GetNonce().has_value() &&
+      !IsNetworkForNonceAndUrlAllowed(
+          network_anonymization_key.GetNonce().value(), report->outer_url)) {
+    return;
+  }
+
   std::string user_agent;
   if (url_request_context_->http_user_agent_settings() != nullptr) {
     user_agent =

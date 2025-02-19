@@ -1085,7 +1085,7 @@ TEST_F(NetworkContextTest, QueueReportAfterNetworkRevocation) {
   const base::UnguessableToken revoked_nonce = base::UnguessableToken::Create();
   const base::UnguessableToken allowed_nonce = base::UnguessableToken::Create();
 
-  // Revoke the nonce for untrusted network access.
+  // Revoke untrusted network access for the nonce.
   base::test::TestFuture<void> revoked;
   network_context->RevokeNetworkForNonces(
       {revoked_nonce}, base::BindOnce(revoked.GetCallback()));
@@ -1116,6 +1116,91 @@ TEST_F(NetworkContextTest, QueueReportAfterNetworkRevocation) {
       network_context->url_request_context()->reporting_service()->GetReports();
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(allowed_type, reports[0]->type);
+}
+
+TEST_F(NetworkContextTest,
+       QueueSignedExchangeReportReportAfterNetworkRevocation) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kPartitionConnectionsByNetworkIsolationKey);
+
+  auto reporting_context = std::make_unique<net::TestReportingContext>(
+      base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
+      net::ReportingPolicy());
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  params->user_agent = kUserAgent_;
+
+  // Ensure that a Nel store is created. This is required for reports to send
+  // out.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath reporting_and_nel_store = temp_dir.GetPath().Append(kFilename);
+  params->file_paths = mojom::NetworkContextFilePaths::New();
+  params->file_paths->data_directory = reporting_and_nel_store.DirName();
+  params->file_paths->reporting_and_nel_store_database_name =
+      reporting_and_nel_store.BaseName();
+
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      std::move(params),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
+
+  // Create 2 nonces. Only one will have its network access revoked.
+  const base::UnguessableToken revoked_nonce = base::UnguessableToken::Create();
+  const base::UnguessableToken allowed_nonce = base::UnguessableToken::Create();
+
+  // Revoke untrusted network access for the nonce.
+  base::test::TestFuture<void> revoked;
+  network_context->RevokeNetworkForNonces(
+      {revoked_nonce}, base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+  EXPECT_FALSE(
+      network_context->IsNetworkForNonceAndUrlAllowed(revoked_nonce, kUrl_));
+
+  // Create the 2 NetworkAnonymizationKey(s).
+  const auto site = net::SchemefulSite(kUrl_);
+  net::NetworkAnonymizationKey revoked_anonymization_key =
+      net::NetworkAnonymizationKey::CreateFromFrameSite(site, site,
+                                                        revoked_nonce);
+  net::NetworkAnonymizationKey allowed_anonymization_key =
+      net::NetworkAnonymizationKey::CreateFromFrameSite(site, site,
+                                                        allowed_nonce);
+
+  // Create a Nel policy for the revoked and allowed nonces.
+  net::NetworkErrorLoggingService::NelPolicy revoked_policy;
+  revoked_policy.key = net::NetworkErrorLoggingService::NelPolicyKey(
+      revoked_anonymization_key, kOrigin_);
+  revoked_policy.expires = base::Time::Now() + base::Days(7);
+  net::NetworkErrorLoggingService::NelPolicy allowed_policy;
+  allowed_policy.key = net::NetworkErrorLoggingService::NelPolicyKey(
+      allowed_anonymization_key, kOrigin_);
+  allowed_policy.expires = base::Time::Now() + base::Days(7);
+
+  net::NetworkErrorLoggingService* logging_service =
+      network_context->url_request_context()->network_error_logging_service();
+  logging_service->LoadPoliciesForTesting({revoked_policy, allowed_policy});
+
+  // The first report is sent with the anonymization key that contains the
+  // revoked nonce. This report should not be sent out.
+  mojom::SignedExchangeReportPtr revoked_report =
+      mojom::SignedExchangeReport::New();
+  revoked_report->outer_url = kUrl_;
+  network_context->QueueSignedExchangeReport(std::move(revoked_report),
+                                             revoked_anonymization_key);
+  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
+      network_context->url_request_context()->reporting_service()->GetReports();
+  ASSERT_EQ(0u, reports.size());
+
+  // The second report is sent with a key whose nonce has not been revoked. This
+  // report should send.
+  mojom::SignedExchangeReportPtr allowed_report =
+      mojom::SignedExchangeReport::New();
+  allowed_report->outer_url = kUrl_;
+  network_context->QueueSignedExchangeReport(std::move(allowed_report),
+                                             allowed_anonymization_key);
+  reports =
+      network_context->url_request_context()->reporting_service()->GetReports();
+  ASSERT_EQ(1u, reports.size());
 }
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -4337,7 +4422,7 @@ TEST_F(NetworkContextResolveHostTest,
 
   const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
-  // Revoke the nonce for untrusted network access.
+  // Revoke untrusted network access for the nonce.
   base::test::TestFuture<void> revoked;
   network_context->RevokeNetworkForNonces(
       {nonce}, base::BindOnce(revoked.GetCallback()));
@@ -4387,7 +4472,7 @@ TEST_F(NetworkContextResolveHostTest,
 
   const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
-  // Revoke the nonce for untrusted network access.
+  // Revoke untrusted network access for the nonce.
   base::test::TestFuture<void> revoked;
   network_context->RevokeNetworkForNonces(
       {nonce}, base::BindOnce(revoked.GetCallback()));
@@ -4440,7 +4525,7 @@ TEST_F(NetworkContextResolveHostTest,
 
   const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
-  // Revoke the nonce for untrusted network access.
+  // Revoke untrusted network access for the nonce.
   base::test::TestFuture<void> revoked;
   network_context->RevokeNetworkForNonces(
       {nonce}, base::BindOnce(revoked.GetCallback()));
@@ -4490,7 +4575,7 @@ TEST_F(NetworkContextResolveHostTest,
 
   const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
-  // Revoke the nonce for untrusted network access.
+  // Revoke untrusted network access for the nonce.
   base::test::TestFuture<void> revoked;
   network_context->RevokeNetworkForNonces(
       {nonce}, base::BindOnce(revoked.GetCallback()));
@@ -9482,7 +9567,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesCancelsPreconnectRequests) {
 
   const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
-  // Revoke the nonce for untrusted network access.
+  // Revoke untrusted network access for the nonce.
   base::test::TestFuture<void> revoked;
   network_context->RevokeNetworkForNonces(
       {nonce}, base::BindOnce(revoked.GetCallback()));
