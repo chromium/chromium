@@ -901,8 +901,10 @@
       'filepath': 'tools/clang/scripts/update.py'
     },
     'client_hints': {
-      'filepath': 'client_hints|user_agent_utils|content/common/user_agent.cc|'
-                  'content/public/common/user_agent.h',
+      'filepath': 'client_hints|user_agent_utils|'\
+                  'chrome/browser/android/content/content_utils.cc'\
+                  'content/common/user_agent.cc|'\
+                  'content/public/common/user_agent.h'
     },
     'clipboard': {
       'filepath': 'content/browser/renderer/clipboard|' \
