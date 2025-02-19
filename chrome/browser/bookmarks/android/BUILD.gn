@@ -35,3 +35,9 @@ source_set("impl") {
     "//components/undo",
   ]
 }
+
+# TODO(crbug.com/395908100): Replace Placeholder.java once internal code is setup.
+android_library("java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/bookmarks/Placeholder.java" ]
+}
