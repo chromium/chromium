@@ -30,7 +30,6 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kExperimentalOmniboxLabs,
     &extensions_features::kExtensionIconVariants,
     &extensions_features::kTelemetryExtensionPendingApprovalApi,
-    &extensions_features::kApiEnterpriseReportingPrivateReportDataMaskingEvent,
 };
 
 constinit base::span<const base::Feature*> g_feature_flags_test_override;
