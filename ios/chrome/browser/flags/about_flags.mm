@@ -1312,6 +1312,38 @@ const FeatureEntry::FeatureVariation
         {" - with Instructions", kAnimatedDBPInFREWithInstructions,
          std::size(kAnimatedDBPInFREWithInstructions), nullptr}};
 
+const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm1[] = {
+    {first_run::kBestFeaturesScreenInFirstRunParam, "1"}};
+const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
+    {first_run::kBestFeaturesScreenInFirstRunParam, "2"}};
+const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm3[] = {
+    {first_run::kBestFeaturesScreenInFirstRunParam, "3"}};
+const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm4[] = {
+    {first_run::kBestFeaturesScreenInFirstRunParam, "4"}};
+const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm5[] = {
+    {first_run::kBestFeaturesScreenInFirstRunParam, "5"}};
+const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm6[] = {
+    {first_run::kBestFeaturesScreenInFirstRunParam, "6"}};
+
+const FeatureEntry::FeatureVariation kBestFeaturesScreenInFirstRunVariations[] =
+    {{" - Variant A: General screen, after DB promo",
+      kUpdatedFirstRunSequenceArm1,
+      std::size(kBestFeaturesScreenInFirstRunArm1), nullptr},
+     {" - Variant B: General screen, before DB promo",
+      kBestFeaturesScreenInFirstRunArm2,
+      std::size(kBestFeaturesScreenInFirstRunArm2), nullptr},
+     {" - Variant C: General screen with passwords item",
+      kBestFeaturesScreenInFirstRunArm3,
+      std::size(kBestFeaturesScreenInFirstRunArm3), nullptr},
+     {" - Variant D: Shopping users screen, variant C as fallback",
+      kBestFeaturesScreenInFirstRunArm4,
+      std::size(kBestFeaturesScreenInFirstRunArm4), nullptr},
+     {" - Variant E: Show screen to signed-in users only",
+      kBestFeaturesScreenInFirstRunArm5,
+      std::size(kBestFeaturesScreenInFirstRunArm5), nullptr},
+     {" - Variant F: Show address bar promo", kBestFeaturesScreenInFirstRunArm6,
+      std::size(kBestFeaturesScreenInFirstRunArm6), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2445,6 +2477,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-new-share-extension", flag_descriptions::kNewShareExtensionName,
      flag_descriptions::kNewShareExtensionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNewShareExtension)},
+    {"ios-best-features-screen",
+     flag_descriptions::kBestFeaturesScreenInFirstRunName,
+     flag_descriptions::kBestFeaturesScreenInFirstRunDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kBestFeaturesScreenInFirstRun,
+                                    kBestFeaturesScreenInFirstRunVariations,
+                                    "BestFeaturesScreenInFirstRun")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

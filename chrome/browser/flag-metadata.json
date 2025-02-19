@@ -5259,6 +5259,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "ios-best-features-screen",
+    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "ios-breadcrumbs",
     "owners": [ "michaeldo@chromium.org", "bling-flags@google.com" ],
     // Breadcrumbs is not a launching feature, but rather a tool used on

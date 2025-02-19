@@ -172,6 +172,11 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kAutofillVcnEnrollRequestTimeoutName[];
 extern const char kAutofillVcnEnrollRequestTimeoutDescription[];
 
+// Title and description for the flag that displays the Best Features screen in
+// the FRE.
+extern const char kBestFeaturesScreenInFirstRunName[];
+extern const char kBestFeaturesScreenInFirstRunDescription[];
+
 // Title and description for blue dot promo on tools menu button.
 extern const char kBlueDotOnToolsMenuButtonName[];
 extern const char kBlueDotOnToolsMenuButtonDescription[];

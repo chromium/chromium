@@ -11,11 +11,35 @@
 
 namespace first_run {
 
+BASE_FEATURE(kAnimatedDefaultBrowserPromoInFRE,
+             "AnimatedDefaultBrowserPromoInFRE",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBestFeaturesScreenInFirstRun,
+             "BestFeaturesScreenInFirstRunExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUpdatedFirstRunSequence,
              "UpdatedFirstRunSequence",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
+    "AnimatedDefaultBrowserPromoInFREExperimentType";
+
+const char kBestFeaturesScreenInFirstRunParam[] =
+    "BestFeaturesScreenInFirstRunParam";
+
 const char kUpdatedFirstRunSequenceParam[] = "updated-first-run-sequence-param";
+
+BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {
+  if (!base::FeatureList::IsEnabled(kBestFeaturesScreenInFirstRun)) {
+    return BestFeaturesScreenVariationType::kDisabled;
+  }
+  return static_cast<BestFeaturesScreenVariationType>(
+      base::GetFieldTrialParamByFeatureAsInt(kBestFeaturesScreenInFirstRun,
+                                             kBestFeaturesScreenInFirstRunParam,
+                                             1));
+}
 
 UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
     ProfileIOS* profile) {
@@ -30,17 +54,10 @@ UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
                                              kUpdatedFirstRunSequenceParam, 1));
 }
 
-BASE_FEATURE(kAnimatedDefaultBrowserPromoInFRE,
-             "AnimatedDefaultBrowserPromoInFRE",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsAnimatedDefaultBrowserPromoInFREEnabled() {
   return base::FeatureList::IsEnabled(kAnimatedDefaultBrowserPromoInFRE) &&
          !base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence);
 }
-
-const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
-    "AnimatedDefaultBrowserPromoInFREExperimentType";
 
 AnimatedDefaultBrowserPromoInFREExperimentType
 AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() {

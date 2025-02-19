@@ -27,6 +27,28 @@ enum class AnimatedDefaultBrowserPromoInFREExperimentType {
   kAnimationWithInstructions = 2,
 };
 
+// Enum to represent variations of feature kBestFeaturesScreenInFirstRun.
+enum class BestFeaturesScreenVariationType {
+  kDisabled,
+  // Show general screen to all users, after the Default Browser promo.
+  kGeneralScreenAfterDBPromo,
+  // Show general screen to all users, before the Default Browser promo.
+  kGeneralScreenBeforeDBPromo,
+  // Show a modified version of the general screen to all users, after the
+  // Default Browser promo. The "incognito tabs" item is replaced with
+  // "passwords" item.
+  kGeneralScreenWithPasswordItemAfterDBPromo,
+  // For "Shopping" classified users, show the Shopping-specific screen. For all
+  // other users, show screen in kGeneralScreenWithPasswordItem arm. Appears
+  // before Default Browser promo.
+  kShoppingUsersWithFallbackBeforeDBPromo,
+  // For signed-in users, show the "signed-in" specific screen. For all other
+  // users, don't show screen. Appears after Default Browser promo.
+  kSignedInUsersOnlyAfterDBPromo,
+  // Show the address bar promo instead of the Best Features screen.
+  kAddressBarPromoInsteadOfDBPromo,
+};
+
 // Enum to represent arms of feature kUpdatedFirstRunSequence.
 enum class UpdatedFRESequenceVariationType {
   kDisabled,
@@ -38,6 +60,10 @@ enum class UpdatedFRESequenceVariationType {
 // Flag to enable the FRE Default Browser Experiment.
 BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
 
+// Feature flag to enable the presentation of the "Best Features" screen in the
+// FRE sequence.
+BASE_DECLARE_FEATURE(kBestFeaturesScreenInFirstRun);
+
 // Feature to enable updates to the sequence of the first run screens.
 BASE_DECLARE_FEATURE(kUpdatedFirstRunSequence);
 
@@ -46,9 +72,17 @@ BASE_DECLARE_FEATURE(kUpdatedFirstRunSequence);
 // the promo.
 extern const char kAnimatedDefaultBrowserPromoInFREExperimentType[];
 
+// Name of the parameter that indicates which variation of the
+//  kBestFeaturesScreenInFirstRun feature will be displayed.
+extern const char kBestFeaturesScreenInFirstRunParam[];
+
 // Name of the param that indicates which variation of the
 // kUpdatedFirstRunSequence is enabled.
 extern const char kUpdatedFirstRunSequenceParam[];
+
+// Returns which variation of the kBestFeaturesScreenInFirstRun feature is
+// enabled or `kDisabled` if the feature is disabled.
+BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType();
 
 // Returns which variation of the kUpdatedFirstRunSequence feature is enabled or
 // `kDisabled` if the feature is disabled. This feature is disabled for EEA

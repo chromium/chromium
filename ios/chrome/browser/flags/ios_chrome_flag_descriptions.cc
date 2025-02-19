@@ -210,6 +210,12 @@ const char kAutofillVcnEnrollRequestTimeoutDescription[] =
     "VCN enrollment request. Upon timeout, the client will terminate the VCN "
     "enrollment UI, but the request may still succeed server-side.";
 
+const char kBestFeaturesScreenInFirstRunName[] =
+    "Display Best Features screen in the FRE";
+const char kBestFeaturesScreenInFirstRunDescription[] =
+    "When enabled, displays the BestFeatures screen in the First Run sequence. "
+    "Screen can be displayed either before or after the DB promo.";
+
 const char kBlueDotOnToolsMenuButtonName[] =
     "Show blue dot promo on tools menu button";
 const char kBlueDotOnToolsMenuButtonDescription[] =
