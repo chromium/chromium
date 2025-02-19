@@ -155,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetPosition) {
 
   // Update position, advance to the end
   gfx::Point new_target_point(50, 50);
-  animation->UpdateTargetPosition(new_target_point, base::DoNothing());
+  gfx::Rect new_target(new_target_point, target_bounds_1.size());
+  animation->UpdateTargetBounds(new_target, base::DoNothing());
   test_api->Step(animation_creation_time() + kTestAnimationDuration);
 
   // Widget should now have the latest target origin and size.
@@ -176,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetSize) {
 
   // Update size, advance to the end
   gfx::Size new_target_size(50, 50);
-  animation->UpdateTargetSize(new_target_size, base::DoNothing());
+  gfx::Rect new_target(target_bounds_1.origin(), new_target_size);
+  animation->UpdateTargetBounds(new_target, base::DoNothing());
   test_api->Step(animation_creation_time() + kTestAnimationDuration);
 
   // Widget should now have the latest target origin and size.
@@ -198,10 +200,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, AllCallbacksRunInOrder) {
   ExpectRectBetween(GetWidgetBounds(), initial_bounds, target_bounds_1);
 
   // Make some updates
-  animation->UpdateTargetSize(gfx::Size(50, 50), BindAppend(&call_log, " 2"));
-  animation->UpdateTargetSize(gfx::Size(60, 60), BindAppend(&call_log, " 3"));
-  animation->UpdateTargetPosition(gfx::Point(100, 100),
-                                  BindAppend(&call_log, " 4"));
+  gfx::Rect target_bounds_2(target_bounds_1.origin(), gfx::Size(50, 50));
+  animation->UpdateTargetBounds(target_bounds_2, BindAppend(&call_log, " 2"));
+  gfx::Rect target_bounds_3(target_bounds_2.origin(), gfx::Size(60, 60));
+  animation->UpdateTargetBounds(target_bounds_3, BindAppend(&call_log, " 3"));
+  gfx::Rect target_bounds_4(gfx::Point(100, 100), target_bounds_3.size());
+  animation->UpdateTargetBounds(target_bounds_4, BindAppend(&call_log, " 4"));
 
   // Advance to the end. Widget should be at its final bounds.
   test_api->Step(animation_creation_time() + kTestAnimationDuration);

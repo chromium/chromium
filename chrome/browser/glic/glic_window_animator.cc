@@ -27,14 +27,6 @@ GlicWindowAnimator::GlicWindowAnimator(GlicWindowController* window_controller)
 
 GlicWindowAnimator::~GlicWindowAnimator() = default;
 
-void GlicWindowAnimator::CreateNewAnimationAndStart(
-    gfx::Rect target_bounds,
-    base::TimeDelta duration,
-    base::OnceClosure callback) {
-  window_resize_animation_ = std::make_unique<GlicWindowResizeAnimation>(
-      window_controller_, this, target_bounds, duration, std::move(callback));
-}
-
 void GlicWindowAnimator::RunOpenAttachedAnimation(GlicButton* glic_button,
                                                   const gfx::Size& target_size,
                                                   base::OnceClosure callback) {
@@ -77,53 +69,49 @@ void GlicWindowAnimator::AnimateBounds(const gfx::Rect& target_bounds,
                                        base::OnceClosure callback) {
   CHECK(window_controller_->GetGlicWidget());
 
-  if (window_resize_animation_) {
-    // TODO(394686499): Do something more graceful than jumping to the end.
-    // This can cause re-entrancy, which can be problematic. If there are bugs
-    // check here first.
-    window_resize_animation_->End();
-  }
-
   if (duration < base::Milliseconds(0)) {
     duration = base::Milliseconds(0);
   }
 
-  CreateNewAnimationAndStart(target_bounds, duration, std::move(callback));
+  if (window_resize_animation_) {
+    // Update the ongoing animation with the new bounds and new duration.
+    window_resize_animation_->UpdateTargetBounds(target_bounds,
+                                                 std::move(callback));
+    window_resize_animation_->SetDuration(
+        std::max(window_resize_animation_->duration_left(), duration));
+  } else {
+    window_resize_animation_ = std::make_unique<GlicWindowResizeAnimation>(
+        window_controller_, this, target_bounds, duration, std::move(callback));
+  }
 }
 
 void GlicWindowAnimator::AnimateSize(const gfx::Size& target_size,
                                      base::TimeDelta duration,
                                      base::OnceClosure callback) {
-  if (window_resize_animation_) {
-    // TODO(394686499): refine how running bounds change animations are updated.
-    // Moves the top-right corner, if we update size we must also update
-    // position.
-    window_resize_animation_->UpdateTargetSize(target_size,
-                                               std::move(callback));
-  } else {
-    // Maintain the top-right corner.
-    gfx::Rect current_bounds =
-        window_controller_->GetGlicWidget()->GetWindowBoundsInScreen();
-    int original_top_right = current_bounds.x() + current_bounds.width();
-    current_bounds.set_size(target_size);
-    current_bounds.set_x(original_top_right - target_size.width());
-    AnimateBounds(current_bounds, duration, std::move(callback));
-  }
+  // Maintain the top-right corner whether there's an ongoing animation or not.
+  gfx::Rect target_bounds = GetCurrentTargetBounds();
+  int original_right = target_bounds.right();
+  target_bounds.set_size(target_size);
+  target_bounds.set_x(original_right - target_size.width());
+  AnimateBounds(target_bounds, duration, std::move(callback));
 }
 
 void GlicWindowAnimator::AnimatePosition(const gfx::Point& target_position,
                                          base::TimeDelta duration,
                                          base::OnceClosure callback) {
+  // Maintain the size whether there's an ongoing animation or not.
+
+  gfx::Rect new_bounds = GetCurrentTargetBounds();
+  new_bounds.set_origin(target_position);
+  AnimateBounds(new_bounds, duration, std::move(callback));
+}
+
+gfx::Rect GlicWindowAnimator::GetCurrentTargetBounds() {
   if (window_resize_animation_) {
-    // TODO(394686499): Refine how running bounds change animations are updated.
-    window_resize_animation_->UpdateTargetPosition(target_position,
-                                                   std::move(callback));
+    // Get the ongoing animation's target bounds if they exist.
+    return window_resize_animation_->target_bounds();
   } else {
-    // Maintain the size.
-    gfx::Rect new_bounds =
-        window_controller_->GetGlicWidget()->GetWindowBoundsInScreen();
-    new_bounds.set_origin(target_position);
-    AnimateBounds(new_bounds, duration, std::move(callback));
+    return window_controller_->GetGlicWidget()->GetWindowBoundsInScreen();
   }
 }
 
