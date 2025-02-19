@@ -841,10 +841,8 @@ void GlicWindowController::Close() {
     state_ = State::kCloseAnimation;
     GetGlicView()->web_view()->SetWebContents(nullptr);
     GlicButton* glic_button = GetGlicButton(*attached_browser_);
-    // The widget is going away so it's fine to replace any existing animation.
-    glic_window_animator_->AnimateBounds(
-        glic_button->GetBoundsWithInset(),
-        base::Milliseconds(kAnimationDurationMs),
+    glic_window_animator_->RunCloseAnimation(
+        glic_button,
         base::BindOnce(&GlicWindowController::CloseFinish, GetWeakPtr(),
                        reopen_detached, closing_to_reopen_detached_source_));
   } else {

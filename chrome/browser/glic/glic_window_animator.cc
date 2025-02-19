@@ -64,6 +64,13 @@ void GlicWindowAnimator::RunOpenDetachedAnimation(base::OnceClosure callback) {
                 std::move(callback));
 }
 
+void GlicWindowAnimator::RunCloseAnimation(GlicButton* glic_button,
+                                           base::OnceClosure callback) {
+  // The widget is going away so it's fine to replace any existing animation.
+  AnimateBounds(glic_button->GetBoundsWithInset(),
+                base::Milliseconds(kAnimationDurationMs), std::move(callback));
+}
+
 void GlicWindowAnimator::AnimateBounds(const gfx::Rect& target_bounds,
                                        base::TimeDelta duration,
                                        base::OnceClosure callback) {
