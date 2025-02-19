@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -59,6 +60,7 @@ constexpr size_t kMaxFrameRateNumerator = 120;
 constexpr size_t kMaxFrameRateDenominator = 1;
 constexpr size_t kNumInputBuffers = 3;
 constexpr gfx::Size kDefaultSupportedResolution = gfx::Size(640, 480);
+constexpr int kH26xMaxQp = 51;
 
 #if SOFTWARE_ENCODING_SUPPORTED
 // The IDs of the encoders that may be selected when we enable low latency via
@@ -166,6 +168,18 @@ bool IsSVCSupported(VideoCodec codec) {
     return codec == VideoCodec::kH264;
   }
   return false;
+}
+
+bool IsManualQpSupported(VideoCodec codec) {
+  // Querying `kVTCompressionPropertyKey_SupportsBaseFrameQP` is the
+  // way Apple recommends to test whether per frame QP is supported by a
+  // given encoder. Based on tests on Intel and Apple Silicon Macs,
+  // the property `kVTCompressionPropertyKey_SupportsBaseFrameQP` will
+  // only report `supported` for encoders created with
+  // `kVTVideoEncoderSpecification_EnableLowLatencyRateControl` set to
+  // `true`. Thus, we assume external mode is supported if SVC is
+  // supported.
+  return IsSVCSupported(codec);
 }
 
 static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile) {
@@ -395,6 +409,7 @@ VideoEncoderInfo GetVideoEncoderInfo(
     constexpr uint8_t kFullFramerate = 255;
     info.fps_allocation[0] = {kFullFramerate};
   }
+  CHECK(info.reports_average_qp);
 
   return info;
 }
@@ -403,10 +418,12 @@ VideoEncoderInfo GetVideoEncoderInfo(
 
 struct VTVideoEncodeAccelerator::InProgressFrameEncode {
   InProgressFrameEncode(scoped_refptr<VideoFrame> frame,
-                        const gfx::ColorSpace& frame_cs)
-      : frame(frame), encoded_color_space(frame_cs) {}
+                        const gfx::ColorSpace& frame_cs,
+                        std::optional<int> frame_qp)
+      : frame(frame), encoded_color_space(frame_cs), qp(frame_qp) {}
   const scoped_refptr<VideoFrame> frame;
   const gfx::ColorSpace encoded_color_space;
+  const std::optional<int> qp;
 };
 
 struct VTVideoEncodeAccelerator::EncodeOutput {
@@ -418,7 +435,8 @@ struct VTVideoEncodeAccelerator::EncodeOutput {
       : info(info_flags),
         sample_buffer(sbuf, base::scoped_policy::RETAIN),
         capture_timestamp(frame_info.frame->timestamp()),
-        encoded_color_space(frame_info.encoded_color_space) {}
+        encoded_color_space(frame_info.encoded_color_space),
+        qp(frame_info.qp) {}
 
   EncodeOutput(const EncodeOutput&) = delete;
   EncodeOutput& operator=(const EncodeOutput&) = delete;
@@ -427,6 +445,7 @@ struct VTVideoEncodeAccelerator::EncodeOutput {
   const base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
   const base::TimeDelta capture_timestamp;
   const gfx::ColorSpace encoded_color_space;
+  const std::optional<int> qp;
 };
 
 struct VTVideoEncodeAccelerator::BitstreamBufferRef {
@@ -472,8 +491,9 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
   supported_profile.max_framerate_denominator = kMaxFrameRateDenominator;
   // Advertise VBR here, even though the peak bitrate is never actually used.
   // See RequestEncodingParametersChange() for more details.
-  supported_profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
-                                         VideoEncodeAccelerator::kVariableMode;
+  const SupportedRateControlMode always_supported_rate_control_modes =
+      VideoEncodeAccelerator::kConstantMode |
+      VideoEncodeAccelerator::kVariableMode;
   // L1T1 = no additional spatial and temporal layer = always supported.
   const std::vector<SVCScalabilityMode> always_supported_scalability_modes{
       SVCScalabilityMode::kL1T1};
@@ -497,9 +517,15 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
       supported_profile.min_resolution = min_resolution;
       supported_profile.is_software_codec = false;
       supported_profile.scalability_modes = always_supported_scalability_modes;
+      supported_profile.rate_control_modes =
+          always_supported_rate_control_modes;
       if (IsSVCSupported(codec)) {
         supported_profile.scalability_modes.push_back(
             SVCScalabilityMode::kL1T2);
+      }
+      if (IsManualQpSupported(codec)) {
+        supported_profile.rate_control_modes |=
+            VideoEncodeAccelerator::kExternalMode;
       }
       if (can_create_hardware_session[codec]) {
         supported_profiles.push_back(supported_profile);
@@ -519,6 +545,8 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
       // and if you set `no-preference`, VT will always emit an error. Thus,
       // we should just re-use min resolutions of HW encoder for SW encoder.
       supported_profile.scalability_modes = always_supported_scalability_modes;
+      supported_profile.rate_control_modes =
+          always_supported_rate_control_modes;
       supported_profile.is_software_codec = true;
       supported_profiles.push_back(supported_profile);
 
@@ -573,6 +601,18 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
+  if (config.bitrate.mode() == Bitrate::Mode::kExternal) {
+    if (!IsManualQpSupported(codec_)) {
+      MEDIA_LOG(ERROR, media_log) << "External bitrate mode is not supported.";
+      return false;
+    }
+    if (!require_low_delay_) {
+      MEDIA_LOG(INFO, media_log)
+          << "Force enable low delay encoding for external bitrate mode.";
+      require_low_delay_ = true;
+    }
+  }
+
   if (!ResetCompressionSession()) {
     MEDIA_LOG(ERROR, media_log) << "Failed creating compression session.";
     return false;
@@ -595,6 +635,12 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
 
 void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                       bool force_keyframe) {
+  Encode(std::move(frame), VideoEncoder::EncodeOptions(force_keyframe));
+}
+
+void VTVideoEncodeAccelerator::Encode(
+    scoped_refptr<VideoFrame> frame,
+    const VideoEncoder::EncodeOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(compression_session_);
   DCHECK(frame);
@@ -639,10 +685,21 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  NSDictionary* frame_props = @{
-    CFToNSPtrCast(kVTEncodeFrameOptionKey_ForceKeyFrame) : force_keyframe ? @YES
-                                                                          : @NO
-  };
+  NSMutableDictionary* frame_props = [NSMutableDictionary dictionary];
+  frame_props[CFToNSPtrCast(kVTEncodeFrameOptionKey_ForceKeyFrame)] =
+      options.key_frame ? @YES : @NO;
+
+  std::optional<int> frame_qp;
+  if (@available(macOS LOW_LATENCY_AND_SVC_AVAILABLE_VER, *)) {
+    if (IsManualQpSupported(codec_) &&
+        bitrate_.mode() == Bitrate::Mode::kExternal &&
+        options.quantizer.has_value()) {
+      DCHECK(require_low_delay_);
+      frame_qp = std::clamp(options.quantizer.value(), 1, kH26xMaxQp);
+      frame_props[CFToNSPtrCast(kVTEncodeFrameOptionKey_BaseFrameQP)] =
+          @(frame_qp.value());
+    }
+  }
 
   // VideoToolbox uses timestamps for rate control purposes, but we can't rely
   // on real frame timestamps to be consistent with configured frame rate.
@@ -658,7 +715,8 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   // Wrap information we'll need after the frame is encoded in a heap object.
   // We'll get the pointer back from the VideoToolbox completion callback.
   auto request = std::make_unique<InProgressFrameEncode>(
-      std::move(frame), encoder_color_space_.value_or(gfx::ColorSpace()));
+      std::move(frame), encoder_color_space_.value_or(gfx::ColorSpace()),
+      frame_qp);
 
   // We can pass the ownership of |request| to the encode callback if
   // successful. Otherwise let it fall out of scope.
@@ -753,7 +811,13 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
         {EncoderStatus::Codes::kSystemAPICallError, "Can't change frame rate"});
     return;
   }
-  if (!session_property_setter.Set(
+  if (bitrate.mode() != bitrate_.mode()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Can't change bitrate mode after Initialize()"});
+    return;
+  }
+  if (bitrate.mode() != Bitrate::Mode::kExternal &&
+      !session_property_setter.Set(
           kVTCompressionPropertyKey_AverageBitRate,
           static_cast<int32_t>(bitrate.target_bps()))) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
@@ -933,6 +997,9 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
   }
 
   md.encoded_color_space = encode_output->encoded_color_space;
+  if (encode_output->qp.has_value()) {
+    md.qp = encode_output->qp.value();
+  }
 
   client_->BitstreamBufferReady(buffer_ref->id, std::move(md));
   MaybeRunFlushCallback();
