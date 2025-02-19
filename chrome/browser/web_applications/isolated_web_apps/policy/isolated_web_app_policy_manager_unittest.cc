@@ -120,7 +120,7 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
       bool is_mgs_session_install_enabled,
       bool is_user_session,
       base::test::TaskEnvironment::TimeSource time_source =
-          base::test::TaskEnvironment::TimeSource::DEFAULT)
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME)
       : IsolatedWebAppTest(time_source, WithDevMode{}),
         is_mgs_session_install_enabled_(is_mgs_session_install_enabled),
         is_user_session_(is_user_session) {
