@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/traits_bag.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -80,9 +79,6 @@ class WebAppPublisherHelperTest : public testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = builder.Build();
 
     provider_ = WebAppProvider::GetForWebApps(profile());

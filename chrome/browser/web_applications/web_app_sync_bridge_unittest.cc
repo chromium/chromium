@@ -1303,11 +1303,7 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
   // This app should be uninstalled, since the `is_uninstalling` field is set.
   std::unique_ptr<WebApp> app1 =
       test::CreateWebApp(GURL("https://example.com/app1"));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  app1->AddSource(WebAppManagement::kPolicy);
-#else
   app1->AddSource(WebAppManagement::kSystem);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   app1->SetIsUninstalling(/*is_uninstalling=*/true);
   const webapps::AppId app_id1 = app1->app_id();
   system_apps.push_back(std::move(app1));
@@ -1315,11 +1311,7 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
   // This app will not be uninstalled.
   std::unique_ptr<WebApp> app2 =
       test::CreateWebApp(GURL("https://example.com/app2"));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  app2->AddSource(WebAppManagement::kPolicy);
-#else
   app2->AddSource(WebAppManagement::kSystem);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const webapps::AppId app_id2 = app2->app_id();
   system_apps.push_back(std::move(app2));
 

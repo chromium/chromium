@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
@@ -20,7 +20,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #endif
 
@@ -98,7 +98,7 @@ struct WebAppInstallParams {
   std::vector<std::string> additional_search_terms;
 
   std::optional<std::string> launch_query_params;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<ash::SystemWebAppType> system_app_type;
 #endif
 

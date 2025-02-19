@@ -12,7 +12,7 @@
 #include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -63,10 +63,10 @@ bool ExternalInstallOptions::operator==(
         options.user_type_allowlist,
         options.gate_on_feature,
         options.gate_on_feature_or_installed,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         options.disable_if_arc_supported,
         options.disable_if_tablet_form_factor,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         options.require_manifest,
         options.install_as_diy,
         options.is_preferred_app_for_supported_links,
@@ -81,7 +81,7 @@ bool ExternalInstallOptions::operator==(
         options.uninstall_and_replace,
         options.additional_search_terms,
         options.only_use_app_info_factory,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         options.system_app_type,
 #endif
         options.oem_installed,
@@ -119,10 +119,10 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("additional_search_terms",
            ConvertStringList(additional_search_terms));
   root.Set("app_info_factory", static_cast<bool>(app_info_factory));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   root.Set("disable_if_arc_supported", disable_if_arc_supported);
   root.Set("disable_if_tablet_form_factor", disable_if_tablet_form_factor);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   root.Set("disable_if_touchscreen_with_stylus_not_supported",
            disable_if_touchscreen_with_stylus_not_supported);
   root.Set("expected_app_id", ConvertOptional(expected_app_id));
@@ -156,7 +156,7 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
                : base::Value());
   root.Set("service_worker_registration_timeout_in_seconds",
            service_worker_registration_timeout.InSecondsF());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   root.Set("system_app_type",
            system_app_type ? base::Value(static_cast<int>(*system_app_type))
                            : base::Value());
@@ -203,7 +203,7 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
 
   params.launch_query_params = install_options.launch_query_params;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   params.system_app_type = install_options.system_app_type;
 #endif
 

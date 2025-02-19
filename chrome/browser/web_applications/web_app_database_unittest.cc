@@ -22,6 +22,7 @@
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
@@ -266,7 +267,7 @@ TEST_P(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   std::vector<webapps::AppId> apps_to_delete;
   Registry expected_registry;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool allow_system_source = true;
 #else
   bool allow_system_source = false;
@@ -341,12 +342,6 @@ TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
 
   // Update the registry so apps reflect expected migrated state.
   for (auto& [app_id, app] : registry) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // System Web Apps are ignored by the registry on Lacros.
-    if (app->IsSystemApp()) {
-      continue;
-    }
-#endif
     EnsureHasUserDisplayModeForCurrentPlatform(*app);
     test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
 

@@ -92,9 +92,6 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   }
 };
 
-// `WebAppUninstallAndReplaceJob` uses `AppServiceProxy` to do uninstall, app
-// service only lives on chromeos ash not lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Regression test for crbug.com/1182030
 TEST_F(WebAppUninstallAndReplaceJobTest,
        WebAppMigrationPreservesShortcutStates) {
@@ -159,6 +156,5 @@ TEST_F(WebAppUninstallAndReplaceJobTest, DoubleMigration) {
                                  future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

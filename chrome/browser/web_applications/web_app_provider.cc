@@ -21,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
@@ -59,13 +58,10 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/web_applications/ash/migrations/adobe_express_oem_to_default_migration.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
@@ -124,7 +120,7 @@ WebAppProvider::WebAppProvider(Profile* profile) : profile_(profile) {
 
   // WebApp System must have only one instance in original profile.
   // Exclude secondary off-the-record profiles.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!profile_->IsGuestSession())
     DCHECK(!profile_->IsOffTheRecord());
 #else

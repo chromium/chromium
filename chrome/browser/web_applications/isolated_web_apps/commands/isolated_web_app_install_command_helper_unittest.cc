@@ -172,11 +172,6 @@ class IsolatedWebAppInstallCommandHelperTest : public ::testing::Test {
 
   std::unique_ptr<TestingProfile> profile_ = []() {
     TestingProfile::Builder builder;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     return builder.Build();
   }();
   std::unique_ptr<content::WebContents> web_contents_;

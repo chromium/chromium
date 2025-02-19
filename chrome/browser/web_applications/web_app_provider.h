@@ -96,22 +96,17 @@ class WebAppProvider : public KeyedService {
   // web apps.
   static WebAppProvider* GetForWebApps(Profile* profile);
 
-  // Returns the WebAppProvider for the current process. In particular:
-  // In Ash: Returns the WebAppProvider that hosts System Web Apps.
-  // In Lacros and other platforms: Returns the WebAppProvider that hosts
-  // non-system Web Apps.
+  // Returns the WebAppProvider for the current process.
   //
   // Avoid using this function where possible and prefer GetForWebApps which
-  // provides a guarantee they are being called from the correct process. Only
-  // use this if the calling code is shared between Ash and Lacros and expects
-  // the PWA WebAppProvider in Lacros and the SWA WebAppProvider in Ash.
+  // provides a guarantee they are being called from the correct process.
   // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
   // profiles where `AreWebAppsEnabled` returns `false` to support CrOS system
   // web apps.
   static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
 
-  // Return the WebAppProvider for tests, regardless of whether this is running
-  // in Lacros/Ash. Blocks if the web app registry is not yet ready.
+  // Return the WebAppProvider for tests. Blocks if the web app registry is not
+  // yet ready.
   // This returns  `nullptr` if installed web apps are not supported on the
   // given `profile`. Use `web_app::AreWebAppsEnabled` to determine if web apps
   // are supported on a profile.

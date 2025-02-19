@@ -67,9 +67,10 @@ class UserUninstalledPreinstalledWebAppPrefs {
       const base::flat_map<WebAppManagement::Type,
                            WebApp::ExternalManagementConfig>& url_map,
       const bool only_default);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Clear all apps marked as user uninstalled. Only used for Lacros
   // disablement.
+  // TODO(crbug.com/380780352): Remove after stepping stone.
   void ClearAllApps();
 #endif
 

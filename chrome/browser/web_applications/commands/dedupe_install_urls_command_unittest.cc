@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -22,7 +23,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/pref_names.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #endif
@@ -48,7 +49,7 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Mocking the StatisticsProvider for testing.
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider);
     statistics_provider.SetMachineStatistic(ash::system::kActivateDateKey,
@@ -57,7 +58,7 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::system::StatisticsProvider::SetTestProvider(nullptr);
 #endif
     WebAppTest::TearDown();
@@ -136,9 +137,9 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
   base::AutoReset<bool> bypass_offline_manifest_requirement_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::FakeStatisticsProvider statistics_provider;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(DedupeInstallUrlsCommandTest,
