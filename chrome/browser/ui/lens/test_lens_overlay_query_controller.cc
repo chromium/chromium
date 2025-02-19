@@ -198,6 +198,9 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     fake_server_response_string = "";
     sent_page_content_request_id_.CopyFrom(
         request->objects_request().request_context().request_id());
+    // Need to reset the underlying content bytes before changing
+    // last_sent_page_content_data_ to prevent a dangling reference.
+    last_sent_underlying_content_bytes_ = {};
     last_sent_page_content_data_ =
         std::string(request->objects_request().payload().content_data());
     last_sent_underlying_content_bytes_ =

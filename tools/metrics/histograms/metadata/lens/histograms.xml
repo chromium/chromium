@@ -264,6 +264,35 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromInvocationToFirstFocus"
+    units="ms" expires_after="2025-09-27">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay contextual searchbox is focused for the
+    first time, sliced by page content type. Records the time from the user
+    invoking the Lens Overlay to the user focusing into the contextual
+    searchbox. Does not log if the user never focuses into the contextual
+    searchbox.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromNavigationToFirstFocus"
+    units="ms" expires_after="2025-09-27">
+  <owner>mercerd@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once after the first focus into the contextual searchbox following
+    a navigation to a new page while the results side panel is open, sliced by
+    page content type. Measures the elapsed time between when the page navigated
+    and when the user subsequently focuses the contextual searchbox.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
     name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromNavigationToFirstInteraction"
     units="ms" expires_after="2025-05-06">
   <owner>mercerd@chromium.org</owner>
