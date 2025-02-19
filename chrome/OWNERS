@@ -34,9 +34,12 @@ twellington@chromium.org
 # Temporary reviewers for the purposes of work on the Ash //chrome refactor
 # (go/ash-chrome-refactor). Please only send mechanical chanages for this
 # project to these reviewers; other CLs should be sent to the reviewers above.
-hidehiko@chromium.org
 khorimoto@chromium.org
 neis@chromium.org
+
+# Reviews for code that is built only for chromeos-chrome as a part of OS
+# system, for Ash //chrome refactor work, or trivial/mechanical changes.
+hidehiko@chromium.org
 
 # per-file rules:
 # These are for the common case of adding or renaming files. If you're doing
