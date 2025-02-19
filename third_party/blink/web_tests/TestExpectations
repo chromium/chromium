@@ -2691,7 +2691,7 @@ crbug.com/394920629 [ Mac13 ] external/wpt/css/css-pseudo/active-selection-021.h
 crbug.com/394920629 [ Mac14 ] external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
 crbug.com/394920629 [ Mac15 ] external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
 crbug.com/394932379 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/popup-with-structured-header.https.html [ Crash ]
-crbug.com/394656809 [ Mac13 ] external/wpt/css/css-overflow/scroll-marker-group-keeps-active-in-view.html [ Failure ]
+crbug.com/394656809 [ Mac ] external/wpt/css/css-overflow/scroll-marker-group-keeps-active-in-view.html [ Failure ]
 crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
 crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]
 crbug.com/393523568 external/wpt/css/css-text/line-breaking/segment-break-transformation-currency-001.html [ Failure ]
