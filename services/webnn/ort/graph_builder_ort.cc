@@ -109,6 +109,8 @@ constexpr char kOpTypeSoftmax[] = "Softmax";
 constexpr char kOpTypeSoftplus[] = "Softplus";
 constexpr char kOpTypeSoftsign[] = "Softsign";
 constexpr char kOpTypeSplit[] = "Split";
+constexpr char kOpTypeTanh[] = "Tanh";
+constexpr char kOpTypeTile[] = "Tile";
 constexpr char kOpTypeTranspose[] = "Transpose";
 constexpr char kOpTypeTriangular[] = "Trilu";
 constexpr char kOpTypeWhere[] = "Where";
@@ -1925,6 +1927,27 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
                          attributes);
 }
 
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddTileOperation(const mojom::Tile& tile) {
+  const std::string node_name = GenerateNextOperationName(tile.label);
+  const std::string input_name = GetOperandNameById(tile.input_operand_id);
+  const std::string output_name = GetOperandNameById(tile.output_operand_id);
+
+  std::vector<int64_t> repetitions(tile.repetitions.begin(),
+                                   tile.repetitions.end());
+  ASSIGN_OR_RETURN(
+      const std::string repeats_name,
+      CreateInitializer<int64_t>(
+          {base::checked_cast<uint32_t>(repetitions.size())}, repetitions));
+
+  std::array<const char*, 2> input_names = {input_name.data(),
+                                            repeats_name.data()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+  model_builder_.AddNode(kOpTypeTile, node_name, input_names, output_names);
+
+  return base::ok();
+}
+
 void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
   const std::string node_name = GenerateNextOperationName(transpose.label);
   const std::string input_name = GetOperandNameById(transpose.input_operand_id);
@@ -2181,6 +2204,14 @@ GraphBuilderOrt::BuildModel() {
         RETURN_IF_ERROR(AddSplitOperation(*operation->get_split()));
         break;
       }
+      case mojom::Operation::Tag::kTanh: {
+        AddUnaryOperation(*operation->get_tanh(), kOpTypeTanh);
+        break;
+      }
+      case mojom::Operation::Tag::kTile: {
+        RETURN_IF_ERROR(AddTileOperation(*operation->get_tile()));
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         AddTransposeOperation(*operation->get_transpose());
         break;
@@ -2206,8 +2237,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReverse:
       case mojom::Operation::Tag::kScatterElements:
-      case mojom::Operation::Tag::kTanh:
-      case mojom::Operation::Tag::kTile:
         return NewNotSupportedError("op is not supported.");
     }
   }

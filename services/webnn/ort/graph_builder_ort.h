@@ -216,6 +216,8 @@ class GraphBuilderOrt {
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddSplitOperation(
       const mojom::Split& split);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddTileOperation(
+      const mojom::Tile& tile);
   void AddTransposeOperation(const mojom::Transpose& transpose);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddTriangularOperation(
       const mojom::Triangular& triangular);
