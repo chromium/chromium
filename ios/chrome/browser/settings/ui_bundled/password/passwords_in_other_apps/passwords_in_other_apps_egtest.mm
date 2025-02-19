@@ -4,6 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
@@ -69,6 +70,15 @@ id<GREYMatcher> OpenSettingsButton() {
 
 // Action to open the Passwords in Other Apps modal from Chrome root view.
 void OpensPasswordsInOtherApps() {
+  // The autofill status needs to be set to "on" on iOS 18+ when the Passkeys M2
+  // feature is enabled as the Passwords in Other Apps screen isn't accessible
+  // otherwise.
+  if (@available(iOS 18, *)) {
+    if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
+      [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:YES];
+    }
+  }
+
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
@@ -182,6 +192,13 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps first shows instructions when auto-fill is off,
 // then shows the caption label after auto-fill is turned on.
 - (void)testTurnOnPasswordsInOtherApps {
+  if (@available(iOS 18, *)) {
+    if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
+      EARL_GREY_TEST_SKIPPED(@"The Password in Other Apps screen isn't "
+                             @"accessible as of iOS 18 when autofill is off.");
+    }
+  }
+
   // Rewrites passwordInAppsViewController.useShortInstruction property.
   EarlGreyScopedBlockSwizzler longInstruction(
       @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
@@ -226,6 +243,13 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps shows instructions when auto-fill is off with
 // short instruction.
 - (void)testShowPasswordsInOtherAppsWithShortInstruction {
+  if (@available(iOS 18, *)) {
+    if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
+      EARL_GREY_TEST_SKIPPED(@"The Password in Other Apps screen isn't "
+                             @"accessible as of iOS 18 when autofill is off.");
+    }
+  }
+
   // Rewrites passwordInAppsViewController.useShortInstruction property.
   EarlGreyScopedBlockSwizzler shortInstruction(
       @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
@@ -243,9 +267,13 @@ void OpensPasswordsInOtherApps() {
   // Check backup instructions are visible.
   NSArray<NSString*>* steps = @[
     l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
+        [PasswordManagerAppInterface isPasskeysM2FeatureEnabled]
+            ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_1
+            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
     l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
+        [PasswordManagerAppInterface isPasskeysM2FeatureEnabled]
+            ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2
+            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
   ];
   for (NSString* step in steps) {
     [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(step)]
@@ -258,6 +286,12 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps shows instructions when auto-fill state is
 // unknown.
 - (void)testOpenPasswordsInOtherAppsWithAutoFillUnknown {
+  if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The autofill state can't be unknown as it's defaulted to `off` when "
+        @"the Passkeys M2 feature is enabled.");
+  }
+
   OpensPasswordsInOtherApps();
 
   [self checkThatCommonElementsAreVisible];

@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
@@ -2967,10 +2968,27 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   id<GREYMatcher> offMatcher = grey_allOf(
       grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_SETTING_OFF)),
       grey_sufficientlyVisible(), nil);
+  if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
+    if (@available(iOS 18, *)) {
+      offMatcher = grey_allOf(grey_accessibilityLabel(@"Leading detail text"),
+                              grey_sufficientlyVisible(), nil);
+    }
+  }
 
-  // No detail text should appear until the AutoFill status has been populated.
-  [[EarlGrey selectElementWithMatcher:onMatcher] assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:offMatcher] assertWithMatcher:grey_nil()];
+  if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
+    // When the Passkeys M2 feature is on, the AutoFill status is defaulted to
+    // "off" until populated.
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:offMatcher];
+    [[EarlGrey selectElementWithMatcher:onMatcher]
+        assertWithMatcher:grey_nil()];
+  } else {
+    // No detail text should appear until the AutoFill status has been
+    // populated.
+    [[EarlGrey selectElementWithMatcher:onMatcher]
+        assertWithMatcher:grey_nil()];
+    [[EarlGrey selectElementWithMatcher:offMatcher]
+        assertWithMatcher:grey_nil()];
+  }
 
   [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:NO];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:offMatcher];

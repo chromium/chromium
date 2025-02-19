@@ -114,6 +114,7 @@ source_set("eg2_tests") {
     ":constants",
     ":eg_test_support+eg2",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
