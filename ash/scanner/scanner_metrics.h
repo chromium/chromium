@@ -60,9 +60,9 @@ enum class ScannerFeatureUserState {
   kConsentDisclaimerAccepted,
   kConsentDisclaimerRejected,
   kSunfishScreenEnteredViaShortcut,
-  kSunfishScreenInitialScreenCaptureSentToScannerServer,
+  kDeprecatedSunfishScreenInitialScreenCaptureSentToScannerServer,
   kScreenCaptureModeScannerButtonShown,
-  kScreenCaptureModeInitialScreenCaptureSentToScannerServer,
+  kDeprecatedScreenCaptureModeInitialScreenCaptureSentToScannerServer,
   kNoActionsDetected,
   kNewCalendarEventActionDetected,
   kNewCalendarEventActionFinishedSuccessfully,
@@ -104,7 +104,12 @@ enum class ScannerFeatureUserState {
   kLauncherShownWithoutSunfishSessionButton = 41,
   kLauncherShownWithSunfishSessionButton = 42,
 
-  kMaxValue = kLauncherShownWithSunfishSessionButton,
+  kSunfishSessionImageCapturedAndActionsNotFetched = 43,
+  kSunfishSessionImageCapturedAndActionsFetchStarted = 44,
+  kSmartActionsButtonImageCapturedAndActionsNotFetched = 45,
+  kSmartActionsButtonImageCapturedAndActionsFetchStarted = 46,
+
+  kMaxValue = kSmartActionsButtonImageCapturedAndActionsFetchStarted,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 

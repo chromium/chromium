@@ -2002,11 +2002,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Consent disclaimer rejected"/>
   <int value="2" label="Sunfish screen entered via shortcut"/>
   <int value="3"
-      label="Sunfish screen: initial screen capture sent to scanner server"/>
+      label="DEPRECATED: Sunfish screen: initial screen capture sent to
+             scanner server"/>
   <int value="4" label="Screen capture mode: Scanner button shown"/>
   <int value="5"
-      label="Screen capture mode: initial screen capture sent to scanner
-             server"/>
+      label="DEPRECATED: Screen capture mode: initial screen capture sent to
+             scanner server"/>
   <int value="6" label="No actions detected"/>
   <int value="7" label="New calendar event action detected"/>
   <int value="8" label="New calendar event action finished successfully"/>
@@ -2062,6 +2063,16 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="40" label="&quot;Do not show UI&quot; resulted from kiosk mode"/>
   <int value="41" label="Launcher was shown without Sunfish-session button"/>
   <int value="42" label="Launcher was shown with Sunfish-session button"/>
+  <int value="43"
+      label="Image captured in Sunfish-session, and actions were not fetched"/>
+  <int value="44"
+      label="Image captured in Sunfish-session, and actions started fetching"/>
+  <int value="45"
+      label="Image captured from smart actions button, and actions were not
+             fetched"/>
+  <int value="46"
+      label="Image captured from smart actions button, and actions started
+             fetching"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->
