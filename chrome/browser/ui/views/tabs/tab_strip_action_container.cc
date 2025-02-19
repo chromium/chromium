@@ -285,8 +285,7 @@ TabStripActionContainer::CreateGlicNudgeButton(
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE),
       kGlicNudgeButtonElementId, Edge::kNone,
-      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON)
-  );
+      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
 
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE));
   button->GetViewAccessibility().SetName(
@@ -534,8 +533,15 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
     return;
   }
 
-  // If the tab strip already has a modal UI showing, exit early.
-  if (!tab_strip_controller_->CanShowModalUI()) {
+  // If the tab strip already has a modal UI showing, that is not for the same
+  // button being hidden, exit early. If the tab strip has modal UI for the same
+  // button being hidden, then continue to reset the animation and start a show
+  // animation.
+  if (!tab_strip_controller_->CanShowModalUI() &&
+      !(animation_session_ &&
+        animation_session_->session_type() ==
+            TabStripNudgeAnimationSession::AnimationSessionType::HIDE &&
+        animation_session_->button() == button)) {
     return;
   }
 
@@ -554,6 +560,7 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
                        base::Unretained(this), button));
   }
 
+  scoped_tab_strip_modal_ui_.reset();
   scoped_tab_strip_modal_ui_ = tab_strip_controller_->ShowModalUI();
 
   animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
