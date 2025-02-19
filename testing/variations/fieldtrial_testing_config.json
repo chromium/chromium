@@ -10113,9 +10113,18 @@
                     ]
                 },
                 {
-                    "name": "Internal_Enabled",
+                    "name": "Freetype_Enabled",
                     "params": {
-                        "typeface": "Internal"
+                        "typeface": "Freetype"
+                    },
+                    "enable_features": [
+                        "FontDataServiceAllWebContents"
+                    ]
+                },
+                {
+                    "name": "Fontations_Enabled",
+                    "params": {
+                        "typeface": "Fontations"
                     },
                     "enable_features": [
                         "FontDataServiceAllWebContents"

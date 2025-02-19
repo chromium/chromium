@@ -233,7 +233,8 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontDataServiceAllWebContents);
 enum class FontDataServiceTypefaceType {
   kDwrite,
-  kInternal,
+  kFreetype,
+  kFontations,
 };
 extern const base::FeatureParam<FontDataServiceTypefaceType>
     kFontDataServiceTypefaceType;
