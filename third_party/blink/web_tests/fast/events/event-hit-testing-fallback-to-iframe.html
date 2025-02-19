@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 
+<script src="../../resources/js-test.js"></script>
+
 <body>
-  <iframe src="resources/body-overflow-iframe.html" height="100px"></iframe>
+  <iframe id=targetFrame height="100px"></iframe>
   <div id='console'></div>
 </body>
 
-<script src="../../resources/js-test.js"></script>
 <script>
 description("Test that when the hit test of input event in an iframe does not hit " +
             "anything (not even the html/body), the input event is still captured " +
@@ -48,4 +49,7 @@ window.addEventListener("message", function(evt) {
 
 }, true);
 
+window.onload = function() {
+  targetFrame.src = 'resources/body-overflow-iframe.html';
+};
 </script>
