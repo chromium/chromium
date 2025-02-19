@@ -279,10 +279,10 @@ SkImageInfo CanvasResource::CreateSkImageInfo() const {
                            color_space_.ToSkColorSpace());
 }
 
-// CanvasResourceSharedBitmap
+// CanvasResourceSharedImage
 //==============================================================================
 
-CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
+CanvasResourceSharedImage::CanvasResourceSharedImage(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -294,7 +294,9 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
                      size,
                      format,
                      alpha_type,
-                     color_space) {
+                     color_space),
+      is_accelerated_(false),
+      use_oop_rasterization_(false) {
   if (!shared_image_interface_provider) {
     return;
   }
@@ -304,41 +306,23 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     return;
   }
 
-  shared_image_ =
+  owning_thread_data().client_shared_image =
       shared_image_interface->CreateSharedImageForSoftwareCompositor(
           {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
            gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-           "CanvasResourceSharedBitmap"});
+           "CanvasResourceSharedImage"});
 
-  // This class doesn't currently have a way of verifying the sync token at the
-  // time of vending it in GetSyncTokenWithOptionalVerification(), so we
-  // instead ensure that it is verified now.
-  sync_token_ = shared_image_interface->GenVerifiedSyncToken();
+  // This class doesn't currently have a way of verifying the sync token for
+  // software SharedImages at the time of vending it in
+  // GetSyncTokenWithOptionalVerification(), so we instead ensure that it is
+  // verified now.
+  owning_thread_data().sync_token =
+      shared_image_interface->GenVerifiedSyncToken();
+  owning_thread_data().mailbox_needs_new_sync_token = false;
 }
 
-CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
-  if (is_cross_thread()) {
-    // Destroyed on wrong thread. This can happen when the thread of origin was
-    // torn down, in which case the GPU context owning any underlying resources
-    // no longer exists and it is not possible to do cleanup of any GPU
-    // context-associated state.
-    return;
-  }
-
-  if (Provider()) {
-    Provider()->OnDestroyResource();
-  }
-}
-
-bool CanvasResourceSharedBitmap::IsValid() const {
-  return !!shared_image_;
-}
-
-scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
-  return CreateUnacceleratedBitmap();
-}
-
-scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
+scoped_refptr<CanvasResourceSharedImage>
+CanvasResourceSharedImage::CreateSoftware(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -346,18 +330,11 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider) {
-  auto resource = AdoptRef(new CanvasResourceSharedBitmap(
+  auto resource = AdoptRef(new CanvasResourceSharedImage(
       size, format, alpha_type, color_space, std::move(provider),
       std::move(shared_image_interface_provider)));
   return resource->IsValid() ? resource : nullptr;
 }
-
-void CanvasResourceSharedBitmap::NotifyResourceLost() {
-  is_lost_ = true;
-}
-
-// CanvasResourceSharedImage
-//==============================================================================
 
 CanvasResourceSharedImage::CanvasResourceSharedImage(
     gfx::Size size,
@@ -674,6 +651,16 @@ void CanvasResourceSharedImage::EndExternalWrite(
 const gpu::SyncToken
 CanvasResourceSharedImage::GetSyncTokenWithOptionalVerification(
     bool needs_verified_token) {
+  if (GetClientSharedImage()->is_software()) {
+    // This class doesn't currently have a way of verifying the sync token
+    // within this call for software SharedImages, so it instead ensures that it
+    // is verified at the time of generation.
+    DCHECK(!mailbox_needs_new_sync_token());
+    DCHECK(sync_token().verified_flush());
+
+    return sync_token();
+  }
+
   if (is_cross_thread()) {
     // Sync token should be generated at Transfer time, which must always be
     // called before cross-thread usage. And since we don't allow writes on

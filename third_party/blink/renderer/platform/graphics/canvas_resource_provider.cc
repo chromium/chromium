@@ -266,9 +266,9 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
       format = GetN32FormatForCanvas();
     }
 
-    return CanvasResourceSharedBitmap::Create(Size(), format, GetAlphaType(),
-                                              GetColorSpace(), CreateWeakPtr(),
-                                              shared_image_interface_provider_);
+    return CanvasResourceSharedImage::CreateSoftware(
+        Size(), format, GetAlphaType(), GetColorSpace(), CreateWeakPtr(),
+        shared_image_interface_provider_);
   }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
@@ -280,9 +280,9 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
 
     FlushCanvas(reason);
 
-    // Note that the resource *must* be a CanvasResourceSharedBitmap as this
-    // class creates CanvasResourceSharedBitmap instances exclusively.
-    static_cast<CanvasResourceSharedBitmap*>(output_resource.get())
+    // Note that the resource *must* be a CanvasResourceSharedImage as this
+    // class creates CanvasResourceSharedImage instances exclusively.
+    static_cast<CanvasResourceSharedImage*>(output_resource.get())
         ->UploadSoftwareRenderingResults(GetSkSurface());
 
     return output_resource;
