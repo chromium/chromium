@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -21,24 +22,26 @@ namespace base {
 // the separator, and `second` is the (potentially empty) part that comes after.
 // If `separator` is not in `input`, returns `std::nullopt`.
 BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
-SplitStringOnce(std::string_view input, char separator);
+SplitStringOnce(std::string_view input LIFETIME_BOUND, char separator);
 
 // Similar to the above, but splits the string at the first instance of any
 // separator in `separators`.
 BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
-SplitStringOnce(std::string_view input, std::string_view separators);
+SplitStringOnce(std::string_view input LIFETIME_BOUND,
+                std::string_view separators);
 
 // Splits a string at the last instance of `separator`, returning a pair of
 // `std::string_view`: `first` is the (potentially empty) part that comes before
 // the separator, and `second` is the (potentially empty) part that comes after.
 // If `separator` is not in `input`, returns `std::nullopt`.
 BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
-RSplitStringOnce(std::string_view input, char separator);
+RSplitStringOnce(std::string_view input LIFETIME_BOUND, char separator);
 
 // Similar to the above, but splits the string at the last instance of any
 // separator in `separators`.
 BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
-RSplitStringOnce(std::string_view input, std::string_view separators);
+RSplitStringOnce(std::string_view input LIFETIME_BOUND,
+                 std::string_view separators);
 
 enum WhitespaceHandling {
   KEEP_WHITESPACE,
@@ -96,12 +99,12 @@ enum SplitResult {
 //                               base::SPLIT_WANT_NONEMPTY)) {
 //     ...
 [[nodiscard]] BASE_EXPORT std::vector<std::string_view> SplitStringPiece(
-    std::string_view input,
+    std::string_view input LIFETIME_BOUND,
     std::string_view separators,
     WhitespaceHandling whitespace,
     SplitResult result_type);
 [[nodiscard]] BASE_EXPORT std::vector<std::u16string_view> SplitStringPiece(
-    std::u16string_view input,
+    std::u16string_view input LIFETIME_BOUND,
     std::u16string_view separators,
     WhitespaceHandling whitespace,
     SplitResult result_type);
@@ -151,12 +154,12 @@ BASE_EXPORT bool SplitStringIntoKeyValuePairsUsingSubstr(
 //                                     base::SPLIT_WANT_NONEMPTY)) {
 //     ...
 [[nodiscard]] BASE_EXPORT std::vector<std::u16string_view>
-SplitStringPieceUsingSubstr(std::u16string_view input,
+SplitStringPieceUsingSubstr(std::u16string_view input LIFETIME_BOUND,
                             std::u16string_view delimiter,
                             WhitespaceHandling whitespace,
                             SplitResult result_type);
 [[nodiscard]] BASE_EXPORT std::vector<std::string_view>
-SplitStringPieceUsingSubstr(std::string_view input,
+SplitStringPieceUsingSubstr(std::string_view input LIFETIME_BOUND,
                             std::string_view delimiter,
                             WhitespaceHandling whitespace,
                             SplitResult result_type);
