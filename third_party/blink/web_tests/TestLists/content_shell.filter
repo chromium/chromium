@@ -490,6 +490,7 @@ external/wpt/css/selectors/open-pseudo.html
 external/wpt/css/selectors/user-invalid-form-submission-invalidation.html
 external/wpt/density-size-correction/density-corrected-image-in-canvas.html
 external/wpt/dom/events/scrolling/input-text-scroll-event-when-using-arrow-keys.html
+external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html
 external/wpt/dom/events/scrolling/scrollend-event-fires-on-visual-viewport.html
 external/wpt/dom/events/scrolling/scrollend-event-fires-to-iframe-window.html
 external/wpt/dom/events/scrolling/wheel-event-transactions-basic.html?include=scroll-over-scrollable-child
