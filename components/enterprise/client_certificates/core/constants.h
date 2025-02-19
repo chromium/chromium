@@ -31,6 +31,13 @@ extern const char kKey[];
 // Key name used within a key-value context for the private key source.
 extern const char kKeySource[];
 
+// Key name used within a key-value context for encompassing the signing key and
+// key source.
+extern const char kKeyDetails[];
+
+// Key name used within a key-value context for a certificate.
+extern const char kCertificate[];
+
 }  // namespace client_certificates
 
 #endif  // COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_CONSTANTS_H_
