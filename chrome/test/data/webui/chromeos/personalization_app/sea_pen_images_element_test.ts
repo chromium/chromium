@@ -196,9 +196,6 @@ suite('SeaPenImagesElementTest', function() {
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.thumbnails;
-    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery = {
-      textQuery: 'test freeform query',
-    };
     personalizationStore.data.wallpaper.seaPen.textQueryHistory = [
       {
         query: 'test freeform query',

@@ -181,8 +181,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
       showHistory_: {
         type: Boolean,
-        computed:
-            'computeShowHistory_(thumbnailsLoading_, seaPenQuery_, textQueryHistory_)',
+        computed: 'computeShowHistory_(thumbnailsLoading_, textQueryHistory_)',
       },
 
       seaPenQuery_: {
@@ -535,10 +534,9 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   }
 
   private computeShowHistory_(
-      thumbnailsLoading: boolean, seaPenQuery: SeaPenQuery|null,
+      thumbnailsLoading: boolean,
       textQueryHistory: TextQueryHistoryEntry[]): boolean {
-    return !thumbnailsLoading && !!seaPenQuery?.textQuery &&
-        isNonEmptyArray(textQueryHistory);
+    return !thumbnailsLoading && isNonEmptyArray(textQueryHistory);
   }
 
   private onHistoryPromptClicked_(e: Event&
