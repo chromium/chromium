@@ -95,7 +95,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   // Scoped move-only object returned when getting a resource from the pool.
   // Ownership must be given back to the pool to release the resource.
-  class InUsePoolResource {
+  class CC_EXPORT InUsePoolResource {
    public:
     InUsePoolResource() = default;
     ~InUsePoolResource() {
@@ -139,7 +139,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     // resource and installs a backing for this resource that is itself backed
     // by that SI.
     void InstallSoftwareBacking(scoped_refptr<gpu::SharedImageInterface> sii,
-                                std::string_view debug_label);
+                                std::string_view debug_label) const;
 
     size_t memory_usage() const {
       DCHECK(resource_);

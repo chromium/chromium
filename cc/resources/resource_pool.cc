@@ -61,7 +61,7 @@ ResourcePool::Backing::~Backing() {
 
 void ResourcePool::InUsePoolResource::InstallSoftwareBacking(
     scoped_refptr<gpu::SharedImageInterface> sii,
-    std::string_view debug_label) {
+    std::string_view debug_label) const {
   CHECK(!backing());
   auto backing = std::make_unique<ResourcePool::Backing>();
   backing->shared_image_interface = sii;
