@@ -492,7 +492,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         if (!mContextMenuEnabled) return null;
 
         @ChromeContextMenuPopulator.ContextMenuMode
-        int contextMenuMode = getContextMenuMode(mActivityType);
+        int contextMenuMode = getContextMenuMode(mIntentDataProvider, mActivityType);
         return new ChromeContextMenuPopulatorFactory(
                 createTabContextMenuItemDelegate(tab), mShareDelegateSupplier, contextMenuMode);
     }
@@ -564,7 +564,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     }
 
     private static @ChromeContextMenuPopulator.ContextMenuMode int getContextMenuMode(
-            @ActivityType int activityType) {
+            BrowserServicesIntentDataProvider intentDataProvider, @ActivityType int activityType) {
+        if (intentDataProvider.hasTargetNetwork()) {
+            return ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB;
+        }
         return isWebappOrWebApk(activityType)
                 ? ChromeContextMenuPopulator.ContextMenuMode.WEB_APP
                 : ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB;
