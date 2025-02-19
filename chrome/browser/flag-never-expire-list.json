@@ -35,6 +35,7 @@
   "disable-bruschetta-install-checks",
   "disable-buffer-bw-compression",
   "disable-explicit-dma-fences",
+  "disable-facilitated-payments-merchant-allowlist",
   "disable-javascript-harmony-shipping",
   "disallow-doc-written-script-loads",
   "enable-autofill-credit-card-upload",

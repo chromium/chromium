@@ -2047,6 +2047,12 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-facilitated-payments-merchant-allowlist",
+    "owners": [ "siashah@chromium.org", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
+    // This flag is required for QA and dogfood testing.
+    "expiry_milestone": -1
+  },
+  {
     "name": "disable-idle-sockets-close-on-memory-pressure",
     "owners": [ "pmarko@chromium.org" ],
     "expiry_milestone": 112

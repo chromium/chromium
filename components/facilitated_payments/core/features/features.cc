@@ -17,7 +17,14 @@ BASE_FEATURE(kEnablePixPayments,
 BASE_FEATURE(kEnablePixPaymentsInLandscapeMode,
              "EnablePixPaymentsInLandscapeMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, the check for matching the main frame domain with the
+// allowlisted domains will be disabled.
+BASE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist,
+             "DisableFacilitatedPaymentsMerchantAllowlist",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will offer to pay with eWallet accounts if a payment
 // link is detected.
 BASE_FEATURE(kEwalletPayments,

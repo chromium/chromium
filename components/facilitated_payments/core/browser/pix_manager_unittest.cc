@@ -407,6 +407,36 @@ TEST_F(PixManagerTest,
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(
+    PixManagerTest,
+    CopyTrigger_UrlNotInAllowlist_AllowlistCheckDisabled_PixValidationTriggered) {
+  base::test::ScopedFeatureList feature_list(
+      kDisableFacilitatedPaymentsMerchantAllowlist);
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  GURL url("https://example.com/");
+
+  // Verify that the allowlist check never happens.
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(0);
+  // If Pix validation is run, then IsAvailable should get called once.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+  // The DataDecoder (utility process) validates the Pix code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(PixManagerTest, TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
