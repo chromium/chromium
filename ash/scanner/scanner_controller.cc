@@ -459,66 +459,72 @@ bool ScannerController::CanShowUi() {
   specialized_features::FeatureAccessFailureSet checks =
       profile_scoped_delegate->CheckFeatureAccess();
 
-  bool consent_not_accepted = checks.Has(
-      specialized_features::FeatureAccessFailure::kConsentNotAccepted);
+  bool consent_accepted = true;
+  bool show_ui = true;
 
-  checks.Remove(
-      specialized_features::FeatureAccessFailure::kConsentNotAccepted);
-  if (!checks.empty()) {
-    for (specialized_features::FeatureAccessFailure failure : checks) {
-      switch (failure) {
-        case specialized_features::FeatureAccessFailure::kConsentNotAccepted:
-          NOTREACHED();
+  for (specialized_features::FeatureAccessFailure failure : checks) {
+    switch (failure) {
+      case specialized_features::FeatureAccessFailure::kConsentNotAccepted:
+        consent_accepted = false;
+        break;
 
-        case specialized_features::FeatureAccessFailure::kDisabledInSettings:
-          RecordScannerFeatureUserState(
-              ScannerFeatureUserState::
-                  kCanShowUiReturnedFalseDueToSettingsToggle);
-          break;
+      case specialized_features::FeatureAccessFailure::kDisabledInSettings:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::
+                kCanShowUiReturnedFalseDueToSettingsToggle);
+        show_ui = false;
+        break;
 
-        case specialized_features::FeatureAccessFailure::kFeatureFlagDisabled:
-          RecordScannerFeatureUserState(
-              ScannerFeatureUserState::kCanShowUiReturnedFalseDueToFeatureFlag);
-          break;
+      case specialized_features::FeatureAccessFailure::kFeatureFlagDisabled:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::kCanShowUiReturnedFalseDueToFeatureFlag);
+        show_ui = false;
+        break;
 
-        case specialized_features::FeatureAccessFailure::
-            kFeatureManagementCheckFailed:
-          RecordScannerFeatureUserState(
-              ScannerFeatureUserState::
-                  kCanShowUiReturnedFalseDueToFeatureManagement);
-          break;
+      case specialized_features::FeatureAccessFailure::
+          kFeatureManagementCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::
+                kCanShowUiReturnedFalseDueToFeatureManagement);
+        show_ui = false;
+        break;
 
-        case specialized_features::FeatureAccessFailure::kSecretKeyCheckFailed:
-          RecordScannerFeatureUserState(
-              ScannerFeatureUserState::kCanShowUiReturnedFalseDueToSecretKey);
-          break;
+      case specialized_features::FeatureAccessFailure::kSecretKeyCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::kCanShowUiReturnedFalseDueToSecretKey);
+        show_ui = false;
+        break;
 
-        case specialized_features::FeatureAccessFailure::
-            kAccountCapabilitiesCheckFailed:
-          RecordScannerFeatureUserState(
-              ScannerFeatureUserState::
-                  kCanShowUiReturnedFalseDueToAccountCapabilities);
-          break;
+      case specialized_features::FeatureAccessFailure::
+          kAccountCapabilitiesCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::
+                kCanShowUiReturnedFalseDueToAccountCapabilities);
+        show_ui = false;
+        break;
 
-        case specialized_features::FeatureAccessFailure::kCountryCheckFailed:
-          RecordScannerFeatureUserState(
-              ScannerFeatureUserState::kCanShowUiReturnedFalseDueToCountry);
-          break;
+      case specialized_features::FeatureAccessFailure::kCountryCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::kCanShowUiReturnedFalseDueToCountry);
+        show_ui = false;
+        break;
 
-        case specialized_features::FeatureAccessFailure::
-            kDisabledInKioskModeCheckFailed:
-          RecordScannerFeatureUserState(
-              ScannerFeatureUserState::kCanShowUiReturnedFalseDueToKioskMode);
-          break;
-      }
+      case specialized_features::FeatureAccessFailure::
+          kDisabledInKioskModeCheckFailed:
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::kCanShowUiReturnedFalseDueToKioskMode);
+        show_ui = false;
+        break;
     }
+  }
 
+  if (!show_ui) {
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
   }
 
-  if (consent_not_accepted) {
+  if (!consent_accepted) {
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedTrueWithoutConsent);
   } else {
