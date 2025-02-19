@@ -11792,6 +11792,21 @@
             ]
         }
     ],
+    "IOSExplicitUITraitRegistration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableTraitCollectionRegistration"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [
