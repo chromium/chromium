@@ -120,20 +120,6 @@ constexpr char kManifestTemplate[] = R"(
 class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
  public:
   EnterpriseReportingPrivateApiTest() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            extensions_features::
-                kApiEnterpriseReportingPrivateReportDataMaskingEvent,
-        },
-        /*disabled_features=*/{});
-#else
-    scoped_features_.InitAndEnableFeature(
-        extensions_features::
-            kApiEnterpriseReportingPrivateReportDataMaskingEvent);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 #if !BUILDFLAG(IS_CHROMEOS)
     browser_dm_token_storage_.SetClientId("client_id");
     browser_dm_token_storage_.SetEnrollmentToken("enrollment_token");
@@ -258,8 +244,6 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   base::CallbackListSubscription create_services_subscription_;
-
-  base::test::ScopedFeatureList scoped_features_;
 
 #if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;

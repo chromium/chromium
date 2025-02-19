@@ -1014,9 +1014,11 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    auto multi_contents_view =
-        std::make_unique<MultiContentsView>(browser_->profile());
-    contents_web_view_ = multi_contents_view->active_contents_view();
+    auto multi_contents_view = std::make_unique<MultiContentsView>(
+        browser_->profile(),
+        base::BindRepeating(&BrowserView::ActivateWebContents,
+                            base::Unretained(this)));
+    contents_web_view_ = multi_contents_view->GetActiveContentsView();
     multi_contents_view_ =
         contents_container->AddChildView(std::move(multi_contents_view));
     contents_view = multi_contents_view_;
@@ -1463,14 +1465,24 @@ void BrowserView::ShowSplitView() {
   CHECK(inactive_index > -1);
   int active_index = browser_->tab_strip_model()->active_index();
   const int active_position = active_index < inactive_index ? 0 : 1;
-  multi_contents_view_->SetActivePosition(active_position);
+  contents_web_view_ = multi_contents_view_->SetActivePosition(active_position);
   multi_contents_view_->SetWebContents(
       browser_->tab_strip_model()->GetWebContentsAt(inactive_index), false);
+  multi_contents_view_->SetWebContents(
+      browser_->tab_strip_model()->GetWebContentsAt(active_index), true);
 }
 
 void BrowserView::HideSplitView() {
   CHECK(multi_contents_view_);
   multi_contents_view_->SetWebContents(nullptr, false);
+}
+
+void BrowserView::ActivateWebContents(content::WebContents* web_contents) {
+  int tab_index =
+      browser_->tab_strip_model()->GetIndexOfWebContents(web_contents);
+  if (tab_index != TabStripModel::kNoTab) {
+    browser_->tab_strip_model()->ActivateTabAt(tab_index);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1843,12 +1855,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
                                      int reason) {
   DCHECK(new_contents);
   TRACE_EVENT0("ui", "BrowserView::OnActiveTabChanged");
-  // TODO(crbug.com/393451405): Remove in favor of multi_contents_view_
-  // handling any potential conflicts around setting a webcontents that is
-  // already set to a different ContentsWebView.
-  if (multi_contents_view_) {
-    multi_contents_view_->SetWebContents(nullptr, false);
-  }
 
   if (old_contents && !old_contents->IsBeingDestroyed()) {
     // We do not store the focus when closing the tab to work-around bug 4633.
@@ -1867,7 +1873,11 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // some work.  This also prevents extra events from being reported by the
   // Visibility API under Windows, as ChangeWebContents will briefly hide
   // the WebContents window.
-  bool change_tab_contents = contents_web_view_->web_contents() != new_contents;
+  bool change_tab_contents =
+      contents_web_view_->web_contents() != new_contents &&
+      (!multi_contents_view_ ||
+       multi_contents_view_->GetInactiveContentsView()->GetWebContents() !=
+           new_contents);
 
 #if BUILDFLAG(IS_MAC)
   // Widget::IsActive is inconsistent between Mac and Aura, so don't check for
@@ -3426,6 +3436,13 @@ void BrowserView::ShowAppMenu() {
   toolbar_button_provider_->GetAppMenuButton()
       ->menu_button_controller()
       ->Activate(nullptr);
+}
+
+bool BrowserView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
+  if (multi_contents_view_) {
+    return multi_contents_view_->PreHandleMouseEvent(event);
+  }
+  return false;
 }
 
 content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(

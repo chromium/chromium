@@ -38,16 +38,13 @@ enum class SmsFetchFailureType {
   kMaxValue = kCrossDeviceFailure,
 };
 
-// TODO(yigu): Do not use anonymous namespace in header.
-namespace {
-using OriginList = std::vector<url::Origin>;
-}  // namespace
-
 // SmsFetcher coordinates between the provisioning of SMSes coming from the
 // local device or remote devices to multiple origins.
 // There is one SmsFetcher per profile.
 class SmsFetcher {
  public:
+  using OriginList = std::vector<url::Origin>;
+
   // Indicates whether the subscriber needs to obtain its own user consent or
   // not.
   enum class UserConsent {
@@ -86,14 +83,14 @@ class SmsFetcher {
   // Subscribes to incoming SMSes from SmsProvider for telephony
   // devices that can receive SMSes locally and can show a permission prompt.
   // TODO(yigu): This API is used in content/ only. We should move it to the
-  // SmsFetcherImpl per guideline. https://crbug.com/1136062.
+  // SmsFetcherImpl per guideline. https://crbug.com/40152118.
   virtual void Subscribe(const OriginList& origin_list,
                          Subscriber& subscriber,
                          RenderFrameHost& render_frame_host) = 0;
   virtual void Unsubscribe(const OriginList& origin_list,
                            Subscriber* subscriber) = 0;
   // TODO(yigu): This API is used in content/ only. We should move it to the
-  // SmsFetcherImpl per guideline. https://crbug.com/1136062.
+  // SmsFetcherImpl per guideline. https://crbug.com/40152118.
   virtual bool HasSubscribers() = 0;
 };
 

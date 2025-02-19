@@ -19,15 +19,9 @@ class InputRouterClient;
 
 class MockInputRouter : public InputRouter {
  public:
-  explicit MockInputRouter(InputRouterClient* client)
-      : sent_mouse_event_(false),
-        sent_wheel_event_(false),
-        sent_keyboard_event_(false),
-        sent_gesture_event_(false),
-        send_touch_event_not_cancelled_(false),
-        has_handlers_(false),
-        client_(client)
-  {}
+  explicit MockInputRouter(InputRouterClient* client) : client_(client) {
+    MakeActive();
+  }
 
   MockInputRouter(const MockInputRouter&) = delete;
   MockInputRouter& operator=(const MockInputRouter&) = delete;
@@ -62,15 +56,15 @@ class MockInputRouter : public InputRouter {
       blink::mojom::TouchEventConsumersPtr consumers) override;
   void WaitForInputProcessed(base::OnceClosure callback) override {}
 
-  bool sent_mouse_event_;
-  bool sent_wheel_event_;
-  bool sent_keyboard_event_;
-  bool sent_gesture_event_;
-  bool send_touch_event_not_cancelled_;
-  bool has_handlers_;
+  bool sent_mouse_event_ = false;
+  bool sent_wheel_event_ = false;
+  bool sent_keyboard_event_ = false;
+  bool sent_gesture_event_ = false;
+  bool send_touch_event_not_cancelled_ = false;
+  bool has_handlers_ = false;
 
  private:
-  raw_ptr<InputRouterClient> client_;
+  raw_ptr<InputRouterClient> client_ = nullptr;
 };
 
 }  // namespace input

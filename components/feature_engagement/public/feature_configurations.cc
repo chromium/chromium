@@ -2394,6 +2394,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     feature_engagement::kMaxStoragePeriod);
     return config;
   }
+
+  if (kIPHiOSDownloadAutoDeletionFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("download_auto_deletion_iph_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::kIOSDownloadAutoDeletionIPHCriterionMet,
+        Comparator(GREATER_THAN_OR_EQUAL, 1), 60, 360));
+    config->used =
+        EventConfig("download_auto_deletion_iph_used", Comparator(ANY, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

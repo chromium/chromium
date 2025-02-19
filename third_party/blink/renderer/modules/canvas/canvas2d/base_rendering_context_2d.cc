@@ -3005,8 +3005,8 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kPutImageData, data->width(), data->height(),
-        data->GetPredefinedColorSpace(), data->GetImageDataStorageFormat(), dx,
-        dy, dirty_x, dirty_y, dirty_width, dirty_height);
+        data->GetPredefinedColorSpace(), data->GetSkColorType(), dx, dy,
+        dirty_x, dirty_y, dirty_width, dirty_height);
     identifiability_study_helper_.set_encountered_partially_digested_image();
   }
 

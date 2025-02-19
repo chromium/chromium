@@ -180,6 +180,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const url::Origin& origin,
       bool headerless = false);
 
+  // This copies everything except `reporting_endpoints_`. Returns `nullptr` if
+  // the input is `nullptr`.
   static std::unique_ptr<PermissionsPolicy> CopyStateFrom(
       const PermissionsPolicy*);
 

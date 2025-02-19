@@ -28,6 +28,7 @@ namespace autofill {
 namespace {
 
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
@@ -70,7 +71,7 @@ class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
  public:
   EntityDataManager& entity_data_manager() { return entity_data_manager_; }
 
-  std::vector<EntityInstance> GetEntityInstances() {
+  base::span<const autofill::EntityInstance> GetEntityInstances() {
     helper().WaitUntilIdle();
     return entity_data_manager().GetEntityInstances();
   }
@@ -145,6 +146,20 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
   entity_data_manager().RemoveEntityInstancesModifiedBetween(
       test::kJune2017, test::kJune2017 + base::Days(2) + base::Seconds(1));
   EXPECT_THAT(GetEntityInstances(), IsEmpty());
+}
+
+// Tests that entities can be retrieved by GUID.
+TEST_F(EntityDataManagerTest_InitiallyEmpty, GetEntityInstance) {
+  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
+  entity_data_manager().AddOrUpdateEntityInstance(pp);
+  entity_data_manager().AddOrUpdateEntityInstance(lc);
+  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
+
+  EXPECT_THAT(entity_data_manager().GetEntityInstance(pp.guid()), Optional(pp));
+  EXPECT_EQ(
+      entity_data_manager().GetEntityInstance(base::Uuid::GenerateRandomV4()),
+      std::nullopt);
 }
 
 }  // namespace

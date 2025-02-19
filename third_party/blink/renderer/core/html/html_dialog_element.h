@@ -63,6 +63,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void requestClose(const String& return_value, ExceptionState&);
   void show(ExceptionState&);
   void showModal(ExceptionState&);
+  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
   bool IsModal() const { return is_modal_; }

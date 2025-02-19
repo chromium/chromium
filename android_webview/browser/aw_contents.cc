@@ -1511,14 +1511,15 @@ jint AwContents::StartPrerendering(
 
   // Cancel existing prerendering before starting a new one to avoid hitting the
   // limit.
-  if (!web_contents_->IsAllowedToStartPrerendering()) {
+  while (!web_contents_->IsAllowedToStartPrerendering()) {
     // Erase the oldest prerendering to free up the capacity for the new
     // attempt. If the handles are already empty, other embedder triggers should
     // be running. In that case, there is no way to trigger. Let this request
     // fail eventually.
-    if (!prerender_handles_.empty()) {
-      prerender_handles_.pop_front();
+    if (prerender_handles_.empty()) {
+      break;
     }
+    prerender_handles_.pop_front();
   }
 
   net::HttpRequestHeaders additional_headers =

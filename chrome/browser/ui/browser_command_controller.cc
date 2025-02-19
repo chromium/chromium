@@ -1649,6 +1649,11 @@ void BrowserCommandController::UpdateCommandsForTabState() {
       IsWebAppOrCustomTab(browser_) && !is_isolated_app && !is_pinned_home_tab);
 
   command_updater_.UpdateCommandEnabled(
+      IDC_READING_LIST_MENU_ADD_TAB,
+      browser_->tab_strip_model()->IsReadLaterSupportedForAny(
+          {browser_->tab_strip_model()->active_index()}));
+
+  command_updater_.UpdateCommandEnabled(
       IDC_TOGGLE_REQUEST_TABLET_SITE,
       CanRequestTabletSite(current_web_contents));
 

@@ -111,6 +111,12 @@ const char kAndroidAppIntegrationWithFaviconDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search with "
     "favicons.";
 
+const char kAndroidAppIntegrationMultiDataSourceName[] =
+    "Integrate with Android App Search with multiple data sources.";
+const char kAndroidAppIntegrationMultiDataSourceDescription[] =
+    "If enabled, allows Chrome to integrate with the Android App Search with "
+    "multiple data sources, e.g. custom Tabs.";
+
 const char kAndroidBcivBottomControlsName[] =
     "Browser controls in viz for bottom controls";
 const char kAndroidBcivBottomControlsDescription[] =
@@ -553,23 +559,23 @@ const char kAutofillEnableAmountExtractionDesktopDescription[] =
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-const char kAutofillEnableBuyNowPayLaterForAffirmName[] =
-    "Enable buy now pay later on Autofill for Affirm";
-const char kAutofillEnableBuyNowPayLaterForAffirmDescription[] =
-    "When enabled, users will have the option to pay with buy now pay later "
-    "with Affirm on specific merchant webpages.";
-
-const char kAutofillEnableBuyNowPayLaterForZipName[] =
-    "Enable buy now pay later on Autofill for Zip";
-const char kAutofillEnableBuyNowPayLaterForZipDescription[] =
-    "When enabled, users will have the option to pay with buy now pay later "
-    "with Zip on specific merchant webpages.";
+const char kAutofillEnableBuyNowPayLaterName[] =
+    "Enable buy now pay later on Autofill";
+const char kAutofillEnableBuyNowPayLaterDescription[] =
+    "When enabled, users will have the option to pay with buy now pay later on "
+    "specific merchant webpages.";
 
 const char kAutofillEnableBuyNowPayLaterSyncingName[] =
     "Enable syncing buy now pay later user data.";
 const char kAutofillEnableBuyNowPayLaterSyncingDescription[] =
     "When enabled, Chrome will sync user data related to buy now pay later.";
 #endif
+
+const char kAutofillEnableCardExpiredTextName[] =
+    "Enable 'expired' text for expired cards.";
+const char kAutofillEnableCardExpiredTextDescription[] =
+    "When enabled, cards that have expired will display 'expired' instead of "
+    "'expires' text.";
 
 const char kAutofillEnableCvcStorageAndFillingName[] =
     "Enable CVC storage and filling for payments autofill";
@@ -3104,6 +3110,14 @@ const char kEnableOmniboxClientSearchPrefetchDescription[] =
 const char kPriceChangeModuleName[] = "Price Change Module";
 const char kPriceChangeModuleDescription[] =
     "Show a module with price drops of open tabs on new tab page.";
+
+const char kPrivacySandboxAdTopicsContentParityName[] =
+    "Privacy Sandbox Ad Topics Content Parity";
+const char kPrivacySandboxAdTopicsContentParityDescription[] =
+    "Enables the Ad Topics card in the Privacy Guide to be displayed. This "
+    "flag also updates UI and text of the Ad Topics settings page and Topics "
+    "Consent Dialog. All of these changes are subject to regional "
+    "availability.";
 
 const char kPrivacySandboxAdsApiUxEnhancementsName[] =
     "Privacy Sandbox Ads API UX Enhancements";

@@ -112,6 +112,13 @@ struct CORE_EXPORT GridItemData {
                                             : row_set_indices;
   }
 
+  GridSizingTrackCollection::SetIterator SetIterator(
+      GridSizingTrackCollection* track_collection) const {
+    DCHECK(track_collection);
+    const auto& set_indices = SetIndices(track_collection->Direction());
+    return track_collection->GetSetIterator(set_indices.begin, set_indices.end);
+  }
+
   GridItemIndices& RangeIndices(GridTrackSizingDirection track_direction) {
     return (track_direction == kForColumns) ? column_range_indices
                                             : row_range_indices;

@@ -375,6 +375,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Images in a specific NTP collection"/>
 </enum>
 
+<!--
+TODO(crbug.com/396711227): Add more error types. This basically functions as an
+error count for now.
+-->
+
+<enum name="NTPMicrosoftAuthError">
+  <int value="0" label="Other"/>
+</enum>
+
 <enum name="NTPMicrosoftAuthType">
   <int value="0" label="Silent"/>
   <int value="1" label="Popup"/>

@@ -170,6 +170,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       TrustedBiddingSignalsSlotSizeMode::kNone;
   int32_t max_trusted_bidding_signals_url_length = 0;
   std::optional<url::Origin> trusted_bidding_signals_coordinator;
+  std::optional<std::vector<url::Origin>> view_and_click_counts_providers;
   std::optional<std::string> user_bidding_signals;
   std::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
   std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
@@ -181,7 +182,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   std::optional<AdditionalBidKey> additional_bid_key;
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 184, R"(
+  static_assert(__LINE__ == 185, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and in this class
@@ -189,13 +190,13 @@ If modifying InterestGroup fields, make sure to also modify:
 * SerializeInterestGroupForDevtools()
     (in devtools_serialization.cc; test in devtools_serialization_unittest.cc)
 * auction_ad_interest_group.idl
-* navigator_auction.cc
+* navigator_auction.cc (test logic in interest_group_browsertest.cc)
 * interest_group_types.mojom
 * validate_blink_interest_group.cc (includes blink version of EstimateSize)
 * validate_blink_interest_group_test.cc
     (at least CreateFullyPopulatedInterestGroup)
 * test_interest_group_builder[.h/.cc]
-* interest_group_mojom_traits[.h/.cc/.test]
+* interest_group_mojom_traits[.h/.cc/_test.cc]
 * bidder_lazy_filler.cc (to pass the InterestGroup to generateBid())
 * shared_storage_worklet_global_scope.cc (interestGroups())
 * shared_storage_worklet_unittest.cc (SharedStorageWorkletTest.InterestGroups)

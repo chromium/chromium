@@ -83,7 +83,6 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
@@ -7799,14 +7798,12 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PerformanceManager) {
           guest->GetGuestMainFrame());
   ASSERT_TRUE(inner_root_frame_node);
 
-  // Jump into the graph and make sure guest view does not have a
-  // parent frame node.
-  performance_manager::RunInGraph([main_frame_node, inner_root_frame_node]() {
-    // <webviews> have an outer document instead of a parent frame node.
-    EXPECT_EQ(inner_root_frame_node->GetParentFrameNode(), nullptr);
+  // Make sure the guest view node does not have a parent frame node.
 
-    // The outer document of the guest view is available.
-    EXPECT_EQ(inner_root_frame_node->GetParentOrOuterDocumentOrEmbedder(),
-              main_frame_node.get());
-  });
+  // <webviews> have an outer document instead of a parent frame node.
+  EXPECT_EQ(inner_root_frame_node->GetParentFrameNode(), nullptr);
+
+  // The outer document of the guest view is available.
+  EXPECT_EQ(inner_root_frame_node->GetParentOrOuterDocumentOrEmbedder(),
+            main_frame_node.get());
 }

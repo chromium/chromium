@@ -4,16 +4,16 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.site_settings.WebsiteAddress.ANY_SUBDOMAIN_PATTERN;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browsing_data.content.BrowsingDataInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -38,6 +38,7 @@ import java.util.Set;
  * Utility class that asynchronously fetches any Websites and the permissions that the user has set
  * for them.
  */
+@NullMarked
 public class WebsitePermissionsFetcher {
     /** An enum describing the types of permissions that exist in website settings. */
     public enum WebsitePermissionsType {
@@ -51,7 +52,7 @@ public class WebsitePermissionsFetcher {
     private final BrowserContextHandle mBrowserContextHandle;
     private WebsitePreferenceBridge mWebsitePreferenceBridge;
 
-    private SiteSettingsCategory mSiteSettingsCategory;
+    private @Nullable SiteSettingsCategory mSiteSettingsCategory;
     private static final String SCHEME_SUFFIX = "://";
     // This regex check comes from google3/java/com/google/net/bns/HostPortName.java which checks
     // for valid DNS name patterns
@@ -71,7 +72,7 @@ public class WebsitePermissionsFetcher {
      *
      * @param contentSettingsType The ContentSettingsType int of the permission.
      */
-    public static WebsitePermissionsType getPermissionsType(
+    public static @Nullable WebsitePermissionsType getPermissionsType(
             @ContentSettingsType.EnumType int contentSettingsType) {
         switch (contentSettingsType) {
             case ContentSettingsType.ADS:
@@ -122,11 +123,13 @@ public class WebsitePermissionsFetcher {
      * crbug.com/732907.
      */
     public static class OriginAndEmbedder extends Pair<WebsiteAddress, WebsiteAddress> {
-        public OriginAndEmbedder(WebsiteAddress origin, WebsiteAddress embedder) {
+        public OriginAndEmbedder(
+                @Nullable WebsiteAddress origin, @Nullable WebsiteAddress embedder) {
             super(origin, embedder);
         }
 
-        public static OriginAndEmbedder create(WebsiteAddress origin, WebsiteAddress embedder) {
+        public static OriginAndEmbedder create(
+                @Nullable WebsiteAddress origin, @Nullable WebsiteAddress embedder) {
             return new OriginAndEmbedder(origin, embedder);
         }
 
@@ -166,7 +169,7 @@ public class WebsitePermissionsFetcher {
      *
      * @param callback The callback to run when the fetch is complete.
      */
-    public void fetchAllPreferences(@NonNull WebsitePermissionsCallback callback) {
+    public void fetchAllPreferences(WebsitePermissionsCallback callback) {
         var fetcherInternal = new WebsitePermissionFetcherInternal();
         fetcherInternal.fetchAllPreferences(callback);
     }
@@ -178,7 +181,7 @@ public class WebsitePermissionsFetcher {
      * @param callback The callback to run when the fetch is complete.
      */
     public void fetchPreferencesForCategory(
-            SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
+            SiteSettingsCategory category, WebsitePermissionsCallback callback) {
         var fetcherInternal = new WebsitePermissionFetcherInternal();
         fetcherInternal.fetchPreferencesForCategory(category, callback);
     }
@@ -191,7 +194,7 @@ public class WebsitePermissionsFetcher {
      * @param callback The callback to run when the fetch is complete.
      */
     public void fetchPreferencesForCategoryAndPopulateRwsInfo(
-            SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
+            SiteSettingsCategory category, WebsitePermissionsCallback callback) {
         var fetcherInternal = new WebsitePermissionFetcherInternal();
         fetcherInternal.fetchPreferencesForCategoryAndPopulateRwsInfo(category, callback);
     }
@@ -212,7 +215,7 @@ public class WebsitePermissionsFetcher {
          *
          * @param callback The callback to run when the fetch is complete.
          */
-        public void fetchAllPreferences(@NonNull WebsitePermissionsCallback callback) {
+        public void fetchAllPreferences(WebsitePermissionsCallback callback) {
             TaskQueue queue = new TaskQueue();
 
             addAllFetchers(queue);
@@ -241,14 +244,13 @@ public class WebsitePermissionsFetcher {
          * @param callback The callback to run when the fetch is complete.
          */
         public void fetchPreferencesForCategory(
-                SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
+                SiteSettingsCategory category, WebsitePermissionsCallback callback) {
             TaskQueue queue = createFetchersForCategory(category);
 
             queue.add(new PermissionsAvailableCallbackRunner(callback));
             queue.next();
         }
 
-        @NonNull
         private TaskQueue createFetchersForCategory(SiteSettingsCategory category) {
             TaskQueue queue = new TaskQueue();
             mSiteSettingsCategory = category;
@@ -275,7 +277,7 @@ public class WebsitePermissionsFetcher {
          * @param callback The callback to run when the fetch is complete.
          */
         public void fetchPreferencesForCategoryAndPopulateRwsInfo(
-                SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
+                SiteSettingsCategory category, WebsitePermissionsCallback callback) {
             TaskQueue queue = createFetchersForCategory(category);
             queue.add(new RelatedWebsiteSetsInfoFetcher());
 
@@ -348,13 +350,13 @@ public class WebsitePermissionsFetcher {
             }
         }
 
-        private Website findOrCreateSite(String origin, String embedder) {
+        private Website findOrCreateSite(String origin, @Nullable String embedder) {
             return findOrCreateSite(origin, embedder, null);
         }
 
         private Website findOrCreateSite(
                 String origin,
-                String embedder,
+                @Nullable String embedder,
                 @ContentSettingValues @Nullable Integer contentSetting) {
             // Ensure that the origin parameter is actually an origin or a wildcard.
             // The purpose of the check is to prevent duplicate entries in the list when getting a
@@ -376,7 +378,7 @@ public class WebsitePermissionsFetcher {
                 embedder = null;
             }
 
-            WebsiteAddress permissionOrigin = WebsiteAddress.create(origin);
+            WebsiteAddress permissionOrigin = assumeNonNull(WebsiteAddress.create(origin));
             WebsiteAddress permissionEmbedder = WebsiteAddress.create(embedder);
 
             Pair<OriginAndEmbedder, Integer> key =
@@ -402,8 +404,7 @@ public class WebsitePermissionsFetcher {
                 String address = exception.getPrimaryPattern();
                 String embedder = exception.getSecondaryPattern();
                 @ContentSettingValues
-                @Nullable
-                Integer contentSetting = null;
+                @Nullable Integer contentSetting = null;
 
                 if (isEmbeddedPermission
                         && embedder != null
@@ -430,7 +431,7 @@ public class WebsitePermissionsFetcher {
                 String origin =
                         containsPatternWildcards(address)
                                 ? address
-                                : WebsiteAddress.create(address).getOrigin();
+                                : assumeNonNull(WebsiteAddress.create(address)).getOrigin();
                 Website site = findOrCreateSite(origin, embedder, contentSetting);
                 if (isEmbeddedPermission) {
                     site.addEmbeddedPermission(exception);
@@ -596,7 +597,9 @@ public class WebsitePermissionsFetcher {
                                     // UI.
                                     // TODO(crbug.com/40231223): Use BrowsingDataModel to avoid this
                                     // conversion.
-                                    String origin = WebsiteAddress.create(address).getOrigin();
+                                    String origin =
+                                            assumeNonNull(WebsiteAddress.create(address))
+                                                    .getOrigin();
                                     findOrCreateSite(origin, null).addStorageInfo(info);
                                 }
                                 queue.next();
@@ -680,7 +683,6 @@ public class WebsitePermissionsFetcher {
              * Builds a {@link Map<String, List <Website>>} of RWS Owner - Set of RWS Members from
              * the fetched websites.
              */
-            @NonNull
             private Map<String, List<Website>> buildOwnerToMembersMapFromFetchedSites() {
                 // set to avoid equals implementation for Website object
                 Set<String> domainAndRegistryToWebsite = new HashSet<>();
@@ -738,10 +740,9 @@ public class WebsitePermissionsFetcher {
         }
 
         private class PermissionsAvailableCallbackRunner extends Task {
-            private final @NonNull WebsitePermissionsCallback mCallback;
+            private final WebsitePermissionsCallback mCallback;
 
-            private PermissionsAvailableCallbackRunner(
-                    @NonNull WebsitePermissionsCallback callback) {
+            private PermissionsAvailableCallbackRunner(WebsitePermissionsCallback callback) {
                 mCallback = callback;
             }
 

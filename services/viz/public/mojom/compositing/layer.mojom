@@ -42,6 +42,10 @@ struct Layer {
   skia.mojom.SkColor4f background_color;
   skia.mojom.SkColor4f safe_opaque_background_color;
 
+  // Optional field that will be set if this Layer is a PictureLayer that is
+  // actually a solid color.
+  skia.mojom.SkColor4f? solid_color;
+
   // Optional stable identifier that may be referenced in property trees and
   // animations. Identifies a client-side object which can be represented by
   // multiple layers over time but only by a single layer at once.

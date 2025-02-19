@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "content/public/renderer/render_thread.h"
@@ -60,11 +61,7 @@ bool GetIsGoogleDocs(const GURL& url) {
 }  // namespace
 
 ReadAnythingAppModel::ReadAnythingAppModel() {
-  // We default to true since base_language_code_ is en by default and that
-  // supports all these fonts.
-  for (const auto* font : fonts::kReadAnythingFonts) {
-    supported_fonts_[font] = true;
-  }
+  ResetTextSize();
 }
 
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
@@ -87,7 +84,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   line_spacing_ = static_cast<size_t>(line_spacing);
   letter_spacing_ = static_cast<size_t>(letter_spacing);
   font_name_ = font;
-  font_size_ = font_size;
+  SetFontSize(font_size);
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = static_cast<size_t>(color);
@@ -681,6 +678,14 @@ double ReadAnythingAppModel::GetLineSpacingValue(
   }
 }
 
+void ReadAnythingAppModel::AdjustTextSize(int increment) {
+  SetFontSize(font_size_, increment);
+}
+
+void ReadAnythingAppModel::ResetTextSize() {
+  SetFontSize(1.0f);
+}
+
 std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
 ReadAnythingAppModel::GetPendingUpdatesForTesting() {
   return pending_updates_map_;
@@ -1046,24 +1051,6 @@ void ReadAnythingAppModel::MaybeRunDataCollectionForScreen2xCallback() {
   std::move(data_collection_for_screen2x_callback_).Run();
 }
 
-void ReadAnythingAppModel::IncreaseTextSize() {
-  font_size_ += kReadAnythingFontScaleIncrement;
-  if (font_size_ > kReadAnythingMaximumFontScale) {
-    font_size_ = kReadAnythingMaximumFontScale;
-  }
-}
-
-void ReadAnythingAppModel::DecreaseTextSize() {
-  font_size_ -= kReadAnythingFontScaleIncrement;
-  if (font_size_ < kReadAnythingMinimumFontScale) {
-    font_size_ = kReadAnythingMinimumFontScale;
-  }
-}
-
-void ReadAnythingAppModel::ResetTextSize() {
-  font_size_ = kReadAnythingDefaultFontScale;
-}
-
 void ReadAnythingAppModel::ToggleLinksEnabled() {
   links_enabled_ = !links_enabled_;
 }
@@ -1075,26 +1062,7 @@ void ReadAnythingAppModel::ToggleImagesEnabled() {
 void ReadAnythingAppModel::SetBaseLanguageCode(const std::string& code) {
   DCHECK(!code.empty());
   base_language_code_ = code;
-  // Update whether each font is supported by the new language code.
-  for (const auto& [font, font_info] : fonts::kFontInfos) {
-    if (font_info.num_langs_supported > 0) {
-      supported_fonts_[font] =
-          (std::find(font_info.langs_supported,
-                     font_info.langs_supported + font_info.num_langs_supported,
-                     code) !=
-           font_info.langs_supported + font_info.num_langs_supported);
-    }
-  }
-}
-
-std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() {
-  std::vector<std::string> font_choices_;
-  for (const auto* font : fonts::kReadAnythingFonts) {
-    if (supported_fonts_[font]) {
-      font_choices_.emplace_back(font);
-    }
-  }
-  return font_choices_;
+  supported_fonts_ = GetSupportedFonts(base_language_code_);
 }
 
 void ReadAnythingAppModel::AddObserver(ModelObserver* observer) {
@@ -1103,4 +1071,8 @@ void ReadAnythingAppModel::AddObserver(ModelObserver* observer) {
 
 void ReadAnythingAppModel::RemoveObserver(ModelObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ReadAnythingAppModel::SetFontSize(double font_size, int increment) {
+  font_size_ = AdjustFontScale(font_size, increment);
 }

@@ -29,29 +29,16 @@ class ProfileDiscardOptOutListHelperDelegateImpl
   ~ProfileDiscardOptOutListHelperDelegateImpl() override = default;
 
   void ClearPatterns(const std::string& browser_context_id) override {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](std::string browser_context_id,
-               performance_manager::Graph* graph) {
-              policies::PageDiscardingHelper::GetFromGraph(graph)
-                  ->ClearNoDiscardPatternsForProfile(browser_context_id);
-            },
-            browser_context_id));
+    Graph* graph = PerformanceManager::GetGraph();
+    policies::PageDiscardingHelper::GetFromGraph(graph)
+        ->ClearNoDiscardPatternsForProfile(browser_context_id);
   }
 
   void SetPatterns(const std::string& browser_context_id,
                    const std::vector<std::string>& patterns) override {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(
-                       [](std::string browser_context_id,
-                          std::vector<std::string> patterns,
-                          performance_manager::Graph* graph) {
-                         policies::PageDiscardingHelper::GetFromGraph(graph)
-                             ->SetNoDiscardPatternsForProfile(
-                                 browser_context_id, patterns);
-                       },
-                       browser_context_id, std::move(patterns)));
+    Graph* graph = PerformanceManager::GetGraph();
+    policies::PageDiscardingHelper::GetFromGraph(graph)
+        ->SetNoDiscardPatternsForProfile(browser_context_id, patterns);
   }
 };
 

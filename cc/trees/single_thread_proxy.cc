@@ -944,6 +944,11 @@ void SingleThreadProxy::SetUkmSmoothnessDestination(
   DCHECK(task_runner_provider_->IsMainThread());
 }
 
+void SingleThreadProxy::SetUkmDroppedFramesDestination(
+    base::WritableSharedMemoryMapping ukm_smoothness_data) {
+  DCHECK(task_runner_provider_->IsMainThread());
+}
+
 void SingleThreadProxy::ClearHistory() {
   DCHECK(task_runner_provider_->IsImplThread());
   if (scheduler_on_impl_thread_)

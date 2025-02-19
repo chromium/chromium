@@ -59,7 +59,7 @@ class AttributeInstance final : public FormGroup {
     std::string format;
   };
 
-  // Less-than relation based on the AttributeType.
+  // Transparent less-than relation based on the AttributeType.
   struct CompareByType;
 
   // Comparator that ranks types by their priority for disambiguating different
@@ -153,6 +153,9 @@ class EntityInstance final {
   EntityInstance& operator=(EntityInstance&&);
   ~EntityInstance();
 
+  // Transparent less-than relation based on the the GUID.
+  struct CompareByGuid;
+
   // Comparator that ranks instances by their priority for import on form
   // submission.
   // `ImportOrder(x, y) == true` means `x` has higher priority than `y`.
@@ -231,6 +234,22 @@ class EntityInstance final {
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);
 std::ostream& operator<<(std::ostream& os, const EntityInstance& e);
+
+struct EntityInstance::CompareByGuid {
+  using is_transparent = void;
+
+  bool operator()(const EntityInstance& lhs, const base::Uuid& rhs) const {
+    return lhs.guid() < rhs;
+  }
+
+  bool operator()(const base::Uuid& lhs, const EntityInstance& rhs) const {
+    return lhs < rhs.guid();
+  }
+
+  bool operator()(const EntityInstance& lhs, const EntityInstance& rhs) const {
+    return lhs.guid() < rhs.guid();
+  }
+};
 
 }  // namespace autofill
 

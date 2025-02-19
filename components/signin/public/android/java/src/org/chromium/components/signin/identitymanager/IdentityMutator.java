@@ -4,11 +4,11 @@
 
 package org.chromium.components.signin.identitymanager;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -20,6 +20,7 @@ import java.util.List;
  * IdentityMutator is the write interface of IdentityManager, see identity_mutator.h for more
  * information.
  */
+@NullMarked
 public class IdentityMutator {
     // Pointer to native IdentityMutator, not final because of destroy().
     private long mNativeIdentityMutator;

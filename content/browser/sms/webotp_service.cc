@@ -47,7 +47,7 @@ namespace {
 // A.com -> B.com -> A.com (calls WebOTP API)
 // A.com -> B.com -> C.com (calls WebOTP API)
 bool ValidateAndCollectUniqueOrigins(RenderFrameHost& rfh,
-                                     OriginList& origin_list) {
+                                     WebOTPService::OriginList& origin_list) {
   url::Origin current_origin = rfh.GetLastCommittedOrigin();
   origin_list.push_back(current_origin);
 

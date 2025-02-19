@@ -16,6 +16,7 @@ source_set("glic") {
     "glic_cookie_synchronizer.h",
     "glic_enabling.h",
     "glic_focused_tab_manager.h",
+    "glic_fre_ui.h",
     "glic_iph_controller.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
@@ -80,6 +81,7 @@ source_set("impl") {
     "glic_fre_dialog_view.h",
     "glic_fre_page_handler.cc",
     "glic_fre_page_handler.h",
+    "glic_fre_ui.cc",
     "glic_iph_controller.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
@@ -116,6 +118,7 @@ source_set("impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resources/glic:resources",
+    "//chrome/browser/resources/glic/fre:resources",
     "//chrome/browser/themes:themes",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
@@ -143,7 +146,10 @@ source_set("impl") {
 }
 
 mojom("mojo_bindings") {
-  sources = [ "glic.mojom" ]
+  sources = [
+    "glic.mojom",
+    "glic_fre.mojom",
+  ]
   webui_module_path = "/"
 
   public_deps = [

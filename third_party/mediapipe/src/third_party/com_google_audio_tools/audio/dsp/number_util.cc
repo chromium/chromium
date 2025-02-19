@@ -16,6 +16,7 @@
 
 #include "audio/dsp/number_util.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <limits>

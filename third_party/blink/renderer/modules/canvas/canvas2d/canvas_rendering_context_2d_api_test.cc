@@ -879,7 +879,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
       Context2D()->createImageData(/*sw=*/1, /*sh=*/1, exception_state);
   EXPECT_FALSE(exception_state.HadException());
   Context2D()->putImageData(image_data, /*dx=*/1, /*dy=*/1, exception_state);
-  EXPECT_EQ(INT64_C(2821795876044191773),
+  EXPECT_EQ(INT64_C(-4824069156106343739),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());

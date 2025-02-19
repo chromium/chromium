@@ -4,18 +4,19 @@
 
 package org.chromium.components.signin.base;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Represents an account ID or Gaia ID. This class has a native counterpart also called GaiaId. */
+@NullMarked
 public class GaiaId {
     private final String mValue;
 
     /** Constructs a new GaiaId from a String representation of the gaia ID. */
     @CalledByNative
-    public GaiaId(@NonNull @JniType("std::string") String value) {
+    public GaiaId(@JniType("std::string") String value) {
         assert value != null;
         mValue = value;
     }

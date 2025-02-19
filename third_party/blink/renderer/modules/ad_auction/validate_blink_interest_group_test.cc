@@ -179,6 +179,9 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     blink_interest_group->max_trusted_bidding_signals_url_length = 8000;
     blink_interest_group->trusted_bidding_signals_coordinator =
         kCoordinatorOrigin;
+    blink_interest_group->view_and_click_counts_providers.emplace();
+    blink_interest_group->view_and_click_counts_providers->emplace_back(
+        kOrigin);
     blink_interest_group->user_bidding_signals =
         String::FromUTF8("\"This field isn't actually validated\"");
 
@@ -1547,6 +1550,34 @@ TEST_F(ValidateBlinkInterestGroupTest,
       /*expected_error=*/
       String::FromUTF8(
           "trustedBiddingSignalsCoordinator origin must be HTTPS."));
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, InvalidViewAndClickCountsProviders) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->view_and_click_counts_providers.emplace();
+  blink_interest_group->view_and_click_counts_providers->emplace_back(
+      SecurityOrigin::CreateFromString(
+          String::FromUTF8("http://origin.test/")));
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/
+      String::FromUTF8("viewAndClickCountsProviders"),
+      /*expected_error_field_value=*/String::FromUTF8("http://origin.test"),
+      /*expected_error=*/
+      String::FromUTF8("viewAndClickCountsProviders origin must be HTTPS."));
+
+  blink_interest_group->view_and_click_counts_providers.emplace();
+  blink_interest_group->view_and_click_counts_providers->emplace_back(
+      SecurityOrigin::CreateFromString(String::FromUTF8("data:,foo")));
+  // Data URLs have opaque origins, which are mapped to the string "null".
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/
+      String::FromUTF8("viewAndClickCountsProviders"),
+      /*expected_error_field_value=*/String::FromUTF8("null"),
+      /*expected_error=*/
+      String::FromUTF8("viewAndClickCountsProviders origin must be HTTPS."));
 }
 
 }  // namespace blink

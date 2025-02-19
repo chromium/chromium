@@ -18,18 +18,7 @@ namespace blink {
 class ConstraintSpace;
 struct GridItemPlacementData;
 
-// This enum corresponds to each step used to accommodate grid items across
-// intrinsic tracks according to their min and max track sizing functions, as
-// defined in https://drafts.csswg.org/css-grid-2/#algo-spanning-items.
-enum class GridItemContributionType {
-  kForIntrinsicMinimums,
-  kForContentBasedMinimums,
-  kForMaxContentMinimums,
-  kForIntrinsicMaximums,
-  kForMaxContentMaximums,
-  kForFreeSpace,
-};
-
+enum class GridItemContributionType;
 enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
 using GridItemDataPtrVector = Vector<GridItemData*, 16>;
@@ -181,6 +170,9 @@ class CORE_EXPORT GridLayoutAlgorithm
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint) const;
 
+  // TODO(ethavar): Remove these methods once we migrate them over to
+  // `grid_track_sizing_algorithm.cc`.
+  // See https://chromium-review.googlesource.com/c/chromium/src/+/6277752.
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.
   void ResolveIntrinsicTrackSizes(const GridSizingSubtree& sizing_subtree,

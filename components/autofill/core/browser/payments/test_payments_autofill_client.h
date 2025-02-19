@@ -122,7 +122,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 #endif
   MockMandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
-  const PaymentsDataManager& GetPaymentsDataManager() const override;
+  PaymentsDataManager& GetPaymentsDataManager() final;
   void ShowUnmaskAuthenticatorSelectionDialog(
       const std::vector<CardUnmaskChallengeOption>& challenge_options,
       base::OnceCallback<void(const std::string&)>

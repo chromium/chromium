@@ -24,7 +24,8 @@ namespace calendar::calendar_fake_data_helper {
 
 ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(
     int index,
-    CalendarType calendar_type) {
+    CalendarType calendar_type,
+    bool has_attachments_enabled) {
   ntp::calendar::mojom::CalendarEventPtr event =
       ntp::calendar::mojom::CalendarEvent::New();
   event->title = "Calendar Event " + base::NumberToString(index);
@@ -36,7 +37,7 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(
     ntp::calendar::mojom::AttachmentPtr attachment =
         ntp::calendar::mojom::Attachment::New();
     attachment->title = "Attachment " + base::NumberToString(i);
-    if (calendar_type != CalendarType::OUTLOOK_CALENDAR) {
+    if (has_attachments_enabled) {
       attachment->resource_url =
           GURL("https://foo.com/attachment" + base::NumberToString(i));
     }
@@ -53,10 +54,11 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(
 }
 
 std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents(
-    CalendarType calendar_type) {
+    CalendarType calendar_type,
+    bool has_attachments_enabled) {
   std::vector<ntp::calendar::mojom::CalendarEventPtr> events;
   for (int i = 0; i < 5; ++i) {
-    events.push_back(GetFakeEvent(i, calendar_type));
+    events.push_back(GetFakeEvent(i, calendar_type, has_attachments_enabled));
   }
   return events;
 }

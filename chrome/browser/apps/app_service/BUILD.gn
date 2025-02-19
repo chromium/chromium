@@ -71,6 +71,7 @@ source_set("app_service") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:features",
     "//components/app_constants",
     "//components/crx_file",
     "//components/keyed_service/content",

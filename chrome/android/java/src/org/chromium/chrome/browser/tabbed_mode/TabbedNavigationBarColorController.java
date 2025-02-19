@@ -77,7 +77,7 @@ class TabbedNavigationBarColorController
     private final @NonNull Callback<Integer> mOnOverviewColorChanged =
             color -> updateNavigationBarColor();
     private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
-    private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+    private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
     private final @Nullable BottomAttachedUiObserver mBottomAttachedUiObserver;
     private final TabObserver mTabObserver;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -528,6 +528,14 @@ class TabbedNavigationBarColorController
 
     boolean getUseBottomAttachedUiColorForTesting() {
         return useBottomAttachedUiColor();
+    }
+
+    public void setEdgeToEdgeSystemBarColorHelperForTesting(EdgeToEdgeSystemBarColorHelper helper) {
+        mEdgeToEdgeSystemBarColorHelper = helper;
+    }
+
+    public ValueAnimator getNavbarColorTransitionAnimationForTesting() {
+        return mNavbarColorTransitionAnimation;
     }
 
     private boolean shouldEnableNavBarBottomChinColorAnimations() {

@@ -124,7 +124,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
-  const PaymentsDataManager& GetPaymentsDataManager() const override;
+  PaymentsDataManager& GetPaymentsDataManager() final;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
   GetProgressDialogModel() {

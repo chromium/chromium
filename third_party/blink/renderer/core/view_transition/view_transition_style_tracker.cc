@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/not_fatal_until.h"
+#include "cc/base/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -403,7 +404,12 @@ gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
   }
 
   if (!transform.HasPerspective()) {
-    transform.Round2dTranslationComponents();
+    if (base::FeatureList::IsEnabled(
+            ::features::kViewTransitionFloorTransform)) {
+      transform.Floor2dTranslationComponents();
+    } else {
+      transform.Round2dTranslationComponents();
+    }
   }
 
   return transform;

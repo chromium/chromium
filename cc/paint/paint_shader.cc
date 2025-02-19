@@ -234,6 +234,12 @@ sk_sp<PaintShader> PaintShader::MakeSkSLCommand(
     std::vector<Float2Uniform> float2_uniforms,
     std::vector<Float4Uniform> float4_uniforms,
     std::vector<IntUniform> int_uniforms) {
+  if (float_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      float2_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      float4_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      int_uniforms.size() > PaintShader::kMaxNumUniformsPerType) {
+    return nullptr;
+  }
   SkString cmd(sksl);
   auto [effect, error] = SkRuntimeEffect::MakeForShader(cmd);
   if (!effect) {

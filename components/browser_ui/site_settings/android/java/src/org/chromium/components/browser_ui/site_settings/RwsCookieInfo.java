@@ -6,10 +6,13 @@ package org.chromium.components.browser_ui.site_settings;
 
 import com.google.common.collect.ImmutableList;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.Serializable;
 import java.util.List;
 
 /** Related Website Sets information for a given website. */
+@NullMarked
 public class RwsCookieInfo implements Serializable {
     private final String mOwnerHost;
     private final List<Website> mMembers;

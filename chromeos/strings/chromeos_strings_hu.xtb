@@ -1468,6 +1468,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7828503206075800057">Egy <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> kávézó</translation>
 <translation id="7841134249932030522">Sötét mód engedélyezése</translation>
 <translation id="7846634333498149051">Billentyűzet</translation>
+<translation id="7847923465436619066">Az átirat nyelvválasztója</translation>
 <translation id="7849030488395653706">sarki fények</translation>
 <translation id="7849737607196682401">csipke</translation>
 <translation id="7850320739366109486">Ne zavarj</translation>
@@ -1654,6 +1655,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8749478549112817787">Kamera háttere</translation>
 <translation id="8755946156089753497">torony</translation>
 <translation id="8760616037557661287">Előző utasítások</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> nyelvű átírási modell letöltése és kiválasztása</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotók-album</translation>
 <translation id="8775713578693478175">Modem APN</translation>

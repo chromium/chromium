@@ -246,6 +246,7 @@ BASE_EXPORT extern const char kWhitespaceASCII[];
 BASE_EXPORT extern const char16_t kWhitespaceASCIIAs16[];  // No unicode.
 
 // https://infra.spec.whatwg.org/#ascii-whitespace
+// Note that this array is not null-terminated.
 inline constexpr char kInfraAsciiWhitespace[] = {0x09, 0x0A, 0x0C, 0x0D, 0x20};
 
 // Null-terminated string representing the UTF-8 byte order mark.

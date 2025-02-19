@@ -172,6 +172,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-app-integration-multi-data-source",
+    "owners": ["hanxi@chromium.org", "gangwu@chromium.org", "clank-start@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-app-integration-v2",
     "owners": ["hanxi@chromium.org", "gangwu@chromium.org", "clank-start@google.com" ],
     "expiry_milestone": 150
@@ -571,12 +576,7 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-buy-now-pay-later-for-affirm",
-    "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "autofill-enable-buy-now-pay-later-for-zip",
+    "name": "autofill-enable-buy-now-pay-later",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
   },
@@ -604,6 +604,11 @@
     "name": "autofill-enable-card-benefits-sync",
     "owners": [ "yishuil@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 135
+  },
+  {
+    "name": "autofill-enable-card-expired-text",
+    "owners": [ "ferny@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-enable-card-info-runtime-retrieval",
@@ -2915,12 +2920,12 @@
   {
     "name": "enable-enterprise-profile-badging-for-avatar",
     "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 136
   },
   {
     "name": "enable-enterprise-profile-badging-for-menu",
     "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 136
   },
   {
     "name": "enable-enterprise-profile-required-interstitial",
@@ -5259,6 +5264,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "ios-best-features-screen",
+    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "ios-breadcrumbs",
     "owners": [ "michaeldo@chromium.org", "bling-flags@google.com" ],
     // Breadcrumbs is not a launching feature, but rather a tool used on
@@ -7147,6 +7157,13 @@
       "areimers@chromium.org",
       "antoniosartori@chromium.org"],
     "expiry_milestone": 148
+  },
+  {
+    "name": "privacy-sandbox-ad-topics-content-parity",
+    "owners": [
+      "jacobstanley@google.com",
+      "koilos@google.com"],
+    "expiry_milestone": 138
   },
   {
     "name": "privacy-sandbox-ads-api-ux-enhancements",

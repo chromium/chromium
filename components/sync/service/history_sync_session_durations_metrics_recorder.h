@@ -42,7 +42,8 @@ class HistorySyncSessionDurationsMetricsRecorder
  private:
   enum class HistorySyncStatus {
     kDisabled,
-    kEnabled,
+    kEnabledWithoutError,
+    kEnabledWithError,
   };
 
   HistorySyncStatus DetermineHistorySyncStatus() const;

@@ -1774,6 +1774,7 @@ static_library("ui") {
       "//chrome/browser/ui/window_sizer:impl",
       "//chrome/browser/user_annotations",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:features",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
       "//chrome/common/read_anything:mojo_bindings",

@@ -621,6 +621,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.MicrosoftAuth.AuthError"
+    enum="NTPMicrosoftAuthError" expires_after="2026-02-06">
+  <owner>rtatum@google.com</owner>
+  <owner>pauladedeji@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records whenever an error occurs during Microsoft Auth on the 1P NTP. This
+    can only occur when Microsoft Authentication module and another Microsoft
+    module are enabled. This can be from any type of authentication recorded as
+    having begun in NewTabPage.MicrosoftAuth.AuthStarted.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.MicrosoftAuth.AuthStarted"
     enum="NTPMicrosoftAuthType" expires_after="2026-02-06">
   <owner>rtatum@google.com</owner>

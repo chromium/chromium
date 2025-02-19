@@ -345,7 +345,7 @@ void AutofillAiManager::MaybeImportForm(
     return;
   }
 
-  std::vector<autofill::EntityInstance> current_entities =
+  base::span<const autofill::EntityInstance> current_entities =
       entity_manager->GetEntityInstances();
   std::ranges::sort(entity_instances_from_form,
                     autofill::EntityInstance::ImportOrder);
@@ -394,7 +394,7 @@ void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
     return std::move(callback).Run({});
   }
 
-  const std::vector<autofill::EntityInstance>& entities =
+  base::span<const autofill::EntityInstance> entities =
       entity_manager->GetEntityInstances();
   if (entities.empty()) {
     std::move(callback).Run({});

@@ -1191,6 +1191,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />এ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ব্যৱহাৰ কৰাটো অব্যাহত ৰাখিব নোৱাৰে</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="1813278315230285598">সেৱা</translation>
+<translation id="1813828404076816564">শ্বেয়াৰ কৰা টেবৰ গোটৰ সুবিধাটোৰ বিষয়ে মতামত পঠিয়াবলৈ মতামতৰ বুটামটো বাছনি কৰক</translation>
 <translation id="18139523105317219">EDI পাৰ্টিৰ নাম</translation>
 <translation id="1815083418640426271">নিকা পাঠ হিচাপে পে’ষ্ট কৰক</translation>
 <translation id="1815097521077272760">এই গে’মটোৰ বাবে কীব’ৰ্ডৰ নিয়ন্ত্ৰণ ব্যৱহাৰ কৰি চাবলৈ আপোনাক আমন্ত্ৰণ জনোৱা হৈছে।</translation>
@@ -4120,6 +4121,7 @@
 <translation id="3857807444929313943">ওপৰলৈ উঠাওক, তাৰ পাছত পুনৰ স্পৰ্শ কৰক</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="385939467708172187">বিশ্বস্ত পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
+<translation id="3859869403161297890">শ্বেয়াৰ কৰা টেবৰ গোটৰ বিষয়ে আপোনাৰ মতামত ইয়াত দিয়ক</translation>
 <translation id="3859987779882450877">স্বয়ংক্ৰিয়ভাৱে পৰামৰ্শ দিয়ে আৰু আপোনাৰ খুলি থোৱা টেবৰ পৰা গোট সৃষ্টি কৰে</translation>
 <translation id="386009056910366930">“<ph name="GROUP_NAME" />” টেবৰ গোটটো পৰিচালনা কৰক</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" ব্যৱহাৰকাৰীৰ নামটো উপলব্ধ নহয়</translation>
@@ -8173,6 +8175,7 @@
 <translation id="6805478749741295868">এইটো এটা পৰীক্ষামূলক AI সুবিধা আৰু সদায় শুদ্ধ ফলাফল প্ৰদৰ্শন নকৰে।</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" />ৰ পৰা ক্লাইণ্টৰ প্ৰমাণপত্ৰ আমদানি কৰিবলৈ অনুগ্ৰহ কৰি <ph name="TOKEN_NAME" />ত ছাইন ইন কৰক।</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" />ত RLZ ট্ৰেকিং সক্ষম কৰক।</translation>
+<translation id="6805817411033102703">শ্বেয়াৰ কৰা টেবৰ গোটৰ বিষয়ে মতামত</translation>
 <translation id="6806089545527108739">অনুমতি নিদিব কিন্তু পাছত সুধিব</translation>
 <translation id="680644983456221885">Googleলৈ পঠিওৱা আপোনাৰ ব্ৰাউজিঙৰ ডেটাৰ ভিত্তিক বিপজ্জনক ছাইটসমূহ, ডাউনল’ড আৰু এক্সটেনশ্বনৰ পৰা ৰিয়েল টাইমত আগতীয়া সুৰক্ষা</translation>
 <translation id="6806781719264274042">কেৱল Google একাউণ্ট থকা আপোনাৰ সম্পৰ্কসমূহে। <ph name="LINK_BEGIN" />সম্পৰ্কসমূহ চাওক<ph name="LINK_END" /></translation>

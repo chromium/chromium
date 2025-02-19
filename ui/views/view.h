@@ -474,6 +474,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void ReorderChildView(View* view, size_t index);
 
   // Removes |view| from this view. The view's parent will change to null.
+  // This does not delete |view|, even if |view| is owned by the views tree. Do
+  // not use this method, use RemoveChildViewT.
   void RemoveChildView(View* view);
 
   // Removes |view| from this view and transfers ownership back to the caller in

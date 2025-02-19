@@ -1856,24 +1856,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "fedcm-authz",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fedcm/fedcm-authz/"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=FedCmAuthz"],
-    "owners": ["cbiesinger@chromium.org", "goto@chromium.org"],
-    "expires": "May 1, 2025"
-  },
-  {
-    "prefix": "fedcm-button-and-other-account",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fedcm/fedcm-button-and-other-account/"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=FedCmUseOtherAccount,FedCmButtonMode"],
-    "owners": ["cbiesinger@chromium.org", "yigu@chromium.org"],
-    "expires": "May 1, 2025"
-  },
-  {
     "prefix": "fedcm-multi-idp",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
@@ -3237,8 +3219,7 @@
       "external/wpt/screen-details/getScreenDetails.tentative.https.window.js",
       "wpt_internal/geolocation-api/disconnected-frame-permission-denied.https.html",
       "wpt_internal/geolocation-api/disconnected-frame.https.html",
-      "wpt_internal/presentation/presentation-receiver-terminate-connection.https.html",
-      "wpt_internal/speech/scripted/speechrecognition-no-crash-detached.html"
+      "wpt_internal/presentation/presentation-receiver-terminate-connection.https.html"
      ],
     "args": ["--disable-features=DeprecateUnload"],
     "expires": "Jun 1, 2025",

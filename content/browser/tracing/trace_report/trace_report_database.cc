@@ -61,20 +61,21 @@ ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
 // `trace_content` The serialized trace content string
 // `system_profile` The serialized system profile string
 // `file_size` The size of trace in bytes.
-constexpr char kLocalTracesTableSql[] = R"sql(
-  CREATE TABLE IF NOT EXISTS local_traces(
-    uuid TEXT PRIMARY KEY NOT NULL,
-    creation_time DATETIME NOT NULL,
-    scenario_name TEXT NOT NULL,
-    upload_rule_name TEXT NOT NULL,
-    upload_rule_value INT NULL,
-    state INT NOT NULL,
-    upload_time DATETIME NULL,
-    skip_reason INT NOT NULL,
-    trace_content BLOB NULL,
-    system_profile BLOB NULL,
-    file_size INTEGER NOT NULL)
-)sql";
+constexpr char kLocalTracesTableSql[] =
+    // clang-format off
+  "CREATE TABLE IF NOT EXISTS local_traces("
+    "uuid TEXT PRIMARY KEY NOT NULL,"
+    "creation_time DATETIME NOT NULL,"
+    "scenario_name TEXT NOT NULL,"
+    "upload_rule_name TEXT NOT NULL,"
+    "upload_rule_value INT NULL,"
+    "state INT NOT NULL,"
+    "upload_time DATETIME NULL,"
+    "skip_reason INT NOT NULL,"
+    "trace_content BLOB NULL,"
+    "system_profile BLOB NULL,"
+    "file_size INTEGER NOT NULL)";
+// clang-format on
 
 }  // namespace
 

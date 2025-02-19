@@ -102,8 +102,8 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 // Enable or disable the side swipe gesture recognizer.
 - (void)setEnabled:(BOOL)enabled;
 
-// Returns `NO` if the device should not rotate.
-- (BOOL)shouldAutorotate;
+// Whether or not a side swipe is in progress.
+- (BOOL)isSideSwipeInProgress;
 
 // Resets the swipeDelegate's contentView frame origin x position to zero if
 // there is an active swipe.

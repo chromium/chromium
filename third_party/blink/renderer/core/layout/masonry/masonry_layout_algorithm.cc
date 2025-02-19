@@ -10,6 +10,12 @@
 
 namespace blink {
 
+MasonryLayoutAlgorithm::MasonryLayoutAlgorithm(
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
+  DCHECK(params.space.IsNewFormattingContext());
+}
+
 const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   for (auto child = Node().FirstChild(); child; child = child.NextSibling()) {
     To<BlockNode>(child).Layout(CreateConstraintSpaceForMeasure(
@@ -24,12 +30,6 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
 MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   return {MinMaxSizes(), /*depends_on_block_constraints=*/false};
-}
-
-MasonryLayoutAlgorithm::MasonryLayoutAlgorithm(
-    const LayoutAlgorithmParams& params)
-    : LayoutAlgorithm(params) {
-  DCHECK(params.space.IsNewFormattingContext());
 }
 
 GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks() const {

@@ -255,6 +255,10 @@ GoogleServiceAuthError TestSyncService::GetAuthError() const {
   return GoogleServiceAuthError();
 }
 
+bool TestSyncService::HasCachedPersistentAuthErrorForMetrics() const {
+  return GetTransportState() == TransportState::PAUSED;
+}
+
 base::Time TestSyncService::GetAuthErrorTime() const {
   return base::Time();
 }

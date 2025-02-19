@@ -49,14 +49,14 @@ class MockSmsFetcher : public SmsFetcher {
   ~MockSmsFetcher() override = default;
 
   MOCK_METHOD2(Subscribe,
-               void(const content::OriginList& origin_list,
+               void(const content::SmsFetcher::OriginList& origin_list,
                     Subscriber& subscriber));
   MOCK_METHOD3(Subscribe,
-               void(const content::OriginList& origin_list,
+               void(const content::SmsFetcher::OriginList& origin_list,
                     Subscriber& subscriber,
                     content::RenderFrameHost& rfh));
   MOCK_METHOD2(Unsubscribe,
-               void(const content::OriginList& origin_list,
+               void(const content::SmsFetcher::OriginList& origin_list,
                     Subscriber* subscriber));
   MOCK_METHOD0(HasSubscribers, bool());
 };
@@ -68,7 +68,7 @@ class MockSmsFetchRequestHandler : public SmsFetchRequestHandler {
   ~MockSmsFetchRequestHandler() override = default;
 
   MOCK_METHOD3(AskUserPermission,
-               void(const content::OriginList&,
+               void(const content::SmsFetcher::OriginList&,
                     const std::string& one_time_code,
                     const std::string& client_name));
 
@@ -137,8 +137,9 @@ TEST(SmsFetchRequestHandlerTest, Basic) {
         loop.Quit();
       }));
 
-  subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
-                        "123", SmsFetcher::UserConsent::kNotObtained);
+  subscriber->OnReceive(
+      content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin))}, "123",
+      SmsFetcher::UserConsent::kNotObtained);
   handler.OnConfirm(env, formatted_origin, nullptr);
   loop.Run();
 }
@@ -188,13 +189,15 @@ TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
         loop2.Quit();
       }));
 
-  request2->OnReceive(content::OriginList{url::Origin::Create(GURL(origin2))},
-                      "2", SmsFetcher::UserConsent::kNotObtained);
+  request2->OnReceive(
+      content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin2))}, "2",
+      SmsFetcher::UserConsent::kNotObtained);
   handler.OnConfirm(env, formatted_origin2, nullptr);
   loop2.Run();
 
-  request1->OnReceive(content::OriginList{url::Origin::Create(GURL(origin1))},
-                      "1", SmsFetcher::UserConsent::kNotObtained);
+  request1->OnReceive(
+      content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin1))}, "1",
+      SmsFetcher::UserConsent::kNotObtained);
   handler.OnConfirm(env, formatted_origin1, nullptr);
   loop1.Run();
 }
@@ -230,9 +233,9 @@ TEST(SmsFetchRequestHandlerTest, AskUserPermissionOnReceive) {
   handler.OnMessage(message, base::DoNothing());
 
   EXPECT_CALL(handler, AskUserPermission).Times(0);
-  subscriber->OnReceive(
-      content::OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
-      SmsFetcher::UserConsent::kNotObtained);
+  subscriber->OnReceive(content::SmsFetcher::OriginList{url::Origin::Create(
+                            GURL("https://a.com"))},
+                        "123", SmsFetcher::UserConsent::kNotObtained);
 
   testing::Mock::VerifyAndClear(&handler);
   EXPECT_CALL(handler, AskUserPermission);
@@ -264,8 +267,9 @@ TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {
         loop.Quit();
       }));
 
-  subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
-                        "123", SmsFetcher::UserConsent::kNotObtained);
+  subscriber->OnReceive(
+      content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin))}, "123",
+      SmsFetcher::UserConsent::kNotObtained);
   handler.OnConfirm(env, formatted_origin, nullptr);
   loop.Run();
 }
@@ -297,8 +301,9 @@ TEST(SmsFetchRequestHandlerTest, SendFailureMessageOnDismiss) {
         loop.Quit();
       }));
 
-  subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
-                        "123", SmsFetcher::UserConsent::kNotObtained);
+  subscriber->OnReceive(
+      content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin))}, "123",
+      SmsFetcher::UserConsent::kNotObtained);
   handler.OnDismiss(env, formatted_origin, nullptr);
   loop.Run();
 }
@@ -340,7 +345,7 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameConfirm) {
         loop.Quit();
       }));
 
-  content::OriginList origin_list;
+  content::SmsFetcher::OriginList origin_list;
   origin_list.push_back(url::Origin::Create(GURL(embedded_origin)));
   origin_list.push_back(url::Origin::Create(GURL(top_origin)));
   subscriber->OnReceive(origin_list, "123",
@@ -385,7 +390,7 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameDismiss) {
         loop.Quit();
       }));
 
-  content::OriginList origin_list;
+  content::SmsFetcher::OriginList origin_list;
   origin_list.push_back(url::Origin::Create(GURL(embedded_origin)));
   origin_list.push_back(url::Origin::Create(GURL(top_origin)));
   subscriber->OnReceive(origin_list, "123",

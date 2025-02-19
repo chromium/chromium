@@ -916,6 +916,15 @@ void ProxyMain::SetUkmSmoothnessDestination(
                                 std::move(ukm_smoothness_data)));
 }
 
+void ProxyMain::SetUkmDroppedFramesDestination(
+    base::WritableSharedMemoryMapping ukm_dropped_frames_data) {
+  DCHECK(IsMainThread());
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetUkmDroppedFramesDestination,
+                                base::Unretained(proxy_impl_.get()),
+                                std::move(ukm_dropped_frames_data)));
+}
+
 void ProxyMain::SetRenderFrameObserver(
     std::unique_ptr<RenderFrameMetadataObserver> observer) {
   ImplThreadTaskRunner()->PostTask(

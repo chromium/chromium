@@ -143,6 +143,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   using Float2Uniform = Uniform<SkV2>;
   using Float4Uniform = Uniform<SkV4>;
   using IntUniform = Uniform<int>;
+  constexpr static size_t kMaxNumUniformsPerType = 16u;
   static sk_sp<PaintShader> MakeSkSLCommand(
       std::string_view sksl,
       std::vector<FloatUniform> float_uniforms,

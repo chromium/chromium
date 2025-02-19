@@ -48,10 +48,6 @@ class MemorySaverModeDelegateImpl
           MemorySaverModeDelegate {
  public:
   void ToggleMemorySaverMode(MemorySaverModeState state) override {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](MemorySaverModeState state) {
               auto* memory_saver_mode_policy =
                   policies::MemorySaverModePolicy::GetInstance();
               CHECK(memory_saver_mode_policy);
@@ -67,20 +63,12 @@ class MemorySaverModeDelegateImpl
                   return;
               }
               NOTREACHED();
-            },
-            state));
   }
 
   void SetMode(prefs::MemorySaverModeAggressiveness mode) override {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(
-                       [](prefs::MemorySaverModeAggressiveness mode) {
-                         auto* policy =
-                             policies::MemorySaverModePolicy::GetInstance();
-                         CHECK(policy);
-                         policy->SetMode(mode);
-                       },
-                       mode));
+    auto* policy = policies::MemorySaverModePolicy::GetInstance();
+    CHECK(policy);
+    policy->SetMode(mode);
   }
 
   ~MemorySaverModeDelegateImpl() override = default;
@@ -199,8 +187,7 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
   g_user_performance_tuning_manager = this;
 
   if (notifier) {
-    performance_manager::PerformanceManager::PassToGraph(FROM_HERE,
-                                                         std::move(notifier));
+    PerformanceManager::GetGraph()->PassToGraph(std::move(notifier));
   }
 
   performance_manager::user_tuning::prefs::MigrateMemorySaverModePref(

@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/base/features.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -426,6 +427,7 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
   ReportLayoutStability();
+  RecordDroppedFramesMetrics();
   RecordSmoothnessMetrics();
   RecordResponsivenessMetrics();
   // Assume that page ends on this method, as the app could be evicted right
@@ -505,6 +507,7 @@ void UkmPageLoadMetricsObserver::OnComplete(
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
   ReportLayoutStability();
+  RecordDroppedFramesMetrics();
   RecordSmoothnessMetrics();
   RecordResponsivenessMetrics();
   RecordPageEndMetrics(&timing, current_time,
@@ -1523,6 +1526,21 @@ void UkmPageLoadMetricsObserver::RecordPageLoadTimestampMetrics(
   builder.SetHourOfDay(exploded.hour);
 }
 
+void UkmPageLoadMetricsObserver::RecordDroppedFramesMetrics() {
+  auto* dropped_frames =
+      ukm_dropped_frames_data_.GetMemoryAs<cc::UkmDroppedFramesDataShared>();
+  if (!dropped_frames) {
+    return;
+  }
+
+  cc::UkmDroppedFramesData dropped_frames_data;
+  bool success = dropped_frames->Read(dropped_frames_data);
+  if (!success) {
+    return;
+  }
+  // TODO(crbug.com/395868899): Read PDF4 metric here.
+}
+
 void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   auto* smoothness =
       ukm_smoothness_data_.GetMemoryAs<cc::UkmSmoothnessDataShared>();
@@ -1774,9 +1792,11 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
   }
 }
 
-void UkmPageLoadMetricsObserver::SetUpSharedMemoryForSmoothness(
-    const base::ReadOnlySharedMemoryRegion& shared_memory) {
-  ukm_smoothness_data_ = shared_memory.Map();
+void UkmPageLoadMetricsObserver::SetUpSharedMemoryForUkms(
+    const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+    const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) {
+  ukm_smoothness_data_ = smoothness_memory.Map();
+  ukm_dropped_frames_data_ = dropped_frames_memory.Map();
 }
 
 void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(

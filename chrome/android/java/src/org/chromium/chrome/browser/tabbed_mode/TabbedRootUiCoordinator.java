@@ -1463,6 +1463,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mRtlGestureNavIphController;
     }
 
+    public TabbedSystemUiCoordinator getTabbedSystemUiCoordinatorForTesting() {
+        return mSystemUiCoordinator;
+    }
+
     /** Called when a link is copied through context menu. */
     public void onContextMenuCopyLink() {
         // TODO(crbug.com/40732234): Find a better way of passing event for IPH.

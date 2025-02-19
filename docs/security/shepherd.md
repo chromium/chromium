@@ -403,6 +403,12 @@ pass it along to / include someone who can direct it more precisely.
       Add owners to cc: on the bug to ensure visibility.
     * Add `Security_Impact-None` hotlist; owner will update if this issue
       does impact Chrome.
+* **Bugs in DevTools**: reproduction and validation should still be performed to
+  find the best owner for a bug in DevTools. When cc'ing individual DevTools
+  engineers for visibility and triage, please use the DevTools
+  [ENG_REVIEW_OWNERS](https://source.chromium.org/chromium/chromium/src/+/main:third_party/devtools-frontend/src/config/owner/ENG_REVIEW_OWNERS)
+  file and/or assign to the current DevTools [triage
+  gardeners](https://rotations.corp.google.com/rotation/3493019).
 * Report suspected malicious URLs to SafeBrowsing:
   * Public URLs:
     * [Report malware](https://safebrowsing.google.com/safebrowsing/report_badware/?hl=en)
@@ -425,7 +431,7 @@ pass it along to / include someone who can direct it more precisely.
 * For vulnerabilities in services Chrome uses (e.g. Omaha, Chrome Web Store,
   SafeBrowsing), make sure the affected team is informed and has access to the
   necessary bugs.
-* Chrome for iOS - bugs suspected to be in **WebKit**:
+* **Chrome for iOS - bugs suspected to be in **WebKit**:
     * Reproduce using an iOS device or desktop Safari.
     * Set Severity, Found In, and set Component Tags fields.
     * If the issue is in Webkit
@@ -439,7 +445,7 @@ pass it along to / include someone who can direct it more precisely.
       Chrome team so they can be notified when the WebKit bug is fixed.
         * Note the WebKit bug ID in the Chromium issue report.
     * All security issues need owners, the WebKit ones can be assigned to michaeldo@.
-*  GPU driver bugs - bugs in GPU drivers that reachable from a renderer process
+* **GPU driver bugs** - bugs in GPU drivers that reachable from a renderer process
    and triggerable through Chrome, such as bugs in Mesa or Mali drivers,
    should be assigned to the appropriate Chrome engineering team, such as WebGL
    or WebGPU, to determine if a shader workaround is appropriate. The report

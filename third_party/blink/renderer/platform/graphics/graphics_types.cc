@@ -195,18 +195,6 @@ String LineJoinName(LineJoin join) {
   return kNames[join];
 }
 
-String ImageDataStorageFormatName(ImageDataStorageFormat format) {
-  switch (format) {
-    case ImageDataStorageFormat::kUint8:
-      return "uint8";
-    case ImageDataStorageFormat::kUint16:
-      return "uint16";
-    case ImageDataStorageFormat::kFloat32:
-      return "float32";
-  }
-  NOTREACHED();
-}
-
 // The PredefinedColorSpace value definitions are specified in the CSS Color
 // Level 4 specification.
 gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(

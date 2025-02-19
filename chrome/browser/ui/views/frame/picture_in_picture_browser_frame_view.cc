@@ -628,8 +628,9 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
                             ->ShouldDrawRestoredFrameShadow();
 
     // This may return null, but that's handled below.
-    window_frame_provider_ =
-        linux_ui_theme->GetWindowFrameProvider(solid_frame, /*tiled=*/false);
+    window_frame_provider_ = linux_ui_theme->GetWindowFrameProvider(
+        solid_frame, /*tiled=*/false,
+        /*maximized=*/frame->IsMaximized());
   }
 
   // Only one of window_frame_provider_ and frame_background_ will be used.

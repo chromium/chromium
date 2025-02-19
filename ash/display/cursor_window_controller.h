@@ -71,7 +71,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   void UpdateContainer();
 
   // Sets the display on which to draw cursor.
-  // Only applicable when cursor compositing is enabled.
   void SetDisplay(const display::Display& display);
 
   // When the mouse starts or stops hovering/resizing the docked magnifier

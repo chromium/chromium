@@ -900,6 +900,7 @@ component("base") {
     "types/same_as_any.h",
     "types/strong_alias.h",
     "types/supports_ostream_operator.h",
+    "types/supports_to_string.h",
     "types/to_address.h",
     "types/token_type.h",
     "types/variant_util.h",
@@ -4307,6 +4308,7 @@ if (is_android || is_robolectric) {
 if (is_android) {
   # JNI supported in Robolectric tests.
   generate_jni("base_minimal_jni") {
+    enable_definition_macros = true
     sources = [
       "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",

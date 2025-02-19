@@ -4,6 +4,8 @@
 
 package org.chromium.components.external_intents;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -20,6 +22,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.WebFeature;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -50,6 +54,7 @@ import java.lang.annotation.RetentionPolicy;
  * done in an asynchronous fashion to avoid it. See https://crbug.com/732260.
  */
 @JNINamespace("external_intents")
+@NullMarked
 public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
     /**
      * Histogram for the source of a main frame intent launch. This enum is used in UMA, do not
@@ -118,18 +123,24 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private static final long DEFER_NAVIGATION_TIMEOUT_MILLIS = 5000;
 
     private InterceptNavigationDelegateClient mClient;
-    private static Callback<Pair<GURL, OverrideUrlLoadingResult>> sResultCallbackForTesting;
+    private static @Nullable Callback<Pair<GURL, OverrideUrlLoadingResult>>
+            sResultCallbackForTesting;
+
+    @SuppressWarnings("NullAway.Init")
     private WebContents mWebContents;
+
+    @SuppressWarnings("NullAway.Init")
     private ExternalNavigationHandler mExternalNavHandler;
-    private WebContentsObserver mWebContentsObserver;
+
+    private @Nullable WebContentsObserver mWebContentsObserver;
 
     /** Whether forward history should be cleared after navigation is committed. */
     private boolean mClearAllForwardHistoryRequired;
 
     private boolean mShouldClearRedirectHistoryForTabClobbering;
 
-    private CancelableRunnable mPendingShouldIgnore;
-    private RequiredCallback<Boolean> mShouldIgnoreResultCallback;
+    private @Nullable CancelableRunnable mPendingShouldIgnore;
+    private @Nullable RequiredCallback<Boolean> mShouldIgnoreResultCallback;
     private boolean mHasAttachedToActivity;
     private boolean mTimedOutWaitingForActivity;
 
@@ -171,7 +182,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         cancelPendingShouldIgnoreCheck();
 
         if (mWebContents != null) {
-            mWebContentsObserver.observe(null);
+            assumeNonNull(mWebContentsObserver).observe(null);
             mWebContentsObserver = null;
         }
         mWebContents = webContents;
@@ -264,7 +275,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         shouldRunAsync);
         if (!shouldRunAsync) {
             onMainFrameShouldIgnoreNavigationResult(
-                    result, escapedUrl, navigationHandle.isExternalProtocol());
+                    assumeNonNull(result), escapedUrl, navigationHandle.isExternalProtocol());
         }
     }
 
@@ -317,12 +328,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void runResultCallback(boolean shouldIgnore) {
-        mShouldIgnoreResultCallback.onResult(shouldIgnore);
+        assumeNonNull(mShouldIgnoreResultCallback).onResult(shouldIgnore);
         mShouldIgnoreResultCallback = null;
     }
 
     @Override
-    public GURL handleSubframeExternalProtocol(
+    public @Nullable GURL handleSubframeExternalProtocol(
             GURL escapedUrl,
             @PageTransition int transition,
             boolean hasUserGesture,
@@ -368,7 +379,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         /* navigationId= */ -1,
                         /* shouldRunAsync= */ false);
 
-        switch (result.getResultType()) {
+        switch (assumeNonNull(result).getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 return null;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
@@ -384,7 +395,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         }
     }
 
-    private OverrideUrlLoadingResult shouldOverrideUrlLoading(
+    private @Nullable OverrideUrlLoadingResult shouldOverrideUrlLoading(
             RedirectHandler redirectHandler,
             GURL escapedUrl,
             @PageTransition int pageTransition,
@@ -393,7 +404,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             boolean isRendererInitiated,
             GURL referrerUrl,
             boolean isInPrimaryMainFrame,
-            Origin initiatorOrigin,
+            @Nullable Origin initiatorOrigin,
             boolean isExternalProtocol,
             Callback<AsyncActionTakenParams> asyncActionTakenCallback,
             boolean hiddenCrossFrame,
@@ -541,12 +552,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
      */
     public void maybeUpdateNavigationHistory() {
         WebContents webContents = mClient.getWebContents();
+        NavigationController navigationController = webContents.getNavigationController();
+        assumeNonNull(navigationController);
         if (mClearAllForwardHistoryRequired && webContents != null) {
-            webContents.getNavigationController().pruneForwardEntries();
+            navigationController.pruneForwardEntries();
         } else if (mShouldClearRedirectHistoryForTabClobbering && webContents != null) {
             // http://crbug/479056: Even if we clobber the current tab, we want to remove
             // redirect history to be consistent.
-            NavigationController navigationController = webContents.getNavigationController();
             int indexBeforeRedirection =
                     mClient.getOrCreateRedirectHandler()
                             .getLastCommittedEntryIndexBeforeStartingNavigation();
@@ -562,12 +574,14 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     private int getLastCommittedEntryIndex() {
         if (mClient.getWebContents() == null) return -1;
-        return mClient.getWebContents().getNavigationController().getLastCommittedEntryIndex();
+        return assumeNonNull(mClient.getWebContents().getNavigationController())
+                .getLastCommittedEntryIndex();
     }
 
     private boolean isInitialNavigation() {
         if (mClient.getWebContents() == null) return true;
-        return mClient.getWebContents().getNavigationController().isInitialNavigation();
+        return assumeNonNull(mClient.getWebContents().getNavigationController())
+                .isInitialNavigation();
     }
 
     private boolean isTabOnInitialNavigationChain() {
@@ -586,7 +600,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private void onDidAsyncActionInMainFrame(AsyncActionTakenParams params) {
         switch (params.actionType) {
             case AsyncActionTakenParams.AsyncActionTakenType.NAVIGATE:
-                clobberMainFrame(params.targetUrl, params.externalNavigationParams);
+                clobberMainFrame(assumeNonNull(params.targetUrl), params.externalNavigationParams);
                 break;
             case AsyncActionTakenParams.AsyncActionTakenType.EXTERNAL_INTENT_LAUNCHED:
                 onDidFinishMainFrameIntentLaunch(
@@ -688,8 +702,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         // index which was saved before this navigation, and remove the empty
                         // entries from the navigation history.
                         mClearAllForwardHistoryRequired = true;
-                        mClient.getWebContents()
-                                .getNavigationController()
+                        assumeNonNull(mClient.getWebContents().getNavigationController())
                                 .goToNavigationIndex(lastCommittedEntryIndexBeforeNavigation);
                     }
                 });
@@ -754,6 +767,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 InterceptNavigationDelegateImpl nativeInterceptNavigationDelegateImpl,
                 WebContents webContents);
 
-        void onSubframeAsyncActionTaken(WebContents webContents, GURL url);
+        void onSubframeAsyncActionTaken(WebContents webContents, @Nullable GURL url);
     }
 }

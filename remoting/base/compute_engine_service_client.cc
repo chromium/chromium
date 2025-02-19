@@ -242,6 +242,10 @@ void ComputeEngineServiceClient::OnRequestComplete(
                << ", Message: " << http_status.error_message();
   }
 
+  // Reset |url_loader_| since we've extracted the info we need from it.
+  // This will allow the caller to reuse this instance to make another request.
+  url_loader_.reset();
+
   std::move(callback).Run(http_status);
 }
 

@@ -11,10 +11,12 @@
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
@@ -199,7 +201,7 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   // access the current WebContents.
   primary_page_ = nullptr;
   active_pages_.clear();
-  ukm_smoothness_data_.clear();
+  ukm_data_.clear();
   provisional_loads_.clear();
   aborted_provisional_loads_.clear();
 }
@@ -271,7 +273,7 @@ void MetricsWebContentsObserver::RenderFrameDeleted(
   }
   active_pages_.erase(rfh);
   inactive_pages_.erase(rfh);
-  ukm_smoothness_data_.erase(rfh);
+  ukm_data_.erase(rfh);
 }
 
 void MetricsWebContentsObserver::MediaStartedPlaying(
@@ -824,11 +826,13 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
   const bool is_main_frame =
       render_frame_host && render_frame_host->GetParent() == nullptr;
   if (is_main_frame) {
-    auto it = ukm_smoothness_data_.find(render_frame_host);
-    if (it != ukm_smoothness_data_.end()) {
-      raw_tracker->metrics_update_dispatcher()->SetUpSharedMemoryForSmoothness(
-          render_frame_host, std::move(it->second));
-      ukm_smoothness_data_.erase(it);
+    auto ukm_it = ukm_data_.find(render_frame_host);
+    if (ukm_it != ukm_data_.end()) {
+      auto& [smoothness_memory, dropped_frames_memory] = ukm_it->second;
+      raw_tracker->metrics_update_dispatcher()->SetUpSharedMemoryForUkms(
+          render_frame_host, std::move(smoothness_memory),
+          std::move(dropped_frames_memory));
+      ukm_data_.erase(ukm_it);
     }
   }
 
@@ -1253,24 +1257,25 @@ void MetricsWebContentsObserver::AddCustomUserTiming(
   OnCustomUserTimingUpdated(render_frame_host, std::move(custom_timing));
 }
 
-void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
-    base::ReadOnlySharedMemoryRegion shared_memory) {
+void MetricsWebContentsObserver::SetUpSharedMemoryForUkms(
+    base::ReadOnlySharedMemoryRegion smoothness_memory,
+    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();
   const bool is_outermost_main_frame =
       render_frame_host->GetParentOrOuterDocument() == nullptr;
   if (!is_outermost_main_frame) {
-    // TODO(crbug.com/40144214): Merge smoothness metrics from OOPIFs and
-    // FencedFrames with the main-frame. Also need to check if FencedFrames
-    // send this request correctly.
     return;
   }
 
   if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
-    tracker->metrics_update_dispatcher()->SetUpSharedMemoryForSmoothness(
-        render_frame_host, std::move(shared_memory));
+    tracker->metrics_update_dispatcher()->SetUpSharedMemoryForUkms(
+        render_frame_host, std::move(smoothness_memory),
+        std::move(dropped_frames_memory));
   } else {
-    ukm_smoothness_data_.emplace(render_frame_host, std::move(shared_memory));
+    ukm_data_.emplace(render_frame_host,
+                      std::make_pair(std::move(smoothness_memory),
+                                     std::move(dropped_frames_memory)));
   }
 }
 

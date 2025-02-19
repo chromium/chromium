@@ -17,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/nserror_util.h"
@@ -172,6 +173,10 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
         return credential->username_value == usernameStr &&
                credential->password_value == passwordStr;
       });
+}
+
++ (bool)isPasskeysM2FeatureEnabled {
+  return IOSPasskeysM2Enabled();
 }
 
 @end

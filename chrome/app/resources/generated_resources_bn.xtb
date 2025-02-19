@@ -1194,6 +1194,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />-এ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যাওয়া যাচ্ছে না</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> কাস্ট করা হচ্ছে</translation>
 <translation id="1813278315230285598">পরিষেবাসমূহ</translation>
+<translation id="1813828404076816564">শেয়ার করা ট্যাব গ্রুপ ফিচার সম্পর্কিত মতামত পাঠাতে 'মতামত দিন' বোতাম বেছে নিন</translation>
 <translation id="18139523105317219">EDI পার্টি নাম</translation>
 <translation id="1815083418640426271">সাধারণ টেক্সট হিসেবে আটকে দিন</translation>
 <translation id="1815097521077272760">এই গেমের জন্য কীবোর্ড নিয়ন্ত্রণ চেষ্টা করার জন্য আপনাকে আমন্ত্রণ জানানো হয়েছে।</translation>
@@ -4123,6 +4124,7 @@
 <translation id="3857807444929313943">আঙ্গুল লিফ্ট করে আবার টাচ করুন</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="385939467708172187">শক্তিশালী পাসওয়ার্ড ব্যবহার করুন</translation>
+<translation id="3859869403161297890">এখানে শেয়ার করা ট্যাব গ্রুপ সম্পর্কে আপনার মতামত পাঠান</translation>
 <translation id="3859987779882450877">আপনার খোলা ট্যাবগুলিকে নিয়ে অটোমেটিক গ্রুপ তৈরি ও সাজেস্ট করে</translation>
 <translation id="386009056910366930">"<ph name="GROUP_NAME" />" ট্যাব গ্রুপ ম্যানেজ করুন</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" ইউজারনেমটি পাওয়া যাচ্ছে না</translation>
@@ -8178,6 +8180,7 @@
 <translation id="6805478749741295868">এটি হল পরীক্ষামূলক AI ফিচার এবং সব সময় সঠিক তথ্য দেবে না।</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> থেকে ক্লায়েন্ট সার্টিফিকেট আমদানি করতে দয়া করে <ph name="TOKEN_NAME" />-এ প্রবেশ করুন৷</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> এ RLZ নজর রাখা সক্ষম করুন৷</translation>
+<translation id="6805817411033102703">শেয়ার করা ট্যাব গ্রুপ সম্পর্কিত মতামত</translation>
 <translation id="6806089545527108739">অনুমতি দেবেন না কিন্তু পরে জিজ্ঞাসা করুন</translation>
 <translation id="680644983456221885">Google-কে পাঠানো আপনার ব্রাউজ করা ডেটার উপর ভিত্তি করে বিপজ্জনক সাইট, ডাউনলোড এবং এক্সটেনশন থেকে রিয়েল-টাইমে সুরক্ষা পাওয়া যায়</translation>
 <translation id="6806781719264274042">শুধুমাত্র আপনার যেসব পরিচিতির Google অ্যাকাউন্ট রয়েছে। <ph name="LINK_BEGIN" />পরিচিতি দেখুন<ph name="LINK_END" /></translation>

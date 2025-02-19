@@ -166,11 +166,9 @@ class PLATFORM_EXPORT WidgetBase
       mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelSuccessfulPresentationTimeRequest() override;
-  void SetupRenderInputRouterConnections(
+  void SetupBrowserRenderInputRouterConnections(
       mojo::PendingReceiver<mojom::blink::RenderInputRouterClient>
-          browser_request,
-      mojo::PendingReceiver<mojom::blink::RenderInputRouterClient> viz_request)
-      override;
+          browser_request) override;
 
   // LayerTreeViewDelegate overrides:
   // Applies viewport related properties during a commit from the compositor

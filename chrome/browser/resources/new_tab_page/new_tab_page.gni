@@ -24,6 +24,7 @@ all_non_web_component_files = [
 all_web_component_files = [
                             "app.ts",
                             "doodle_share_dialog.ts",
+                            "footer.ts",
                             "iframe.ts",
                             "lens_form.ts",
                             "lens_upload_dialog.ts",
@@ -36,6 +37,7 @@ all_web_component_files = [
 all_css_files = [
                   "app.css",
                   "doodle_share_dialog.css",
+                  "footer.css",
                   "iframe.css",
                   "lens_form.css",
                   "lens_upload_dialog.css",

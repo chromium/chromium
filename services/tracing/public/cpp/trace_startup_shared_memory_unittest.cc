@@ -68,8 +68,7 @@ MULTIPROCESS_TEST_MAIN(InitFromLaunchParameters) {
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_FUCHSIA)
   base::FeatureList::InitInstance("", "");
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("StartupTraceTest");
-  tracing::InitTracingPostThreadPoolStartAndFeatureList(
-      /*enable_consumer=*/false);
+  tracing::InitTracingPostFeatureList(/*enable_consumer=*/false);
 
   // Simulate launching with the serialized parameters.
   EnableStartupTracingIfNeeded();

@@ -2,28 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 
-#include <cstring>
+#include <string>
 #include <utility>
 
-#include "base/check.h"
+#include "base/lazy_instance.h"
 
 namespace extensions {
 
 namespace {
+
 ScopedTestDialogAutoConfirm::AutoConfirm g_extension_dialog_auto_confirm_value =
     ScopedTestDialogAutoConfirm::NONE;
-// Since |g_extension_dialog_justification| is global, type char[] is used
-// instead of std::string to ensure trivial destruction. Note that its size is
-// currently hard-coded as it's only used for testing purposes.
-char g_extension_dialog_justification[20];
-}
+
+base::LazyInstance<std::string>::DestructorAtExit
+    g_extension_dialog_justification = LAZY_INSTANCE_INITIALIZER;
+
+}  // namespace
 
 ScopedTestDialogAutoConfirm::ScopedTestDialogAutoConfirm(
     ScopedTestDialogAutoConfirm::AutoConfirm override_confirm_value)
@@ -33,7 +29,7 @@ ScopedTestDialogAutoConfirm::ScopedTestDialogAutoConfirm(
 
 ScopedTestDialogAutoConfirm::~ScopedTestDialogAutoConfirm() {
   g_extension_dialog_auto_confirm_value = old_auto_confirm_value_;
-  std::strcpy(g_extension_dialog_justification, old_justification_.c_str());
+  g_extension_dialog_justification.Get() = old_justification_.c_str();
 }
 
 // static
@@ -44,14 +40,13 @@ ScopedTestDialogAutoConfirm::GetAutoConfirmValue() {
 
 // static
 std::string ScopedTestDialogAutoConfirm::GetJustification() {
-  return g_extension_dialog_justification;
+  return g_extension_dialog_justification.Get();
 }
 
 void ScopedTestDialogAutoConfirm::set_justification(
     const std::string& justification) {
-  DCHECK(sizeof(g_extension_dialog_justification) > justification.length());
-  old_justification_.assign(g_extension_dialog_justification);
-  std::strcpy(g_extension_dialog_justification, justification.c_str());
+  old_justification_.assign(g_extension_dialog_justification.Get());
+  g_extension_dialog_justification.Get() = justification;
 }
 
 }  // namespace extensions

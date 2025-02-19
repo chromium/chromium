@@ -291,15 +291,8 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
         return;
       }
       if (Form() && type_ == kReset) {
-        if (potentialCommand) {
-          AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
-                            mojom::blink::ConsoleMessageLevel::kWarning,
-                            "Buttons with a type of reset will ignore the "
-                            "command or commandfor attributes.");
-        }
         Form()->reset();
         event.SetDefaultHandled();
-        return;
       }
     }
 

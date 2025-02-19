@@ -2655,13 +2655,14 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Result.{ReportType}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-11-17">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-08-18">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Response or error codes from SafeBrowsing real time URL lookups when the
     report type is {ReportType}. Logged on each resource check for which a
-    lookup request is sent to the server.
+    lookup request is sent to the server. Warning: this histogram was expired
+    from 2024-11-17 to 2025-02-19; data may be missing.
   </summary>
   <token key="ReportType">
     <variant name="NormalPing" summary="normal ping"/>

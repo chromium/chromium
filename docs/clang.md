@@ -28,13 +28,11 @@ If you're working on the plugin, you can build it locally like so:
 
 1.  Run `./tools/clang/scripts/build.py --without-android --without-fuchsia`
     to build the plugin.
-1.  Run `ninja -C third_party/llvm-build/Release+Asserts/` to build incrementally.
-1.  Build with clang like described above, but, if you use reclient, disable it.
-
-To test the FindBadConstructs plugin, run:
-
-    (cd tools/clang/plugins/tests && \
-     ./test.py ../../../../third_party/llvm-build/Release+Asserts/bin/clang)
+1.  Run `ninja -C third_party/llvm-build/Release+Asserts/` to build
+    incrementally after making changes.
+1.  Run `(cd tools/clang/plugins/tests && ./test.py ../../../../third_party/llvm-build/Release+Asserts/bin/clang)`
+    to test the plugin after making changes.
+1.  Build Chromium with clang as usual, but, if you use reclient, disable it.
 
 Since the plugin is rolled with clang changes, behavior changes to the plugin
 should be guarded by flags to make it easy to roll clang. A general outline:

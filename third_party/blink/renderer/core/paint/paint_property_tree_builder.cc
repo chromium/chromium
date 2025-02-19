@@ -2479,6 +2479,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
                                              paint_clip_rect);
       ClipPaintPropertyNode::State state(*context_.current.transform,
                                          layout_clip_rect, paint_clip_rect);
+      if (!paint_clip_rect.HasSimpleRoundedCurvature()) {
+        state.SetClipRect(layout_clip_rect,
+                          FloatRoundedRect(paint_clip_rect.Rect()));
+        Path& path = state.clip_path.emplace();
+        path.AddRoundedRect(paint_clip_rect);
+      }
       OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
           *context_.current.clip, std::move(state)));
     } else {

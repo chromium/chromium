@@ -700,8 +700,13 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
   // Note that kCacheControlNoStoreHTTPOnlyCookieModified,
   // kCacheControlNoStoreCookieModified and kCacheControlNoStore are mutually
   // exclusive.
-  if (render_frame_host->GetCookieChangeInfo()
-          .http_only_cookie_modification_count_ > 0) {
+  if (render_frame_host->IsDeviceBoundSessionTerminated() &&
+      base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionTerminationEvictBackForwardCache)) {
+    result.No(BackForwardCacheMetrics::NotRestoredReason::
+                  kCacheControlNoStoreDeviceBoundSessionTerminated);
+  } else if (render_frame_host->GetCookieChangeInfo()
+                 .http_only_cookie_modification_count_ > 0) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kCacheControlNoStoreHTTPOnlyCookieModified);
   } else if (render_frame_host->GetCookieChangeInfo()

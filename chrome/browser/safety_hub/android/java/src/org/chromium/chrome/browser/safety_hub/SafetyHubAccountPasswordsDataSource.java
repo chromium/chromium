@@ -216,6 +216,11 @@ public class SafetyHubAccountPasswordsDataSource
     }
 
     @Override
+    public void localPasswordCountsChanged() {
+        // no-op.
+    }
+
+    @Override
     public void onSavedPasswordsChanged(int count) {
         updateState();
     }

@@ -12,6 +12,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
@@ -24,6 +25,7 @@ import java.util.Objects;
  * resources.
  */
 @MainThread
+@NullMarked
 public class WebSigninBridge {
     /** Factory to create WebSigninBridge object. */
     public static class Factory {

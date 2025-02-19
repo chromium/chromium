@@ -1184,6 +1184,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kullanarak devam edemiyor</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> yayınlanıyor</translation>
 <translation id="1813278315230285598">Hizmetler</translation>
+<translation id="1813828404076816564">Ortak sekme grupları özelliğiyle ilgili geri bildirim göndermek için geri bildirim düğmesini seçin</translation>
 <translation id="18139523105317219">EDI Grup Adı</translation>
 <translation id="1815083418640426271">Düz Metin Olarak Yapıştır</translation>
 <translation id="1815097521077272760">Bu oyundaki klavye kontrolü özelliğini denemeye davet edildiniz.</translation>
@@ -4105,6 +4106,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3857807444929313943">Kaldırın, tekrar dokunun</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="385939467708172187">Güçlü Şifre Kullanın</translation>
+<translation id="3859869403161297890">Ortak sekme gruplarıyla ilgili geri bildiriminizi buradan gönderin</translation>
 <translation id="3859987779882450877">Açık sekmelerinizden otomatik olarak gruplar önerir ve oluşturur</translation>
 <translation id="386009056910366930">"<ph name="GROUP_NAME" />" sekme grubunu yönetin</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" kullanıcı adı kullanılamıyor</translation>
@@ -8157,6 +8159,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6805478749741295868">Bu, deneysel bir yapay zeka özelliği olduğundan her zaman düzgün çalışmayabilir.</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> adresinden istemci sertifikasını içe aktarmak için lütfen <ph name="TOKEN_NAME" /> cihazında oturum açın.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> üzerinde RLZ izlemeyi etkinleştir.</translation>
+<translation id="6805817411033102703">Ortak sekme gruplarıyla ilgili geri bildirim</translation>
 <translation id="6806089545527108739">İzin verme, ancak daha sonra sor</translation>
 <translation id="680644983456221885">Tarama verilerinizin Google'a gönderilmesi aracılığıyla tehlikeli siteler, indirmeler ve uzantılara karşı gerçek zamanlı, proaktif koruma</translation>
 <translation id="6806781719264274042">Yalnızca Google Hesabı olan kişileriniz. <ph name="LINK_BEGIN" />Kişileri göster<ph name="LINK_END" /></translation>

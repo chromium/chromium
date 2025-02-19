@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
@@ -783,7 +784,7 @@ TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
   EXPECT_EQ(test_case.expected_friction_shown,
             function->GetFrictionDialogShownForTesting());
 
-  std::unique_ptr<WebstoreInstaller::Approval> approval =
+  std::unique_ptr<InstallApproval> approval =
       WebstorePrivateApi::PopApprovalForTesting(profile(), kExtensionId);
   if (test_case.dialog_action == ScopedTestDialogAutoConfirm::ACCEPT) {
     ASSERT_TRUE(approval);

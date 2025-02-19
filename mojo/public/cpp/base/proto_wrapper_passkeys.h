@@ -11,6 +11,7 @@
 namespace component_updater {
 class ReadMaskedDomainListProto;
 class PKIMetadataComponentInstallerService;
+class MaskedDomainListComponentInstallerPolicyTest;
 }  // namespace component_updater
 
 namespace paint_preview {
@@ -37,6 +38,7 @@ class ProtoWrapperBytes {
   // or to directly set the contained class name and bytes with from_span().
   friend class component_updater::ReadMaskedDomainListProto;
   friend class component_updater::PKIMetadataComponentInstallerService;
+  friend class component_updater::MaskedDomainListComponentInstallerPolicyTest;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ProtoWrapperTest, ToFromBytes);

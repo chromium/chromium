@@ -227,7 +227,7 @@ export class PrintPreviewMarginControlElement extends
     }
     assert(this.measurementSystem);
     const decimal = this.measurementSystem.decimalDelimiter;
-    const thousands = this.measurementSystem!.thousandsDelimiter;
+    const thousands = this.measurementSystem.thousandsDelimiter;
     const whole = `(?:0|[1-9]\\d*|[1-9]\\d{0,2}(?:[${thousands}]\\d{3})*)`;
     const fractional = `(?:[${decimal}]\\d+)`;
     const wholeDecimal = `(?:${whole}[${decimal}])`;
@@ -250,7 +250,7 @@ export class PrintPreviewMarginControlElement extends
   private serializeValueFromPts_(value: number): string {
     assert(this.measurementSystem);
     value = this.measurementSystem.convertFromPoints(value);
-    value = this.measurementSystem!.roundValue(value);
+    value = this.measurementSystem.roundValue(value);
     // Convert the dot symbol to the decimal delimiter for the locale.
     return value.toString().replace(
         '.', this.measurementSystem.decimalDelimiter);

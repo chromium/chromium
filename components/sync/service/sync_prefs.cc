@@ -179,6 +179,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::internal::kSyncEncryptionBootstrapToken,
                                std::string());
 
+  // Cached notion of whether or not a persistent auth error exists.
+  registry->RegisterBooleanPref(
+      prefs::internal::kSyncCachedPersistentAuthErrorForMetrics, false);
+
   // The encryption bootstrap token represents a user-entered passphrase per
   // account.
   registry->RegisterDictionaryPref(
@@ -573,6 +577,26 @@ void SyncPrefs::SetCachedPassphraseType(PassphraseType passphrase_type) {
 void SyncPrefs::ClearCachedPassphraseType() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::internal::kSyncCachedPassphraseType);
+}
+
+bool SyncPrefs::HasCachedPersistentAuthErrorForMetrics() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(
+      prefs::internal::kSyncCachedPersistentAuthErrorForMetrics);
+}
+
+void SyncPrefs::SetHasCachedPersistentAuthErrorForMetrics(
+    bool has_persistent_auth_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(
+      prefs::internal::kSyncCachedPersistentAuthErrorForMetrics,
+      has_persistent_auth_error);
+}
+
+void SyncPrefs::ClearCachedPersistentAuthErrorForMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->ClearPref(
+      prefs::internal::kSyncCachedPersistentAuthErrorForMetrics);
 }
 
 std::optional<sync_pb::TrustedVaultAutoUpgradeExperimentGroup>

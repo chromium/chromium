@@ -100,6 +100,8 @@ source_set("scene") {
     "//ios/chrome/browser/authentication/ui_bundled/account_menu",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:features",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/promo",
     "//ios/chrome/browser/blocking_overlay/ui_bundled",
     "//ios/chrome/browser/browser_view/ui_bundled",
     "//ios/chrome/browser/browsing_data/model",

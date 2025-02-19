@@ -1183,6 +1183,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> non pode continuar usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Emitindo <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Servizos</translation>
+<translation id="1813828404076816564">Selecciona o botón correspondente para enviar comentarios sobre a función de grupos de pestanas compartidos</translation>
 <translation id="18139523105317219">Nome da parte EDI</translation>
 <translation id="1815083418640426271">Pegar como texto sen formato</translation>
 <translation id="1815097521077272760">Convidáronte a probar o control co teclado neste xogo.</translation>
@@ -4111,6 +4112,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3857807444929313943">Levanta o dedo e volve tocar o sensor</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="385939467708172187">Usa este contrasinal seguro</translation>
+<translation id="3859869403161297890">Envía comentarios sobre os grupos de pestanas compartidos aquí</translation>
 <translation id="3859987779882450877">Suxerirá e creará grupos automaticamente a partir das pestanas que teñas abertas</translation>
 <translation id="386009056910366930">Xestionar o grupo de pestanas "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">O nome de usuario "<ph name="USERNAME" />" non está dispoñible</translation>
@@ -8160,6 +8162,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6805478749741295868">Esta función de IA é experimental e non sempre acerta.</translation>
 <translation id="6805647936811177813">Inicia sesión en <ph name="TOKEN_NAME" /> para importar o certificado do cliente de <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Activar seguimento RLZ en <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Comentarios sobre os grupos de pestanas compartidos</translation>
 <translation id="6806089545527108739">Non permitir, pero preguntar máis tarde</translation>
 <translation id="680644983456221885">Protección proactiva e en tempo real contra sitios, descargas e extensións perigosos baseada nos teus datos de navegación enviados a Google</translation>
 <translation id="6806781719264274042">Só os contactos que teñan unha Conta de Google. <ph name="LINK_BEGIN" />Ver contactos<ph name="LINK_END" /></translation>

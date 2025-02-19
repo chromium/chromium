@@ -52,6 +52,7 @@ class CliOptions:
     self.output_files = None if is_final else []
     self.header_path = None
     self.enable_jni_multiplexing = False
+    self.enable_definition_macros = False
     self.package_prefix = None
     self.package_prefix_filter = None
     self.use_proxy_hash = False
@@ -67,6 +68,8 @@ class CliOptions:
     ret = [os.path.join(_SCRIPT_DIR, os.pardir, 'jni_zero.py'), self.action]
     if self.enable_jni_multiplexing:
       ret.append('--enable-jni-multiplexing')
+    if self.enable_definition_macros:
+      ret.append('--enable-definition-macros')
     if self.package_prefix:
       ret += ['--package-prefix', self.package_prefix]
     if self.package_prefix_filter:
@@ -354,7 +357,8 @@ class Tests(BaseTest):
     self._TestEndToEndGeneration(['SampleNonProxy.java'])
 
   def testBirectionalNonProxy(self):
-    self._TestEndToEndGeneration(['SampleBidirectionalNonProxy.java'])
+    self._TestEndToEndGeneration(['SampleBidirectionalNonProxy.java'],
+                                 enable_definition_macros=True)
 
   def testBidirectionalClass(self):
     self._TestEndToEndGeneration(['SampleForTests.java'], srcjar=True)

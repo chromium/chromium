@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <thread>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/task_annotator.h"
 #include "base/test/test_trace_processor.h"
@@ -19,8 +22,10 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
+#include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/chrome/histogram_samples.gen.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/test/bind.h"
@@ -39,27 +44,50 @@ namespace {
 const char kDetailedDumpMode[] = "detailed";
 const char kBackgroundDumpMode[] = "background";
 
+perfetto::protos::gen::ChromiumHistogramSamplesConfig::HistogramSample
+MakeHistogramSample(const std::string& name,
+                    std::optional<int64_t> min_value = std::nullopt,
+                    std::optional<int64_t> max_value = std::nullopt) {
+  perfetto::protos::gen::ChromiumHistogramSamplesConfig::HistogramSample sample;
+  sample.set_histogram_name(name);
+  if (min_value) {
+    sample.set_min_value(*min_value);
+  }
+  if (max_value) {
+    sample.set_max_value(*max_value);
+  }
+  return sample;
+}
+
 perfetto::protos::gen::TraceConfig TraceConfigWithHistograms(
-    const std::string& category_filter_string,
-    const std::vector<std::string>& histograms) {
-  // Which categories are specified in the legacy config should not affect
-  // anything. Only the list of enabled histograms should be read from the
-  // legacy config.
-  base::trace_event::TraceConfig trace_event_config;
-  for (const auto& histogram : histograms) {
-    trace_event_config.EnableHistogram(histogram);
+    const std::vector<
+        perfetto::protos::gen::ChromiumHistogramSamplesConfig::HistogramSample>&
+        histograms) {
+  auto perfetto_config = base::test::DefaultTraceConfig("-*", false);
+
+  auto* histogram_data_source = perfetto_config.add_data_sources();
+  auto* histogram_source_config = histogram_data_source->mutable_config();
+  histogram_source_config->set_name(tracing::mojom::kHistogramSampleSourceName);
+  histogram_source_config->set_target_buffer(0);
+
+  if (!histograms.empty()) {
+    perfetto::protos::gen::ChromiumHistogramSamplesConfig histogram_config;
+    for (const auto& histogram : histograms) {
+      *histogram_config.add_histograms() = histogram;
+    }
+    histogram_source_config->set_chromium_histogram_samples_raw(
+        histogram_config.SerializeAsString());
   }
 
-  auto perfetto_config =
-      base::test::DefaultTraceConfig(category_filter_string, false);
-  for (auto& ds : *perfetto_config.mutable_data_sources()) {
-    if (ds.config().name() == "track_event") {
-      ds.mutable_config()->mutable_chrome_config()->set_trace_config(
-          trace_event_config.ToString());
-    }
-  }
   return perfetto_config;
 }
+
+constexpr const char* histogram_query =
+    "SELECT "
+    "EXTRACT_ARG(arg_set_id, \"chrome_histogram_sample.name\") AS name, "
+    "EXTRACT_ARG(arg_set_id, \"chrome_histogram_sample.sample\") AS value "
+    "FROM slice "
+    "WHERE cat = \"disabled-by-default-histogram_samples\"";
 
 perfetto::protos::gen::TraceConfig TraceConfigWithMemoryDumps(
     const char* mode) {
@@ -543,64 +571,105 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsSimple) {
                                      std::vector<std::string>{"cat_event"}));
 }
 
-IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsHistograms) {
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
+                       TwoSessionsGlobalHistograms) {
+  ASSERT_FALSE(base::StatisticsRecorder::global_sample_callback());
+
   // Start the first session that records "Test.Foo" histograms
-  auto config = TraceConfigWithHistograms(
-      "disabled-by-default-histogram_samples", {"Test.Foo"});
+  auto config = TraceConfigWithHistograms({});
   base::test::TestTraceProcessor ttp1;
   ttp1.StartTrace(config);
 
-  UMA_HISTOGRAM_BOOLEAN("Test.Foo", true);
-  UMA_HISTOGRAM_BOOLEAN("Test.Bar", true);
+  base::UmaHistogramCounts100("Test.Foo", 1);
+  base::UmaHistogramCounts100("Test.Bar", 2);
 
-  // Start the second session that records "Test.Bar" histograms
-  config = TraceConfigWithHistograms("disabled-by-default-histogram_samples",
-                                     {"Test.Bar"});
+  // Start the second session that records all histograms
+  config = TraceConfigWithHistograms({});
   base::test::TestTraceProcessor ttp2;
   ttp2.StartTrace(config);
 
-  UMA_HISTOGRAM_BOOLEAN("Test.Foo", true);
-  UMA_HISTOGRAM_BOOLEAN("Test.Bar", true);
+  base::UmaHistogramCounts100("Test.Foo", 3);
+  base::UmaHistogramCounts100("Test.Bar", 4);
 
-  // Stop the second session. Its trace should contain only one "Test.Bar"
-  // sample that was recorded while the session was active.
-  // It will also contain a "Test.Foo" sample because right now the list of
-  // monitored histograms is shared between sessions.
-  // TODO(khokhlov): Fix the test expectations when CustomEventRecorder
-  // correctly tracks which samples go to which sessions.
+  // Stop the second session.
   absl::Status status = ttp2.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
 
-  std::string query =
-      "SELECT "
-      "EXTRACT_ARG(arg_set_id, \"chrome_histogram_sample.name\") AS name "
-      "FROM slice "
-      "WHERE cat = \"disabled-by-default-histogram_samples\"";
-  auto result = ttp2.RunQuery(query);
+  auto result = ttp2.RunQuery(histogram_query);
   ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(result.value(),
-              ::testing::ElementsAre(std::vector<std::string>{"name"},
-                                     std::vector<std::string>{"Test.Foo"},
-                                     std::vector<std::string>{"Test.Bar"}));
+  EXPECT_THAT(result.value(), ::testing::IsSupersetOf(
+                                  {std::vector<std::string>{"name", "value"},
+                                   std::vector<std::string>{"Test.Foo", "3"},
+                                   std::vector<std::string>{"Test.Bar", "4"}}));
 
-  UMA_HISTOGRAM_BOOLEAN("Test.Foo", true);
-  UMA_HISTOGRAM_BOOLEAN("Test.Bar", true);
+  base::UmaHistogramCounts100("Test.Foo", 5);
+  base::UmaHistogramCounts100("Test.Bar", 6);
+
+  // Stop the first session. Its trace should contain all samples that were
+  // recorded while the session was active.
+  status = ttp1.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  ASSERT_FALSE(base::StatisticsRecorder::global_sample_callback());
+
+  result = ttp1.RunQuery(histogram_query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), ::testing::IsSupersetOf(
+                                  {std::vector<std::string>{"name", "value"},
+                                   std::vector<std::string>{"Test.Foo", "1"},
+                                   std::vector<std::string>{"Test.Bar", "2"},
+                                   std::vector<std::string>{"Test.Foo", "3"},
+                                   std::vector<std::string>{"Test.Bar", "4"},
+                                   std::vector<std::string>{"Test.Foo", "5"},
+                                   std::vector<std::string>{"Test.Bar", "6"}}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
+                       TwoSessionsTargetedHistograms) {
+  // Start the first session that records "Test.Foo" histograms
+  auto config =
+      TraceConfigWithHistograms({MakeHistogramSample("Test.Foo", 10, 20)});
+  base::test::TestTraceProcessor ttp1;
+  ttp1.StartTrace(config);
+
+  base::UmaHistogramCounts100("Test.Foo", 1);  // Not recorded
+  base::UmaHistogramCounts100("Test.Foo", 10);
+  base::UmaHistogramCounts100("Test.Foo", 21);  // Not recorded
+
+  // Start the second session that records "Test.Bar" histograms
+  config = TraceConfigWithHistograms({MakeHistogramSample("Test.Bar", 30, 40)});
+  base::test::TestTraceProcessor ttp2;
+  ttp2.StartTrace(config);
+
+  base::UmaHistogramCounts100("Test.Foo", 11);
+  base::UmaHistogramCounts100("Test.Bar", 15);  // Not recorded
+  base::UmaHistogramCounts100("Test.Bar", 30);
+
+  // Stop the second session. Its trace should contain only one "Test.Bar"
+  // sample that was recorded while the session was active.
+  absl::Status status = ttp2.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result = ttp2.RunQuery(histogram_query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), ::testing::ElementsAre(
+                                  std::vector<std::string>{"name", "value"},
+                                  std::vector<std::string>{"Test.Bar", "30"}));
+
+  base::UmaHistogramCounts100("Test.Foo", 12);
+  base::UmaHistogramCounts100("Test.Bar", 31);  // Not recorded
 
   // Stop the first session. Its trace should contain all three "Test.Foo"
   // samples that were recorded while the session was active.
-  // Some "Test.Bar" samples will also be there (see the previous comment).
   status = ttp1.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
 
-  result = ttp1.RunQuery(query);
+  result = ttp1.RunQuery(histogram_query);
   ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(result.value(),
-              ::testing::ElementsAre(std::vector<std::string>{"name"},
-                                     std::vector<std::string>{"Test.Foo"},
-                                     std::vector<std::string>{"Test.Foo"},
-                                     std::vector<std::string>{"Test.Bar"},
-                                     std::vector<std::string>{"Test.Foo"},
-                                     std::vector<std::string>{"Test.Bar"}));
+  EXPECT_THAT(result.value(), ::testing::ElementsAre(
+                                  std::vector<std::string>{"name", "value"},
+                                  std::vector<std::string>{"Test.Foo", "10"},
+                                  std::vector<std::string>{"Test.Foo", "11"},
+                                  std::vector<std::string>{"Test.Foo", "12"}));
 }
 
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsProcessNames) {

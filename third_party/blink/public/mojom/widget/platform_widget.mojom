@@ -66,12 +66,16 @@ interface WidgetHost {
 
   // Create a CompositorFrameSink that is associated with this widget.
   // The renderer compositor will use the returned sink to submit
-  // CompositorFrames for this widget.
+  // CompositorFrames for this widget. Sends remote to browser to connect
+  // Viz <-> Renderer RenderInputRouterClient mojo interface when InputVizard is
+  // enabled.
   CreateFrameSink(
       pending_receiver<viz.mojom.CompositorFrameSink>
           compositor_frame_sink_receiver,
       pending_remote<viz.mojom.CompositorFrameSinkClient>
-          compositor_frame_sink_client);
+          compositor_frame_sink_client,
+      pending_remote<blink.mojom.RenderInputRouterClient>
+          render_input_router_client);
 
   // Register compositor RenderFrameMetadataObserver and client.
   // This call will be made in conjunction with calling CreateFrameSink.
@@ -122,11 +126,10 @@ interface Widget {
   // none this will do nothing.
   CancelSuccessfulPresentationTimeRequest();
 
-  // Setup the RenderInputRouter mojo connections.
-  // `viz_client` is only set when `InputOnViz` flag is enabled.
-  SetupRenderInputRouterConnections(
-    pending_receiver<blink.mojom.RenderInputRouterClient> browser_client,
-    pending_receiver<blink.mojom.RenderInputRouterClient>? viz_client);
+  // Setup the RenderInputRouter mojo connection between the browser and the
+  // renderer process.
+  SetupBrowserRenderInputRouterConnections(
+    pending_receiver<blink.mojom.RenderInputRouterClient> browser_client);
 };
 
 // Implemented in Blink, this interface defines input-specific methods that will

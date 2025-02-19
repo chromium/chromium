@@ -17,10 +17,6 @@ namespace blink {
 struct UserAgentMetadata;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace embedder_support {
 
 // TODO(crbug.com/40843535): Remove this enum along with policy.
@@ -64,6 +60,12 @@ blink::UserAgentMetadata GetUserAgentMetadata(bool only_low_entropy_ch = false);
 // hints.
 blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* local_state,
                                               bool only_low_entropy_ch = false);
+
+// Returns a list of form-factors compliant with
+// https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors.
+std::vector<std::string> GetFormFactorsClientHint(
+    const blink::UserAgentMetadata& metadata,
+    bool is_mobile);
 
 // Return UserAgentBrandList based on the expected output version type.
 // Only use when adding additional brand version pair and overriding the default
@@ -109,16 +111,6 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
 blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     int seed,
     blink::UserAgentBrandVersionType output_version_type);
-
-#if BUILDFLAG(IS_ANDROID)
-// This sets a user agent string to simulate a desktop user agent on mobile.
-// If |override_in_new_tabs| is true, and the first navigation in the tab is
-// renderer initiated, then is-overriding-user-agent is set to true for the
-// NavigationEntry.
-void SetDesktopUserAgentOverride(content::WebContents* web_contents,
-                                 const blink::UserAgentMetadata& metadata,
-                                 bool override_in_new_tabs);
-#endif
 
 #if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting();

@@ -703,6 +703,21 @@
             ]
         }
     ],
+    "AndroidTabDeclutterDuplicateUrls": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabDeclutterArchiveDuplicateTabs"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseFrameIntervalDecider": [
         {
             "platforms": [
@@ -6210,26 +6225,6 @@
             ]
         }
     ],
-    "ConcurrentViewTransitionsSPA": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ConcurrentViewTransitionsSPA"
-                    ]
-                }
-            ]
-        }
-    ],
     "ConditionalImageResize": [
         {
             "platforms": [
@@ -7489,6 +7484,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DefaultANGLEVulkan"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DefaultBrowserBannerPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserBannerPromo"
                     ]
                 }
             ]
@@ -10133,9 +10143,18 @@
                     ]
                 },
                 {
-                    "name": "Internal_Enabled",
+                    "name": "Freetype_Enabled",
                     "params": {
-                        "typeface": "Internal"
+                        "typeface": "Freetype"
+                    },
+                    "enable_features": [
+                        "FontDataServiceAllWebContents"
+                    ]
+                },
+                {
+                    "name": "Fontations_Enabled",
+                    "params": {
+                        "typeface": "Fontations"
                     },
                     "enable_features": [
                         "FontDataServiceAllWebContents"
@@ -11541,22 +11560,6 @@
             ]
         }
     ],
-    "IOSAccountCapabilitiesMigration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS",
-                        "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillAcrossIframes": [
         {
             "platforms": [
@@ -11808,6 +11811,21 @@
             ]
         }
     ],
+    "IOSExplicitUITraitRegistration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableTraitCollectionRegistration"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [
@@ -11960,6 +11978,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "HomeMemoryImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSImprovePasswordFieldDetectionForFilling": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSImprovePasswordFieldDetectionForFilling"
                     ]
                 }
             ]
@@ -15874,28 +15907,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "AllowWindowDragUsingSystemDragDrop",
+                    "name": "Default",
+                    "disable_features": [
                         "OverrideDefaultOzonePlatformHintToAuto"
                     ]
                 },
                 {
-                    "name": "Enabled_IME_Dogfood",
-                    "enable_features": [
-                        "AllowWindowDragUsingSystemDragDrop",
-                        "OverrideDefaultOzonePlatformHintToAuto",
-                        "WaylandPerSurfaceScale",
-                        "WaylandTextInputV3"
-                    ]
-                },
-                {
-                    "name": "Enabled_IME_UiScale_Video_Dogfood",
+                    "name": "Enabled_Dogfood",
                     "enable_features": [
                         "AcceleratedVideoDecodeLinuxGL",
                         "AcceleratedVideoDecodeLinuxZeroCopyGL",
                         "AllowWindowDragUsingSystemDragDrop",
                         "OverrideDefaultOzonePlatformHintToAuto",
+                        "WaylandLinuxDrmSyncobj",
                         "WaylandPerSurfaceScale",
                         "WaylandTextInputV3",
                         "WaylandUiScale"
@@ -16570,12 +16594,7 @@
     "PasswordLeakToggleMove": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
@@ -17384,6 +17403,29 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PowerBookmarkBackend"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PreOpenPreloadDatabase": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreOpenPreloadDatabase"
                     ]
                 }
             ]
@@ -21565,26 +21607,6 @@
             ]
         }
     ],
-    "SearchPrefetchHighPriorityPrefetchesAndroid_WithVariousCacheSizes": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240913",
-                    "params": {
-                        "navigation_prefetch_param": "op",
-                        "touch_down": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxTouchDownTriggerForPrefetch",
-                        "SearchNavigationPrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
     "SearchReadyOmniboxAllowQueryEdit": [
         {
             "platforms": [
@@ -21788,7 +21810,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Both",
+                    "name": "Enabled_Both_20250207",
                     "params": {
                         "delay_after_tasks": "30",
                         "max_chunk_size": "100"
@@ -23314,6 +23336,24 @@
                     "enable_features": [
                         "IPH_TabAudioMuting",
                         "TabAudioMuting"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TabGroupSyncAutoOpenOffByDefault": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "auto_open_synced_tab_groups": "false"
+                    },
+                    "enable_features": [
+                        "TabGroupSyncAndroid"
                     ]
                 }
             ]

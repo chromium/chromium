@@ -65,12 +65,6 @@ enum class CanvasPixelFormat {
   kF16,
 };
 
-enum class ImageDataStorageFormat {
-  kUint8,
-  kUint16,
-  kFloat32,
-};
-
 enum ImageEncodingMimeType {
   kMimeTypePng,
   kMimeTypeJpeg,
@@ -352,8 +346,6 @@ PLATFORM_EXPORT bool ParseLineCap(const WTF::String&, LineCap&);
 
 PLATFORM_EXPORT WTF::String LineJoinName(LineJoin);
 PLATFORM_EXPORT bool ParseLineJoin(const WTF::String&, LineJoin&);
-
-PLATFORM_EXPORT WTF::String ImageDataStorageFormatName(ImageDataStorageFormat);
 
 // Return the gfx::ColorSpace or SkColorSpace for a PredefinedColorSpace.
 PLATFORM_EXPORT gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(

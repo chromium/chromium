@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "components/webdata/common/web_data_results.h"
 
@@ -29,14 +31,16 @@ void EntityDataManager::LoadEntities() {
   pending_query_ = webdata_service_->GetEntityInstances(base::BindOnce(
       [](base::WeakPtr<EntityDataManager> self,
          WebDataServiceBase::Handle handle,
-         std::unique_ptr<WDTypedResult> result) {
+         std::unique_ptr<WDTypedResult> typed_result) {
         CHECK_EQ(handle, self->pending_query_);
         self->pending_query_ = {};
-        if (result) {
-          CHECK_EQ(result->GetType(), AUTOFILL_ENTITY_INSTANCE_RESULT);
+        if (typed_result) {
+          CHECK_EQ(typed_result->GetType(), AUTOFILL_ENTITY_INSTANCE_RESULT);
+          auto& result = static_cast<WDResult<std::vector<EntityInstance>>&>(
+              *typed_result);
           self->entities_ =
-              static_cast<WDResult<std::vector<EntityInstance>>*>(result.get())
-                  ->GetValue();
+              base::flat_set<EntityInstance, EntityInstance::CompareByGuid>(
+                  std::move(result).GetValue());
         }
       },
       weak_ptr_factory_.GetWeakPtr()));
@@ -51,12 +55,9 @@ void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
               return;
             }
             CHECK_EQ(eic.type(), EntityInstanceChange::UPDATE);
-            auto it = std::ranges::find(self->entities_, eic.key(),
-                                        &EntityInstance::guid);
-            if (it != self->entities_.end()) {
+            auto [it, inserted] = self->entities_.insert(*eic.data_model());
+            if (!inserted) {
               *it = *eic.data_model();
-            } else {
-              self->entities_.push_back(*eic.data_model());
             }
           },
           weak_ptr_factory_.GetWeakPtr()));
@@ -71,11 +72,7 @@ void EntityDataManager::RemoveEntityInstance(base::Uuid guid) {
               return;
             }
             CHECK_EQ(eic.type(), EntityInstanceChange::REMOVE);
-            auto it = std::ranges::find(self->entities_, eic.key(),
-                                        &EntityInstance::guid);
-            if (it != self->entities_.end()) {
-              self->entities_.erase(it);
-            }
+            self->entities_.erase(eic.key());
           },
           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -89,9 +86,13 @@ void EntityDataManager::RemoveEntityInstancesModifiedBetween(
   LoadEntities();
 }
 
-const std::vector<EntityInstance>& EntityDataManager::GetEntityInstances()
-    const {
-  return entities_;
+base::optional_ref<const EntityInstance> EntityDataManager::GetEntityInstance(
+    const base::Uuid& guid) const {
+  auto it = entities_.find(guid);
+  if (it == entities_.end()) {
+    return std::nullopt;
+  }
+  return *it;
 }
 
 }  // namespace autofill

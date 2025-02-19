@@ -32,7 +32,7 @@ namespace {
 static constexpr base::TimeDelta kNotificationDelay = base::Seconds(1);
 
 bool DoesMatchOriginList(const std::vector<std::u16string>& origins,
-                         const content::OriginList& origin_list) {
+                         const content::SmsFetcher::OriginList& origin_list) {
   if (origins.size() != origin_list.size())
     return false;
 
@@ -92,7 +92,7 @@ void SmsFetchRequestHandler::RemoveRequest(Request* request) {
 }
 
 void SmsFetchRequestHandler::AskUserPermission(
-    const content::OriginList& origin_list,
+    const content::SmsFetcher::OriginList& origin_list,
     const std::string& one_time_code,
     const std::string& client_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -191,7 +191,7 @@ SmsFetchRequestHandler::Request::~Request() {
 }
 
 void SmsFetchRequestHandler::Request::OnReceive(
-    const content::OriginList& origin_list,
+    const content::SmsFetcher::OriginList& origin_list,
     const std::string& one_time_code,
     content::SmsFetcher::UserConsent consent_requirement) {
   DCHECK(origin_list_ == origin_list);

@@ -489,9 +489,8 @@ void PreFreezeBackgroundMemoryTrimmer::MaybePostSelfCompactionTask(
         FROM_HERE,
         // |base::Unretained| is safe here because we never destroy |this|.
         base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::SelfCompactionTask,
-                       base::Unretained(this), std::move(task_runner),
-                       std::move(regions), std::move(metric), max_size,
-                       started_at),
+                       base::Unretained(this), task_runner, std::move(regions),
+                       std::move(metric), max_size, started_at),
         GetDelayBetweenSelfCompaction());
   } else {
     FinishSelfCompaction(std::move(metric), started_at);
@@ -571,10 +570,16 @@ void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompactionInternal() {
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::CompactSelf() {
+void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    base::TimeTicks started_at) {
   // MADV_PAGEOUT was only added in Linux 5.4, so do nothing in earlier
   // versions.
   if (!SelfCompactionIsSupported()) {
+    return;
+  }
+
+  if (!ShouldContinueSelfCompaction(started_at)) {
     return;
   }
 
@@ -594,12 +599,10 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf() {
     }
   }
 
-  auto started_at = base::TimeTicks::Now();
-  Instance().StartSelfCompaction(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT, MayBlock()}),
-      std::move(regions), MakeRefCounted<CompactionMetric>(started_at),
-      MiBToBytes(kShouldFreezeSelfMaxSize.Get()), started_at);
+  Instance().StartSelfCompaction(std::move(task_runner), std::move(regions),
+                                 MakeRefCounted<CompactionMetric>(started_at),
+                                 MiBToBytes(kShouldFreezeSelfMaxSize.Get()),
+                                 started_at);
 }
 
 // static
@@ -674,19 +677,22 @@ void PreFreezeBackgroundMemoryTrimmer::PostMetricsTasksIfModern() {
 void PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze() {
   TRACE_EVENT0("base", "OnSelfFreeze");
 
-  Instance().OnSelfFreezeInternal();
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::BEST_EFFORT, MayBlock()});
+  Instance().OnSelfFreezeInternal(std::move(task_runner));
 }
 
-void PreFreezeBackgroundMemoryTrimmer::OnSelfFreezeInternal() {
+void PreFreezeBackgroundMemoryTrimmer::OnSelfFreezeInternal(
+    scoped_refptr<SequencedTaskRunner> task_runner) {
+  const auto started_at = base::TimeTicks::Now();
   base::AutoLock locker(lock());
   if (base::FeatureList::IsEnabled(kShouldFreezeSelf)) {
     RunPreFreezeTasks();
   }
-
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, MayBlock()},
+  task_runner->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::CompactSelf,
-                     base::Unretained(this)),
+                     base::Unretained(this), task_runner, started_at),
       base::Seconds(kShouldFreezeSelfDelayAfterPreFreezeTasks.Get()));
 }
 

@@ -588,15 +588,17 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
     case SharingState::kShared: {
       [menuElements
           addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
-                        // TODO(crbug.com/375586820): Implement this.
-                    }]];
+            [weakSelf.mutator leaveSharedTabGroupsPanelItem:cell.item
+                                                 sourceView:cell];
+          }]];
       break;
     }
     case SharingState::kSharedAndOwned: {
       [menuElements
           addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
-                        // TODO(crbug.com/375586820): Implement this.
-                    }]];
+            [weakSelf.mutator deleteSharedTabGroupsPanelItem:cell.item
+                                                  sourceView:cell];
+          }]];
       break;
     }
   }

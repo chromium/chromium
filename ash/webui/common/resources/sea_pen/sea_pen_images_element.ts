@@ -539,10 +539,11 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     return !thumbnailsLoading && isNonEmptyArray(textQueryHistory);
   }
 
-  private onHistoryPromptClicked_(e: Event&
-                                  {model: {item: TextQueryHistoryEntry}}) {
+  private onHistoryPromptClicked_(e: Event&{
+    model: {queryHistoryEntry: TextQueryHistoryEntry}
+  }) {
     this.dispatchEvent(
-        new SeaPenHistoryPromptSelectedEvent(e.model.item.query));
+        new SeaPenHistoryPromptSelectedEvent(e.model.queryHistoryEntry.query));
   }
 
   private onLatestTextQueryClicked_() {

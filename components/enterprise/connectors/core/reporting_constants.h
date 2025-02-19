@@ -6,8 +6,15 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_CONSTANTS_H_
 
 #include <array>
+#include <string_view>
+
+#include "base/containers/fixed_flat_map.h"
+#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 
 namespace enterprise_connectors {
+
+// Alias to reduce verbosity when using Event::EventCase.
+using EventCase = ::chrome::cros::reporting::proto::Event::EventCase;
 
 inline constexpr char kExtensionInstallEvent[] = "browserExtensionInstallEvent";
 inline constexpr char kExtensionTelemetryEvent[] = "extensionTelemetryEvent";
@@ -38,6 +45,83 @@ inline constexpr std::array<const char*, 12> kAllReportingEvents = {
     kExtensionTelemetryEvent,
     kBrowserCrashEvent,
 };
+
+inline constexpr char kAllUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.All.UploadSize";
+inline constexpr char kPasswordReuseUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.PasswordReuse.UploadSize";
+inline constexpr char kPasswordChangedUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.PasswordChanged.UploadSize";
+inline constexpr char kDangerousDownloadUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.DangerousDownload.UploadSize";
+inline constexpr char kInterstitialUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.Interstitial.UploadSize";
+inline constexpr char kSensitiveDataUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.SensitiveData.UploadSize";
+inline constexpr char kUnscannedFileUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.UnscannedFile.UploadSize";
+inline constexpr char kLoginUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.Login.UploadSize";
+inline constexpr char kPasswordBreachUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.PasswordBreach.UploadSize";
+inline constexpr char kUrlFilteringInterstitialUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.UrlFilteringInterstitial.UploadSize";
+inline constexpr char kExtensionInstallUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.BrowserExtensionInstallEvent.UploadSize";
+inline constexpr char kBrowserCrashUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.BrowserCrash.UploadSize";
+inline constexpr char kExtensionTelemetryUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.ExtensionTelemetry.UploadSize";
+inline constexpr char kUnknownUploadSizeUmaMetricName[] =
+    "Enterprise.ReportingEvent.Unknown.UploadSize";
+
+// Mapping from event name to UMA metric name for the payload size histogram.
+inline constexpr auto kEventNameToUmaUploadSizeMetricNameMap =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
+        {{kKeyPasswordReuseEvent, kPasswordReuseUploadSizeUmaMetricName},
+         {kKeyPasswordChangedEvent, kPasswordChangedUploadSizeUmaMetricName},
+         {kKeyDangerousDownloadEvent,
+          kDangerousDownloadUploadSizeUmaMetricName},
+         {kKeyInterstitialEvent, kInterstitialUploadSizeUmaMetricName},
+         {kKeySensitiveDataEvent, kSensitiveDataUploadSizeUmaMetricName},
+         {kKeyUnscannedFileEvent, kUnscannedFileUploadSizeUmaMetricName},
+         {kKeyLoginEvent, kLoginUploadSizeUmaMetricName},
+         {kKeyPasswordBreachEvent, kPasswordBreachUploadSizeUmaMetricName},
+         {kKeyUrlFilteringInterstitialEvent,
+          kUrlFilteringInterstitialUploadSizeUmaMetricName},
+         {kExtensionInstallEvent, kExtensionInstallUploadSizeUmaMetricName},
+         {kBrowserCrashEvent, kBrowserCrashUploadSizeUmaMetricName},
+         {kExtensionTelemetryEvent,
+          kExtensionTelemetryUploadSizeUmaMetricName}});
+
+// Mapping from event case to UMA metric name for the payload size histogram.
+inline constexpr auto kEventCaseToUmaUploadSizeMetricNameMap =
+    base::MakeFixedFlatMap<EventCase, std::string_view>(
+        {{EventCase::kPasswordReuseEvent,
+          kPasswordReuseUploadSizeUmaMetricName},
+         {EventCase::kPasswordChangedEvent,
+          kPasswordChangedUploadSizeUmaMetricName},
+         {EventCase::kDangerousDownloadEvent,
+          kDangerousDownloadUploadSizeUmaMetricName},
+         {EventCase::kInterstitialEvent, kInterstitialUploadSizeUmaMetricName},
+         {EventCase::kSensitiveDataEvent,
+          kSensitiveDataUploadSizeUmaMetricName},
+         {EventCase::kUnscannedFileEvent,
+          kUnscannedFileUploadSizeUmaMetricName},
+         {EventCase::kLoginEvent, kLoginUploadSizeUmaMetricName},
+         {EventCase::kPasswordBreachEvent,
+          kPasswordBreachUploadSizeUmaMetricName},
+         {EventCase::kUrlFilteringInterstitialEvent,
+          kUrlFilteringInterstitialUploadSizeUmaMetricName},
+         {EventCase::kBrowserExtensionInstallEvent,
+          kExtensionInstallUploadSizeUmaMetricName},
+         {EventCase::kBrowserCrashEvent, kBrowserCrashUploadSizeUmaMetricName},
+         {EventCase::kExtensionTelemetryEvent,
+          kExtensionTelemetryUploadSizeUmaMetricName}});
+
+std::string_view GetPayloadSizeUmaMetricName(std::string_view eventName);
+
+std::string_view GetPayloadSizeUmaMetricName(EventCase eventCase);
 
 }  // namespace enterprise_connectors
 

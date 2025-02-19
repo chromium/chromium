@@ -34,3 +34,7 @@ message BiddingAndAuctionServerKeyProtos {
 message KAnonKeyProtos {
   repeated bytes keys = 1;
 }
+
+message ListOfOrigins {
+  repeated string origins = 1;
+}

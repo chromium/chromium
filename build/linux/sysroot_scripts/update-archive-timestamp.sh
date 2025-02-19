@@ -12,7 +12,7 @@ ARCHIVE_URL="http://snapshot.debian.org/archive/debian"
 # Use 9999-01-01 as the date so that we get a redirect to the page with the
 # latest timestamp.
 TIMESTAMP=$(curl -s "${ARCHIVE_URL}/99990101T000000Z/pool/" | \
-  sed -n "s|.*${ARCHIVE_URL}/\([[:digit:]TZ]\+\)/pool/.*|\1|p" | head -n 1)
+  sed -n "s|.*/archive/debian/\([[:digit:]TZ]\+\)/pool/.*|\1|p" | head -n 1)
 
-sed -i "s/ARCHIVE_TIMESTAMP=.*$/ARCHIVE_TIMESTAMP=${TIMESTAMP}/" \
+sed -i "s/ARCHIVE_TIMESTAMP = .*$/ARCHIVE_TIMESTAMP = \"${TIMESTAMP}\"/" \
   "${SCRIPT_DIR}"/sysroot_creator.py

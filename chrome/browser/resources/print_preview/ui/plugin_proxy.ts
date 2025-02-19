@@ -91,7 +91,7 @@ export class PluginProxyImpl implements PluginProxy {
     // chrome/renderer/printing/print_render_frame_helper.cc actually
     // references it.
     this.plugin_.setAttribute('id', 'pdf-viewer');
-    return this.plugin_!;
+    return this.plugin_;
   }
 
   /**

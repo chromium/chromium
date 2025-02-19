@@ -32,20 +32,3 @@ const char kLanguageHistogramName[] = "Accessibility.ReadAnything.Language";
 
 const char kReadingModeName[] = "Reading mode";
 }  // namespace string_constants
-
-namespace fonts {
-
-const base::fixed_flat_map<std::string_view, FontInfo, 9> kFontInfos =
-    base::MakeFixedFlatMap<std::string_view, FontInfo>({
-        {"Poppins", kPoppinsFontInfo},
-        {"Sans-serif", kSansSerifFontInfo},
-        {"Serif", kSerifFontInfo},
-        {"Comic Neue", kComicNeueFontInfo},
-        {"Lexend Deca", kLexendDecaFontInfo},
-        {"EB Garamond", kEbGaramondFontInfo},
-        {"STIX Two Text", kStixTwoTextFontInfo},
-        {"Andika", kAndikaFontInfo},
-        {"Atkinson Hyperlegible", kAtkinsonHyperlegibleFontInfo},
-    });
-
-}  // namespace fonts

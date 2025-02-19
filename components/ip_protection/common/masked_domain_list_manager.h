@@ -6,12 +6,14 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
@@ -63,8 +65,14 @@ class MaskedDomainListManager {
   // and the 1P bypass rules.
   void UpdateMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl,
                               const std::vector<std::string>& exclusion_list);
+  void UpdateMaskedDomainListFlatbuffer(base::File default_file,
+                                        uint64_t default_file_size,
+                                        base::File regular_browsing_file,
+                                        uint64_t regular_browsing_file_size);
 
  private:
+  void RecordCreationTime();
+
   // Sanitizes the given URL by removing a trailing dot from its host if
   // present. Returns a reference to either the modified sanitized URL or the
   // original URL if no changes were made.
@@ -81,7 +89,7 @@ class MaskedDomainListManager {
   UrlMatcherWithBypass url_matcher_with_bypass_;
 
   // If UpdateMaskedDomainList has not yet been called, stores the time at which
-  // the manager was created. The first call to UpdateMaskedDomainList clears
+  // the manager was created. The first call to `RecordCreationTime` clears
   // this to nullopt on entry.
   std::optional<base::TimeTicks> creation_time_for_mdl_update_metric_;
 };

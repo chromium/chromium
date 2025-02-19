@@ -19,6 +19,7 @@
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
@@ -905,7 +906,12 @@ void FrameNodeImpl::SetViewportIntersectionImpl(bool is_intersecting_viewport) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The outermost main frame or embedder is always fully intersecting with the
   // viewport, so it is not tracked.
-  CHECK(parent_or_outer_document_or_embedder());
+  if (!parent_or_outer_document_or_embedder()) {
+    mojo::ReportBadMessage(
+        "The viewport intersection is never sent for the outermost main "
+        "frame.");
+    return;
+  }
 
   ViewportIntersection viewport_intersection = [&, this]() {
     if (is_intersecting_viewport) {

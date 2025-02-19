@@ -184,6 +184,9 @@ extern const char kIOSPullToRefreshIPHDismissButtonTapped[];
 // The user has tapped "incognito" on the page control in the tab grid.
 extern const char kIOSIncognitoPageControlTapped[];
 
+// The sign-in fullscreen promo was triggered.
+extern const char kIOSSigninFullscreenPromoTrigger[];
+
 // The user has swiped right from regular tab grid to the incognito tab grid.
 extern const char kIOSSwipeRightForIncognitoUsed[];
 
@@ -292,6 +295,10 @@ extern const char kIOSOverflowMenuSetTabReminderTapped[];
 
 // The Reminder Notifications Overflow Menu New Badge IPH was triggered.
 extern const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[];
+
+// The user has executed an action that is a trigger for the Auto-deletion IPH.
+extern const char kIOSDownloadAutoDeletionIPHCriterionMet[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

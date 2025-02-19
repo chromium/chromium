@@ -114,6 +114,18 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   virtual ~IOBuffer();
 
+  // Sets `data_` and `size_` based on span. CHECKs `size_` isn't too big to fit
+  // in an int.
+  //
+  // TODO(https://crbug.com/396621713): Replace `data_` and `size_` with a
+  // private `raw_span`, with this function being the only way to modify it.
+  void SetSpan(base::span<uint8_t> span);
+
+  // Like SetSpan(base::span<uint8_t>()), but without a size check. Particularly
+  // useful to call in the destructor of subclasses, to avoid failing raw
+  // reference checks.
+  void ClearSpan();
+
   raw_ptr<char, AllowPtrArithmetic> data_ = nullptr;
   int size_ = 0;
 };
@@ -128,7 +140,7 @@ class NET_EXPORT IOBufferWithSize : public IOBuffer {
   ~IOBufferWithSize() override;
 
  private:
-  base::HeapArray<char> storage_;
+  base::HeapArray<uint8_t> storage_;
 };
 
 // This is like IOBufferWithSize, except its constructor takes a vector.
@@ -260,7 +272,7 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   // TODO(329476354): Convert to std::vector, use reserve()+resize() to make
   // exact reallocs, and remove `capacity_`. Possibly with an allocator the
   // default-initializes, if it's important to not initialize the new memory?
-  std::unique_ptr<char, base::FreeDeleter> real_data_;
+  std::unique_ptr<uint8_t, base::FreeDeleter> real_data_;
   int capacity_ = 0;
   int offset_ = 0;
 };

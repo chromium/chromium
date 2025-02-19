@@ -5,16 +5,20 @@
 package org.chromium.base;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** This class provides JNI-related methods to the native library. */
 @NullMarked
+@JNINamespace("base::android")
 public class JNIUtils {
     private static final String TAG = "JNIUtils";
     private static @Nullable ClassLoader sJniClassLoader;
+    private static boolean sBadClassLoaderUsed;
 
     /**
      * Returns a ClassLoader which can load Java classes from the specified split.
@@ -37,7 +41,13 @@ public class JNIUtils {
                 // is very out of date.
             }
         }
-        return sJniClassLoader != null ? sJniClassLoader : JNIUtils.class.getClassLoader();
+        if (sJniClassLoader == null) {
+            sBadClassLoaderUsed = true;
+            // This will be replaced by the Chrome split's ClassLoader as soon as we call
+            // setClassLoader.
+            return JNIUtils.class.getClassLoader();
+        }
+        return sJniClassLoader;
     }
 
     /**
@@ -46,6 +56,20 @@ public class JNIUtils {
      * @param classLoader the ClassLoader to use.
      */
     public static void setClassLoader(ClassLoader classLoader) {
+        assert sJniClassLoader == null : "setClassLoader should be called only once.";
         sJniClassLoader = classLoader;
+        if (sBadClassLoaderUsed) {
+            // In the case that we attempt a JNI call before the Chrome split is loaded, we want to
+            // make sure that we invalidate the cached ClassLoader, since the cached ClassLoader
+            // only includes the base module. We cannot do this unconditionally, however, since
+            // sBadClassLoaderUsed also indicates that native is loaded, and this function will
+            // often execute before native is loaded.
+            JNIUtilsJni.get().overwriteMainClassLoader(classLoader);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void overwriteMainClassLoader(ClassLoader classLoader);
     }
 }

@@ -328,9 +328,15 @@ class SyncService : public KeyedService {
   bool HasCompletedSyncCycle() const;
 
   // The last persistent authentication error that was encountered by the
-  // SyncService. It gets cleared when the error is resolved.
+  // SyncService. It gets cleared when the error is resolved. Note that auth
+  // errors are not persisted to disk, so during browser or profile startup the
+  // function returns no error.
   virtual GoogleServiceAuthError GetAuthError() const = 0;
   virtual base::Time GetAuthErrorTime() const = 0;
+
+  // Similar to GetAuthError().IsPersistentError(), but more reliable shortly
+  // after startup / profile load, as it caches the last known value.
+  virtual bool HasCachedPersistentAuthErrorForMetrics() const = 0;
 
   // Returns true if the Chrome client is too old and needs to be updated for
   // Sync to work.

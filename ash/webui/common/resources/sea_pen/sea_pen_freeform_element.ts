@@ -12,6 +12,7 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 
 import type {SeaPenSamplePrompt} from './constants.js';
@@ -21,7 +22,7 @@ import {getTemplate} from './sea_pen_freeform_element.html.js';
 import {logSamplePromptShuffleClicked, logSeaPenFreeformTabClicked} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
-import {isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
+import {IronAnnounceEvent, isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
 
 export interface SeaPenFreeformElement {
   $: {
@@ -73,6 +74,11 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
   private seaPenQuery_: SeaPenQuery|null;
   private thumbnailResponseStatusCode_: MantaStatusCode|null;
   private thumbnails_: SeaPenThumbnail[]|null;
+
+  override ready() {
+    super.ready();
+    IronA11yAnnouncer.requestAvailability();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -180,6 +186,8 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
   private onShuffleClicked_(): void {
     logSamplePromptShuffleClicked();
     this.shuffleSamplePrompts_();
+    this.dispatchEvent(
+        new IronAnnounceEvent(this.i18n('ariaAnnounceSamplePromptsShuffled')));
   }
 
   private shuffleSamplePrompts_(): void {

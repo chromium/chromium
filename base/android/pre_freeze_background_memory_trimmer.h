@@ -116,7 +116,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static bool SelfCompactionIsSupported();
 
   // Compacts the memory for the process.
-  void CompactSelf();
+  void CompactSelf(scoped_refptr<SequencedTaskRunner> task_runner,
+                   base::TimeTicks started_at);
 
   // If we are currently running self compaction, cancel it.
   static void MaybeCancelSelfCompaction();
@@ -155,6 +156,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   friend class PreFreezeSelfCompactionTest;
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, Cancel);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
 
   // We use our own implementation here, based on |PostCancelableDelayedTask|,
   // rather than relying on something like |base::OneShotTimer|, since
@@ -284,7 +286,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   void OnPreFreezeInternal() LOCKS_EXCLUDED(lock());
   void RunPreFreezeTasks() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
-  void OnSelfFreezeInternal();
+  void OnSelfFreezeInternal(scoped_refptr<SequencedTaskRunner> task_runner);
 
   void MaybeCancelSelfCompactionInternal() LOCKS_EXCLUDED(lock());
 

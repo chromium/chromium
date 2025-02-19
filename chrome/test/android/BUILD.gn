@@ -394,6 +394,7 @@ android_library("chrome_java_integration_test_support") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/bookmarks/android:java",
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/language/android:java",

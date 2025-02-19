@@ -31,6 +31,7 @@ import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polym
 
 import {emitEvent, getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import type {SettingsPrefs} from './common.js';
+import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
 import type {ColorMenu} from './menus/color_menu.js';
 import type {HighlightMenu} from './menus/highlight_menu.js';
 import type {LetterSpacingMenu} from './menus/letter_spacing_menu.js';
@@ -780,34 +781,19 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.onKeyDown_(e, focusableElements);
   }
 
-  private getNewIndex_(e: KeyboardEvent, focusableElements: HTMLElement[]):
-      number {
-    let currentIndex = focusableElements.indexOf(e.target as HTMLElement);
-    const direction =
-        (e.key === 'ArrowRight' || e.key === 'ArrowDown') ? 1 : -1;
-    // If e.target wasn't found in focusable elements, and we're going
-    // backwards, adjust currentIndex so we move to the last focusable element
-    if (currentIndex === -1 && direction === -1) {
-      currentIndex = focusableElements.length;
-    }
-    // Move to the next focusable item in the menu, wrapping around
-    // if we've reached the end or beginning.
-    return (currentIndex + direction + focusableElements.length) %
-        focusableElements.length;
-  }
-
   private onFontSizeMenuKeyDown_(e: KeyboardEvent) {
     // The font size selection menu is laid out horizontally, so users should be
     // able to navigate it using either up and down arrows, or left and right
     // arrows.
-    if (!['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+    if (!isArrow(e.key)) {
       return;
     }
     e.preventDefault();
     const focusableElements =
         Array.from(this.$.fontSizeMenu.get().children) as HTMLElement[];
+    assert(e.target instanceof HTMLElement);
     const elementToFocus =
-        focusableElements[this.getNewIndex_(e, focusableElements)];
+        focusableElements[getNewIndex(e.key, e.target, focusableElements)];
     assert(elementToFocus, 'no element to focus');
     elementToFocus.focus();
   }
@@ -818,15 +804,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {
-    if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) {
+    if (!isHorizontalArrow(e.key)) {
       return;
     }
 
     e.preventDefault();
     //  Move to the next focusable item in the toolbar, wrapping around
     //  if we've reached the end or beginning.
-    let newIndex = this.getNewIndex_(e, focusableElements);
-    const direction = e.key === 'ArrowRight' ? 1 : -1;
+    assert(e.target instanceof HTMLElement);
+    let newIndex = getNewIndex(e.key, e.target, focusableElements);
+    const direction = isForwardArrow(e.key) ? 1 : -1;
     // If the next item has overflowed, skip focusing the more options button
     // itself and go directly to the children. We still need this button in the
     // list of focusable elements because it can become focused by tabbing while
@@ -920,7 +907,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // The default behavior goes to the next select option. However, we want
     // to instead go to the next toolbar button (handled in onToolbarKeyDown_).
     // ArrowDown and ArrowUp will still move to the next/previous option.
-    if (['ArrowRight', 'ArrowLeft'].includes(e.key)) {
+    if (isHorizontalArrow(e.key)) {
       e.preventDefault();
     }
   }

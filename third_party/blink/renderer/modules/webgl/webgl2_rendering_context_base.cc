@@ -4422,17 +4422,7 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
     case GL_BLEND_SRC_RGB:
     case GL_BLEND_SRC_ALPHA:
     case GL_BLEND_DST_RGB:
-    case GL_BLEND_DST_ALPHA: {
-      if (!ExtensionEnabled(kOESDrawBuffersIndexedName)) {
-        // return null
-        SynthesizeGLError(GL_INVALID_ENUM, "getIndexedParameter",
-                          "invalid parameter name");
-        return ScriptValue::CreateNull(script_state->GetIsolate());
-      }
-      GLint value = -1;
-      ContextGL()->GetIntegeri_v(target, index, &value);
-      return WebGLAny(script_state, value);
-    }
+    case GL_BLEND_DST_ALPHA:
     case GL_COLOR_WRITEMASK: {
       if (!ExtensionEnabled(kOESDrawBuffersIndexedName)) {
         // Enum validation has to happen here to return null
@@ -4442,14 +4432,25 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
                           "invalid parameter name");
         return ScriptValue::CreateNull(script_state->GetIsolate());
       }
-      constexpr size_t result_size = 4;
-      Vector<GLint> values(result_size);
-      ContextGL()->GetIntegeri_v(target, index, values.data());
-      Vector<bool> bool_values(result_size);
-      for (size_t i = 0; i < result_size; i++) {
-        bool_values[i] = (values[i] != GL_FALSE);
+      if (index >= static_cast<GLuint>(MaxDrawBuffers())) {
+        SynthesizeGLError(GL_INVALID_VALUE, "getIndexedParameter",
+                          "index out of range");
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       }
-      return WebGLAny(script_state, bool_values);
+      if (target == GL_COLOR_WRITEMASK) {
+        constexpr size_t result_size = 4;
+        Vector<GLint> values(result_size);
+        ContextGL()->GetIntegeri_v(target, index, values.data());
+        Vector<bool> bool_values(result_size);
+        for (size_t i = 0; i < result_size; i++) {
+          bool_values[i] = (values[i] != GL_FALSE);
+        }
+        return WebGLAny(script_state, bool_values);
+      }
+      // All parameters except GL_COLOR_WRITEMASK are a single integer
+      GLint value = -1;
+      ContextGL()->GetIntegeri_v(target, index, &value);
+      return WebGLAny(script_state, value);
     }
     default:
       SynthesizeGLError(GL_INVALID_ENUM, "getIndexedParameter",

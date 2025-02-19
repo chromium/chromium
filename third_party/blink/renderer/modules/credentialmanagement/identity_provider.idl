@@ -27,8 +27,7 @@ dictionary IdentityProviderToken {
     [CallWith=ScriptState, RaisesException, MeasureAs=FedCmUserInfo]
     static Promise<sequence<IdentityUserInfo>> getUserInfo(IdentityProviderConfig config);
 
-    [RuntimeEnabled=FedCm, CallWith=ScriptState]
-    static void close();
+    [CallWith=ScriptState] static void close();
 
     [RuntimeEnabled=FedCmIdPRegistration, CallWith=ScriptState, ImplementedAs=registerIdentityProvider]
     static Promise<boolean> register(USVString configURL);
@@ -37,6 +36,5 @@ dictionary IdentityProviderToken {
 
     // Allows an IdP to return a token to the RP from the content area, as opposed to
     // over HTTP with the id_assertion_endpoint.
-    [RuntimeEnabled=FedCmAuthz, CallWith=ScriptState]
-    static Promise<undefined> resolve((USVString or IdentityProviderToken) token, optional IdentityResolveOptions options = {});
+    [CallWith=ScriptState] static Promise<undefined> resolve((USVString or IdentityProviderToken) token, optional IdentityResolveOptions options = {});
 };

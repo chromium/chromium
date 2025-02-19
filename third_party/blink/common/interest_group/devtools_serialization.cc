@@ -504,6 +504,8 @@ base::Value::Dict SerializeInterestGroupForDevtools(const InterestGroup& ig) {
                     ig.max_trusted_bidding_signals_url_length, result);
   SerializeIntoDict("trustedBiddingSignalsCoordinator",
                     ig.trusted_bidding_signals_coordinator, result);
+  SerializeIntoDict("viewAndClickCountsProviders",
+                    ig.view_and_click_counts_providers, result);
   SerializeIntoDict("userBiddingSignals", ig.user_bidding_signals, result);
   SerializeIntoDict("ads", ig.ads, result);
   SerializeIntoDict("adComponents", ig.ad_components, result);

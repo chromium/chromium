@@ -64,6 +64,7 @@ GlicKeyedService::~GlicKeyedService() {
 
 void GlicKeyedService::Shutdown() {
   window_controller_->Shutdown();
+  SetContextAccessIndicator(false);
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,

@@ -65,9 +65,9 @@ SmsParser::Result::Result(const url::Origin& top_origin,
 SmsParser::Result::Result(const Result& other) = default;
 SmsParser::Result::~Result() = default;
 
-OriginList SmsParser::Result::GetOriginList() const {
+SmsFetcher::OriginList SmsParser::Result::GetOriginList() const {
   DCHECK(IsValid());
-  OriginList origin_list;
+  SmsFetcher::OriginList origin_list;
   if (!embedded_origin.opaque())
     origin_list.push_back(embedded_origin);
   origin_list.push_back(top_origin);

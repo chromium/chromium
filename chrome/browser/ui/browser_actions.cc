@@ -507,8 +507,7 @@ void BrowserActions::InitializeBrowserActions() {
             base::BindRepeating(
                 [](Browser* browser, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  // TODO(396720194): simplify ptr const to non ptr const for clarity.
-                  content::WebContents* const web_contents =
+                  content::WebContents* web_contents =
                       browser->tab_strip_model()->GetActiveWebContents();
                   const GURL& url = chrome::GetURLToBookmark(web_contents);
                   IntentPickerTabHelper* intent_picker_tab_helper =

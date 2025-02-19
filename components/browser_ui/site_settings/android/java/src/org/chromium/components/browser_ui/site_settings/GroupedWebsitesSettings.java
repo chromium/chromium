@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -20,6 +22,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -27,6 +32,7 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
 /** Shows the permissions and other settings for a group of websites. */
+@NullMarked
 public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         implements EmbeddableSettingsPage,
                 Preference.OnPreferenceClickListener,
@@ -40,11 +46,11 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
     public static final String PREF_RESET_GROUP = "reset_group_button";
 
-    private static GroupedWebsitesSettings sPausedInstance;
+    private static @Nullable GroupedWebsitesSettings sPausedInstance;
 
     private WebsiteGroup mSiteGroup;
 
-    private Dialog mConfirmationDialog;
+    private @Nullable Dialog mConfirmationDialog;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -54,13 +60,14 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
      * <p>This is used by {@link SingleWebsiteSettings} to go to the 'All Sites' level when clearing
      * data.
      */
-    public static GroupedWebsitesSettings getPausedInstance() {
+    public static @Nullable GroupedWebsitesSettings getPausedInstance() {
         ThreadUtils.assertOnUiThread();
         return sPausedInstance;
     }
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    @Initializer
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         // Remove this Preference if it gets restored without a valid SiteSettingsDelegate. This
         // can happen e.g. when it is included in PageInfo.
         if (!hasSiteSettingsDelegate()) {
@@ -79,11 +86,11 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
         // Preferences screen
         SettingsUtils.addPreferencesFromResource(this, R.xml.grouped_websites_preferences);
-        findPreference(PREF_SITE_TITLE).setTitle(domainAndRegistry);
-        findPreference(PREF_SITES_IN_GROUP)
-                .setTitle(
-                        activity.getString(
-                                R.string.domain_settings_sites_in_group, domainAndRegistry));
+        Preference siteTitlePref = assumeNonNull(findPreference(PREF_SITE_TITLE));
+        siteTitlePref.setTitle(domainAndRegistry);
+        Preference siteInGroupPref = assumeNonNull(findPreference(PREF_SITES_IN_GROUP));
+        siteInGroupPref.setTitle(
+                activity.getString(R.string.domain_settings_sites_in_group, domainAndRegistry));
         setUpClearDataPreference();
         setUpResetGroupPreference();
         setUpRelatedSitesPreferences();
@@ -160,7 +167,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     public void onDisplayPreferenceDialog(Preference preference) {
         if (preference instanceof ClearWebsiteStorage) {
             // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-            if (getFragmentManager().isStateSaved()) {
+            if (assumeNonNull(getFragmentManager()).isStateSaved()) {
                 return;
             }
             Callback<Boolean> onDialogClosed =
@@ -193,7 +200,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                 // place for a slightly smoother user experience. However, due to the complexity
                 // involved in refreshing the already fetched data and a very marginal benefit, it
                 // may not be worth it.
-                getSettingsNavigation().finishCurrentSettings(this);
+                assumeNonNull(getSettingsNavigation()).finishCurrentSettings(this);
             };
 
     @VisibleForTesting
@@ -212,6 +219,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private void setUpClearDataPreference() {
         ClearWebsiteStorage preference = findPreference(PREF_CLEAR_DATA);
+        assumeNonNull(preference);
         long storage = mSiteGroup.getTotalUsage();
         int cookies = mSiteGroup.getNumberOfCookies();
         if (storage > 0 || cookies > 0) {
@@ -234,6 +242,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private void setUpResetGroupPreference() {
         Preference preference = findPreference(PREF_RESET_GROUP);
+        assumeNonNull(preference);
         if (mSiteGroup.isCookieDeletionDisabled(
                 getSiteSettingsDelegate().getBrowserContextHandle())) {
             preference.setEnabled(false);
@@ -243,24 +252,26 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private void setUpRelatedSitesPreferences() {
         PreferenceCategory relatedSitesHeader = findPreference(PREF_RELATED_SITES);
+        assumeNonNull(relatedSitesHeader);
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
+        var rwsInfo = mSiteGroup.getRwsInfo();
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                         && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                        && mSiteGroup.getRwsInfo() != null;
+                        && rwsInfo != null;
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
 
         if (shouldRelatedSitesPrefBeVisible) {
-            var rwsInfo = mSiteGroup.getRwsInfo();
+            assumeNonNull(rwsInfo);
 
             relatedSitesText.setTitle(
                     getContext()
                             .getResources()
                             .getQuantityString(
                                     R.plurals.allsites_rws_summary,
-                                    mSiteGroup.getRwsInfo().getMembersCount(),
-                                    Integer.toString(mSiteGroup.getRwsInfo().getMembersCount()),
+                                    rwsInfo.getMembersCount(),
+                                    Integer.toString(rwsInfo.getMembersCount()),
                                     rwsInfo.getOwner()));
             relatedSitesText.setManagedPreferenceDelegate(
                     new ForwardingManagedPreferenceDelegate(
@@ -282,7 +293,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
             if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
                 relatedSitesHeader.removeAll();
                 relatedSitesHeader.addPreference(relatedSitesText);
-                for (Website site : mSiteGroup.getRwsInfo().getMembers()) {
+                for (Website site : rwsInfo.getMembers()) {
                     WebsiteRowPreference preference =
                             new RwsRowPreference(
                                     relatedSitesHeader.getContext(),
@@ -297,6 +308,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private void updateSitesInGroup() {
         PreferenceCategory category = findPreference(PREF_SITES_IN_GROUP);
+        assumeNonNull(category);
         category.removeAll();
         for (Website site : mSiteGroup.getWebsites()) {
             WebsiteRowPreference preference =

@@ -80,9 +80,15 @@ template <typename ValueType>
 void ReadSimpleValueUniformsHelper(
     PaintOpReader& reader,
     std::vector<PaintShader::Uniform<ValueType>>* output_uniforms) {
+  CHECK(output_uniforms);
   size_t count = 0u;
   reader.ReadSize(&count);
   if (!reader.valid() || count == 0u) {
+    return;
+  }
+  if (count > PaintShader::kMaxNumUniformsPerType ||
+      count > output_uniforms->max_size()) {
+    reader.valid_ = false;
     return;
   }
   output_uniforms->reserve(count);

@@ -12,6 +12,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties of message banner. */
+@NullMarked
 public class MessageBannerProperties {
     /** A Color value indicating that the "natural" colors from the image should be used. */
     @ColorInt public static final int TINT_NONE = Color.TRANSPARENT;

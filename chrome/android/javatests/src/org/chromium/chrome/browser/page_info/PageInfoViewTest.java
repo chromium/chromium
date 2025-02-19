@@ -1542,8 +1542,7 @@ public class PageInfoViewTest {
                             ContentSettingsType.FEDERATED_IDENTITY_API);
             assertEquals(1, exceptions.size());
             assertEquals(GURLUtils.getOrigin(rpUrl), exceptions.get(0).getPrimaryPattern() + "/");
-            assertEquals(
-                    ContentSettingValues.BLOCK, exceptions.get(0).getContentSetting().intValue());
+            assertEquals(ContentSettingValues.BLOCK, exceptions.get(0).getContentSetting());
         }
 
         // Toggle the federated identity permission.
@@ -1557,8 +1556,7 @@ public class PageInfoViewTest {
                             ContentSettingsType.FEDERATED_IDENTITY_API);
             assertEquals(1, exceptions.size());
             assertEquals(GURLUtils.getOrigin(rpUrl), exceptions.get(0).getPrimaryPattern() + "/");
-            assertEquals(
-                    ContentSettingValues.ALLOW, exceptions.get(0).getContentSetting().intValue());
+            assertEquals(ContentSettingValues.ALLOW, exceptions.get(0).getContentSetting());
         }
     }
 

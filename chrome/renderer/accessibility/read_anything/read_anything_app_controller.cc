@@ -21,10 +21,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/read_anything/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
@@ -1290,19 +1292,22 @@ bool ReadAnythingAppController::IsGoogleDocs() const {
 }
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
-  return model_.GetSupportedFonts();
+  return model_.supported_fonts();
 }
 
 std::string ReadAnythingAppController::GetValidatedFontName(
     const std::string& font) const {
-  bool is_valid = base::Contains(fonts::kReadAnythingFonts, font);
-  return is_valid ? fonts::kFontInfos.at(font).css_name
-                  : string_constants::kReadAnythingDefaultFont;
+  if (!base::Contains(GetAllFonts(), font)) {
+    return string_constants::kReadAnythingDefaultFont;
+  }
+  if (font == "Serif" || font == "Sans-serif") {
+    return base::ToLowerASCII(font);
+  }
+  return base::Contains(font, ' ') ? base::StrCat({"\"", font, "\""}) : font;
 }
 
-std::vector<std::string> ReadAnythingAppController::GetAllFonts() {
-  return std::vector<std::string>(std::begin(fonts::kReadAnythingFonts),
-                                  std::end(fonts::kReadAnythingFonts));
+std::vector<std::string> ReadAnythingAppController::GetAllFonts() const {
+  return ::GetSupportedFonts({});
 }
 
 void ReadAnythingAppController::RequestImageDataUrl(
@@ -1467,12 +1472,7 @@ void ReadAnythingAppController::OnCopy() const {
 }
 
 void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
-  if (increase) {
-    model_.IncreaseTextSize();
-  } else {
-    model_.DecreaseTextSize();
-  }
-
+  model_.AdjustTextSize(increase ? 1 : -1);
   page_handler_->OnFontSizeChange(model_.font_size());
 }
 

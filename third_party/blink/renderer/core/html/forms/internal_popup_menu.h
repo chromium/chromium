@@ -62,7 +62,7 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   CSSFontSelector* CreateCSSFontSelector(Document& popup_document) override;
   void SetValueAndClosePopup(int,
                              const String&,
-                             const bool is_keyboard_event) override;
+                             bool is_keyboard_event) override;
   void SetValue(const String&) override;
   void CancelPopup() override;
   Element& OwnerElement() override;

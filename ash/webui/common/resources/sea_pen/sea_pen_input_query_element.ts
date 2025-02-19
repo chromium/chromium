@@ -287,6 +287,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
       return;
     }
     this.textValue_ = this.textValue_.length > 0 ? newTextValue : event.detail;
+    this.focusInput_();
   }
 
   private updateSearchButton_(

@@ -134,15 +134,6 @@ static_library("browser") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (is_android) {
-    sources += [
-      "android/android_history_types.cc",
-      "android/android_history_types.h",
-      "android/android_urls_database.cc",
-      "android/android_urls_database.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -201,8 +192,5 @@ source_set("unit_tests") {
   ]
   if (is_ios) {
     deps += [ "//components/test:history_test_bundle_data" ]
-  }
-  if (is_android) {
-    sources += [ "android/android_history_types_unittest.cc" ]
   }
 }

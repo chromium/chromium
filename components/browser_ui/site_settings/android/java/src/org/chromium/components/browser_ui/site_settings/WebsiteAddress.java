@@ -4,10 +4,13 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -22,13 +25,14 @@ import java.util.Objects;
  *
  * This is roughly equivalent to C++'s ContentSettingsPattern, though more limited.
  */
+@NullMarked
 public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable {
     private final String mOriginOrHostPattern;
-    private final String mOrigin;
-    private final String mScheme;
-    private final String mHost;
+    private final @Nullable String mOrigin;
+    private final @Nullable String mScheme;
+    private final @Nullable String mHost;
     private final boolean mOmitProtocolAndPort;
-    private String mDomainAndRegistry;
+    private @Nullable String mDomainAndRegistry;
 
     private static final String SCHEME_SUFFIX = "://";
     static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
@@ -38,8 +42,8 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
      *
      * @return A new WebsiteAddress, or null if |originOrHostOrPattern| was null or empty.
      */
-    @Nullable
-    public static WebsiteAddress create(String originOrHostOrPattern) {
+    @Contract("null -> null")
+    public static @Nullable WebsiteAddress create(@Nullable String originOrHostOrPattern) {
         // TODO(mvanouwerkerk): Define the behavior of this method if a url with path, query, or
         // fragment is passed in.
 
@@ -88,9 +92,9 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
 
     private WebsiteAddress(
             String originOrHostPattern,
-            String origin,
-            String scheme,
-            String host,
+            @Nullable String origin,
+            @Nullable String scheme,
+            @Nullable String host,
             boolean omitProtocolAndPort) {
         mOriginOrHostPattern = originOrHostPattern;
         mOrigin = origin;
@@ -104,11 +108,11 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
         if (mHost != null && mOmitProtocolAndPort) {
             return UrlConstants.HTTP_URL_PREFIX + mHost;
         } else {
-            return mOrigin;
+            return assumeNonNull(mOrigin);
         }
     }
 
-    public String getHost() {
+    public @Nullable String getHost() {
         return mHost;
     }
 
@@ -117,7 +121,7 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     }
 
     public String getTitle() {
-        if (mOrigin == null) return mHost;
+        if (mOrigin == null) return assumeNonNull(mHost);
         return UrlFormatter.formatUrlForSecurityDisplay(
                 mOrigin.contains(ANY_SUBDOMAIN_PATTERN)
                         ? mOrigin.replace(ANY_SUBDOMAIN_PATTERN, "")
@@ -135,7 +139,7 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
      * @return Domain and registry if those are defined; origin/host otherwise (for things like IP
      *.        addresses and "localhost") with the scheme omitted.
      */
-    public String getDomainAndRegistry() {
+    public @Nullable String getDomainAndRegistry() {
         if (mDomainAndRegistry == null) {
             // getDomainAndRegistry works better having a protocol prefix.
             mDomainAndRegistry =
@@ -172,7 +176,7 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     @Override
     public int compareTo(WebsiteAddress to) {
         if (this == to) return 0;
-        String domainAndRegistry1 = getDomainAndRegistry();
+        String domainAndRegistry1 = assumeNonNull(getDomainAndRegistry());
         String domainAndRegistry2 = to.getDomainAndRegistry();
         int domainComparison = domainAndRegistry1.compareTo(domainAndRegistry2);
         if (domainComparison != 0) return domainComparison;
@@ -196,19 +200,20 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
 
     private String[] getSubdomainsList() {
         int startIndex;
-        String mAddress;
+        String address;
         if (mOrigin != null) {
             startIndex = mOrigin.indexOf(SCHEME_SUFFIX);
             if (startIndex == -1) return new String[0];
             startIndex += SCHEME_SUFFIX.length();
-            mAddress = mOrigin;
+            address = mOrigin;
         } else {
             startIndex = 0;
-            mAddress = mHost;
+            address = mHost;
         }
-        int endIndex = mAddress.indexOf(getDomainAndRegistry());
+        assumeNonNull(address);
+        int endIndex = address.indexOf(getDomainAndRegistry());
         return --endIndex > startIndex
-                ? mAddress.substring(startIndex, endIndex).split("\\.")
+                ? address.substring(startIndex, endIndex).split("\\.")
                 : new String[0];
     }
 

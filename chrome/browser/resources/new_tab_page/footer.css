@@ -1,0 +1,65 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#backgroundImageAttribution {
+  border-radius: 8px;
+  bottom: 16px;
+  color: var(--color-new-tab-page-attribution-foreground);
+  line-height: 20px;
+  max-width: 50vw;
+  padding: 8px;
+  position: fixed;
+  z-index: -1;
+  background-color: var(--ntp-protected-icon-background-color);
+  text-shadow: none;
+}
+
+#backgroundImageAttribution:hover {
+  background-color: var(--ntp-protected-icon-background-color-hovered);
+  background: rgba(var(--google-grey-900-rgb), .1);
+}
+
+:host-context([dir='ltr']) #backgroundImageAttribution {
+  left: 16px;
+}
+
+:host-context([dir='rtl']) #backgroundImageAttribution {
+  right: 16px;
+}
+
+#backgroundImageAttribution1Container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+#linkIcon {
+  -webkit-mask-image: url(icons/link.svg);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(--color-new-tab-page-attribution-foreground);
+  height: 16px;
+  margin-inline-end: 8px;
+  width: 16px;
+}
+
+#backgroundImageAttribution1,
+#backgroundImageAttribution2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#backgroundImageAttribution1 {
+  font-size: .875rem;
+}
+
+#backgroundImageAttribution2 {
+  font-size: .75rem;
+}

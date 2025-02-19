@@ -5,9 +5,11 @@
 package org.chromium.components.signin.identitymanager;
 
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.base.AccountInfo;
 
 /** This interface handles the {@link AccountInfo} fetch on Java side. */
+@NullMarked
 public interface AccountInfoService {
     /** Observes the changes of {@link AccountInfo}. */
     interface Observer {

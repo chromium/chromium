@@ -38,6 +38,64 @@ bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice>::Read(
 }
 
 // static
+gpu::mojom::SkiaBackendType
+EnumTraits<gpu::mojom::SkiaBackendType, gpu::SkiaBackendType>::ToMojom(
+    gpu::SkiaBackendType type) {
+  switch (type) {
+    case gpu::SkiaBackendType::kUnknown:
+      return gpu::mojom::SkiaBackendType::kUnknown;
+    case gpu::SkiaBackendType::kNone:
+      return gpu::mojom::SkiaBackendType::kNone;
+    case gpu::SkiaBackendType::kGaneshGL:
+      return gpu::mojom::SkiaBackendType::kGaneshGL;
+    case gpu::SkiaBackendType::kGaneshVulkan:
+      return gpu::mojom::SkiaBackendType::kGaneshVulkan;
+    case gpu::SkiaBackendType::kGraphiteDawnVulkan:
+      return gpu::mojom::SkiaBackendType::kGraphiteDawnVulkan;
+    case gpu::SkiaBackendType::kGraphiteDawnMetal:
+      return gpu::mojom::SkiaBackendType::kGraphiteDawnMetal;
+    case gpu::SkiaBackendType::kGraphiteDawnD3D11:
+      return gpu::mojom::SkiaBackendType::kGraphiteDawnD3D11;
+    case gpu::SkiaBackendType::kGraphiteDawnD3D12:
+      return gpu::mojom::SkiaBackendType::kGraphiteDawnD3D12;
+  }
+  NOTREACHED() << "Invalid SkiaBackendType:" << static_cast<int>(type);
+}
+
+// static
+bool EnumTraits<gpu::mojom::SkiaBackendType, gpu::SkiaBackendType>::FromMojom(
+    gpu::mojom::SkiaBackendType input,
+    gpu::SkiaBackendType* out) {
+  switch (input) {
+    case gpu::mojom::SkiaBackendType::kUnknown:
+      *out = gpu::SkiaBackendType::kUnknown;
+      return true;
+    case gpu::mojom::SkiaBackendType::kNone:
+      *out = gpu::SkiaBackendType::kNone;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGaneshGL:
+      *out = gpu::SkiaBackendType::kGaneshGL;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGaneshVulkan:
+      *out = gpu::SkiaBackendType::kGaneshVulkan;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteDawnVulkan:
+      *out = gpu::SkiaBackendType::kGraphiteDawnVulkan;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteDawnMetal:
+      *out = gpu::SkiaBackendType::kGraphiteDawnMetal;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteDawnD3D11:
+      *out = gpu::SkiaBackendType::kGraphiteDawnD3D11;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteDawnD3D12:
+      *out = gpu::SkiaBackendType::kGraphiteDawnD3D12;
+      return true;
+  }
+  return false;
+}
+
+// static
 gpu::mojom::VideoCodecProfile
 EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::ToMojom(
     gpu::VideoCodecProfile video_codec_profile) {
@@ -519,6 +577,7 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
          data.ReadMachineModelName(&out->machine_model_name) &&
          data.ReadMachineModelVersion(&out->machine_model_version) &&
          data.ReadDisplayType(&out->display_type) &&
+         data.ReadSkiaBackendType(&out->skia_backend_type) &&
          data.ReadGlVersion(&out->gl_version) &&
          data.ReadGlVendor(&out->gl_vendor) &&
          data.ReadGlRenderer(&out->gl_renderer) &&

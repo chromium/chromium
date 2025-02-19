@@ -86,7 +86,8 @@ class MonthPicker extends HTMLElement {
 
   onYearListViewDidSelectMonth_ = (sender, month) => {
     const selectedValue = month.toString();
-    window.pagePopupController.setValueAndClosePopup(0, selectedValue);
+    window.pagePopupController.setValueAndClosePopup(
+        0, selectedValue, /* is_keyboard_event= */ false);
   };
 
   initializeClearButton_ = () => {
@@ -98,7 +99,8 @@ class MonthPicker extends HTMLElement {
   };
 
   onClearButtonClick_ = () => {
-    window.pagePopupController.setValueAndClosePopup(0, '');
+    window.pagePopupController.setValueAndClosePopup(
+        0, '', /* is_keyboard_event= */ false);
   };
 
   initializeTodayButton_ = () => {
@@ -117,7 +119,8 @@ class MonthPicker extends HTMLElement {
 
   onTodayButtonClick_ = (sender) => {
     const selectedValue = Month.createFromToday().toString();
-    window.pagePopupController.setValueAndClosePopup(0, selectedValue);
+    window.pagePopupController.setValueAndClosePopup(
+        0, selectedValue, /* is_keyboard_event= */ false);
   };
 
   onKeyDown_ = (event) => {

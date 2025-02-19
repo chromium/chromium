@@ -239,8 +239,6 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
       result.identity_provider_config_url, result.endpoints.token);
   bool is_accounts_valid = webid::IsEndpointSameOrigin(
       result.identity_provider_config_url, result.endpoints.accounts);
-  url::Origin idp_origin =
-      url::Origin::Create(result.identity_provider_config_url);
 
   bool is_login_url_valid =
       result.metadata &&
@@ -281,8 +279,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   }
 
   // (b)
-  if (webid::IsFedCmAuthzEnabled(*render_frame_host_, idp_origin) &&
-      result.wellknown.accounts.is_valid() &&
+  if (webid::IsFedCmAuthzEnabled() && result.wellknown.accounts.is_valid() &&
       result.wellknown.login_url.is_valid() && result.metadata &&
       result.metadata->idp_login_url.is_valid()) {
     // Behind the AuthZ flag, it is valid for IdPs to have valid configURLs

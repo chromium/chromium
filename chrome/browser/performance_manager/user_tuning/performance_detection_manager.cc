@@ -97,13 +97,10 @@ bool PerformanceDetectionManager::DiscardTabs(
 }
 
 void PerformanceDetectionManager::ForceTabCpuDataRefresh() {
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce([](performance_manager::Graph* graph) {
-        performance_manager::user_tuning::CpuHealthTracker* const
-            health_tracker = performance_manager::user_tuning::
-                CpuHealthTracker::GetFromGraph(graph);
-        health_tracker->QueryAndProcessTabActionability(std::nullopt);
-      }));
+  Graph* graph = PerformanceManager::GetGraph();
+  CpuHealthTracker* const health_tracker =
+      CpuHealthTracker::GetFromGraph(graph);
+  health_tracker->QueryAndProcessTabActionability(std::nullopt);
 }
 
 void PerformanceDetectionManager::OnDiscardComplete() {
@@ -129,19 +126,14 @@ void PerformanceDetectionManager::OnDiscardComplete() {
 
 void PerformanceDetectionManager::RecordCpuHealthStatus(
     base::TimeDelta time_after_discard) {
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::TimeDelta time, performance_manager::Graph* graph) {
-            performance_manager::user_tuning::CpuHealthTracker* const
-                health_tracker = performance_manager::user_tuning::
-                    CpuHealthTracker::GetFromGraph(graph);
-            PerformanceDetectionManager::HealthLevel health_level =
-                health_tracker->GetCurrentHealthLevel();
+  Graph* graph = PerformanceManager::GetGraph();
 
-            RecordCpuHealthStatusAfterDiscard(time, health_level);
-          },
-          time_after_discard));
+  CpuHealthTracker* const health_tracker =
+      performance_manager::user_tuning::CpuHealthTracker::GetFromGraph(graph);
+  PerformanceDetectionManager::HealthLevel health_level =
+      health_tracker->GetCurrentHealthLevel();
+
+  RecordCpuHealthStatusAfterDiscard(time_after_discard, health_level);
 }
 
 void PerformanceDetectionManager::NotifyActionableTabObserversForTesting(
@@ -194,21 +186,12 @@ PerformanceDetectionManager::PerformanceDetectionManager() {
               &PerformanceDetectionManager::NotifyActionableTabObservers,
               weak_ptr_factory_.GetWeakPtr()));
 
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](CpuHealthTracker::StatusChangeCallback on_status_change,
-             CpuHealthTracker::ActionableTabResultCallback
-                 on_actionable_list_change,
-             Graph* graph) {
-            std::unique_ptr<CpuHealthTracker> cpu_health_tracker =
-                std::make_unique<CpuHealthTracker>(
-                    std::move(on_status_change),
-                    std::move(on_actionable_list_change));
+  Graph* graph = PerformanceManager::GetGraph();
 
-            graph->PassToGraph(std::move(cpu_health_tracker));
-          },
-          std::move(on_status_change), std::move(on_actionable_list_change)));
+  std::unique_ptr<CpuHealthTracker> cpu_health_tracker =
+      std::make_unique<CpuHealthTracker>(std::move(on_status_change),
+                                         std::move(on_actionable_list_change));
+  graph->PassToGraph(std::move(cpu_health_tracker));
 }
 
 void PerformanceDetectionManager::NotifyStatusObservers(

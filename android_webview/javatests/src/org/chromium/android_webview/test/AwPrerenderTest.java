@@ -85,6 +85,10 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private static final String PRERENDER_URL = "/android_webview/test/data/prerender.html";
     private static final String PRERENDER_SETUP_SCRIPT_URL =
             "/android_webview/test/data/prerender-test-setup.js";
+
+    private static final String FINAL_STATUS_UMA =
+            "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView";
+
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private AwEmbeddedTestServer mTestServer;
@@ -486,9 +490,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
     private static HistogramWatcher createFinalStatusHistogramWatcher(int[] expectedStatuses) {
         HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
-        builder.expectIntRecords(
-                "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView",
-                expectedStatuses);
+        builder.expectIntRecords(FINAL_STATUS_UMA, expectedStatuses);
         return builder.build();
     }
 
@@ -1985,8 +1987,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
-    // Tests the case where prerendering is triggered for different URLs and hits the max prerender
-    // limit.
+    // Tests the case where prerendering is triggered for different URLs with changing the max
+    // prerender limit.
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
@@ -1995,51 +1997,140 @@ public class AwPrerenderTest extends AwParameterizedTest {
     public void testMultiplePrerenderingLimit() throws Throwable {
         loadInitialPage();
 
-        // This test assumes that the content/ allows multiple prerendering up to 2. The third
-        // request will cancel the first request.
+        // This test will start prerendering 5 times.
+        int numberOfPrerenders = 5;
+
+        var activationCallbackHelpers = new ActivationCallbackHelper[numberOfPrerenders];
+        for (int i = 0; i < numberOfPrerenders; ++i) {
+            activationCallbackHelpers[i] = new ActivationCallbackHelper();
+        }
+        var errorCallbackHelpers = new PrerenderErrorCallbackHelper[numberOfPrerenders];
+        for (int i = 0; i < numberOfPrerenders; ++i) {
+            errorCallbackHelpers[i] = new PrerenderErrorCallbackHelper();
+        }
+        String[] prerenderingUrls = new String[numberOfPrerenders];
+        for (int i = 0; i < numberOfPrerenders; ++i) {
+            prerenderingUrls[i] = getUrl(PRERENDER_URL + "?b=" + i);
+        }
+
+        // Expect 1 kActivated(0), 3 kTriggerDestroyed(16), and 1 kOtherPrerenderedPageActivated(84)
+        // in the end.
+        var histogramWatcherAll =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(FINAL_STATUS_UMA, 0, 1)
+                        .expectIntRecordTimes(FINAL_STATUS_UMA, 16, 3)
+                        .expectIntRecordTimes(FINAL_STATUS_UMA, 84, 1)
+                        .build();
+
+        // Start with 2 slots for startPrerendering().
         setMaxPrerenders(2);
 
-        // Expect kActivated(0), kTriggerDestroyed(16), and kOtherPrerenderedPageActivated(84).
-        var histogramWatcher = createFinalStatusHistogramWatcher(new int[] {0, 16, 84});
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered   = []
+        //   Cancelled     = []
 
-        ActivationCallbackHelper[] activationCallbackHelpers = {
-            new ActivationCallbackHelper(),
-            new ActivationCallbackHelper(),
-            new ActivationCallbackHelper(),
-        };
-        PrerenderErrorCallbackHelper[] errorCallbackHelpers = {
-            new PrerenderErrorCallbackHelper(),
-            new PrerenderErrorCallbackHelper(),
-            new PrerenderErrorCallbackHelper(),
-        };
+        {
+            // Start prerendering from 0 to 2. Prerendering 0 should be canceled with
+            // kTriggerDestroyed(16), as the current limit is 2.
+            var histogramWatcher = createFinalStatusHistogramWatcher(16);
+            for (int i = 0; i < 3; ++i) {
+                startPrerendering(
+                        prerenderingUrls[i],
+                        /* prefetchParameters= */ null,
+                        /* cancellationSignal= */ null,
+                        activationCallbackHelpers[i].getCallback(),
+                        errorCallbackHelpers[i].getCallback());
+            }
+            histogramWatcher.assertExpected();
+        }
 
-        String[] prerenderingUrls = {
-            getUrl(PRERENDER_URL + "?b=12"),
-            getUrl(PRERENDER_URL + "?b=124"),
-            getUrl(PRERENDER_URL + "?b=91"),
-        };
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered   = [1, 2]
+        //   Cancelled     = [0]
 
-        for (int i = 0; i < prerenderingUrls.length; ++i) {
+        // Set max prerenders to 3. This allocates one more slot for startPrerendering().
+        setMaxPrerenders(3);
+
+        {
+            // Start prerendering 3. No prerendering should be canceled.
+            var histogramWatcher =
+                    HistogramWatcher.newBuilder().expectNoRecords(FINAL_STATUS_UMA).build();
             startPrerendering(
-                    prerenderingUrls[i],
+                    prerenderingUrls[3],
                     /* prefetchParameters= */ null,
                     /* cancellationSignal= */ null,
-                    activationCallbackHelpers[i].getCallback(),
-                    errorCallbackHelpers[i].getCallback());
+                    activationCallbackHelpers[3].getCallback(),
+                    errorCallbackHelpers[3].getCallback());
+            histogramWatcher.assertExpected();
         }
-        // Prerendering 0 should be canceled with kTriggerDestroyed at this point.
 
-        // Activate prerendering 1. Prerendering 2 should be canceled during activation.
-        activatePage(prerenderingUrls[1], ActivationBy.LOAD_URL);
+        // Current status:
+        //   MaxPrerenders = 3
+        //   Prerendered   = [1, 2, 3]
+        //   Cancelled     = [0]
 
-        // Wait until the navigation activates the prerendered page.
-        activationCallbackHelpers[1].waitForNext();
+        {
+            // Set max prerenders to 2. This is smaller than the number of ongoing prerendering (3),
+            // but it doesn't cancel them now and instead defers it until startPrerendering() is
+            // called.
+            var histogramWatcher =
+                    HistogramWatcher.newBuilder().expectNoRecords(FINAL_STATUS_UMA).build();
+            setMaxPrerenders(2);
+            histogramWatcher.assertExpected();
+        }
 
-        // The error callback for prerendering 0 and 2 are never called in the case where
-        // prerendering is canceled for the limit or other prerendering is activated.
-        Assert.assertEquals(0, errorCallbackHelpers[0].getCallCount());
-        Assert.assertEquals(0, errorCallbackHelpers[2].getCallCount());
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered   = [1, 2, 3]
+        //   Cancelled     = [0]
 
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+        {
+            // Start prerendering 4. Prerendering 1 and 2 should be canceled with
+            // kTriggerDestroyed(16), as the current limit is 2.
+            var histogramWatcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecordTimes(FINAL_STATUS_UMA, 16, 2)
+                            .build();
+            startPrerendering(
+                    prerenderingUrls[4],
+                    /* prefetchParameters= */ null,
+                    /* cancellationSignal= */ null,
+                    activationCallbackHelpers[4].getCallback(),
+                    errorCallbackHelpers[4].getCallback());
+            histogramWatcher.assertExpected();
+        }
+
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered   = [3, 4]
+        //   Cancelled     = [0, 1, 2]
+
+        {
+            // Activate prerendering 3. Prerendering 4 should be canceled with
+            // kOtherPrerenderedPageActivated(84) during activation.
+            var histogramWatcher = createFinalStatusHistogramWatcher(new int[] {0, 84});
+            activatePage(prerenderingUrls[3], ActivationBy.LOAD_URL);
+
+            // Wait until the navigation activates the prerendered page.
+            activationCallbackHelpers[3].waitForNext();
+
+            // The error callbacks are never called in the case where prerendering is canceled for
+            // the limit or other prerendering is activated.
+            for (int i = 0; i < numberOfPrerenders; ++i) {
+                Assert.assertEquals(0, errorCallbackHelpers[i].getCallCount());
+            }
+            histogramWatcher.assertExpected();
+        }
+
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered  = []
+        //   Cancelled    = [0, 1, 2] (kTriggerDestroyed = 16)
+        //   NotActivated = [4]       (kOtherPrerenderedPageActivated = 84)
+        //   Activated    = [3]       (kActivated = 0)
+
+        histogramWatcherAll.assertExpected();
     }
 }

@@ -226,3 +226,18 @@ export function isArrayEqual<T>(arr1: T[], arr2: T[]): boolean {
   return arr1.length === arr2.length &&
       arr1.every((value, index) => value === arr2[index]);
 }
+
+/**
+ * Announces the given message to users when screen reader is enabled.
+ */
+export class IronAnnounceEvent extends CustomEvent<{text: string}> {
+  constructor(message: string) {
+    super('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: message,
+      },
+    });
+  }
+}

@@ -129,10 +129,15 @@ chromium-metrics-reviews@google.com.
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The current status of a ping sent by the browser process to a child process.
-    Emitted in 3 steps: 1. When the browser process sends a ping IPC to the
-    child process (BROWSER_SENT_IPC), 2. When the child process receives said
-    IPC (CHILD_RECEIVED_IPC), and 3. When the browser process receives a reply
-    from the child process after the IPC was processed (BROWSER_REPLY_CALLBACK).
+    Emitted in 3 steps:
+
+    1. When the browser process sends a ping IPC to the child process
+    (BROWSER_SENT_IPC).
+
+    2. When the child process receives said IPC (CHILD_RECEIVED_IPC).
+
+    3. When the browser process receives a reply from the child process after
+    the IPC was processed (BROWSER_REPLY_CALLBACK).
 
     Because a child process may exit early and never receive the IPC (even in
     normal scenarios), 1 may not match 2 and 3 in total count. However, 2 and 3

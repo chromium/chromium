@@ -221,6 +221,8 @@ cc_component("cc") {
     "metrics/submit_info.h",
     "metrics/total_frame_counter.cc",
     "metrics/total_frame_counter.h",
+    "metrics/ukm_dropped_frames_data.cc",
+    "metrics/ukm_dropped_frames_data.h",
     "metrics/ukm_manager.cc",
     "metrics/ukm_manager.h",
     "metrics/ukm_smoothness_data.cc",

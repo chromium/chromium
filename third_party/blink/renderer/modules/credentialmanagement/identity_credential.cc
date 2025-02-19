@@ -46,9 +46,6 @@ void OnDisconnect(ScriptPromiseResolver<IDLUndefined>* resolver,
 IdentityCredential* IdentityCredential::Create(const String& token,
                                                bool is_auto_selected,
                                                const String& config_url) {
-  if (!RuntimeEnabledFeatures::FedCmAutoSelectedFlagEnabled()) {
-    is_auto_selected = false;
-  }
   return MakeGarbageCollected<IdentityCredential>(token, is_auto_selected,
                                                   config_url);
 }

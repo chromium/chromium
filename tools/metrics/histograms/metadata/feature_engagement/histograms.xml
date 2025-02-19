@@ -268,6 +268,8 @@ chromium-metrics-reviews@google.com.
       summary="Showing the Docking Promo on iOS"/>
   <variant name="IPH_iOSDockingPromoRemindMeLater"
       summary="Showing the Docking Promo (Remind Me Later version) on iOS"/>
+  <variant name="IPH_iOSDownloadAutoDeletion"
+      summary="Showing the Auto Deletion IPH on iOS."/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
   <variant name="IPH_iOSInlineEnhancedSafeBrowsingPromoFeature"
@@ -310,6 +312,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the Post Restore Promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestoreDefaultBrowser"
       summary="showing the Post Restore Default Browser Promo on iOS"/>
+  <variant name="IPH_iOSPromoSigninFullscreen"
+      summary="showing the Signin Fullscreen Promo on iOS"/>
   <variant name="IPH_iOSPromoStaySafe"
       summary="showing Stay Safe default browser promo"/>
   <variant name="IPH_iOSPromoWhatsNew"

@@ -26,8 +26,8 @@ dictionary IdentityProviderField {
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
   DOMString loginHint;
-  [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
-  [RuntimeEnabled=FedCmAuthz] sequence<(USVString or IdentityProviderField)> fields;
-  [RuntimeEnabled=FedCmAuthz] any params;
+  DOMString domainHint;
+  sequence<(USVString or IdentityProviderField)> fields;
+  any params;
   [RuntimeEnabled=FedCmDelegation] IdentityProviderRequestOptionsFormat format;
 };

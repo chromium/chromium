@@ -43,8 +43,9 @@ NewChromeLensViewFinderController(LensConfiguration* config) {
 }
 
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
-    UIImage* snapshot,
+    LensImageSource* imageSource,
     LensConfiguration* config,
+    NSArray<UIAction*>* precedingMenuItems,
     NSArray<UIAction*>* additionalMenuItems) {
   // Lens is not supported in Chromium.
   return nil;

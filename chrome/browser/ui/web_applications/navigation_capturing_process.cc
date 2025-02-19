@@ -187,10 +187,15 @@ NavigationCapturingProcess::MaybeHandleAppNavigation(
   // process.
   const std::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(profile, params.url);
-  if (capturing_system_app_type.has_value() && params.browser &&
-      ash::IsBrowserForSystemWebApp(params.browser,
-                                    capturing_system_app_type.value())) {
-    return nullptr;
+  if (capturing_system_app_type.has_value()) {
+    if (params.browser &&
+        ash::IsBrowserForSystemWebApp(params.browser,
+                                      capturing_system_app_type.value())) {
+      return nullptr;
+    }
+    // This process should never be called for URLS captured by system web apps
+    // from a non-system-web-app browser.
+    NOTREACHED();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

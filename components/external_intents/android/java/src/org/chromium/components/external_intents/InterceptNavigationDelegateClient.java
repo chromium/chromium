@@ -6,6 +6,7 @@ package org.chromium.components.external_intents;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
@@ -13,6 +14,7 @@ import org.chromium.content_public.browser.WebContents;
  * An interface via which the embedder provides the context information that
  * InterceptNavigationDelegateImpl needs.
  */
+@NullMarked
 public interface InterceptNavigationDelegateClient {
     /* Returns the WebContents in the context of which this InterceptNavigationDelegateImpl instance
      * is operating. */

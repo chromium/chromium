@@ -40,12 +40,15 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/favicon_size.h"
 #import "ui/gfx/image/image.h"
 
+using PeopleGroupActionOutcome =
+    data_sharing::DataSharingService::PeopleGroupActionOutcome;
 using ScopedDataSharingSyncObservation =
     base::ScopedObservation<data_sharing::DataSharingService,
                             data_sharing::DataSharingService::Observer>;
@@ -214,6 +217,16 @@ NSString* CreationText(base::Time creation_date) {
     // sync service.
     _tabGroupSyncService->RemoveGroup(syncID);
   }
+}
+
+- (void)deleteSharedTabGroup:(const base::Uuid&)syncID {
+  [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
+                 sharedTabGroup:syncID];
+}
+
+- (void)leaveSharedTabGroup:(const base::Uuid&)syncID {
+  [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup
+                 sharedTabGroup:syncID];
 }
 
 - (void)disconnect {
@@ -401,8 +414,36 @@ NSString* CreationText(base::Time creation_date) {
 - (void)deleteTabGroupsPanelItem:(TabGroupsPanelItem*)item
                       sourceView:(UIView*)sourceView {
   [self.delegate tabGroupsPanelMediator:self
-       showDeleteConfirmationWithSyncID:item.savedTabGroupID
-                             sourceView:sourceView];
+      showDeleteGroupConfirmationWithSyncID:item.savedTabGroupID
+                                 sourceView:sourceView];
+}
+
+- (void)leaveSharedTabGroupsPanelItem:(TabGroupsPanelItem*)item
+                           sourceView:(UIView*)sourceView {
+  std::optional<tab_groups::SavedTabGroup> group =
+      _tabGroupSyncService->GetGroup(item.savedTabGroupID);
+  if (!group) {
+    return;
+  }
+  [self.delegate tabGroupsPanelMediator:self
+      showLeaveSharedGroupConfirmationWithSyncID:item.savedTabGroupID
+                                      groupTitle:base::SysUTF16ToNSString(
+                                                     group->title())
+                                      sourceView:sourceView];
+}
+
+- (void)deleteSharedTabGroupsPanelItem:(TabGroupsPanelItem*)item
+                            sourceView:(UIView*)sourceView {
+  std::optional<tab_groups::SavedTabGroup> group =
+      _tabGroupSyncService->GetGroup(item.savedTabGroupID);
+  if (!group) {
+    return;
+  }
+  [self.delegate tabGroupsPanelMediator:self
+      showDeleteSharedGroupConfirmationWithSyncID:item.savedTabGroupID
+                                       groupTitle:base::SysUTF16ToNSString(
+                                                      group->title())
+                                       sourceView:sourceView];
 }
 
 - (void)deleteNotificationItem:(TabGroupsPanelItem*)item {
@@ -566,6 +607,52 @@ NSString* CreationText(base::Time creation_date) {
   return userRole == data_sharing::MemberRole::kOwner
              ? SharingState::kSharedAndOwned
              : SharingState::kShared;
+}
+
+// Takes the corresponded action to `actionType` for the shared `groupSyncID`.
+// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                 sharedTabGroup:(const base::Uuid&)groupSyncID {
+  std::optional<tab_groups::SavedTabGroup> group =
+      _tabGroupSyncService->GetGroup(groupSyncID);
+  if (!group || !group.has_value() || !group->collaboration_id().has_value()) {
+    return;
+  }
+
+  const tab_groups::CollaborationId collabId =
+      group->collaboration_id().value();
+  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
+
+  __weak TabGroupsPanelMediator* weakSelf = self;
+  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
+    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+    [weakSelf handleTakeActionForActionTypeOutcome:success];
+  });
+
+  // TODO(crbug.com/393073658): Block the screen.
+
+  // Asynchronously call on the server.
+  switch (actionType) {
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      _dataSharingService->LeaveGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      _dataSharingService->DeleteGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kUngroupTabGroup:
+    case TabGroupActionType::kDeleteTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      NOTREACHED();
+  }
+}
+
+// Called when `takeActionForActionType:forSharedTabGroup:` server's call
+// returned.
+- (void)handleTakeActionForActionTypeOutcome:(BOOL)success {
+  // TODO(crbug.com/393073658):
+  // - Unblock the screen.
+  // - Show an error if needed.
 }
 
 @end

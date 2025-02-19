@@ -2171,8 +2171,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.SelfCompact2.Renderer.AreAllPagesFrozen" units="bool"
-    expires_after="2025-10-06">
+<histogram name="Memory.SelfCompact2.Renderer.AreAllPagesFrozen"
+    enum="BooleanAreAllPagesFrozen" expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -2181,7 +2181,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.SelfCompact2.Renderer.TimeSinceLastCancel" units="s"
+<histogram name="Memory.SelfCompact2.Renderer.TimeSinceLastCancel" units="ms"
     expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>

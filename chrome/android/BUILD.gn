@@ -18,6 +18,8 @@ import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
+import(
+    "//chrome/browser/bookmarks/android/unmodularized_bookmarks_java_files.gni")
 import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
 import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
 import("//chrome/browser/page_info/buildflags.gni")
@@ -355,6 +357,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/battery/android:java",
       "//chrome/browser/bluetooth/android:java",
+      "//chrome/browser/bookmarks/android:java",
       "//chrome/browser/browser_controls/android:java",
       "//chrome/browser/browsing_data/android:java",
       "//chrome/browser/collaboration:factory_java",
@@ -818,6 +821,10 @@ if (current_toolchain == default_toolchain) {
     # dependency when circular deps is resolved.
     sources += commerce_subscriptions_java_sources
     deps += commerce_subscriptions_java_deps
+
+    # TODO(crbug.com/395908100): Some bookmark files aren't able to be modularized,
+    # include them directly in chrome_java in the meantime and refactor one-by-one.
+    sources += unmodularized_bookmarks_java_files
 
     if (enable_printing) {
       sources +=
@@ -3043,7 +3050,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java",
     "java/src/org/chromium/chrome/browser/backup/ChromeBackupWatcher.java",
     "java/src/org/chromium/chrome/browser/backup/DictPrefBackupSerializer.java",
-    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
     "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/SiteIsolator.java",
     "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappBridge.java",
     "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappGeolocationBridge.java",
@@ -3196,6 +3202,7 @@ generate_jni("chrome_jni_headers") {
 
   public_deps = [
     ":base_module_jni",
+    "//chrome/browser/bookmarks/android:jni_headers",
     "//chrome/browser/partnerbookmarks:jni_headers",
     "//chrome/browser/webid:jni_headers",
   ]

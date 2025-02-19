@@ -136,8 +136,9 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // blink::WebLocalFrameObserver implementation
   void OnFrameDetached() override;
 
-  bool SetUpSmoothnessReporting(
-      base::ReadOnlySharedMemoryRegion& shared_memory) override;
+  bool SetUpUkmReporting(
+      base::ReadOnlySharedMemoryRegion& shared_memory_smoothness,
+      base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames) override;
 
  protected:
   // The relative and monotonic page load timings.
@@ -182,6 +183,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
 
   // Handle to the shared memory for transporting smoothness related ukm data.
   base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;
+  base::ReadOnlySharedMemoryRegion ukm_dropped_frames_data_;
 
   // The main frame intersection rectangle signal received before
   // `page_timing_metrics_sender_` is created. The signal will be send out right

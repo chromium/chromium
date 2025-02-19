@@ -36,6 +36,7 @@ class WebContents;
 namespace extensions {
 
 class Extension;
+struct InstallApproval;
 class ScopedActiveInstall;
 
 class WebstorePrivateApi {
@@ -56,7 +57,7 @@ class WebstorePrivateApi {
   // Gets the pending approval for the |extension_id| in |profile|. Pending
   // approvals are held between the calls to beginInstallWithManifest and
   // completeInstall. This should only be used for testing.
-  static std::unique_ptr<WebstoreInstaller::Approval> PopApprovalForTesting(
+  static std::unique_ptr<InstallApproval> PopApprovalForTesting(
       Profile* profile,
       const std::string& extension_id);
 
@@ -192,7 +193,7 @@ class WebstorePrivateCompleteInstallFunction : public ExtensionFunction {
 
   void OnInstallSuccess(const std::string& id);
 
-  std::unique_ptr<WebstoreInstaller::Approval> approval_;
+  std::unique_ptr<InstallApproval> approval_;
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
   base::WeakPtrFactory<WebstorePrivateCompleteInstallFunction>
       weak_ptr_factory_{this};

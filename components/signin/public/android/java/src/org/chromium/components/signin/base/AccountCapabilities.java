@@ -4,11 +4,11 @@
 
 package org.chromium.components.signin.base;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;
@@ -20,6 +20,7 @@ import java.util.Map;
  * Stores the state associated with supported account capabilities. This class has a native
  * counterpart.
  */
+@NullMarked
 public class AccountCapabilities {
     private final Map<String, Boolean> mAccountCapabilities;
 
@@ -229,7 +230,7 @@ public class AccountCapabilities {
      * @return the capability value associated to the name.
      */
     @CalledByNative
-    private @Tribool int getCapabilityByName(@NonNull String capabilityName) {
+    private @Tribool int getCapabilityByName(String capabilityName) {
         if (!mAccountCapabilities.containsKey(capabilityName)) {
             return Tribool.UNKNOWN;
         }

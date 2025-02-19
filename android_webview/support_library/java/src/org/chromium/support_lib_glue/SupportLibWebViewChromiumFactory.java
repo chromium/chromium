@@ -105,7 +105,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.PREFETCH_WITH_URL,
                 Features.DEFAULT_TRAFFICSTATS_TAGGING,
                 Features.ASYNC_WEBVIEW_STARTUP,
-                Features.PRERENDER_WITH_URL + Features.DEV_SUFFIX,
+                Features.PRERENDER_WITH_URL,
                 Features.WEB_STORAGE_DELETE_BROWSING_DATA,
                 Features.SPECULATIVE_LOADING_CONFIG + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`

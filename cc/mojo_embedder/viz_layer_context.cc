@@ -449,9 +449,12 @@ void SerializeLayer(LayerImpl& layer,
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
   if (layer.GetLayerType() == mojom::LayerType::kPicture) {
-    SerializePictureLayerTileUpdates(static_cast<PictureLayerImpl&>(layer),
-                                     resource_provider, context_provider,
-                                     update.tilings);
+    PictureLayerImpl& picture_layer = static_cast<PictureLayerImpl&>(layer);
+    if (picture_layer.GetRasterSource()->IsSolidColor()) {
+      wire.solid_color = picture_layer.GetRasterSource()->GetSolidColor();
+    }
+    SerializePictureLayerTileUpdates(picture_layer, resource_provider,
+                                     context_provider, update.tilings);
   }
 }
 

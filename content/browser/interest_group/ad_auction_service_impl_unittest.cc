@@ -91,6 +91,7 @@
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
@@ -1591,6 +1592,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsSlotSizeMode": "slot-size",
 "maxTrustedBiddingSignalsURLLength": 8000,
 "trustedBiddingSignalsCoordinator": "https://trusted-bidding-signals.coordinator-b.test",
+"viewAndClickCountsProviders": ["https://view-and-click-counts-provider-b.test"],
 "userBiddingSignals": {"test":10},
 "updateURL": "%s/interest_group/new_daily_update_partial.json",
 "ads": [{"renderURL": "%s/new_ad_render_url",
@@ -1650,6 +1652,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.max_trusted_bidding_signals_url_length = 10000;
   interest_group.trusted_bidding_signals_coordinator = url::Origin::Create(
       GURL("https://trusted-bidding-signals.coordinator-a.test"));
+  interest_group.view_and_click_counts_providers = {{url::Origin::Create(
+      GURL("https://view-and-click-counts-provider-a.test"))}};
   interest_group.ads.emplace();
   std::vector<url::Origin> allowed_reporting_origins = {kOriginF};
   blink::InterestGroup::Ad ad(
@@ -1737,6 +1741,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(group.max_trusted_bidding_signals_url_length, 8000);
   EXPECT_EQ(group.trusted_bidding_signals_coordinator->Serialize(),
             "https://trusted-bidding-signals.coordinator-b.test");
+  ASSERT_TRUE(group.view_and_click_counts_providers.has_value());
+  ASSERT_EQ(group.view_and_click_counts_providers->size(), 1u);
+  EXPECT_EQ(group.view_and_click_counts_providers.value()[0].Serialize(),
+            "https://view-and-click-counts-provider-b.test");
   ASSERT_TRUE(group.user_bidding_signals.has_value());
   EXPECT_EQ(group.user_bidding_signals.value(), "{\"test\":10}");
 
@@ -8972,7 +8980,7 @@ class AdAuctionServiceImplRestrictedPermissionsPolicyTest
  public:
   AdAuctionServiceImplRestrictedPermissionsPolicyTest() {
     feature_list_.InitAndEnableFeature(
-        blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
+        network::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
     blink::UpdatePermissionsPolicyFeatureListForTesting();
     old_content_browser_client_ =
         SetBrowserClientForTesting(&content_browser_client_);

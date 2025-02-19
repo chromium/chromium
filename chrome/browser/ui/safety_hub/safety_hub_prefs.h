@@ -39,6 +39,21 @@ inline constexpr char kWeakCredentialsCount[] =
 // by GMSCore.
 inline constexpr char kReusedCredentialsCount[] =
     "profile.safety_hub_reused_credentials_count";
+
+// An integer count of how many local-level breached credentials were detected
+// by GMSCore.
+inline constexpr char kLocalBreachedCredentialsCount[] =
+    "profile.safety_hub_local_breached_credentials_count";
+
+// An integer count of how many local-level weak credentials were detected by
+// GMSCore.
+inline constexpr char kLocalWeakCredentialsCount[] =
+    "profile.safety_hub_local_weak_credentials_count";
+
+// An integer count of how many local-level reused credentials were detected
+// by GMSCore.
+inline constexpr char kLocalReusedCredentialsCount[] =
+    "profile.safety_hub_reused_local_credentials_count";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Dictionary that holds the notifications in the three-dot menu and their

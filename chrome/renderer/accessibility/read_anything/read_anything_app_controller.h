@@ -95,67 +95,6 @@ class ReadAnythingAppController
   void OnTreeAdded(ui::AXTree* tree) override;
   void OnTreeRemoved(ui::AXTree* tree) override;
 
- private:
-  friend ReadAnythingAppControllerTest;
-  friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
-
-  explicit ReadAnythingAppController(content::RenderFrame* render_frame);
-  ~ReadAnythingAppController() override;
-
-  // gin::WrappableBase:
-  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override;
-
-  // ui::AXTreeObserver:
-  void OnNodeDataChanged(ui::AXTree* tree,
-                         const ui::AXNodeData& old_node_data,
-                         const ui::AXNodeData& new_node_data) override;
-
-  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
-
-  void OnNodeDeleted(ui::AXTree* tree, ui::AXNodeID node) override;
-
-  // read_anything::mojom::UntrustedPage:
-  void AccessibilityEventReceived(
-      const ui::AXTreeID& tree_id,
-      const std::vector<ui::AXTreeUpdate>& updates,
-      const std::vector<ui::AXEvent>& events) override;
-  void AccessibilityLocationChangesReceived(
-      const ui::AXTreeID& tree_id,
-      ui::AXLocationAndScrollUpdates& details) override;
-  void AccessibilityLocationChangesReceived(
-      const ui::AXTreeID& tree_id,
-      const ui::AXLocationAndScrollUpdates& details) override;
-  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
-                               ukm::SourceId ukm_source_id,
-                               bool is_pdf) override;
-  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
-  void OnImageDataDownloaded(const ui::AXTreeID& tree_id,
-                             ui::AXNodeID node_id,
-                             const SkBitmap& image) override;
-  void OnSettingsRestoredFromPrefs(
-      read_anything::mojom::LineSpacing line_spacing,
-      read_anything::mojom::LetterSpacing letter_spacing,
-      const std::string& font,
-      double font_size,
-      bool links_enabled,
-      bool images_enabled,
-      read_anything::mojom::Colors color,
-      double speech_rate,
-      base::Value::Dict voices,
-      base::Value::List languages_enabled_in_pref,
-      read_anything::mojom::HighlightGranularity granularity) override;
-  void SetLanguageCode(const std::string& code) override;
-  void SetDefaultLanguageCode(const std::string& code) override;
-  void ScreenAIServiceReady() override;
-  void OnGetVoicePackInfo(
-      read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnDeviceLocked() override;
-#else
-  void OnTtsEngineInstalled() override;
-#endif
-
   // gin templates:
   ui::AXNodeID RootId() const;
   ui::AXNodeID StartNodeId() const;
@@ -241,9 +180,70 @@ class ReadAnythingAppController
   v8::Local<v8::Value> GetImageBitmap(ui::AXNodeID node_id);
   void OnSpeechPlayingStateChanged(bool is_speech_active);
   std::string GetValidatedFontName(const std::string& font) const;
-  std::vector<std::string> GetAllFonts();
+  std::vector<std::string> GetAllFonts() const;
   void OnScrolledToBottom();
   bool IsDocsLoadMoreButtonVisible() const;
+
+ private:
+  friend ReadAnythingAppControllerTest;
+  friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
+
+  explicit ReadAnythingAppController(content::RenderFrame* render_frame);
+  ~ReadAnythingAppController() override;
+
+  // gin::WrappableBase:
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
+      v8::Isolate* isolate) override;
+
+  // ui::AXTreeObserver:
+  void OnNodeDataChanged(ui::AXTree* tree,
+                         const ui::AXNodeData& old_node_data,
+                         const ui::AXNodeData& new_node_data) override;
+
+  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
+
+  void OnNodeDeleted(ui::AXTree* tree, ui::AXNodeID node) override;
+
+  // read_anything::mojom::UntrustedPage:
+  void AccessibilityEventReceived(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const std::vector<ui::AXEvent>& events) override;
+  void AccessibilityLocationChangesReceived(
+      const ui::AXTreeID& tree_id,
+      ui::AXLocationAndScrollUpdates& details) override;
+  void AccessibilityLocationChangesReceived(
+      const ui::AXTreeID& tree_id,
+      const ui::AXLocationAndScrollUpdates& details) override;
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
+                               ukm::SourceId ukm_source_id,
+                               bool is_pdf) override;
+  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
+  void OnImageDataDownloaded(const ui::AXTreeID& tree_id,
+                             ui::AXNodeID node_id,
+                             const SkBitmap& image) override;
+  void OnSettingsRestoredFromPrefs(
+      read_anything::mojom::LineSpacing line_spacing,
+      read_anything::mojom::LetterSpacing letter_spacing,
+      const std::string& font,
+      double font_size,
+      bool links_enabled,
+      bool images_enabled,
+      read_anything::mojom::Colors color,
+      double speech_rate,
+      base::Value::Dict voices,
+      base::Value::List languages_enabled_in_pref,
+      read_anything::mojom::HighlightGranularity granularity) override;
+  void SetLanguageCode(const std::string& code) override;
+  void SetDefaultLanguageCode(const std::string& code) override;
+  void ScreenAIServiceReady() override;
+  void OnGetVoicePackInfo(
+      read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnDeviceLocked() override;
+#else
+  void OnTtsEngineInstalled() override;
+#endif
 
   // The language code that should be used to determine which voices are
   // supported for speech.

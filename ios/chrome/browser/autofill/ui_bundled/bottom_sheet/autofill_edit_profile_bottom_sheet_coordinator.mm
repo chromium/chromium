@@ -60,9 +60,11 @@
   ActionSheetCoordinator* _actionSheetCoordinator;
 }
 
-- (instancetype)initWithBaseViewController:
-                    (UINavigationController*)viewController
-                                   browser:(Browser*)browser {
+- (instancetype)
+    initWithBaseViewController:(UINavigationController*)viewController
+                       browser:(Browser*)browser
+                       handler:
+                           (id<AutofillEditProfileBottomSheetHandler>)handler {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     ProfileIOS* profile = browser->GetProfile();

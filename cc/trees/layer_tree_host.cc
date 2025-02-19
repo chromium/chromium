@@ -48,6 +48,7 @@
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
 #include "cc/metrics/ukm_manager.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
@@ -1984,6 +1985,20 @@ LayerTreeHost::CreateSharedMemoryForSmoothnessUkm() {
   proxy_->SetUkmSmoothnessDestination(
       std::move(ukm_smoothness_mapping.mapping));
   return std::move(ukm_smoothness_mapping.region);
+}
+
+base::ReadOnlySharedMemoryRegion
+LayerTreeHost::CreateSharedMemoryForDroppedFramesUkm() {
+  DCHECK(IsMainThread());
+  const auto size = sizeof(UkmDroppedFramesDataShared);
+  auto ukm_dropped_frames_mapping =
+      base::ReadOnlySharedMemoryRegion::Create(size);
+  if (!ukm_dropped_frames_mapping.IsValid()) {
+    return {};
+  }
+  proxy_->SetUkmDroppedFramesDestination(
+      std::move(ukm_dropped_frames_mapping.mapping));
+  return std::move(ukm_dropped_frames_mapping.region);
 }
 
 void LayerTreeHost::SetRenderFrameObserver(

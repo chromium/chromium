@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-
+import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 /**
  * Queries |selector| on |element|'s shadow root and returns the resulting
@@ -31,4 +32,11 @@ export function strictQuery<T>(
   const element = root.querySelector(selector);
   assert(element && element instanceof type);
   return element;
+}
+
+/**
+ * Converts |skColor| to a rgba. Returns 'inherit' if |skColor| is null.
+ */
+export function rgbaOrInherit(skColor: SkColor|null): string {
+  return skColor ? skColorToRgba(skColor) : 'inherit';
 }

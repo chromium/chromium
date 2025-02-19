@@ -22,7 +22,7 @@ class CommandLine;
 
 namespace tracing {
 
-// Returns true if InitTracingPostThreadPoolStartAndFeatureList has been called
+// Returns true if `InitTracingPostFeatureList()` has been called
 // for this process.
 bool COMPONENT_EXPORT(TRACING_CPP) IsTracingInitialized();
 
@@ -52,7 +52,7 @@ bool COMPONENT_EXPORT(TRACING_CPP)
 // |enable_consumer| should be true if the system consumer can be enabled.
 // Currently this is only the case if this is running in the browser process.
 void COMPONENT_EXPORT(TRACING_CPP)
-    InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer);
+    InitTracingPostFeatureList(bool enable_consumer);
 
 // If tracing is enabled, grabs the current trace config & mode and tells the
 // child to begin tracing right away via startup tracing command line flags.

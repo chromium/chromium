@@ -40,6 +40,7 @@ inline constexpr int kDefaultNewBadgeFeatureUsedCount = 2;
 
 inline constexpr base::TimeDelta kDefaultNewBadgeDisplayWindow = base::Days(60);
 
+inline constexpr char kHighPriorityTimeout[] = "high_priority_timeout";
 inline constexpr base::TimeDelta kDefaultHighPriorityTimeout =
     base::Seconds(15);
 
@@ -135,7 +136,9 @@ base::TimeDelta GetNewBadgeDisplayWindow() {
 }
 
 base::TimeDelta GetHighPriorityTimeout() {
-  return kDefaultHighPriorityTimeout;
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kUserEducationExperienceVersion2Point5, kHighPriorityTimeout,
+      kDefaultHighPriorityTimeout);
 }
 
 base::TimeDelta GetMediumPriorityTimeout() {

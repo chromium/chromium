@@ -428,17 +428,6 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool HasGzipHeader(const base::RefCountedMemory& maybe_gzipped) {
-  net::GZipHeader header;
-  net::GZipHeader::Status header_status = net::GZipHeader::INCOMPLETE_HEADER;
-  const char* header_end = nullptr;
-  while (header_status == net::GZipHeader::INCOMPLETE_HEADER) {
-    auto chars = base::as_chars(base::span(maybe_gzipped));
-    header_status = header.ReadMore(chars.data(), chars.size(), &header_end);
-  }
-  return header_status == net::GZipHeader::COMPLETE_HEADER;
-}
-
 void AppendGzippedResource(const base::RefCountedMemory& encoded,
                            std::string* to_append) {
   auto source_stream = std::make_unique<net::MockSourceStream>();
@@ -2021,7 +2010,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
           IDR_ASH_WEBUI_COMMON_WEBUI_RESOURCE_TEST_JS);
 
-  if (HasGzipHeader(*bytes)) {
+  if (net::GZipHeader::HasGZipHeader(base::span(*bytes))) {
     AppendGzippedResource(*bytes, &script);
   } else {
     auto chars = base::as_chars(base::span(*bytes));

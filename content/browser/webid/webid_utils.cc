@@ -438,28 +438,14 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
       requester_origin, embedder_origin, url::Origin::Create(provider_url));
 }
 
-bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin) {
-  RuntimeFeatureStateDocumentData* rfs_document_data =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(&host);
+bool IsFedCmAuthzEnabled() {
   // If field trials or an explicit user selection disables authz, we should
   // respect that.
   std::optional<bool> is_overridden = IsFedCmAuthzOverridden();
   if (is_overridden) {
     return *is_overridden;
   }
-
-  // Should not be null as this gets initialized when the host gets created.
-  DCHECK(rfs_document_data);
-  std::vector<url::Origin> third_party_origins = {idp_origin};
-  // This includes origin trials.
-  bool runtime_enabled =
-      rfs_document_data->runtime_feature_state_read_context()
-          .IsFedCmAuthzEnabled() ||
-      rfs_document_data->runtime_feature_state_read_context()
-          .IsFedCmAuthzEnabledForThirdParty(third_party_origins);
-
-  bool flag_enabled = IsFedCmAuthzFlagEnabled();
-  return runtime_enabled || flag_enabled;
+  return true;
 }
 
 FederatedAuthRequestPageData* GetPageData(Page& page) {

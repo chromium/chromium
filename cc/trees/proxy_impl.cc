@@ -1013,6 +1013,13 @@ void ProxyImpl::SetUkmSmoothnessDestination(
   host_impl_->SetUkmSmoothnessDestination(std::move(ukm_smoothness_data));
 }
 
+void ProxyImpl::SetUkmDroppedFramesDestination(
+    base::WritableSharedMemoryMapping ukm_dropped_frames_data) {
+  DCHECK(IsImplThread());
+  host_impl_->SetUkmDroppedFramesDestination(
+      std::move(ukm_dropped_frames_data));
+}
+
 void ProxyImpl::ClearHistory() {
   DCHECK(IsImplThread());
   scheduler_->ClearHistory();

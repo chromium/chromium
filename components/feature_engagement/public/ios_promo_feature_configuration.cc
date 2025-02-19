@@ -211,6 +211,22 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
+  if (kIPHiOSPromoSigninFullscreenFeature.name == feature->name) {
+    config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used =
+        EventConfig("signin_fullscreen_promo_used", Comparator(ANY, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->trigger = EventConfig(
+        feature_engagement::events::kIOSSigninFullscreenPromoTrigger,
+        Comparator(ANY, 0), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
+
   return std::nullopt;
 }
 

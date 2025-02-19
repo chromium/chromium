@@ -614,19 +614,16 @@ void WidgetBase::CancelSuccessfulPresentationTimeRequest() {
   tab_switch_time_recorder_.TabWasHidden();
 }
 
-void WidgetBase::SetupRenderInputRouterConnections(
+void WidgetBase::SetupBrowserRenderInputRouterConnections(
     mojo::PendingReceiver<mojom::blink::RenderInputRouterClient>
-        browser_request,
-    mojo::PendingReceiver<mojom::blink::RenderInputRouterClient> viz_request) {
-  TRACE_EVENT("renderer", "WidgetBase::SetupRenderInputRouterConnections");
+        browser_request) {
+  TRACE_EVENT("renderer",
+              "WidgetBase::SetupBrowserRenderInputRouterConnections");
 
   // TODO(b/322833330): Investigate binding |browser_input_receiver_| on
   // RendererCompositor to break dependency on CrRendererMain and avoiding
   // contention with javascript during method calls.
   browser_input_receiver_.Bind(std::move(browser_request), task_runner_);
-  if (viz_request) {
-    viz_input_receiver_.Bind(std::move(viz_request), task_runner_);
-  }
 }
 
 void WidgetBase::ApplyViewportChanges(
@@ -670,8 +667,7 @@ void WidgetBase::OnCommitRequested() {
 }
 
 void WidgetBase::DidBeginMainFrame() {
-  if (base::FeatureList::IsEnabled(features::kRunTextInputUpdatePostLifecycle))
-    UpdateTextInputState();
+  UpdateTextInputState();
   client_->DidBeginMainFrame();
 }
 
@@ -814,9 +810,13 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
     return;
   }
 
+  viz_input_receiver_.reset();
+
   if (Platform::Current()->IsGpuCompositingDisabled()) {
-    widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
-                                  std::move(compositor_frame_sink_client));
+    widget_host_->CreateFrameSink(
+        std::move(compositor_frame_sink_receiver),
+        std::move(compositor_frame_sink_client),
+        viz_input_receiver_.BindNewPipeAndPassRemote(task_runner_));
     widget_host_->RegisterRenderFrameMetadataObserver(
         std::move(render_frame_metadata_observer_client_receiver),
         std::move(render_frame_metadata_observer_remote));
@@ -886,8 +886,10 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
       !is_embedded_) {
     // TODO(ericrk): Collapse with non-webview registration below.
     if (::features::IsUsingVizFrameSubmissionForWebView()) {
-      widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
-                                    std::move(compositor_frame_sink_client));
+      widget_host_->CreateFrameSink(
+          std::move(compositor_frame_sink_receiver),
+          std::move(compositor_frame_sink_client),
+          viz_input_receiver_.BindNewPipeAndPassRemote(task_runner_));
     }
     widget_host_->RegisterRenderFrameMetadataObserver(
         std::move(render_frame_metadata_observer_client_receiver),
@@ -911,8 +913,10 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
     return;
   }
 #endif
-  widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
-                                std::move(compositor_frame_sink_client));
+  widget_host_->CreateFrameSink(
+      std::move(compositor_frame_sink_receiver),
+      std::move(compositor_frame_sink_client),
+      viz_input_receiver_.BindNewPipeAndPassRemote(task_runner_));
   widget_host_->RegisterRenderFrameMetadataObserver(
       std::move(render_frame_metadata_observer_client_receiver),
       std::move(render_frame_metadata_observer_remote));
@@ -980,10 +984,6 @@ void WidgetBase::WillBeginMainFrame() {
   client_->SetSuppressFrameRequestsWorkaroundFor704763Only(true);
   client_->WillBeginMainFrame();
   UpdateSelectionBounds();
-  // UpdateTextInputState() will cause a forced style and layout update, which
-  // we would like to eliminate.
-  if (!base::FeatureList::IsEnabled(features::kRunTextInputUpdatePostLifecycle))
-    UpdateTextInputState();
 }
 
 void WidgetBase::RunPaintBenchmark(int repeat_count,

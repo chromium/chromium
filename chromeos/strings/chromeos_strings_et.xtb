@@ -1468,6 +1468,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" />-kohvik</translation>
 <translation id="7841134249932030522">Tumeda režiimi lubamine</translation>
 <translation id="7846634333498149051">Klaviatuur</translation>
+<translation id="7847923465436619066">Transkribeerimise keele valija</translation>
 <translation id="7849030488395653706">virmalised</translation>
 <translation id="7849737607196682401">pitsist</translation>
 <translation id="7850320739366109486">Mitte segada</translation>
@@ -1654,6 +1655,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8749478549112817787">Kaamera taust</translation>
 <translation id="8755946156089753497">torn</translation>
 <translation id="8760616037557661287">Eelmised päringud</translation>
+<translation id="876280838467039397">Transkriptsiooni mudeli (<ph name="LANGUAGE_NAME" />) allalaadimine ja valimine</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Teenuse Google Photos album</translation>
 <translation id="8775713578693478175">Modemi APN</translation>

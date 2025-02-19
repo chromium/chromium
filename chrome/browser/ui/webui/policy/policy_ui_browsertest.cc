@@ -1165,7 +1165,15 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
   EXPECT_EQ(result, kBannerHidden);
 }
 
-IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, HandleLocaleNotEnUSHidden) {
+// Test is flaky on macOS. <https://crbug.com/394767577>
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HandleLocaleNotEnUSHidden DISABLED_HandleLocaleNotEnUSHidden
+#else
+#define MAYBE_HandleLocaleNotEnUSHidden HandleLocaleNotEnUSHidden
+#endif
+
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       MAYBE_HandleLocaleNotEnUSHidden) {
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
       policy::EnterpriseManagementAuthority::CLOUD);

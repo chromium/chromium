@@ -82,6 +82,8 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kCreateSpeculativeRFHDelayMs;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeleteStaleSessionCookiesOnStartup);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kDeviceBoundSessionTerminationEvictBackForwardCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevToolsPrivacyUI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
 // TODO(crbug.com/364900088): Refactor BTM feature flags and parameters into
@@ -233,7 +235,8 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontDataServiceAllWebContents);
 enum class FontDataServiceTypefaceType {
   kDwrite,
-  kInternal,
+  kFreetype,
+  kFontations,
 };
 extern const base::FeatureParam<FontDataServiceTypefaceType>
     kFontDataServiceTypefaceType;

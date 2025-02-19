@@ -799,6 +799,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
+  void SetUkmDroppedFramesDestination(
+      base::WritableSharedMemoryMapping ukm_dropped_frames_data);
 
   // Notifies FrameTrackers, impl side callbacks that the compsitor frame
   // was presented.
@@ -1096,6 +1098,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<PageScaleAnimation> page_scale_animation_;
 
   base::WritableSharedMemoryMapping ukm_smoothness_mapping_;
+  base::WritableSharedMemoryMapping ukm_dropped_frames_mapping_;
 
   TotalFrameCounter total_frame_counter_;
   // `dropped_frame_counter_` holds a pointer `to ukm_smoothness_mapping_` so

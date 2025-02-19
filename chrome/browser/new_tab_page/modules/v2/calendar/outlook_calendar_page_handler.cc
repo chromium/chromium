@@ -249,8 +249,10 @@ void OutlookCalendarPageHandler::GetEvents(GetEventsCallback callback) {
       ntp_features::kNtpOutlookCalendarModule,
       ntp_features::kNtpOutlookCalendarModuleDataParam);
   if (!fake_data_param.empty()) {
+    bool has_attachments_enabled = fake_data_param == "fake-attachments";
     std::move(callback).Run(calendar::calendar_fake_data_helper::GetFakeEvents(
-        calendar::calendar_fake_data_helper::CalendarType::OUTLOOK_CALENDAR));
+        calendar::calendar_fake_data_helper::CalendarType::OUTLOOK_CALENDAR,
+        has_attachments_enabled));
   } else {
     MakeRequest(std::move(callback));
   }

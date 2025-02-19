@@ -193,7 +193,7 @@ export class SettingsSafetyHubModuleElement extends
     let removedAll = (origin === null);
     for (let i = 0; i < this.sites.length; ++i) {
       if (origin === null || origin === this.sites[i].origin) {
-        items[i]!.classList.add('hiding');
+        items[i].classList.add('hiding');
         if (origin) {
           // If this is the last site being removed, the visuals should be
           // the same as if all sites were removed.

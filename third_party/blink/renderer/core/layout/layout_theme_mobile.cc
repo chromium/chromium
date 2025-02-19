@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
@@ -51,10 +52,16 @@ scoped_refptr<LayoutTheme> LayoutThemeMobile::Create() {
 LayoutThemeMobile::~LayoutThemeMobile() = default;
 
 String LayoutThemeMobile::ExtraDefaultStyleSheet() {
-  return LayoutThemeDefault::ExtraDefaultStyleSheet() +
-         UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS) +
-         UncompressResourceAsASCIIString(
-             IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS);
+  String stylesheet =
+      LayoutThemeDefault::ExtraDefaultStyleSheet() +
+      UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS) +
+      UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS);
+  // This can't check for origin trials, unfortunately.
+  if (HTMLSelectElement::CustomizableSelectEnabledNoDocument()) {
+    stylesheet = stylesheet + UncompressResourceAsASCIIString(
+                                  IDR_UASTYLE_CUSTOMIZABLE_SELECT_LINUX_CSS);
+  }
+  return stylesheet;
 }
 
 String LayoutThemeMobile::ExtraFullscreenStyleSheet() {

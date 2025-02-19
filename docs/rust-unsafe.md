@@ -2,9 +2,9 @@
 
 ## Code Review Policy {#code-review-policy}
 
-All `unsafe` Rust code in Chromium needs to be reviewed and LGTM-ed by a member
-of the `unsafe-rust-in-chrome@google.com` group and the review must be cc'd to
-the group for visibility.  This policy applies to both third-party code
+All `unsafe` Rust code in Chromium needs to be reviewed and LGTM-ed by a
+reviewer from `//third_party/rust/UNSAFE_RUST_OWNERS`.
+This policy applies to both third-party code
 (e.g. under `//third_party/rust`) and first-party code.
 
 ### How to request a review
@@ -22,7 +22,7 @@ To facilitate a code review please:
 
 Note that changes _anywhere_ in a crate that uses `unsafe` blocks may violate
 the internal invariants on which those `unsafe` blocks rely. It is unrealistic
-to require a `unsafe-rust-in-chrome@google.com` review to re-audit all the
+to require an `unsafe` review to re-audit all the
 `unsafe` blocks each time a crate is updated, but the crate `OWNERS` and other
 reviewers should be on the lookout for code changes which feel as though they
 could affect invariants on which `unsafe` blocks rely.

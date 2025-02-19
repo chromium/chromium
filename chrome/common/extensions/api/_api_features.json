@@ -220,6 +220,7 @@
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
       "chrome://glic/*",
+      "chrome://glic-fre/*",
       "chrome://graduation/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
@@ -439,9 +440,6 @@
   },
   "enterprise.reportingPrivate.getHotfixes": {
     "platforms": ["win"]
-  },
-  "enterprise.reportingPrivate.reportDataMaskingEvent": {
-    "feature_flag": "ApiEnterpriseReportingPrivateReportDataMaskingEvent"
   },
   "experimental.devtools.audits": {
     "nocompile": true,

@@ -92,15 +92,18 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
   coordinator_.passes = @[ pass ];
   [coordinator_ start];
 
-  // Wallet app is not supported on iPads simulator or on iPad device before
-  // iOS18.2.
+  // Wallet app is supported on iPhons...
+  bool supported = ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+  // .. or on iPad device running iOS18.2.
+  const bool runningIOS18_2 = base::ios::IsRunningOnOrLater(18, 2, 0) &&
+                              !base::ios::IsRunningOnOrLater(18, 3, 0);
 #if TARGET_IPHONE_SIMULATOR
   const bool simulator = true;
 #else
   const bool simulator = false;
 #endif
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      (simulator || !base::ios::IsRunningOnOrLater(18, 2, 0))) {
+  supported |= (!simulator) && runningIOS18_2;
+  if (!supported) {
     // Wallet app is not supported on iPads.
   } else {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{

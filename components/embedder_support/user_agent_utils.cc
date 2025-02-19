@@ -26,7 +26,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/user_agent.h"
@@ -224,19 +223,6 @@ const blink::UserAgentBrandList GetUserAgentBrandFullVersionListInternal(
                                std::string(version_info::GetVersionNumber()),
                                blink::UserAgentBrandVersionType::kFullVersion,
                                additional_brand_version);
-}
-
-std::vector<std::string> GetFormFactorsClientHint(
-    const blink::UserAgentMetadata& metadata,
-    bool is_mobile) {
-  // By default, use "Mobile" or "Desktop" depending on the `mobile` bit.
-  std::vector<std::string> form_factors = {
-      is_mobile ? blink::kMobileFormFactor : blink::kDesktopFormFactor};
-
-  if (base::FeatureList::IsEnabled(blink::features::kClientHintsXRFormFactor)) {
-    form_factors.push_back(blink::kXRFormFactor);
-  }
-  return form_factors;
 }
 
 // Internal function to handle return the full or "reduced" user agent string,
@@ -513,32 +499,18 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   return metadata;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void SetDesktopUserAgentOverride(content::WebContents* web_contents,
-                                 const blink::UserAgentMetadata& metadata,
-                                 bool override_in_new_tabs) {
-  const char kLinuxInfoStr[] = "X11; Linux x86_64";
+std::vector<std::string> GetFormFactorsClientHint(
+    const blink::UserAgentMetadata& metadata,
+    bool is_mobile) {
+  // By default, use "Mobile" or "Desktop" depending on the `mobile` bit.
+  std::vector<std::string> form_factors = {
+      is_mobile ? blink::kMobileFormFactor : blink::kDesktopFormFactor};
 
-  blink::UserAgentOverride spoofed_ua;
-  spoofed_ua.ua_string_override = content::BuildUserAgentFromOSAndProduct(
-      kLinuxInfoStr, GetProductAndVersion());
-  spoofed_ua.ua_metadata_override = metadata;
-  spoofed_ua.ua_metadata_override->platform = "Linux";
-  spoofed_ua.ua_metadata_override->platform_version =
-      std::string();  // match content::GetOSVersion(false) on Linux
-  spoofed_ua.ua_metadata_override->model = std::string();
-  spoofed_ua.ua_metadata_override->mobile = false;
-  spoofed_ua.ua_metadata_override->form_factors =
-      GetFormFactorsClientHint(metadata, /*is_mobile=*/false);
-  // Match the above "CpuInfo" string, which is also the most common Linux
-  // CPU architecture and bitness.`
-  spoofed_ua.ua_metadata_override->architecture = "x86";
-  spoofed_ua.ua_metadata_override->bitness = "64";
-  spoofed_ua.ua_metadata_override->wow64 = false;
-
-  web_contents->SetUserAgentOverride(spoofed_ua, override_in_new_tabs);
+  if (base::FeatureList::IsEnabled(blink::features::kClientHintsXRFormFactor)) {
+    form_factors.push_back(blink::kXRFormFactor);
+  }
+  return form_factors;
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting() {

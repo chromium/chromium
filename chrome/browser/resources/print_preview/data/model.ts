@@ -971,7 +971,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         caps.media_type.option.length > 0) {
       const unavailableValue =
           caps.media_type.option.find(o => !!o.is_default) ||
-          caps.media_type!.option[0];
+          caps.media_type.option[0];
       this.setSettingPath_('mediaType.unavailableValue', unavailableValue);
     }
 
@@ -987,7 +987,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       this.setSetting('dpi', matchingOption || defaultOption, true);
     } else if (caps.dpi && caps.dpi.option && caps.dpi.option.length > 0) {
       const unavailableValue =
-          caps.dpi!.option.find(o => !!o.is_default) || caps.dpi!.option[0];
+          caps.dpi.option.find(o => !!o.is_default) || caps.dpi.option[0];
       this.setSettingPath_('dpi.unavailableValue', unavailableValue);
     }
 
@@ -1039,9 +1039,9 @@ export class PrintPreviewModelElement extends PolymerElement {
         caps.duplex.option) {
       // In this case, there must only be one option.
       const hasLongEdge =
-          caps.duplex!.option.some(o => o.type === DuplexType.LONG_EDGE);
+          caps.duplex.option.some(o => o.type === DuplexType.LONG_EDGE);
       const hasShortEdge =
-          caps.duplex!.option.some(o => o.type === DuplexType.SHORT_EDGE);
+          caps.duplex.option.some(o => o.type === DuplexType.SHORT_EDGE);
       // If the only option available is long edge, the value should always be
       // true.
       this.setSettingPath_(
@@ -1634,7 +1634,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       // adjust it for page content, see Landscape.isCapabilityAvailable().
       // We can improve results if we set AUTO here.
       const capability = destination.capabilities.printer ?
-          destination.capabilities!.printer.page_orientation :
+          destination.capabilities.printer.page_orientation :
           null;
       if (capability && capability.option &&
           capability.option.some(option => option.type === 'AUTO')) {

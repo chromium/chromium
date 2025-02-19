@@ -667,10 +667,8 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
     // pixel alignment to align it to screen pixels.
     render_surface_transform.PostTranslate(
         render_surface->render_target()->pixel_alignment_offset());
-    // TODO(crbug.com/396190933): For now a render surface with view
-    // transition handles pixel alignment by itself, but that doesn't
-    // work in some cases.
-    if (!render_surface->OwningEffectNode()
+    if (base::FeatureList::IsEnabled(features::kViewTransitionFloorTransform) ||
+        !render_surface->OwningEffectNode()
              ->view_transition_element_resource_id.IsValid()) {
       if (auto offset = draw_property_utils::PixelAlignmentOffset(
               render_surface->screen_space_transform(),

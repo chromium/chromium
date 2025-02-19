@@ -57,7 +57,7 @@ PagePopupController::PagePopupController(Page& page,
 
 void PagePopupController::setValueAndClosePopup(int num_value,
                                                 const String& string_value,
-                                                const bool is_keyboard_event) {
+                                                bool is_keyboard_event) {
   if (popup_client_) {
     popup_client_->SetValueAndClosePopup(num_value, string_value,
                                          is_keyboard_event);

@@ -475,10 +475,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.REPORT_EVENT_TIMING_AT_VISIBILITY_CHANGE,
                 "Report event timing to UKM at visibility change."),
         Flag.baseFeature(
-                BlinkFeatures.RUN_TEXT_INPUT_UPDATE_POST_LIFECYCLE,
-                "Runs code to update IME state at the end of a lifecycle update "
-                        + "rather than the beginning."),
-        Flag.baseFeature(
                 CcFeatures.USE_DMSAA_FOR_TILES,
                 "Switches skia to use DMSAA instead of MSAA for tile raster"),
         Flag.baseFeature(
@@ -882,9 +878,6 @@ public final class ProductionSupportedFlagList {
                 "Optimize handling of static properties during animations."),
         Flag.baseFeature("LazyBindJsInjection"),
         Flag.baseFeature(AwFeatures.WEBVIEW_MUTE_AUDIO, "Enables WebView audio to be muted."),
-        Flag.baseFeature(
-                BlinkFeatures.CONCURRENT_VIEW_TRANSITIONS_SPA,
-                "Allows concurrent transitions in local frames rendered in the same process"),
         Flag.baseFeature("WebViewVizUseThreadPool"),
         Flag.baseFeature("InProcessGpuUseIOThread"),
         Flag.baseFeature("EnableCustomInputStreamBufferSize"),

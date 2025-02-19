@@ -521,6 +521,8 @@ class _Variant():
             'fonts': [],
         }
         params.update(test)
+        if 'variants' in params:
+            del params['variants']
         return _Variant(params)
 
     def merge_params(self, params: _TestParams) -> '_Variant':

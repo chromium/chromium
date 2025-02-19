@@ -58,16 +58,16 @@ PredefinedColorSpace DeserializeColorSpace(
 
 SerializedImageDataSettings::SerializedImageDataSettings(
     PredefinedColorSpace color_space,
-    ImageDataStorageFormat storage_format)
+    V8ImageDataStorageFormat storage_format)
     : color_space_(SerializeColorSpace(color_space)) {
-  switch (storage_format) {
-    case ImageDataStorageFormat::kUint8:
+  switch (storage_format.AsEnum()) {
+    case V8ImageDataStorageFormat::Enum::kUint8:
       storage_format_ = SerializedImageDataStorageFormat::kUint8Clamped;
       break;
-    case ImageDataStorageFormat::kUint16:
+    case V8ImageDataStorageFormat::Enum::kUint16:
       storage_format_ = SerializedImageDataStorageFormat::kUint16;
       break;
-    case ImageDataStorageFormat::kFloat32:
+    case V8ImageDataStorageFormat::Enum::kFloat32:
       storage_format_ = SerializedImageDataStorageFormat::kFloat32;
       break;
   }
@@ -78,26 +78,21 @@ SerializedImageDataSettings::SerializedImageDataSettings(
     SerializedImageDataStorageFormat storage_format)
     : color_space_(color_space), storage_format_(storage_format) {}
 
-PredefinedColorSpace SerializedImageDataSettings::GetColorSpace() const {
-  return DeserializeColorSpace(color_space_);
-}
-
-ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
-  switch (storage_format_) {
-    case SerializedImageDataStorageFormat::kUint8Clamped:
-      return ImageDataStorageFormat::kUint8;
-    case SerializedImageDataStorageFormat::kUint16:
-      return ImageDataStorageFormat::kUint16;
-    case SerializedImageDataStorageFormat::kFloat32:
-      return ImageDataStorageFormat::kFloat32;
-  }
-  NOTREACHED();
-}
-
 ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
   ImageDataSettings* settings = ImageDataSettings::Create();
-  settings->setColorSpace(PredefinedColorSpaceToV8(GetColorSpace()));
-  settings->setStorageFormat(ImageDataStorageFormatName(GetStorageFormat()));
+  settings->setColorSpace(
+      PredefinedColorSpaceToV8(DeserializeColorSpace(color_space_)));
+  switch (storage_format_) {
+    case SerializedImageDataStorageFormat::kUint8Clamped:
+      settings->setStorageFormat(V8ImageDataStorageFormat::Enum::kUint8);
+      break;
+    case SerializedImageDataStorageFormat::kUint16:
+      settings->setStorageFormat(V8ImageDataStorageFormat::Enum::kUint16);
+      break;
+    case SerializedImageDataStorageFormat::kFloat32:
+      settings->setStorageFormat(V8ImageDataStorageFormat::Enum::kFloat32);
+      break;
+  }
   return settings;
 }
 

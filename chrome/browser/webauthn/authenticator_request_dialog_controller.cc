@@ -769,14 +769,7 @@ void AuthenticatorRequestDialogController::
           !enclave_will_do_uv))) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (absl::holds_alternative<Mechanism::Password>(mechanism.type)) {
-      auto* password_controller =
-          webauthn::PasswordCredentialController::MaybeGet(
-              GetRenderFrameHost());
-      if (password_controller && password_controller->IsAuthRequired()) {
-        SetCurrentStep(Step::kSelectPriorityMechanism);
-      } else {
-        mechanism.callback.Run();
-      }
+      SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (cred != nullptr || !hints_.transport.has_value() ||
                transport_availability_.request_type !=
                    FidoRequestType::kGetAssertion ||

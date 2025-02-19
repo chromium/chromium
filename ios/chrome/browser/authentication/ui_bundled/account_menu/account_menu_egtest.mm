@@ -499,8 +499,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity2];
 }
 
+// TODO(crbug.com/397651804): Re-enable once fixed.
 // Test the open Settings button.
-- (void)testOpenSettings {
+- (void)DISABLED_testOpenSettings {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(

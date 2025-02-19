@@ -23,6 +23,10 @@ constexpr char kMetricNameWithoutHistorySync[] =
     "Session.TotalDurationMax1Day.WithoutHistorySync";
 constexpr char kMetricNameWithHistorySync[] =
     "Session.TotalDurationMax1Day.WithHistorySync";
+constexpr char kMetricNameWithHistorySyncWithoutAuthError[] =
+    "Session.TotalDurationMax1Day.WithHistorySyncWithoutAuthError";
+constexpr char kMetricNameWithHistorySyncAndAuthError[] =
+    "Session.TotalDurationMax1Day.WithHistorySyncAndAuthError";
 
 class HistorySyncSessionDurationsMetricsRecorderTest : public testing::Test {
  public:
@@ -50,6 +54,8 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest, InitiallySignedOut) {
 
   ht.ExpectUniqueTimeSample(kMetricNameWithoutHistorySync, kSessionTime, 1);
   ht.ExpectTotalCount(kMetricNameWithHistorySync, 0);
+  ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+  ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
 }
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
@@ -63,6 +69,8 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
 
   ht.ExpectUniqueTimeSample(kMetricNameWithoutHistorySync, kSessionTime, 1);
   ht.ExpectTotalCount(kMetricNameWithHistorySync, 0);
+  ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+  ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
 }
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
@@ -75,7 +83,27 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
   metrics_recorder.OnSessionEnded(kSessionTime);
 
   ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
+  ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncWithoutAuthError,
+                            kSessionTime, 1);
   ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+  ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+}
+
+TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
+       InitiallySignedInWithHistorySyncAndAuthError) {
+  SignIn(/*history_sync_enabled=*/true);
+  sync_service_.SetPersistentAuthError();
+
+  base::HistogramTester ht;
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+  metrics_recorder.OnSessionStarted();
+  metrics_recorder.OnSessionEnded(kSessionTime);
+
+  ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
+  ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncAndAuthError,
+                            kSessionTime, 1);
+  ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+  ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
 }
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
@@ -92,6 +120,8 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
 
     ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 1);
     ht.ExpectTotalCount(kMetricNameWithHistorySync, 0);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
   }
 
   {
@@ -100,7 +130,67 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
     SCOPED_TRACE("OnSessionEnded");
 
     ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
+    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncWithoutAuthError,
+                              kSessionTime, 1);
     ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+  }
+}
+
+TEST_F(HistorySyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
+  SignIn(/*history_sync_enabled=*/true);
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+
+  {
+    base::HistogramTester ht;
+    metrics_recorder.OnSessionStarted();
+    sync_service_.SetPersistentAuthError();
+    sync_service_.FireStateChanged();
+
+    ht.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 1);
+    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+  }
+
+  {
+    base::HistogramTester ht;
+    metrics_recorder.OnSessionEnded(kSessionTime);
+
+    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
+    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncAndAuthError,
+                              kSessionTime, 1);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+  }
+}
+
+TEST_F(HistorySyncSessionDurationsMetricsRecorderTest, FixAuthError) {
+  SignIn(/*history_sync_enabled=*/true);
+  sync_service_.SetPersistentAuthError();
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+
+  {
+    base::HistogramTester ht;
+    metrics_recorder.OnSessionStarted();
+    sync_service_.ClearAuthError();
+    sync_service_.FireStateChanged();
+
+    ht.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 1);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+  }
+
+  {
+    base::HistogramTester ht;
+    metrics_recorder.OnSessionEnded(kSessionTime);
+
+    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
+    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncWithoutAuthError,
+                              kSessionTime, 1);
+    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
   }
 }
 

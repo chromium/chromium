@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -139,6 +140,7 @@ public class GURL {
     }
 
     /** @return true if the GURL is null, empty, or invalid. */
+    @Contract("null -> true")
     public static boolean isEmptyOrInvalid(@Nullable GURL gurl) {
         return gurl == null || gurl.isEmpty() || !gurl.isValid();
     }

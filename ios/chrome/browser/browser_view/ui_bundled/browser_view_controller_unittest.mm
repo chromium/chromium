@@ -63,7 +63,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
-#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
@@ -260,9 +260,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[TabStripLegacyCoordinator alloc] initWithBrowser:browser_.get()];
 
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
-    side_swipe_mediator_ = [[SideSwipeMediator alloc]
-        initWithFullscreenController:fullscreen_controller_
-                        webStateList:browser_->GetWebStateList()];
+    side_swipe_coordinator_ = [[SideSwipeCoordinator alloc]
+        initWithBaseViewController:nil
+                           browser:browser_.get()];
 
     bookmarks_coordinator_ =
         [[BookmarksCoordinator alloc] initWithBrowser:browser_.get()];
@@ -282,7 +282,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.toolbarCoordinator = toolbar_coordinator_;
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
     dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
-    dependencies.sideSwipeMediator = side_swipe_mediator_;
+    dependencies.sideSwipeCoordinator = side_swipe_coordinator_;
     dependencies.bookmarksCoordinator = bookmarks_coordinator_;
     dependencies.fullscreenController = fullscreen_controller_;
     dependencies.tabUsageRecorderBrowserAgent =
@@ -332,7 +332,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [toolbar_coordinator_ stop];
     [popup_menu_coordinator_ stop];
     [NTPCoordinator_ stop];
-    [side_swipe_mediator_ disconnect];
+    [side_swipe_coordinator_ stop];
     ClipboardRecentContent::SetInstance(nullptr);
 
     BlockCleanupTest::TearDown();
@@ -421,7 +421,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   ToolbarCoordinator* toolbar_coordinator_;
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
-  SideSwipeMediator* side_swipe_mediator_;
+  SideSwipeCoordinator* side_swipe_coordinator_;
   BookmarksCoordinator* bookmarks_coordinator_;
   raw_ptr<FullscreenController> fullscreen_controller_;
   TabEventsMediator* tab_events_mediator_;

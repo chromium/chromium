@@ -4,6 +4,7 @@
 
 package org.chromium.components.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.signin.AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME;
 
 import android.accounts.Account;
@@ -15,8 +16,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -29,6 +28,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.ConnectionRetry.AuthTask;
 import org.chromium.components.signin.base.AccountCapabilities;
@@ -45,6 +46,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** AccountManagerFacade wraps our access of AccountManager in Android. */
+@NullMarked
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
     /**
      * An account feature (corresponding to a Gaia service flag) that specifies whether the account
@@ -78,17 +80,17 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             new AtomicReference<>();
 
     // Deprecated in favor of `mAccountsPromise`, to be removed after migrating all affected calls.
-    private @NonNull Promise<List<CoreAccountInfo>> mCoreAccountInfosPromise = new Promise<>();
+    private Promise<List<CoreAccountInfo>> mCoreAccountInfosPromise = new Promise<>();
 
-    private @NonNull Promise<List<AccountInfo>> mAccountsPromise = new Promise<>();
+    private Promise<List<AccountInfo>> mAccountsPromise = new Promise<>();
 
-    private @Nullable AsyncTask<List<GaiaId>> mFetchGaiaIdsTask;
+    private @Nullable AsyncTask<@Nullable List<GaiaId>> mFetchGaiaIdsTask;
 
     private int mNumberOfRetries;
     private boolean mDidAccountFetchSucceed;
 
     private int mPendingTokenRequests;
-    private Runnable mTokenRequestsCompletedCallback;
+    private @Nullable Runnable mTokenRequestsCompletedCallback;
 
     private boolean mDisallowTokenRequestsForTesting;
 
@@ -346,7 +348,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     @Override
-    public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
+    public void confirmCredentials(
+            Account account, @Nullable Activity activity, Callback<Bundle> callback) {
         mDelegate.confirmCredentials(account, activity, callback);
     }
 
@@ -370,9 +373,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         List<String> emails = getFilteredAccountEmails();
         mFetchGaiaIdsTask =
-                new AsyncTask<List<GaiaId>>() {
+                new AsyncTask<@Nullable List<GaiaId>>() {
+                    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1139
                     @Override
-                    public @Nullable List<GaiaId> doInBackground() {
+                    public List<GaiaId> doInBackground() {
                         final long seedingStartTime = SystemClock.elapsedRealtime();
                         List<GaiaId> gaiaIds = new ArrayList<>();
                         for (String email : emails) {
@@ -428,7 +432,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private void onAccountsUpdated() {
         ThreadUtils.assertOnUiThread();
-        new AsyncTask<List<Account>>() {
+        new AsyncTask<@Nullable List<Account>>() {
+            @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1139
             @Override
             protected @Nullable List<Account> doInBackground() {
                 try {
@@ -502,7 +507,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private List<String> getFilteredAccountEmails() {
         List<String> ret = new ArrayList<>();
         List<PatternMatcher> restrictions = mAccountRestrictionPatterns.get();
-        for (Account account : mAllAccounts.get()) {
+        assumeNonNull(restrictions);
+        for (Account account : assumeNonNull(mAllAccounts.get())) {
             String name = account.name;
             boolean matches = restrictions.isEmpty();
             for (PatternMatcher matcher : restrictions) {
@@ -522,7 +528,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      * @param capabilityName the name of the capability used to query Identity services.
      * @return the name of the capability used to query GmsCore.
      */
-    static String getAndroidCapabilityName(@NonNull String capabilityName) {
+    static String getAndroidCapabilityName(String capabilityName) {
         if (capabilityName.startsWith(ACCOUNT_CAPABILITY_NAME_PREFIX)) {
             return capabilityName.substring(ACCOUNT_CAPABILITY_NAME_PREFIX.length());
         }

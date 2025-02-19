@@ -7,9 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "chrome/browser/glic/fre_util.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/guest_util.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
@@ -75,9 +73,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Set up guest URL via cli flag or default to finch param value.
   source->AddString("glicGuestURL", GetGuestURL().spec());
 
-  // Set up FRE URL via cli flag, or default to the finch param value.
-  source->AddString("glicFreURL", GetFreURL().spec());
-
   // Set up loading notice timeout values.
   source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
   source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
@@ -127,12 +122,6 @@ void GlicUI::CreatePageHandler(
     mojo::PendingRemote<glic::mojom::Page> page) {
   page_handler_ = std::make_unique<GlicPageHandler>(
       web_ui()->GetWebContents(), std::move(receiver), std::move(page));
-}
-
-void GlicUI::CreateFrePageHandler(
-    mojo::PendingReceiver<glic::mojom::FrePageHandler> receiver) {
-  fre_page_handler_ = std::make_unique<GlicFrePageHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 }  // namespace glic

@@ -116,18 +116,18 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         DCHECK_NE(TYPE_DEFLATE, type());
 
         const size_t kGzipFooterBytes = 8;
-        const char* end = nullptr;
-        GZipHeader::Status status =
-            gzip_header_.ReadMore(input_data, input_data_size, &end);
+        size_t header_end = 0u;
+        GZipHeader::Status status = gzip_header_.ReadMore(
+            base::as_bytes(base::span(input_data, input_data_size)),
+            header_end);
         if (status == GZipHeader::INCOMPLETE_HEADER) {
           input_data += input_data_size;
           input_data_size = 0;
         } else if (status == GZipHeader::COMPLETE_HEADER) {
           // If there is a valid header, there should also be a valid footer.
           gzip_footer_bytes_left_ = kGzipFooterBytes;
-          size_t bytes_consumed = static_cast<size_t>(end - input_data);
-          input_data += bytes_consumed;
-          input_data_size -= bytes_consumed;
+          input_data += header_end;
+          input_data_size -= header_end;
           input_state_ = STATE_COMPRESSED_BODY;
         } else if (status == GZipHeader::INVALID_HEADER) {
           return base::unexpected(ERR_CONTENT_DECODING_FAILED);

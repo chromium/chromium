@@ -128,8 +128,7 @@ bool Delegate::PreRun() {
       "elevated_tracing_service");
 
   // Initialize tracing in the process.
-  tracing::InitTracingPostThreadPoolStartAndFeatureList(
-      /*enable_consumer=*/false);
+  tracing::InitTracingPostFeatureList(/*enable_consumer=*/false);
 
   // Create the global SessionRegistry.
   session_registry_ = base::MakeRefCounted<SessionRegistry>();

@@ -72,7 +72,29 @@ std::string GrContextTypeToString(GrContextType type) {
     case GrContextType::kGraphiteMetal:
       return "GraphiteMetal";
   }
-  NOTREACHED();
+  NOTREACHED() << "GrContextType=" << static_cast<int>(type);
+}
+
+std::string SkiaBackendTypeToString(SkiaBackendType type) {
+  switch (type) {
+    case SkiaBackendType::kUnknown:
+      return "Unknown";
+    case SkiaBackendType::kNone:
+      return "None";
+    case SkiaBackendType::kGaneshGL:
+      return "GaneshGL";
+    case SkiaBackendType::kGaneshVulkan:
+      return "GaneshVulkan";
+    case SkiaBackendType::kGraphiteDawnVulkan:
+      return "GraphiteDawnVulkan";
+    case SkiaBackendType::kGraphiteDawnMetal:
+      return "GraphiteDawnMetal";
+    case SkiaBackendType::kGraphiteDawnD3D11:
+      return "GraphiteDawnD3D11";
+    case SkiaBackendType::kGraphiteDawnD3D12:
+      return "GraphiteDawnD3D12";
+  }
+  NOTREACHED() << "SkiaBackendType=" << static_cast<int>(type);
 }
 
 GpuPreferences::GpuPreferences() = default;

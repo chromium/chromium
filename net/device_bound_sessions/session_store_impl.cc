@@ -47,7 +47,9 @@ SessionStoreImpl::DBStatus InitializeOnDbSequence(
     return SessionStoreImpl::DBStatus::kFailure;
   }
 
-  db->Preload();
+  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
+    db->Preload();
+  }
 
   table_manager->InitializeOnDbSequence(
       db, std::vector<std::string>{kSessionTableName}, kCurrentSchemaVersion);
@@ -65,6 +67,8 @@ SessionStoreImpl::SessionStoreImpl(base::FilePath db_storage_path,
           base::ThreadPool::CreateSequencedTaskRunner(kDBTaskTraits)),
       db_storage_path_(std::move(db_storage_path)),
       db_(std::make_unique<sql::Database>(
+          sql::DatabaseOptions().set_preload(base::FeatureList::IsEnabled(
+              sql::features::kPreOpenPreloadDatabase)),
           sql::Database::Tag("DBSCSessions"))),
       table_manager_(base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
           db_task_runner_)),

@@ -29,6 +29,7 @@ build_webui("build") {
   non_web_component_files = [
     "app_style_updater.ts",
     "common.ts",
+    "keyboard_util.ts",
     "menus/menu_util.ts",
     "metrics_browser_proxy.ts",
     "read_anything.ts",

@@ -62,6 +62,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
@@ -380,12 +381,20 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
     return unhandled_keyboard_event_type_;
   }
 
+  bool prehandle_mouse_event_called() const {
+    return prehandle_mouse_event_called_;
+  }
+
   bool prehandle_keyboard_event_called() const {
     return prehandle_keyboard_event_called_;
   }
 
   WebInputEvent::Type prehandle_keyboard_event_type() const {
     return prehandle_keyboard_event_type_;
+  }
+
+  void set_prehandle_mouse_event(bool handle) {
+    prehandle_mouse_event_ = handle;
   }
 
   void set_prehandle_keyboard_event(bool handle) {
@@ -455,6 +464,14 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
               (override));
 
  protected:
+  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override {
+    prehandle_mouse_event_called_ = true;
+    if (prehandle_mouse_event_) {
+      return true;
+    }
+    return false;
+  }
+
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override {
     prehandle_keyboard_event_type_ = event.GetType();
@@ -506,6 +523,8 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   }
 
  private:
+  bool prehandle_mouse_event_ = false;
+  bool prehandle_mouse_event_called_ = false;
   bool prehandle_keyboard_event_;
   bool prehandle_keyboard_event_is_shortcut_;
   bool prehandle_keyboard_event_called_;
@@ -1534,6 +1553,37 @@ TEST_F(RenderWidgetHostTest, SendEditCommandsBeforeKeyEvent) {
   // Send the simulated response from the renderer back.
   dispatched_events[1]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
+}
+
+TEST_F(RenderWidgetHostTest, PreHandleMouseEvent) {
+  // Simulate the situation that the browser handled the mouse event during
+  // pre-handle phrase.
+  delegate_->set_prehandle_mouse_event(true);
+
+  // Simulate a mouse event.
+  SimulateMouseEvent(WebMouseEvent::Type::kMouseDown);
+
+  EXPECT_TRUE(delegate_->prehandle_mouse_event_called());
+
+  // Make sure the mouse event is not sent to the renderer.
+  MockWidgetInputHandler::MessageVector dispatched_events =
+      host_->mock_render_input_router()->GetAndResetDispatchedMessages();
+  EXPECT_EQ(0u, dispatched_events.size());
+
+  // Simulate the situation that the browser didn't handle the mouse event
+  // during pre-handle phrase.
+  delegate_->set_prehandle_mouse_event(false);
+
+  // Simulate a mouse event.
+  SimulateMouseEvent(WebMouseEvent::Type::kMouseUp);
+
+  // Make sure the mouse event is sent to the renderer.
+  dispatched_events =
+      host_->mock_render_input_router()->GetAndResetDispatchedMessages();
+  ASSERT_EQ(1u, dispatched_events.size());
+  ASSERT_TRUE(dispatched_events[0]->ToEvent());
+  EXPECT_EQ(WebMouseEvent::Type::kMouseUp,
+            dispatched_events[0]->ToEvent()->Event()->Event().GetType());
 }
 
 TEST_F(RenderWidgetHostTest, PreHandleRawKeyDownEvent) {

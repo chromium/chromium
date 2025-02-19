@@ -4,17 +4,18 @@
 
 package org.chromium.components.messages;
 
-
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Static utility methods for recording messages related metrics. TODO(crbug.com/40877562): remove
  * logs.
  */
+@NullMarked
 public class MessagesMetrics {
     private static final String TAG = "MessagesMetrics";
     private static final String ENQUEUED_HISTOGRAM_NAME = "Android.Messages.Enqueued";

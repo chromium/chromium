@@ -59,6 +59,11 @@ extern const char kAutofillEnableCardBenefitsForBmoDescription[];
 extern const char kAutofillEnableCardBenefitsSyncName[];
 extern const char kAutofillEnableCardBenefitsSyncDescription[];
 
+// Title and description for the flag to enable "expired" text on expired cards
+// for autofill Payments UI.
+extern const char kAutofillEnableCardExpiredTextName[];
+extern const char kAutofillEnableCardExpiredTextDescription[];
+
 // Title and description for the flag to enable dynamically loading the fields
 // for address input based on the country value.
 extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];
@@ -171,6 +176,11 @@ extern const char kAutofillUseRendererIDsDescription[];
 // VCN Enroll requests to Google Payments servers.
 extern const char kAutofillVcnEnrollRequestTimeoutName[];
 extern const char kAutofillVcnEnrollRequestTimeoutDescription[];
+
+// Title and description for the flag that displays the Best Features screen in
+// the FRE.
+extern const char kBestFeaturesScreenInFirstRunName[];
+extern const char kBestFeaturesScreenInFirstRunDescription[];
 
 // Title and description for blue dot promo on tools menu button.
 extern const char kBlueDotOnToolsMenuButtonName[];

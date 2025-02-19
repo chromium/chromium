@@ -2456,7 +2456,8 @@ void Animation::SetCompositorPending(CompositorPendingReason reason) {
   // composited via a native paint worklet. If reset, it forces Paint to
   // re-evaluate whether to paint with a native paint worklet.
   if (reason == CompositorPendingReason::kPaintWorkletImageCreated ||
-      reason == CompositorPendingReason::kPendingDowngrade) {
+      reason == CompositorPendingReason::kPendingDowngrade ||
+      reason == CompositorPendingReason::kPendingSafeRestart) {
     reason = CompositorPendingReason::kPendingRestart;
     // Composited paint status has already be set so we can skip the update.
   } else {
@@ -2857,11 +2858,11 @@ void Animation::CancelAnimationOnCompositor() {
   compositor_state_.reset();
 }
 
-void Animation::RestartAnimationOnCompositor() {
+void Animation::RestartAnimationOnCompositor(CompositorPendingReason reason) {
   if (!HasActiveAnimationsOnCompositor()) {
     return;
   }
-  SetCompositorPending(CompositorPendingReason::kPendingRestart);
+  SetCompositorPending(reason);
 }
 
 void Animation::CancelIncompatibleAnimationsOnCompositor() {

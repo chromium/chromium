@@ -10,7 +10,9 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/enterprise/common/strings.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,10 +66,36 @@ RealtimeReportingJobConfiguration::~RealtimeReportingJobConfiguration() =
     default;
 
 std::string RealtimeReportingJobConfiguration::GetPayload() {
+  std::string payload;
+  std::string metric_name;
   if (base::FeatureList::IsEnabled(kUploadRealtimeReportingEventsUsingProto)) {
-    return upload_request_.SerializeAsString();
+    upload_request_.SerializeToString(&payload);
+    const auto& event_case = upload_request_.events(0).event_case();
+    metric_name =
+        enterprise_connectors::GetPayloadSizeUmaMetricName(event_case);
+  } else {
+    payload = ReportingJobConfigurationBase::GetPayload();
+
+    // When kUploadRealtimeReportingEventsUsingProto is disabled, the payload
+    // is serialized from the JSON dictionary in |payload_|, so use this
+    // dict to find the event type. |payload| still stores the final serialized
+    // string in both cases.
+    const auto& dict = payload_.FindList(kEventListKey)->front().GetDict();
+    for (const std::string& event_name :
+         enterprise_connectors::kAllReportingEvents) {
+      if (dict.contains(event_name)) {
+        metric_name =
+            enterprise_connectors::GetPayloadSizeUmaMetricName(event_name);
+        break;
+      }
+    }
   }
-  return ReportingJobConfigurationBase::GetPayload();
+  base::UmaHistogramCounts100000(
+      enterprise_connectors::kAllUploadSizeUmaMetricName, payload.size());
+  if (!metric_name.empty()) {
+    base::UmaHistogramCounts100000(metric_name, payload.size());
+  }
+  return payload;
 }
 
 std::string RealtimeReportingJobConfiguration::GetContentType() {

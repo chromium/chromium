@@ -6,11 +6,10 @@ package org.chromium.components.signin.base;
 
 import android.accounts.Account;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountUtils;
 
 /**
@@ -19,6 +18,7 @@ import org.chromium.components.signin.AccountUtils;
  * For example, the email will change if the user changes email.
  * This class has a native counterpart called CoreAccountInfo.
  */
+@NullMarked
 public class CoreAccountInfo {
     private final CoreAccountId mId;
     private final String mEmail;
@@ -32,8 +32,7 @@ public class CoreAccountInfo {
      * @param gaiaId An object representing a Gaia ID.
      */
     @CalledByNative
-    protected CoreAccountInfo(
-            @NonNull CoreAccountId id, @NonNull String email, @NonNull GaiaId gaiaId) {
+    protected CoreAccountInfo(CoreAccountId id, String email, GaiaId gaiaId) {
         assert id != null;
         assert email != null;
         assert gaiaId != null;

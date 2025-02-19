@@ -1496,7 +1496,12 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records when and what content setting is changed in the site settings page.
+    Records when and what content setting is changed in the site setting's page.
+    Data recorded earlier than M135 is recorded directly with
+    `ContentSettingsType` in
+    `components/content_settings/core/common/content_settings_types.mojom`,
+    which means they are probably in the wrong buckets and need to be viewed
+    with cautious.
   </summary>
 </histogram>
 

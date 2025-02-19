@@ -155,6 +155,11 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kCreateURLLoaderPipeAsync);
 // requests be processed?
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kAdAuctionEventRegistration);
 
+// Runtime flag that changes default Permissions Policy for features
+// join-ad-interest-group and run-ad-auction to a more restricted EnableForSelf.
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

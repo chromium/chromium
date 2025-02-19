@@ -97,13 +97,14 @@ for el_id, el_markup in els:
 all_els = all_els.rstrip()
 
 template = u"""<!-- DO NOT EDIT. This file has been generated. Source:
-    ./tools/build-compute-kind-widget-fallback-props.py
+    ../tools/build-compute-kind-widget-fallback-props.py
 -->
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>CSS Basic User Interface Test: Compute kind of widget: {props} maybe disables native appearance for {el_id}</title>
-<link rel="help" href="https://drafts.csswg.org/css-ui-4/#computing-kind-widget">
-<meta name="assert" content="appropriate widget is returned when authorProps includes {props}.">
+<link rel="help" href="https://drafts.csswg.org/css-ui-4/#appearance-disabling-properties">
+<link rel="help" href="https://html.spec.whatwg.org/#widgets">
+<meta name="assert" content="appropriate widget is used when props includes {props}.">
 <link rel="match" href="../compute-kind-widget-fallback-{el_id}-ref.html">
 <style>
     #container {{ width: 500px; }}

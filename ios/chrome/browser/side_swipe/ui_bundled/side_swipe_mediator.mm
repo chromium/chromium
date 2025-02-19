@@ -251,8 +251,8 @@ const CGFloat kIpadTabSwipeDistance = 100;
   [_swipeGestureRecognizer setEnabled:enabled];
 }
 
-- (BOOL)shouldAutorotate {
-  return !([_tabSideSwipeView window] || _inSwipe);
+- (BOOL)isSideSwipeInProgress {
+  return ([_tabSideSwipeView window] || _inSwipe);
 }
 
 - (void)handlePan:(SideSwipeGestureRecognizer*)gesture {

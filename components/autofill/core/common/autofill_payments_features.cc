@@ -31,16 +31,9 @@ BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,
              "AutofillEnableAmountExtractionDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, buy now pay later (BNPL) in Autofill will be offered through
-// Affirm.
-BASE_FEATURE(kAutofillEnableBuyNowPayLaterForAffirm,
-             "AutofillEnableBuyNowPayLaterForAffirm",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, buy now pay later (BNPL) in Autofill will be offered through
-// Zip.
-BASE_FEATURE(kAutofillEnableBuyNowPayLaterForZip,
-             "AutofillEnableBuyNowPayLaterForZip",
+// When enabled, buy now pay later (BNPL) in Autofill will be offered.
+BASE_FEATURE(kAutofillEnableBuyNowPayLater,
+             "AutofillEnableBuyNowPayLater",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, buy now pay later (BNPL) data will be synced to Chrome clients.
@@ -78,6 +71,10 @@ BASE_FEATURE(kAutofillEnableCardBenefitsSync,
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+BASE_FEATURE(kAutofillEnableCardExpiredText,
+             "AutofillEnableCardExpiredText",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, runtime retrieval of CVC along with card number and expiry
 // from issuer for enrolled cards will be enabled during form fill.

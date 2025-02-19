@@ -1101,6 +1101,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   double GetPendingZoomLevel(RenderWidgetHostImpl* rwh) override;
 
+  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleMouseEvent(const blink::WebMouseEvent& event) override;
@@ -2164,6 +2165,10 @@ class CONTENT_EXPORT WebContentsImpl
   // Cancel any pending dialogs created from the delegate's
   // JavascriptDialogManager.
   void CancelDialogManagerDialogs(bool reset_state);
+
+  // Sets up RenderInputRouterDelegate mojo connections with InputManager on
+  // the VizCompositorThread for input handling with InputVizard.
+  void SetupRenderInputRouterDelegateConnection();
 
   // Data for core operation ---------------------------------------------------
 

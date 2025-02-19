@@ -77,6 +77,9 @@ extern const char kAllowLegacyMV2ExtensionsDescription[];
 extern const char kAndroidAppIntegrationName[];
 extern const char kAndroidAppIntegrationDescription[];
 
+extern const char kAndroidAppIntegrationMultiDataSourceName[];
+extern const char kAndroidAppIntegrationMultiDataSourceDescription[];
+
 extern const char kAndroidAppIntegrationModuleName[];
 extern const char kAndroidAppIntegrationModuleDescription[];
 
@@ -349,15 +352,15 @@ extern const char kAutofillEnableAmountExtractionDesktopDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-extern const char kAutofillEnableBuyNowPayLaterForAffirmName[];
-extern const char kAutofillEnableBuyNowPayLaterForAffirmDescription[];
-
-extern const char kAutofillEnableBuyNowPayLaterForZipName[];
-extern const char kAutofillEnableBuyNowPayLaterForZipDescription[];
+extern const char kAutofillEnableBuyNowPayLaterName[];
+extern const char kAutofillEnableBuyNowPayLaterDescription[];
 
 extern const char kAutofillEnableBuyNowPayLaterSyncingName[];
 extern const char kAutofillEnableBuyNowPayLaterSyncingDescription[];
 #endif
+
+extern const char kAutofillEnableCardExpiredTextName[];
+extern const char kAutofillEnableCardExpiredTextDescription[];
 
 extern const char kAutofillEnableCvcStorageAndFillingName[];
 extern const char kAutofillEnableCvcStorageAndFillingDescription[];
@@ -1789,6 +1792,9 @@ extern const char kPrerender2Description[];
 
 extern const char kPriceChangeModuleName[];
 extern const char kPriceChangeModuleDescription[];
+
+extern const char kPrivacySandboxAdTopicsContentParityName[];
+extern const char kPrivacySandboxAdTopicsContentParityDescription[];
 
 extern const char kPrivacySandboxAdsApiUxEnhancementsName[];
 extern const char kPrivacySandboxAdsApiUxEnhancementsDescription[];

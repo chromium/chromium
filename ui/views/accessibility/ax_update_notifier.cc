@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/views/accessibility/ax_update_observer.h"
 
 namespace views {
@@ -38,6 +39,24 @@ void AXUpdateNotifier::NotifyVirtualViewEvent(
     ax::mojom::Event event_type) {
   observers_.Notify(&AXUpdateObserver::OnVirtualViewEvent, virtual_view,
                     event_type);
+}
+
+void AXUpdateNotifier::NotifyViewDataChanged(views::View* view) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (::features::IsViewsAccessibilitySerializeOnDataChangeEnabled()) {
+    observers_.Notify(&AXUpdateObserver::OnDataChanged, view);
+  }
+#endif
+}
+
+void AXUpdateNotifier::NotifyVirtualViewDataChanged(
+    views::AXVirtualView* virtual_view) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (::features::IsViewsAccessibilitySerializeOnDataChangeEnabled()) {
+    observers_.Notify(&AXUpdateObserver::OnVirtualViewDataChanged,
+                      virtual_view);
+  }
+#endif
 }
 
 }  // namespace views

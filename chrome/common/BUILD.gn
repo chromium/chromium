@@ -365,6 +365,8 @@ static_library("common_lib") {
     sources += [
       "read_anything/read_anything_constants.cc",
       "read_anything/read_anything_constants.h",
+      "read_anything/read_anything_util.cc",
+      "read_anything/read_anything_util.h",
     ]
   }
 

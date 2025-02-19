@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace blink {
@@ -18,7 +18,7 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList
   {%- if feature.default_value_behind_flag %}
     {%- for flag, default_value in feature.default_value_behind_flag %}
       {%- if not loop.first %} else {% endif %}
-  if (base::FeatureList::IsEnabled(features::k{{flag}})) {
+  if (base::FeatureList::IsEnabled(network::features::k{{flag}})) {
     mutable_feature_list.find(network::mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
       PermissionsPolicyFeatureDefault::{{default_value}};
   }

@@ -28,11 +28,11 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -100,20 +100,18 @@ scoped_refptr<CrxInstaller> CrxInstaller::Create(
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
     ExtensionService* service,
     std::unique_ptr<ExtensionInstallPrompt> client,
-    const WebstoreInstaller::Approval* approval) {
+    const InstallApproval* approval) {
   return new CrxInstaller(service->AsExtensionServiceWeakPtr(),
                           std::move(client), approval);
 }
 
 CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
                            std::unique_ptr<ExtensionInstallPrompt> client,
-                           const WebstoreInstaller::Approval* approval)
+                           const InstallApproval* approval)
     : profile_(service_weak->profile()),
       install_directory_(service_weak->install_directory()),
       install_source_(mojom::ManifestLocation::kInternal),
       approved_(false),
-      expected_manifest_check_level_(
-          WebstoreInstaller::MANIFEST_CHECK_LEVEL_STRICT),
       fail_install_if_unexpected_version_(false),
       extensions_enabled_(service_weak->extensions_enabled()),
       delete_source_(false),
@@ -148,8 +146,7 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
     // so we can check that they match the CRX's.
     approved_ = true;
     expected_manifest_check_level_ = approval->manifest_check_level;
-    if (expected_manifest_check_level_ !=
-        WebstoreInstaller::MANIFEST_CHECK_LEVEL_NONE) {
+    if (expected_manifest_check_level_ != ManifestCheckLevel::kNone) {
       expected_manifest_ = std::make_unique<base::Value::Dict>(
           approval->manifest->value()->Clone());
     }
@@ -347,8 +344,7 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
   // Make sure the manifests match if we want to bypass the prompt.
   if (approved_) {
     bool valid = false;
-    if (expected_manifest_check_level_ ==
-        WebstoreInstaller::MANIFEST_CHECK_LEVEL_NONE) {
+    if (expected_manifest_check_level_ == ManifestCheckLevel::kNone) {
       // To skip manifest checking, the extension must be a shared module
       // and not request any permissions.
       if (SharedModuleInfo::IsSharedModule(extension) &&
@@ -357,8 +353,8 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
       }
     } else {
       valid = *expected_manifest_ == *original_manifest_;
-      if (!valid && expected_manifest_check_level_ ==
-          WebstoreInstaller::MANIFEST_CHECK_LEVEL_LOOSE) {
+      if (!valid &&
+          expected_manifest_check_level_ == ManifestCheckLevel::kLoose) {
         std::string error;
         scoped_refptr<Extension> dummy_extension = Extension::Create(
             base::FilePath(), install_source_, *expected_manifest_,

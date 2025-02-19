@@ -96,6 +96,11 @@ inline constexpr char kSyncManaged[] = "sync.managed";
 inline constexpr char kSyncCachedPassphraseType[] =
     "sync.cached_passphrase_type";
 
+// Whether or not a persistent auth error is known to exist, cached in prefs
+// because IdentityManager doesn't persist this information.
+inline constexpr char kSyncCachedPersistentAuthErrorForMetrics[] =
+    "sync.cached_persistent_auth_error";
+
 // The user's TrustedVaultAutoUpgradeExperimentGroup, determined the first time
 // the engine is successfully initialized.
 inline constexpr char kSyncCachedTrustedVaultAutoUpgradeExperimentGroup[] =

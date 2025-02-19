@@ -26,7 +26,7 @@ public class TextMessagePreference extends ChromeBasePreference {
     private @Nullable CharSequence mSummaryContentDescription;
 
     /** Constructor for inflating from XML. */
-    public TextMessagePreference(Context context, AttributeSet attrs) {
+    public TextMessagePreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setSelectable(false);
         setSingleLineTitle(false);

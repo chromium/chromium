@@ -249,6 +249,10 @@ void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
   AXUpdateNotifier::Get()->NotifyVirtualViewEvent(this, event_type);
 }
 
+void AXVirtualView::NotifyDataChanged() {
+  AXUpdateNotifier::Get()->NotifyVirtualViewDataChanged(this);
+}
+
 // ui::AXPlatformNodeDelegate
 
 const ui::AXNodeData& AXVirtualView::GetData() const {

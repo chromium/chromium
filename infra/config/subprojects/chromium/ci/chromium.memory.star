@@ -380,6 +380,7 @@ linux_memory_builder(
     ),
     cores = 16,
     ssd = True,
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "cros|asan",
         short_name = "bld",

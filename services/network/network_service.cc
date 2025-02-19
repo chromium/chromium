@@ -5,6 +5,7 @@
 #include "services/network/network_service.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -936,23 +938,23 @@ void NetworkService::UpdateMaskedDomainList(
   if (mdl.has_value()) {
     UMA_HISTOGRAM_MEMORY_KB("NetworkService.MaskedDomainList.SizeInKB",
                             mdl->ByteSizeLong() / 1024);
-
     masked_domain_list_manager_->UpdateMaskedDomainList(mdl.value(),
                                                         exclusion_list);
-
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection.ProxyAllowList."
-        "UpdateSuccess",
-        true);
-  } else {
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection.ProxyAllowList.UpdateSuccess", false);
-    LOG(ERROR) << "Unable to parse MDL in NetworkService";
   }
 
   base::UmaHistogramTimes(
       "NetworkService.IpProtection.ProxyAllowList.UpdateProcessTime",
       base::Time::Now() - start_time);
+}
+
+void NetworkService::UpdateMaskedDomainListFlatbuffer(
+    base::File default_file,
+    uint64_t default_file_size,
+    base::File regular_browsing_file,
+    uint64_t regular_browsing_file_size) {
+  masked_domain_list_manager_->UpdateMaskedDomainListFlatbuffer(
+      std::move(default_file), default_file_size,
+      std::move(regular_browsing_file), regular_browsing_file_size);
 }
 
 #if BUILDFLAG(IS_ANDROID)

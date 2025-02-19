@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
@@ -32,7 +33,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
@@ -47,6 +47,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
@@ -105,6 +107,7 @@ import java.util.Set;
  * launched to allow the user to see or modify the settings for that particular website.
  */
 @UsedByReflection("site_settings_preferences.xml")
+@NullMarked
 public class SingleCategorySettings extends BaseSiteSettingsFragment
         implements EmbeddableSettingsPage,
                 OnPreferenceChangeListener,
@@ -133,6 +136,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     public static final String EXTRA_TITLE = "title";
     public static final String POLICY = "policy";
 
+    @SuppressWarnings("NullAway.Init")
     private SettingsNavigation mSettingsNavigation;
 
     @Override
@@ -149,11 +153,11 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     // The list that contains preferences.
     private RecyclerView mListView;
     // The item for searching the list of items.
-    private MenuItem mSearchItem;
+    private @Nullable MenuItem mSearchItem;
     // The Site Settings Category we are showing.
     private SiteSettingsCategory mCategory;
     // If not blank, represents a substring to use to search for site names.
-    private String mSearch;
+    private @Nullable String mSearch;
     // Whether to group by allowed/blocked list.
     private boolean mGroupByAllowBlock;
     // Whether the Blocked list should be shown expanded.
@@ -176,7 +180,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     // The "desktop_site_window" preference to allow hiding/showing it.
     private ChromeBaseCheckBoxPreference mDesktopSiteWindowPref;
 
-    @Nullable private Set<String> mSelectedDomains;
+    private @Nullable Set<String> mSelectedDomains;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -380,6 +384,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         } else {
             resourceId = R.string.website_settings_blocked_group_heading;
         }
+        assumeNonNull(blockedGroup);
         blockedGroup.setTitle(getHeaderTitle(resourceId, numBlocked));
         blockedGroup.setExpanded(mBlockListExpanded);
     }
@@ -395,6 +400,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         // Set the title and arrow icons for the header.
         int resourceId = R.string.website_settings_managed_group_heading;
+        assumeNonNull(managedGroup);
         managedGroup.setTitle(getHeaderTitle(resourceId, numManaged));
         managedGroup.setExpanded(mManagedListExpanded);
     }
@@ -426,14 +432,17 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         // Read which category we should be showing.
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         if (getArguments() != null) {
-            mCategory =
+            SiteSettingsCategory category =
                     SiteSettingsCategory.createFromPreferenceKey(
                             browserContextHandle, getArguments().getString(EXTRA_CATEGORY, ""));
+            mCategory = assumeNonNull(category);
         }
 
         if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
@@ -471,13 +480,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         // Handled in onActivityCreated. Moving the addPreferencesFromResource call up to here
         // causes animation jank (crbug.com/985734).
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.website_preferences);
 
         String title = getArguments().getString(EXTRA_TITLE);
@@ -549,6 +558,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             }
             return true;
         }
+        assumeNonNull(mSearchItem);
         if (handleSearchNavigation(item, mSearchItem, mSearch, getActivity())) {
             boolean queryHasChanged = mSearch != null && !mSearch.isEmpty();
             mSearch = null;
@@ -574,7 +584,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return false;
             }
 
-            if (websitePreference.getParent().getKey().equals(MANAGED_GROUP)) {
+            if (assumeNonNull(websitePreference.getParent()).getKey().equals(MANAGED_GROUP)) {
                 websitePreference.setFragment(SingleWebsiteSettings.class.getName());
                 websitePreference.putSiteAddressIntoExtras(
                         SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
@@ -963,8 +973,11 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         } else {
             // Group sites into Allowed/Blocked lists.
             PreferenceGroup allowedGroup = getPreferenceScreen().findPreference(ALLOWED_GROUP);
+            assumeNonNull(allowedGroup);
             PreferenceGroup blockedGroup = getPreferenceScreen().findPreference(BLOCKED_GROUP);
+            assumeNonNull(blockedGroup);
             PreferenceGroup managedGroup = getPreferenceScreen().findPreference(MANAGED_GROUP);
+            assumeNonNull(managedGroup);
 
             Set<String> delegatedOrigins =
                     mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS
@@ -1093,11 +1106,14 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
                 TriStateSiteSettingsPreference triStateToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_TOGGLE_KEY);
+                assumeNonNull(triStateToggle);
                 return (triStateToggle.getCheckedSetting() == ContentSettingValues.BLOCK);
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
                 TriStateCookieSettingsPreference triStateCookieToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_COOKIE_TOGGLE);
-                return triStateCookieToggle.getState() != CookieControlsMode.OFF;
+                assumeNonNull(triStateCookieToggle);
+                Integer state = assumeNonNull(triStateCookieToggle.getState());
+                return state != CookieControlsMode.OFF;
             case GlobalToggleLayout.BINARY_TOGGLE:
                 ChromeSwitchPreference binaryToggle =
                         getPreferenceScreen().findPreference(BINARY_TOGGLE_KEY);
@@ -1115,19 +1131,26 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         // Find all preferences on the current preference screen. Some preferences are
         // not needed for the current category and will be removed in the steps below.
-        ChromeSwitchPreference binaryToggle = screen.findPreference(BINARY_TOGGLE_KEY);
-        TriStateSiteSettingsPreference triStateToggle = screen.findPreference(TRI_STATE_TOGGLE_KEY);
+        ChromeSwitchPreference binaryToggle =
+                assumeNonNull(screen.findPreference(BINARY_TOGGLE_KEY));
+        TriStateSiteSettingsPreference triStateToggle =
+                assumeNonNull(screen.findPreference(TRI_STATE_TOGGLE_KEY));
         TriStateCookieSettingsPreference triStateCookieToggle =
-                screen.findPreference(TRI_STATE_COOKIE_TOGGLE);
-        Preference notificationsVibrate = screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
-        mNotificationsQuietUiPref = screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
-        mNotificationsTriStatePref = screen.findPreference(NOTIFICATIONS_TRI_STATE_PREF_KEY);
-        mLocationTriStatePref = screen.findPreference(LOCATION_TRI_STATE_PREF_KEY);
-        mDesktopSiteWindowPref = screen.findPreference(DESKTOP_SITE_WINDOW_TOGGLE_KEY);
-        Preference explainProtectedMediaKey = screen.findPreference(EXPLAIN_PROTECTED_MEDIA_KEY);
-        PreferenceGroup allowedGroup = screen.findPreference(ALLOWED_GROUP);
-        PreferenceGroup blockedGroup = screen.findPreference(BLOCKED_GROUP);
-        PreferenceGroup managedGroup = screen.findPreference(MANAGED_GROUP);
+                assumeNonNull(screen.findPreference(TRI_STATE_COOKIE_TOGGLE));
+        Preference notificationsVibrate =
+                assumeNonNull(screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY));
+        mNotificationsQuietUiPref =
+                assumeNonNull(screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY));
+        mNotificationsTriStatePref =
+                assumeNonNull(screen.findPreference(NOTIFICATIONS_TRI_STATE_PREF_KEY));
+        mLocationTriStatePref = assumeNonNull(screen.findPreference(LOCATION_TRI_STATE_PREF_KEY));
+        mDesktopSiteWindowPref =
+                assumeNonNull(screen.findPreference(DESKTOP_SITE_WINDOW_TOGGLE_KEY));
+        Preference explainProtectedMediaKey =
+                assumeNonNull(screen.findPreference(EXPLAIN_PROTECTED_MEDIA_KEY));
+        PreferenceGroup allowedGroup = assumeNonNull(screen.findPreference(ALLOWED_GROUP));
+        PreferenceGroup blockedGroup = assumeNonNull(screen.findPreference(BLOCKED_GROUP));
+        PreferenceGroup managedGroup = assumeNonNull(screen.findPreference(MANAGED_GROUP));
         boolean permissionBlockedByOs = mCategory.showPermissionBlockedMessage(getContext());
 
         if (mGlobalToggleLayout != GlobalToggleLayout.BINARY_TOGGLE) {
@@ -1151,7 +1174,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 break;
         }
 
-        Preference infoText = screen.findPreference(INFO_TEXT_KEY);
+        Preference infoText = assumeNonNull(screen.findPreference(INFO_TEXT_KEY));
         if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
             infoText.setSummary(R.string.website_settings_site_data_page_description);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
@@ -1168,16 +1191,22 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         // Hide the anti-abuse text preferences, as needed.
         if (mCategory.getType() != SiteSettingsCategory.Type.ANTI_ABUSE) {
             Preference antiAbuseWhenOnHeader = screen.findPreference(ANTI_ABUSE_WHEN_ON_HEADER);
+            assumeNonNull(antiAbuseWhenOnHeader);
             Preference antiAbuseWhenOnSectionOne =
                     screen.findPreference(ANTI_ABUSE_WHEN_ON_SECTION_ONE);
+            assumeNonNull(antiAbuseWhenOnSectionOne);
             Preference antiAbuseWhenOnSectionTwo =
                     screen.findPreference(ANTI_ABUSE_WHEN_ON_SECTION_TWO);
+            assumeNonNull(antiAbuseWhenOnSectionTwo);
             Preference antiAbuseWhenOnSectionThree =
                     screen.findPreference(ANTI_ABUSE_WHEN_ON_SECTION_THREE);
+            assumeNonNull(antiAbuseWhenOnSectionThree);
             Preference antiAbuseThingsToConsiderHeader =
                     screen.findPreference(ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER);
+            assumeNonNull(antiAbuseThingsToConsiderHeader);
             Preference antiAbuseThingsToConsiderSectionOne =
                     screen.findPreference(ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE);
+            assumeNonNull(antiAbuseThingsToConsiderSectionOne);
 
             screen.removePreference(antiAbuseWhenOnHeader);
             screen.removePreference(antiAbuseWhenOnSectionOne);
@@ -1540,7 +1569,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                         ContentSettingsResources.getSiteSummary(
                                 ContentSettingValues.BLOCK, contentSettingsType)));
 
-        if (value == ContentSettingValues.ALLOW) {
+        if (assumeNonNull(value) == ContentSettingValues.ALLOW) {
             allowButton.setChecked(true);
         } else {
             blockButton.setChecked(true);

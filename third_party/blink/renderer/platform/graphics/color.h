@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 
+#include <array>
 #include <iosfwd>
 #include <optional>
 #include <string_view>
@@ -447,9 +448,19 @@ class PLATFORM_EXPORT Color {
   // According the Spec https://www.w3.org/TR/css-color-4/#interpolation-missing
   // we have to do a special treatment of when to carry forward the 'noneness'
   // of a component, given if it's an 'analog component'.
-  static void CarryForwardAnalogousMissingComponents(
-      Color color,
-      ColorSpace prev_color_space);
+
+  // Get the analogous missing components for this color with respect to the
+  // specified interpolation color space. Returns an array with the 'none'-ness
+  // for each parameter in the interpolation color space, suitable for passing
+  // to CarryForwardAnalogousMissingComponents() after converting the color to
+  // the interpolation color space.
+  std::array<bool, 3> GetAnalogousMissingComponents(
+      ColorSpace interpolation_space) const;
+
+  // Set param[0..2]_is_none_ to true if the corresponding entry in the array
+  // is true.
+  void CarryForwardAnalogousMissingComponents(
+      const std::array<bool, 3>& missing_components);
 
   // https://www.w3.org/TR/css-color-4/#interpolation-missing
   // If a color with a carried forward missing component is interpolated

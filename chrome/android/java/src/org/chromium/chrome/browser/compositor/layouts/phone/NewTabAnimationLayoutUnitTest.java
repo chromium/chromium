@@ -281,7 +281,7 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(CURRENT_TAB_ID, layoutTabs[0].getId());
         assertEquals(NEW_TAB_ID, layoutTabs[1].getId());
 
-        verify(mNewTabAnimationLayout).forceAnimationToFinish();
+        verify(mNewTabAnimationLayout, times(1)).forceNewTabAnimationToFinish();
         verify(mAnimationHostView, times(1)).addView(any());
 
         mNewTabAnimationLayout.getForegroundAnimatorSet().start();

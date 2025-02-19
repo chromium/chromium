@@ -444,8 +444,104 @@ void TabStripModel::OnTabGroupAttached(const TabGroup& group) {
 
 std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
     const tab_groups::TabGroupId& group_id) {
+  // TODO(392952244): Remove once observers have been migrated.
   NOTIMPLEMENTED();
-  return std::make_unique<DetachedTabGroup>(nullptr);
+
+  // Prepare for group to be removed.
+  const gfx::Range tabs_in_group =
+      group_model_->GetTabGroup(group_id)->ListTabs();
+
+  tabs::TabModel* active_tab_model = GetTabModelAtIndex(active_index());
+  ui::ListSelectionModel old_selection_model = selection_model_;
+
+  bool selected_tabs_removed = false;
+  bool active_tab_removed = false;
+
+  const bool closing_all_tabs =
+      static_cast<int>(tabs_in_group.length()) == GetTabCount();
+  TabStripModelChange::Remove remove;
+
+  for (int index = static_cast<int>(tabs_in_group.end()) - 1;
+       index >= static_cast<int>(tabs_in_group.start()); --index) {
+    tabs::TabModel* tab = GetTabModelAtIndex(index);
+
+    // If the tab is active, notify it that it's going to the background:
+    if (tab == active_tab_model) {
+      active_tab_removed = true;
+      active_tab_model->WillEnterBackground(base::PassKey<TabStripModel>());
+    }
+
+    // Track whether any of these tabs are selected.
+    if (IsTabSelected(index)) {
+      selected_tabs_removed = true;
+    }
+
+    // Tell the tab it’s being detached (inserted into another window).
+    tab->WillDetach(base::PassKey<TabStripModel>(),
+                    tabs::TabInterface::DetachReason::kInsertIntoOtherWindow);
+
+    // Notify observers that the tab will be removed.
+    for (auto& observer : observers_) {
+      observer.OnTabWillBeRemoved(tab->GetContents(), index);
+    }
+
+    // Fix opener relationships before removing the tab.
+    FixOpeners(index);
+
+    // Record this removal in the `Remove` event payload.
+    remove.contents.emplace_back(
+        tab, index,
+        TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
+        tabs::TabInterface::DetachReason::kInsertIntoOtherWindow, std::nullopt);
+  }
+
+  // Selection model update should be done as a bulk operation.
+  if (closing_all_tabs) {
+    selection_model_.Clear();
+  } else {
+    std::optional<int> next_selected_index =
+        DetermineNewSelectedIndex(group_id);
+
+    // Remove all the selected tabs from the model.
+    for (int index = static_cast<int>(tabs_in_group.end()) - 1;
+         index >= static_cast<int>(tabs_in_group.start()); --index) {
+      selection_model_.DecrementFrom(index);
+    }
+
+    if (active_tab_removed) {
+      if (!selection_model_.empty()) {
+        selection_model_.set_active(
+            *selection_model_.selected_indices().begin());
+        selection_model_.set_anchor(selection_model_.active());
+      } else {
+        selection_model_.SetSelectedIndex(next_selected_index.value());
+      }
+    }
+  }
+
+  // Remove the group collection.
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      contents_data_->unpinned_collection()->RemoveGroup(
+          contents_data_->unpinned_collection()->GetTabGroupCollection(
+              group_id));
+
+  // Send group detach notification.
+  OnTabGroupDetached(*group_model_->GetTabGroup(group_id));
+  group_model_->RemoveTabGroup(group_id, base::PassKey<TabStripModel>());
+
+  // Send remove notifications for tabs. There is no need to send group
+  // notifications again since tabs are part of the same group.
+  TabStripModelChange change(std::move(remove));
+  TabStripSelectionChange selection(active_tab_model, old_selection_model);
+  selection.new_tab = GetActiveTab();
+  selection.new_contents = GetActiveWebContents();
+  selection.new_model = selection_model_;
+  selection.reason = TabStripModelObserver::CHANGE_REASON_NONE;
+  selection.selected_tabs_were_removed = selected_tabs_removed;
+
+  OnChange(change, selection);
+
+  return std::make_unique<DetachedTabGroup>(std::move(group_collection));
 }
 
 void TabStripModel::InsertDetachedTabGroupImpl(
@@ -3518,6 +3614,22 @@ void TabStripModel::GroupCloseStopped(const tab_groups::TabGroupId& group) {
     ungrouping_tabs_indices.push_back(i);
   }
   RemoveFromGroup(ungrouping_tabs_indices);
+}
+
+std::optional<int> TabStripModel::DetermineNewSelectedIndex(
+    const tab_groups::TabGroupId& removed_group_id) const {
+  // TODO(396498447): Use opener and group information to compute this.
+  const gfx::Range tabs_in_group =
+      group_model_->GetTabGroup(removed_group_id)->ListTabs();
+
+  const int first_tab_in_group = static_cast<int>(tabs_in_group.start());
+  const int last_tab_in_group = static_cast<int>(tabs_in_group.end() - 1);
+
+  if (last_tab_in_group >= (count() - 1)) {
+    return first_tab_in_group - 1;
+  }
+
+  return last_tab_in_group + 1 - tabs_in_group.length();
 }
 
 std::optional<int> TabStripModel::DetermineNewSelectedIndex(

@@ -168,6 +168,12 @@ void TileDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
 void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
                                        viz::CompositorRenderPass* render_pass,
                                        AppendQuadsData* append_quads_data) {
+  if (solid_color_) {
+    CHECK(tilings_.empty());
+    AppendSolidQuad(render_pass, append_quads_data, *solid_color_);
+    return;
+  }
+
   if (tilings_.empty()) {
     return;
   }

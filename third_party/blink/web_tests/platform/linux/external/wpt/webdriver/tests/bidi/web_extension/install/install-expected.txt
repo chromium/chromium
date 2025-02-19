@@ -1,0 +1,9 @@
+This is a wdspec test.
+[ERROR] test_install_from_base64
+  setup error: KeyError: 'chrome'
+[ERROR] test_install_from_path
+  setup error: KeyError: 'chrome'
+[ERROR] test_install_from_archive_path
+  setup error: KeyError: 'chrome'
+Harness: the test ran to completion.
+

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -21,7 +22,9 @@
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -55,6 +58,19 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     EXPECT_TRUE(ea);
     EXPECT_EQ(ea->Animations().size(), 1u);
     return ea->Animations().begin()->key;
+  }
+
+  Animation* GetFirstAnimationForProperty(const Element* element,
+                                          const CSSProperty& property) {
+    for (const auto& animation :
+         element->GetElementAnimations()->Animations()) {
+      if (animation.key->CalculateAnimationPlayState() !=
+              V8AnimationPlayState::Enum::kIdle &&
+          animation.key->Affects(*element, property)) {
+        return animation.key;
+      }
+    }
+    return nullptr;
   }
 
   void EnsureCCClipPathInvariantsHoldStyleAndLayout(
@@ -146,6 +162,15 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
         override_scheduled_animation);
   }
 
+  // Some animations require the paint artifact compositor's update flag to be
+  // correctly cleared. This ensures that the Paint Artifact Compositor has a
+  // LayerTreeHost so it will run its normal logic.
+  void InitPaintArtifactCompositor() {
+    layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
+    layer_tree_->layer_tree_host()->SetRootLayer(
+        GetDocument().View()->GetPaintArtifactCompositor()->RootLayer());
+  }
+
  protected:
   void SetUp() override {
     scoped_composite_clip_path_animation =
@@ -154,6 +179,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
         std::make_unique<ScopedCompositeBGColorAnimationForTest>(false);
     chrome_client_ = MakeGarbageCollected<MockSchedulingChromeClient>();
     PageTestBase::SetupPageWithClients(chrome_client_);
+
     GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
     GetDocument().Timeline().ResetForTesting();
   }
@@ -165,6 +191,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       scoped_composite_bgcolor_animation;
 
   Persistent<MockSchedulingChromeClient> chrome_client_;
+  std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;
 };
 
 // Test the case where there is a clip-path animation with two simple
@@ -565,6 +592,94 @@ TEST_F(ClipPathPaintDefinitionTest, WillChangeContents) {
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
       /* needs_repaint= */ false, CompositedPaintStatus::kNotComposited,
       element, animation);
+}
+
+// Test that the special animation restart for percent translate animations does
+// not trigger lifecycle issues for cc clippaths.
+TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes transform {
+            0% {
+                transform: translate(10%, 10%);
+            }
+            100% {
+                transform: translate(20%, 20%);
+            }
+        }
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+                transform: translate(10%, 10%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+                transform: translate(20%, 20%);
+            }
+        }
+        .animation1 {
+            animation: transform 30s;
+        }
+        .animation2 {
+            animation: clippath 30s;
+        }
+        .oldsize {
+            width: 100px;
+            height: 100px;
+        }
+        .newsize {
+            width: 125px;
+            height: 125px;
+        }
+
+        #target {
+            transform: translate(1%, 1%);
+        }
+    </style>
+    <div id="target" class="oldsize">
+    </div>
+  )HTML");
+  InitPaintArtifactCompositor();
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element = GetElementById("target");
+
+  // TODO(crbug.com/396645699): Due to a separate issue animations on clip-path
+  // and transform will only be composited in certain situations when updates
+  // are forced. Here, we're starting a valid transform animation and replacing
+  // it with one with both properties. This primes the paint properties to be
+  // correct so that the clip path animation will be composited. This can also
+  // happen in other situations where there are multiple animations running.
+  // This code should be removed when the linked crbug is fixed.
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation1 oldsize"));
+  UpdateAllLifecyclePhasesForTest();
+
+  // Init animation with clip-path and a translate.
+
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation2 oldsize"));
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
+
+  Animation* animation =
+      GetFirstAnimationForProperty(element, GetCSSPropertyClipPath());
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+      animation);
+
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation2 newsize"));
+
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ false, CompositedPaintStatus::kComposited, element,
+      animation, /* override_scheduled_animation= */ true);
 }
 
 }  // namespace blink

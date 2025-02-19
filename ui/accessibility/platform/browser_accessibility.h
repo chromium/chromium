@@ -246,7 +246,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
     Iterator begin() { return {parent_, child_tree_root_}; }
     Iterator end() {
       unsigned int count =
-          child_tree_root_ ? 1U : parent_->node()->children().size();
+          child_tree_root_
+              ? 1U
+              : static_cast<unsigned int>(parent_->node()->children().size());
       return {parent_, child_tree_root_, count};
     }
 

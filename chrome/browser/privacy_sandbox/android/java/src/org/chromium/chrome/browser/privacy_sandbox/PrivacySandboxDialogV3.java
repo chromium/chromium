@@ -15,6 +15,7 @@ import android.widget.ScrollView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -114,7 +115,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
                 .getViewTreeObserver()
                 .addOnScrollChangedListener(
                         () -> {
-                            if (!mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+                            if (!canScrollVerticallyDown()) {
                                 mMoreButton.setVisibility(View.GONE);
                                 mBottomFade.setVisibility(View.GONE);
                                 mActionButtons.setVisibility(View.VISIBLE);
@@ -227,6 +228,11 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
         }
     }
 
+    @VisibleForTesting
+    public boolean canScrollVerticallyDown() {
+        return mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN);
+    }
+
     // OnClickListener:
     @Override
     public void onClick(View view) {
@@ -246,7 +252,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
 
     @Override
     public void onShow(DialogInterface dialogInterface) {
-        if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+        if (canScrollVerticallyDown()) {
             mMoreButton.setVisibility(View.VISIBLE);
             mBottomFade.setVisibility(View.VISIBLE);
             mActionButtons.setVisibility(View.GONE);

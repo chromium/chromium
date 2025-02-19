@@ -60,6 +60,7 @@ class PinnedToolbarActionsContainer
 
   // views::View:
   void OnThemeChanged() override;
+  void AddedToWidget() override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool AreDropTypesRequired() override;

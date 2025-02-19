@@ -22,6 +22,9 @@ class VIEWS_EXPORT AXUpdateObserver : public base::CheckedObserver {
   virtual void OnVirtualViewEvent(views::AXVirtualView* virtual_view,
                                   ax::mojom::Event event_type) {}
 
+  virtual void OnDataChanged(views::View* view) {}
+  virtual void OnVirtualViewDataChanged(views::AXVirtualView* virtual_view) {}
+
  protected:
   AXUpdateObserver();
   ~AXUpdateObserver() override;

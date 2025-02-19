@@ -35,13 +35,11 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // Runs the detached open widget animation for the Glic widget.
   void RunOpenDetachedAnimation(base::OnceClosure callback);
 
-  // Sets target bounds for the widget (must exist) and creates a
-  // GlicWindowResizeAnimation instance to begin a new animation. If a bounds
-  // animation is already running, end it and start a new one. Duration is set
-  // to 0 if negative.
-  void AnimateBounds(const gfx::Rect& target_bounds,
-                     base::TimeDelta duration,
-                     base::OnceClosure callback);
+  // Runs the attached close animation for the Glic widget.
+  void RunCloseAnimation(GlicButton* glic_button, base::OnceClosure callback);
+
+  // Sets the background color and corner radius of the Glic widget.
+  void SetRoundedRectBackground();
 
   // Animate the window size, maintaining the position of the top right corner.
   // If there is already a running bounds change animation, update that
@@ -62,6 +60,14 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   void ResizeFinished();
 
  private:
+  // Sets target bounds for the widget (must exist) and creates a
+  // GlicWindowResizeAnimation instance to begin a new animation. If a bounds
+  // animation is already running, end it and start a new one. Duration is set
+  // to 0 if negative.
+  void AnimateBounds(const gfx::Rect& target_bounds,
+                     base::TimeDelta duration,
+                     base::OnceClosure callback);
+
   // Gets the bounds for the widget's resize animation. If there is an animation
   // already ongoing, use the target bounds for that animation. Otherwise, use
   // the widget's current bounds.

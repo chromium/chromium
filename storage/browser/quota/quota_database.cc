@@ -1054,6 +1054,8 @@ QuotaError QuotaDatabase::EnsureOpened() {
 
   db_ = std::make_unique<sql::Database>(
       sql::DatabaseOptions()
+          .set_preload(base::FeatureList::IsEnabled(
+              sql::features::kPreOpenPreloadDatabase))
           // The quota database is a critical storage component. If it's
           // corrupted, all client-side storage APIs fail, because they don't
           // know where their data is stored.
@@ -1167,7 +1169,9 @@ bool QuotaDatabase::OpenDatabase() {
     return false;
   }
 
-  db_->Preload();
+  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
+    db_->Preload();
+  }
   return true;
 }
 

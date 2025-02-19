@@ -87,6 +87,20 @@ NSString* GetSavePasswordsItemTitle() {
                                     : IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
 }
 
+// Helper method that returns whether the `passwordsInOtherAppsItem` should be
+// tappable depending on its accessory type.
+BOOL IsPasswordsInOtherAppsItemTappable(
+    UITableViewCellAccessoryType cell_accessory_type) {
+  switch (cell_accessory_type) {
+    case UITableViewCellAccessoryNone:
+      return NO;
+    case UITableViewCellAccessoryDisclosureIndicator:
+      return YES;
+    default:
+      NOTREACHED();
+  }
+}
+
 // Whether automatic passkey upgrades feature is enabled.
 BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   return base::FeatureList::IsEnabled(
@@ -108,6 +122,8 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   // Whether or not Chromium has been enabled as a credential provider at the
   // iOS level. This may not be known at load time; the detail text showing on
   // or off status will be omitted until this is populated.
+  // TODO(crbug.com/396694707): Should become a plain bool once the Passkeys M2
+  // feature is launched.
   std::optional<bool> _passwordsInOtherAppsEnabled;
 
   // Whether the change PIN button should be set up. This will be true when it's
@@ -380,7 +396,10 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypePasswordsInOtherApps: {
-      [self.presentationDelegate showPasswordsInOtherAppsScreen];
+      if (IsPasswordsInOtherAppsItemTappable(
+              self.passwordsInOtherAppsItem.accessoryType)) {
+        [self.presentationDelegate showPasswordsInOtherAppsScreen];
+      }
       break;
     }
     case ItemTypeBulkMovePasswordsToAccountButton: {
@@ -433,6 +452,9 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
       return self.canExportPasswords;
     case ItemTypeSavePasswordsSwitch:
       return NO;
+    case ItemTypePasswordsInOtherApps:
+      return IsPasswordsInOtherAppsItemTappable(
+          self.passwordsInOtherAppsItem.accessoryType);
   }
   return YES;
 }
@@ -532,9 +554,11 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   _passwordsInOtherAppsItem.text = l10n_util::GetNSString(
       IOSPasskeysM2Enabled() ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS
                              : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
-  _passwordsInOtherAppsItem.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  _passwordsInOtherAppsItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  if (!IOSPasskeysM2Enabled()) {
+    _passwordsInOtherAppsItem.accessoryType =
+        UITableViewCellAccessoryDisclosureIndicator;
+    _passwordsInOtherAppsItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  }
   _passwordsInOtherAppsItem.accessibilityIdentifier =
       kPasswordSettingsPasswordsInOtherAppsRowId;
   [self updatePasswordsInOtherAppsItem];
@@ -986,17 +1010,57 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // Updates the appearance of the Passwords In Other Apps item to reflect the
 // current state of `_passwordsInOtherAppsEnabled`.
 - (void)updatePasswordsInOtherAppsItem {
-  if (_passwordsInOtherAppsEnabled.has_value()) {
+  if (!_passwordsInOtherAppsEnabled.has_value()) {
+    if (IOSPasskeysM2Enabled()) {
+      // If the `passwordsInOtherAppsEnabled` value hasn't been set yet when the
+      // Passkeys M2 feature is enabled, default to `NO` as it doesn't make
+      // sense, in this case, for the UI to be in an intermediate state.
+      _passwordsInOtherAppsEnabled = NO;
+    } else {
+      return;
+    }
+  }
+
+  // Whether the `passwordsInOtherAppsItem` should be tappable and allow the
+  // user to access the Passwords in Other Apps view. The UI of the cell varies
+  // depending on whether or not it is tappable.
+  BOOL shouldPasswordsInOtherAppsItemBeTappable = YES;
+  if (@available(iOS 18, *)) {
+    shouldPasswordsInOtherAppsItemBeTappable =
+        !IOSPasskeysM2Enabled() || _passwordsInOtherAppsEnabled.value();
+  }
+
+  if (shouldPasswordsInOtherAppsItemBeTappable) {
+    self.passwordsInOtherAppsItem.leadingDetailText = nil;
     self.passwordsInOtherAppsItem.trailingDetailText =
         _passwordsInOtherAppsEnabled.value()
             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-
-    if (self.modelLoadStatus != ModelLoadComplete) {
-      return;
-    }
-    [self reconfigureCellsForItems:@[ self.passwordsInOtherAppsItem ]];
+    self.passwordsInOtherAppsItem.accessoryType =
+        UITableViewCellAccessoryDisclosureIndicator;
+    self.passwordsInOtherAppsItem.accessibilityTraits |=
+        UIAccessibilityTraitButton;
+  } else {
+    // TODO(crbug.com/394580626): Replace placeholder string once strings are
+    // ready.
+    self.passwordsInOtherAppsItem.leadingDetailText = @"Leading detail text";
+    self.passwordsInOtherAppsItem.trailingDetailText = nil;
+    self.passwordsInOtherAppsItem.accessoryType = UITableViewCellAccessoryNone;
+    self.passwordsInOtherAppsItem.accessibilityTraits &=
+        ~UIAccessibilityTraitButton;
   }
+
+  // TODO(crbug.com/394580626): Create and manage visibility of the "Turn on
+  // autofill" button.
+
+  if (self.modelLoadStatus != ModelLoadComplete) {
+    return;
+  }
+  [self reconfigureCellsForItems:@[ self.passwordsInOtherAppsItem ]];
+
+  // Refresh the cells' height.
+  [self.tableView beginUpdates];
+  [self.tableView endUpdates];
 }
 
 // Updates the UI to present the correct elements for the user's current

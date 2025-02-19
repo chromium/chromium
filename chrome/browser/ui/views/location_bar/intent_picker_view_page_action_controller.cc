@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/intent_picker_view_page_action_controller.h"
 
+#include "base/check_op.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,8 +22,10 @@ class WebContents;
 
 IntentPickerViewPageActionController::IntentPickerViewPageActionController(
     tabs::TabInterface* tab_interface)
-    : tab_interface_(*tab_interface) {}
-// TODO(396720194): Add a check to ensure the tab_interface ptr is not nullptr.
+    : tab_interface_(*tab_interface) {
+  CHECK_NE(tab_interface, nullptr);
+}
+
 void IntentPickerViewPageActionController::UpdatePageActionVisibility(
     bool should_show_icon) {
   if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {

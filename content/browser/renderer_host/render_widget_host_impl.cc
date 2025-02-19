@@ -447,6 +447,14 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   agent_scheduling_group_->GetProcess()->AddPriorityClient(this);
 
   SetupRenderInputRouter();
+  if (!frame_tree || !frame_tree->is_primary()) {
+    // We are preserving the old behavior for non-primary frames because the
+    // paint-holding signal seems missing in non-primary frames, and more
+    // importantly, releasing input early is fine in this case because the page
+    // either does not receive an input (kPrerender) or is a non-top-frame
+    // (where holding back input is not needed, crbug.com/40074208).
+    input_router()->MakeActive();
+  }
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kDisableNewContentRenderingTimeout)) {
@@ -584,6 +592,15 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
     MaybeDispatchBufferedFrameSinkRequest();
     is_topmost_frame_widget_with_view_ =
         !view->IsRenderWidgetHostViewChildFrame() && !self_owned_;
+
+    if (!is_topmost_frame_widget_with_view_) {
+      // We need to drop input only for the topmost frame shown to the user, see
+      // crbug.com/40074208.
+      //
+      // TODO(https://crbug.com/397701273): What happens to the input events to
+      // a subframe in the navigated page?
+      input_router()->MakeActive();
+    }
 
     // SendScreenRects() and SynchronizeVisualProperties() delay until a view
     // is set, however we come here with a newly created `view` that is not
@@ -741,15 +758,8 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
   renderer_widget_created_ = true;
 
   mojo::PendingRemote<blink::mojom::RenderInputRouterClient> browser_remote;
-  mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_receiver =
-      mojo::NullReceiver();
-  if (input::IsTransferInputToVizSupported()) {
-    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> viz_remote;
-    viz_receiver = viz_remote.InitWithNewPipeAndPassReceiver();
-    viz_rir_client_remote_ = std::move(viz_remote);
-  }
-  blink_widget_->SetupRenderInputRouterConnections(
-      browser_remote.InitWithNewPipeAndPassReceiver(), std::move(viz_receiver));
+  blink_widget_->SetupBrowserRenderInputRouterConnections(
+      browser_remote.InitWithNewPipeAndPassReceiver());
 
   GetRenderInputRouter()->BindRenderInputRouterInterfaces(
       std::move(browser_remote));
@@ -1534,6 +1544,10 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
 
   CHECK_GE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeFirst);
   CHECK_LE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeLast);
+
+  if (delegate_ && delegate_->PreHandleMouseEvent(mouse_event)) {
+    return;
+  }
 
   for (auto& mouse_event_callback : mouse_event_callbacks_) {
     if (mouse_event_callback.Run(mouse_event)) {
@@ -2452,6 +2466,8 @@ void RenderWidgetHostImpl::ClearDisplayedGraphics() {
   // we will release input events at this point anyway.  So for our purpose,
   // this is equivalent to receiving the signal.
   first_content_metadata_received_ = true;
+
+  input_router()->MakeActive();
 }
 
 void RenderWidgetHostImpl::OnKeyboardEventAck(
@@ -3552,23 +3568,23 @@ void RenderWidgetHostImpl::CreateFrameSink(
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
         compositor_frame_sink_receiver,
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
-        compositor_frame_sink_client) {
+        compositor_frame_sink_client,
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient>
+        viz_rir_client_remote) {
   // Connects the viz process end of CompositorFrameSink message pipes. The
   // renderer compositor may request a new CompositorFrameSink on context
   // loss, which will destroy the existing CompositorFrameSink.
   create_frame_sink_callback_ = base::BindOnce(
       [](mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver,
          mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
-         std::optional<mojo::PendingRemote<
-             blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
+         mojo::PendingRemote<blink::mojom::RenderInputRouterClient>
+             viz_rir_client_remote,
          bool force_enable_zoom, base::UnguessableToken grouping_id,
          const viz::FrameSinkId& frame_sink_id) {
         input::mojom::RenderInputRouterConfigPtr config;
         if (input::IsTransferInputToVizSupported()) {
-          DCHECK(viz_rir_client_remote.has_value());
-
           config = input::mojom::RenderInputRouterConfig::New();
-          config->rir_client = std::move(viz_rir_client_remote.value());
+          config->rir_client = std::move(viz_rir_client_remote);
           config->grouping_id = grouping_id;
           config->force_enable_zoom = force_enable_zoom;
         }
@@ -3577,8 +3593,7 @@ void RenderWidgetHostImpl::CreateFrameSink(
             std::move(config));
       },
       std::move(compositor_frame_sink_receiver),
-      std::move(compositor_frame_sink_client),
-      std::move(viz_rir_client_remote_),
+      std::move(compositor_frame_sink_client), std::move(viz_rir_client_remote),
       GetRenderInputRouter()->GetForceEnableZoom());
 
   MaybeDispatchBufferedFrameSinkRequest();
@@ -3761,6 +3776,7 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
   if (!first_content_metadata_received_) {
     first_content_metadata_received_ = true;
     first_content_metadata_time_ = base::TimeTicks::Now();
+    input_router()->MakeActive();
   }
 
   const auto& metadata =

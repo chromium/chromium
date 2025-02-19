@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ENTITIES_ENTITY_DATA_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ENTITIES_ENTITY_DATA_MANAGER_H_
 
-#include <map>
-#include <memory>
-
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/types/optional_ref.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -53,7 +54,13 @@ class EntityDataManager : public KeyedService {
   // finished.
   //
   // See `EntityTable::GetEntityInstances()` for details on what "valid" means.
-  const std::vector<EntityInstance>& GetEntityInstances() const;
+  base::span<const EntityInstance> GetEntityInstances() const LIFETIME_BOUND {
+    return entities_;
+  }
+
+  // Equivalent to looking up `guid` in `GetEntityInstances()`.
+  base::optional_ref<const EntityInstance> GetEntityInstance(
+      const base::Uuid& guid) const LIFETIME_BOUND;
 
  private:
   void LoadEntities();
@@ -67,7 +74,7 @@ class EntityDataManager : public KeyedService {
 
   // The result of the last successful LoadEntities() query.
   // All entries are identifiable by their EntityInstance::guid().
-  std::vector<EntityInstance> entities_;
+  base::flat_set<EntityInstance, EntityInstance::CompareByGuid> entities_;
 
   base::WeakPtrFactory<EntityDataManager> weak_ptr_factory_{this};
 };

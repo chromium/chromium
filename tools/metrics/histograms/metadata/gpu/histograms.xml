@@ -1079,6 +1079,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.IOSurface.CreationTimeUs" units="microseconds"
+    expires_after="2025-06-30">
+  <owner>sunnyps@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The time that it took to create an IOSurface. Recorded for every IOSurface
+    that's created. This metric is only collected on Mac, which only has
+    high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.Mac.BackpressureUs" units="microseconds"
     expires_after="2025-07-27">
   <owner>magchen@chromium.org</owner>

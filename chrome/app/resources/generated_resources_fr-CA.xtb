@@ -1185,6 +1185,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne peut pas continuer à utiliser <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Diffusion de <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Services</translation>
+<translation id="1813828404076816564">Sélectionner le bouton de commentaires pour envoyer des commentaires concernant la fonctionnalité de groupes d'onglets partagés</translation>
 <translation id="18139523105317219">Nom de partie EDI</translation>
 <translation id="1815083418640426271">Coller en tant que texte brut</translation>
 <translation id="1815097521077272760">Vous avez été invité à essayer les commandes clavier pour ce jeu.</translation>
@@ -4112,6 +4113,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="3857807444929313943">Relever le doigt et toucher le capteur de nouveau</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="385939467708172187">Utilisez un mot de passe fort</translation>
+<translation id="3859869403161297890">Envoyez vos commentaires sur les groupes d'onglets partagés ici.</translation>
 <translation id="3859987779882450877">Suggère et crée automatiquement des groupes à partir de vos onglets ouverts.</translation>
 <translation id="386009056910366930">Gérer le groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
 <translation id="3861638017150647085">Le nom d'utilisateur « <ph name="USERNAME" /> » n'est pas disponible</translation>
@@ -8164,6 +8166,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6805478749741295868">Il s'agit d'une fonctionnalité d'IA expérimentale et elle ne fonctionnera pas toujours correctement.</translation>
 <translation id="6805647936811177813">Veuillez vous connecter à <ph name="TOKEN_NAME" /> pour importer le certificat client de <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Activer le suivi RLZ pour <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
+<translation id="6805817411033102703">Commentaires sur les groupes d'onglets partagés</translation>
 <translation id="6806089545527108739">Ne pas autoriser, mais demander plus tard</translation>
 <translation id="680644983456221885">Une protection proactive en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur les données de navigation envoyées à Google</translation>
 <translation id="6806781719264274042">Seulement vos contacts qui ont un compte Google. <ph name="LINK_BEGIN" />Afficher les contacts<ph name="LINK_END" /></translation>

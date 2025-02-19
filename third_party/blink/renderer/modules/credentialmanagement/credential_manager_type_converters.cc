@@ -983,11 +983,7 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
 
   mojo_options->nonce = options.getNonceOr("");
   mojo_options->login_hint = options.getLoginHintOr("");
-  mojo_options->domain_hint =
-      blink::RuntimeEnabledFeatures::FedCmDomainHintEnabled()
-          ? options.getDomainHintOr("")
-          : "";
-
+  mojo_options->domain_hint = options.getDomainHintOr("");
   if (options.hasFormat()) {
     // Only one format type is supported at the time and the bindings code
     // verifies that the correct one was specified.

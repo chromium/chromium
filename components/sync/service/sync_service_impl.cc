@@ -1283,6 +1283,15 @@ void SyncServiceImpl::SyncAuthAccountStateChanged() {
 void SyncServiceImpl::SyncAuthCredentialsChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Cache in prefs whether a persistent auth error exists.
+  if (auth_manager_->IsSyncPaused()) {
+    sync_prefs_.SetHasCachedPersistentAuthErrorForMetrics(true);
+  } else if (!auth_manager_->GetCredentials().access_token.empty()) {
+    // In order to conclude with certainty that there is no persistent auth
+    // error, it is necessary to get an access token successfully.
+    sync_prefs_.SetHasCachedPersistentAuthErrorForMetrics(false);
+  }
+
   // If the engine isn't allowed to start anymore due to the credentials change,
   // then shut down. This happens when there is a persistent auth error (e.g.
   // the user signs out on the web), which implies the "Sync paused" state.
@@ -1455,6 +1464,11 @@ GoogleServiceAuthError SyncServiceImpl::GetAuthError() const {
 base::Time SyncServiceImpl::GetAuthErrorTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return auth_manager_->GetLastAuthErrorTime();
+}
+
+bool SyncServiceImpl::HasCachedPersistentAuthErrorForMetrics() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_prefs_.HasCachedPersistentAuthErrorForMetrics();
 }
 
 bool SyncServiceImpl::RequiresClientUpgrade() const {
@@ -2116,6 +2130,10 @@ void SyncServiceImpl::StopAndClear(ResetEngineReason reset_engine_reason) {
   // If the migration didn't finish before StopAndClear() was called, mark it as
   // done so it doesn't trigger again if the user signs in later.
   sync_prefs_.MarkPartialSyncToSigninMigrationFullyDone();
+
+  if (reset_engine_reason == ResetEngineReason::kNotSignedIn) {
+    sync_prefs_.ClearCachedPersistentAuthErrorForMetrics();
+  }
 
   // Also let observers know that Sync-the-feature is now fully disabled
   // (before it possibly starts up again in transport-only mode).

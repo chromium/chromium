@@ -816,6 +816,7 @@ chromium-metrics-reviews@google.com.
   <int value="762064551" label="chrome://graduation/"/>
   <int value="770641362" label="chrome://shortcut-customization/"/>
   <int value="784140714" label="chrome://predictors/"/>
+  <int value="807323521" label="chrome://glic-fre/"/>
   <int value="812624791" label="chrome://dom-distiller/"/>
   <int value="821023334" label="chrome://screenlock-icon/"/>
   <int value="858923205" label="chrome://cloud-upload/"/>

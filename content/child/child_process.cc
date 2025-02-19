@@ -104,8 +104,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
     initialized_thread_pool_ = true;
   }
 
-  tracing::InitTracingPostThreadPoolStartAndFeatureList(
-      /* enable_consumer */ false);
+  tracing::InitTracingPostFeatureList(/*enable_consumer=*/false);
 
   // Ensure the visibility tracker is created on the main thread.
   ProcessVisibilityTracker::GetInstance();

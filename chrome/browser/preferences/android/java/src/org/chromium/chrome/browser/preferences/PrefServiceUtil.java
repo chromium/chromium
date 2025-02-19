@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.preferences;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Utilities for accessing PrefServices. */
+@NullMarked
 public class PrefServiceUtil {
     /** Create a PrefChangeRegistrar watching the UserPrefs of a Profile. */
     public static PrefChangeRegistrar createFor(Profile profile) {

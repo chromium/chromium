@@ -10,11 +10,14 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * AccountManagerFacadeProvider is intended to group all the AccountManagerFacade instance
  * manipulation methods in one place.
  */
+@NullMarked
 public class AccountManagerFacadeProvider {
     // Holder needed to avoid init on instrumentation thread in tests.
     private static class Holder {
@@ -30,7 +33,7 @@ public class AccountManagerFacadeProvider {
         }
     }
 
-    private static AccountManagerFacade sInstanceForTesting;
+    private static @Nullable AccountManagerFacade sInstanceForTesting;
 
     private AccountManagerFacadeProvider() {}
 

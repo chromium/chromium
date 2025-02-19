@@ -26,10 +26,10 @@ source_set("link_capturing") {
   }
 
   deps = [
-    ":features",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:features",
     "//chrome/common:chrome_features",
     "//components/keep_alive_registry",
     "//components/page_load_metrics/browser",
@@ -85,12 +85,6 @@ source_set("link_capturing") {
   }
 }
 
-source_set("features") {
-  sources = [ "link_capturing_features.h" ]
-  public_deps = [ "//base" ]
-  deps = [ "//chrome/browser/web_applications:web_applications" ]
-}
-
 source_set("test_support") {
   testonly = true
   sources = [
@@ -101,6 +95,7 @@ source_set("test_support") {
     ":link_capturing",
     "//base/test:test_support",
     "//chrome/browser:test_support",
+    "//chrome/browser/web_applications:features",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
@@ -115,10 +110,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "link_capturing_navigation_throttle_unittest.cc" ]
   deps = [
-    ":features",
     ":link_capturing",
     "//base/test:test_support",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/web_applications:features",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",

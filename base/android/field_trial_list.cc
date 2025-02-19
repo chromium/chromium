@@ -73,6 +73,8 @@ static std::string JNI_FieldTrialList_GetVariationParameter(
 // friend the JNI function and is, in turn, friended by
 // FieldTrialListIncludingLowAnonymity which allows for the private
 // GetActiveFieldTrialGroups() to be reached.
+static void JNI_FieldTrialList_LogActiveTrials(JNIEnv* env);
+
 class AndroidFieldTrialListLogActiveTrialsFriendHelper {
  private:
   friend void ::JNI_FieldTrialList_LogActiveTrials(JNIEnv* env);
@@ -110,3 +112,5 @@ static jboolean JNI_FieldTrialList_CreateFieldTrial(JNIEnv* env,
   return base::FieldTrialList::CreateFieldTrial(trial_name, group_name) !=
          nullptr;
 }
+
+DEFINE_JNI_FOR_FieldTrialList()

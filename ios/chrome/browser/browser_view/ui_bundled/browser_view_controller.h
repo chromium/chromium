@@ -38,7 +38,7 @@ class PagePlaceholderBrowserAgent;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 @class SafeAreaProvider;
-@class SideSwipeMediator;
+@class SideSwipeCoordinator;
 @class TabStripCoordinator;
 @class TabStripLegacyCoordinator;
 class TabUsageRecorderBrowserAgent;
@@ -58,7 +58,7 @@ typedef struct {
   ToolbarCoordinator* toolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
-  SideSwipeMediator* sideSwipeMediator;
+  SideSwipeCoordinator* sideSwipeCoordinator;
   BookmarksCoordinator* bookmarksCoordinator;
   raw_ptr<FullscreenController> fullscreenController;
   id<TextZoomCommands> textZoomHandler;

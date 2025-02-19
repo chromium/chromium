@@ -876,6 +876,22 @@ SharedStorageWorkletGlobalScope::interestGroups(
                         ->trusted_bidding_signals_coordinator->ToString());
               }
 
+              if (mojom_group->interest_group
+                      ->view_and_click_counts_providers) {
+                Vector<String> view_and_click_counts_providers;
+                view_and_click_counts_providers.reserve(
+                    mojom_group->interest_group->view_and_click_counts_providers
+                        ->size());
+                for (const scoped_refptr<const blink::SecurityOrigin>& origin :
+                     *mojom_group->interest_group
+                          ->view_and_click_counts_providers) {
+                  view_and_click_counts_providers.emplace_back(
+                      origin->ToString());
+                }
+                group->setViewAndClickCountsProviders(
+                    std::move(view_and_click_counts_providers));
+              }
+
               if (mojom_group->interest_group->user_bidding_signals) {
                 group->setUserBiddingSignals(JsonStringToScriptValue(
                     resolver->GetScriptState(),

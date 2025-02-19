@@ -225,6 +225,11 @@ CC_BASE_EXPORT extern bool StopExportDFCMetrics();
 // end of frame production for the given VSync.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kZeroScrollMetricsUpdate);
 
+// When enabled, the view transition capture transform is floored instead of
+// rounded and we use the render surface pixel snapping to counteract the blurry
+// effect.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionFloorTransform);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

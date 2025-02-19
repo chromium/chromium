@@ -424,6 +424,48 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
+// Copies the viewAndClickCountsProviders JSON field into
+// `view_and_click_counts_providers`.
+[[nodiscard]] bool TryToCopyViewAndClickCountsProviders(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const base::Value* maybe_view_and_click_counts_providers =
+      dict.Find("viewAndClickCountsProviders");
+
+  // No `viewAndClickCountsProviders` field in the update JSON.
+  if (!maybe_view_and_click_counts_providers) {
+    return true;
+  }
+
+  // `viewAndClickCountsProviders` field is `null` in the update JSON.
+  if (maybe_view_and_click_counts_providers->is_none()) {
+    interest_group_update.view_and_click_counts_providers = std::nullopt;
+    return true;
+  }
+
+  // If `view_and_click_counts_providers` is present and not null, it must
+  // be a valid list of URL origin strings.
+  if (!maybe_view_and_click_counts_providers->is_list()) {
+    return false;
+  }
+
+  const base::Value::List& view_and_click_counts_providers =
+      maybe_view_and_click_counts_providers->GetList();
+
+  interest_group_update.view_and_click_counts_providers.emplace();
+  interest_group_update.view_and_click_counts_providers->reserve(
+      view_and_click_counts_providers.size());
+  for (const base::Value& provider : view_and_click_counts_providers) {
+    if (!provider.is_string()) {
+      return false;
+    }
+    interest_group_update.view_and_click_counts_providers->emplace_back(
+        url::Origin::Create(GURL(provider.GetString())));
+  }
+
+  return true;
+}
+
 // Helper for TryToCopyAds() and TryToCopyAdComponents().
 [[nodiscard]] std::optional<std::vector<blink::InterestGroup::Ad>> ExtractAds(
     const base::Value::List& ads_list,
@@ -780,6 +822,9 @@ std::optional<InterestGroupUpdate> ParseUpdateJson(
   }
   if (!TryToCopyTrustedBiddingSignalsCoordinator(*dict,
                                                  interest_group_update)) {
+    return std::nullopt;
+  }
+  if (!TryToCopyViewAndClickCountsProviders(*dict, interest_group_update)) {
     return std::nullopt;
   }
   if (!TryToCopyUserBiddingSignals(*dict, interest_group_update)) {

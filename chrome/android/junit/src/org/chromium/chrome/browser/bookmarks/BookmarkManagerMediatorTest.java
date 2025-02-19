@@ -403,6 +403,7 @@ public class BookmarkManagerMediatorTest {
         doReturn(mOtherFolderItem).when(mBookmarkModel).getBookmarkById(mOtherFolderId);
         doReturn(mReadingListFolderId).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
         doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
+        doReturn(true).when(mBookmarkModel).isReadingListFolder(mReadingListFolderId);
         doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
         doReturn(Arrays.asList(mFolderId2, mFolderId3))
                 .when(mBookmarkModel)

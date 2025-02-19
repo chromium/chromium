@@ -645,7 +645,8 @@ class FakeLinuxUiGetter : public ui::LinuxUiGetter {
     }
 
     ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
-                                                    bool tiled) override {
+                                                    bool tiled,
+                                                    bool maximized) override {
       // The test relies on this returning null.
       return nullptr;
     }

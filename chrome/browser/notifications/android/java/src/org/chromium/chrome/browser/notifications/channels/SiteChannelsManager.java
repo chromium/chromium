@@ -4,16 +4,19 @@
 
 package org.chromium.chrome.browser.notifications.channels;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge.SiteChannel;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -23,11 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Creates/deletes and queries our notification channels for websites. */
+@NullMarked
 public class SiteChannelsManager {
     private static final String CHANNEL_ID_PREFIX_SITES = "web:";
     private static final String CHANNEL_ID_SEPARATOR = ";";
 
-    private static SiteChannelsManager sInstance;
+    private static @Nullable SiteChannelsManager sInstance;
 
     public static SiteChannelsManager getInstance() {
         if (sInstance == null) {
@@ -62,8 +66,10 @@ public class SiteChannelsManager {
 
         // Channel group must be created before the channel.
         NotificationChannelGroup channelGroup =
-                ChromeChannelDefinitions.getInstance()
-                        .getChannelGroup(ChromeChannelDefinitions.ChannelGroupId.SITES)
+                assumeNonNull(
+                                ChromeChannelDefinitions.getInstance()
+                                        .getChannelGroup(
+                                                ChromeChannelDefinitions.ChannelGroupId.SITES))
                         .toNotificationChannelGroup(
                                 ContextUtils.getApplicationContext().getResources());
         NotificationManagerProxyImpl.getInstance().createNotificationChannelGroup(channelGroup);
@@ -81,7 +87,7 @@ public class SiteChannelsManager {
     }
 
     private @Nullable SiteChannel getSiteChannelForOrigin(String origin) {
-        String normalizedOrigin = WebsiteAddress.create(origin).getOrigin();
+        String normalizedOrigin = assumeNonNull(WebsiteAddress.create(origin)).getOrigin();
         for (SiteChannel channel : getSiteChannels()) {
             if (channel.getOrigin().equals(normalizedOrigin)) {
                 return channel;
@@ -154,7 +160,7 @@ public class SiteChannelsManager {
     @VisibleForTesting
     public static String createChannelId(String origin, long creationTime) {
         return CHANNEL_ID_PREFIX_SITES
-                + WebsiteAddress.create(origin).getOrigin()
+                + assumeNonNull(WebsiteAddress.create(origin)).getOrigin()
                 + CHANNEL_ID_SEPARATOR
                 + creationTime;
     }
@@ -183,10 +189,11 @@ public class SiteChannelsManager {
         SiteChannel channel = getSiteChannelForOrigin(origin);
         // Fall back to generic Sites channel if a channel for this origin doesn't exist.
         // TODO(crbug.com/40558363) Stop using this channel as a fallback and fully deprecate it.
-        boolean fallbackToSitesChannel = channel == null;
-        if (fallbackToSitesChannel) {
+        if (channel != null) {
+            return channel.getId();
+        } else {
             RecordHistogram.recordBooleanHistogram("Notifications.Android.SitesChannel", true);
+            return ChromeChannelDefinitions.ChannelId.SITES;
         }
-        return fallbackToSitesChannel ? ChromeChannelDefinitions.ChannelId.SITES : channel.getId();
     }
 }

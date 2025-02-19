@@ -123,6 +123,12 @@ size_t EstimateBlinkInterestGroupSize(
   if (group.trusted_bidding_signals_coordinator) {
     size += group.trusted_bidding_signals_coordinator->ToString().length();
   }
+  if (group.view_and_click_counts_providers) {
+    for (const scoped_refptr<const SecurityOrigin>& provider :
+         *group.view_and_click_counts_providers) {
+      size += provider->ToString().length();
+    }
+  }
   size += group.user_bidding_signals.length();
 
   if (group.ads) {
@@ -314,6 +320,18 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
       error_field_value = group.trusted_bidding_signals_coordinator->ToString();
       error = "trustedBiddingSignalsCoordinator origin must be HTTPS.";
       return false;
+    }
+  }
+
+  if (group.view_and_click_counts_providers) {
+    for (const scoped_refptr<const SecurityOrigin>& provider :
+         *group.view_and_click_counts_providers) {
+      if (provider->Protocol() != url::kHttpsScheme) {
+        error_field_name = "viewAndClickCountsProviders";
+        error_field_value = provider->ToString();
+        error = "viewAndClickCountsProviders origin must be HTTPS.";
+        return false;
+      }
     }
   }
 

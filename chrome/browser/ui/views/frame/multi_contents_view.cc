@@ -9,18 +9,22 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
 
-MultiContentsView::MultiContentsView(content::BrowserContext* browser_context) {
-  active_contents_view_ =
+MultiContentsView::MultiContentsView(
+    content::BrowserContext* browser_context,
+    WebContentsPressedCallback inactive_view_pressed_callback)
+    : inactive_view_pressed_callback_(inactive_view_pressed_callback) {
+  start_contents_view_ =
       AddChildView(std::make_unique<ContentsWebView>(browser_context));
-  inactive_contents_view_ =
+  end_contents_view_ =
       AddChildView(std::make_unique<ContentsWebView>(browser_context));
-  inactive_contents_view_->SetVisible(false);
+  end_contents_view_->SetVisible(false);
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -33,19 +37,46 @@ MultiContentsView::MultiContentsView(content::BrowserContext* browser_context) {
 
 MultiContentsView::~MultiContentsView() = default;
 
+ContentsWebView* MultiContentsView::GetActiveContentsView() {
+  return active_position_ == 0 ? start_contents_view_ : end_contents_view_;
+}
+
+ContentsWebView* MultiContentsView::GetInactiveContentsView() {
+  return active_position_ == 0 ? end_contents_view_ : start_contents_view_;
+}
+
 void MultiContentsView::SetWebContents(content::WebContents* web_contents,
                                        bool active) {
   ContentsWebView* contents_view =
-      active ? active_contents_view_ : inactive_contents_view_;
+      active ? GetActiveContentsView() : GetInactiveContentsView();
   contents_view->SetWebContents(web_contents);
   contents_view->SetVisible(web_contents != nullptr);
 }
 
-void MultiContentsView::SetActivePosition(int position) {
+ContentsWebView* MultiContentsView::SetActivePosition(int position) {
   // Position should never be less than 0 or equal to or greater than the total
   // number of contents views.
   CHECK(position >= 0 && position < 2);
-  ReorderChildView(active_contents_view_, position);
+  active_position_ = position;
+  return GetActiveContentsView();
+}
+
+bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
+  ContentsWebView* inactive_contents_view = GetInactiveContentsView();
+  if (event.GetTypeAsUiEventType() == ui::EventType::kMousePressed &&
+      inactive_contents_view->GetVisible()) {
+    gfx::Rect inactive_contents_view_bounds =
+        inactive_contents_view->GetWebContents()->GetContainerBounds();
+    const gfx::PointF& event_position = event.PositionInScreen();
+    if (inactive_contents_view_bounds.Contains(event_position.x(),
+                                               event_position.y())) {
+      inactive_view_pressed_callback_.Run(
+          inactive_contents_view->GetWebContents());
+    }
+  }
+  // Always allow the event to propagate to the WebContents, regardless of
+  // whether it was also handled above.
+  return false;
 }
 
 BEGIN_METADATA(MultiContentsView)

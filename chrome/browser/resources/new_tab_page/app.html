@@ -64,20 +64,9 @@
         </ntp-modules-v2>
       `}
     ` : ''}
-    <a id="backgroundImageAttribution"
-        href="${this.backgroundImageAttributionUrl_}"
-        ?hidden="${!this.backgroundImageAttribution1_}">
-      <div id="backgroundImageAttribution1Container">
-        <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}"></div>
-        <div id="backgroundImageAttribution1">
-          ${this.backgroundImageAttribution1_}
-        </div>
-      </div>
-      <div id="backgroundImageAttribution2"
-          ?hidden="${!this.backgroundImageAttribution2_}">
-        ${this.backgroundImageAttribution2_}
-      </div>
-    </a>
+    <ntp-footer .theme="${this.theme_}"></ntp-footer>
+    <!-- TODO(crbug.com/394906782): Move customize buttons and
+     theme attribution into the ntp footer. -->
     <div id="customizeButtons">
       ${this.showWallpaperSearchButton_ ? html`
         <cr-button id="wallpaperSearchButton"

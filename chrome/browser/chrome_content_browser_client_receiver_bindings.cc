@@ -283,7 +283,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
                 &performance_manager::mechanism::userspace_swap::
                     UserspaceSwapInitializationImpl::Create,
                 render_process_host->GetDeprecatedID()),
-            performance_manager::PerformanceManager::GetTaskRunner());
+            ui_task_runner);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 

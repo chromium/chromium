@@ -934,6 +934,11 @@ std::optional<gfx::RRectF> PropertyTreeManager::ShaderBasedRRect(
     return std::nullopt;
   }
 
+  // When we have a non-round corner shape we remove the rect rounding
+  // and use clip-path.
+  // See FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip()
+  DCHECK(clip.PaintClipRect().HasSimpleRoundedCurvature());
+
   auto WidthAndHeightAreTheSame = [](const gfx::SizeF& size) {
     return size.width() == size.height();
   };

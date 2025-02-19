@@ -13,10 +13,11 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.GaiaId;
 
 import java.lang.annotation.Retention;
@@ -26,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
  * Abstraction of account management implementation.
  * Provides methods for getting accounts and managing auth tokens.
  */
+@NullMarked
 public interface AccountManagerDelegate {
     /** Response code of the {@link AccountManagerDelegate#hasCapability} result. */
     @IntDef({CapabilityResponse.EXCEPTION, CapabilityResponse.YES, CapabilityResponse.NO})
@@ -80,7 +82,7 @@ public interface AccountManagerDelegate {
      */
     @WorkerThread
     @CapabilityResponse
-    int hasCapability(Account account, String capability);
+    int hasCapability(@Nullable Account account, String capability);
 
     /**
      * Creates an intent that will ask the user to add a new account to the device. See
@@ -112,8 +114,7 @@ public interface AccountManagerDelegate {
      * @param accountEmail The email address of a Google account.
      */
     @WorkerThread
-    @Nullable
-    GaiaId getAccountGaiaId(String accountEmail);
+    @Nullable GaiaId getAccountGaiaId(String accountEmail);
 
     /**
      * Asks the user to confirm their knowledge of the password to the given account.
@@ -124,5 +125,6 @@ public interface AccountManagerDelegate {
      * @param callback The callback to indicate whether the user successfully confirmed their
      *     knowledge of the account's credentials.
      */
-    void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback);
+    void confirmCredentials(
+            Account account, @Nullable Activity activity, Callback<Bundle> callback);
 }

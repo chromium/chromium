@@ -370,11 +370,12 @@ class CONTENT_EXPORT RenderFrameObserver
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle);
 
-  // The smoothness metrics is shared over shared-memory. The interested
-  // observer should invalidate |shared_memory| (by std::move()'ing it), and
-  // return true. All other observers should return false (default).
-  virtual bool SetUpSmoothnessReporting(
-      base::ReadOnlySharedMemoryRegion& shared_memory);
+  // The smoothness and dropped frames metrics is shared over shared-memory. The
+  // interested observer should invalidate |shared_memory| (by std::move()'ing
+  // it), and return true. All other observers should return false (default).
+  virtual bool SetUpUkmReporting(
+      base::ReadOnlySharedMemoryRegion& shared_memory_smoothness,
+      base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames);
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // IPC::Listener implementation.

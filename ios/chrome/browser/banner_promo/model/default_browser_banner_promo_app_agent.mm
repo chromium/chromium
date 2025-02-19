@@ -427,6 +427,17 @@ struct SceneStateData {
   [self updatePromoState];
 }
 
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  webStateList->RemoveObserver(_webStateListObserverBridge.get());
+
+  web::WebState* activeWebState = webStateList->GetActiveWebState();
+  if (activeWebState) {
+    [self stopObservingWebState:activeWebState];
+  }
+
+  [self updatePromoState];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState

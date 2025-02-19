@@ -257,6 +257,10 @@ void PinnedToolbarActionsContainer::OnThemeChanged() {
   ToolbarIconContainerView::OnThemeChanged();
 }
 
+void PinnedToolbarActionsContainer::AddedToWidget() {
+  OnThemeChanged();
+}
+
 bool PinnedToolbarActionsContainer::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {

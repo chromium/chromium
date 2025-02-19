@@ -145,7 +145,7 @@ class MemoryTracingIntegrationTest : public testing::Test {
     coordinator_ = std::make_unique<MockCoordinator>(this);
 
     TraceLog::GetInstance()->InitializePerfettoIfNeeded();
-    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunner(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     TracingObserverProto::GetInstance()->ResetForTesting();
   }

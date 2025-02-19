@@ -1658,22 +1658,20 @@ dialog:where(:modal) {
   select:not(:-internal-list-box):not([multiple]) {
     font: -internal-auto-base(-webkit-small-control, inherit);
     text-shadow: -internal-auto-base(none, inherit);
-    text-transform: -internal-auto-base(none, inherit);
+    text-transform: -internal-auto-base(none, initial);
     text-rendering: -internal-auto-base(auto, inherit);
     letter-spacing: -internal-auto-base(normal, inherit);
     word-spacing: -internal-auto-base(normal, inherit);
-    text-align: -internal-auto-base(start, inherit);
+    text-align: -internal-auto-base(start, initial);
+    text-indent: -internal-auto-base(0px, initial);
+    -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
+    cursor: -internal-auto-base(default, inherit);
+    white-space: -internal-auto-base(pre, inherit);
     /* This text-autospace rule won't work because it is set with !important
      * earlier in the UA stylesheet. After merging with the rest of the UA
      * style rules when removing the CustomizableSelect flag, it should start
      * to work. */
     text-autospace: -internal-auto-base(no-autospace !important, inherit);
-    color: -internal-auto-base(FieldText, inherit);
-    background-color: -internal-auto-base(Field, transparent);
-    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
-    padding-block: -internal-auto-base(0, 0.25em);
-    padding-inline: -internal-auto-base(0, 0.5em);
-    font: -internal-auto-base(-webkit-small-control, inherit);
     color: -internal-auto-base(FieldText, inherit);
     background-color: -internal-auto-base(Field, transparent);
     border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);

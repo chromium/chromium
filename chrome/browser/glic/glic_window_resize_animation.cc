@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/glic_window_animator.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -64,6 +65,7 @@ void GlicWindowResizeAnimation::AnimateToState(double state) {
   window_controller_->GetGlicWidget()->SetBounds(gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::EASE_IN_OUT_EMPHASIZED, state),
       initial_bounds_, new_bounds_));
+  glic_window_animator_->SetRoundedRectBackground();
   duration_left_ = (1 - GetCurrentValue()) * duration();
 }
 

@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.protocol.NigoriKey;
 
@@ -24,6 +25,7 @@ import org.chromium.components.sync.protocol.NigoriKey;
  * <p>This class is only used from the native side, the only APIs exposed to Java are testing ones.
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public abstract class ExplicitPassphrasePlatformClient {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public abstract void setExplicitDecryptionPassphrase(

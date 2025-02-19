@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -111,13 +112,14 @@ class ReadAnythingAppModel {
 
   void SetBaseLanguageCode(const std::string& code);
 
-  std::vector<std::string> GetSupportedFonts();
+  const std::vector<std::string>& supported_fonts() const {
+    return supported_fonts_;
+  }
 
   // Theme
   const std::string& font_name() const { return font_name_; }
   void set_font_name(const std::string& font) { font_name_ = font; }
   float font_size() const { return font_size_; }
-  void set_font_size(float font_size) { font_size_ = font_size; }
   bool links_enabled() const { return links_enabled_; }
   bool images_enabled() const { return images_enabled_; }
   int letter_spacing() const { return letter_spacing_; }
@@ -239,8 +241,7 @@ class ReadAnythingAppModel {
   double GetLetterSpacingValue(
       read_anything::mojom::LetterSpacing letter_spacing) const;
 
-  void IncreaseTextSize();
-  void DecreaseTextSize();
+  void AdjustTextSize(int increment);
   void ResetTextSize();
   void ToggleLinksEnabled();
   void ToggleImagesEnabled();
@@ -285,6 +286,8 @@ class ReadAnythingAppModel {
 
   void OnPageLoadTimerTriggered();
   void OnTreeChangeTimerTriggered();
+
+  void SetFontSize(double font_size, int increment = 0);
 
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
@@ -339,7 +342,7 @@ class ReadAnythingAppModel {
 
   // Theme information.
   std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
-  float font_size_ = kReadAnythingDefaultFontScale;
+  float font_size_;
   bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
   bool images_enabled_ = kReadAnythingDefaultImagesEnabled;
   int letter_spacing_ = (int)read_anything::mojom::LetterSpacing::kDefaultValue;
@@ -371,8 +374,11 @@ class ReadAnythingAppModel {
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;
 
-  // Maps fonts to whether the current base_language_code_ supports that font.
-  std::map<std::string_view, bool> supported_fonts_;
+  // Cached set of fonts that support `base_language_code_`, updated whenever
+  // that is changed.
+  std::vector<std::string> supported_fonts_ =
+      GetSupportedFonts(base_language_code_);
+
   // If the page language can't be determined by the model, we can check the
   // AX tree to see if it has that information, but the ax tree is created
   // asynchronously from the language determination so we need to keep track of

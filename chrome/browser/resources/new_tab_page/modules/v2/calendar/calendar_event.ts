@@ -194,7 +194,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
     }
     const scrollableRight =
         (attachmentList.scrollWidth - attachmentList.scrollLeft -
-         kAttachmentScrollFadeBuffer) > attachmentList!.clientWidth;
+         kAttachmentScrollFadeBuffer) > attachmentList.clientWidth;
     const scrollableLeft =
         attachmentList.scrollLeft - kAttachmentScrollFadeBuffer > 0;
 

@@ -7,9 +7,9 @@ package org.chromium.components.browser_ui.site_settings;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -24,6 +24,7 @@ import java.util.Set;
  * An interface implemented by the embedder that allows the Site Settings UI to access
  * embedder-specific logic.
  */
+@NullMarked
 public interface SiteSettingsDelegate {
     /**
      * @return The BrowserContextHandle that should be used to read and update settings.
@@ -94,15 +95,15 @@ public interface SiteSettingsDelegate {
      * @return The user visible name of the app that will handle permission delegation for the
      *     origin and content setting type.
      */
-    @Nullable
-    String getDelegateAppNameForOrigin(Origin origin, @ContentSettingsType.EnumType int type);
+    @Nullable String getDelegateAppNameForOrigin(
+            Origin origin, @ContentSettingsType.EnumType int type);
 
     /**
      * @return The package name of the app that should handle permission delegation for the origin
      *     and content setting type.
      */
-    @Nullable
-    String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType.EnumType int type);
+    @Nullable String getDelegatePackageNameForOrigin(
+            Origin origin, @ContentSettingsType.EnumType int type);
 
     /**
      * @return true if Help and Feedback links and menu items should be shown to the user.

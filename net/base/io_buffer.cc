@@ -35,25 +35,32 @@ IOBuffer::IOBuffer(base::span<uint8_t> data)
 
 IOBuffer::~IOBuffer() = default;
 
+void IOBuffer::SetSpan(base::span<uint8_t> span) {
+  AssertValidBufferSize(span.size());
+  data_ = base::as_writable_chars(span).data();
+  size_ = span.size();
+}
+
+void IOBuffer::ClearSpan() {
+  data_ = nullptr;
+  size_ = 0;
+}
+
 IOBufferWithSize::IOBufferWithSize() = default;
 
-IOBufferWithSize::IOBufferWithSize(size_t buffer_size) {
-  AssertValidBufferSize(buffer_size);
-  storage_ = base::HeapArray<char>::Uninit(buffer_size);
-  size_ = storage_.size();
-  data_ = storage_.data();
+IOBufferWithSize::IOBufferWithSize(size_t buffer_size)
+    : storage_(base::HeapArray<uint8_t>::Uninit(buffer_size)) {
+  SetSpan(storage_);
 }
 
 IOBufferWithSize::~IOBufferWithSize() {
   // Clear pointer before this destructor makes it dangle.
-  data_ = nullptr;
+  ClearSpan();
 }
 
 VectorIOBuffer::VectorIOBuffer(std::vector<uint8_t> vector)
     : vector_(std::move(vector)) {
-  AssertValidBufferSize(vector_.size());
-  data_ = reinterpret_cast<char*>(vector_.data());
-  size_ = vector_.size();
+  SetSpan(vector_);
 }
 
 VectorIOBuffer::VectorIOBuffer(base::span<uint8_t> span)
@@ -61,7 +68,7 @@ VectorIOBuffer::VectorIOBuffer(base::span<uint8_t> span)
 
 VectorIOBuffer::~VectorIOBuffer() {
   // Clear pointer before this destructor makes it dangle.
-  data_ = nullptr;
+  ClearSpan();
 }
 
 StringIOBuffer::StringIOBuffer(std::string s) : string_data_(std::move(s)) {
@@ -69,14 +76,12 @@ StringIOBuffer::StringIOBuffer(std::string s) : string_data_(std::move(s)) {
   // from `s` may invalidate it. This is especially true for libc++ short
   // string optimization where the data may be held in the string variable
   // itself, instead of in a movable backing store.
-  AssertValidBufferSize(string_data_.size());
-  data_ = string_data_.data();
-  size_ = string_data_.size();
+  SetSpan(base::as_writable_bytes(base::span(string_data_)));
 }
 
 StringIOBuffer::~StringIOBuffer() {
   // Clear pointer before this destructor makes it dangle.
-  data_ = nullptr;
+  ClearSpan();
 }
 
 DrainableIOBuffer::DrainableIOBuffer(scoped_refptr<IOBuffer> base, size_t size)
@@ -87,7 +92,7 @@ void DrainableIOBuffer::DidConsume(int bytes) {
 }
 
 int DrainableIOBuffer::BytesRemaining() const {
-  return size_;
+  return size();
 }
 
 // Returns the number of consumed bytes.
@@ -102,26 +107,28 @@ void DrainableIOBuffer::SetOffset(int bytes) {
   int length = size_ + used_;
   CHECK_LE(bytes, length);
   used_ = bytes;
-  size_ = length - bytes;
-  data_ = UNSAFE_TODO(base_->data() + used_);
+  SetSpan(base_->span().subspan(base::checked_cast<size_t>(used_),
+                                base::checked_cast<size_t>(length - bytes)));
 }
 
 DrainableIOBuffer::~DrainableIOBuffer() {
   // Clear ptr before this destructor destroys the |base_| instance,
   // making it dangle.
-  data_ = nullptr;
+  ClearSpan();
 }
 
 GrowableIOBuffer::GrowableIOBuffer() = default;
 
 void GrowableIOBuffer::SetCapacity(int capacity) {
   CHECK_GE(capacity, 0);
-  // this will get reset in `set_offset`.
-  data_ = nullptr;
-  size_ = 0;
+
+  // The span will be set again in `set_offset()`. Need to clear raw pointers to
+  // the data before reallocating the buffer.
+  ClearSpan();
 
   // realloc will crash if it fails.
-  real_data_.reset(static_cast<char*>(realloc(real_data_.release(), capacity)));
+  real_data_.reset(
+      static_cast<uint8_t*>(realloc(real_data_.release(), capacity)));
 
   capacity_ = capacity;
   if (offset_ > capacity)
@@ -134,8 +141,9 @@ void GrowableIOBuffer::set_offset(int offset) {
   CHECK_GE(offset, 0);
   CHECK_LE(offset, capacity_);
   offset_ = offset;
-  data_ = UNSAFE_TODO(real_data_.get() + offset);
-  size_ = capacity_ - offset;
+
+  UNSAFE_TODO(SetSpan(base::span<uint8_t>(
+      real_data_.get() + offset, static_cast<size_t>(capacity_ - offset))));
 }
 
 void GrowableIOBuffer::DidConsume(int bytes) {
@@ -145,7 +153,7 @@ void GrowableIOBuffer::DidConsume(int bytes) {
 }
 
 int GrowableIOBuffer::RemainingCapacity() {
-  return size_;
+  return size();
 }
 
 base::span<uint8_t> GrowableIOBuffer::everything() {
@@ -171,28 +179,29 @@ base::span<const uint8_t> GrowableIOBuffer::span_before_offset() const {
 }
 
 GrowableIOBuffer::~GrowableIOBuffer() {
-  data_ = nullptr;
+  ClearSpan();
 }
 
 PickledIOBuffer::PickledIOBuffer() = default;
 
 void PickledIOBuffer::Done() {
-  data_ = const_cast<char*>(pickle_.data_as_char());
-  size_ = pickle_.size();
+  // SAFETY: const cast does not affect size.
+  UNSAFE_BUFFERS(SetSpan(
+      base::span(const_cast<uint8_t*>(pickle_.data()), pickle_.size())));
 }
 
 PickledIOBuffer::~PickledIOBuffer() {
   // Avoid dangling ptr when this destructor destroys the pickle.
-  data_ = nullptr;
+  ClearSpan();
 }
 
 WrappedIOBuffer::WrappedIOBuffer(base::span<const char> data)
-    // SAFETY: const cast does not affect size.
-    : IOBuffer(UNSAFE_BUFFERS(
-          base::span(const_cast<char*>(data.data()), data.size()))) {}
+    : WrappedIOBuffer(base::as_byte_span(data)) {}
 
 WrappedIOBuffer::WrappedIOBuffer(base::span<const uint8_t> data)
-    : WrappedIOBuffer(base::as_chars(data)) {}
+    // SAFETY: const cast does not affect size.
+    : IOBuffer(UNSAFE_BUFFERS(
+          base::span(const_cast<uint8_t*>(data.data()), data.size()))) {}
 
 WrappedIOBuffer::~WrappedIOBuffer() = default;
 

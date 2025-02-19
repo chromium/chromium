@@ -1520,6 +1520,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
       "bone with a bite four times their own weight.");
   ASSERT_EQ(u"Downloading French language pack\x2026 12%",
             GetDownloadProgressLabel()->GetText());
+  ASSERT_EQ(48, GetDownloadProgressLabel()->GetPreferredSize().height());
 
   OnSodaInstalled();
   ASSERT_TRUE(GetLabel()->GetVisible());

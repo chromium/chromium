@@ -37,6 +37,7 @@ include_rules = [
   "+components/system_media_controls",
   "+components/tracing",
   "+components/ukm",
+  "+components/unexportable_keys/features.h",
   "+components/url_formatter",
   "+components/viz",
   "+components/web_package",

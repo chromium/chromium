@@ -93,7 +93,7 @@ public class PdfContentProvider extends ContentProvider {
      *
      * @param uri Uri to be removed.
      */
-    public static void removeContentUri(String uri) {
+    public static void removeContentUri(@Nullable String uri) {
         if (uri == null) {
             return;
         }

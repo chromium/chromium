@@ -322,6 +322,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "shared_tab_groups_egtest.mm",
+    "shared_tab_groups_panel_egtest.mm",
     "tab_group_sync_egtest.mm",
     "tab_group_sync_signin_egtest.mm",
     "tab_groups_eg_utils.h",

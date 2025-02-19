@@ -451,7 +451,7 @@ export class BookmarksCommandManagerElement extends
   handleKeyEvent(e: KeyboardEvent, itemIds: Set<string>): boolean {
     for (const commandTuple of this.shortcuts_) {
       const command = commandTuple[0];
-      const shortcut = commandTuple[1] as KeyboardShortcutList;
+      const shortcut = commandTuple[1];
       if (shortcut.matchesEvent(e) && this.canExecute(command, itemIds)) {
         this.handle(command, itemIds);
 
@@ -603,7 +603,7 @@ export class BookmarksCommandManagerElement extends
         }
 
         const id = Array.from(this.menuIds_)[0];
-        const itemUrl = this.getState().nodes[id]!.url;
+        const itemUrl = this.getState().nodes[id].url;
         label = itemUrl ? 'menuEdit' : 'menuRename';
         break;
       case Command.CUT:

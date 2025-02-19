@@ -245,7 +245,9 @@ TEST_F(LeakDetectionDelegateTest, InIncognito) {
   EXPECT_FALSE(delegate().leak_check());
 }
 
-TEST_F(LeakDetectionDelegateTest, SafeBrowsingOff) {
+// TODO(crbug.com/397409660): Clean up old test cases
+TEST_F(LeakDetectionDelegateTest, SafeBrowsingOffPreventsLeakDetectionCheck) {
+  feature_list.InitAndDisableFeature(safe_browsing::kPasswordLeakToggleMove);
   pref_service()->SetBoolean(::prefs::kSafeBrowsingEnabled, false);
 
   EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
@@ -351,7 +353,9 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithNonBlockedFormURL) {
       *pref_service(), GURL("http://not_blocked_domain.com"), nullptr));
 }
 
+// TODO(crbug.com/397409660): Clean up old test cases
 TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
+  feature_list.InitAndDisableFeature(safe_browsing::kPasswordLeakToggleMove);
   SetSBState(safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   SetLeakDetectionEnabled(false);
   const PasswordForm form = CreateTestForm();
@@ -370,7 +374,9 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
                                                     GetTestUrl(), nullptr));
 }
 
+// TODO(crbug.com/397409660): Clean up old test cases
 TEST_F(LeakDetectionDelegateTest, DoNotStartCheckWithoutSafeBrowsing) {
+  feature_list.InitAndDisableFeature(safe_browsing::kPasswordLeakToggleMove);
   SetSBState(safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
   SetLeakDetectionEnabled(true);
   const PasswordForm form = CreateTestForm();

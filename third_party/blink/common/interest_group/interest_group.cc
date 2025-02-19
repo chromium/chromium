@@ -316,6 +316,14 @@ bool InterestGroup::IsValid() const {
     }
   }
 
+  if (view_and_click_counts_providers) {
+    for (const url::Origin& provider : *view_and_click_counts_providers) {
+      if (provider.scheme() != url::kHttpsScheme) {
+        return false;
+      }
+    }
+  }
+
   if (ads) {
     std::optional<size_t> selectable_buyer_and_seller_reporting_ids_hard_limit;
     if (base::FeatureList::IsEnabled(
@@ -503,6 +511,11 @@ size_t InterestGroup::EstimateSize() const {
   size += sizeof(max_trusted_bidding_signals_url_length);
   if (trusted_bidding_signals_coordinator) {
     size += trusted_bidding_signals_coordinator->Serialize().size();
+  }
+  if (view_and_click_counts_providers) {
+    for (const url::Origin& provider : *view_and_click_counts_providers) {
+      size += provider.Serialize().size();
+    }
   }
   if (user_bidding_signals) {
     size += user_bidding_signals->size();

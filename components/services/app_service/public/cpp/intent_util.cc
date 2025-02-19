@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 

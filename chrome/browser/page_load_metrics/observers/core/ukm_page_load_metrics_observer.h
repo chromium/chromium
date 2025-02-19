@@ -111,8 +111,9 @@ class UkmPageLoadMetricsObserver
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
-  void SetUpSharedMemoryForSmoothness(
-      const base::ReadOnlySharedMemoryRegion& shared_memory) override;
+  void SetUpSharedMemoryForUkms(
+      const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+      const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) override;
 
   void OnCpuTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
@@ -187,6 +188,7 @@ class UkmPageLoadMetricsObserver
       ukm::builders::PageLoad& builder,
       const page_load_metrics::PageEndReason page_end_reason);
 
+  void RecordDroppedFramesMetrics();
   void RecordSmoothnessMetrics();
   void RecordResponsivenessMetrics();
 
@@ -362,6 +364,7 @@ class UkmPageLoadMetricsObserver
   std::optional<net::HttpConnectionInfo> connection_info_;
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
+  base::ReadOnlySharedMemoryMapping ukm_dropped_frames_data_;
 
   // Only true if the page became hidden after the first time it was shown in
   // the foreground, no matter how it started.

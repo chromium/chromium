@@ -340,6 +340,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_fre_ui.h"
 #include "chrome/browser/glic/glic_ui.h"
 #endif
 
@@ -408,8 +409,11 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()))) {
-    // Register the binder for all eligible profiles but the WebUI page will
-    // check whether Glic is policy-enabled and restrict access if needed.
+    // Register binders for all eligible profiles.
+    RegisterWebUIControllerInterfaceBinder<glic::mojom::FrePageHandlerFactory,
+                                           glic::GlicFreUI>(map);
+    // For GlicUI, the WebUI page will check whether Glic is policy-enabled and
+    // restrict access if needed. This isn't required for the GlicFreUI.
     RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,
                                            glic::GlicUI>(map);
   }

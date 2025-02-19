@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.optimization_guide;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 
+@NullMarked
 public class OptimizationGuideDecisionWithMetadata {
 
     private final @OptimizationGuideDecision int mDecision;
-    @Nullable private final Any mMetadata;
+    private final @Nullable Any mMetadata;
 
     OptimizationGuideDecisionWithMetadata(
             @OptimizationGuideDecision int decision, @Nullable Any metadata) {
@@ -24,8 +25,7 @@ public class OptimizationGuideDecisionWithMetadata {
         return mDecision;
     }
 
-    @Nullable
-    public Any getMetadata() {
+    public @Nullable Any getMetadata() {
         return mMetadata;
     }
 }

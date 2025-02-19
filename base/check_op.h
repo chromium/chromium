@@ -14,9 +14,9 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/to_string.h"
 #include "base/types/is_arc_pointer.h"
 #include "base/types/supports_ostream_operator.h"
+#include "base/types/supports_to_string.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.
 //

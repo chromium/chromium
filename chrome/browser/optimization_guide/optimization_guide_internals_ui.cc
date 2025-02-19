@@ -94,7 +94,7 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
 
   int64_t client_id =
       local_state->GetInt64(optimization_guide::model_execution::prefs::
-                                localstate::kModelQualityLogggingClientId);
+                                localstate::kModelQualityLoggingClientId);
 
   // If the client id is zero no client id is set, in that case do nothing.
   if (client_id == 0) {

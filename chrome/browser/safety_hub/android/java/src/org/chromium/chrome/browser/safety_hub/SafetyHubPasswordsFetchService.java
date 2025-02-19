@@ -78,6 +78,34 @@ public class SafetyHubPasswordsFetchService {
         fetchReusedPasswordsCount(onFinishedCallback);
     }
 
+    /**
+     * Makes a call to GMSCore to perform a password checkup in the background for `mAccount`. It
+     * also triggers several calls to GMSCore to fetch the compromised, weak and reuse password
+     * counts. `onFinishedCallback` runs either: (1) on success, when all password counts have
+     * successfully been returned and the appropriate preferences have been updated with the
+     * results; or (2) if any error has occurred either when running the checkup or fetching the
+     * counts.
+     */
+    public void runPasswordCheckup(Callback<Boolean> onFinishedCallback) {
+        if (!canPerformFetch()) {
+            clearPrefs();
+            onFinishedCallback.onResult(/* errorOccurred */ true);
+            return;
+        }
+
+        mPasswordManagerHelper.runPasswordCheckupInBackground(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                mAccount,
+                success -> {
+                    fetchPasswordsCount(onFinishedCallback);
+                },
+                error -> {
+                    // TODO(crbug.com/388789824): Check if the prefs should be cleared on checkup
+                    // error.
+                    onFinishedCallback.onResult(/* errorOccurred */ true);
+                });
+    }
+
     /** Returns true if a password fetch can be performed, namely if GMSCore can be called. */
     public boolean canPerformFetch() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB)
@@ -92,18 +120,19 @@ public class SafetyHubPasswordsFetchService {
     }
 
     private String getBreachedPreference() {
-        // TODO(crbug.com/388789824): Add local preference if `mAccount` is null.
-        return Pref.BREACHED_CREDENTIALS_COUNT;
+        return mAccount == null
+                ? Pref.LOCAL_BREACHED_CREDENTIALS_COUNT
+                : Pref.BREACHED_CREDENTIALS_COUNT;
     }
 
     private String getWeakPreference() {
-        // TODO(crbug.com/388789824): Add local preference if `mAccount` is null.
-        return Pref.WEAK_CREDENTIALS_COUNT;
+        return mAccount == null ? Pref.LOCAL_WEAK_CREDENTIALS_COUNT : Pref.WEAK_CREDENTIALS_COUNT;
     }
 
     private String getReusedPreference() {
-        // TODO(crbug.com/388789824): Add local preference if `mAccount` is null.
-        return Pref.REUSED_CREDENTIALS_COUNT;
+        return mAccount == null
+                ? Pref.LOCAL_REUSED_CREDENTIALS_COUNT
+                : Pref.REUSED_CREDENTIALS_COUNT;
     }
 
     /** Makes a call to GMSCore to fetch the latest leaked passwords count for `mAccount`. */

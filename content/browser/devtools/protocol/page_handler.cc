@@ -1813,6 +1813,9 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
       NOTREACHED();
     case Reason::kUnknown:
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          CacheControlNoStoreDeviceBoundSessionTerminated;
   }
 }
 
@@ -2109,6 +2112,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
     case Reason::kUnloadHandlerExistsInMainFrame:
     case Reason::kUnloadHandlerExistsInSubFrame:
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
     case Reason::kUnknown:

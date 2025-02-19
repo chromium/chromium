@@ -20,4 +20,8 @@ const char kKey[] = "PrivateKey";
 
 const char kKeySource[] = "PrivateKeySource";
 
+const char kKeyDetails[] = "KeyDetails";
+
+const char kCertificate[] = "Certificate";
+
 }  // namespace client_certificates

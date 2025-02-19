@@ -71,7 +71,8 @@ def main():
               file=sys.stderr)
         sys.exit(1)
 
-    with socketserver.TCPServer(("", args.port), RequestHandler) as httpd:
+    with socketserver.ForkingTCPServer(("", args.port),
+                                       RequestHandler) as httpd:
         print("Server started at localhost:" + str(args.port))
         httpd.serve_forever()
 

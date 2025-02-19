@@ -103,10 +103,11 @@ namespace provider {
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
     LensImageSource* imageSource,
     LensConfiguration* config,
+    NSArray<UIAction*>* precedingMenuItems,
     NSArray<UIAction*>* additionalMenuItems);
 
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
-    UIImage* snapshot,
+    LensImageSource* imageSource,
     LensConfiguration* config,
     NSArray<UIAction*>* additionalMenuItems);
 

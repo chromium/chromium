@@ -111,7 +111,8 @@ std::unique_ptr<ui::NavButtonProvider> FakeLinuxUi::CreateNavButtonProvider() {
 }
 
 ui::WindowFrameProvider* FakeLinuxUi::GetWindowFrameProvider(bool solid_frame,
-                                                             bool tiled) {
+                                                             bool tiled,
+                                                             bool maximized) {
   return nullptr;
 }
 

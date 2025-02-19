@@ -143,7 +143,15 @@ TestInterestGroupBuilder&
 TestInterestGroupBuilder::SetTrustedBiddingSignalsCoordinator(
     std::optional<url::Origin> trusted_bidding_signals_coordinator) {
   interest_group_.trusted_bidding_signals_coordinator =
-      trusted_bidding_signals_coordinator;
+      std::move(trusted_bidding_signals_coordinator);
+  return *this;
+}
+
+TestInterestGroupBuilder&
+TestInterestGroupBuilder::SetViewAndClickCountsProviders(
+    std::optional<std::vector<url::Origin>> view_and_click_counts_providers) {
+  interest_group_.view_and_click_counts_providers =
+      std::move(view_and_click_counts_providers);
   return *this;
 }
 
@@ -194,7 +202,8 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdditionalBidKey(
 TestInterestGroupBuilder&
 TestInterestGroupBuilder::SetAggregationCoordinatorOrigin(
     std::optional<url::Origin> agg_coordinator_origin) {
-  interest_group_.aggregation_coordinator_origin = agg_coordinator_origin;
+  interest_group_.aggregation_coordinator_origin =
+      std::move(agg_coordinator_origin);
   return *this;
 }
 

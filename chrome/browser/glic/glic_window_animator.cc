@@ -38,12 +38,7 @@ void GlicWindowAnimator::RunOpenAttachedAnimation(GlicButton* glic_button,
   target_bounds.set_x(top_left_x);
   target_bounds.set_width(target_size.width());
   target_bounds.set_height(target_size.height());
-
-  // TODO(crbug.com/389982576): Match the background color of the widget with
-  // the web client background.
-  window_controller_->GetGlicView()->SetBackground(
-      views::CreateRoundedRectBackground(kDefaultBackgroundColor,
-                                         kCornerRadius));
+  SetRoundedRectBackground();
 
   AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
                 std::move(callback));
@@ -53,15 +48,25 @@ void GlicWindowAnimator::RunOpenDetachedAnimation(base::OnceClosure callback) {
   gfx::Rect target_bounds =
       window_controller_->GetGlicWidget()->GetWindowBoundsInScreen();
   target_bounds.set_y(target_bounds.y() + kInitialDetachedYPosition);
+  SetRoundedRectBackground();
 
+  AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
+                std::move(callback));
+}
+
+void GlicWindowAnimator::RunCloseAnimation(GlicButton* glic_button,
+                                           base::OnceClosure callback) {
+  // The widget is going away so it's fine to replace any existing animation.
+  AnimateBounds(glic_button->GetBoundsWithInset(),
+                base::Milliseconds(kAnimationDurationMs), std::move(callback));
+}
+
+void GlicWindowAnimator::SetRoundedRectBackground() {
   // TODO(crbug.com/389982576): Match the background color of the widget with
   // the web client background.
   window_controller_->GetGlicView()->SetBackground(
       views::CreateRoundedRectBackground(kDefaultBackgroundColor,
                                          kCornerRadius));
-
-  AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
-                std::move(callback));
 }
 
 void GlicWindowAnimator::AnimateBounds(const gfx::Rect& target_bounds,

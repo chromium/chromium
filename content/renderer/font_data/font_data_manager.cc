@@ -22,9 +22,8 @@
 #include "third_party/skia/src/ports/SkTypeface_win_dw.h"  // nogncheck
 #if BUILDFLAG(ENABLE_FREETYPE)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
-#else
-#include "third_party/skia/include/ports/SkTypeface_fontations.h"
 #endif
+#include "third_party/skia/include/ports/SkTypeface_fontations.h"
 
 namespace font_data_service {
 
@@ -223,15 +222,20 @@ sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
   // Experiment will test the performance of different SkTypefaces.
   // 'custom_fnt_mgr_' is a wrapper to create an SkFreeType typeface.
 
-  return features::kFontDataServiceTypefaceType.Get() ==
-                 features::FontDataServiceTypefaceType::kInternal
-             ?
+  if (features::kFontDataServiceTypefaceType.Get() ==
+      features::FontDataServiceTypefaceType::kDwrite) {
+    return DWriteFontTypeface::MakeFromStream(std::move(stream), args);
+  } else if (features::kFontDataServiceTypefaceType.Get() ==
+             features::FontDataServiceTypefaceType::kFreetype) {
+    // Chromium currently always sets ENABLE_FREETYPE, but nonetheless allow
+    // falling back to fontations if the param is set to freetype but freetype
+    // isn't enabled.
 #if BUILDFLAG(ENABLE_FREETYPE)
-             custom_fnt_mgr_->makeFromStream(std::move(stream), args)
-#else
-             SkTypeface_Make_Fontations(std::move(stream), args)
+    return custom_fnt_mgr_->makeFromStream(std::move(stream), args);
 #endif
-             : DWriteFontTypeface::MakeFromStream(std::move(stream), args);
+  }
+
+  return SkTypeface_Make_Fontations(std::move(stream), args);
 }
 
 sk_sp<SkTypeface> FontDataManager::onMakeFromFile(const char path[],

@@ -21,6 +21,7 @@
 #include "components/input/utils.h"
 #include "components/input/web_touch_event_traits.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
@@ -103,7 +104,10 @@ void InputRouterImpl::SendMouseEvent(
     const MouseEventWithLatencyInfo& mouse_event,
     MouseEventCallback event_result_callback,
     DispatchToRendererCallback& dispatch_callback) {
-  if ((mouse_event.event.GetType() == WebInputEvent::Type::kMouseDown &&
+  if ((!IsActive() &&
+       base::FeatureList::IsEnabled(
+           blink::features::kDropInputEventsWhilePaintHolding)) ||
+      (mouse_event.event.GetType() == WebInputEvent::Type::kMouseDown &&
        gesture_event_queue_.GetTouchpadTapSuppressionController()
            ->ShouldSuppressMouseDown(mouse_event)) ||
       (mouse_event.event.GetType() == WebInputEvent::Type::kMouseUp &&
@@ -125,6 +129,13 @@ void InputRouterImpl::SendMouseEvent(
 void InputRouterImpl::SendWheelEvent(
     const MouseWheelEventWithLatencyInfo& wheel_event,
     DispatchToRendererCallback& dispatch_callback) {
+  if (!IsActive() && base::FeatureList::IsEnabled(
+                         blink::features::kDropInputEventsWhilePaintHolding)) {
+    std::move(dispatch_callback)
+        .Run(wheel_event.event, DispatchToRendererResult::kNotDispatched);
+    return;
+  }
+
   wheel_event_queue_.QueueEvent(wheel_event, dispatch_callback);
 }
 
@@ -132,6 +143,17 @@ void InputRouterImpl::SendKeyboardEvent(
     const NativeWebKeyboardEventWithLatencyInfo& key_event,
     KeyboardEventCallback event_result_callback,
     DispatchToRendererCallback& dispatch_callback) {
+  if (!IsActive() && base::FeatureList::IsEnabled(
+                         blink::features::kDropInputEventsWhilePaintHolding)) {
+    std::move(event_result_callback)
+        .Run(key_event, blink::mojom::InputEventResultSource::kBrowser,
+             blink::mojom::InputEventResultState::kIgnored);
+
+    std::move(dispatch_callback)
+        .Run(key_event.event, DispatchToRendererResult::kNotDispatched);
+    return;
+  }
+
   gesture_event_queue_.StopFling();
   blink::mojom::WidgetInputHandler::DispatchEventCallback callback =
       base::BindOnce(&InputRouterImpl::KeyboardEventHandled, weak_this_,
@@ -143,6 +165,14 @@ void InputRouterImpl::SendKeyboardEvent(
 void InputRouterImpl::SendGestureEvent(
     const GestureEventWithLatencyInfo& original_gesture_event,
     DispatchToRendererCallback& dispatch_callback) {
+  if (!IsActive() && base::FeatureList::IsEnabled(
+                         blink::features::kDropInputEventsWhilePaintHolding)) {
+    std::move(dispatch_callback)
+        .Run(original_gesture_event.event,
+             DispatchToRendererResult::kNotDispatched);
+    return;
+  }
+
   TRACE_EVENT0("input", "InputRouterImpl::SendGestureEvent");
   input_stream_validator_.Validate(original_gesture_event.event);
 
@@ -295,6 +325,13 @@ bool InputRouterImpl::HandleGestureScrollForStylusWriting(
 void InputRouterImpl::SendTouchEvent(
     const TouchEventWithLatencyInfo& touch_event,
     DispatchToRendererCallback& dispatch_callback) {
+  if (!IsActive() && base::FeatureList::IsEnabled(
+                         blink::features::kDropInputEventsWhilePaintHolding)) {
+    std::move(dispatch_callback)
+        .Run(touch_event.event, DispatchToRendererResult::kNotDispatched);
+    return;
+  }
+
   TouchEventWithLatencyInfo updated_touch_event = touch_event;
   SetMovementXYForTouchPoints(&updated_touch_event.event);
   input_stream_validator_.Validate(updated_touch_event.event);

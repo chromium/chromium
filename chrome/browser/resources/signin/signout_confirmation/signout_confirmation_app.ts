@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -30,6 +31,8 @@ function createDummySignoutConfirmationData(): SignoutConfirmationData {
 export interface SignoutConfirmationAppElement {
   $: {
     signoutConfirmationDialog: HTMLElement,
+    acceptButton: CrButtonElement,
+    cancelButton: CrButtonElement,
   };
 }
 

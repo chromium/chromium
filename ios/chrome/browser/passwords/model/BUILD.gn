@@ -358,6 +358,7 @@ source_set("eg_app_support+eg2") {
     "//components/password_manager/core/common",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//ios/web/public",
