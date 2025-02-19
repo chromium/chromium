@@ -25,9 +25,8 @@ bool SimdutfBase64Decode(std::string_view input,
       // The input is not properly padded.
       return false;
     }
-    std::string_view bad_chars(base::kInfraAsciiWhitespace);
-    if (std::ranges::any_of(input, [&bad_chars](char c) {
-          return base::Contains(bad_chars, c);
+    if (std::ranges::any_of(input, [](char c) {
+          return base::Contains(base::kInfraAsciiWhitespace, c);
         })) {
       return false;
     }
