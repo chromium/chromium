@@ -85,24 +85,46 @@ bool LogFile::Refresh() {
   return OpenAtOffset(curr_pos);
 }
 
-std::vector<std::string> LogFile::RetrieveNextLogs(size_t count) {
+std::vector<std::string> LogFile::RetrieveNextLogs(size_t line_count,
+                                                   size_t max_byte_limit) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   std::vector<std::string> logs;
   size_t num_read_lines = 0;
+  size_t num_read_bytes = 0;
 
   std::string line;
-  while (!IsAtEOF() && !IsInFailState() && num_read_lines < count &&
-         std::getline(file_stream_, line)) {
-    logs.push_back(std::move(line));
+  while (!IsAtEOF() && !IsInFailState() && num_read_lines < line_count &&
+         num_read_bytes < max_byte_limit && std::getline(file_stream_, line)) {
+    num_read_bytes += line.size();
     num_read_lines++;
+
+    logs.push_back(std::move(line));
     last_read_offset_ = file_stream_.tellg();
   }
 
   if (IsInFailState()) {
     LOG(ERROR) << "Error reading file " << filepath_ << " after "
                << num_read_lines << " lines";
+  } else if (num_read_lines < line_count && num_read_bytes > max_byte_limit &&
+             !IsAtEOF()) {
+    LOG(WARNING) << "Requested " << line_count << " lines for " << GetFilePath()
+                 << ", but only read " << num_read_lines
+                 << " due to byte cap. Limit exceeded by "
+                 << num_read_bytes - max_byte_limit << " bytes.";
+
+    // Drop logs until we're within our limit. This is a highly unlikely
+    // scenario, so this shouldn't impact our data analysis too much.
+    size_t orig_size = logs.size();
+    while (num_read_bytes > max_byte_limit && !logs.empty()) {
+      num_read_bytes -= logs.back().size();
+      logs.pop_back();
+    }
+
+    LOG(WARNING) << "Dropped " << orig_size - logs.size() << " logs.";
+  } else {
+    VLOG(3) << "Read " << num_read_bytes << " bytes from " << GetFilePath();
   }
 
   return logs;
