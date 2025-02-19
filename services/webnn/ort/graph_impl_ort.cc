@@ -121,55 +121,6 @@ class GraphImplOrt::ComputeResources {
                               output_names.size(), output_tensors.data()));
   }
 
-  // Run the model asynchronously in a thread owned by ort intra op thread pool.
-  void OrtRunAsync(
-      std::vector<std::pair<std::string, const OrtValue*>> named_input_tensors,
-      std::vector<std::pair<std::string, OrtValue*>> named_output_tensors,
-      base::OnceClosure completion_closure) {
-    TRACE_EVENT0("gpu", "ort::GraphImplOrt::ComputeResources::OrtRunAsync");
-
-    std::vector<const char*> input_names;
-    std::vector<const OrtValue*> input_tensors;
-    input_names.reserve(named_input_tensors.size());
-    input_tensors.reserve(named_input_tensors.size());
-    for (const auto& [name, tensor] : named_input_tensors) {
-      input_names.push_back(
-          operand_input_name_to_onnx_input_name_.at(name).data());
-      input_tensors.push_back(tensor);
-    }
-
-    std::vector<const char*> output_names;
-    std::vector<OrtValue*> output_tensors;
-    output_names.reserve(named_output_tensors.size());
-    output_tensors.reserve(named_output_tensors.size());
-    for (const auto& [name, tensor] : named_output_tensors) {
-      output_names.push_back(
-          operand_output_name_to_onnx_output_name_.at(name).data());
-      output_tensors.push_back(tensor);
-    }
-
-    const OrtApi* ort_api = GetOrtApi();
-    CHECK_STATUS(ort_api->RunAsync(
-        session_->GetSession(), nullptr, input_names.data(),
-        input_tensors.data(), input_names.size(), output_names.data(),
-        output_names.size(), output_tensors.data(),
-        &ComputeResources::OnOrtRunAsyncCompleted,
-        new base::OnceClosure(std::move(completion_closure))));
-  }
-
-  // This method is not run on the main thread, it's called by the ort.
-  static void OnOrtRunAsyncCompleted(void* user_data,
-                                     OrtValue** outputs,
-                                     size_t num_outputs,
-                                     OrtStatus* status) {
-    auto* completion_closure = static_cast<base::OnceClosure*>(user_data);
-    CHECK(!status);
-    CHECK(outputs);
-    std::move(*completion_closure).Run();
-    delete completion_closure;
-    completion_closure = nullptr;
-  }
-
  private:
   base::flat_map<std::string, std::string>
       operand_input_name_to_onnx_input_name_;
