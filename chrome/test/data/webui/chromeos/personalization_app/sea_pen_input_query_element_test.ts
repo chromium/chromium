@@ -316,7 +316,6 @@ suite('SeaPenInputQueryElementTest', function() {
 
     const suggestionButtonText = await clickSuggestionButton()!;
 
-
     assertEquals(inputElement?.value, suggestionButtonText);
   });
 
@@ -331,10 +330,25 @@ suite('SeaPenInputQueryElementTest', function() {
 
     const suggestionButtonText = await clickSuggestionButton()!;
 
-
     assertEquals(
         `${textValue}, ${suggestionButtonText}`, inputElement!.value,
         'suggestion text should be added at the end of the text input');
+  });
+
+  test('clicking suggestion focuses input', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
+            '#queryInput');
+    const textValue = 'Expectation is the root of all heartache';
+    await setTextInputValue(textValue);
+
+    await clickSuggestionButton()!;
+
+    assertEquals(
+        inputElement, getActiveElement(seaPenInputQueryElement),
+        'input element should be focused');
   });
 
   test(
