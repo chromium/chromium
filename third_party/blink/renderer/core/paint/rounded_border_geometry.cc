@@ -81,57 +81,33 @@ FloatRoundedRect RoundedBorderGeometry::RoundedBorder(
 }
 
 // Each corner is rendered independently and its rendering should remain within
-// the corner bounds. With low curvature values (curvature<2), as well as with
-// elliptical corners, this creates an effect where lines/curves drawn at the
+// the corner bounds. With low curvature values (curvature<2),this creates an
+// effect where lines/curves drawn at the
 // border-width offset would seem thinner than the given border-width. To
 // correct this, while maintaining the rule of drawing only within the corners,
-// the outer corner is inset by some offset, computed by the slope and different
-// border-widths. The resulting smaller outer corner size creates the effect of
-// having a larger border, which matches the specified border-width. Note that
-// it's currently implemented for bevel (straight line), and for other
-// curvatures it would have to use something equivalent to the tangent (the
-// nearest control point). Note that some of this is an open spec issue:
+// the outer corner is inset by some offset.
+// Note that this doesn't account for elliptical corners, as those aren't
+// corrected for ordinary rounded rects as well. See open spec issue:
 // https://github.com/w3c/csswg-drafts/issues/11610
 gfx::SizeF InsetOuterCornerSizeForCurvature(const gfx::SizeF& corner_size,
                                             float curvature,
                                             float horizontal_border_width,
                                             float vertical_border_width) {
-  // TODO(noamr) implement for other curvatures.
-  if (curvature != FloatRoundedRect::CornerCurvature::kBevel) {
+  if (curvature >= 2) {
     return corner_size;
   }
+  if (curvature <= 0.5) {
+    return corner_size -
+           gfx::SizeF(vertical_border_width, horizontal_border_width);
+  }
 
-  CHECK(!corner_size.IsEmpty());
-
-  // The slope would be different for curvatures other than bevel. The slope
-  // would be based on the control point.
-  float slope = corner_size.height() / corner_size.width();
-
-  // compute two vector that would be perpendicular to the straight line,
-  // with the border widths as their sizes.
-  gfx::Vector2dF perpendicular_vector(-corner_size.height(),
-                                      corner_size.width());
-  float magnitude = perpendicular_vector.Length();
-  gfx::Vector2dF horizontal_side_translation = gfx::ScaleVector2d(
-      perpendicular_vector, horizontal_border_width / magnitude,
-      horizontal_border_width / magnitude);
-  gfx::Vector2dF vertical_side_translation = gfx::ScaleVector2d(
-      perpendicular_vector, vertical_border_width / magnitude,
-      vertical_border_width / magnitude);
-
-  // Given the translations, compute the intercepts (b) of the wanted equation.
-  float vertical_side_intercept =
-      vertical_side_translation.y() - slope * vertical_side_translation.x();
-  float horizontal_side_intercept =
-      horizontal_side_translation.y() - slope * horizontal_side_translation.x();
-
-  // The found intercepts are relative to the *inner* rect, as the requisited
-  // distance is relative to the inner rect. So correct using the border width,
-  // as the offset applies to the outer rect.
-  return gfx::SizeF(
-      corner_size.width() + vertical_border_width - vertical_side_intercept,
-      corner_size.height() + horizontal_border_width -
-          horizontal_side_intercept);
+  // The offset from the inner edge is sqrt(2 / curvature).
+  // This would result in an offset of sqrt(2) for bevel, and and offset of 2
+  // for scoop. We then subtract it by 1 to get the offset from the outer edge.
+  float offset_from_outer_edge = std::sqrt(2. / curvature) - 1;
+  return corner_size -
+         gfx::SizeF(vertical_border_width * offset_from_outer_edge,
+                    horizontal_border_width * offset_from_outer_edge);
 }
 
 FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorder(
