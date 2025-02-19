@@ -21,6 +21,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -554,7 +555,162 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
   TestBrowserRedirectMV3(is_war_for_redirect_enabled);
 }
 
-// TODO(crbug.com/40060076): Add a test for a server redirect from A to B to C.
+// Verify browser process redirect to an non web accessible resource. Navigate
+// to a webpage that's redirected by DNR to a web server that initiates a
+// redirect to a non web accessible resource.
+IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
+                       Inaccessible) {
+  auto TestBrowserRedirectImpl = [&](const std::string& manifest,
+                                     bool is_war_for_redirect_enabled) {
+    std::string host = "example.com";
+
+    // Load extension.
+    TestExtensionDir test_dir;
+    test_dir.WriteManifest(manifest);
+    test_dir.WriteFile(FILE_PATH_LITERAL("accessible.html"), "accessible.html");
+    test_dir.WriteFile(FILE_PATH_LITERAL("inaccessible.html"),
+                       "inaccessible.html");
+    test_dir.WriteFile(
+        FILE_PATH_LITERAL("background.js"),
+        base::StringPrintf(
+            R"(
+              // Promisable function for getDynamicRules(), which is unavailable
+              // before MV3. Returns a promise that can be resolved or rejected.
+              async function getDynamicRules() {
+                return new Promise(async (resolve, reject) => {
+                  chrome.declarativeNetRequest.getDynamicRules(rules => {
+                    if (chrome.runtime.lastError) {
+                      return reject(chrome.runtime.lastError);
+                    }
+
+                    return resolve(rules);
+                  });
+                });
+              }
+
+              // Ensure that the expected rule has loaded before continuing.
+              async function waitForRuleId(ruleId) {
+                const start = Date.now();
+                const timeout = 3000;
+                const sleep = 100;
+                let rules;
+                while (Date.now() - start < timeout) {
+                  try {
+                    rules = await getDynamicRules();
+                  } catch(error) {
+                    // Try to get rules again, until either success or timeout.
+                    continue;
+                  }
+
+                  if (rules.some(rule => rule.id === ruleId)) {
+                    // Exit this function now that the rule has been awaited.
+                    return true;
+                  }
+
+                  // Sleep for a bit before trying again to match the rule.
+                  await new Promise(resolve => setTimeout(resolve, sleep));
+                  continue;
+                }
+
+                // A matching rule id wasn't found.
+                return false;
+              }
+
+              chrome.runtime.onInstalled.addListener(async () => {
+                const ruleId = 1;
+                await chrome.declarativeNetRequest.updateDynamicRules({
+                  addRules: [{
+                    "id": ruleId,
+                    "action": {
+                      "type": "redirect",
+                      "redirect": {
+                        "url":
+                          `%s?${chrome.runtime.getURL('inaccessible.html')}`
+                      }
+                    },
+                    "condition": {
+                      "urlFilter": "example.com*/empty.html",
+                      "resourceTypes": ["main_frame"]
+                    }
+                  }]
+                });
+
+                chrome.test.assertTrue(await waitForRuleId(ruleId));
+                chrome.test.notifyPass();
+              });
+            )",
+            embedded_test_server()->GetURL(host, "/server-redirect").spec()));
+    extensions::ResultCatcher catcher;
+    const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+    ASSERT_TRUE(catcher.GetNextResult());
+
+    // Navigate to a webpage that eventually navigates to an extension resource.
+    auto server_redirect = [&](int expect_net_error, const char* resource) {
+      GURL gurl = embedded_test_server()->GetURL(host, "/empty.html");
+      auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+      content::TestNavigationObserver observer(web_contents);
+      EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+      observer.WaitForNavigationFinished();
+      EXPECT_EQ(expect_net_error == net::OK,
+                observer.last_navigation_succeeded());
+      EXPECT_EQ(expect_net_error, observer.last_net_error_code());
+      EXPECT_EQ(extension->GetResourceURL(resource),
+                observer.last_navigation_url());
+    };
+
+    server_redirect(
+        is_war_for_redirect_enabled ? net::ERR_BLOCKED_BY_CLIENT : net::OK,
+        "inaccessible.html");
+  };
+
+  using ManifestVersion = enum { MV3, MV2 };
+  auto TestBrowserRedirect = [&TestBrowserRedirectImpl](
+                                 ManifestVersion manifest_version,
+                                 bool is_war_for_redirect_enabled) {
+    std::string manifest_base = base::StringPrintf(
+        R"(
+          "name": "test",
+          "version": "1",
+          "manifest_version": %d
+        )",
+        manifest_version == MV3 ? 3 : 2);
+    std::string manifest;
+
+    switch (manifest_version) {
+      case MV3:
+        manifest =
+            R"(
+              "background": {"service_worker": "background.js"},
+              "permissions": [
+                "declarativeNetRequest",
+                "declarativeNetRequestWithHostAccess"
+              ],
+              "host_permissions": [
+                "<all_urls>"
+              ]
+            )";
+        break;
+      case MV2:
+        manifest =
+            R"(
+              "background": {"scripts": ["background.js"]},
+              "permissions": [
+                "declarativeNetRequest",
+                "declarativeNetRequestWithHostAccess",
+                "<all_urls>"
+              ]
+            )";
+        break;
+    }
+
+    manifest = base::StringPrintf("{%s, %s}", manifest_base, manifest);
+    TestBrowserRedirectImpl(manifest, is_war_for_redirect_enabled);
+  };
+
+  bool is_war_for_redirect_enabled = GetParam();
+  TestBrowserRedirect(MV3, is_war_for_redirect_enabled);
+  TestBrowserRedirect(MV2, is_war_for_redirect_enabled);
+}
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
