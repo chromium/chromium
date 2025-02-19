@@ -1900,6 +1900,21 @@ void DevToolsUIBindings::RecordPerformanceHistogram(const std::string& name,
   base::UmaHistogramTimes(name, delta);
 }
 
+void DevToolsUIBindings::RecordPerformanceHistogramMedium(
+    const std::string& name,
+    double duration) {
+  if (!frontend_host_) {
+    return;
+  }
+  if (duration < 0) {
+    return;
+  }
+  // Use histogram_functions.h instead of macros as the name comes from the
+  // DevTools frontend javascript and so will always have the same call site.
+  base::TimeDelta delta = base::Milliseconds(duration);
+  base::UmaHistogramMediumTimes(name, delta);
+}
+
 void DevToolsUIBindings::RecordUserMetricsAction(const std::string& name) {
   if (!frontend_host_) {
     return;

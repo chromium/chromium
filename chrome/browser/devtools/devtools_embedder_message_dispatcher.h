@@ -115,6 +115,8 @@ class DevToolsEmbedderMessageDispatcher {
                                            int boundary_value) = 0;
     virtual void RecordPerformanceHistogram(const std::string& name,
                                             double duration) = 0;
+    virtual void RecordPerformanceHistogramMedium(const std::string& name,
+                                                  double duration) = 0;
     virtual void RecordUserMetricsAction(const std::string& name) = 0;
     virtual void RecordImpression(const ImpressionEvent& event) = 0;
     virtual void RecordResize(const ResizeEvent& event) = 0;
