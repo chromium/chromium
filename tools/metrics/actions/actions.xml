@@ -47679,6 +47679,8 @@ should be able to be added at any place in this file.
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
   <suffix name="iOSPromoPostRestoreDefaultBrowser"
       label="For iOSPromoPostRestoreDefaultBrowser feature"/>
+  <suffix name="iOSPromoSigninFullscreen"
+      label="For iOSPromoSigninFullscreen feature"/>
   <suffix name="iOSPromoStaySafe" label="For Stay Safe default browser promo."/>
   <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
   <suffix name="iOSPullToRefreshFeature"

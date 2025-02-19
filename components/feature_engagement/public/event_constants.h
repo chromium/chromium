@@ -184,6 +184,9 @@ extern const char kIOSPullToRefreshIPHDismissButtonTapped[];
 // The user has tapped "incognito" on the page control in the tab grid.
 extern const char kIOSIncognitoPageControlTapped[];
 
+// The sign-in fullscreen promo was triggered.
+extern const char kIOSSigninFullscreenPromoTrigger[];
+
 // The user has swiped right from regular tab grid to the incognito tab grid.
 extern const char kIOSSwipeRightForIncognitoUsed[];
 

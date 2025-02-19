@@ -233,6 +233,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
 DEFINE_VARIATION_PARAM(kIPHiOSPromoAppStoreFeature, "IPH_iOSPromoAppStore");
 DEFINE_VARIATION_PARAM(kIPHiOSLensKeyboardFeature, "IPH_iOSLensKeyboard");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoWhatsNewFeature, "IPH_iOSPromoWhatsNew");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoSigninFullscreenFeature,
+                       "IPH_iOSPromoSigninFullscreen");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoPostRestoreFeature,
                        "IPH_iOSPromoPostRestore");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoCredentialProviderExtensionFeature,

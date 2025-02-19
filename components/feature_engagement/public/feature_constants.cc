@@ -563,6 +563,9 @@ BASE_FEATURE(kIPHiOSPromoAppStoreFeature,
 BASE_FEATURE(kIPHiOSPromoWhatsNewFeature,
              "IPH_iOSPromoWhatsNew",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoSigninFullscreenFeature,
+             "IPH_iOSPromoSigninFullscreen",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoPostRestoreFeature,
              "IPH_iOSPromoPostRestore",
              base::FEATURE_ENABLED_BY_DEFAULT);

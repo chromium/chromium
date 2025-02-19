@@ -101,6 +101,8 @@ const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
 const char kIOSPullToRefreshIPHDismissButtonTapped[] =
     "pull_to_refresh_feature_iph_dismiss_button_tapped";
 const char kIOSIncognitoPageControlTapped[] = "incognito_page_control_tapped";
+const char kIOSSigninFullscreenPromoTrigger[] =
+    "signin_fullscreen_promo_trigger";
 const char kIOSSwipeRightForIncognitoUsed[] = "swipe_right_for_incognito_used";
 const char kIOSSwipeRightForIncognitoIPHDismissButtonTapped[] =
     "swipe_right_for_incognito_iph_dismiss_button_tapped";
