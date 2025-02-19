@@ -3350,6 +3350,9 @@ public class StripLayoutHelper
         } else {
             resizeTabStrip(animate, false, animate);
         }
+
+        // Update the ideal view positions, since these are needed for reorder offset calculations.
+        computeIdealViewPositions();
     }
 
     private List<Animator> resizeTabStrip(boolean animate, boolean delay, boolean deferAnimations) {
