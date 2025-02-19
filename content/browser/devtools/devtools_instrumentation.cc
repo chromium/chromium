@@ -765,12 +765,17 @@ void DidUpdatePrefetchStatus(
     return;
   }
 
+  // See a comment in `PreloadingDecider::ctor()`.
+  auto* devtools_preload_storage =
+      DevToolsPreloadStorage::GetForCurrentDocument(ftn->current_frame_host());
+  if (!devtools_preload_storage) {
+    return;
+  }
+
   // We update DevToolsPreloadStorage, even if there are no active DevTools
   // sessions, to persist the latest status update.
-  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
-      ftn->current_frame_host())
-      ->UpdatePrefetchStatus(prefetch_url, preload_pipeline_id, status,
-                             prefetch_status, request_id);
+  devtools_preload_storage->UpdatePrefetchStatus(
+      prefetch_url, preload_pipeline_id, status, prefetch_status, request_id);
 
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
@@ -875,13 +880,18 @@ void DidUpdatePrerenderStatus(
     return;
   }
 
+  // See a comment in `PreloadingDecider::ctor()`.
+  auto* devtools_preload_storage =
+      DevToolsPreloadStorage::GetForCurrentDocument(ftn->current_frame_host());
+  if (!devtools_preload_storage) {
+    return;
+  }
+
   // We update DevToolsPreloadStorage, even if there are no active DevTools
   // sessions, to persist the latest status update.
-  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
-      ftn->current_frame_host())
-      ->UpdatePrerenderStatus(prerender_url, target_hint, preload_pipeline_id,
-                              status, prerender_status,
-                              disallowed_mojo_interface, mismatched_headers);
+  devtools_preload_storage->UpdatePrerenderStatus(
+      prerender_url, target_hint, preload_pipeline_id, status, prerender_status,
+      disallowed_mojo_interface, mismatched_headers);
 
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                    initiator_devtools_navigation_token, prerender_url,
