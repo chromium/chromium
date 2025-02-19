@@ -27,6 +27,7 @@ chromium-metrics-reviews@google.com.
   <variant name="BiddingAndAuctionServerKeyProtos"
       summary="BiddingAndAuctionServerKeyProtos"/>
   <variant name="KAnonKeyProtos" summary="KAnonKeyProtos"/>
+  <variant name="ListOfOrigins" summary="ListOfOrigins"/>
 </variants>
 
 <histogram name="API.EffectiveStorageAccess.AllowedByStorageAccessType"

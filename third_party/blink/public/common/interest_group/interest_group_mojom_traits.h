@@ -206,6 +206,11 @@ struct BLINK_COMMON_EXPORT
     return interest_group.trusted_bidding_signals_coordinator;
   }
 
+  static const std::optional<std::vector<url::Origin>>&
+  view_and_click_counts_providers(const blink::InterestGroup& interest_group) {
+    return interest_group.view_and_click_counts_providers;
+  }
+
   static const std::optional<std::string>& user_bidding_signals(
       const blink::InterestGroup& interest_group) {
     return interest_group.user_bidding_signals;

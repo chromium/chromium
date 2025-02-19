@@ -265,6 +265,8 @@ TEST(SerializeInterestGroupTest, Basic) {
   ig.max_trusted_bidding_signals_url_length = 100;
   ig.trusted_bidding_signals_coordinator =
       url::Origin::Create(GURL("https://example.test"));
+  ig.view_and_click_counts_providers = {
+      {url::Origin::Create(GURL("https://example.test"))}};
   ig.user_bidding_signals = "hello";
   ig.ads = {
       {blink::InterestGroup::Ad(
@@ -309,6 +311,7 @@ TEST(SerializeInterestGroupTest, Basic) {
     "trustedBiddingSignalsSlotSizeMode": "all-slots-requested-sizes",
     "maxTrustedBiddingSignalsURLLength": 100,
     "trustedBiddingSignalsCoordinator": "https://example.test",
+    "viewAndClickCountsProviders": ["https://example.test"],
     "userBiddingSignals": "hello",
     "ads": [ {
       "adRenderId": "ad_render_id",

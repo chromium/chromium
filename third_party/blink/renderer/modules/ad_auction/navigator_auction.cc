@@ -942,6 +942,31 @@ bool CopyTrustedBiddingSignalsCoordinatorFromIdlToMojo(
   return true;
 }
 
+bool CopyViewAndClickCountsProvidersFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdInterestGroup& input,
+    mojom::blink::InterestGroup& output) {
+  if (!input.hasViewAndClickCountsProviders()) {
+    return true;
+  }
+
+  Vector<scoped_refptr<const SecurityOrigin>> view_and_click_counts_providers;
+  for (const String& provider : input.viewAndClickCountsProviders()) {
+    scoped_refptr<const SecurityOrigin> parsed_provider = ParseOrigin(provider);
+    if (!parsed_provider) {
+      exception_state.ThrowTypeError(String::Format(
+          "viewAndClickCountsProviders '%s' for AuctionAdInterestGroup "
+          "with name '%s' must be a valid https origin.",
+          provider.Utf8().c_str(), input.name().Utf8().c_str()));
+      return false;
+    }
+  }
+
+  output.view_and_click_counts_providers =
+      std::move(view_and_click_counts_providers);
+  return true;
+}
+
 bool CopyUserBiddingSignalsFromIdlToMojo(const ScriptState& script_state,
                                          ExceptionState& exception_state,
                                          const AuctionAdInterestGroup& input,
@@ -3464,6 +3489,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
           exception_state, *group, *mojo_group) ||
       !CopyTrustedBiddingSignalsCoordinatorFromIdlToMojo(exception_state,
                                                          *group, *mojo_group) ||
+      !CopyViewAndClickCountsProvidersFromIdlToMojo(exception_state, *group,
+                                                    *mojo_group) ||
       !CopyUserBiddingSignalsFromIdlToMojo(*script_state, exception_state,
                                            *group, *mojo_group) ||
       !CopyAdsFromIdlToMojo(*context, *script_state, exception_state, *group,

@@ -380,16 +380,20 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/common/interest_group/interest_group.cc',
-            'third_party/blink/public/common/interest_group/interest_group.h'
+            'third_party/blink/common/interest_group/',
+            'third_party/blink/public/common/interest_group/',
         ],
         'allowed': [
             # For hashing of k-anonymity keys
             'crypto::SHA256HashString',
 
-            # Types used to compute k-anonymity keys.
+            # Types used to compute k-anonymity keys, also many IG fields are
+            # origins and URLs.
             "url::Origin",
             "GURL",
+
+            # For checking if origins in interest group are https.
+            "url::kHttpsScheme",
         ],
     },
     {

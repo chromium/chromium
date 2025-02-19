@@ -204,6 +204,12 @@ void InterestGroupCompare(const blink::InterestGroup& actual,
              expected.max_trusted_bidding_signals_url_length);
   IG_COMPARE(actual.trusted_bidding_signals_coordinator,
              expected.trusted_bidding_signals_coordinator);
+  auto compare_origins = [&](const url::Origin& actual,
+                             const url::Origin& expected) {
+    IG_COMPARE(actual, expected);
+  };
+  IG_COMPARE_VEC(actual.view_and_click_counts_providers,
+                 expected.view_and_click_counts_providers, compare_origins);
   IG_COMPARE(actual.user_bidding_signals, expected.user_bidding_signals);
   auto compare_ads = [&](const blink::InterestGroup::Ad& actual,
                          const blink::InterestGroup::Ad& expected) {
@@ -218,10 +224,6 @@ void InterestGroupCompare(const blink::InterestGroup& actual,
                    compare_strings);
     IG_COMPARE(actual.ad_render_id, expected.ad_render_id);
 
-    auto compare_origins = [&](const url::Origin& actual,
-                               const url::Origin& expected) {
-      IG_COMPARE(actual, expected);
-    };
     IG_COMPARE_VEC(actual.allowed_reporting_origins,
                    expected.allowed_reporting_origins, compare_origins);
     IG_COMPARE(actual.creative_scanning_metadata,

@@ -2100,6 +2100,10 @@
       name: "FledgeBiddingAndAuctionServerAPIMultiSeller",
     },
     {
+      name: "FledgeClickiness",
+      status: "test",
+    },
+    {
       name: "FledgeCustomMaxAuctionAdComponents",
       status: "stable",
     },

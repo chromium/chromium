@@ -5337,6 +5337,46 @@ IN_PROC_BROWSER_TEST_F(
       EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
 }
 
+class InterestGroupClickinessBrowserTest : public InterestGroupBrowserTest {
+ public:
+  InterestGroupClickinessBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kFledgeClickiness},
+                                   /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupClickinessBrowserTest,
+                       JoinInterestGroupNonOriginViewAndClickCountsProviders) {
+  const char kScriptTemplate[] = R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          viewAndClickCountsProviders: ['hi'],
+        },
+        /*joinDurationSec=*/10000);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())";
+
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "viewAndClickCountsProviders 'hi' for AuctionAdInterestGroup with name "
+      "'cars' must be a valid https origin.",
+      EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionInvalidSeller) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_https_test_server().GetURL("a.test", "/echo")));

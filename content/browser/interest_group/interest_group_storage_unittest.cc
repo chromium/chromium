@@ -212,12 +212,16 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 33:
+        result.view_and_click_counts_providers = {{url::Origin::Create(
+            GURL("https://view-and-click-counts-provider.test"))}};
+        [[fallthrough]];
       case 32:
         [[fallthrough]];
       case 31:
         result.ads.value()[0].creative_scanning_metadata = "scan 1";
         result.ad_components.value()[1].creative_scanning_metadata = "scan 2";
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 30:
         // Compressed AdsProto, but introduced no new fields.
         [[fallthrough]];
@@ -3583,6 +3587,16 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
       }
     }
 
+    // Make sure the metadata table got upgraded correctly.
+    {
+      sql::Database raw_db(sql::test::kTestTag);
+      EXPECT_TRUE(raw_db.Open(db_path()));
+      sql::MetaTable meta;
+      ASSERT_TRUE(meta.Init(&raw_db, 1, 1));
+      EXPECT_EQ(InterestGroupStorage::GetCurrentVersionNumberForTesting(),
+                meta.GetVersionNumber());
+    }
+
     // Delete the database in case we loop again, creating the database from
     // another .sql file.
     base::DeleteFile(db_path());
@@ -3597,6 +3611,26 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
       InterestGroupStorage::GetCurrentVersionNumberForTesting()));
   ASSERT_TRUE(base::PathExists(file_path))
       << "Missing " << file_path << " -- " << kMisssingFileError;
+
+  // Also, make sure that the current version matches ProduceAllFields() -- they
+  // might not match if the storage format changed after the initial DB dump for
+  // the current version (that is, it changed before the CL introducing the new
+  // version landed).
+  {
+    ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
+    blink::InterestGroup expected = ProduceAllFields();
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetAllInterestGroupsUnfilteredForTesting();
+
+    ASSERT_EQ(1u, interest_groups.size());
+    const blink::InterestGroup& actual = interest_groups[0].interest_group;
+    // Don't compare `expiry` as it changes every test run.
+    expected.expiry = actual.expiry;
+    IgExpectEqualsForTesting(actual, expected);
+    // Delete the database before the next testcase.
+    base::DeleteFile(db_path());
+  }
 }
 
 TEST_F(InterestGroupStorageTest,

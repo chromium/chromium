@@ -179,6 +179,9 @@ struct InterestGroup {
   // An optional field for matching the encryption key, and indicating which
   // version of the key-value server this interest group uses.
   url.mojom.Origin? trusted_bidding_signals_coordinator;
+  // Stores the set of origins that are allowed to provide view and click
+  // counts to this interest group's generateBid() function.
+  array<url.mojom.Origin>? view_and_click_counts_providers;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? user_bidding_signals;
   array<InterestGroupAd>? ads;
