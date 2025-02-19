@@ -7,7 +7,7 @@
 // Requires functions from base.js.
 
 /** @typedef {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement} */
-var FormControlElement;
+let FormControlElement;
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -52,12 +52,12 @@ __gCrWeb.common.JSONStringify = JSON.stringify;
 __gCrWeb.stringify = function(value) {
   if (value === null) return 'null';
   if (value === undefined) return 'undefined';
-  if (typeof(value.toJSON) == 'function') {
+  if (typeof (value.toJSON) === 'function') {
     // Prevents websites from changing stringify's behavior by adding the
     // method toJSON() by temporarily removing it.
-    var originalToJSON = value.toJSON;
+    const originalToJSON = value.toJSON;
     value.toJSON = undefined;
-    var stringifiedValue = __gCrWeb.common.JSONStringify(value);
+    const stringifiedValue = __gCrWeb.common.JSONStringify(value);
     value.toJSON = originalToJSON;
     return stringifiedValue;
   }
