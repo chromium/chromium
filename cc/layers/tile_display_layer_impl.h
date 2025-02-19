@@ -139,6 +139,8 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
 
   Tiling& GetOrCreateTilingFromScaleKey(float scale_key);
 
+  void SetSolidColor(std::optional<SkColor4f> color) { solid_color_ = color; }
+
   // LayerImpl overrides:
   mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
@@ -152,6 +154,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   raw_ref<Client> client_;
   std::vector<std::unique_ptr<Tiling>> tilings_;
   std::vector<viz::TransferableResource> discarded_resources_;
+  std::optional<SkColor4f> solid_color_;
 };
 
 }  // namespace cc

@@ -357,6 +357,11 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.UnionUpdateRect(wire.update_rect);
   layer.SetOffsetToTransformParent(wire.offset_to_transform_parent);
 
+  if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
+    static_cast<cc::TileDisplayLayerImpl&>(layer).SetSolidColor(
+        wire.solid_color);
+  }
+
   const cc::PropertyTrees& property_trees =
       *layer.layer_tree_impl()->property_trees();
   if (!IsPropertyTreeIndexValid(property_trees.transform_tree(),
