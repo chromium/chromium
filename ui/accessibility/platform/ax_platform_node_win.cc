@@ -6347,7 +6347,8 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
             sort_ranges_by_start_offset);
 
   // Validate that the desired range has instance of MarkerType.
-  bool has_marker_in_desired_range = false;
+  int desired_start = start_offset.value_or(0);
+  int desired_end = end_offset.value_or(GetTextContentLengthUTF16());
   for (const std::pair<int, int>& range : relevant_ranges) {
     if (end_offset && range.first >= end_offset.value()) {
       break;
@@ -6356,15 +6357,16 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
       continue;
     }
 
-    has_marker_in_desired_range = true;
-    break;
+    if (range.first <= desired_start && range.second >= desired_end) {
+      // Marker covers the desired range perfectly.
+      return MarkerTypeRangeResult::kMatch;
+    } else {
+      // Marker only partially covers the desired range.
+      return MarkerTypeRangeResult::kMixed;
+    }
   }
 
-  if (!has_marker_in_desired_range) {
-    return MarkerTypeRangeResult::kNone;
-  }
-
-  return MarkerTypeRangeResult::kMatch;
+  return MarkerTypeRangeResult::kNone;
 }
 
 // IRawElementProviderSimple support methods.
