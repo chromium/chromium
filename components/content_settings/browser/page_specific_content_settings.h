@@ -437,6 +437,15 @@ class PageSpecificContentSettings
   // This method is called when audio or video capturing is started or finished.
   void OnCapturingStateChanged(ContentSettingsType type, bool is_capturing);
 
+  // This method is called every time when device capabilities (currently, only
+  // Smart Cards) are used to communicate with a device. Because device
+  // connections can be long-lived, this method may be called multiple times
+  // during a connection.
+  void OnDeviceUsed(ContentSettingsType type);
+  // This is called when the last connection from this page to devices of `type`
+  // is closed.
+  void OnLastDeviceConnectionLost(ContentSettingsType type);
+
   // Returns true if a page is currently using a feature gated behind `type`
   // permission. Returns false otherwise.
   bool IsInUse(ContentSettingsType type) { return in_use_.contains(type); }
