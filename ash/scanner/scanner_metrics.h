@@ -101,7 +101,10 @@ enum class ScannerFeatureUserState {
   kCanShowUiReturnedFalseDueToCountry = 39,
   kCanShowUiReturnedFalseDueToKioskMode = 40,
 
-  kMaxValue = kCanShowUiReturnedFalseDueToKioskMode,
+  kLauncherShownWithoutSunfishSessionButton = 41,
+  kLauncherShownWithSunfishSessionButton = 42,
+
+  kMaxValue = kLauncherShownWithSunfishSessionButton,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 
@@ -109,6 +112,9 @@ ASH_EXPORT void RecordScannerFeatureUserState(ScannerFeatureUserState state);
 
 ASH_EXPORT void RecordOnDeviceOcrTimerCompleted(
     base::TimeTicks ocr_attempt_start_time);
+
+ASH_EXPORT void RecordSunfishSessionButtonVisibilityOnLauncherShown(
+    bool is_visible);
 
 }  // namespace ash
 

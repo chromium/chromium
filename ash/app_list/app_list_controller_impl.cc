@@ -50,6 +50,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/home_button.h"
@@ -66,6 +67,7 @@
 #include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -1703,11 +1705,16 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
       app_list_view->OnAppListVisibilityChanged(real_visibility);
 
       // Only handle the tablet mode visibility changes, and let clamshell mode
-      // handle the nudge separately.
+      // handle the nudge and button visibility metrics separately.
       if (real_visibility && IsInTabletMode()) {
-        MaybeShowSunfishLauncherNudge(fullscreen_presenter_->GetView()
-                                          ->search_box_view()
-                                          ->sunfish_button());
+        views::ImageButton* sunfish_button =
+            app_list_view->search_box_view()->sunfish_button();
+        // `sunfish_button` is always initialised in `SearchBoxView`'s
+        // constructor.
+        CHECK(sunfish_button);
+        MaybeShowSunfishLauncherNudge(sunfish_button);
+        RecordSunfishSessionButtonVisibilityOnLauncherShown(
+            /*is_visible=*/sunfish_button->GetVisible());
       }
     }
 
