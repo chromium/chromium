@@ -129,19 +129,13 @@ AILanguageModel::Context::AddContextItem(ContextItem context_item) {
   return result;
 }
 
-std::unique_ptr<google::protobuf::MessageLite>
-AILanguageModel::Context::MaybeFormatRequest(PromptApiRequest request) {
-  return std::make_unique<PromptApiRequest>(std::move(request));
-}
-
-std::unique_ptr<google::protobuf::MessageLite>
-AILanguageModel::Context::MakeRequest() {
+PromptApiRequest AILanguageModel::Context::MakeRequest() {
   PromptApiRequest request;
   request.mutable_initial_prompts()->MergeFrom(initial_prompts_.prompts);
   for (auto& context_item : context_items_) {
     request.mutable_prompt_history()->MergeFrom((context_item.prompts));
   }
-  return MaybeFormatRequest(std::move(request));
+  return request;
 }
 
 bool AILanguageModel::Context::HasContextItem() {
@@ -210,7 +204,7 @@ void AILanguageModel::SetInitialPrompts(
         MakePrompt(ConvertRole(prompt->role), prompt->content);
   }
   session_->GetContextSizeInTokens(
-      *context_->MaybeFormatRequest(request),
+      request,
       base::BindOnce(&AILanguageModel::InitializeContextWithInitialPrompts,
                      weak_ptr_factory_.GetWeakPtr(), request,
                      std::move(callback)));
@@ -347,14 +341,13 @@ void AILanguageModel::PromptGetInputSizeCompletion(
   }
 
   if (context_->HasContextItem()) {
-    session_->AddContext(*context_->MakeRequest());
+    session_->AddContext(context_->MakeRequest());
   }
 
   session_->ExecuteModel(
-      *context_->MaybeFormatRequest(request),
-      base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(), request,
-                          responder_id));
+      request, base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
+                                   weak_ptr_factory_.GetWeakPtr(), request,
+                                   responder_id));
 }
 
 void AILanguageModel::Prompt(
@@ -378,7 +371,7 @@ void AILanguageModel::Prompt(
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
 
   session_->GetExecutionInputSizeInTokens(
-      *context_->MaybeFormatRequest(request),
+      request,
       base::BindOnce(&AILanguageModel::PromptGetInputSizeCompletion,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
 }
@@ -451,7 +444,7 @@ void AILanguageModel::CountPromptTokens(
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
 
   session_->GetExecutionInputSizeInTokens(
-      *context_->MaybeFormatRequest(request),
+      request,
       base::BindOnce(
           [](mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>
                  client_remote,

@@ -95,13 +95,7 @@ class AILanguageModel : public AIContextBoundObject,
 
     // Combines the initial prompts and all current items into a request.
     // The type of request produced is a PromptApiRequest.
-    std::unique_ptr<google::protobuf::MessageLite> MakeRequest();
-
-    // Either returns it's argument wrapped in unique_ptr, or converts it to a
-    // StringValue depending on whether this Context has
-    // use_prompt_api_proto = true.
-    std::unique_ptr<google::protobuf::MessageLite> MaybeFormatRequest(
-        PromptApiRequest request);
+    PromptApiRequest MakeRequest();
 
     // Returns true if the system prompt is set or there is at least one context
     // item.
