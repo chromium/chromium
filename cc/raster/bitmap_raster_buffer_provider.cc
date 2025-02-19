@@ -104,7 +104,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     backing->shared_image_interface = shared_image_interface_;
     backing->set_shared_image(
         shared_image_interface_->CreateSharedImageForSoftwareCompositor(
-            {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
+            {resource.format(), size, color_space,
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
              "BitmapRasterBufferProvider"}));
     CHECK(backing->shared_image());
