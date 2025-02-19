@@ -1041,6 +1041,10 @@ class TabStripModel : public TabGroupController {
   // Determine where to shift selection after a tab is closed.
   std::optional<int> DetermineNewSelectedIndex(int removed_index) const;
 
+  // Determine where to shift selection after a group is detached.
+  std::optional<int> DetermineNewSelectedIndex(
+      const tab_groups::TabGroupId& removed_group_id) const;
+
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
   std::unique_ptr<tabs::TabStripCollection> contents_data_;

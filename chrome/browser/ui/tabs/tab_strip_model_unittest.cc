@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/commerce/core/commerce_utils.h"
 #ifdef UNSAFE_BUFFERS_BUILD
@@ -898,6 +899,25 @@ TEST_F(TabStripModelTest, TestTabHandlesAcrossModels) {
   EXPECT_EQ(false, tabstrip.IsTabBlocked(0));
 
   delegate.SetBrowserWindowInterface(nullptr);
+}
+
+TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(3), true);
+
+  tab_groups::TabGroupId group_id =
+      tabstrip.AddToNewGroup(std::vector<int>{1, 2});
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      tabstrip.DetachTabGroupForInsertion(group_id);
+
+  EXPECT_EQ(detached_group->collection_->TabCountRecursive(), 2u);
+  EXPECT_FALSE(tabstrip.group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(tabstrip.count(), 1);
 }
 
 TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
