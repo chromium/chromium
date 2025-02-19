@@ -14,7 +14,7 @@ TestWatchDog::TestWatchDog(mojo::PendingReceiver<mojom::DataWatchDog> receiver,
                            mojom::DataFilterPtr filter)
     : receiver_(this, std::move(receiver)), filter_(std::move(filter)) {}
 
-TestWatchDog::~TestWatchDog() {}  // IN-TEST
+TestWatchDog::~TestWatchDog() = default;  // IN-TEST
 
 const mojom::DataFilterPtr TestWatchDog::GetFilter() {
   return filter_->Clone();
