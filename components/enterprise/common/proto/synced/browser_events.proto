@@ -273,12 +273,12 @@ message RiskInfo {
 
   RiskLevel risk_level = 2;
 
-  // Risk subcategory (malware category/family, phishing brand, etc.)
-  message RiskSubCategory {
+  // Risk category (malware category/family, phishing brand, etc.)
+  message RiskCategory {
     string key = 1;
     string value = 2;
   }
-  repeated RiskSubCategory risk_sub_categories = 3;
+  repeated RiskCategory risk_categories = 3;
 
   // Reasons like Safe Browsing blocklist, ML models vs. heuristic rules.
   repeated string risk_reasons = 4;
