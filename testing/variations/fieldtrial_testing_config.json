@@ -7494,21 +7494,6 @@
             ]
         }
     ],
-    "DefaultBrowserBannerPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DefaultBrowserBannerPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultBrowserPromoAndroid2": [
         {
             "platforms": [
