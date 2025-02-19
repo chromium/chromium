@@ -86,7 +86,7 @@ class AccessCodeCastDiscoveryInterface {
       const std::string& value,
       const std::string& key);
   std::pair<std::optional<DiscoveryDevice>, AddSinkResultCode>
-  ConstructDiscoveryDeviceFromJson(base::Value json_response);
+  ConstructDiscoveryDeviceFromJson(base::Value::Dict json_response);
   void HandleDiscoveryDeviceJsonError(const std::string& field_missing);
   void HandleServerResponse(std::unique_ptr<EndpointResponse> response);
 
@@ -96,8 +96,9 @@ class AccessCodeCastDiscoveryInterface {
   // Function that runs the member variable callback with the given error.
   void ReportErrorViaCallback(AddSinkResultCode error);
 
-  AddSinkResultCode GetErrorFromResponse(const base::Value& response);
-  AddSinkResultCode IsResponseValid(const std::optional<base::Value>& response);
+  AddSinkResultCode GetErrorFromResponse(const base::Value::Dict& response);
+  AddSinkResultCode IsResponseValid(
+      const std::optional<base::Value::Dict>& response);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   // Access code passed down from the WebUI and used in the construction of the
