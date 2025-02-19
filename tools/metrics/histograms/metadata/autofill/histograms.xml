@@ -78,6 +78,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Natwest" summary="card issued by Natwest"/>
 </variants>
 
+<variants name="Autofill.CreditCardIssuerId.WithBenefits">
+  <variant name="Amex" summary="card issued by American Express"/>
+  <variant name="Bmo" summary="card issued by BMO"/>
+</variants>
+
 <variants name="Autofill.CreditCardNetwork">
   <variant name="Mastercard" summary="card with the Mastercard network."/>
   <variant name="Visa" summary="card with the Visa network."/>
@@ -2885,7 +2890,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     and logs at each of those times. Log emission pertains to the credit card
     issuer, {CardIssuerId}.
   </summary>
-  <token key="CardIssuerId" variants="Autofill.CreditCardIssuerId"/>
+  <token key="CardIssuerId"
+      variants="Autofill.CreditCardIssuerId.WithBenefits"/>
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
