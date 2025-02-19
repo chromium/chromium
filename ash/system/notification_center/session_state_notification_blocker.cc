@@ -10,6 +10,7 @@
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
+#include "ash/system/privacy/screen_security_controller.h"
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
 #include "ui/message_center/message_center.h"
@@ -129,6 +130,13 @@ bool SessionStateNotificationBlocker::ShouldShowNotification(
     return false;
   }
 
+  // Always show remote activity notification (which also acts as a privacy
+  // indicator) irrespective of the session state (except when running in
+  // app mode).
+  if (notification.id() == ash::kRemotingScreenShareNotificationId) {
+    return true;
+  }
+
   const SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
   // Do not show the "Do not disturb" notification if there is no active
@@ -177,6 +185,13 @@ bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
           message_center::NotifierType::SYSTEM_COMPONENT &&
       login_delay_timer_.IsRunning()) {
     return false;
+  }
+
+  // Always show remote activity notification (which also acts as a privacy
+  // indicator) irrespective of the session state (except when running in
+  // app mode).
+  if (notification.id() == ash::kRemotingScreenShareNotificationId) {
+    return true;
   }
 
   if (IsAllowedDuringOOBE(notification.id())) {
