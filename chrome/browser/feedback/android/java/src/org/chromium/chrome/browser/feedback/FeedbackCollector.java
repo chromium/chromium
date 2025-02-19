@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.common.collect.Iterables;
@@ -21,6 +19,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -36,23 +37,25 @@ import java.util.Map;
  * a set of Key - Value pairs used to submit feedback requests.
  * @param <T> Initialization params used by subclasses for the feedback source builders.
  */
+@NullMarked
 public abstract class FeedbackCollector<T> implements Runnable {
     /** The timeout for gathering data asynchronously. This timeout is ignored for screenshots. */
     private static final int TIMEOUT_MS = 500;
 
     private final long mStartTime = SystemClock.elapsedRealtime();
 
-    private final String mCategoryTag;
-    private final String mDescription;
-    private String mAccountInUse;
+    private final @Nullable String mCategoryTag;
+    private final @Nullable String mDescription;
+    private @Nullable String mAccountInUse;
 
     private List<FeedbackSource> mSynchronousSources;
+
     @VisibleForTesting protected List<AsyncFeedbackSource> mAsynchronousSources;
 
-    private ScreenshotSource mScreenshotTask;
+    private @Nullable ScreenshotSource mScreenshotTask;
 
     /** The callback is cleared once notified so we will never notify the caller twice. */
-    private Callback<FeedbackCollector> mCallback;
+    private @Nullable Callback<FeedbackCollector> mCallback;
 
     public FeedbackCollector(
             @Nullable String categoryTag,
@@ -64,6 +67,7 @@ public abstract class FeedbackCollector<T> implements Runnable {
     }
 
     // Subclasses must invoke init() at construction time.
+    @Initializer
     protected void init(
             Activity activity,
             @Nullable ScreenshotSource screenshotTask,
@@ -103,21 +107,19 @@ public abstract class FeedbackCollector<T> implements Runnable {
     }
 
     @VisibleForTesting
-    @NonNull
     protected abstract List<FeedbackSource> buildSynchronousFeedbackSources(
             Activity activity, T initParams);
 
     @VisibleForTesting
-    @NonNull
     protected abstract List<AsyncFeedbackSource> buildAsynchronousFeedbackSources(T initParams);
 
     /** @return The category tag for this feedback report. */
-    public String getCategoryTag() {
+    public @Nullable String getCategoryTag() {
         return mCategoryTag;
     }
 
     /** @return The description of this feedback report. */
-    public String getDescription() {
+    public @Nullable String getDescription() {
         return mDescription;
     }
 
@@ -131,7 +133,7 @@ public abstract class FeedbackCollector<T> implements Runnable {
      * @return Returns the histogram data from {@link #getLogs()}.
      */
     @Deprecated
-    public String getHistograms() {
+    public @Nullable String getHistograms() {
         return getLogs().get(HistogramFeedbackSource.HISTOGRAMS_KEY);
     }
 
