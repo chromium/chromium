@@ -397,9 +397,6 @@ BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
 BASE_FEATURE(kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage,
              "FastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage,
-             "RoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable persistent storage of VkPipelineCache data.
 BASE_FEATURE(kEnableVkPipelineCache,

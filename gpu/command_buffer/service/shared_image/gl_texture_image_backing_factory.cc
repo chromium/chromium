@@ -37,12 +37,6 @@ bool SupportScanout() {
           features::kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-
   return base::FeatureList::IsEnabled(kSupportScanoutInGLTextureImageBacking);
 }
 
