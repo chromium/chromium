@@ -310,7 +310,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
     return nullptr;
   }
 
-  const auto source_info = source->GetSkImageInfo();
+  const auto source_color_space = source->GetSkColorSpace();
   const bool needs_flip = options.flip_y;
   const bool needs_crop =
       options.source_rect != gfx::Rect(GetSourceSize(source, options));
@@ -320,8 +320,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
   const bool needs_convert_color_space =
       options.dest_color_space &&
       !SkColorSpace::Equals(options.dest_color_space.get(),
-                            source_info.colorSpace()
-                                ? source_info.colorSpace()
+                            source_color_space
+                                ? source_color_space.get()
                                 : SkColorSpace::MakeSRGB().get());
   const bool needs_alpha_change =
       (source->GetAlphaType() == kUnpremul_SkAlphaType) !=
