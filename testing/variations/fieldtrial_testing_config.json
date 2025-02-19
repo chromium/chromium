@@ -15853,28 +15853,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "AllowWindowDragUsingSystemDragDrop",
+                    "name": "Default",
+                    "disable_features": [
                         "OverrideDefaultOzonePlatformHintToAuto"
                     ]
                 },
                 {
-                    "name": "Enabled_IME_Dogfood",
-                    "enable_features": [
-                        "AllowWindowDragUsingSystemDragDrop",
-                        "OverrideDefaultOzonePlatformHintToAuto",
-                        "WaylandPerSurfaceScale",
-                        "WaylandTextInputV3"
-                    ]
-                },
-                {
-                    "name": "Enabled_IME_UiScale_Video_Dogfood",
+                    "name": "Enabled_Dogfood",
                     "enable_features": [
                         "AcceleratedVideoDecodeLinuxGL",
                         "AcceleratedVideoDecodeLinuxZeroCopyGL",
                         "AllowWindowDragUsingSystemDragDrop",
                         "OverrideDefaultOzonePlatformHintToAuto",
+                        "WaylandLinuxDrmSyncobj",
                         "WaylandPerSurfaceScale",
                         "WaylandTextInputV3",
                         "WaylandUiScale"
