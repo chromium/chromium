@@ -42,6 +42,7 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -1192,26 +1193,12 @@ class LensOverlayController : public LensSearchboxClient,
   // was performed.
   bool search_performed_in_session_ = false;
 
-  // Indicates whether contextual zero suggest was shown in a session.
-  bool contextual_zps_shown_in_session_ = false;
-
-  // Indicates whether contextual zero suggest was used in a session.
-  bool contextual_zps_used_in_session_ = false;
-
-  // Indicates whether a contextual query was issued in a session.
-  bool contextual_query_issued_in_session_ = false;
-
-  // Indicates whether the contextual searchbox was focused in the current
-  // session. Used to record interaction rate, defined by whether or not a
-  // user focused the contextual searchbox in sessions in which it was shown.
-  // Set if contextual searchbox is shown.
-  bool contextual_searchbox_focused_in_session_ = false;
-
-  // Whether the contextual searchbox should be shown in the session.
-  bool contextual_searchbox_shown_in_session_ = false;
-
   // Whether the OCR DOM similarity has been recorded in the current session.
   bool ocr_dom_similarity_recorded_in_session_ = false;
+
+  // Metrics for the contextual searchbox that will be recorded at the end of a
+  // session.
+  lens::ContextualSearchboxSessionEndMetrics csb_session_end_metrics_;
 
   // The type of the page content extracted from the page when the lens overlay
   // was initialized. This is used when recording contextual searchbox metrics
