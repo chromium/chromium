@@ -146,6 +146,17 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   };
   [_consumer setupModalViewControllerWithPrefs:prefs];
 
+  if (!infobar->accepted()) {
+    // Log metrics for modal being shown to offer card save. We log each time
+    // the modal is shown, even if it is a re-show via the omnibox chip, as
+    // each show will be paired with one outcome (e.g. dismiss, accept, etc).
+    // However once the prompt has been accepted, we stop logging any re-shows
+    // as the user has already committed to the save flow.
+    delegate->LogSaveCreditCardInfoBarResultMetric(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kShown,
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
+  }
+
   if (delegate->is_for_upload() && infobar->accepted() &&
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
@@ -207,6 +218,10 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
+
+  delegate->LogSaveCreditCardInfoBarResultMetric(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kAccepted,
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
 
   infobar->set_accepted(delegate->UpdateAndAccept(
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
