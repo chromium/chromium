@@ -375,6 +375,10 @@ template("generate_jni_impl") {
         if (defined(invoker.namespace)) {
           args += [ "--namespace=${invoker.namespace}" ]
         }
+        if (defined(invoker.enable_definition_macros) &&
+            invoker.enable_definition_macros) {
+          args += [ "--enable-definition-macros" ]
+        }
 
         # Cronet needs to rename jni_zero classes
         if (defined(is_cronet_build) && is_cronet_build) {

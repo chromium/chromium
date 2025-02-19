@@ -33,23 +33,38 @@ class StringBuilder:
   def __init__(self):
     self._sb = []
     self._indent = 0
-    self._start_of_line = True
+    self._comment_indent = None
+    self._in_cpp_macro = False
+    self._cur_line_len = 0
 
   def __call__(self, value):
     lines = value.splitlines(keepends=True)
     for line in lines:
-      if self._start_of_line and line != '\n':
-        self._sb.append(' ' * self._indent)
-      self._sb.append(line)
-      self._start_of_line = line[-1] == '\n'
+      # Add any applicable prefix.
+      if self._cur_line_len == 0:
+        if self._comment_indent is not None:
+          self._sb.append(' ' * self._comment_indent)
+          # Do not add trailing whitespace for blank lines.
+          prefix = '//' if line == '\n' else '// '
+          self._sb.append(prefix)
+          self._cur_line_len += self._comment_indent + len(prefix)
 
-  def _cur_line_length(self):
-    ret = 0
-    for l in reversed(self._sb):
-      if l.endswith('\n'):
-        break
-      ret += len(l)
-    return ret
+        if line != '\n' and self._indent > 0:
+          self._sb.append(' ' * self._indent)
+          self._cur_line_len += self._indent
+
+      self._sb.append(line)
+      self._cur_line_len += len(line)
+
+      if line[-1] == '\n':
+        if self._in_cpp_macro:
+          self._sb[-1] = self._sb[-1][:-1]
+          remaining = _TARGET_LINE_LENGTH - self._cur_line_len - 1
+          if remaining > 0:
+            self._sb.append(' ' * remaining)
+          self._sb.append(' \\\n')
+
+        self._cur_line_len = 0
 
   @contextlib.contextmanager
   def _param_list_generator(self):
@@ -65,7 +80,7 @@ class StringBuilder:
     if values:
       punctuation_size = 2 * len(values) # punctuation: ", ()"
       single_line_size = sum(len(v) for v in values) + punctuation_size
-      if self._cur_line_length() + single_line_size < _TARGET_LINE_LENGTH:
+      if self._cur_line_len + single_line_size < _TARGET_LINE_LENGTH:
         self(', '.join(values))
       else:
         self('\n')
@@ -84,6 +99,7 @@ class StringBuilder:
 
   @contextlib.contextmanager
   def section(self, section_title):
+    assert not self._in_cpp_macro
     if not ''.join(self._sb[-2:]).endswith('\n\n'):
       self('\n')
     self(f'// {section_title}\n')
@@ -98,7 +114,10 @@ class StringBuilder:
     value = f' {namespace_name}' if namespace_name else ''
     self(f'namespace{value} {{\n\n')
     yield
-    self(f'\n}}  // namespace{value}\n')
+    if self._in_cpp_macro:
+      self(f'\n}}  /* namespace{value} */\n')
+    else:
+      self(f'\n}}  // namespace{value}\n')
 
   @contextlib.contextmanager
   def block(self, *, indent=2, after=None):
@@ -117,6 +136,34 @@ class StringBuilder:
     self._indent += amount
     yield
     self._indent -= amount
+
+  @contextlib.contextmanager
+  def commented_section(self):
+    assert self._comment_indent is None
+    assert not self._in_cpp_macro
+    self._comment_indent = self._indent
+    self._indent = 0
+    yield
+    self._indent = self._comment_indent
+    self._comment_indent = None
+
+  @contextlib.contextmanager
+  def cpp_macro(self, macro_name):
+    assert self._indent == 0
+    assert not self._in_cpp_macro
+    self(f'#define {macro_name}()')
+    self._in_cpp_macro = True
+    self('\n')
+    with self.indent(2):
+      yield
+    self._in_cpp_macro = False
+    # Check that the last call to __call__ ended with a \n, which will result
+    # in self._sb ending with [indent, slash-and-newline].
+    assert self._cur_line_len == 0
+    assert self._sb[-1] == ' \\\n', 'was: ' + self._sb[-1]
+    assert self._sb[-2].isspace(), 'was: ' + self._sb[-2]
+    self._sb.pop()
+    self._sb[-1] = '\n'
 
   def to_string(self):
     return ''.join(self._sb)

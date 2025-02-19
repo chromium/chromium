@@ -4307,6 +4307,7 @@ if (is_android || is_robolectric) {
 if (is_android) {
   # JNI supported in Robolectric tests.
   generate_jni("base_minimal_jni") {
+    enable_definition_macros = true
     sources = [
       "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
