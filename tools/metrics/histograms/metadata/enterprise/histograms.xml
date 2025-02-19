@@ -150,6 +150,24 @@ chromium-metrics-reviews@google.com.
   <variant name=".InitialEnrollment" summary="Initial Enrollment Exchange"/>
 </variants>
 
+<variants name="EnterpriseReportingEventType">
+  <variant name="All" summary="All events"/>
+  <variant name="BrowserCrash" summary="Browser crash events"/>
+  <variant name="DangerousDownload" summary="Dangerous download events"/>
+  <variant name="ExtensionInstall" summary="Extension install events"/>
+  <variant name="ExtensionTelemetry" summary="Extension telemetry events"/>
+  <variant name="Interstitial" summary="Interstitial events"/>
+  <variant name="Login" summary="Login events"/>
+  <variant name="PasswordBreach" summary="Password breach events"/>
+  <variant name="PasswordChanged" summary="Password changed events"/>
+  <variant name="PasswordReuse" summary="Password reuse events"/>
+  <variant name="SensitiveData" summary="Sensitive data events"/>
+  <variant name="Unknown" summary="Unknown/uncategorized events"/>
+  <variant name="UnscannedFile" summary="Unscanned file events"/>
+  <variant name="UrlFilteringInterstitial"
+      summary="URL filtering interstitial events"/>
+</variants>
+
 <variants name="EnterpriseSignals">
   <variant name="AntiVirus" summary="antivirus"/>
   <variant name="FileSystemInfo" summary="file system information"/>
@@ -2990,6 +3008,19 @@ chromium-metrics-reviews@google.com.
     enrolled device rounded down to the nearest 10-minute bucket and capped at
     24 hours.
   </summary>
+</histogram>
+
+<histogram name="Enterprise.ReportingEvent.{EventType}.UploadSize" units="B"
+    expires_after="2025-08-14">
+  <owner>domfc@chromium.org</owner>
+  <owner>xanth@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <summary>
+    The size of the UploadEventsRequest for {EventType} events sent to the
+    reporting server, in bytes. This is recorded once per upload request when
+    the payload is generated in RealtimeReportingJobConfiguration::GetPayload.
+  </summary>
+  <token key="EventType" variants="EnterpriseReportingEventType"/>
 </histogram>
 
 <histogram name="Enterprise.ReportingEventUploadFailure"

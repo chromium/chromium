@@ -27,7 +27,6 @@ source_set("core") {
     "features.h",
     "realtime_reporting_client_base.cc",
     "realtime_reporting_client_base.h",
-    "reporting_constants.h",
     "reporting_service_settings.cc",
     "reporting_service_settings.h",
     "reporting_utils.cc",
@@ -36,7 +35,10 @@ source_set("core") {
     "service_provider_config.h",
   ]
 
-  public_deps = [ "//components/enterprise/common/proto:connectors_proto" ]
+  public_deps = [
+    ":constants",
+    "//components/enterprise/common/proto:connectors_proto",
+  ]
 
   deps = [
     "//base",
@@ -69,6 +71,17 @@ source_set("core") {
   if (enterprise_client_certificates) {
     deps += [ "//components/enterprise/client_certificates/core" ]
   }
+}
+
+source_set("constants") {
+  sources = [
+    "reporting_constants.cc",
+    "reporting_constants.h",
+  ]
+  deps = [
+    "//base",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+  ]
 }
 
 source_set("test_support") {

@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 
+#include <cstddef>
 #include <optional>
 #include <set>
 #include <vector>
@@ -11,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -18,6 +20,7 @@
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/common/proto/upload_request_response.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -41,7 +44,6 @@ namespace policy {
 
 constexpr char kAppPackage[] = "appPackage";
 constexpr char kEventType[] = "eventType";
-constexpr char kAppInstallEvent[] = "androidAppInstallEvent";
 constexpr char kEventId[] = "eventId";
 constexpr char kStatusCode[] = "status";
 
@@ -77,8 +79,7 @@ class RealtimeReportingJobConfigurationTest
 
   void SetUp() override {
     client_.SetDMToken(kDummyToken);
-    bool use_proto_format = GetParam();
-    if (use_proto_format) {
+    if (use_proto_format()) {
       feature_list_.InitAndEnableFeature(
           kUploadRealtimeReportingEventsUsingProto);
     } else {
@@ -91,7 +92,7 @@ class RealtimeReportingJobConfigurationTest
         /*include_device_info=*/true,
         base::BindOnce(&MockCallbackObserver::OnURLLoadComplete,
                        base::Unretained(&callback_observer_)));
-    if (use_proto_format) {
+    if (use_proto_format()) {
       ::chrome::cros::reporting::proto::UploadEventsRequest request;
       request.mutable_browser()->set_user_agent("dummyAgent");
       for (size_t i = 0; i < kIds.size(); ++i) {
@@ -113,14 +114,18 @@ class RealtimeReportingJobConfigurationTest
     }
   }
 
+  bool use_proto_format() { return GetParam(); }
+
  protected:
   const std::vector<std::string> kIds = {"id1", "id2", "id3"};
+  base::HistogramTester histogram_;
   static base::Value::Dict CreateEvent(const std::string& event_id, int type) {
     base::Value::Dict event;
     event.Set(kAppPackage, kPackage);
     event.Set(kEventType, type);
     base::Value::Dict wrapper;
-    wrapper.Set(kAppInstallEvent, std::move(event));
+    wrapper.Set(enterprise_connectors::kExtensionInstallEvent,
+                std::move(event));
     wrapper.Set(kEventId, event_id);
     return wrapper;
   }
@@ -218,7 +223,7 @@ class RealtimeReportingJobConfigurationTest
 };
 
 TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
-  if (GetParam()) {
+  if (use_proto_format()) {
     // If using the proto format, validate the request.
     ::chrome::cros::reporting::proto::UploadEventsRequest request;
     request.ParseFromString(configuration_->GetPayload());
@@ -286,7 +291,8 @@ TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
       const std::string& id = CHECK_DEREF(event.FindString(kEventId));
       EXPECT_EQ(kIds[++i], id);
       const std::optional<int> type =
-          event.FindDict(kAppInstallEvent)->FindInt(kEventType);
+          event.FindDict(enterprise_connectors::kExtensionInstallEvent)
+              ->FindInt(kEventType);
       ASSERT_TRUE(type.has_value());
       EXPECT_EQ(i, *type);
     }
@@ -401,6 +407,17 @@ TEST_P(RealtimeReportingJobConfigurationTest, OnBeforeRetry_HttpFailure) {
   configuration_->OnBeforeRetry(DeviceManagementService::kServiceUnavailable,
                                 "");
   EXPECT_EQ(original_payload, configuration_->GetPayload());
+}
+
+TEST_P(RealtimeReportingJobConfigurationTest, GetPayloadRecordsUmaMetrics) {
+  // GetPayload should record the payload size as an UMA metric.
+  std::string payload = configuration_->GetPayload();
+  histogram_.ExpectUniqueSample(
+      enterprise_connectors::kAllUploadSizeUmaMetricName, payload.size(), 1);
+
+  histogram_.ExpectUniqueSample(
+      enterprise_connectors::kExtensionInstallUploadSizeUmaMetricName,
+      payload.size(), 1);
 }
 
 TEST_P(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
