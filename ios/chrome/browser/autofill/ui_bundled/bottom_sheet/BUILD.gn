@@ -30,6 +30,9 @@ source_set("bottom_sheet") {
   sources = [
     "autofill_edit_profile_bottom_sheet_coordinator.h",
     "autofill_edit_profile_bottom_sheet_coordinator.mm",
+    "autofill_edit_profile_bottom_sheet_handler.h",
+    "infobar_autofill_edit_profile_bottom_sheet_handler.h",
+    "infobar_autofill_edit_profile_bottom_sheet_handler.mm",
     "payments_suggestion_bottom_sheet_coordinator.h",
     "payments_suggestion_bottom_sheet_coordinator.mm",
     "payments_suggestion_bottom_sheet_exit_reason.h",
