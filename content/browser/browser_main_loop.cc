@@ -1503,12 +1503,16 @@ bool BrowserMainLoop::InitializeToolkit() {
 }
 
 void BrowserMainLoop::InitializeMojo() {
+// iOS browser process does sync calls using mojo (mainly for in process
+// unzipper, so do not enable these checks right now).
+#if !BUILDFLAG(IS_IOS)
   if (!parsed_command_line_->HasSwitch(switches::kSingleProcess)) {
     // Disallow mojo sync calls in the browser process. Note that we allow sync
     // calls in single-process mode since renderer IPCs are made from a browser
     // thread.
     mojo::SyncCallRestrictions::DisallowSyncCall();
   }
+#endif
 
   // Start startup tracing through TracingController's interface. TraceLog has
   // been enabled in content_main_runner where threads are not available. Now We
