@@ -146,11 +146,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
     const auto bm_color_space = options.dest_color_space
                                     ? options.dest_color_space
                                     : source_info.refColorSpace();
-    const auto bm_info =
-        source_info.makeDimensions(source_rect.size())
-            .makeAlphaType(bm_alpha_type)
-            .makeColorType(GetDestColorType(source_info.colorType()))
-            .makeColorSpace(bm_color_space);
+    const auto bm_info = SkImageInfo::Make(
+        source_rect.size(), GetDestColorType(source_info.colorType()),
+        bm_alpha_type, bm_color_space);
     if (!bm.tryAllocPixels(bm_info)) {
       return nullptr;
     }
