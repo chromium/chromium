@@ -180,6 +180,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAppIntegrationV2,
     &kNewTabPageCustomization,
     &kAndroidAppIntegrationWithFavicon,
+    &kAndroidAppIntegrationMultiDataSource,
     &kAndroidBookmarkBar,
     &kAndroidBottomToolbar,
     &kAndroidDumpOnScrollWithoutResource,
@@ -477,6 +478,10 @@ BASE_FEATURE(kAndroidAppIntegration,
 
 BASE_FEATURE(kAndroidAppIntegrationV2,
              "AndroidAppIntegrationV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidAppIntegrationMultiDataSource,
+             "AndroidAppIntegrationMultiDataSource",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageCustomization,

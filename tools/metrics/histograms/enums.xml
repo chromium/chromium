@@ -12814,6 +12814,7 @@ from previous Chrome versions.
   <int value="-519960638" label="enable-site-engagement-service"/>
   <int value="-519844731" label="SignInProfileCreationFlow:enabled"/>
   <int value="-519653227" label="ToolbarPinning:disabled"/>
+  <int value="-519595301" label="AndroidAppIntegrationMultiDataSource:enabled"/>
   <int value="-519345823" label="CrOSEnforceSystemAecNsAgc:enabled"/>
   <int value="-519342886" label="PrintWithPostScriptType42Fonts:disabled"/>
   <int value="-518104091" label="NewAudioRenderingMixingStrategy:enabled"/>
@@ -15034,6 +15035,7 @@ from previous Chrome versions.
   <int value="356453693" label="SystemNudgeV2:disabled"/>
   <int value="356850763" label="AutofillEnableBuyNowPayLaterSyncing:disabled"/>
   <int value="356857664" label="QuickAnswersMaterialNextUI:enabled"/>
+  <int value="356875586" label="AndroidAppIntegrationMultiDataSource:disabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="357165937" label="ShareToGoogleCollections:enabled"/>
   <int value="357832577" label="OmniboxSuggestionHoverFillShape:disabled"/>

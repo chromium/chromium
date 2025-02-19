@@ -111,6 +111,12 @@ const char kAndroidAppIntegrationWithFaviconDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search with "
     "favicons.";
 
+const char kAndroidAppIntegrationMultiDataSourceName[] =
+    "Integrate with Android App Search with multiple data sources.";
+const char kAndroidAppIntegrationMultiDataSourceDescription[] =
+    "If enabled, allows Chrome to integrate with the Android App Search with "
+    "multiple data sources, e.g. custom Tabs.";
+
 const char kAndroidBcivBottomControlsName[] =
     "Browser controls in viz for bottom controls";
 const char kAndroidBcivBottomControlsDescription[] =

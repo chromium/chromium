@@ -6242,6 +6242,13 @@ const FeatureEntry kFeatureEntries[] = {
          kAndroidAppIntegrationModuleVariations,
          "AndroidAppIntegrationModule")},
 
+    {"android-app-integration-multi-data-source",
+     flag_descriptions::kAndroidAppIntegrationMultiDataSourceName,
+     flag_descriptions::kAndroidAppIntegrationMultiDataSourceDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAndroidAppIntegrationMultiDataSource)},
+
     {"android-app-integration-v2",
      flag_descriptions::kAndroidAppIntegrationV2Name,
      flag_descriptions::kAndroidAppIntegrationV2Description, kOsAndroid,

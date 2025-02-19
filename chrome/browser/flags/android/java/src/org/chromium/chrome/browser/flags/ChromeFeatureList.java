@@ -168,6 +168,8 @@ public abstract class ChromeFeatureList {
     public static final String NEW_TAB_PAGE_CUSTOMIZATION = "NewTabPageCustomization";
     public static final String ANDROID_APP_INTEGRATION_WITH_FAVICON =
             "AndroidAppIntegrationWithFavicon";
+    public static final String ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE =
+            "AndroidAppIntegrationMultiDataSource";
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
     public static final String ANDROID_DUMP_ON_SCROLL_WITHOUT_RESOURCE =
@@ -614,6 +616,9 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, false);
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
             newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, false, true);
+
+    public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
+            newCachedFlag(ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE, false);
     public static final CachedFlag sAndroidBottomToolbar =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, false, true);
     public static final CachedFlag sAndroidElegantTextHeight =
@@ -854,6 +859,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationV2,
                     sAndroidAppIntegrationWithFavicon,
+                    sAndroidAppIntegrationMultiDataSource,
                     sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,
