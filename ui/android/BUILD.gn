@@ -2,13 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_android)
+
+declare_args() {
+  # Include the new texture compressor in build (still subject to feature
+  # flags).
+  # If toolchain roll breaks due to usage of nightly features, it is OK to flip
+  # this off. Please ping OWNERS of texture_compressor on the CL.
+  enable_new_texture_compressor = true
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR=$enable_new_texture_compressor",
+  ]
+}
 
 component("android") {
   output_name = "ui_android"
@@ -69,6 +86,7 @@ component("android") {
   defines = [ "UI_ANDROID_IMPLEMENTATION" ]
 
   deps = [
+    ":buildflags",
     ":java_enums_srcjar",
     ":ui_android_jni_headers",
     "//base",
@@ -93,6 +111,10 @@ component("android") {
     "//ui/touch_selection",
     "//url",
   ]
+
+  if (enable_new_texture_compressor) {
+    deps += [ ":texture_compressor" ]
+  }
 }
 
 java_cpp_features("java_features_srcjar") {
@@ -758,6 +780,9 @@ test("ui_android_unittests") {
     "//ui/gfx/geometry",
     "//ui/resources:ui_test_pak",
   ]
+  if (enable_new_texture_compressor) {
+    deps += [ ":texture_compressor_unittests" ]
+  }
 }
 
 android_library("clipboard_java_test_support") {
@@ -831,4 +856,45 @@ generate_jni("ui_javatest_jni_headers") {
     "javatests/src/org/chromium/ui/test/util/TestViewAndroidDelegate.java",
     "javatests/src/org/chromium/ui/test/util/modaldialog/FakeModalDialogManager.java",
   ]
+}
+
+if (enable_new_texture_compressor) {
+  rust_static_library("texture_compressor") {
+    crate_root = "texture_compressor/lib.rs"
+    sources = [
+      "texture_compressor/cxx.rs",
+      "texture_compressor/dither.rs",
+      "texture_compressor/lib.rs",
+      "texture_compressor/quant.rs",
+      "texture_compressor/selectors.rs",
+    ]
+    allow_unsafe = true
+    cxx_bindings = [ "texture_compressor/cxx.rs" ]
+    deps = [ "//third_party/rust/bytemuck/v1:lib" ]
+
+    # Required for #[feature(portable_simd)]
+    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+    rustflags = [ "-Zallow-features=portable_simd" ]
+  }
+
+  rust_static_library("texture_compressor_unittests") {
+    testonly = true
+    is_gtest_unittests = true
+    crate_root = "texture_compressor/tests.rs"
+    sources = [
+      "texture_compressor/lib_tests.rs",
+      "texture_compressor/quant_tests.rs",
+      "texture_compressor/selectors_tests.rs",
+      "texture_compressor/tests.rs",
+    ]
+
+    deps = [
+      ":texture_compressor",
+      "//testing/rust_gtest_interop",
+    ]
+
+    # Required for #[feature(portable_simd)]
+    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+    rustflags = [ "-Zallow-features=portable_simd" ]
+  }
 }
