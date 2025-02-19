@@ -24,11 +24,11 @@
 #include "media/cast/constants.h"
 #include "media/cast/encoding/fake_software_video_encoder.h"
 #include "media/cast/encoding/video_encoder.h"
+#include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "media/video/video_encoder_info.h"
 #include "media_video_encoder_wrapper.h"
-#include "third_party/libaom/libaom_buildflags.h"
 
 #if BUILDFLAG(ENABLE_LIBVPX)
 #include "media/video/vpx_video_encoder.h"

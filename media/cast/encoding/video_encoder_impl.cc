@@ -11,15 +11,16 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_frame.h"
-#include "third_party/libaom/libaom_buildflags.h"
-#if BUILDFLAG(ENABLE_LIBAOM)
-#include "media/cast/encoding/av1_encoder.h"
-#endif
 #include "media/base/video_encoder_metrics_provider.h"
+#include "media/base/video_frame.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/fake_software_video_encoder.h"
 #include "media/cast/encoding/vpx_encoder.h"
+#include "media/media_buildflags.h"
+
+#if BUILDFLAG(ENABLE_LIBAOM)
+#include "media/cast/encoding/av1_encoder.h"
+#endif
 
 namespace media {
 namespace cast {
