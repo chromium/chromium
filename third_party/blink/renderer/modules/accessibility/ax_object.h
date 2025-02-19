@@ -255,6 +255,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool is_initializing_ = false;
   bool is_computing_role_ = false;
   bool is_updating_cached_values_ = false;
+  bool is_initialized_ = false;
 #endif
 #if !defined(NDEBUG)
   // Keep track of what the object used to be, to make it easier to debug
@@ -1475,6 +1476,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void PreSerializationConsistencyCheck() const;
 
   // Returns a string representation of this object.
+  // Must only be used after `init()`has been called.
   virtual String ToString(bool verbose = true) const;
 
   void PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
