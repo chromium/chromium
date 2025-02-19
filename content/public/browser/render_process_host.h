@@ -20,7 +20,6 @@
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/supports_user_data.h"
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
@@ -51,7 +50,6 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -92,6 +90,14 @@ namespace network {
 struct CrossOriginEmbedderPolicy;
 struct DocumentIsolationPolicy;
 }  // namespace network
+
+namespace perfetto {
+template <typename MessageType>
+class TracedProto;
+namespace protos::pbzero {
+class RenderProcessHost;
+}
+}  // namespace perfetto
 
 namespace storage {
 struct BucketLocator;
