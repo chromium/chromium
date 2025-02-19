@@ -15,6 +15,7 @@
 namespace ash::cfm {
 
 inline constexpr char kCfmChromeLogFile[] = "/var/log/chrome/chrome";
+inline constexpr char kCfmChromeUserLogFile[] = "/home/chronos/user/log/chrome";
 inline constexpr char kCfmCrosEcLogFile[] = "/var/log/cros_ec.log";
 inline constexpr char kCfmFwupdLogFile[] = "/var/log/fwupd.log";
 inline constexpr char kCfmPowerdLogFile[] = "/var/log/powerd.out";

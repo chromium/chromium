@@ -16,7 +16,6 @@ inline constexpr char kCfmBiosInfoLogFile[] = "/var/log/bios_info.txt";
 inline constexpr char kCfmEventlogLogFile[] = "/var/log/eventlog.txt";
 
 // The full paths for the sources below will be determined at runtime
-inline constexpr char kCfmLacrosLogFile[] = "lacros.log";
 inline constexpr char kCfmVariationsListLogFile[] = ".variations-list.txt";
 
 // audit.log
@@ -57,18 +56,6 @@ class EventlogLogSource : public LogSource {
  protected:
   // LocalDataSource:
   RE2& GetLogLineRegex() override;
-};
-
-// lacros.log
-class LacrosLogSource : public LogSource {
- public:
-  LacrosLogSource(base::TimeDelta poll_rate, size_t batch_size);
-  LacrosLogSource(const LacrosLogSource&) = delete;
-  LacrosLogSource& operator=(const LacrosLogSource&) = delete;
-  ~LacrosLogSource() override;
-
- private:
-  std::string GetLacrosLogPath(const std::string& basename);
 };
 
 // .variations-list.txt
