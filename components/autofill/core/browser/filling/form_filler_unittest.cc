@@ -1473,6 +1473,62 @@ TEST_F(FormFillerTest, FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
   EXPECT_EQ(std::u16string(), filled_fields[5].value());
 }
 
+TEST_F(FormFillerTest, FillPassportEntity) {
+  FormData form = test::GetFormData({.fields = {
+                                         // Passport number:
+                                         {.role = UNKNOWN_TYPE},
+                                         // Passport name:
+                                         {.role = NAME_FULL},
+                                         // Issuing country:
+                                         {.role = ADDRESS_HOME_COUNTRY},
+                                         // Issue date:
+                                         {.role = UNKNOWN_TYPE},
+                                         // Expiration date:
+                                         {.role = UNKNOWN_TYPE},
+                                     }});
+  FormsSeen({form});
+  FormStructure* form_structure = GetFormStructure(form);
+
+  ASSERT_TRUE(form_structure);
+  auto set_server_type = [&](size_t field_index, auto... types) {
+    form_structure->fields()[field_index]->set_server_predictions(
+        {test::CreateFieldPrediction(types)...});
+  };
+  set_server_type(0, PASSPORT_NUMBER);
+  set_server_type(1, NAME_FULL, PASSPORT_NAME_TAG);
+  set_server_type(2, ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY_TAG);
+  set_server_type(3, PASSPORT_ISSUE_DATE_TAG);
+  set_server_type(4, PASSPORT_EXPIRATION_DATE_TAG);
+  form_structure->UpdateAutofillCount();
+
+  EntityInstance passport = test::GetPassportEntityInstance({
+      .name = u"Pippi Långstrump",
+      .number = u"123456",
+      .country = u"Sweden",
+      .expiry_date = u"12/2019",
+      .issue_date = u"01/2010",
+  });
+  auto values_to_fill = base::MakeFlatMap<FieldGlobalId, std::u16string>(
+      form_structure->fields(), {},
+      [&](const auto& field) -> std::pair<FieldGlobalId, std::u16string> {
+        FieldType field_type = *field->GetAutofillAiServerTypePredictions();
+        AttributeType attribute_type =
+            *AttributeType::FromFieldType(field_type);
+        const AttributeInstance attribute_instance =
+            *passport.attribute(attribute_type);
+        return {field->global_id(), attribute_instance.value()};
+      });
+
+  std::vector<FormFieldData> filled_fields =
+      FillAutofillFormData(form, form.fields()[0], std::move(values_to_fill))
+          .fields();
+  EXPECT_EQ(filled_fields[0].value(), u"123456");
+  EXPECT_EQ(filled_fields[1].value(), u"Pippi Långstrump");
+  EXPECT_EQ(filled_fields[2].value(), u"Sweden");
+  EXPECT_EQ(filled_fields[3].value(), u"01/2010");
+  EXPECT_EQ(filled_fields[4].value(), u"12/2019");
+}
+
 // Test that we can still fill a form when a field has been removed from it.
 TEST_F(FormFillerTest, FormChangesRemoveField) {
   FormData form = test::GetFormData(
