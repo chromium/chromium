@@ -154,23 +154,6 @@ std::unique_ptr<skgpu::graphite::Recorder> MakeGraphiteRecorder(
   return context->makeRecorder(options);
 }
 
-// Used to represent Skia backend type for UMA.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SkiaBackendType {
-  kUnknown = 0,
-  kNone = 1,
-  kGaneshGL = 2,
-  kGaneshVulkan = 3,
-  kGraphiteDawnVulkan = 4,
-  kGraphiteDawnMetal = 5,
-  kGraphiteDawnD3D11 = 6,
-  kGraphiteDawnD3D12 = 7,
-  // It's not clear what granularity of kGraphiteDawnGL* backend dawn will
-  // provided yet so those values are to be added later.
-  kMaxValue = kGraphiteDawnD3D12
-};
-
 SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
   switch (context->gr_context_type()) {
     case gpu::GrContextType::kNone:
@@ -207,28 +190,6 @@ SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
     }
   }
   return SkiaBackendType::kUnknown;
-}
-
-std::string SkiaBackendTypeToString(SkiaBackendType type) {
-  switch (type) {
-    case SkiaBackendType::kUnknown:
-      return "Unknown";
-    case SkiaBackendType::kNone:
-      return "None";
-    case SkiaBackendType::kGaneshGL:
-      return "GaneshGL";
-    case SkiaBackendType::kGaneshVulkan:
-      return "GaneshVulkan";
-    case SkiaBackendType::kGraphiteDawnVulkan:
-      return "GraphiteDawnVulkan";
-    case SkiaBackendType::kGraphiteDawnMetal:
-      return "GraphiteDawnMetal";
-    case SkiaBackendType::kGraphiteDawnD3D11:
-      return "GraphiteDawnD3D11";
-    case SkiaBackendType::kGraphiteDawnD3D12:
-      return "GraphiteDawnD3D12";
-  }
-  NOTREACHED();
 }
 
 GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,

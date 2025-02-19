@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/geometry/size.h"
@@ -391,6 +392,9 @@ struct GPU_EXPORT GPUInfo {
 
   // The DisplayType requested from ANGLE.
   std::string display_type;
+
+  // Skia Backend used for rendering and compositing.
+  SkiaBackendType skia_backend_type = SkiaBackendType::kNone;
 
   // The GL_VERSION string.
   std::string gl_version;

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_info.mojom.h"
 #include "ui/gfx/buffer_types.h"
@@ -78,6 +79,14 @@ struct GPU_EXPORT
       const gpu::GPUInfo::GPUDevice& input) {
     return input.gpu_preference;
   }
+};
+
+template <>
+struct GPU_EXPORT EnumTraits<gpu::mojom::SkiaBackendType,
+                             gpu::SkiaBackendType> {
+  static gpu::mojom::SkiaBackendType ToMojom(gpu::SkiaBackendType type);
+  static bool FromMojom(gpu::mojom::SkiaBackendType input,
+                        gpu::SkiaBackendType* out);
 };
 
 template <>
@@ -315,6 +324,10 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
 
   static const std::string& display_type(const gpu::GPUInfo& input) {
     return input.display_type;
+  }
+
+  static gpu::SkiaBackendType skia_backend_type(const gpu::GPUInfo& input) {
+    return input.skia_backend_type;
   }
 
   static const std::string& gl_version(const gpu::GPUInfo& input) {
