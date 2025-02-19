@@ -211,27 +211,21 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   BOOL escapeHatchEnabled = IsLVFEscapeHatchEnabled();
   config.useTrailingDismissButton = !escapeHatchEnabled;
 
-  NSArray<UIAction*>* additionalMenuItems;
-  if (escapeHatchEnabled) {
-    __weak __typeof(self) weakSelf = self;
-    UIAction* searchWithCameraAction =
-        [overflowMenuFactory searchWithCameraActionWithHandler:^{
-          [weakSelf didRequestSearchWithCamera];
-        }];
-    additionalMenuItems = @[
-      searchWithCameraAction,
-      [overflowMenuFactory openUserActivityAction],
-      [overflowMenuFactory learnMoreAction],
-    ];
-  } else {
-    additionalMenuItems = @[
-      [overflowMenuFactory openUserActivityAction],
-      [overflowMenuFactory learnMoreAction],
-    ];
-  }
+  __weak __typeof(self) weakSelf = self;
+  UIAction* searchWithCameraAction =
+      [overflowMenuFactory searchWithCameraActionWithHandler:^{
+        [weakSelf didRequestSearchWithCamera];
+      }];
+  NSArray<UIAction*>* precedingMenuItems =
+      escapeHatchEnabled ? @[ searchWithCameraAction ] : @[];
+
+  NSArray<UIAction*>* additionalMenuItems = @[
+    [overflowMenuFactory openUserActivityAction],
+    [overflowMenuFactory learnMoreAction],
+  ];
 
   _selectionViewController = ios::provider::NewChromeLensOverlay(
-      imageSource, config, additionalMenuItems);
+      imageSource, config, precedingMenuItems, additionalMenuItems);
 }
 
 - (void)createContainerViewController {
