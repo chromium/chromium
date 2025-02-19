@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -121,6 +122,9 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   SkColorType GetSkColorType() { return GetSkImageInfo().colorType(); }
   sk_sp<SkColorSpace> GetSkColorSpace() {
     return GetSkImageInfo().refColorSpace();
+  }
+  viz::SharedImageFormat GetSharedImageFormat() {
+    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
   }
 
  protected:
