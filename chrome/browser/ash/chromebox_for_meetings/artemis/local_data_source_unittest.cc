@@ -202,24 +202,19 @@ TEST(ArtemisLocalDataSourceTest, TestBufferSizeIsCapped) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
-  std::vector<std::string> fake_data = {"a", "b", "c", "d", "e", "f"};
+  std::vector<std::string> large_data = {
+      std::string(kMaxInternalBufferSize + 1, '!')};
 
-  // Fill buffer to the max limit
-  for (int i = 0; i < kMaxInternalBufferSize; i++) {
-    int index = i % fake_data.size();
-    source.FillDataBufferForTesting(fake_data[index]);
-  }
+  // Fill buffer to exceed our max limit
+  source.FillDataBufferForTesting(large_data);
 
-  // Now fill beyond that limit
+  // Now try adding more
   source.FillDataBufferForTesting({"a", "b", "c"});
 
-  // Verify that returned data is capped at the limit. Also verify that
-  // the beginning of the Fetch buffer is as expected, ie with older
-  // data purged.
+  // Verify that returned data is capped at the limit.
   auto callback =
       base::BindLambdaForTesting([&](const std::vector<std::string>& data) {
-        EXPECT_EQ((int)data.size(), kMaxInternalBufferSize);
-        EXPECT_EQ(data[0], "d");
+        EXPECT_EQ((int)data.size(), 1);
       });
   source.Fetch(std::move(callback));
 }

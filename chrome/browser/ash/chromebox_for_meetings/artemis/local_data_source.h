@@ -17,11 +17,11 @@
 
 namespace ash::cfm {
 
-// Maximum lines that can be in the internal buffer before we start
-// purging older records. In the working case, we should never hit
-// this limit, but we may reach it if we're unable to enqueue logs
+// Maximum bytes that can be in the internal buffer before we halt
+// collecting data temporarily. In the working case, we should never
+// hit this limit, but we may reach it if we're unable to enqueue logs
 // via Fetch() for whatever reason (eg a network outage).
-inline constexpr int kMaxInternalBufferSize = 50000;  // ~7Mb
+inline constexpr int kMaxInternalBufferSize = 500000;  // 500Kb
 
 class LocalDataSource : public mojom::DataSource {
  public:
@@ -104,6 +104,9 @@ class LocalDataSource : public mojom::DataSource {
   // Contains a chain of the most recent data. Will be returned
   // at the next call to Fetch().
   std::deque<std::string> data_buffer_;
+
+  // Current size of data buffer in bytes.
+  size_t data_buffer_size_ = 0;
 
   // Redaction tool for PII redaction
   redaction::RedactionTool redactor_;
