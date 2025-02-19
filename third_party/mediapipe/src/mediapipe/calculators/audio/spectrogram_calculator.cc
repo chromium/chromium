@@ -312,7 +312,8 @@ absl::Status SpectrogramCalculator::Open(CalculatorContext* cc) {
   for (int i = 0; i < num_input_channels_; i++) {
     spectrogram_generators_.push_back(
         std::make_unique<audio_dsp::Spectrogram>());
-    spectrogram_generators_[i]->Initialize(window, frame_step_samples());
+    spectrogram_generators_[i]->Initialize(window, frame_step_samples(),
+                                           fft_size);
   }
 
   switch (spectrogram_options.sample_buffer_mode()) {

@@ -18,6 +18,7 @@
 #include "audio/dsp/spectrogram/spectrogram.h"
 
 #include <math.h>
+#include <optional>
 
 #include "audio/dsp/number_util.h"
 #include "audio/dsp/window_functions.h"
@@ -38,14 +39,15 @@ bool Spectrogram::ResetSampleBuffer() {
   return true;
 }
 
-bool Spectrogram::Initialize(int window_length, int step_length) {
+bool Spectrogram::Initialize(int window_length, int step_length,
+                             std::optional<int> fft_length) {
   std::vector<double> window;
   HannWindow().GetPeriodicSamples(window_length, &window);
-  return Initialize(window, step_length);
+  return Initialize(window, step_length, fft_length);
 }
 
-bool Spectrogram::Initialize(const std::vector<double>& window,
-                             int step_length) {
+bool Spectrogram::Initialize(const std::vector<double>& window, int step_length,
+                             std::optional<int> fft_length) {
   window_length_ = window.size();
   window_ = window;  // Copy window.
   if (window_length_ < 2) {
@@ -61,7 +63,12 @@ bool Spectrogram::Initialize(const std::vector<double>& window,
     return false;
   }
 
-  fft_length_ = NextPowerOfTwo(window_length_);
+  if (fft_length.has_value() && !IsPowerOfTwoOrZero(fft_length.value())) {
+    LOG(ERROR) << "FFT length must be a power of two.";
+    initialized_ = false;
+    return false;
+  }
+  fft_length_ = fft_length.value_or(NextPowerOfTwo(window_length_));
   ABSL_CHECK(fft_length_ >= window_length_);
   output_frequency_channels_ = 1 + fft_length_ / 2;
 
