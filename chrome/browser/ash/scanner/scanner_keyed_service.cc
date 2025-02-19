@@ -22,6 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -180,6 +181,8 @@ void ScannerKeyedService::FetchActionDetailsForImage(
   }
   manta::proto::ScannerInput scanner_input;
   scanner_input.set_image(std::string(base::as_string_view(*jpeg_bytes)));
+  scanner_input.mutable_current_timestamp()->set_seconds(
+      base::Time::Now().InSecondsFSinceUnixEpoch());
   *scanner_input.mutable_selected_action() = std::move(selected_action);
   scanner_provider_->Call(scanner_input, std::move(callback));
 }

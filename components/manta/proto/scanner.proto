@@ -5,6 +5,8 @@
 syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 
+import "components/manta/proto/common.proto";
+
 package manta.proto;
 
 message ScannerInput {
@@ -15,6 +17,8 @@ message ScannerInput {
   // actions that can be performed on the selected region with unpopulated
   // details.
   ScannerAction selected_action = 2;
+  // The current timestamp on the user's device.
+  Timestamp current_timestamp = 3;
 }
 
 message ScannerOutput {
