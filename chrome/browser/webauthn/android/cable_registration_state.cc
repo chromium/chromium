@@ -60,16 +60,12 @@ void RegistrationState::Register() {
     crypto::RandBytes(secret_);
     interface_->SetRootSecret(base::Base64Encode(secret_));
   }
-
-  interface_->CalculateIdentityKey(
-      secret_, base::BindOnce(&RegistrationState::OnIdentityKeyReady,
-                              base::Unretained(this)));
 }
 
 // have_data_for_sync returns true if this object has loaded enough state to
 // put information into sync's DeviceInfo.
 bool RegistrationState::have_data_for_sync() const {
-  return device_supports_cable_.has_value() && identity_key_ &&
+  return device_supports_cable_.has_value() &&
          am_in_work_profile_.has_value() && sync_registration_ != nullptr &&
          sync_registration_->contact_id() && have_play_services_data();
 }
@@ -190,12 +186,6 @@ void RegistrationState::OnDeviceSupportResult(bool result) {
 
 void RegistrationState::OnWorkProfileResult(bool result) {
   am_in_work_profile_ = result;
-  MaybeSignalSync();
-}
-
-void RegistrationState::OnIdentityKeyReady(
-    bssl::UniquePtr<EC_KEY> identity_key) {
-  identity_key_ = std::move(identity_key);
   MaybeSignalSync();
 }
 

@@ -56,11 +56,6 @@ class RegistrationState {
     // Test whether the current process is an in Android work profile.
     virtual void AmInWorkProfile(base::OnceCallback<void(bool)> callback) = 0;
 
-    // Generate a P-256 key pair from a seed.
-    virtual void CalculateIdentityKey(
-        const std::array<uint8_t, 32>& secret,
-        base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> callback) = 0;
-
     // Fetch prelinking information from Play Services, if any.
     virtual void GetPrelinkFromPlayServices(
         base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
@@ -86,7 +81,6 @@ class RegistrationState {
     return sync_registration_.get();
   }
   const std::array<uint8_t, 32>& secret() const { return secret_; }
-  const EC_KEY* identity_key() const { return identity_key_.get(); }
   bool device_supports_cable() const { return *device_supports_cable_; }
   bool am_in_work_profile() const { return *am_in_work_profile_; }
   const std::optional<std::vector<uint8_t>>& link_data_from_play_services()
@@ -130,18 +124,12 @@ class RegistrationState {
   // OnWorkProfileResult is run with the result of `AmInWorkProfile`.
   void OnWorkProfileResult(bool result);
 
-  // OnIdentityKeyReady is run with the result of `CalculateIdentityKey`.
-  void OnIdentityKeyReady(bssl::UniquePtr<EC_KEY> identity_key);
-
   const std::unique_ptr<SystemInterface> interface_;
   std::unique_ptr<device::cablev2::authenticator::Registration>
       linking_registration_;
   std::unique_ptr<device::cablev2::authenticator::Registration>
       sync_registration_;
   std::array<uint8_t, 32> secret_;
-  // identity_key_ is a public/private P-256 key that is calculated from
-  // `secret_`. It's cached because it takes some time to compute.
-  bssl::UniquePtr<EC_KEY> identity_key_;
   std::unique_ptr<device::cablev2::authenticator::Registration::Event>
       pending_event_;
   // device_supports_cable_ caches the result of a Java function that checks

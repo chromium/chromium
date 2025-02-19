@@ -135,17 +135,6 @@ class SystemInterface : public RegistrationState::SystemInterface {
     }
   }
 
-  void CalculateIdentityKey(
-      const std::array<uint8_t, 32>& secret,
-      base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> callback) override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(
-            &SystemInterface::CalculateIdentityKeyOnBackgroundSequence, secret),
-        std::move(callback));
-  }
-
   void GetPrelinkFromPlayServices(
       base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback)
       override {
@@ -200,13 +189,6 @@ class SystemInterface : public RegistrationState::SystemInterface {
     // little while and it shouldn't block the UI thread.
     return Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
         base::android::AttachCurrentThread());
-  }
-
-  static bssl::UniquePtr<EC_KEY> CalculateIdentityKeyOnBackgroundSequence(
-      std::array<uint8_t, 32> secret) {
-    // This runs on a worker thread because the scalar multiplication takes a
-    // few milliseconds on slower devices.
-    return device::cablev2::IdentityKey(secret);
   }
 
   static void GetPrelinkFromPlayServicesOnBackgroundSequence(
