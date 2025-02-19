@@ -114,8 +114,8 @@ void AccessCodeCastDiscoveryInterface::ReportErrorViaCallback(
 }
 
 AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
-    const base::Value& response) {
-  const base::Value::Dict* error = response.GetDict().FindDict(kJsonError);
+    const base::Value::Dict& response) {
+  const base::Value::Dict* error = response.FindDict(kJsonError);
   if (!error) {
     return AddSinkResultCode::OK;
   }
@@ -182,8 +182,8 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
 // TODO(b/206997996): Add an enum to the EndpointResponse struct so that we can
 // check the enum instead of the string
 AddSinkResultCode AccessCodeCastDiscoveryInterface::IsResponseValid(
-    const std::optional<base::Value>& response) {
-  if (!response || !response->is_dict()) {
+    const std::optional<base::Value::Dict>& response) {
+  if (!response) {
     logger_->LogError(
         mojom::LogCategory::kDiscovery, kLoggerComponent,
         "The response body from the server was of unexpected format.", "", "",
@@ -191,7 +191,7 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::IsResponseValid(
     return AddSinkResultCode::RESPONSE_MALFORMED;
   }
 
-  if (response->GetDict().empty()) {
+  if (response->empty()) {
     logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
                       "The response from the server does not have a value. "
                       "Server response is: " +
@@ -284,8 +284,8 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
     return;
   }
 
-  std::optional<base::Value> response_value =
-      base::JSONReader::Read(response->response);
+  std::optional<base::Value::Dict> response_value =
+      base::JSONReader::ReadDict(response->response);
 
   AddSinkResultCode result_code = IsResponseValid(response_value);
   if (result_code != AddSinkResultCode::OK) {
@@ -298,7 +298,7 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
 
   std::pair<std::optional<DiscoveryDevice>, AddSinkResultCode>
       construction_result =
-          ConstructDiscoveryDeviceFromJson(std::move(response_value.value()));
+          ConstructDiscoveryDeviceFromJson(std::move(*response_value));
   std::move(callback_).Run(construction_result.first,
                            construction_result.second);
 }
@@ -358,10 +358,10 @@ void AccessCodeCastDiscoveryInterface::HandleServerError(
 std::pair<std::optional<AccessCodeCastDiscoveryInterface::DiscoveryDevice>,
           AccessCodeCastDiscoveryInterface::AddSinkResultCode>
 AccessCodeCastDiscoveryInterface::ConstructDiscoveryDeviceFromJson(
-    base::Value json_response) {
+    base::Value::Dict json_response) {
   DiscoveryDevice discovery_device;
 
-  base::Value::Dict* device = json_response.GetDict().FindDict(kJsonDevice);
+  base::Value::Dict* device = json_response.FindDict(kJsonDevice);
   if (!device) {
     return std::make_pair(std::nullopt, AddSinkResultCode::RESPONSE_MALFORMED);
   }

@@ -814,9 +814,9 @@ LoadState HttpStreamPool::AttemptManager::GetLoadState() const {
 }
 
 RequestPriority HttpStreamPool::AttemptManager::GetPriority() const {
+  // There are several cases where `jobs_` is empty (e.g. `this` only has
+  // preconnects, all jobs are already notified etc). Use IDLE for these cases.
   if (jobs_.empty()) {
-    CHECK(!preconnect_jobs_.empty());
-    // Preconnets have IDLE priority.
     return RequestPriority::IDLE;
   }
   return static_cast<RequestPriority>(jobs_.FirstMax().priority());

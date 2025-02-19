@@ -436,8 +436,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
       IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
-  const GURL app_url =
-      url_info.origin().GetURL().Resolve("/does_not_exist.html");
+  const GURL app_url = url_info.origin().GetURL().Resolve("/non-existing");
   auto* app_frame =
       NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
@@ -453,10 +452,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
   // window with error message instead of the actual IWA
   EXPECT_NE(content::WebExposedIsolationLevel::kIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
-  EXPECT_TRUE(EvalJs(app_frame,
-                     "document.body.textContent.includes("
-                     "'No webpage was found for the web address')")
-                  .ExtractBool());
+  EXPECT_THAT(
+      EvalJs(app_frame, "document.body.innerText").ExtractString(),
+      HasSubstr(
+          "The page you requested could not be found in the application"));
 }
 
 // Tests that the app menu doesn't have an 'Open in Chrome' option.

@@ -10,6 +10,7 @@
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/smart_card_delegate.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
 
@@ -31,9 +32,13 @@ SmartCardService::SmartCardService(
     mojo::PendingRemote<device::mojom::SmartCardContextFactory> context_factory)
     : DocumentService(render_frame_host, std::move(receiver)),
       context_factory_(std::move(context_factory)) {
+  // base::Unretained is safe in below cases, as receiver sets, being members,
+  // are bound to the lifetime of this object.
   context_wrapper_receivers_.set_disconnect_handler(
       base::BindRepeating(&SmartCardService::OnMojoWrapperContextDisconnected,
                           base::Unretained(this)));
+  connection_watcher_receivers_.set_disconnect_handler(base::BindRepeating(
+      &SmartCardService::OnMojoWatcherPipeClosed, base::Unretained(this)));
 }
 
 SmartCardService::~SmartCardService() {}
@@ -127,7 +132,13 @@ void SmartCardService::Connect(
     const std::string& reader,
     device::mojom::SmartCardShareMode share_mode,
     device::mojom::SmartCardProtocolsPtr preferred_protocols,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher,
     ConnectCallback callback) {
+  // This argument should be passed only from here to the platform-specific
+  // component - not to here.
+  CHECK(!mojo::Remote(std::move(connection_watcher)).is_bound());
+
   SmartCardDelegate& delegate = GetSmartCardDelegate();
 
   mojo::ReceiverId context_wrapper_id =
@@ -138,6 +149,7 @@ void SmartCardService::Connect(
         CHECK_DEREF(base::FindOrNull(context_remotes_, context_wrapper_id));
 
     context_remote->Connect(reader, share_mode, std::move(preferred_protocols),
+                            GetNewConnectionWatcher(reader),
                             std::move(callback));
     return;
   }
@@ -161,6 +173,10 @@ void SmartCardService::Connect(
                      weak_ptr_factory_.GetWeakPtr(), context_wrapper_id, reader,
                      share_mode, std::move(preferred_protocols),
                      std::move(callback)));
+}
+
+void SmartCardService::NotifyConnectionUsed() {
+  GetSmartCardDelegate().NotifyConnectionUsed(render_frame_host());
 }
 
 void SmartCardService::OnReaderPermissionResult(
@@ -188,7 +204,7 @@ void SmartCardService::OnReaderPermissionResult(
   mojo::Remote<SmartCardContext>& context_remote = it->second;
 
   context_remote->Connect(reader, share_mode, std::move(preferred_protocols),
-                          std::move(callback));
+                          GetNewConnectionWatcher(reader), std::move(callback));
 }
 
 void SmartCardService::OnMojoWrapperContextDisconnected() {
@@ -237,4 +253,33 @@ void SmartCardService::OnContextCreated(
   std::move(callback).Run(std::move(result));
 }
 
+mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+SmartCardService::GetNewConnectionWatcher(const std::string& reader) {
+  mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+      ceaseless_watcher;
+  auto receiver_id = connection_watcher_receivers_.Add(
+      this, ceaseless_watcher.InitWithNewPipeAndPassReceiver());
+  connection_watchers_per_reader_[reader].insert(receiver_id);
+  reader_names_per_watcher_[receiver_id] = reader;
+  return ceaseless_watcher;
+}
+
+void SmartCardService::OnMojoWatcherPipeClosed() {
+  auto receiver_id = connection_watcher_receivers_.current_receiver();
+  auto reader_it = reader_names_per_watcher_.find(receiver_id);
+  if (reader_it == reader_names_per_watcher_.end()) {
+    return;
+  }
+  const std::string& reader = reader_it->second;
+  auto reader_ids_it = connection_watchers_per_reader_.find(reader);
+  if (reader_ids_it == connection_watchers_per_reader_.end()) {
+    return;
+  }
+  reader_ids_it->second.erase(receiver_id);
+  reader_names_per_watcher_.erase(reader_it);
+
+  if (reader_names_per_watcher_.empty()) {
+    GetSmartCardDelegate().NotifyLastConnectionLost(render_frame_host());
+  }
+}
 }  // namespace content

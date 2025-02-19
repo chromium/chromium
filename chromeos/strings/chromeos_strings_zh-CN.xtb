@@ -1468,6 +1468,7 @@
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /><ph name="CAFE_TYPE" />咖啡馆</translation>
 <translation id="7841134249932030522">启用深色模式</translation>
 <translation id="7846634333498149051">键盘</translation>
+<translation id="7847923465436619066">转写语言选择器</translation>
 <translation id="7849030488395653706">北极光</translation>
 <translation id="7849737607196682401">蕾丝</translation>
 <translation id="7850320739366109486">请勿打扰</translation>
@@ -1654,6 +1655,7 @@
 <translation id="8749478549112817787">相机背景</translation>
 <translation id="8755946156089753497">塔</translation>
 <translation id="8760616037557661287">先前的提示</translation>
+<translation id="876280838467039397">下载并选择<ph name="LANGUAGE_NAME" />转写模型</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相册中的相册</translation>
 <translation id="8775713578693478175">调制解调器 APN</translation>

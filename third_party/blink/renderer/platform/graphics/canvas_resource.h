@@ -230,60 +230,17 @@ class PLATFORM_EXPORT CanvasResource
   bool is_origin_clean_ = true;
 };
 
-// Resource type for SharedBitmaps
-class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
- public:
-  static scoped_refptr<CanvasResourceSharedBitmap> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<CanvasResourceProvider>,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
-  ~CanvasResourceSharedBitmap() override;
-  bool IsRecycleable() const final { return !is_lost_; }
-  bool IsValid() const final;
-  bool CreatesAcceleratedTransferableResources() const final { return false; }
-  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
-    return shared_image_;
-  }
-
-  const gpu::SyncToken GetSyncTokenWithOptionalVerification(
-      bool needs_verified_token) final {
-    // This class doesn't currently have a way of verifying the sync token
-    // within this call, so it instead ensures that it is verified at the time
-    // of generation.
-    CHECK(sync_token_.verified_flush());
-    return sync_token_;
-  }
-
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const override {
-    return nullptr;
-  }
-
-  scoped_refptr<StaticBitmapImage> Bitmap() final;
-  void NotifyResourceLost() override;
-
- private:
-  CanvasResourceSharedBitmap(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<CanvasResourceProvider>,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
-
-  bool UsesAcceleratedRaster() const final { return false; }
-
-  scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  gpu::SyncToken sync_token_;
-  bool is_lost_ = false;
-};
-
 // Resource type for SharedImage
 class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
  public:
+  static scoped_refptr<CanvasResourceSharedImage> CreateSoftware(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      base::WeakPtr<CanvasResourceProvider>,
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
+
   static scoped_refptr<CanvasResourceSharedImage> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -296,7 +253,9 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   ~CanvasResourceSharedImage() override;
 
   bool IsRecycleable() const final { return !IsLost(); }
-  bool CreatesAcceleratedTransferableResources() const override { return true; }
+  bool CreatesAcceleratedTransferableResources() const override {
+    return !GetClientSharedImage()->is_software();
+  }
   bool IsValid() const final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   void Transfer() final;
@@ -360,6 +319,14 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
+
+  CanvasResourceSharedImage(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      base::WeakPtr<CanvasResourceProvider>,
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
   CanvasResourceSharedImage(gfx::Size size,
                             viz::SharedImageFormat format,

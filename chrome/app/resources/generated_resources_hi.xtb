@@ -1194,6 +1194,7 @@
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> पर <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल जारी नहीं रखा जा सकता</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> को कास्ट किया जा रहा है</translation>
 <translation id="1813278315230285598">सेवाएं</translation>
+<translation id="1813828404076816564">शेयर किए गए टैब ग्रुप की सुविधा के बारे में सुझाव, शिकायत या राय भेजने के लिए, 'सुझाव, शिकायत या राय भेजें' बटन को चुनें</translation>
 <translation id="18139523105317219">EDI पार्टी नाम</translation>
 <translation id="1815083418640426271">सादे टेक्‍स्‍ट के रूप में चिपकाएं</translation>
 <translation id="1815097521077272760">आपको इस गेम के लिए, कीबोर्ड कंट्रोल की सुविधा आज़माने के लिए न्योता भेजा गया है.</translation>
@@ -2681,7 +2682,6 @@
 <translation id="2832124733806557606">इस डिवाइस में साइन इन करने या इसे अनलॉक करने के लिए, आपका बच्चा पिन का इस्तेमाल कर सकता है.</translation>
 <translation id="2833144527504272627">टेक्स्ट कर्सर की मदद से नेविगेट करें</translation>
 <translation id="2833727845850279275">इस फ़ाइल में मैलवेयर है या यह किसी संदिग्ध साइट से डाउनलोड की गई है.</translation>
-<translation id="2834091109531651093">अपना Outlook Calendar और Sharepoint फ़ाइलें देखें</translation>
 <translation id="2835177225987815960">स्कैन करने वाला आपका मौजूदा सेट अप रीसेट हो जाएगा. इसमें, असाइन किए गए स्विच और अपने-आप तेज़ी से स्कैन होने की सेटिंग शामिल हैं.</translation>
 <translation id="2835547721736623118">बोली पहचानने की सुविधा</translation>
 <translation id="2835761321523638096">रीडिंग लिस्ट में एंट्री पढ़ें और उन्हें बदलें</translation>
@@ -4124,6 +4124,7 @@
 <translation id="3857807444929313943">उठाएं, फिर दोबारा छुएं</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="385939467708172187">मज़बूत पासवर्ड इस्तेमाल करें</translation>
+<translation id="3859869403161297890">शेयर किए गए टैब ग्रुप के बारे में अपने सुझाव, शिकायत या राय यहां भेजें</translation>
 <translation id="3859987779882450877">यह सुविधा, खुले हुए टैब के आधार पर इनके ग्रुप बनाने के बारे में सुझाव देती है. साथ ही, अपने-आप टैब के ग्रुप भी बनाती है</translation>
 <translation id="386009056910366930">“<ph name="GROUP_NAME" />” टैब ग्रुप को मैनेज करें</translation>
 <translation id="3861638017150647085">उपयोगकर्ता नाम "<ph name="USERNAME" />" उपलब्ध नहीं है</translation>
@@ -5809,7 +5810,6 @@
 <translation id="508059534790499809">Kerberos टिकट रीफ़्रेश करें</translation>
 <translation id="5081124414979006563">मेहमान प्रोफ़ाइल खोलें</translation>
 <translation id="5081974595802103358">लिंक को कॉपी नहीं किया जा सका</translation>
-<translation id="508209203623347828">अगर इस कार्ड को बंद किया जाता है, तो आपके Sharepoint और Outlook Calendar जैसे Microsoft कार्ड भी बंद हो जाएंगे.</translation>
 <translation id="5083035541015925118">ctrl + alt + अप ऐरो</translation>
 <translation id="5084328598860513926">सेट अप करने के दौरान कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें. इसके अलावा, डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">इस बात की संभावना ज़्यादा है कि साइटें आपकी उम्मीद के मुताबिक काम करें</translation>
@@ -8176,6 +8176,7 @@
 <translation id="6805478749741295868">एआई की इस सुविधा को फ़िलहाल आज़माया जा रहा है. यह ज़रूरी नहीं है कि यह सुविधा हमेशा सही हो.</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> से क्लाइंट प्रमाणपत्र लेकर आने के लिए, कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> पर RLZ ट्रैकिंग चालू करें.</translation>
+<translation id="6805817411033102703">शेयर किए गए टैब ग्रुप के बारे में सुझाव, शिकायत या राय दें</translation>
 <translation id="6806089545527108739">अनुमति न दें, लेकिन बाद में पूछें</translation>
 <translation id="680644983456221885">Google को भेजे जाने वाले आपके ब्राउज़िंग डेटा के हिसाब से, नुकसान पहुंचाने वाली साइटों, डाउनलोड, और एक्सटेंशन से रीयल-टाइम में सुरक्षा मिलती है</translation>
 <translation id="6806781719264274042">सिर्फ़ Google खाते में सेव किए गए संपर्क. <ph name="LINK_BEGIN" />संपर्क देखें<ph name="LINK_END" /></translation>

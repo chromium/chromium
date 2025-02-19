@@ -120,7 +120,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
     scoped_refptr<StaticBitmapImage> source,
     const StaticBitmapImageTransform::Params& options) {
   auto source_paint_image = source->PaintImageForCurrentFrame();
-  auto source_info = source->GetSkImageInfo();
   const auto source_orientation = GetSourceOrientation(source, options);
 
   // Compute the unoriented source and dest rects and sizes.
@@ -145,12 +144,10 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
     }
     const auto bm_color_space = options.dest_color_space
                                     ? options.dest_color_space
-                                    : source_info.refColorSpace();
-    const auto bm_info =
-        source_info.makeDimensions(source_rect.size())
-            .makeAlphaType(bm_alpha_type)
-            .makeColorType(GetDestColorType(source_info.colorType()))
-            .makeColorSpace(bm_color_space);
+                                    : source->GetSkColorSpace();
+    const auto bm_info = SkImageInfo::Make(
+        source_rect.size(), GetDestColorType(source->GetSkColorType()),
+        bm_alpha_type, bm_color_space);
     if (!bm.tryAllocPixels(bm_info)) {
       return nullptr;
     }
@@ -313,7 +310,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
     return nullptr;
   }
 
-  const auto source_info = source->GetSkImageInfo();
+  const auto source_color_space = source->GetSkColorSpace();
   const bool needs_flip = options.flip_y;
   const bool needs_crop =
       options.source_rect != gfx::Rect(GetSourceSize(source, options));
@@ -323,8 +320,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
   const bool needs_convert_color_space =
       options.dest_color_space &&
       !SkColorSpace::Equals(options.dest_color_space.get(),
-                            source_info.colorSpace()
-                                ? source_info.colorSpace()
+                            source_color_space
+                                ? source_color_space.get()
                                 : SkColorSpace::MakeSRGB().get());
   const bool needs_alpha_change =
       (source->GetAlphaType() == kUnpremul_SkAlphaType) !=

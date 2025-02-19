@@ -97,27 +97,18 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_webp_candidates) {
   DCHECK_EQ(resource.format(), viz::SinglePlaneFormat::kBGRA_8888);
 
-  const gfx::Size& size = resource.size();
-  const gfx::ColorSpace& color_space = resource.color_space();
   if (!resource.backing()) {
-    auto backing = std::make_unique<ResourcePool::Backing>();
-    backing->shared_image_interface = shared_image_interface_;
-    backing->set_shared_image(
-        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
-            {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-             "BitmapRasterBufferProvider"}));
-    CHECK(backing->shared_image());
+    resource.InstallSoftwareBacking(shared_image_interface_,
+                                    "BitmapRasterBufferProvider");
 
-    backing->mailbox_sync_token =
+    resource.backing()->mailbox_sync_token =
         shared_image_interface_->GenVerifiedSyncToken();
-
-    resource.set_backing(std::move(backing));
   }
   ResourcePool::Backing* backing = resource.backing();
 
   return std::make_unique<BitmapRasterBufferImpl>(
-      size, color_space, backing, resource_content_id, previous_content_id);
+      resource.size(), resource.color_space(), backing, resource_content_id,
+      previous_content_id);
 }
 
 void BitmapRasterBufferProvider::Flush() {}

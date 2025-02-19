@@ -14437,15 +14437,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
           Your account sign-in details are out of date. Please sign out and sign in again.
         </message>
-        <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_EXPIRED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to change their password.">
-          Your password has expired. Please sign out then sign in again to change it.
-        </message>
-        <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_CHANGED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to update local password to cryptohome.">
-          Your password has been changed on the server. Please sign out then sign in again.
-        </message>
-        <message name="IDS_ACTIVE_DIRECTORY_REFRESH_AUTH_TOKEN" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to get authentication token.">
-          Failed to get authentication token. Please sign out then sign in again to try again.
-        </message>
       </if>
       <message name="IDS_SYNC_ADVANCED_OPTIONS" desc="The text in the link that brings up the sync configure screen in the new tab page new data type notification.">
         Advanced settings

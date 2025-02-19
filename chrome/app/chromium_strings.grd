@@ -2056,7 +2056,7 @@ Chromium is unable to recover your settings.
           Who's using Chromium?
         </message>
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE" desc="Profile picker main view subtitle">
-          With Chromium profiles you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.
+          With Chromium profiles, you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
           Set up your new Chromium profile

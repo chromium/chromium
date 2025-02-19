@@ -15,13 +15,21 @@
 
 namespace ash {
 
-CrosSafetyService::CrosSafetyService(manta::MantaService* manta_service)
-    : manta_service_(manta_service) {
+CrosSafetyService::CrosSafetyService(
+    raw_ptr<manta::MantaService> manta_service) {
   CHECK(mojo_service_manager::IsServiceManagerBound())
       << "CrosSafetyService requires mojo service manager.";
   mojo_service_manager::GetServiceManagerProxy()->Register(
       chromeos::mojo_services::kCrosSafetyService,
       provider_receiver_.BindNewPipeAndPassRemote());
+
+  if (manta_service) {
+    auto provider = manta_service->CreateWalrusProvider();
+    if (provider) {
+      cloud_safety_session_ =
+          std::make_unique<CloudSafetySession>(std::move(provider));
+    }
+  }
 }
 
 CrosSafetyService::~CrosSafetyService() = default;
@@ -104,23 +112,10 @@ void CrosSafetyService::CreateOnDeviceSafetySession(
 void CrosSafetyService::CreateCloudSafetySession(
     mojo::PendingReceiver<cros_safety::mojom::CloudSafetySession> session,
     CreateCloudSafetySessionCallback callback) {
-  // initialize cloud_safety_session_ if not previously done.
   if (!cloud_safety_session_) {
-    if (!manta_service_) {
-      std::move(callback).Run(cros_safety::mojom::GetCloudSafetySessionResult::
-                                  kMantaServiceFailedToCreate);
-      return;
-    }
-
-    auto provider = manta_service_->CreateWalrusProvider();
-    if (!provider) {
-      std::move(callback).Run(cros_safety::mojom::GetCloudSafetySessionResult::
-                                  kMantaServiceFailedToCreate);
-      return;
-    }
-
-    cloud_safety_session_ =
-        std::make_unique<CloudSafetySession>(std::move(provider));
+    std::move(callback).Run(cros_safety::mojom::GetCloudSafetySessionResult::
+                                kMantaServiceFailedToCreate);
+    return;
   }
 
   cloud_safety_session_->AddReceiver(std::move(session));

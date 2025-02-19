@@ -24,6 +24,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -634,6 +635,7 @@ PageSpecificContentSettings::~PageSpecificContentSettings() {
     switch (last_used_entry.first) {
       case ContentSettingsType::MEDIASTREAM_MIC:
       case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::SMART_CARD_GUARD:
         map_->UpdateLastUsedTime(media_stream_access_origin_,
                                  media_stream_access_origin_,
                                  last_used_entry.first, last_used_entry.second);
@@ -1583,6 +1585,23 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
       OnCapturingStateChangedInternal(type, /*is_capturing=*/false);
     }
   }
+}
+
+void PageSpecificContentSettings::OnDeviceUsed(ContentSettingsType type) {
+  // For now, only smart card permissions are supported.
+  CHECK_EQ(ContentSettingsType::SMART_CARD_GUARD, type);
+  last_used_time_[type] = base::Time::Now();
+  if (in_use_.insert(type).second) {
+    MaybeUpdateLocationBar();
+  }
+}
+
+void PageSpecificContentSettings::OnLastDeviceConnectionLost(
+    ContentSettingsType type) {
+  // For now, only smart card permissions are supported.
+  CHECK_EQ(mojom::ContentSettingsType::SMART_CARD_GUARD, type);
+  in_use_.erase(type);
+  MaybeUpdateLocationBar();
 }
 
 void PageSpecificContentSettings::OnCapturingStateChangedInternal(

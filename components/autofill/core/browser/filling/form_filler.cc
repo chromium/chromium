@@ -312,6 +312,8 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
          FieldFillingSkipReason::kAlreadyAutofilled);
 
   FieldType field_type = autofill_field.Type().GetStorableType();
+  std::optional<FieldType> autofill_ai_type =
+      autofill_field.GetAutofillAiServerTypePredictions();
 
   // On a refill, only fill fields from type groups that were present during
   // the initial fill.
@@ -329,9 +331,10 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
       GetFieldTypesToFillFromFillingProduct(filling_product);
   // This ensures that a filling product only operates on fields of supported
   // types.
-  add_if(supported_types && !supported_types->contains(
-                                autofill_field.Type().GetStorableType()),
-         FieldFillingSkipReason::kFieldTypeUnrelated);
+  add_if(
+      supported_types && !supported_types->contains(field_type) &&
+          (!autofill_ai_type || !supported_types->contains(*autofill_ai_type)),
+      FieldFillingSkipReason::kFieldTypeUnrelated);
 
   // Don't fill meaningfully pre-filled fields but overwrite placeholders.
   add_if(ShouldSkipFieldBecauseOfMeaningfulInitialValue(autofill_field,

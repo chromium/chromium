@@ -609,7 +609,7 @@
 <translation id="2045871135676061132">निजी तौर पर इस्तेमाल होने वाला लिफ़ाफ़ा</translation>
 <translation id="2046951263634619614">किताबों के खुदरा दुकानदार</translation>
 <translation id="2048261947532620704">पेज का अनुवाद किया जा रहा है</translation>
-<translation id="2056658168519009885">आपको दिखने वाले विज्ञापनों को आपके हिसाब से बनाने के लिए साइटें, Chrome से जानकारी मांग सकती हैं.</translation>
+<translation id="2056658168519009885">साइटें आपके हिसाब से विज्ञापन दिखाने के लिए, Chrome से जानकारी मांग सकती हैं.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">22 x 34 इंच</translation>
 <translation id="2064568741209980952">क्रेडिट और क़र्ज़</translation>
@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">बैकिंग संग्रह खराब स्थिति में है</translation>
 <translation id="5019293549442035120">सेव किए गए पतों का इस्तेमाल, Google के सभी प्रॉडक्ट के लिए किया जा सकता है. यह पता, आपके Google खाते <ph name="USER_EMAIL" /> में सेव किया जाएगा.</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> नीति सेट है. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, एक्सटेंशन पेज पर डेवलपर मोड की उपलब्धता को कंट्रोल नहीं करेगी.</translation>
+<translation id="5021500396464456616">जिस व्यक्ति ने यह लिंक भेजा है उससे संपर्क करें</translation>
 <translation id="5021557570875267742">Chrome की मदद से कीमतों को ट्रैक करें</translation>
 <translation id="5023310440958281426">अपने एडमिन की नीतियां देखें</translation>
 <translation id="5024171724744627792">कार्ड की जानकारी सेव होने पर तेज़ी से पेमेंट किया जा सकता है. यह जानकारी आपके Google खाते में एन्क्रिप्ट (सुरक्षित) की जाती है.</translation>
@@ -3268,7 +3269,7 @@
 <translation id="6786145470008421571">6 x 9 इंच का लिफ़ाफ़ा</translation>
 <translation id="67862343314499040">बैंगनी</translation>
 <translation id="6786747875388722282">एक्‍सटेंशन</translation>
-<translation id="6787094689637422836">हम निजता से जुड़ी नई सुविधाएं लॉन्च कर रहे हैं. इनसे, आपको दिखने वाले विज्ञापनों के ज़्यादा विकल्प मिलेंगे.</translation>
+<translation id="6787094689637422836">हम निजता से जुड़ी नई सुविधाएं लॉन्च कर रहे हैं. इनकी मदद से, आपको अपने हिसाब से विज्ञापन देखने के ज़्यादा विकल्प मिलेंगे.</translation>
 <translation id="6789062271869667677">कंटिन्यूअस (लॉन्ग)</translation>
 <translation id="678982761784843853">सुरक्षित कॉन्टेंट के आईडी</translation>
 <translation id="6790428901817661496">चलाएं</translation>
@@ -4666,6 +4667,7 @@
 <translation id="963837307749850257">सभी उपयोगकर्ता</translation>
 <translation id="964050462028070434">पासवर्ड और पासकी मैनेज करें…</translation>
 <translation id="969892804517981540">आधिकारिक बिल्ड</translation>
+<translation id="973788791897303708">इस टैब ग्रुप में अब और लोग नहीं जोड़े जा सकते</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{कुछ नहीं}=1{1 आइटम}one{# आइटम}other{# आइटम}}</translation>
 <translation id="976522784004777030">5 x 8 इंच</translation>
 <translation id="977502174772294970">शादी के जुड़ी सेवाएं</translation>

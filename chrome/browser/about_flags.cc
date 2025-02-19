@@ -11697,6 +11697,12 @@ const FeatureEntry kFeatureEntries[] = {
          payments::facilitated::kDisableFacilitatedPaymentsMerchantAllowlist)},
 #endif  // BUILDFLAF(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"dbd-revamp-desktop", flag_descriptions::kDbdRevampDesktopName,
+     flag_descriptions::kDbdRevampDesktopDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kDbdRevampDesktop)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

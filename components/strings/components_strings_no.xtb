@@ -2277,6 +2277,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5019198164206649151">Ugyldig funksjonalitet for sikkerhetskopiering</translation>
 <translation id="5019293549442035120">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen lagres i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Regelen <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> er angitt. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> kontrollerer ikke tilgjengeligheten av utviklermodus på utvidelsessiden.</translation>
+<translation id="5021500396464456616">Kontakt personen som sendte denne linken</translation>
 <translation id="5021557570875267742">Spor priser med Chrome</translation>
 <translation id="5023310440958281426">Kontroller retningslinjene til administratoren din</translation>
 <translation id="5024171724744627792">Når kortet er lagret, kan du betale raskere. Kortinformasjonen er kryptert i Google-kontoen din.</translation>
@@ -4664,6 +4665,7 @@ Mer informasjon:
 <translation id="963837307749850257">Alle brukere</translation>
 <translation id="964050462028070434">Administrer passord og passnøkler…</translation>
 <translation id="969892804517981540">Offisiell delversjon</translation>
+<translation id="973788791897303708">Denne fanegruppen er full</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 element}other{# elementer}}</translation>
 <translation id="976522784004777030">5 x 8 tommer</translation>
 <translation id="977502174772294970">Bryllup</translation>

@@ -63,6 +63,12 @@ PrivacySandboxAttestationsPreloaded\privacy-sandbox-attestations.dat: %(VersionD
 MEIPreload\manifest.json: %(VersionDir)s\MEIPreload\
 MEIPreload\preloaded_data.pb: %(VersionDir)s\MEIPreload\
 
+#
+# IWA Key Distribution
+#
+IwaKeyDistribution\iwa-key-distribution.pb: %(VersionDir)s\IwaKeyDistribution\
+IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
+
 [HIDPI]
 chrome_200_percent.pak: %(VersionDir)s\
 

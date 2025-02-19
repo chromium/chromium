@@ -2277,6 +2277,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5019198164206649151">Skladište toka podataka je u lošem stanju</translation>
 <translation id="5019293549442035120">Možete da koristite sačuvane adrese u svim Google proizvodima. Ova adresa će biti sačuvana na Google nalogu <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Smernice <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> su podešene. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> neće kontrolisati dostupnost režima programera na stranici sa dodacima.</translation>
+<translation id="5021500396464456616">Obratite se osobi koja je poslala ovaj link</translation>
 <translation id="5021557570875267742">Pratite cene pomoću Chrome-a</translation>
 <translation id="5023310440958281426">Proverite smernice administratora</translation>
 <translation id="5024171724744627792">Plaćajte brže uz sačuvanu karticu. Detalji o kartici se šifruju na Google nalogu.</translation>
@@ -4665,6 +4666,7 @@ Dodatni detalji:
 <translation id="963837307749850257">Svi korisnici</translation>
 <translation id="964050462028070434">Upravljajte lozinkama i pristupnim kodovima…</translation>
 <translation id="969892804517981540">Zvanična verzija</translation>
+<translation id="973788791897303708">Ova grupa kartica je puna</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{None}=1{1 stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>
 <translation id="976522784004777030">5×8 in</translation>
 <translation id="977502174772294970">Venčanja</translation>

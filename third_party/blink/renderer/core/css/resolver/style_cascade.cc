@@ -98,6 +98,15 @@ bool ConsumeComma(CSSParserTokenStream& stream) {
   return false;
 }
 
+template <CSSParserTokenType... Types>
+StringView ConsumeUntilPeekedTypeIs(CSSParserTokenStream& stream) {
+  wtf_size_t value_start_offset = stream.LookAheadOffset();
+  stream.SkipUntilPeekedTypeIs<Types...>();
+  wtf_size_t value_end_offset = stream.LookAheadOffset();
+  return stream.StringRangeAt(value_start_offset,
+                              value_end_offset - value_start_offset);
+}
+
 const CSSValue* Parse(const CSSProperty& property,
                       CSSParserTokenStream& stream,
                       const CSSParserContext* context) {
@@ -1626,15 +1635,17 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
       if (stream.Peek().GetType() == kCommaToken) {
         stream.ConsumeIncludingWhitespace();
       }
-      wtf_size_t value_start_offset = stream.LookAheadOffset();
-      stream.SkipUntilPeekedTypeIs<kCommaToken>();
-      wtf_size_t value_end_offset = stream.LookAheadOffset();
-      argument_string = stream.StringRangeAt(
-          value_start_offset, value_end_offset - value_start_offset);
-      // Explicitly empty values, e.g. --foo(1,,3), are not allowed.
-      if (argument_string.empty()) {
-        return false;
+      // Handle {}-wrapper.
+      // https://drafts.csswg.org/css-values-5/#component-function-commas
+      if (stream.Peek().GetType() == kLeftBraceToken) {
+        CSSParserTokenStream::BlockGuard guard(stream);
+        stream.ConsumeWhitespace();
+        DCHECK(!stream.AtEnd());
+        argument_string = ConsumeUntilPeekedTypeIs<>(stream);
+      } else {
+        argument_string = ConsumeUntilPeekedTypeIs<kCommaToken>(stream);
       }
+      DCHECK(!argument_string.empty());  // Handled parse-time.
     } else if (parameter.default_value) {
       argument_string = parameter.default_value->OriginalText();
     } else {

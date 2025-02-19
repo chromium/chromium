@@ -14,10 +14,12 @@
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
+#include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -121,6 +123,16 @@ class SessionStateNotificationBlockerTest
       const std::string& notification_id) {
     return blocker_->ShouldShowNotificationAsPopup(
         CreateDummyNotification(notification_id));
+  }
+
+  bool ShouldShowRemoteScreenSharingNotification() {
+    return blocker_->ShouldShowNotification(
+        CreateDummyNotification(ash::kRemotingScreenShareNotificationId));
+  }
+
+  bool ShouldShowRemoteScreenSharingNotificationAsPopup() {
+    return blocker_->ShouldShowNotificationAsPopup(
+        CreateDummyNotification(ash::kRemotingScreenShareNotificationId));
   }
 
   void SetLockedState(bool locked) {
@@ -342,6 +354,20 @@ TEST_F(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
                 test_case.second);
     }
   }
+}
+
+TEST_F(SessionStateNotificationBlockerTest,
+       AlwaysAllowRemoteScreenShareNotification) {
+  EXPECT_TRUE(ShouldShowRemoteScreenSharingNotification());
+  EXPECT_TRUE(ShouldShowRemoteScreenSharingNotificationAsPopup());
+}
+
+TEST_F(SessionStateNotificationBlockerTest,
+       ShouldNotAllowRemoteScreenShareNotificationDuringKioskSession) {
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  EXPECT_FALSE(ShouldShowRemoteScreenSharingNotification());
+  EXPECT_FALSE(ShouldShowRemoteScreenSharingNotificationAsPopup());
 }
 
 }  // namespace ash

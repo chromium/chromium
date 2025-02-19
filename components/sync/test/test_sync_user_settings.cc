@@ -110,12 +110,6 @@ TestSyncUserSettings::GetTypePrefStateForAccount(
   return SyncUserSettings::UserSelectableTypePrefState::kDisabled;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-int TestSyncUserSettings::GetNumberOfAccountsWithPasswordsSelected() const {
-  return selected_types_.Has(UserSelectableType::kPasswords) ? 1 : 0;
-}
-#endif
-
 DataTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
   DataTypeSet types = UserSelectableTypesToDataTypes(GetSelectedTypes());
   types.PutAll(AlwaysPreferredUserTypes());

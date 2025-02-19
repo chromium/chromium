@@ -2277,6 +2277,7 @@
 <translation id="5019198164206649151">სარეზერვო საცავი ცუდ მდგომარეობაშია</translation>
 <translation id="5019293549442035120">შენახული მისამართების გამოყენება Google-ის სხვადასხვა პროდუქტში შეგიძლიათ. ეს მისამართი შეინახება თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> წესები დაყენებულია. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> არ გააკონტროლებს გაფართოებების გვერდზე შემმუშავებლის რეჟიმის ხელმისაწვდომობას.</translation>
+<translation id="5021500396464456616">დაუკავშირდით ბმულის გამომგზავნ პირს</translation>
 <translation id="5021557570875267742">გააკონტროლეთ ფასები Chrome-ის მეშვეობით</translation>
 <translation id="5023310440958281426">შეამოწმეთ ადმინისტრატორის წესები</translation>
 <translation id="5024171724744627792">გადაიხადეთ სწრაფად, როცა თქვენი ბარათი შენახულია. ბარათის დეტალები დაშიფრულია თქვენს Google ანგარიშში.</translation>
@@ -4664,6 +4665,7 @@
 <translation id="963837307749850257">ყველა მომხმარებელი</translation>
 <translation id="964050462028070434">პაროლებისა და წვდომის გასაღებების მართვა…</translation>
 <translation id="969892804517981540">ოფიციალური კონსტრუქცია</translation>
+<translation id="973788791897303708">ჩანართების ეს ჯგუფი შევსებულია</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{არცერთი}=1{1 ერთეული}other{# ერთეული}}</translation>
 <translation id="976522784004777030">5 x 8 დუიმი</translation>
 <translation id="977502174772294970">ქორწილები</translation>

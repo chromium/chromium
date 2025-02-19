@@ -80,6 +80,7 @@ if (is_android) {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/metrics:java",
     "//chrome/browser/autofill/android:java",
+    "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/auxiliary_search:java",
     "//chrome/browser/auxiliary_search/proto:proto_java",
     "//chrome/browser/back_press/android:java",
@@ -344,6 +345,8 @@ if (is_android) {
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_fragment_fragment_testing_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/androidx:androidx_preference_preference_java",
@@ -455,6 +458,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetMediatorTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillDeletePaymentMethodConfirmationDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillDeleteSavedCvcsConfirmationDialogTest.java",
+      "src/org/chromium/chrome/browser/autofill/settings/AutofillLocalCardEditorTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardEnrollmentDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardUnenrollmentDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/SettingsNavigationHelperTest.java",
@@ -992,7 +996,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/signin/PolicyLoadListenerUnitTest.java",
       "src/org/chromium/chrome/browser/signin/SigninBridgeTest.java",
       "src/org/chromium/chrome/browser/signin/SigninManagerImplTest.java",
-      "src/org/chromium/chrome/browser/signin/SyncConsentActivityLauncherImplTest.java",
     ]
 
     deps = chrome_junit_tests_deps

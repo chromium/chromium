@@ -314,6 +314,12 @@ const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
 const char kDataSharingJoinOnlyDescription[] =
     "Enabled Data Sharing Joining flow related UI and features.";
 
+const char kDbdRevampDesktopName[] = "Revamped Delete Browsing Data dialog";
+const char kDbdRevampDesktopDescription[] =
+    "Enables a revamped Delete Browsing Data dialog on Desktop. This includes "
+    "UI changes and removal of the bulk password deletion option from the "
+    "dialog.";
+
 const char kDisableFacilitatedPaymentsMerchantAllowlistName[] =
     "Disable the merchant allowlist check for facilitated payments";
 const char kDisableFacilitatedPaymentsMerchantAllowlistDescription[] =

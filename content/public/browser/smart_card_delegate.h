@@ -39,6 +39,9 @@ class CONTENT_EXPORT SmartCardDelegate {
   virtual bool HasReaderPermission(RenderFrameHost& render_frame_host,
                                    const std::string& reader_name) = 0;
 
+  virtual void NotifyConnectionUsed(RenderFrameHost& render_frame_host) = 0;
+  virtual void NotifyLastConnectionLost(RenderFrameHost& render_frame_host) = 0;
+
   // Shows a prompt to the user requesting permission to connect to the smart
   // card reader named `reader_name`.
   //

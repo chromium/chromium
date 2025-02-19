@@ -53,7 +53,9 @@ void SuccessfulPasswordChangeBubbleController::OpenPasswordManager() {
 
 void SuccessfulPasswordChangeBubbleController::FinishPasswordChange() {
   dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
-  password_change_delegate_->Stop();
+  if (password_change_delegate_) {
+    password_change_delegate_->Stop();
+  }
 }
 
 void SuccessfulPasswordChangeBubbleController::AuthenticateUser(

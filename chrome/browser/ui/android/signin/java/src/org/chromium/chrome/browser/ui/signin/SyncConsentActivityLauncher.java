@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.content.Context;
-
 import androidx.annotation.IntDef;
 
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -26,37 +24,4 @@ public interface SyncConsentActivityLauncher {
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}
-
-    /**
-     * Launches the {@link SyncConsentActivity} with default sign-in flow from personalized sign-in
-     * promo.
-     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
-     * @param accountName The account to preselect or null to preselect the default account.
-     */
-    void launchActivityForPromoDefaultFlow(
-            Context context, @SigninAccessPoint int accessPoint, String accountName);
-
-    /**
-     * Launches the {@link SyncConsentActivity} with "Choose account" sign-in flow from personalized
-     * sign-in promo.
-     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
-     * @param accountName The account to preselect or null to preselect the default account.
-     */
-    void launchActivityForPromoChooseAccountFlow(
-            Context context, @SigninAccessPoint int accessPoint, String accountName);
-
-    /**
-     * Launches the {@link SyncConsentActivity} with "New account" sign-in flow from personalized
-     * sign-in promo.
-     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
-     */
-    void launchActivityForPromoAddAccountFlow(Context context, @SigninAccessPoint int accessPoint);
-
-    /**
-     * Launches the {@link SyncConsentActivity} if signin is allowed.
-     * @param context A {@link Context} object.
-     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
-     * @return a boolean indicating if the {@link SyncConsentActivity} is launched.
-     */
-    boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint);
 }

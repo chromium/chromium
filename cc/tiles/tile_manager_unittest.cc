@@ -1784,15 +1784,10 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
     if (!resource.backing()) {
-      auto backing = std::make_unique<ResourcePool::Backing>();
-      backing->set_shared_image(sii_->CreateSharedImageForSoftwareCompositor(
-          {viz::SinglePlaneFormat::kBGRA_8888, resource.size(),
-           gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-           "TextureLayerTest"}));
+      resource.InstallSoftwareBacking(sii_, "TextureLayerTest");
 
-      backing->mailbox_sync_token = sii_->GenVerifiedSyncToken();
+      resource.backing()->mailbox_sync_token = sii_->GenVerifiedSyncToken();
 
-      resource.set_backing(std::move(backing));
       is_software_ = true;
     }
     return std::make_unique<TestRasterBuffer>(resource.size(),

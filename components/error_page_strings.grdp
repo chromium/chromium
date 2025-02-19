@@ -121,6 +121,9 @@
   <message name="IDS_ERRORPAGES_MESSAGE_IWA_INSTALLED_IN_DEV_MODE" desc="Message of the error page for when an IWA was installed in Isolated Web App Developer Mode, but that mode was disabled.">
     To run this app, re-enable Isolated Web App Developer Mode
   </message>
+  <message name="IDS_ERRORPAGES_MESSAGE_IWA_PAGE_NOT_FOUND" desc="Message of the error page for when accessing an IWA resource caused HTTP error.">
+    The page you requested could not be found in the application
+  </message>
   <message name="IDS_ERRORPAGES_HEADING_CACHE_READ_FAILURE" desc="Heading in the error page when we encountered an error reading from the cache.  Generally this happens when the disk cache is corrupted from improper shutdown.">
     This site can’t be loaded from the cache
   </message>

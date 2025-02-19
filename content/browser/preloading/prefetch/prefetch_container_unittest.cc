@@ -643,8 +643,9 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
 
   // Simulates the URL of the prefetch being navigated to and the prefetch being
   // considered for serving.
-  prefetch_container->OnReturnPrefetchToServe(/*served=*/true,
-                                              GURL("https://test.com"));
+  prefetch_container->OnUnregisterCandidate(GURL("https://test.com"),
+                                            /*is_served=*/true,
+                                            /*blocked_duration=*/std::nullopt);
 
   // Simulate a successful DNS probe for this prefetch. Not this will also
   // update the status of the prefetch to

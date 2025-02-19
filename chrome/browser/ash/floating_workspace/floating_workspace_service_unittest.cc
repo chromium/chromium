@@ -13,6 +13,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
+#include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1757,7 +1758,8 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        CaptureFloatingWorkspaceTemplateOnLockScreen) {
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   client.Init();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());

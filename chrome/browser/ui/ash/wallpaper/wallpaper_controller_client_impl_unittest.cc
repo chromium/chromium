@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -68,6 +69,7 @@ class WallpaperControllerClientImplTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
   TestWallpaperController controller_;
   WallpaperControllerClientImpl client_{
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
       std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>()};
 };
 
@@ -88,7 +90,8 @@ TEST_F(WallpaperControllerClientImplTest, IsWallpaperSyncEnabledNoProfile) {
 
 TEST_F(WallpaperControllerClientImplTest, GetFilesId) {
   const AccountId account_id = AccountId::FromUserEmail("test@test.com");
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(
+      TestingBrowserProcess::GetGlobal()->local_state());
   // Make a fake entry to register `account_id` as existing user.
   known_user.SetPath(account_id, "test", base::Value(""));
   EXPECT_TRUE(known_user.UserExists(account_id));
@@ -109,7 +112,8 @@ TEST_F(WallpaperControllerClientImplTest, GetFilesIdForRemovedUser) {
   base::test::TestFuture<const std::string&> future;
   client()->GetFilesId(account_id, future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(
+      TestingBrowserProcess::GetGlobal()->local_state());
   EXPECT_FALSE(known_user.UserExists(account_id));
 }
 

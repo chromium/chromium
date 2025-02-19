@@ -5541,7 +5541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult{JobType}"
+    name="Net.SessionCreate.GoogleSearch.Preconnect2.Quic.CompletionResult{JobType}"
     enum="NetErrorCodes" expires_after="2025-07-27">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -5559,8 +5559,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.SessionCreate.GoogleSearch.Preconnect.{ProtocolType}.IsSessionReused"
-    enum="Boolean" expires_after="2025-06-30">
+    name="Net.SessionCreate.GoogleSearch.Preconnect2.{ProtocolType}.IsSessionReused"
+    enum="Boolean" expires_after="2025-07-27">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

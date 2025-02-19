@@ -309,9 +309,8 @@ suite('nearby-contact-visibility', () => {
       });
 
   test(
-      'Save persists visibility setting and allowed contacts LEGACY',
+      'Save persists visibility setting and allowed contacts',
       async function() {
-        loadTimeData.overrideValues({'isQuickShareV2Enabled': false});
         fakeContactManager.setupContactRecords();
         fakeContactManager.setNumUnreachable(0);
         fakeContactManager.completeDownload();
@@ -348,32 +347,15 @@ suite('nearby-contact-visibility', () => {
         assertEquals(fakeContactManager.allowedContacts[0], '2');
       });
 
-  test(
-      'Save persists visibility setting and allowed contacts',
-      async function() {
-        fakeContactManager.setupContactRecords();
-        fakeContactManager.setNumUnreachable(0);
-        fakeContactManager.completeDownload();
-        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
-        await waitAfterNextRender(visibilityElement);
-
-        // after save, ui state is persisted
-        visibilityElement.saveVisibilityAndAllowedContacts();
-        assertEquals(
-            visibilityElement.get('settings.visibility'),
-            Visibility.kAllContacts);
-        assertEquals(fakeContactManager.allowedContacts.length, 2);
-      });
-
-  test('System Settings changed on Save only LEGACY', async () => {
-    loadTimeData.overrideValues({'isQuickShareV2Enabled': false});
+  test('System Settings changed on Save only', async () => {
     fakeContactManager.setupContactRecords();
     fakeContactManager.setNumUnreachable(0);
     fakeContactManager.completeDownload();
     visibilityElement.set('settings.visibility', Visibility.kAllContacts);
     await waitAfterNextRender(visibilityElement);
 
-    // visibility setting is not immediately updated
+    // System visibility setting is not immediately updated to Selected
+    // Devices despite toggling Selected Devices in Dialog.
     visibilityElement.shadowRoot.querySelector('#AllContactsToggle').click();
     await waitAfterNextRender(visibilityElement);
     assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
@@ -401,8 +383,7 @@ suite('nearby-contact-visibility', () => {
     assertEquals('2', fakeContactManager.allowedContacts[0]);
   });
 
-  test('Toggle some contacts from all contacts LEGACY', async () => {
-    loadTimeData.overrideValues({'isQuickShareV2Enabled': false});
+  test('Toggle some contacts from all contacts', async () => {
     fakeContactManager.setupContactRecords();
     fakeContactManager.setNumUnreachable(0);
     fakeContactManager.completeDownload();
@@ -416,8 +397,7 @@ suite('nearby-contact-visibility', () => {
     assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
   });
 
-  test('Toggle all contacts from some contacts LEGACY', async () => {
-    loadTimeData.overrideValues({'isQuickShareV2Enabled': false});
+  test('Toggle all contacts from some contacts', async () => {
     fakeContactManager.setupContactRecords();
     fakeContactManager.setNumUnreachable(0);
     fakeContactManager.completeDownload();
@@ -464,9 +444,8 @@ suite('nearby-contact-visibility', () => {
   });
 
   test(
-      'Only contacts toggled are saved in allowed contact list when selected contacts toggled LEGACY',
+      'Only contacts toggled are saved in allowed contact list when selected contacts toggled',
       async () => {
-        loadTimeData.overrideValues({'isQuickShareV2Enabled': false});
         fakeContactManager.setupContactRecords();
         fakeContactManager.setNumUnreachable(0);
         fakeContactManager.completeDownload();

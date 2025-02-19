@@ -24,7 +24,6 @@ static_library("wallpaper") {
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/wallpaper",
     "//chrome/browser/ash/customization",

@@ -59,9 +59,32 @@ ResourcePool::Backing::~Backing() {
   }
 }
 
+void ResourcePool::InUsePoolResource::InstallGpuBacking(
+    gpu::SharedImageInterface* sii,
+    bool is_overlay_candidate,
+    bool use_gpu_rasterization,
+    std::string_view debug_label) const {
+  auto backing = std::make_unique<ResourcePool::Backing>();
+  backing->overlay_candidate = is_overlay_candidate;
+
+  gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+  if (use_gpu_rasterization) {
+    flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  }
+  if (backing->overlay_candidate) {
+    flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
+  backing->set_shared_image(sii->CreateSharedImage(
+      {format(), size(), color_space(), flags, debug_label},
+      gpu::kNullSurfaceHandle));
+  CHECK(backing->shared_image());
+  set_backing(std::move(backing));
+}
+
 void ResourcePool::InUsePoolResource::InstallSoftwareBacking(
     scoped_refptr<gpu::SharedImageInterface> sii,
-    std::string_view debug_label) {
+    std::string_view debug_label) const {
   CHECK(!backing());
   auto backing = std::make_unique<ResourcePool::Backing>();
   backing->shared_image_interface = sii;

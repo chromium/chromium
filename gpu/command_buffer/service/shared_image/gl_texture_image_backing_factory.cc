@@ -30,19 +30,6 @@ BASE_FEATURE(kSupportScanoutInGLTextureImageBacking,
 // TODO(crbug.com/330865436): Eliminate once killswitches checked within this
 // function roll out safely.
 bool SupportScanout() {
-  // If any of the below clients are not guarding their addition of SCANOUT
-  // usage by SCANOUT support being present in SharedImageCapabilities, then
-  // GLTextureImageBacking *must* accept SCANOUT usage for this use case.
-  if (!base::FeatureList::IsEnabled(
-          features::kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-
   return base::FeatureList::IsEnabled(kSupportScanoutInGLTextureImageBacking);
 }
 

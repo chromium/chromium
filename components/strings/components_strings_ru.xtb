@@ -2276,6 +2276,7 @@
 <translation id="5019198164206649151">Данные в хранилище повреждены</translation>
 <translation id="5019293549442035120">Сохраненные адреса можно использовать в разных продуктах Google. Этот адрес будет сохранен в вашем аккаунте Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Настроено правило <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> не будет управлять доступом к режиму разработчика на странице расширений.</translation>
+<translation id="5021500396464456616">Обратитесь к пользователю, который прислал эту ссылку.</translation>
 <translation id="5021557570875267742">Следите за ценами с помощью Chrome</translation>
 <translation id="5023310440958281426">Проверьте правила, установленные администратором</translation>
 <translation id="5024171724744627792">Так вы сможете оплачивать покупки быстрее. Реквизиты карты хранятся в аккаунте Google в зашифрованном виде.</translation>
@@ -4664,6 +4665,7 @@
 <translation id="963837307749850257">Все пользователи</translation>
 <translation id="964050462028070434">Управление паролями и ключами доступа</translation>
 <translation id="969892804517981540">Официальная сборка</translation>
+<translation id="973788791897303708">Эта группа вкладок заполнена</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Нет}=1{1 запись}one{# запись}few{# записи}many{# записей}other{# записи}}</translation>
 <translation id="976522784004777030">5 x 8 дюймов</translation>
 <translation id="977502174772294970">Свадьбы</translation>

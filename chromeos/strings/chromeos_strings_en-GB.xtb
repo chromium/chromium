@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Cancel print job</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Turn dark mode on</translation>
+<translation id="2164131940279488868">Make sure that a mic is connected to start recording audio</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
 <translation id="2189104374785738357">Edit APN details</translation>
@@ -1683,6 +1684,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8876270629542503161">Device is a tablet.</translation>
 <translation id="8881098542468797602">Test succeeded</translation>
 <translation id="8882789155418924367">owls</translation>
+<translation id="8885038613856655272">Connect a mic</translation>
 <translation id="8892443466059986410">Cancel shortcut editing</translation>
 <translation id="8897043028305808902">File renamed</translation>
 <translation id="8898840733695078011">Signal strength</translation>

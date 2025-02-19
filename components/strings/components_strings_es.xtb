@@ -2277,6 +2277,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5019198164206649151">El almacén secundario está en mal estado.</translation>
 <translation id="5019293549442035120">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guardará en tu cuenta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625">Se ha definido la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> no controlará la disponibilidad del modo Desarrollador en la página de extensiones.</translation>
+<translation id="5021500396464456616">Ponte en contacto con la persona que te ha enviado este enlace</translation>
 <translation id="5021557570875267742">Hacer un seguimiento de los precios con Chrome</translation>
 <translation id="5023310440958281426">Consulta las políticas del administrador</translation>
 <translation id="5024171724744627792">Paga más rápido cuando tu tarjeta esté guardada. Los datos de la tarjeta se cifran en tu cuenta de Google.</translation>
@@ -4665,6 +4666,7 @@ Más información:
 <translation id="963837307749850257">Todos los usuarios</translation>
 <translation id="964050462028070434">Gestionar contraseñas y claves de acceso…</translation>
 <translation id="969892804517981540">Build oficial</translation>
+<translation id="973788791897303708">Este grupo de pestañas está lleno</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ninguno}=1{1 elemento}other{# elementos}}</translation>
 <translation id="976522784004777030">5x8 pulgadas</translation>
 <translation id="977502174772294970">Bodas</translation>

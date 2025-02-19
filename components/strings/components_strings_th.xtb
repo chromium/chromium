@@ -2276,6 +2276,7 @@
 <translation id="5019198164206649151">ไม่สามารถจัดเก็บเนื่องจากระบบแบ็คเอนด์อยู่ในสถานะไม่ดี</translation>
 <translation id="5019293549442035120">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="5019952743397118625">ตั้งค่านโยบาย <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> แล้ว <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> จะไม่ควบคุมความพร้อมใช้งานของโหมดนักพัฒนาซอฟต์แวร์ในหน้าส่วนขยาย</translation>
+<translation id="5021500396464456616">ติดต่อผู้ที่ส่งลิงก์นี้</translation>
 <translation id="5021557570875267742">ติดตามราคาด้วย Chrome</translation>
 <translation id="5023310440958281426">ตรวจสอบนโยบายของผู้ดูแลระบบของคุณ</translation>
 <translation id="5024171724744627792">ชำระเงินได้เร็วขึ้นเมื่อบันทึกบัตร รายละเอียดบัตรจะได้รับการเข้ารหัสในบัญชี Google ของคุณ</translation>
@@ -4664,6 +4665,7 @@
 <translation id="963837307749850257">ผู้ใช้ทุกคน</translation>
 <translation id="964050462028070434">จัดการรหัสผ่านและพาสคีย์…</translation>
 <translation id="969892804517981540">รุ่นที่เป็นทางการ</translation>
+<translation id="973788791897303708">กลุ่มแท็บนี้เต็มแล้ว</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ไม่มี}=1{1 รายการ}other{# รายการ}}</translation>
 <translation id="976522784004777030">5 x 8 นิ้ว</translation>
 <translation id="977502174772294970">งานแต่งงาน</translation>

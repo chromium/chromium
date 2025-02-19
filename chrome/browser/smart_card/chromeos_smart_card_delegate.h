@@ -24,6 +24,11 @@ class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {
       content::RenderFrameHost& render_frame_host,
       const std::string& reader_name,
       RequestReaderPermissionCallback callback) override;
+
+  void NotifyConnectionUsed(
+      content::RenderFrameHost& render_frame_host) override;
+  void NotifyLastConnectionLost(
+      content::RenderFrameHost& render_frame_host) override;
 };
 
 #endif  // CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_

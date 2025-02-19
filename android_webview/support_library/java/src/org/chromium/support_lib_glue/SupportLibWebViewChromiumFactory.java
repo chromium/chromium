@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 
 import com.android.webview.chromium.CallbackConverter;
@@ -18,6 +19,9 @@ import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
+import org.chromium.android_webview.AwProxyController;
+import org.chromium.android_webview.AwServiceWorkerController;
+import org.chromium.android_webview.AwTracingController;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
@@ -370,12 +374,22 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 "Android.WebView.AndroidX.ApiCall", apiCall, ApiCall.COUNT);
     }
 
-    // Initialization guarded by mAwInit.getLock()
+    @GuardedBy("mAwInit.getLazyInitLock()")
     private InvocationHandler mStatics;
+
+    @GuardedBy("mAwInit.getLazyInitLock()")
     private InvocationHandler mServiceWorkerController;
+
+    @GuardedBy("mAwInit.getLazyInitLock()")
     private InvocationHandler mTracingController;
+
+    @GuardedBy("mAwInit.getLazyInitLock()")
     private InvocationHandler mProxyController;
+
+    @GuardedBy("mAwInit.getLazyInitLock()")
     private InvocationHandler mDropDataProvider;
+
+    @GuardedBy("mAwInit.getLazyInitLock()")
     private InvocationHandler mProfileStore;
 
     public SupportLibWebViewChromiumFactory() {
@@ -488,16 +502,16 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     public InvocationHandler getStatics() {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_STATICS")) {
             recordApiCall(ApiCall.GET_STATICS);
-            synchronized (mAwInit.getLock()) {
+            SharedStatics sharedStatics = mAwInit.getStatics();
+            synchronized (mAwInit.getLazyInitLock()) {
                 if (mStatics == null) {
                     mStatics =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                    new StaticsAdapter(
-                                            WebkitToSharedGlueConverter.getGlobalAwInit()
-                                                    .getStatics()));
+                                    new StaticsAdapter(sharedStatics));
                 }
+
+                return mStatics;
             }
-            return mStatics;
         }
     }
 
@@ -515,15 +529,18 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_SERVICE_WORKER_CONTROLLER")) {
             recordApiCall(ApiCall.GET_SERVICE_WORKER_CONTROLLER);
-            synchronized (mAwInit.getLock()) {
+            AwServiceWorkerController serviceWorkerController =
+                    mAwInit.getDefaultServiceWorkerController();
+            synchronized (mAwInit.getLazyInitLock()) {
                 if (mServiceWorkerController == null) {
                     mServiceWorkerController =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibServiceWorkerControllerAdapter(
-                                            mAwInit.getDefaultServiceWorkerController()));
+                                            serviceWorkerController));
                 }
+
+                return mServiceWorkerController;
             }
-            return mServiceWorkerController;
         }
     }
 
@@ -532,17 +549,18 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_TRACING_CONTROLLER")) {
             recordApiCall(ApiCall.GET_TRACING_CONTROLLER);
-            synchronized (mAwInit.getLock()) {
+            AwTracingController tracingController = mAwInit.getAwTracingController();
+            synchronized (mAwInit.getLazyInitLock()) {
                 if (mTracingController == null) {
                     mTracingController =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibTracingControllerAdapter(
                                             new SharedTracingControllerAdapter(
-                                                    mAwInit.getRunQueue(),
-                                                    mAwInit.getAwTracingController())));
+                                                    mAwInit.getRunQueue(), tracingController)));
                 }
+
+                return mTracingController;
             }
-            return mTracingController;
         }
     }
 
@@ -551,15 +569,17 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROXY_CONTROLLER")) {
             recordApiCall(ApiCall.GET_PROXY_CONTROLLER);
-            synchronized (mAwInit.getLock()) {
+            AwProxyController proxyController = mAwInit.getAwProxyController();
+            synchronized (mAwInit.getLazyInitLock()) {
                 if (mProxyController == null) {
                     mProxyController =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibProxyControllerAdapter(
-                                            mAwInit.getRunQueue(), mAwInit.getAwProxyController()));
+                                            mAwInit.getRunQueue(), proxyController));
                 }
+
+                return mProxyController;
             }
-            return mProxyController;
         }
     }
 
@@ -568,14 +588,14 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_IMAGE_DRAG_DROP_IMPLEMENTATION")) {
             recordApiCall(ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION);
-            synchronized (mAwInit.getLock()) {
+            synchronized (mAwInit.getLazyInitLock()) {
                 if (mDropDataProvider == null) {
                     mDropDataProvider =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibDropDataContentProviderAdapter());
                 }
+                return mDropDataProvider;
             }
-            return mDropDataProvider;
         }
     }
 
@@ -583,14 +603,15 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     public InvocationHandler getProfileStore() {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROFILE_STORE")) {
             recordApiCall(ApiCall.GET_PROFILE_STORE);
-            synchronized (mAwInit.getLock()) {
+            synchronized (mAwInit.getLazyInitLock()) {
                 if (mProfileStore == null) {
                     mProfileStore =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibProfileStore(ProfileStore.getInstance()));
                 }
+
+                return mProfileStore;
             }
-            return mProfileStore;
         }
     }
 

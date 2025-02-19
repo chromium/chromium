@@ -43,7 +43,6 @@
 #include "chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -135,10 +134,11 @@ bool CanGetFilesId() {
 }
 
 void GetFilesIdSaltReady(
+    PrefService* local_state,
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) {
   DCHECK(CanGetFilesId());
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(local_state);
   if (const std::string* stored_value =
           known_user.FindStringPath(account_id, kWallpaperFilesId)) {
     std::move(files_id_callback).Run(*stored_value);
@@ -181,10 +181,11 @@ user_manager::User* FindPublicSession(const user_manager::UserList& users) {
 }  // namespace
 
 WallpaperControllerClientImpl::WallpaperControllerClientImpl(
+    PrefService& local_state,
     std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
         wallpaper_fetcher_delegate)
-    : wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)) {
-  local_state_ = g_browser_process->local_state();
+    : local_state_(local_state),
+      wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)) {
   show_user_names_on_signin_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
           ash::kAccountsPrefShowUserNamesOnSignIn,
@@ -216,7 +217,7 @@ WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
 }
 
 void WallpaperControllerClientImpl::Init() {
-  pref_registrar_.Init(local_state_);
+  pref_registrar_.Init(&local_state_.get());
   pref_registrar_.Add(
       prefs::kDeviceWallpaperImageFilePath,
       base::BindRepeating(
@@ -338,8 +339,9 @@ void WallpaperControllerClientImpl::RemovePolicyWallpaper(
 void WallpaperControllerClientImpl::GetFilesId(
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) const {
-  ash::SystemSaltGetter::Get()->AddOnSystemSaltReady(base::BindOnce(
-      &GetFilesIdSaltReady, account_id, std::move(files_id_callback)));
+  ash::SystemSaltGetter::Get()->AddOnSystemSaltReady(
+      base::BindOnce(&GetFilesIdSaltReady, &local_state_.get(), account_id,
+                     std::move(files_id_callback)));
 }
 
 bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(

@@ -4,6 +4,7 @@
 
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 
+#include <ranges>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -33,6 +35,12 @@ class AutofillAiSuggestionsTest : public testing::Test {
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
+
+size_t CountFillingSuggestions(base::span<const Suggestion> suggestions) {
+  return std::ranges::count_if(suggestions, [](const Suggestion& suggestion) {
+    return suggestion.type == SuggestionType::kFillAutofillAi;
+  });
+}
 
 std::u16string GetEntityInstanceValueForFieldType(
     const autofill::EntityInstance entity,
@@ -301,6 +309,225 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
       CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
                                {passport_entity}),
       SuggestionType::kUndoOrClear, &Suggestion::type));
+}
+
+TEST_F(AutofillAiSuggestionsTest,
+       LabelGeneration_SingleSuggestion_OneFieldFilled) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({triggering_field_type});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), {passport_entity});
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport");
+}
+
+TEST_F(AutofillAiSuggestionsTest,
+       LabelGeneration_SingleSuggestion_TwoFieldsFilled) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), {passport_entity});
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · 123");
+}
+
+// Note that in this test the passport country is used in the label, even though
+// the form also contains expiry date field. This is because country data
+// appears before expiry date in the disambiguation order for passport entities.
+TEST_F(AutofillAiSuggestionsTest,
+       LabelGeneration_SingleSuggestion_TwoFieldsFilled_UseFieldPriorityOrder) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
+       autofill::PASSPORT_EXPIRATION_DATE_TAG});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), {passport_entity});
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden");
+}
+
+TEST_F(
+    AutofillAiSuggestionsTest,
+    LabelGeneration_TwoSuggestions_PassportsWithDifferentCountries_AddDifferentiatingLabel) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+  autofill::test::PassportEntityOptions passport_entity_b_options;
+  passport_entity_b_options.country = u"Brazil";
+  autofill::EntityInstance passport_entity_b =
+      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
+       autofill::PASSPORT_NUMBER});
+  std::vector<autofill::Suggestion> suggestions =
+      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
+                               {passport_entity, passport_entity_b});
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden");
+
+  EXPECT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Brazil");
+}
+
+TEST_F(AutofillAiSuggestionsTest,
+       LabelGeneration_ThreeSuggestions_AddDifferentiatingLabel) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+  autofill::test::PassportEntityOptions passport_entity_b_options;
+  passport_entity_b_options.country = u"Brazil";
+  autofill::EntityInstance passport_entity_b =
+      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+  autofill::test::PassportEntityOptions passport_entity_c_options;
+  passport_entity_c_options.expiry_date = u"12/2018";
+  autofill::EntityInstance passport_entity_c =
+      autofill::test::GetPassportEntityInstance(passport_entity_c_options);
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  // Note that `autofill::PASSPORT_ISSUING_COUNTRY_TAG` appears twice in the
+  // form, yet due to deduping it only adds its equivalent label once.
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
+       autofill::PASSPORT_ISSUING_COUNTRY_TAG, autofill::PASSPORT_NUMBER,
+       autofill::PASSPORT_EXPIRATION_DATE_TAG});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_entity, passport_entity_b, passport_entity_c});
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 3u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden · 12/2019");
+
+  EXPECT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Brazil · 12/2019");
+
+  EXPECT_EQ(suggestions[2].labels.size(), 1u);
+  EXPECT_EQ(suggestions[2].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[2].labels[0][0].value, u"Passport · Sweden · 12/2018");
+}
+
+TEST_F(
+    AutofillAiSuggestionsTest,
+    LabelGeneration_ThreeSuggestions_WithMissingValues_AddDifferentiatingLabel) {
+  autofill::test::PassportEntityOptions passport_entity_a_options;
+  passport_entity_a_options.country = u"Brazil";
+  autofill::EntityInstance passport_entity_a =
+      autofill::test::GetPassportEntityInstance(passport_entity_a_options);
+
+  autofill::test::PassportEntityOptions passport_entity_b_options;
+  // Note that passport b can only fill the triggering name field and has no
+  // country data label to add.
+  passport_entity_b_options.name = u"Jack Sparrow";
+  passport_entity_b_options.country = nullptr;
+  autofill::EntityInstance passport_entity_b =
+      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+
+  autofill::EntityInstance passport_entity_c =
+      autofill::test::GetPassportEntityInstance();
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_entity_a, passport_entity_b, passport_entity_c});
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 3u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Brazil");
+
+  // The second suggestion can only fill the triggering field and can add no
+  // other label.
+  EXPECT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
+
+  EXPECT_EQ(suggestions[2].labels.size(), 1u);
+  EXPECT_EQ(suggestions[2].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[2].labels[0][0].value, u"Passport · Sweden");
+}
+
+TEST_F(
+    AutofillAiSuggestionsTest,
+    LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_AddDifferentiatingLabel) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+  autofill::test::PassportEntityOptions passport_entity_b_options;
+  passport_entity_b_options.expiry_date = u"12/2018";
+  autofill::EntityInstance passport_entity_b =
+      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
+       autofill::PASSPORT_NUMBER, autofill::PASSPORT_EXPIRATION_DATE_TAG});
+  std::vector<autofill::Suggestion> suggestions =
+      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
+                               {passport_entity, passport_entity_b});
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · 12/2019");
+
+  EXPECT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · 12/2018");
+}
+
+TEST_F(
+    AutofillAiSuggestionsTest,
+    LabelGeneration_TwoSuggestions_DifferentMainText_NoDifferentiatingLabel) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+  autofill::test::PassportEntityOptions passport_entity_b_options;
+  passport_entity_b_options.name = u"Lebowski";
+  autofill::EntityInstance passport_entity_b =
+      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
+       autofill::PASSPORT_NUMBER});
+  std::vector<autofill::Suggestion> suggestions =
+      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
+                               {passport_entity, passport_entity_b});
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden");
+
+  EXPECT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Sweden");
 }
 
 }  // namespace

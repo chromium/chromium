@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -112,12 +113,17 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   Vector<uint8_t> CopyImageData(const SkImageInfo& info,
                                 bool apply_orientation);
 
-  // Return the SkImageInfo of the internal representation of this image.
-  virtual SkImageInfo GetSkImageInfo() const = 0;
   gfx::Size GetSize() const {
     return gfx::Size(GetSkImageInfo().width(), GetSkImageInfo().height());
   }
   SkAlphaType GetAlphaType() { return GetSkImageInfo().alphaType(); }
+  SkColorType GetSkColorType() { return GetSkImageInfo().colorType(); }
+  sk_sp<SkColorSpace> GetSkColorSpace() {
+    return GetSkImageInfo().refColorSpace();
+  }
+  viz::SharedImageFormat GetSharedImageFormat() {
+    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+  }
 
  protected:
   // Helper for sub-classes
@@ -139,6 +145,10 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // AcceleratedStaticBitmapImage. To change this property, the call site would
   // have to call SetOriginClean().
   bool is_origin_clean_ = true;
+
+ private:
+  // Return the SkImageInfo of the internal representation of this image.
+  virtual SkImageInfo GetSkImageInfo() const = 0;
 };
 
 template <>

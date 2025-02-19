@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_view_spec.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
@@ -140,8 +141,14 @@ scoped_refptr<Image> FEImage::GetImage(const gfx::SizeF& container_size) const {
     return nullptr;
   }
   if (auto* svg_image = DynamicTo<SVGImage>(*image_)) {
+    const SVGImageViewInfo* view_info = nullptr;
+    const SVGViewSpec* view_spec =
+        SVGViewSpec::CreateFromAspectRatio(preserve_aspect_ratio_);
+    if (view_spec) {
+      view_info = MakeGarbageCollected<SVGImageViewInfo>(view_spec, nullptr);
+    }
     return SVGImageForContainer::Create(
-        *svg_image, container_size, GetFilter()->Scale(), nullptr,
+        *svg_image, container_size, GetFilter()->Scale(), view_info,
         mojom::blink::PreferredColorScheme::kLight);
   }
   return image_;

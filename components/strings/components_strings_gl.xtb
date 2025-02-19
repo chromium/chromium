@@ -2277,6 +2277,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5019198164206649151">A memoria auxiliar está en mal estado</translation>
 <translation id="5019293549442035120">Podes usar os enderezos gardados nos produtos de Google. Este enderezo gardarase na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019952743397118625">Definiuse a política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> non controlará a dispoñibilidade do modo de programador na páxina de extensións.</translation>
+<translation id="5021500396464456616">Ponte en contacto coa persoa que che enviou esta ligazón</translation>
 <translation id="5021557570875267742">Facer un seguimento dos prezos con Chrome</translation>
 <translation id="5023310440958281426">Comproba as túas políticas de administrador</translation>
 <translation id="5024171724744627792">Garda a tarxeta para pagar máis rápido. Os detalles da tarxeta encríptanse na túa Conta de Google.</translation>
@@ -4664,6 +4665,7 @@ Detalles adicionais:
 <translation id="963837307749850257">Todos os usuarios</translation>
 <translation id="964050462028070434">Xestionar contrasinais e claves de acceso…</translation>
 <translation id="969892804517981540">Compilación oficial</translation>
+<translation id="973788791897303708">Este grupo de pestanas está cheo</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ningún}=1{1 elemento}other{# elementos}}</translation>
 <translation id="976522784004777030">5 x 8 polgadas</translation>
 <translation id="977502174772294970">Vodas</translation>

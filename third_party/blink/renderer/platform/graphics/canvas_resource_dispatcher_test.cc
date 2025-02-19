@@ -367,7 +367,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
               CreateCompositorFrameSink_(viz::FrameSinkId(kClientId, kSinkId)));
   platform->RunUntilIdle();
 
-  auto canvas_resource = CanvasResourceSharedBitmap::Create(
+  auto canvas_resource = CanvasResourceSharedImage::CreateSoftware(
       GetSize(), viz::SinglePlaneFormat::kRGBA_8888, kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(),
       /*provider=*/nullptr, shared_image_interface_provider());
@@ -411,7 +411,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
             EXPECT_EQ(texture_quad->uv_top_left, gfx::PointF(0.0f, 0.0f));
             EXPECT_EQ(texture_quad->uv_bottom_right, gfx::PointF(1.0f, 1.0f));
 
-            // CanvasResourceSharedBitmap origin is top-left.
+            // CanvasResourceSharedImage::CreateSoftware() creates a resource
+            // whose origin is top-left.
             EXPECT_EQ(frame->resource_list.front().origin,
                       kTopLeft_GrSurfaceOrigin);
           })));

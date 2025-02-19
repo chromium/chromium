@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Activa el mode fosc</translation>
+<translation id="2164131940279488868">Comprova que hi hagi un micròfon connectat per començar a gravar àudio</translation>
 <translation id="2173302385160625112">Comprova la connexió a Internet</translation>
 <translation id="2180197493692062006">S'ha produït un error. Prova de tornar a obrir l'aplicació.</translation>
 <translation id="2189104374785738357">Edita els detalls de l'APN</translation>
@@ -1685,6 +1686,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8876270629542503161">El dispositiu és una tauleta.</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
 <translation id="8882789155418924367">mussols</translation>
+<translation id="8885038613856655272">Connecta un micròfon</translation>
 <translation id="8892443466059986410">Cancel·la l'edició de la drecera</translation>
 <translation id="8897043028305808902">S'ha canviat el nom del fitxer</translation>
 <translation id="8898840733695078011">Intensitat del senyal</translation>

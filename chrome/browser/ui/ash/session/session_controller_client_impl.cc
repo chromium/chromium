@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -145,7 +144,8 @@ void OnAcceptMultiprofilesIntroDialog(bool accept, bool never_show_again) {
 
 }  // namespace
 
-SessionControllerClientImpl::SessionControllerClientImpl() {
+SessionControllerClientImpl::SessionControllerClientImpl(
+    PrefService& local_state) {
   SessionManager::Get()->AddObserver(this);
   UserManager::Get()->AddSessionStateObserver(this);
   UserManager::Get()->AddObserver(this);
@@ -154,7 +154,7 @@ SessionControllerClientImpl::SessionControllerClientImpl() {
       &SessionControllerClientImpl::OnAppTerminating, base::Unretained(this)));
 
   local_state_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  local_state_registrar_->Init(g_browser_process->local_state());
+  local_state_registrar_->Init(&local_state);
   local_state_registrar_->Add(
       prefs::kSessionStartTime,
       base::BindRepeating(&SessionControllerClientImpl::SendSessionLengthLimit,

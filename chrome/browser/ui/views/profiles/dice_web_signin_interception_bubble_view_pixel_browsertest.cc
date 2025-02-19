@@ -392,13 +392,6 @@ class DiceWebSigninInterceptionBubblePixelTest
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
                        InvokeUi_default) {
-#if BUILDFLAG(IS_WIN)
-  if (GetParam().test_suffix == "EnterpriseManagedIntercepted") {
-    // TODO(crbug.com/389737045): Enable for this variation once pixel tests
-    // are corrected.
-    GTEST_SKIP();
-  }
-#endif
   ShowAndVerifyUi();
 }
 

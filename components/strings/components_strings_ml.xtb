@@ -2276,6 +2276,7 @@
 <translation id="5019198164206649151">ബാക്കിംഗ് സംഭരണം മോശം അവസ്ഥയിലാണ്</translation>
 <translation id="5019293549442035120">സംരക്ഷിച്ച വിലാസങ്ങൾ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാം. ഈ വിലാസം നിങ്ങളുടെ Google അക്കൗണ്ടിൽ (<ph name="USER_EMAIL" />) സംരക്ഷിക്കും.</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> നയം സജ്ജീകരിച്ചു. വിപുലീകരണങ്ങൾ പേജിലെ ഡെവലപ്പർ മോഡിന്റെ ലഭ്യതയെ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> നിയന്ത്രിക്കില്ല.</translation>
+<translation id="5021500396464456616">ഈ ലിങ്ക് അയച്ച വ്യക്തിയെ ബന്ധപ്പെടുക</translation>
 <translation id="5021557570875267742">Chrome ഉപയോഗിച്ച് നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="5023310440958281426">നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്ററുടെ നയങ്ങൾ പരിശോധിക്കുക.</translation>
 <translation id="5024171724744627792">നിങ്ങളുടെ കാർഡ് സംരക്ഷിച്ചിരിക്കുമ്പോൾ വേഗത്തിൽ പേ ചെയ്യുക. നിങ്ങളുടെ Google Account-ൽ കാർഡ് വിശദാംശങ്ങൾ എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നു.</translation>
@@ -4662,6 +4663,7 @@
 <translation id="963837307749850257">എല്ലാ ഉപയോക്താക്കളും</translation>
 <translation id="964050462028070434">പാസ്‌വേഡുകളും പാസ്‌കീകളും മാനേജ് ചെയ്യുക…</translation>
 <translation id="969892804517981540">ഔദ്യോഗിക ബില്‍ഡ്</translation>
+<translation id="973788791897303708">ടാബ് ഗ്രൂപ്പ് നിറഞ്ഞിരിക്കുന്നു</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ഇനം}other{# ഇനങ്ങൾ}}</translation>
 <translation id="976522784004777030">5 x 8 ഇഞ്ച്</translation>
 <translation id="977502174772294970">വിവാഹങ്ങൾ</translation>

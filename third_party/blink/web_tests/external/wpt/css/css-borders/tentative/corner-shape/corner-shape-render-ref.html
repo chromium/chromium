@@ -48,26 +48,22 @@ for (const vSide of ["top", "bottom"]) {
 }
 
 const ctx = canvas.getContext("2d");
-
+const keywords = {bevel: 1, round: 2};
 // Adjust outer width for curvature
 const outer_width = ["top", "bottom"].flatMap((vSide) =>
   ["left", "right"].map((hSide) => {
     const corner = `${vSide}-${hSide}`;
-    const shape = style[`corner-${corner}-shape`];
+    let shape = style[`corner-${corner}-shape`];
+    shape = keywords[shape] || shape;
     const radius = style[`border-${corner}-radius`];
-    if (radius[0] === 0 || radius[1] === 0) return [0, 0];
-    if (shape === "round") return [...radius];
-
     const hWidth = style[`border-${hSide}-width`];
     const vWidth = style[`border-${vSide}-width`];
-    let slope = radius[1] / radius[0];
-    let perp = [-radius[0], radius[1]];
-    const mag = Math.hypot(...radius);
-    const translateX = [(perp[0] * hWidth) / mag, (perp[1] * hWidth) / mag];
-    const translateY = [(perp[0] * vWidth) / mag, (perp[1] * vWidth) / mag];
-    const vIntercept = Math.max(0, translateY[1] - slope * translateY[0]);
-    const hIntercept = Math.max(0, translateX[1] - slope * translateX[0]);
-    return [radius[0] + vWidth - vIntercept, radius[1] + hWidth - hIntercept];
+    if (shape >= 2.)
+      return radius;
+    if (shape <= 0.5)
+      return [radius[0] - vWidth, radius[1] - hWidth];
+    const offset = Math.sqrt(2. / shape) - 1;
+    return [radius[0] - vWidth * offset, radius[1] - hWidth * offset];
   })
 );
 let cursor = [];

@@ -280,6 +280,7 @@
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
 <translation id="2161656808144014275">Tekstowe</translation>
 <translation id="2163937499206714165">Włącz tryb ciemny</translation>
+<translation id="2164131940279488868">Aby rozpocząć nagrywanie dźwięku, sprawdź, czy został podłączony mikrofon</translation>
 <translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
 <translation id="2189104374785738357">Edytuj szczegóły punktu APN</translation>
@@ -1465,6 +1466,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> kawiarnia typu <ph name="CAFE_TYPE" /></translation>
 <translation id="7841134249932030522">Włącz tryb ciemny</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
+<translation id="7847923465436619066">Selektor języka transkrypcji</translation>
 <translation id="7849030488395653706">zorza polarna</translation>
 <translation id="7849737607196682401">koronki</translation>
 <translation id="7850320739366109486">Nie przeszkadzać</translation>
@@ -1651,6 +1653,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8749478549112817787">Tło aparatu</translation>
 <translation id="8755946156089753497">wieży</translation>
 <translation id="8760616037557661287">Poprzednie prompty</translation>
+<translation id="876280838467039397">Pobierz i wybierz model transkrypcji w języku: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Zdjęcia Google</translation>
 <translation id="8775713578693478175">APN modemu</translation>
@@ -1681,6 +1684,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8876270629542503161">Urządzenie to tablet.</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>
 <translation id="8882789155418924367">sowy</translation>
+<translation id="8885038613856655272">Podłącz mikrofon</translation>
 <translation id="8892443466059986410">Anuluj edytowanie skrótu</translation>
 <translation id="8897043028305808902">Nazwa pliku została zmieniona</translation>
 <translation id="8898840733695078011">Siła sygnału</translation>

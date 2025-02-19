@@ -18,7 +18,6 @@ static_library("session") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/ash/floating_workspace:utils",

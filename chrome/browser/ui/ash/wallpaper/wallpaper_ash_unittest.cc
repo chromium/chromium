@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/mojom/wallpaper.mojom.h"
+#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -74,6 +75,7 @@ class WallpaperAshTest : public testing::Test {
     // Create Wallpaper Controller Client.
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 

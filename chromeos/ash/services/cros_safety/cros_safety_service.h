@@ -32,7 +32,7 @@ class CrosSafetyService
   using CreateCloudSafetySessionCallback =
       base::OnceCallback<void(cros_safety::mojom::GetCloudSafetySessionResult)>;
 
-  explicit CrosSafetyService(manta::MantaService* manta_service);
+  explicit CrosSafetyService(raw_ptr<manta::MantaService> manta_service);
   CrosSafetyService(const CrosSafetyService&) = delete;
   CrosSafetyService& operator=(const CrosSafetyService&) = delete;
   ~CrosSafetyService() override;
@@ -61,7 +61,6 @@ class CrosSafetyService
       chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
       mojo::ScopedMessagePipeHandle receiver) override;
 
-  const raw_ptr<manta::MantaService> manta_service_;
   std::unique_ptr<CloudSafetySession> cloud_safety_session_;
 
   // Receiver for mojo service manager service provider.

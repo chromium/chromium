@@ -1284,8 +1284,8 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
 void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {
   CHECK(job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3);
   constexpr std::string_view kHistogramBase =
-      "Net.SessionCreate.GoogleSearch.Preconnect";
-  if (!IsGoogleHost(destination_.host())) {
+      "Net.SessionCreate.GoogleSearch.Preconnect2";
+  if (!IsGoogleHostWithAlpnH3(destination_.host())) {
     return;
   }
   bool is_session_reuse = false;
