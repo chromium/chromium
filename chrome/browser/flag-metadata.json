@@ -7149,6 +7149,13 @@
     "expiry_milestone": 148
   },
   {
+    "name": "privacy-sandbox-ad-topics-content-parity",
+    "owners": [
+      "jacobstanley@google.com",
+      "koilos@google.com"],
+    "expiry_milestone": 138
+  },
+  {
     "name": "privacy-sandbox-ads-api-ux-enhancements",
     "owners": [
       "jacobstanley@google.com",

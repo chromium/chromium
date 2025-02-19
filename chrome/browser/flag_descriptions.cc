@@ -3105,6 +3105,14 @@ const char kPriceChangeModuleName[] = "Price Change Module";
 const char kPriceChangeModuleDescription[] =
     "Show a module with price drops of open tabs on new tab page.";
 
+const char kPrivacySandboxAdTopicsContentParityName[] =
+    "Privacy Sandbox Ad Topics Content Parity";
+const char kPrivacySandboxAdTopicsContentParityDescription[] =
+    "Enables the Ad Topics card in the Privacy Guide to be displayed. This "
+    "flag also updates UI and text of the Ad Topics settings page and Topics "
+    "Consent Dialog. All of these changes are subject to regional "
+    "availability.";
+
 const char kPrivacySandboxAdsApiUxEnhancementsName[] =
     "Privacy Sandbox Ads API UX Enhancements";
 const char kPrivacySandboxAdsApiUxEnhancementsDescription[] =

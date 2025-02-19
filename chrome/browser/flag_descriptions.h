@@ -1790,6 +1790,9 @@ extern const char kPrerender2Description[];
 extern const char kPriceChangeModuleName[];
 extern const char kPriceChangeModuleDescription[];
 
+extern const char kPrivacySandboxAdTopicsContentParityName[];
+extern const char kPrivacySandboxAdTopicsContentParityDescription[];
+
 extern const char kPrivacySandboxAdsApiUxEnhancementsName[];
 extern const char kPrivacySandboxAdsApiUxEnhancementsDescription[];
 

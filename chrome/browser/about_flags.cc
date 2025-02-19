@@ -11701,6 +11701,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDbdRevampDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"privacy-sandbox-ad-topics-content-parity",
+     flag_descriptions::kPrivacySandboxAdTopicsContentParityName,
+     flag_descriptions::kPrivacySandboxAdTopicsContentParityDescription, kOsAll,
+     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdTopicsContentParity)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -18960,6 +18960,7 @@ from previous Chrome versions.
   <int value="1875156497" label="CaptureMode:enabled"/>
   <int value="1877769074" label="PhoneHubFeatureSetupErrorHandling:enabled"/>
   <int value="1878331098" label="GuestViewCrossProcessFrames:enabled"/>
+  <int value="1880148987" label="PrivacySandboxAdTopicsContentParity:disabled"/>
   <int value="1880955305" label="enable-preconnect-to-search"/>
   <int value="1881036528" label="disable-multilingual-spellchecker"/>
   <int value="1881065222" label="CrOSLateBootAllowFpmcuBetaFirmware:disabled"/>
@@ -19118,6 +19119,7 @@ from previous Chrome versions.
   <int value="1937660673" label="PrivacySandboxEqualizedPromptButtons:enabled"/>
   <int value="1937905990" label="AutofillCenterAlignedSuggestions:enabled"/>
   <int value="1938279796" label="PromosOnLocalNtp:disabled"/>
+  <int value="1938772705" label="PrivacySandboxAdTopicsContentParity:enabled"/>
   <int value="1939413645" label="enable-invalid-cert-collection"/>
   <int value="1939884866" label="web-otp-backend"/>
   <int value="1940625534" label="NewOverviewUi:disabled"/>
