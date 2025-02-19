@@ -32,6 +32,8 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     interface Observer {
         void accountPasswordCountsChanged();
 
+        void localPasswordCountsChanged();
+
         void updateStatusChanged();
     }
 
@@ -57,6 +59,8 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      */
     private final SafetyHubPasswordsFetchService mAccountPasswordsFetchService;
 
+    private SafetyHubPasswordsFetchService mLocalPasswordsFetchService;
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     SafetyHubFetchService(Profile profile) {
         assert profile != null;
@@ -74,6 +78,9 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
                         passwordManagerHelper,
                         prefService,
                         SafetyHubUtils.getAccountEmail(profile));
+
+        mLocalPasswordsFetchService =
+                new SafetyHubPasswordsFetchService(passwordManagerHelper, prefService, null);
 
         // Fetch latest update status.
         UpdateStatusProvider.getInstance().addObserver(mUpdateCallback);
@@ -173,6 +180,8 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * to GMSCore have returned.
      */
     void fetchAccountCredentialsCount(Callback<Boolean> onFinishedCallback) {
+        // TODO(crbug.com/388789824): Consider letting the fetch fail in the `PasswordFetchService`
+        // instead.
         if (!checkConditionsForAccountPasswords()) {
             onFinishedCallback.onResult(/* needsReschedule */ false);
             cancelAccountPasswordsFetchJob();
@@ -204,9 +213,29 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
         }
     }
 
+    /** Triggers a call to GMSCore to perform the local-level password checks in the background. */
+    public void runLocalPasswordCheckup() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
+            mLocalPasswordsFetchService.clearPrefs();
+            return;
+        }
+
+        Callback<Boolean> onCheckupFinishedCallback =
+                (errorOccurred) -> notifyLocalPasswordCountsChanged();
+
+        // TODO(crbug.com/388789824): Add one hour timeout logic between fetches.
+        mLocalPasswordsFetchService.runPasswordCheckup(onCheckupFinishedCallback);
+    }
+
     private void notifyAccountPasswordCountsChanged() {
         for (Observer observer : mObservers) {
             observer.accountPasswordCountsChanged();
+        }
+    }
+
+    private void notifyLocalPasswordCountsChanged() {
+        for (Observer observer : mObservers) {
+            observer.localPasswordCountsChanged();
         }
     }
 
