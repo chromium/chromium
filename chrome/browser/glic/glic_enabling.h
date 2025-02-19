@@ -47,9 +47,6 @@ class GlicEnabling {
   // off. This will never change for a given profile.
   static bool IsProfileEligible(const Profile* profile);
 
-  // Returns true if the given profile has Glic enabled. True implies that
-  // IsEnabledByFlags is on and IsProfileEligible(profile) is also true. This
-  // value can change at runtime.
   // This is a convenience method for code outside of //chrome/browser/glic.
   // Code inside should use instance method IsEnabled() instead.
   static bool IsEnabledForProfile(const Profile* profile);
@@ -67,9 +64,23 @@ class GlicEnabling {
   explicit GlicEnabling(Profile* profile);
   ~GlicEnabling();
 
-  // Returns true if the given profile has Glic enabled. True implies that
-  // IsEnabledByFlags is on and IsProfileEligible(profile) is also true. This
-  // value can change at runtime.
+  // TODO(crbug.com/390487066): This method is misnamed. It would be more
+  // accurate to call it `IsAllowed()`.
+  // Returns true if the given profile is allowed to use glic. This means that
+  // IsProfileEligible() returns true and:
+  //   * the profile is signed in
+  //   * can_use_model_execution is true
+  //   * glic is allowed by enterprise policy.
+  // This value can change at runtime.
+  //
+  // Once a profile is allowed to run glic, there are several more checks that
+  // are required to use glic although many callsites may not care about all of
+  // these:
+  //   * FRE has been passed. There is no way to permanently decline FRE, as
+  //     it's only invoked on user interaction with glic entry points.
+  //   * Entry point specific flags (e.g. kGlicPinnedToTabstrip).
+  //   * Profile is not paused.
+  // If all entry-points have been disabled, then glic is functionally disabled.
   bool IsEnabled();
 
   using EnableChangedCallback = base::RepeatingClosure;
