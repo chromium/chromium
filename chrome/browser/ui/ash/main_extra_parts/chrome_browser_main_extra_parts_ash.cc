@@ -278,7 +278,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
           std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
   wallpaper_controller_client_->Init();
 
-  session_controller_client_ = std::make_unique<SessionControllerClientImpl>();
+  session_controller_client_ = std::make_unique<SessionControllerClientImpl>(
+      CHECK_DEREF(g_browser_process->local_state()));
   session_controller_client_->Init();
   // By this point ash shell should have initialized its D-Bus signal
   // listeners, so inform the session manager that Ash is initialized.

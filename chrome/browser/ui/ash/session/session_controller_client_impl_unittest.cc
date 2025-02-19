@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -198,7 +199,8 @@ TEST_F(SessionControllerClientImplTest, CyclingOneUser) {
 // Cycle three users forwards and backwards to see that it works.
 TEST_F(SessionControllerClientImplTest, CyclingThreeUsers) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
@@ -407,7 +409,8 @@ TEST_F(SessionControllerClientImplTest,
 
 TEST_F(SessionControllerClientImplTest, SendUserSession) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
@@ -442,7 +445,8 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
 
 TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
@@ -469,7 +473,8 @@ TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
 
 TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
@@ -510,7 +515,8 @@ TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
 
 TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
@@ -530,7 +536,8 @@ TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
 }
 
 TEST_F(SessionControllerClientImplTest, FirstSessionReady) {
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
