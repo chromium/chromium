@@ -484,11 +484,6 @@ void BrowserProcessImpl::StartTearDown() {
   DCHECK(IsShuttingDown());
 
   features_->Shutdown();
-
-// TODO(https://crbug.com/388906971): fix dead code below.
-#if BUILDFLAG(IS_ANDROID)
-  accessibility_prefs_controller_.reset();
-#endif
   metrics_services_manager_.reset();
   intranet_redirect_detector_.reset();
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
