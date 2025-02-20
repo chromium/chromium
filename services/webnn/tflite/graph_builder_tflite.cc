@@ -430,7 +430,12 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*arg_min_max_input=*/
        {kFloat16To32AndInt8To32AndUint8, SupportedRanks::NonScalarUpTo(8)},
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
-       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       // BatchNormalization is emulated by sub, mul, add and div ops that only
+       // support max rank up to 5.
+       /*batch_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(5)},
+       /*batch_normalization_mean=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cast_input=*/
        {kFloat16To32AndInts8To32AndInt64, SupportedRanks::UpTo(8)},
        // Polyfilled using MIN and MAX.
@@ -1816,8 +1821,8 @@ auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
 auto GraphBuilderTflite::SerializeBatchNormalization(
     const mojom::BatchNormalization& batch_normalization)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.batch_normalization_input.Has(
-      GetOperand(batch_normalization.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.batch_normalization_input.Supports(
+      GetOperand(batch_normalization.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(batch_normalization.input_operand_id));
@@ -1829,20 +1834,22 @@ auto GraphBuilderTflite::SerializeBatchNormalization(
   new_shape[batch_normalization.axis] = dimension_on_axis;
 
   // Reshape the 1-D tensor of the mean operand to the new shape.
+  CHECK(context_properties_.data_type_limits.batch_normalization_mean.Supports(
+      GetOperand(batch_normalization.mean_operand_id).descriptor));
   ASSIGN_OR_RETURN(
       const TensorInfo& mean_tensor_info,
       SerializeInputTensorInfo(batch_normalization.mean_operand_id));
-  CHECK_EQ(mean_tensor_info.dimensions.size(), 1u);
   const int32_t reshape_mean_tensor_index =
       SerializeTemporaryTensor(new_shape, input_tensor_type);
   operators_.emplace_back(SerializeReshapeOperation(
       mean_tensor_info.index, reshape_mean_tensor_index, new_shape));
 
   // Reshape the 1-D tensor of the variance operand to the new shape.
+  CHECK(context_properties_.data_type_limits.batch_normalization_mean.Supports(
+      GetOperand(batch_normalization.variance_operand_id).descriptor));
   ASSIGN_OR_RETURN(
       const TensorInfo& variance_tensor_info,
       SerializeInputTensorInfo(batch_normalization.variance_operand_id));
-  CHECK_EQ(variance_tensor_info.dimensions.size(), 1u);
   const int32_t reshape_variance_tensor_index =
       SerializeTemporaryTensor(new_shape, input_tensor_type);
   operators_.emplace_back(SerializeReshapeOperation(
@@ -1851,10 +1858,12 @@ auto GraphBuilderTflite::SerializeBatchNormalization(
   // Reshape the 1-D tensor of the scale operand to the new shape if needed.
   std::optional<int32_t> reshape_scale_tensor_index;
   if (batch_normalization.scale_operand_id) {
+    CHECK(
+        context_properties_.data_type_limits.batch_normalization_mean.Supports(
+            GetOperand(*batch_normalization.scale_operand_id).descriptor));
     ASSIGN_OR_RETURN(
         const TensorInfo& scale_tensor_info,
         SerializeInputTensorInfo(*batch_normalization.scale_operand_id));
-    CHECK_EQ(scale_tensor_info.dimensions.size(), 1u);
     reshape_scale_tensor_index =
         SerializeTemporaryTensor(new_shape, input_tensor_type);
     operators_.emplace_back(SerializeReshapeOperation(
@@ -1864,10 +1873,12 @@ auto GraphBuilderTflite::SerializeBatchNormalization(
   // Reshape the 1-D tensor of the bias operand to the new shape if needed.
   std::optional<int32_t> reshape_bias_tensor_index;
   if (batch_normalization.bias_operand_id) {
+    CHECK(
+        context_properties_.data_type_limits.batch_normalization_mean.Supports(
+            GetOperand(*batch_normalization.bias_operand_id).descriptor));
     ASSIGN_OR_RETURN(
         const TensorInfo& bias_tensor_info,
         SerializeInputTensorInfo(*batch_normalization.bias_operand_id));
-    CHECK_EQ(bias_tensor_info.dimensions.size(), 1u);
     reshape_bias_tensor_index =
         SerializeTemporaryTensor(new_shape, input_tensor_type);
     operators_.emplace_back(SerializeReshapeOperation(

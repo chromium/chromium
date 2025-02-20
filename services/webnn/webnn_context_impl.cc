@@ -155,24 +155,26 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
     ContextProperties backend_context_properties) {
   // A specific maximum rank is still under discussion, but 8 is the highest
   // supported by any backend.
-  constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(8);
   constexpr SupportedRanks kNonScalarMaxRank = SupportedRanks::NonScalarUpTo(8);
 
   // Only intersects for ones that have limits defined in the specification.
   // For ones that has no limit, no need to intersect with
   // `SupportedDataTypes::All()`.
   backend_context_properties.data_type_limits.batch_normalization_input
-      .RetainAll(DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.logical_not_input.IntersectWith(
-      {DataTypeConstraint::kUint8, kMaxRank});
+      .data_types.RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.batch_normalization_mean
+      .IntersectWith(
+          {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)});
+  backend_context_properties.data_type_limits.logical_not_input.data_types
+      .RetainAll(DataTypeConstraint::kUint8);
   backend_context_properties.data_type_limits.logical_output.RetainAll(
       DataTypeConstraint::kUint8);
-  backend_context_properties.data_type_limits.abs_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32Int8To32, kMaxRank});
-  backend_context_properties.data_type_limits.ceil_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.cos_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
+  backend_context_properties.data_type_limits.abs_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.ceil_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.cos_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.cumulative_sum_input
       .IntersectWith(
           {DataTypeConstraint::kFloat16To32Ints32To64, kNonScalarMaxRank});
@@ -182,54 +184,54 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.dequantize_linear_zero_point
       .data_types.RetainAll(DataTypeConstraint::kInts4ToInts8);
-  backend_context_properties.data_type_limits.erf_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.exp_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.floor_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.log_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.neg_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32Int8To32, kMaxRank});
-  backend_context_properties.data_type_limits.reciprocal_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.sign_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32Int8To64, kMaxRank});
-  backend_context_properties.data_type_limits.sin_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.sqrt_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.tan_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.elu_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
+  backend_context_properties.data_type_limits.erf_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.exp_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.floor_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.log_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.neg_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.reciprocal_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.sign_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To64);
+  backend_context_properties.data_type_limits.sin_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.sqrt_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.tan_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.elu_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gather_indices.RetainAll(
       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gather_elements_indices.RetainAll(
       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gather_nd_indices.RetainAll(
       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
-  backend_context_properties.data_type_limits.gelu_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
+  backend_context_properties.data_type_limits.gelu_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gemm_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gru_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gru_cell_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.hard_sigmoid_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.hard_swish_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
+  backend_context_properties.data_type_limits.hard_sigmoid_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.hard_swish_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.instance_normalization_input
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.layer_normalization_input
       .RetainAll(DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.leaky_relu_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.linear_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
+  backend_context_properties.data_type_limits.leaky_relu_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.linear_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.lstm_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.lstm_cell_input.RetainAll(
@@ -251,24 +253,24 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.quantize_linear_zero_point
       .data_types.RetainAll(DataTypeConstraint::kInts4ToInts8);
-  backend_context_properties.data_type_limits.reduce_l1_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank});
-  backend_context_properties.data_type_limits.reduce_l2_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.reduce_log_sum_input
-      .IntersectWith({DataTypeConstraint::kFloat16To32, kMaxRank});
+  backend_context_properties.data_type_limits.reduce_l1_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_l2_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_log_sum_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.reduce_log_sum_exp_input
       .data_types.RetainAll(DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.reduce_mean_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.reduce_product_input
-      .IntersectWith({DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank});
-  backend_context_properties.data_type_limits.reduce_sum_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank});
-  backend_context_properties.data_type_limits.reduce_sum_square_input
-      .IntersectWith({DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank});
-  backend_context_properties.data_type_limits.relu_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32Int8To32, kMaxRank});
+  backend_context_properties.data_type_limits.reduce_mean_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_product_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_sum_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_sum_square_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.relu_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.resample2d_input.IntersectWith(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)});
   backend_context_properties.data_type_limits.scatter_elements_input.ranks
@@ -281,18 +283,18 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.scatter_nd_indices.IntersectWith(
       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
        SupportedRanks::NonScalarUpTo(8)});
-  backend_context_properties.data_type_limits.sigmoid_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
+  backend_context_properties.data_type_limits.sigmoid_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.slice_input.IntersectWith(
       {SupportedDataTypes::All(), kNonScalarMaxRank});
-  backend_context_properties.data_type_limits.softmax_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.softplus_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.softsign_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
-  backend_context_properties.data_type_limits.tanh_input.IntersectWith(
-      {DataTypeConstraint::kFloat16To32, kMaxRank});
+  backend_context_properties.data_type_limits.softmax_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.softplus_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.softsign_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.tanh_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.triangular_input.IntersectWith(
       {SupportedDataTypes::All(), {2, 8}});
   backend_context_properties.data_type_limits.where_condition.data_types

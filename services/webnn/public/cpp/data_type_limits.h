@@ -18,7 +18,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes constant,
                  SupportedTensors arg_min_max_input,
                  SupportedDataTypes arg_min_max_output,
-                 SupportedDataTypes batch_normalization_input,
+                 SupportedTensors batch_normalization_input,
+                 SupportedTensors batch_normalization_mean,
                  SupportedTensors cast_input,
                  SupportedTensors clamp_input,
                  SupportedDataTypes concat_inputs,
@@ -134,7 +135,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes constant;
   SupportedTensors arg_min_max_input;
   SupportedDataTypes arg_min_max_output;
-  SupportedDataTypes batch_normalization_input;
+  SupportedTensors batch_normalization_input;
+  SupportedTensors batch_normalization_mean;
   SupportedTensors cast_input;
   SupportedTensors clamp_input;
   SupportedDataTypes concat_inputs;
@@ -244,6 +246,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.arg_min_max_input == rhs.arg_min_max_input &&
          lhs.arg_min_max_output == rhs.arg_min_max_output &&
          lhs.batch_normalization_input == rhs.batch_normalization_input &&
+         lhs.batch_normalization_mean == rhs.batch_normalization_mean &&
          lhs.cast_input == rhs.cast_input &&
          lhs.clamp_input == rhs.clamp_input &&
          lhs.concat_inputs == rhs.concat_inputs &&

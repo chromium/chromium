@@ -115,7 +115,10 @@ ContextProperties ContextImplDml::GetProperties(
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc#tensor-support
-       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*batch_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*batch_normalization_mean=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cast_operator_desc#tensor-support
        /*cast_input=*/

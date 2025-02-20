@@ -30,9 +30,13 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.arg_min_max_output;
   }
-  static webnn::SupportedDataTypes batch_normalization_input(
+  static webnn::SupportedTensors batch_normalization_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.batch_normalization_input;
+  }
+  static webnn::SupportedTensors batch_normalization_mean(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.batch_normalization_mean;
   }
   static webnn::SupportedTensors cast_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -441,6 +445,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadArgMinMaxInput(&out->arg_min_max_input) &&
            data.ReadArgMinMaxOutput(&out->arg_min_max_output) &&
            data.ReadBatchNormalizationInput(&out->batch_normalization_input) &&
+           data.ReadBatchNormalizationMean(&out->batch_normalization_mean) &&
            data.ReadCastInput(&out->cast_input) &&
            data.ReadClampInput(&out->clamp_input) &&
            data.ReadConcatInputs(&out->concat_inputs) &&
