@@ -231,10 +231,7 @@ scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
     FlushReason,
     SourceImageStatus* status,
     const gfx::SizeF&,
-    const AlphaDisposition alpha_disposition = kPremultiplyAlpha) {
-  // Only cover premultiply alpha cases.
-  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
-
+    const AlphaDisposition) {
   if (status)
     *status = kNormalSourceImageStatus;
   return image_;

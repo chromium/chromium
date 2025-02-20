@@ -1437,10 +1437,7 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
     FlushReason,
     SourceImageStatus* status,
     const gfx::SizeF&,
-    const AlphaDisposition alpha_disposition) {
-  // UnpremultiplyAlpha is not implemented yet.
-  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
-
+    const AlphaDisposition) {
   const auto local_handle = handle_->CloneForInternalUse();
   if (!local_handle) {
     DLOG(ERROR) << "GetSourceImageForCanvas() called for closed frame.";
