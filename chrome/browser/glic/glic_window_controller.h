@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -36,6 +37,7 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 extern void* kGlicWidgetIdentifier;
 
+class GlicEnabling;
 class GlicKeyedService;
 class GlicView;
 class WebUIContentsContainer;
@@ -76,7 +78,8 @@ class GlicWindowController : public views::WidgetObserver {
 
   GlicWindowController(Profile* profile,
                        signin::IdentityManager* identity_manager,
-                       GlicKeyedService* service);
+                       GlicKeyedService* service,
+                       GlicEnabling* enabling);
   ~GlicWindowController() override;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
@@ -320,6 +323,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Returns true if a browser is occluded at point in screen coordinates.
   bool IsBrowserOccludedAtPoint(Browser* browser, gfx::Point point);
 
+  // Called anytime GlicEnabling::IsEnabled() may have changed value.
+  void EnableChanged();
+
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
@@ -403,6 +409,10 @@ class GlicWindowController : public views::WidgetObserver {
   std::unique_ptr<WindowFinder> window_finder_;
 
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
+  raw_ptr<GlicEnabling> enabling_;
+
+  // Holds subscriptions for callbacks.
+  std::vector<base::CallbackListSubscription> subscriptions_;
 
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };

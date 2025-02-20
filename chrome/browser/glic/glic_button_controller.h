@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_GLIC_BUTTON_CONTROLLER_H_
 
+#include <vector>
+
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_window_controller.h"
@@ -36,6 +39,9 @@ class GlicButtonController : public GlicWindowController::StateObserver {
   raw_ptr<GlicButtonControllerDelegate> glic_controller_delegate_;
   raw_ptr<GlicKeyedService> glic_keyed_service_;
   PrefChangeRegistrar pref_registrar_;
+
+  // Holds subscriptions for callbacks.
+  std::vector<base::CallbackListSubscription> subscriptions_;
 };
 
 }  // namespace glic

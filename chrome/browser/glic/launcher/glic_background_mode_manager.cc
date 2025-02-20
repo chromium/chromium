@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/browser/glic/launcher/glic_status_icon.h"
@@ -21,17 +22,6 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
-namespace {
-bool IsEnabledInAnyLoadedProfile() {
-  return std::ranges::any_of(
-      g_browser_process->profile_manager()->GetLoadedProfiles(),
-      [](Profile* profile) {
-        return !IsProfileDirectoryMarkedForDeletion(profile->GetPath()) &&
-               glic::GlicEnabling::IsEnabledAndConsentForProfile(profile);
-      });
-}
-}  // namespace
-
 namespace glic {
 
 GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
@@ -41,8 +31,13 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
       enabled_pref_(GlicLauncherConfiguration::IsEnabled()),
       expected_registered_hotkey_(
           GlicLauncherConfiguration::GetGlobalHotkey()) {
-  UpdateState();
   g_browser_process->profile_manager()->AddObserver(this);
+  // Start tracking any profiles that already exist.
+  for (auto* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    OnProfileAdded(profile);
+  }
+  UpdateState();
 }
 
 GlicBackgroundModeManager::~GlicBackgroundModeManager() = default;
@@ -84,6 +79,18 @@ void GlicBackgroundModeManager::ExecuteCommand(
 }
 
 void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
+  auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (!service) {
+    return;
+  }
+  GlicEnabling* enabling = service->enabling();
+  profile_subscriptions_.emplace(
+      profile, enabling->RegisterEnableChanged(base::BindRepeating(
+                   &GlicBackgroundModeManager::OnProfileEnableChanged,
+                   base::Unretained(this))));
+  auto [it, inserted] = profile_observers_.emplace(profile, this);
+  it->second.Observe(profile);
+
   // If a profile is added when not in background mode, check if it can now be
   // entered.
   if (!status_icon_) {
@@ -92,19 +99,15 @@ void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
   }
 }
 
-void GlicBackgroundModeManager::OnProfileMarkedForPermanentDeletion(
-    Profile* profile) {
+void GlicBackgroundModeManager::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observers_.erase(profile);
+  profile_subscriptions_.erase(profile);
+
   // If a profile is removed while in background mode, check if it must now be
   // exited.
   if (status_icon_) {
     UpdateState();
   }
-}
-
-void GlicBackgroundModeManager::OnPolicyChanged() {
-  // Recompute whether the background launcher should change state based on the
-  // updated policy.
-  UpdateState();
 }
 
 void GlicBackgroundModeManager::Shutdown() {
@@ -178,6 +181,23 @@ void GlicBackgroundModeManager::UpdateState() {
   if (status_icon_) {
     status_icon_->UpdateHotkey(actual_registered_hotkey_);
   }
+}
+
+void GlicBackgroundModeManager::OnProfileEnableChanged() {
+  // Recompute whether the background launcher should change state based on the
+  // updated policy.
+  UpdateState();
+}
+
+bool GlicBackgroundModeManager::IsEnabledInAnyLoadedProfile() {
+  for (const auto& pair : profile_observers_) {
+    Profile* profile = pair.first;
+    if (!IsProfileDirectoryMarkedForDeletion(profile->GetPath()) &&
+        glic::GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace glic

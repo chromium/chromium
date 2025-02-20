@@ -32,12 +32,14 @@ GlicButtonController::GlicButtonController(
 
   // Observe for changes in preferences and panel state events
   pref_registrar_.Init(profile_->GetPrefs());
-  for (std::string_view pref :
-       {glic::prefs::kGlicPinnedToTabstrip, glic::prefs::kGlicSettingsPolicy}) {
-    pref_registrar_.Add(
-        pref, base::BindRepeating(&GlicButtonController::UpdateShowState,
-                                  base::Unretained(this)));
-  }
+  pref_registrar_.Add(
+      glic::prefs::kGlicPinnedToTabstrip,
+      base::BindRepeating(&GlicButtonController::UpdateShowState,
+                          base::Unretained(this)));
+  subscriptions_.push_back(
+      glic_keyed_service_->enabling()->RegisterEnableChanged(
+          base::BindRepeating(&GlicButtonController::UpdateShowState,
+                              base::Unretained(this))));
 
   glic_keyed_service_->window_controller().AddStateObserver(this);
 }
