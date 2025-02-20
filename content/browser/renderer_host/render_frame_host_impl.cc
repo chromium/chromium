@@ -11017,6 +11017,15 @@ void RenderFrameHostImpl::HandleAXEvents(
     return;
   }
 
+  if (is_waiting_for_unload_ack_) {
+    // This frame has been unloaded and is awaiting destruction following the
+    // UnloadACK. There is no reason to process any received updates and events.
+    // In particular, the RenderFrameHostImpl is no longer reachable from its
+    // former RenderFrameHostDelegate (WebContentsImpl), so it may not be
+    // notified of changes to the accessibility mode.
+    return;
+  }
+
   if (tree_id != GetAXTreeID()) {
     // The message has arrived after the frame has navigated which means its
     // events are no longer relevant and can be discarded.
@@ -11051,6 +11060,10 @@ void RenderFrameHostImpl::HandleAXEvents(
     // see https://crbug.com/326751711.
     SCOPED_CRASH_KEY_STRING256("ax", "ax_mode", accessibility_mode.ToString());
     SCOPED_CRASH_KEY_STRING256("ax", "last_ax_mode", last_ax_mode_.ToString());
+    SCOPED_CRASH_KEY_NUMBER("ax", "page_close_state_",
+                            static_cast<int>(page_close_state_));
+    SCOPED_CRASH_KEY_BOOL("ax", "is_waiting_for_unload_ack_",
+                          is_waiting_for_unload_ack_);
     SCOPED_CRASH_KEY_BOOL("ax", "is_init_and_not_dead",
                           GetProcess()->IsInitializedAndNotDead());
     SCOPED_CRASH_KEY_NUMBER("ax", "render_frame_state",
