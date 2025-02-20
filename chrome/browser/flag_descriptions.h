@@ -891,8 +891,10 @@ extern const char kEnableGamepadMultitouchName[];
 extern const char kEnableGamepadMultitouchDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 extern const char kDirectSocketsInServiceWorkersName[];
 extern const char kDirectSocketsInServiceWorkersDescription[];

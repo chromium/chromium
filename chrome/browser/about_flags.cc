@@ -5156,9 +5156,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
     {"enable-isolated-web-apps", flag_descriptions::kEnableIsolatedWebAppsName,
      flag_descriptions::kEnableIsolatedWebAppsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebApps)},
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     {"direct-sockets-in-service-workers",
      flag_descriptions::kDirectSocketsInServiceWorkersName,
      flag_descriptions::kDirectSocketsInServiceWorkersDescription, kOsDesktop,

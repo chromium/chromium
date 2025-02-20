@@ -413,10 +413,9 @@ class FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest
   FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest() {
     // These feature flags are required to make different virtual tasks
     // discoverable.
-    features_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall,
-         chromeos::features::kUploadOfficeToCloud},
-        {});
+    features_.InitWithFeatures({features::kIsolatedWebAppUnmanagedInstall,
+                                chromeos::features::kUploadOfficeToCloud},
+                               {});
   }
 
  private:

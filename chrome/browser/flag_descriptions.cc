@@ -1476,10 +1476,12 @@ const char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kEnableIsolatedWebAppsName[] = "Enable Isolated Web Apps";
 const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for Isolated Web Apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 const char kDirectSocketsInServiceWorkersName[] =
     "Direct Sockets API in Service Workers";
