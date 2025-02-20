@@ -9,10 +9,13 @@
 """
 
 import argparse
-from multiprocessing import Process, Manager, cpu_count, Pool
+import glob
+import math
 import os
 import subprocess
-import glob
+import sys
+
+from multiprocessing import Process, Manager, cpu_count, Pool
 from typing import Mapping, Sequence
 
 WHOLE_CORPUS_RETRIES = 2
@@ -20,6 +23,12 @@ WHOLE_CORPUS_TIMEOUT_SECS = 1200
 INDIVIDUAL_TESTCASE_TIMEOUT_SECS = 60
 INDIVIDUAL_TESTCASES_MAX_TO_TRY = 500
 INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED = 100
+
+LIBFUZZER = 'libfuzzer'
+CENTIPEDE = 'centipede'
+FUZZILLI = 'fuzzilli'
+ALL_FUZZER_TYPES = [LIBFUZZER, CENTIPEDE, FUZZILLI]
+REPORT_DIR = 'out/report'
 
 
 def _profdata_merge(inputs: Sequence[str], output: str) -> bool:
@@ -131,6 +140,7 @@ def _run_fuzzer_target(args):
   cmd = target_details['cmd']
   env = target_details['env']
   corpus_dir = target_details['corpus']
+  corpus_files = target_details['files']
   profraw_dir = target_details['profraw_dir']
   target_profdata = target_details['profdata_file']
 
@@ -147,6 +157,7 @@ def _run_fuzzer_target(args):
                       f"full corpus attempt {i}")
     if ok:
       break
+
   valid_profiles = 0
   matching_profraws = list(_matching_profraws(fullcorpus_profraw))
   # There may be several if the fuzzer involved multiple processes,
@@ -154,13 +165,19 @@ def _run_fuzzer_target(args):
   ok = _profdata_merge(matching_profraws, target_profdata)
   if ok:
     valid_profiles = 1
-  if valid_profiles == 0:
+
+  if valid_profiles == 0 and corpus_files is not None:
     # We failed to run the fuzzer with the whole corpus in one go. That probably
     # means one of the test cases caused a crash. Let's run each test
     # case one at a time. The resulting profraw files can be hundreds of MB
     # each so after each test case, we merge them into an accumulated
     # profdata file.
-    for count, corpus_entry in enumerate(os.listdir(corpus_dir)):
+    if corpus_files == '*':
+      corpus_files = os.listdir(corpus_dir)
+    else:
+      corpus_files = corpus_files.split()
+
+    for count, corpus_entry in enumerate(corpus_files):
       specific_test_case_profraw = os.path.join(
           profraw_dir, target + "_" + str(count) + "_%p.profraw")
       test_case = os.path.join(corpus_dir, corpus_entry)
@@ -208,8 +225,7 @@ def _run_fuzzer_target(args):
          num_targets, len(verified_fuzzer_targets)))
 
 
-
-def _ParseCommandArguments():
+def _parse_command_arguments():
   """Adds and parses relevant arguments for tool commands.
 
   Returns:
@@ -235,114 +251,182 @@ def _ParseCommandArguments():
                           type=str,
                           help='Directory where profdata will be stored.')
 
+  arg_parser.add_argument('--fuzzer',
+                          choices=ALL_FUZZER_TYPES,
+                          default=LIBFUZZER,
+                          help='The type of fuzzer tests to run.')
+
   arg_parser.add_argument
   args = arg_parser.parse_args()
   return args
 
 
-args = _ParseCommandArguments()
+def _get_all_target_details(args):
+  incomplete_targets = []
+  all_target_details = []
 
-incomplete_targets = []
-verified_fuzzer_targets = Manager().list()
-failed_targets = Manager().list()
-reportdir = 'out/report'
-all_target_details = []
-llvm_profdata = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata'
+  for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
+    fuzzer_target_binpath = os.path.join(args.fuzzer_binaries_dir,
+                                         fuzzer_target)
+    fuzzer_target_corporadir = os.path.join(args.fuzzer_corpora_dir,
+                                            fuzzer_target)
 
-if not (os.path.isfile(llvm_profdata)):
-  print('No valid llvm_profdata at %s' % llvm_profdata)
-  exit(2)
+    if not (os.path.isfile(fuzzer_target_binpath)
+            and os.path.isdir(fuzzer_target_corporadir)):
+      print((
+          'Could not find binary file for %s, or, the provided corpora path is '
+          'not a directory') % fuzzer_target)
+      incomplete_targets.append(fuzzer_target)
+    else:
+      env = dict()
+      if 'DISPLAY' in os.environ:
+        # Inherit X settings from the real environment
+        env['DISPLAY'] = os.environ['DISPLAY']
+      all_target_details.append({
+          'name':
+          fuzzer_target,
+          'profraw_dir':
+          REPORT_DIR,
+          'profdata_file':
+          os.path.join(REPORT_DIR, fuzzer_target + ".profdata"),
+          'env':
+          env,
+          # RSS limit 8GB. Some of our fuzzers which involve running significant
+          # chunks of Chromium code require more than the 2GB default.
+          'cmd': [
+              fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192',
+              fuzzer_target_corporadir
+          ],
+          'corpus':
+          fuzzer_target_corporadir,
+          'files':
+          '*'
+      })
 
-if not (os.path.isdir(args.profdata_outdir)):
-  print('%s does not exist or is not a directory' % args.profdata_outdir)
-  exit(2)
-
-for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
-  fuzzer_target_binpath = os.path.join(args.fuzzer_binaries_dir, fuzzer_target)
-  fuzzer_target_corporadir = os.path.join(args.fuzzer_corpora_dir,
-                                          fuzzer_target)
-
-  if not (os.path.isfile(fuzzer_target_binpath)
-          and os.path.isdir(fuzzer_target_corporadir)):
-    print(
-        ('Could not find binary file for %s, or, the provided corpora path is '
-         'not a directory') % fuzzer_target)
-    incomplete_targets.append(fuzzer_target)
+  # We also want to run ./chrome without a valid X server.
+  # It will almost immediately exit.
+  # This runs essentially no Chrome code, so will result in all the lines
+  # of code in the Chrome binary being marked as 0 in the code coverage
+  # report. Without doing this step, many of the files of Chrome source
+  # code simply don't appear in the coverage report at all.
+  chrome_target_binpath = os.path.join(args.fuzzer_binaries_dir, "chrome")
+  if not os.path.isfile(chrome_target_binpath):
+    print('Could not find binary file for Chrome itself')
   else:
-    env = dict()
-    if 'DISPLAY' in os.environ:
-      # Inherit X settings from the real environment
-      env['DISPLAY'] = os.environ['DISPLAY']
+    profraw_file = chrome_target_binpath + ".profraw"
+
+    env = {'DISPLAY': 'not-a-real-display'}
     all_target_details.append({
         'name':
-        fuzzer_target,
+        "chrome",
         'profraw_dir':
-        reportdir,
+        REPORT_DIR,
         'profdata_file':
-        os.path.join(reportdir, fuzzer_target + ".profdata"),
+        os.path.join(REPORT_DIR, "chrome.profdata"),
         'env':
         env,
-        # RSS limit 8GB. Some of our fuzzers which involve running significant
-        # chunks of Chromium code require more than the 2GB default.
-        'cmd': [
-            fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192',
-            fuzzer_target_corporadir
-        ],
+        'cmd': [chrome_target_binpath],
         'corpus':
-        fuzzer_target_corporadir
+        None,
+        'files':
+        None
     })
+  print("Incomplete targets (couldn't find binary): %s" % incomplete_targets)
+  return all_target_details
 
-# We also want to run ./chrome without a valid X server.
-# It will almost immediately exit.
-# This runs essentially no Chrome code, so will result in all the lines
-# of code in the Chrome binary being marked as 0 in the code coverage
-# report. Without doing this step, many of the files of Chrome source
-# code simply don't appear in the coverage report at all.
-chrome_target_binpath = os.path.join(args.fuzzer_binaries_dir, "chrome")
-if not os.path.isfile(chrome_target_binpath):
-  print('Could not find binary file for Chrome itself')
-else:
-  profraw_file = chrome_target_binpath + ".profraw"
-  profraw_path = os.path.join(reportdir, profraw_file)
 
-  env = {'DISPLAY': 'not-a-real-display'}
-  all_target_details.append({
-      'name':
-      "chrome",
-      'profraw_dir':
-      reportdir,
-      'profdata_file':
-      os.path.join(reportdir, "chrome.profdata"),
-      'env':
-      env,
-      'cmd': [chrome_target_binpath],
-      'corpus':
-      None
-  })
+def _get_fuzzilli_target_details(args):
+  all_target_details = []
+  fuzzer_target_binpath = os.path.join(args.fuzzer_binaries_dir, 'd8')
+  if not os.path.isfile(fuzzer_target_binpath):
+    print(f'Could not find binary file: {fuzzer_target_binpath}')
+    return all_target_details
 
-# Run the fuzzers in parallel.
-cpu_count = int(cpu_count())
-num_targets = len(all_target_details)
-print("Running %d fuzzers across %d CPUs" % (num_targets, cpu_count))
-with Pool(cpu_count) as p:
-  results = p.map(
-      _run_fuzzer_target,
-      [(target_details, verified_fuzzer_targets, failed_targets, num_targets)
-       for target_details in all_target_details])
+  for corpora_dir in os.listdir(args.fuzzer_corpora_dir):
+    target_corpora_dir = os.path.join(args.fuzzer_corpora_dir, corpora_dir)
+    if not os.path.isdir(target_corpora_dir):
+      continue
+    # for each corpora dir, the json file containing the command line args is at
+    # x/fuzzdir/settings.json. Javascript files are at x/fuzzdir/corpus
+    path_to_settings = os.path.join(target_corpora_dir, 'fuzzdir',
+                                    'settings.json')
+    with open(path_to_settings, 'r') as fp:
+      settings = json.load(fp)
+    cmd = [fuzzer_target_binpath]
+    cmd.extend(settings['processArguments'])
+    path_to_js_dir = os.path.join(target_corpora_dir, 'fuzzdir', 'corpus')
+    jsfiles = [
+        file for file in os.listdir(path_to_js_dir) if file.endswith('.js')
+    ]
+    files_per_chunk = 10
+    num_of_chunks = math.ceil(len(jsfiles) / files_per_chunk)
+    for i in range(num_of_chunks):
+      chunk = jsfiles[files_per_chunk * i:files_per_chunk * (i + 1)]
+      all_target_details.append({
+          'name':
+          f'{corpora_dir}_{i}',
+          'profraw_dir':
+          REPORT_DIR,
+          'profdata_file':
+          os.path.join(REPORT_DIR, f'{corpora_dir}_{i}.profdata'),
+          'env':
+          env,
+          'cmd':
+          cmd + chunk,
+          'corpus':
+          fuzzer_target_corporadir,
+          'files':
+          ' '.join(chunk)
+      })
 
-print("Successful targets: %s" % verified_fuzzer_targets)
-print("Failed targets: %s" % failed_targets)
-print("Incomplete targets (couldn't find binary): %s" % incomplete_targets)
 
-print("Finished getting coverage information. Copying to %s" %
-      args.profdata_outdir)
-for fuzzer in verified_fuzzer_targets:
-  cmd = [
-      'cp',
-      os.path.join(reportdir, fuzzer + '.profdata'), args.profdata_outdir
-  ]
-  print(cmd)
-  try:
-    subprocess.check_call(cmd)
-  except:
-    print.warning("Warning: failed to copy profdata for %s" % fuzzer)
+def main():
+  args = _parse_command_arguments()
+
+  verified_fuzzer_targets = Manager().list()
+  failed_targets = Manager().list()
+  all_target_details = []
+  llvm_profdata = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata'
+
+  if not (os.path.isfile(llvm_profdata)):
+    print('No valid llvm_profdata at %s' % llvm_profdata)
+    exit(2)
+
+  if not (os.path.isdir(args.profdata_outdir)):
+    print('%s does not exist or is not a directory' % args.profdata_outdir)
+    exit(2)
+
+  if args.fuzzer == 'FUZZILLI':
+    all_target_details = _get_fuzzilli_target_details(args)
+  else:
+    all_target_details = _get_all_target_details(args)
+
+  # Run the fuzzers in parallel.
+  num_cpus = int(cpu_count())
+  num_targets = len(all_target_details)
+  print("Running %d fuzzers across %d CPUs" % (num_targets, num_cpus))
+  with Pool(num_cpus) as p:
+    results = p.map(
+        _run_fuzzer_target,
+        [(target_details, verified_fuzzer_targets, failed_targets, num_targets)
+         for target_details in all_target_details])
+
+  print("Successful targets: %s" % verified_fuzzer_targets)
+  print("Failed targets: %s" % failed_targets)
+
+  print("Finished getting coverage information. Copying to %s" %
+        args.profdata_outdir)
+  for fuzzer in verified_fuzzer_targets:
+    cmd = [
+        'cp',
+        os.path.join(REPORT_DIR, fuzzer + '.profdata'), args.profdata_outdir
+    ]
+    print(cmd)
+    try:
+      subprocess.check_call(cmd)
+    except:
+      print.warning("Warning: failed to copy profdata for %s" % fuzzer)
+
+
+if __name__ == '__main__':
+  sys.exit(main())
