@@ -11566,6 +11566,8 @@ from previous Chrome versions.
   <int value="-1024644761" label="OmniboxShortcutBoost:enabled"/>
   <int value="-1024065253" label="EnableWireGuard:disabled"/>
   <int value="-1024018413" label="CrOSLateBootGravedigger:disabled"/>
+  <int value="-1023356765"
+      label="WebAuthenticationAlignErrorTypeForPaymentCredentialCreate:enabled"/>
   <int value="-1023007976" label="SingleCaCertVerificationPhase1:enabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
   <int value="-1022290134" label="WebApkInstallFailureRetry:disabled"/>
@@ -12837,6 +12839,8 @@ from previous Chrome versions.
   <int value="-516845951" label="enable-embedded-extension-options"/>
   <int value="-516269317" label="HttpsFirstModeV2:enabled"/>
   <int value="-515913489" label="EphemeralTabUsingBottomSheet:disabled"/>
+  <int value="-515066652"
+      label="WebAuthenticationAlignErrorTypeForPaymentCredentialCreate:disabled"/>
   <int value="-514672474"
       label="PolicyProvidedTrustAnchorsAllowedAtLockScreen:enabled"/>
   <int value="-514076866" label="MovablePartialScreenshot:disabled"/>

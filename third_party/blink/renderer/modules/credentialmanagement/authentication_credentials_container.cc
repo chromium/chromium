@@ -896,7 +896,9 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   // |AuthenticationCredentialsContainer::create|, which throws a
   // NotAllowedError rather than a SecurityError like the SPC spec currently
   // requires.
-  if (!IsSameSecurityOriginWithAncestors(
+  if (!RuntimeEnabledFeatures::
+          WebAuthenticationAlignErrorTypeForPaymentCredentialCreateEnabled() &&
+      !IsSameSecurityOriginWithAncestors(
           To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame())) {
     bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
         To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
@@ -1892,10 +1894,13 @@ AuthenticationCredentialsContainer::create(
   // TODO(crbug.com/1512245): This check should be used for payment credentials
   // as well, but currently the SPC spec expects a SecurityError rather than
   // NotAllowedError.
+  bool has_payment_extension = options->publicKey()->hasExtensions() &&
+                               options->publicKey()->extensions()->hasPayment();
   if (!IsSameSecurityOriginWithAncestors(
           To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame()) &&
-      (!options->publicKey()->hasExtensions() ||
-       !options->publicKey()->extensions()->hasPayment())) {
+      (RuntimeEnabledFeatures::
+           WebAuthenticationAlignErrorTypeForPaymentCredentialCreateEnabled() ||
+       !has_payment_extension)) {
     bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
         To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
         UserActivationUpdateSource::kRenderer);

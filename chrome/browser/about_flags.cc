@@ -11722,6 +11722,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(webapps::features::kAndroidMinimalUiLargeScreen)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"web-authentication-align-error-type-for-payment-credential-create",
+     flag_descriptions::
+         kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName,
+     flag_descriptions::
+         kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::
+             kWebAuthenticationAlignErrorTypeForPaymentCredentialCreate)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
