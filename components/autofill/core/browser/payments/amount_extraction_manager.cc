@@ -150,6 +150,10 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
   autofill_metrics::LogAmountExtractionLatency(
       base::TimeTicks::Now() - search_request_start_timestamp,
       !extracted_amount.empty());
+  autofill_metrics::LogAmountExtractionResult(
+      extracted_amount.empty()
+          ? autofill_metrics::AmountExtractionResult::kAmountNotFound
+          : autofill_metrics::AmountExtractionResult::kSuccessful);
   // Set `search_request_pending_` to false once the search is done.
   search_request_pending_ = false;
   // TODO(crbug.com/378517983): Add BNPL flow action logic here.

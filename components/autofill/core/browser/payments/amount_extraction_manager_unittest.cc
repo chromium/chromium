@@ -336,9 +336,11 @@ TEST_F(AmountExtractionManagerTest,
   constexpr int kDefaultAmountExtractionLatencyMs = 200;
   constexpr std::string kExtractedAmount = "123.45";
   base::HistogramTester histogram_tester;
+
   SetUpExtractLabeledTextNodeValue(
       /*extracted_amount=*/kExtractedAmount,
       /*latency_ms=*/kDefaultAmountExtractionLatencyMs);
+
   EXPECT_CALL(
       *mock_autofill_driver_,
       ExtractLabeledTextNodeValue(
@@ -350,6 +352,7 @@ TEST_F(AmountExtractionManagerTest,
               .number_of_ancestor_levels_to_search(),
           testing::_))
       .Times(1);
+
   amount_extraction_manager_->TriggerCheckoutAmountExtraction();
   histogram_tester.ExpectUniqueTimeSample(
       "Autofill.AmountExtraction.Latency.Success",
@@ -363,9 +366,11 @@ TEST_F(AmountExtractionManagerTest,
        TriggerCheckoutAmountExtraction_Failure_Metric) {
   constexpr int kDefaultAmountExtractionLatencyMs = 200;
   base::HistogramTester histogram_tester;
+
   SetUpExtractLabeledTextNodeValue(
       /*extracted_amount=*/"",
       /*latency_ms=*/kDefaultAmountExtractionLatencyMs);
+
   EXPECT_CALL(
       *mock_autofill_driver_,
       ExtractLabeledTextNodeValue(
@@ -377,6 +382,7 @@ TEST_F(AmountExtractionManagerTest,
               .number_of_ancestor_levels_to_search(),
           testing::_))
       .Times(1);
+
   amount_extraction_manager_->TriggerCheckoutAmountExtraction();
   histogram_tester.ExpectUniqueTimeSample(
       "Autofill.AmountExtraction.Latency.Failure",
@@ -384,6 +390,60 @@ TEST_F(AmountExtractionManagerTest,
   histogram_tester.ExpectUniqueTimeSample(
       "Autofill.AmountExtraction.Latency",
       base::Milliseconds(kDefaultAmountExtractionLatencyMs), 1);
+}
+
+// Verify that Amount extraction records true for a successful extraction.
+TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Successful) {
+  constexpr std::string kExtractedAmount = "123.45";
+  base::HistogramTester histogram_tester;
+
+  SetUpExtractLabeledTextNodeValue(
+      /*extracted_amount=*/kExtractedAmount,
+      /*latency_ms=*/0);
+
+  EXPECT_CALL(
+      *mock_autofill_driver_,
+      ExtractLabeledTextNodeValue(
+          base::UTF8ToUTF16(
+              AmountExtractionHeuristicRegexes::GetInstance().amount_pattern()),
+          base::UTF8ToUTF16(AmountExtractionHeuristicRegexes::GetInstance()
+                                .keyword_pattern()),
+          AmountExtractionHeuristicRegexes::GetInstance()
+              .number_of_ancestor_levels_to_search(),
+          testing::_))
+      .Times(1);
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AmountExtraction.Result",
+      autofill::autofill_metrics::AmountExtractionResult::kSuccessful, 1);
+}
+
+// Verify that Amount extraction records false for a failed extraction.
+TEST_F(AmountExtractionManagerTest,
+       AmountExtractionResult_Metric_AmountNotFound) {
+  base::HistogramTester histogram_tester;
+
+  SetUpExtractLabeledTextNodeValue(
+      /*extracted_amount=*/"",
+      /*latency_ms=*/0);
+
+  EXPECT_CALL(
+      *mock_autofill_driver_,
+      ExtractLabeledTextNodeValue(
+          base::UTF8ToUTF16(
+              AmountExtractionHeuristicRegexes::GetInstance().amount_pattern()),
+          base::UTF8ToUTF16(AmountExtractionHeuristicRegexes::GetInstance()
+                                .keyword_pattern()),
+          AmountExtractionHeuristicRegexes::GetInstance()
+              .number_of_ancestor_levels_to_search(),
+          testing::_))
+      .Times(1);
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AmountExtraction.Result",
+      autofill::autofill_metrics::AmountExtractionResult::kAmountNotFound, 1);
 }
 
 #endif

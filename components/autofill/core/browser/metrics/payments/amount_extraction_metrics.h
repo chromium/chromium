@@ -26,6 +26,14 @@ enum class AmountExtractionComponentInstallationResult {
   kMaxValue = kEmptyGenericDetails,
 };
 
+enum class AmountExtractionResult {
+  // The amount extraction was successful.
+  kSuccessful = 0,
+  // The amount extraction result was empty.
+  kAmountNotFound = 1,
+  kMaxValue = kAmountNotFound,
+};
+
 void LogAmountExtractionComponentInstallationResult(
     AmountExtractionComponentInstallationResult result);
 
@@ -33,6 +41,8 @@ void LogAmountExtractionComponentInstallationResult(
 // extraction initiation to when it finishes. Logged once a response from amount
 // extraction is received.
 void LogAmountExtractionLatency(base::TimeDelta latency, bool is_successful);
+
+void LogAmountExtractionResult(AmountExtractionResult result);
 
 }  // namespace autofill::autofill_metrics
 
