@@ -1234,6 +1234,28 @@ TEST_P(JSONReaderTest, UsingRust) {
   ASSERT_EQ(JSONReader::UsingRust(), using_rust_);
 }
 
+TEST_P(JSONReaderTest, ReadingJsonIntoDictAndList) {
+  {
+    std::optional<base::Value::List> list = JSONReader::ReadList("[1, 2, 3]");
+    ASSERT_TRUE(list);
+  }
+
+  {
+    std::optional<base::Value::List> list = JSONReader::ReadList("{}");
+    ASSERT_FALSE(list);
+  }
+
+  {
+    std::optional<base::Value::Dict> dict = JSONReader::ReadDict("{}");
+    ASSERT_TRUE(dict);
+  }
+
+  {
+    std::optional<base::Value::Dict> dict = JSONReader::ReadDict("[1, 2, 3]");
+    ASSERT_FALSE(dict);
+  }
+}
+
 static void CanParseAnythingWithoutCrashing(const std::string& input) {
   JSONReader::Read(input, JSON_PARSE_CHROMIUM_EXTENSIONS);
 }

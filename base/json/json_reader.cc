@@ -165,6 +165,17 @@ std::optional<Value::Dict> JSONReader::ReadDict(std::string_view json,
 }
 
 // static
+std::optional<Value::List> JSONReader::ReadList(std::string_view json,
+                                                int options,
+                                                size_t max_depth) {
+  std::optional<Value> value = Read(json, options, max_depth);
+  if (!value || !value->is_list()) {
+    return std::nullopt;
+  }
+  return std::move(*value).TakeList();
+}
+
+// static
 JSONReader::Result JSONReader::ReadAndReturnValueWithError(
     std::string_view json,
     int options) {
