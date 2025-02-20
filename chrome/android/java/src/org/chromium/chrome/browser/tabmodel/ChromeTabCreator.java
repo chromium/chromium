@@ -138,6 +138,8 @@ public class ChromeTabCreator extends TabCreator {
                 return "RecentTabsForeground";
             case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
                 return "CollaborationBackgroundInGroup";
+            case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
+                return "BookmarkBarBackground";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -657,6 +659,7 @@ public class ChromeTabCreator extends TabCreator {
             case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
             case TabLaunchType.FROM_RECENT_TABS:
             case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
+            case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
                 // On low end devices tabs are backgrounded in a frozen state, so we set the
                 // transition type to RELOAD to avoid handling intents when the tab is foregrounded.
                 // (https://crbug.com/758027)

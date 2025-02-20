@@ -28,6 +28,7 @@ import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** Consolidates logic about opening bookmarks. */
 public class BookmarkOpener {
@@ -84,6 +85,22 @@ public class BookmarkOpener {
      * @return Whether the bookmark ids were successfully opened.
      */
     public boolean openBookmarksInNewTabs(List<BookmarkId> bookmarkIds, boolean incognito) {
+        return openBookmarksInNewTabs(
+                bookmarkIds, incognito, /* tabLaunchType= */ Optional.empty());
+    }
+
+    /**
+     * Open the given bookmarkIds in new tabs.
+     *
+     * @param bookmarkIds The bookmark ids to open.
+     * @param incognito Whether the bookmarks should be opened in incognito mode.
+     * @param tabLaunchType The launch type to use when creating new tabs.
+     * @return Whether the bookmark ids were successfully opened.
+     */
+    public boolean openBookmarksInNewTabs(
+            List<BookmarkId> bookmarkIds,
+            boolean incognito,
+            Optional<@TabLaunchType Integer> tabLaunchType) {
         if (bookmarkIds == null || bookmarkIds.size() == 0) return false;
 
         BookmarkItem firstItem = null;
@@ -111,6 +128,7 @@ public class BookmarkOpener {
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
         intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
+        tabLaunchType.ifPresent(v -> IntentHandler.setTabLaunchType(intent, v));
         IntentHandler.startActivityForTrustedIntent(intent);
 
         if (mBookmarkOpenedCallback != null) {
