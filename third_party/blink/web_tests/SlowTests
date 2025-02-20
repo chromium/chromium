@@ -1478,3 +1478,7 @@ crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-breakpo
 crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-pause/debugger-eval-on-call-frame-inside-iframe.js [ Slow ]
 crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-step/debugger-step-over-inlined-scripts.js [ Slow ]
 crbug.com/393175977 [ Mac14 Debug ] http/tests/inspector-protocol/tracing/screenshots.js [ Slow ]
+
+# Gardener 2025-02-18
+crbug.com/391006701 [ Debug ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Slow ]
+crbug.com/391006701 [ Debug ] images/yuv-decode-eligible/webp-image-decoding.html [ Slow ]
