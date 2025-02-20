@@ -33,7 +33,8 @@ class GlicButtonController : public GlicWindowController::StateObserver {
   void PanelStateChanged(const mojom::PanelState& panel_state) override;
 
  private:
-  void UpdateShowState();
+  void OnPrefsChanged();
+  void UpdateShowState(bool detached);
 
   raw_ptr<Profile> profile_;
   raw_ptr<GlicButtonControllerDelegate> glic_controller_delegate_;

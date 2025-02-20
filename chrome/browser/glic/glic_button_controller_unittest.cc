@@ -104,9 +104,9 @@ class GlicButtonControllerTest : public testing::Test {
   std::unique_ptr<GlicButtonController> glic_button_controller_;
 };
 
-// Test the settings policy state reflects the show state of the
-// the controller delegate.
-TEST_F(GlicButtonControllerTest, GlicSettingsPolicy) {
+// Test that settings changes are reflected in the show state of the controller
+// delegate.
+TEST_F(GlicButtonControllerTest, GlicSettings) {
   PrefService* prefs = profile()->GetPrefs();
 
   prefs->SetInteger(
@@ -132,6 +132,25 @@ TEST_F(GlicButtonControllerTest, GlicSettingsPolicy) {
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(controller_delegate()->show_state());
+}
+
+// Test that when the glic window is detached, the button is shown regardless of
+// settings state.
+TEST_F(GlicButtonControllerTest, GlicDetachedOverridesSettings) {
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetInteger(
+      glic::prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+  prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
+
+  mojom::PanelState panel_state;
+  panel_state.kind = mojom::PanelState_Kind::kAttached;
+  controller()->PanelStateChanged(panel_state);
+  ASSERT_FALSE(controller_delegate()->show_state());
+
+  panel_state.kind = mojom::PanelState_Kind::kDetached;
+  controller()->PanelStateChanged(panel_state);
+  EXPECT_TRUE(controller_delegate()->show_state());
 }
 
 // Test the panel state of the glic window reflects the icon state
