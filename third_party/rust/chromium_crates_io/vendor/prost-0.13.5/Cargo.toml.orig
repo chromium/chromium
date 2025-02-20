@@ -24,12 +24,12 @@ std = []
 
 [dependencies]
 bytes = { version = "1", default-features = false }
-prost-derive = { version = "0.13.4", path = "../prost-derive", optional = true }
+prost-derive = { version = "0.13.5", path = "../prost-derive", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.5", default-features = false }
 proptest = "1"
-rand = "0.8"
+rand = "0.9"
 
 [[bench]]
 name = "varint"

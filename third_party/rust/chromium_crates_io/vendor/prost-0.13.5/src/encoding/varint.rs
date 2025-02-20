@@ -24,7 +24,7 @@ pub fn encode_varint(mut value: u64, buf: &mut impl BufMut) {
 /// Returns the encoded length of the value in LEB128 variable length format.
 /// The returned value will be between 1 and 10, inclusive.
 #[inline]
-pub fn encoded_len_varint(value: u64) -> usize {
+pub const fn encoded_len_varint(value: u64) -> usize {
     // Based on [VarintSize64][1].
     // [1]: https://github.com/protocolbuffers/protobuf/blob/v28.3/src/google/protobuf/io/coded_stream.h#L1744-L1756
     // Safety: value | 1 is non-zero.

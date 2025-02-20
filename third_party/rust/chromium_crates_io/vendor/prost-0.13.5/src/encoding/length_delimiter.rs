@@ -40,7 +40,7 @@ pub fn length_delimiter_len(length: usize) -> usize {
 ///
 ///  * If the supplied buffer contains fewer than 10 bytes, then an error indicates that more
 ///    input is required to decode the full delimiter.
-///  * If the supplied buffer contains more than 10 bytes, then the buffer contains an invalid
+///  * If the supplied buffer contains 10 bytes or more, then the buffer contains an invalid
 ///    delimiter, and typically the buffer should be considered corrupt.
 pub fn decode_length_delimiter(mut buf: impl Buf) -> Result<usize, DecodeError> {
     let length = decode_varint(&mut buf)?;

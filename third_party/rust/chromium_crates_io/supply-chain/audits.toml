@@ -2254,6 +2254,12 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.13.3 -> 0.13.4"
 
+[[audits.prost]]
+who = "Jonathan Hao <phao@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.4 -> 0.13.5"
+notes = "Touches one function with unsafe inside, but it only adds the const keyword so should not really change anything. Converts a `from` to `as` as well."
+
 [[audits.prost-derive]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
