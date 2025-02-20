@@ -864,7 +864,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="40062176907008878">Scrittura a mano libera</translation>
 <translation id="4011112806063830608">Modalità Non disturbare attiva.</translation>
-<translation id="4015144849380506405">Metti in pausa/riprendi i tasti del mouse quando il criterio è attivo</translation>
+<translation id="4015144849380506405">Metti in pausa/riprendi i tasti del mouse quando la policy è attiva</translation>
 <translation id="4017989525502048489">Puntatore laser</translation>
 <translation id="401993194061514265">Indicatore non disponibile. Riapri Registra schermo.</translation>
 <translation id="4021716437419160885">Scorri verso il basso</translation>
@@ -1366,7 +1366,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5600837773213129531">Premi CTRL + ALT + Z per disattivare la funzione di lettura vocale.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Abbiamo eseguito per te il passaggio a una rete migliore</translation>
-<translation id="5619862035903135339">Il criterio dell'amministratore disattiva l'acquisizione schermo</translation>
+<translation id="5619862035903135339">La policy dell'amministratore disattiva l'acquisizione schermo</translation>
 <translation id="5620856676199877916">Visualizza tutti i lavori del corso sul sito web di Google Classroom</translation>
 <translation id="5620979661744857819">Consente l'accesso per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno le autorizzazioni di accesso al microfono e alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="5625955975703555628">LTE+</translation>

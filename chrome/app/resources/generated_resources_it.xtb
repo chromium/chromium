@@ -288,7 +288,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1190086046506744802">Molto larga</translation>
 <translation id="1190155014618058972">Crea una combinazione di tasti personalizzata</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Accesso a un file memorizzato sul computer}other{Accesso a # file memorizzati sul computer}}</translation>
-<translation id="1190706173655543975">Criteri delle applicazioni Microsoft</translation>
+<translation id="1190706173655543975">Policy delle applicazioni Microsoft</translation>
 <translation id="1191353342579061195">Scegli il tema più adatto alle tue esigenze. Per cambiare tema, sfondo, salvaschermo e altro ancora, fai clic con il pulsante destro del mouse sul desktop.</translation>
 <translation id="1192706927100816598">{0,plural, =1{Verrà eseguita automaticamente la disconnessione tra # secondo.
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.}other{Verrà eseguita automaticamente la disconnessione tra # secondi.
@@ -593,7 +593,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1410197035576869800">Icona dell'app</translation>
 <translation id="1410616244180625362">Continua a consentire l'accesso di <ph name="HOST" /> alla webcam</translation>
 <translation id="1410797069449661718">Scorri verso la prima scheda</translation>
-<translation id="1410806973194718079">Impossibile controllare i criteri</translation>
+<translation id="1410806973194718079">Impossibile controllare le policy</translation>
 <translation id="1411400282355634827">Vuoi reimpostare tutte le autorizzazioni del dispositivo Bluetooth?</translation>
 <translation id="1414315029670184034">Non consentire ai siti di usare la fotocamera</translation>
 <translation id="1414648216875402825">Stai per passare a una versione non stabile di <ph name="PRODUCT_NAME" /> che contiene funzioni ancora in fase di sviluppo. Si verificheranno arresti anomali e bug imprevisti. Procedi con cautela.</translation>
@@ -1298,7 +1298,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementi}}</translation>
 <translation id="1884340228047885921">L'attuale impostazione di visibilità è Alcuni contatti</translation>
 <translation id="1884705339276589024">Ridimensiona disco Linux</translation>
-<translation id="1885066963699478692">I file XML usati per impostare i criteri.</translation>
+<translation id="1885066963699478692">I file XML usati per impostare le policy.</translation>
 <translation id="1885089541024391265">Google Calendar</translation>
 <translation id="1885106732301550621">Spazio su disco</translation>
 <translation id="1886996562706621347">Consenti ai siti di chiedere di diventare gestori predefiniti dei protocolli (consigliata)</translation>
@@ -1584,7 +1584,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2088092308059522196">La registrazione è supportata solo dopo l'installazione di <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint integrato</translation>
 <translation id="208928984520943006">Per andare alla schermata Home in qualsiasi momento, scorri dal basso verso l'alto.</translation>
-<translation id="2089550919269323883">La possibilità di installare <ph name="VM_NAME" /> è bloccata dal criterio aziendale. Contatta l'amministratore di sistema per ricevere assistenza. Il codice di errore è <ph name="ERROR" />.</translation>
+<translation id="2089550919269323883">La possibilità di installare <ph name="VM_NAME" /> è bloccata dalla policy aziendale. Contatta l'amministratore di sistema per ricevere assistenza. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">OPPURE</translation>
 <translation id="2090165459409185032">Visita il sito google.com/accounts/recovery per recuperare i dati del tuo account</translation>
 <translation id="2090507354966565596">Si connette automaticamente quando effettui l'accesso</translation>
@@ -1725,7 +1725,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2178585470774851578">Stai per attivare le funzionalità di debug di ChromeOS Flex, che comporteranno la configurazione del daemon sshd e l'attivazione dell'avvio da unità USB.</translation>
 <translation id="2178614541317717477">Compromesso CA</translation>
 <translation id="2180620921879609685">Bloccare i contenuti in qualsiasi pagina</translation>
-<translation id="2181821976797666341">Criteri</translation>
+<translation id="2181821976797666341">Policy</translation>
 <translation id="2182058453334755893">Copia negli appunti eseguita</translation>
 <translation id="2182419606502127232">Includi i miei log del server.</translation>
 <translation id="2183570493397356669">Pulsante Continua non attivo</translation>
@@ -1834,7 +1834,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2257053455312861282">L'aggiunta di un account della scuola consente di accedere facilmente ai siti web, alle estensioni e alle app come studente, applicando al tempo stesso il Controllo genitori.</translation>
 <translation id="225716114209817872">Massima</translation>
 <translation id="2261323523305321874">L'amministratore ha apportato una modifica a livello di sistema che disabilita alcuni vecchi profili.</translation>
-<translation id="22614517036276112">Questo documento o il tuo dispositivo non rispetta alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.</translation>
+<translation id="22614517036276112">Questo documento o il tuo dispositivo non rispetta alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.</translation>
 <translation id="2262477216570151239">Ritardo prima della ripetizione</translation>
 <translation id="2263189956353037928">Esci e accedi nuovamente</translation>
 <translation id="2263371730707937087">Frequenza di aggiornamento dello schermo</translation>
@@ -2445,7 +2445,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2673873887296220733">Vuoi copiare 1 file in <ph name="CLOUD_PROVIDER" /> per aprirlo?</translation>
 <translation id="267442004702508783">aggiorna</translation>
 <translation id="2674764818721168631">Off</translation>
-<translation id="2676084251379299915">Questa estensione è stata disattivata dai criteri aziendali perché non è più disponibile nel Chrome Web Store.</translation>
+<translation id="2676084251379299915">Questa estensione è stata disattivata dalle policy aziendali perché non è più disponibile nel Chrome Web Store.</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2678063897982469759">Riattiva</translation>
 <translation id="2678801466438589151">Seleziona il pulsante Google Lens</translation>
@@ -2532,7 +2532,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="27349076983469322">Sfondo chiaro</translation>
 <translation id="2735712963799620190">Pianificazione</translation>
 <translation id="2737363922397526254">Comprimi...</translation>
-<translation id="2737538893171115082">L'amministratore ha bloccato Steam per Chromebook (beta). L'amministratore deve attivare i seguenti criteri:</translation>
+<translation id="2737538893171115082">L'amministratore ha bloccato Steam per Chromebook (beta). L'amministratore deve attivare le seguenti policy:</translation>
 <translation id="2737719817922589807">&amp;Preferiti ed elenchi</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Non consentire ai siti di utilizzare i caratteri installati sul tuo dispositivo</translation>
@@ -2646,7 +2646,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2805539617243680210">Ecco fatto.</translation>
 <translation id="2805646850212350655">Crittografia file system Microsoft</translation>
 <translation id="2805756323405976993">App</translation>
-<translation id="2805760958323556153">Il valore del criterio di ExtensionInstallForcelist non è valido. Contatta l'amministratore.</translation>
+<translation id="2805760958323556153">Il valore della policy di ExtensionInstallForcelist non è valido. Contatta l'amministratore.</translation>
 <translation id="2805770823691782631">Dettagli aggiuntivi</translation>
 <translation id="2806372837663997957">Il dispositivo con cui stai tentando di condividere il file non ha accettato</translation>
 <translation id="2806891468525657116">Scorciatoia già presente</translation>
@@ -2727,7 +2727,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="286643536820867504">Crea automaticamente i sottotitoli codificati per le lingue supportate. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
 <translation id="286674810810214575">Controllo delle fonti di alimentazione…</translation>
 <translation id="2867768963760577682">Apri in una scheda bloccata</translation>
-<translation id="2868746137289129307">Questa estensione è obsoleta e disattivata in base ai criteri aziendali. Potrebbe essere attivata automaticamente quando sarà disponibile una nuova versione.</translation>
+<translation id="2868746137289129307">Questa estensione è obsoleta e disattivata in base alle policy aziendali. Potrebbe essere attivata automaticamente quando sarà disponibile una nuova versione.</translation>
 <translation id="2869511363030898130">Apri nell'app <ph name="APP_NAME" /></translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2870909136778269686">Aggiornamento in corso...</translation>
@@ -3373,7 +3373,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="335587007651175930">Cerca quello che c'è sullo schermo con Google Lens</translation>
 <translation id="3355936511340229503">Errore di connessione</translation>
 <translation id="3356580349448036450">Fine</translation>
-<translation id="3359256513598016054">Vincoli criteri certificati</translation>
+<translation id="3359256513598016054">Vincoli policy certificati</translation>
 <translation id="3360297538363969800">Errore di stampa. Controlla la stampante e riprova.</translation>
 <translation id="3360306038446926262">Finestre</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}other{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}}</translation>
@@ -4215,7 +4215,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3919262972282962508">Le versioni precedenti delle app di Chrome non si apriranno più sui dispositivi Mac dopo dicembre 2022. Contatta l'amministratore per eseguire l'aggiornamento a una nuova versione o per rimuovere questa app.</translation>
 <translation id="3919376399641777316">Usa lo spazio di archiviazione di Google Drive</translation>
 <translation id="3919798653937160644">Le pagine visualizzate in questa finestra non verranno memorizzate nella cronologia del browser e non lasceranno altre tracce, ad esempio cookie, sul computer dopo la chiusura di tutte le finestre Ospite aperte. Tutti i file scaricati verranno comunque conservati.</translation>
-<translation id="3920504717067627103">Criteri dei certificati</translation>
+<translation id="3920504717067627103">Policy dei certificati</translation>
 <translation id="3920909973552939961">Non possono installare gestori dei pagamenti</translation>
 <translation id="3922823422695198027">Ci sono altre app impostate per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e <ph name="APP_NAME_4" />.</translation>
 <translation id="3923184630988645767">Utilizzo dei dati</translation>
@@ -4647,7 +4647,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4241182343707213132">Riavvia per aggiornare le app dell'organizzazione</translation>
 <translation id="4242145785130247982">Non sono supportati più certificati client</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
-<translation id="4242577469625748426">Installazione delle impostazioni criterio sul dispositivo non riuscita. <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4242577469625748426">Installazione delle impostazioni policy sul dispositivo non riuscita. <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Il tuo <ph name="BEGIN_LINK" />browser e il tuo profilo sono gestiti<ph name="END_LINK" /> da <ph name="DOMAIN" /></translation>
 <translation id="4243504193894350135">La stampante è in pausa</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, grado <ph name="GRADE" /></translation>
@@ -5262,7 +5262,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4680105648806843642">L'audio è stato disattivato in questa pagina</translation>
 <translation id="4680112532510845139">Trascina un'immagine qui</translation>
 <translation id="4681453295291708042">Disattiva Condivisione nelle vicinanze</translation>
-<translation id="4681512854288453141">Criterio di origine</translation>
+<translation id="4681512854288453141">Policy di origine</translation>
 <translation id="4681930562518940301">Apri &amp;originale in nuova scheda</translation>
 <translation id="4682481611456523884">Per i contenuti incorporati in questo sito non è possibile usare le informazioni su di te che sono state salvate</translation>
 <translation id="4682807230647698604">Quando utilizzi queste funzionalità, i dati pertinenti vengono inviati a Google per creare esperienze AI</translation>
@@ -5580,7 +5580,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4900908761825556116">Non consentire ai siti di installare le app web sul tuo dispositivo</translation>
 <translation id="4901154724271753917">Espandi schede chiuse di recente</translation>
 <translation id="4901309472892185668">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" />.</translation>
-<translation id="49027928311173603">Il criterio scaricato dal server non è valido. <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="49027928311173603">La policy scaricata dal server non è valida. <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">Estende la durata della batteria limitando l'attività in background e gli effetti visivi, come lo scorrimento continuo.</translation>
 <translation id="4906490889887219338">Configura o gestisci condivisioni file di rete. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Ripristina impostazioni predefinite</translation>
@@ -6218,7 +6218,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5384401776498845256">Chi può condividere con te</translation>
 <translation id="5385628342687007304">La password viene salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google.</translation>
 <translation id="5387116558048951800">Modifica <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="538822246583124912">Criterio aziendale modificato. Pulsante Esperimenti aggiunto alla barra degli strumenti. Fai clic sul pulsante per aprire una finestra di dialogo in cui puoi attivare esperimenti.</translation>
+<translation id="538822246583124912">Policy aziendale modificata. Pulsante Esperimenti aggiunto alla barra degli strumenti. Fai clic sul pulsante per aprire una finestra di dialogo in cui puoi attivare esperimenti.</translation>
 <translation id="5388436023007579456">Le app e i siti web che dispongono dell'autorizzazione di accesso alla fotocamera, nonché i servizi di sistema, possono utilizzare la fotocamera. Per usare la fotocamera, potrebbe essere necessario riavviare l'app o aggiornare la pagina.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{È stato trovato un sito con molte notifiche}other{Sono stati trovati {NUM_SITES} siti con molte notifiche}}</translation>
 <translation id="5388885445722491159">Accoppiato</translation>
@@ -6457,7 +6457,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Scegli la tua configurazione</translation>
 <translation id="5551573675707792127">Tastiera e input di testo</translation>
-<translation id="5553089923092577885">Mapping dei criteri dei certificati</translation>
+<translation id="5553089923092577885">Mapping delle policy dei certificati</translation>
 <translation id="5554240068773209752">Fai clic qui per personalizzare i controlli</translation>
 <translation id="5554403733534868102">Dopo questo aggiornamento, niente più attese</translation>
 <translation id="5554489410841842733">Questa icona sarà visibile quando l'estensione potrà interagire nella pagina corrente.</translation>
@@ -6697,7 +6697,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5734362860645681824">Comunicazioni</translation>
 <translation id="5734697361979786483">Aggiungi condivisione file</translation>
 <translation id="5735513236153491131">Aumenta prestazioni ora</translation>
-<translation id="5736092224453113618">{NUM_FILES,plural, =0{Questi dati o il tuo dispositivo non rispettano alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}=1{Questo file o il tuo dispositivo non rispetta alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}other{Questi file non rispettano alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}}</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Questi dati o il tuo dispositivo non rispettano alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}=1{Questo file o il tuo dispositivo non rispetta alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}other{Questi file non rispettano alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}}</translation>
 <translation id="5738093759615225354">Questa passkey è necessaria per accedere al tuo computer</translation>
 <translation id="5739017626473506901">Accedi per aiutare <ph name="USER_NAME" /> ad aggiungere un account della scuola</translation>
 <translation id="5739235828260127894">In attesa di verifica. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
@@ -6857,7 +6857,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5852112051279473187">Spiacenti. Si è verificato un grave problema durante la registrazione di questo dispositivo. Riprova o contatta un rappresentante dell'assistenza.</translation>
 <translation id="5852137567692933493">Riavvia ed esegui Powerwash</translation>
 <translation id="5853487241227591972">Passaggio 4 di 4: vengono esportati i dati diagnostici</translation>
-<translation id="5854066326260337683">Al momento la funzionalità LBS non è attiva. Puoi attivarla impostando il criterio <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
+<translation id="5854066326260337683">Al momento la funzionalità LBS non è attiva. Puoi attivarla impostando la policy <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">Fetta</translation>
 <translation id="5855267860608268405">Reti Wi-Fi note</translation>
 <translation id="5855375823365231964">Informazioni su questo profilo</translation>
@@ -7120,7 +7120,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6048747414605857443">Seleziona e personalizza le voci per la sintesi vocale per ChromeVox e Seleziona per ascoltare</translation>
 <translation id="6050189528197190982">Scala di grigi</translation>
 <translation id="6051354611314852653">Spiacenti, il sistema non è riuscito ad autorizzare l'accesso API per questo dispositivo.</translation>
-<translation id="6051811090255711417">La tua organizzazione ha bloccato questo file perché non soddisfava un criterio di sicurezza</translation>
+<translation id="6051811090255711417">La tua organizzazione ha bloccato questo file perché non soddisfava una policy di sicurezza</translation>
 <translation id="6052261338768299955"><ph name="APP_NAME" /> sta tentando di stampare su <ph name="PRINTER_NAME" /></translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Digita il codice di accesso per iniziare a trasmettere</translation>
@@ -7501,7 +7501,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6315493146179903667">Porta tutto in primo piano</translation>
 <translation id="6316432269411143858">Contenuti dei Termini di Google ChromeOS</translation>
 <translation id="6317369057005134371">In attesa della finestra dell'applicazione...</translation>
-<translation id="6318125393809743217">Includi un file policies.json con le configurazioni dei criteri.</translation>
+<translation id="6318125393809743217">Includi un file policies.json con le configurazioni delle policy.</translation>
 <translation id="6318407754858604988">Download iniziato</translation>
 <translation id="6318944945640833942">Impossibile rilevare una stampante. Inserisci di nuovo l'indirizzo della stampante.</translation>
 <translation id="6319278239690147683"><ph name="BEGIN_LINK" />Accedi alle impostazioni di sincronizzazione<ph name="END_LINK" /> per eliminare i dati di navigazione da tutti i dispositivi sincronizzati e dal tuo Account Google.</translation>
@@ -7953,7 +7953,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6660301751798595791">Selezione voce</translation>
 <translation id="6660819301598582123">Pranzo d'acqua fa volti sghembi.</translation>
 <translation id="666099631117081440">Server di stampa</translation>
-<translation id="6662931079349804328">Criterio aziendale modificato. Pulsante Esperimenti rimosso dalla barra degli strumenti.</translation>
+<translation id="6662931079349804328">Policy aziendale modificata. Pulsante Esperimenti rimosso dalla barra degli strumenti.</translation>
 <translation id="6663190258859265334">Esegui il Powerwash del tuo dispositivo <ph name="DEVICE_TYPE" /> e torna alla versione precedente.</translation>
 <translation id="6664774537677393800">Si è verificato un problema durante l'apertura del profilo. Esci e accedi di nuovo.</translation>
 <translation id="6665874326033183068">Selvaggio</translation>
@@ -8613,7 +8613,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7122605570852873914">Esci comunque</translation>
 <translation id="7123030151043029868">Possono scaricare automaticamente più file</translation>
 <translation id="7124013154139278147">Assegna sensore per "Precedente"</translation>
-<translation id="7124712201233930202">I criteri della tua organizzazione non sono stati rispettati</translation>
+<translation id="7124712201233930202">Le policy della tua organizzazione non sono state rispettate</translation>
 <translation id="7125148293026877011">Eliminare Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Assicurati che la tua stampante sia collegata alla stessa rete Wi-Fi a cui è collegato Chromebook oppure usa un cavo USB. <ph name="LINK_BEGIN" />Scopri di più sulla compatibilità<ph name="LINK_END" /></translation>
@@ -9236,7 +9236,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7578137152457315135">Impostazioni impronta</translation>
 <translation id="7578692661782707876">Inserisci il codice di conferma.</translation>
 <translation id="757941033127302446">Accesso effettuato</translation>
-<translation id="7581007437437492586">I criteri devono essere configurati correttamente</translation>
+<translation id="7581007437437492586">Le policy devono essere configurate correttamente</translation>
 <translation id="7581462281756524039">Uno strumento per la pulizia</translation>
 <translation id="7582582252461552277">Preferisci questa rete</translation>
 <translation id="7582844466922312471">Dati mobile</translation>
@@ -9435,7 +9435,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7714464543167945231">Certificato</translation>
 <translation id="7715455358521357192">Strizza l'occhio destro</translation>
 <translation id="7716648931428307506">Seleziona la posizione di salvataggio della password</translation>
-<translation id="7716781361494605745">URL dei criteri dell'autorità di certificazione Netscape</translation>
+<translation id="7716781361494605745">URL delle policy dell'autorità di certificazione Netscape</translation>
 <translation id="7717014941119698257">Download in corso: <ph name="STATUS" /></translation>
 <translation id="771721654176725387">I tuoi dati di navigazione verranno eliminati definitivamente da questo dispositivo. Per recuperare i dati, attiva la sincronizzazione come</translation>
 <translation id="7717845620320228976">Verifica disponibilità di aggiornamenti</translation>
@@ -10687,7 +10687,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8597845839771543242">Formato proprietà:</translation>
 <translation id="8598249292448297523">Stampa</translation>
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Gestisci estensione}other{Gestisci estensioni}}</translation>
-<translation id="8599681327221583254">Uno o più criteri non sono configurati correttamente. Contatta l'amministratore.</translation>
+<translation id="8599681327221583254">Una o più policy non sono configurate correttamente. Contatta l'amministratore.</translation>
 <translation id="8599864823732014237">Vuoi saltare la registrazione aziendale?</translation>
 <translation id="8600362954032151088">Gestisci le tue password e passkey in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8601206103050338563">Autenticazione TLS client WWW</translation>
@@ -10884,7 +10884,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8725178340343806893">Preferiti/Segnalibri</translation>
 <translation id="87254326763805752">Conferma passkey</translation>
-<translation id="8726206820263995930">Errore durante il recupero delle impostazioni criterio dal server. <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8726206820263995930">Errore durante il recupero delle impostazioni policy dal server. <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727333994464775697">Personalizza ciò che vedi in questa pagina</translation>
 <translation id="8727751378406387165">Invia <ph name="BEGIN_LINK1" />metadati di compilazione automatica<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />

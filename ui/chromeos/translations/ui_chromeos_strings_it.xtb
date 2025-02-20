@@ -70,7 +70,7 @@
 <translation id="1561842594491319104">Dispositivi Chrome</translation>
 <translation id="1572585716423026576">Imposta come sfondo</translation>
 <translation id="1576937952766665062">Traslitterazione bengalese</translation>
-<translation id="1577977504532381335">Controlla il criterio dell'amministratore</translation>
+<translation id="1577977504532381335">Controlla la policy dell'amministratore</translation>
 <translation id="158849752021629804">Occorre una rete domestica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Videocamera</translation>
@@ -388,7 +388,7 @@
 <translation id="4134804435730168042">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Attiva dopo la configurazione del dispositivo</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Attiva la seguente estensione in modalità di navigazione in incognito:}other{Attiva le seguenti estensioni in modalità di navigazione in incognito:}}</translation>
 <translation id="4153015322587141338">Fai clic con il tasto destro del mouse su un file e seleziona "<ph name="PIN_COMMAND" />" per accedervi rapidamente dalla barra delle app.</translation>
-<translation id="4157569377477607576">Il criterio dell'amministratore sconsiglia:</translation>
+<translation id="4157569377477607576">La policy dell'amministratore sconsiglia:</translation>
 <translation id="4159731583141908892">Elemento <ph name="FILE_NAME" /> spostato.</translation>
 <translation id="4176286497474237543">Svuota il cestino adesso</translation>
 <translation id="4179621117429069925">L'elemento è nel cestino</translation>
@@ -505,7 +505,7 @@
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Calcio</translation>
 <translation id="4961158930123534723">1 cartella condivisa con Parallels Desktop</translation>
-<translation id="4965874878399872778">Controllo della conformità dei file ai criteri di sicurezza della tua organizzazione in corso…</translation>
+<translation id="4965874878399872778">Controllo della conformità dei file alle policy di sicurezza della tua organizzazione in corso…</translation>
 <translation id="496656650103537022">File <ph name="FILE_NAME" /> ripristinato</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Impossibile completare la configurazione della sincronizzazione dei file</translation>
@@ -561,7 +561,7 @@
 <translation id="5278111733643988471">Per ripristinare questo elemento, trascinalo in una nuova cartella fuori dal cestino. La cartella originale "<ph name="PARENT_FOLDER_NAME" />" di questo elemento è stata eliminata.</translation>
 <translation id="5283101102242354279">Attiva un'estensione in modalità di navigazione in incognito:</translation>
 <translation id="5288441970121584418">Hamburger</translation>
-<translation id="5293615890992542006">Lo spostamento di questo file è bloccato dal criterio dell'amministratore</translation>
+<translation id="5293615890992542006">Lo spostamento di questo file è bloccato dalla policy dell'amministratore</translation>
 <translation id="5305688511332277257">Nessuno installato</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5318819489018851358">Condividi con Linux</translation>
@@ -690,7 +690,7 @@
 <translation id="6287852322318138013">Seleziona un'app per aprire questo file</translation>
 <translation id="6295542640242147836">Blocca SIM</translation>
 <translation id="6296410173147755564">PUK non valido</translation>
-<translation id="6308243004861726558">Questo file è riservato e soggetto al criterio dell'amministratore. Si applicano le azioni di accesso ai file e trasferimento di file che seguono.</translation>
+<translation id="6308243004861726558">Questo file è riservato e soggetto alla policy dell'amministratore. Si applicano le azioni di accesso ai file e trasferimento di file che seguono.</translation>
 <translation id="6312403991423642364">Errore di rete sconosciuto</translation>
 <translation id="6317608858038767920">Nameserver personalizzato <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Archivio <ph name="ARCHIVE_TYPE" /></translation>
@@ -711,12 +711,12 @@
 <translation id="6430271654280079150">Hai ancora 1 tentativo a disposizione.</translation>
 <translation id="643243556292470964">I file eliminati verranno spostati nel cestino</translation>
 <translation id="6438480100790416671">Controllo dello spazio di archiviazione in corso…</translation>
-<translation id="6451527188465304418">Controllo della conformità del file ai criteri di sicurezza della tua organizzazione in corso…</translation>
+<translation id="6451527188465304418">Controllo della conformità del file alle policy di sicurezza della tua organizzazione in corso…</translation>
 <translation id="6485131920355264772">Impossibile recuperare le informazioni sullo spazio</translation>
 <translation id="6495925982925244349">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, dettagli</translation>
 <translation id="649877868557234318">Estrazione del file <ph name="FILE_NAME" /> nella cartella <ph name="FOLDER_NAME" /> in corso…</translation>
 <translation id="6499681088828539489">Non consentire proxy per reti condivise</translation>
-<translation id="6503285896705205014">La copia di <ph name="COUNT" /> file è bloccata dal criterio dell'amministratore</translation>
+<translation id="6503285896705205014">La copia di <ph name="COUNT" /> file è bloccata dalla policy dell'amministratore</translation>
 <translation id="6509122719576673235">Norvegese</translation>
 <translation id="6528513914570774834">Consenti ad altri utenti del dispositivo di usare questa rete</translation>
 <translation id="6549689063733911810">Recenti</translation>
@@ -782,7 +782,7 @@
 <translation id="6993826899923627728">Questi elementi sono nel cestino</translation>
 <translation id="6996593023542748157">Condividi cartella con <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">La tua organizzazione richiede più spazio di archiviazione per completare il caricamento.</translation>
-<translation id="7009985720488544166">Lo spostamento di <ph name="COUNT" /> file è bloccato dal criterio dell'amministratore</translation>
+<translation id="7009985720488544166">Lo spostamento di <ph name="COUNT" /> file è bloccato dalla policy dell'amministratore</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installazione non riuscita.</translation>
 <translation id="7031639531908619281">Turco</translation>
@@ -818,7 +818,7 @@
 <translation id="7268659760406822741">Servizi disponibili</translation>
 <translation id="7291818353625820805">Vuoi attivare la ripetizione dei tasti? Disattiva gli accenti nelle Impostazioni tastiera</translation>
 <translation id="729236380049459563">La sincronizzazione dei file è attiva</translation>
-<translation id="7292816689782057017">Il criterio dell'amministratore limita il salvataggio ad alcune posizioni.</translation>
+<translation id="7292816689782057017">La policy dell'amministratore limita il salvataggio ad alcune posizioni.</translation>
 <translation id="7294063083760278948">Traslitterazione telugu</translation>
 <translation id="7295662345261934369">Condividi con altri</translation>
 <translation id="7297443947353982503">Nome utente/password errati o autenticazione EAP non riuscita</translation>
@@ -829,7 +829,7 @@
 <translation id="7357762654218998920">Questo tipo di file non è supportato. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in ChromeOS.</translation>
 <translation id="7359359531237882347">Copia di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="7375951387215729722">Elenco di file ordinato per <ph name="COLUMN_NAME" /> in ordine decrescente.</translation>
-<translation id="7377161162143020057">La copia di questo file è bloccata dal criterio dell'amministratore</translation>
+<translation id="7377161162143020057">La copia di questo file è bloccata dalla policy dell'amministratore</translation>
 <translation id="7402503521691663770">Dispositivi ChromeOS Flex</translation>
 <translation id="7408870451288633753">Ceco</translation>
 <translation id="7417453074306512035">Tastiera Etiope</translation>
@@ -953,7 +953,7 @@
 <translation id="8255595130163158297">Tutti gli elementi nel cestino verranno eliminati e non potrai ripristinarli.</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8261561378965667560">Cinese Array</translation>
-<translation id="8262872909443689080">Criterio dell'amministratore</translation>
+<translation id="8262872909443689080">Policy dell'amministratore</translation>
 <translation id="8264024885325823677">Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="8269755669432358899">Comprimi i riquadri di feedback dei file</translation>
 <translation id="8280151743281770066">Fonetica armena</translation>
@@ -1021,7 +1021,7 @@
 <translation id="8656768832129462377">Non verificare</translation>
 <translation id="8688591111840995413">Password non valida</translation>
 <translation id="8698464937041809063">Disegno Google</translation>
-<translation id="8698877009525468705">Questo file è riservato e soggetto a limitazioni stabilite dal criterio dell'amministratore.</translation>
+<translation id="8698877009525468705">Questo file è riservato e soggetto a limitazioni stabilite dalla policy dell'amministratore.</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8713112442029511308">Maltese</translation>
 <translation id="8714406895390098252">Bicicletta</translation>
@@ -1036,7 +1036,7 @@
 <translation id="8810671769985673465">Compressione non riuscita. Elemento esistente: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spagnolo (Spagna)</translation>
 <translation id="8834164572807951958">I membri di "<ph name="DESTINATION_NAME" />" avranno accesso alla copia di questi elementi.</translation>
-<translation id="8849389110234859568">Il criterio dell'amministratore limita l'accesso ad alcuni file.</translation>
+<translation id="8849389110234859568">La policy dell'amministratore limita l'accesso ad alcuni file.</translation>
 <translation id="8857149712089373752">Nepalese con tastiera fonetica</translation>
 <translation id="8860454412039442620">Foglio di calcolo Excel</translation>
 <translation id="8866284467018526531">Traslitterazione arabo</translation>
@@ -1090,7 +1090,7 @@
 <translation id="943972244133411984">Modificato da</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="947144732524271678">È stato selezionato un intervallo di <ph name="ENTRY_COUNT" /> elementi da <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="954194396377670556">Il criterio dell'amministratore impedisce quanto segue:</translation>
+<translation id="954194396377670556">La policy dell'amministratore impedisce quanto segue:</translation>
 <translation id="965477715979482472">Inglese (Sudafrica)</translation>
 <translation id="976666271385981812">Spostamento di <ph name="NUMBER_OF_ITEMS" /> elementi nel cestino in corso…</translation>
 <translation id="981121421437150478">Offline</translation>
