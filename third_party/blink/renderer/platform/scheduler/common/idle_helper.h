@@ -68,13 +68,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
     virtual void OnPendingTasksChanged(bool has_tasks) = 0;
   };
 
-  enum class IdlePeriodState {
-    kNotInIdlePeriod,
-    kInShortIdlePeriod,
-    kInLongIdlePeriod,
-    kInLongIdlePeriodPaused,
-  };
-
   // The minimum duration of an idle period.
   static constexpr base::TimeDelta kMinimumIdlePeriodDuration =
       base::Milliseconds(1);
@@ -134,6 +127,9 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // Returns the deadline for the current idle task.
   base::TimeTicks CurrentIdleTaskDeadline() const;
 
+  bool IsInIdlePeriod() const;
+  bool IsInLongIdlePeriod() const;
+
   // SingleThreadIdleTaskRunner::Delegate implementation:
   void OnIdleTaskPosted() override;
   base::TimeTicks WillProcessIdleTask() override;
@@ -145,12 +141,18 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
                        bool was_blocked_or_low_priority) override;
   void DidProcessTask(const base::PendingTask& pending_task) override;
 
-  IdlePeriodState SchedulerIdlePeriodState() const;
-  static const char* IdlePeriodStateToString(IdlePeriodState state);
+  const char* IdlePeriodStateForTracing() const;
 
  private:
   friend class idle_helper_unittest::BaseIdleHelperTest;
   friend class idle_helper_unittest::IdleHelperTest;
+
+  enum class IdlePeriodState {
+    kNotInIdlePeriod,
+    kInShortIdlePeriod,
+    kInLongIdlePeriod,
+    kInLongIdlePeriodPaused,
+  };
 
   class State {
    public:
@@ -211,10 +213,7 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
                           base::TimeTicks new_deadline,
                           base::TimeTicks optional_now);
 
-  // Returns true if |state| represents being within an idle period state.
-  static bool IsInIdlePeriod(IdlePeriodState state);
-  // Returns true if |state| represents being within a long idle period state.
-  static bool IsInLongIdlePeriod(IdlePeriodState state);
+  static const char* IdlePeriodStateToString(IdlePeriodState state);
 
   raw_ptr<SchedulerHelper> helper_;  // NOT OWNED
   raw_ptr<Delegate> delegate_;       // NOT OWNED
