@@ -853,8 +853,6 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
 };
 
 // This implements a strict sequence of asynchronous calls:
-//   - synchronize clock
-//   - check embargo date
 //   - retrieve device identifiers (brand code and serial number)
 //   - PSM OPRF
 //   - PSM Query
