@@ -36,6 +36,7 @@ export interface CertificateSubpageV2Element {
 export class SubpageCertificateList {
   headerText: string;
   certSource: CertificateSource;
+  certMetadataEditable?: boolean;
   hideExport?: boolean;
   showImport?: boolean;
   showImportAndBind?: boolean;

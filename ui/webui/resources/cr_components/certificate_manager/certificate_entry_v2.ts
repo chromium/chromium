@@ -58,6 +58,7 @@ export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
       sha256hashHex: String,
       displayName: String,
       isDeletable: Boolean,
+      showEditIcon: Boolean,
     };
   }
 
@@ -65,6 +66,15 @@ export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
   sha256hashHex: string;
   displayName: string;
   isDeletable: boolean;
+  showEditIcon: boolean = false;
+
+  private certDetailsIconClass_(): string {
+    if (this.showEditIcon) {
+      return 'icon-edit';
+    } else {
+      return 'icon-visibility';
+    }
+  }
 
   private onViewCertificate_() {
     CertificatesV2BrowserProxy.getInstance().handler.viewCertificate(
