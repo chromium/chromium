@@ -939,11 +939,12 @@ int HttpNetworkTransaction::DoCreateStream() {
   response_.network_accessed = true;
 
   next_state_ = STATE_CREATE_STREAM_COMPLETE;
-  // IP based pooling is only enabled on a retry after 421 Misdirected Request
+  // IP based pooling is only disabled on a retry after 421 Misdirected Request
   // is received. Alternative Services are also disabled in this case (though
   // they can also be disabled when retrying after a QUIC error).
-  if (!enable_ip_based_pooling_)
+  if (!enable_ip_based_pooling_) {
     DCHECK(!enable_alternative_services_);
+  }
 
   create_stream_start_time_ = base::TimeTicks::Now();
   if (ForWebSocketHandshake()) {
