@@ -1429,8 +1429,8 @@
   },
   {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
-    "owners": [ "shuuran@chromium.org", "kaustubhag@chromium.org" ],
-    "expiry_milestone": 115
+    "owners": [ "ladan@chromium.org", "miketaylr@chromium.org" ],
+    "expiry_milestone": 141
   },
   {
     "name": "clear-login-database-for-all-migrated-upm-users",
