@@ -94,8 +94,7 @@ TEST_F(RefillMetricsTest,
   base::HistogramTester histogram_tester;
   autofill_manager().OnJavaScriptChangedAutofilledValue(
       form_after_js_modification,
-      form_after_js_modification.fields()[2].global_id(), u"04/2099",
-      /*formatting_only=*/false);
+      form_after_js_modification.fields()[2].global_id(), u"04/2099");
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.RefillTriggerReason",

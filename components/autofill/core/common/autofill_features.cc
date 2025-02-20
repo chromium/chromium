@@ -212,16 +212,6 @@ BASE_FEATURE(kAutofillOptimizeFormExtraction,
              "AutofillOptimizeFormExtraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Resets the autofill state of a field when JavaScript modifies its value.
-// Also resets the AutofillState of the blink element to kAutofilled if the
-// change was only a reformatting (inserting whitespaces and special
-// characters).
-// This feature should be enabled with
-// blink::features::AllowJavaScriptToResetAutofillState.
-BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
-             "AutofillFixCachingOnJavaScriptChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Fixes the overloaded meaning of FormFieldData::value (current value of a
 // field and initial value of a field): if enabled, AutofillField::value() takes
 // into accounts its ValueSemantics parameter.

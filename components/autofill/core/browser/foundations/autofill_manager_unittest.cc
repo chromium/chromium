@@ -451,8 +451,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
 
   EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue(m, f, ff));
   EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue(m, f, ff));
-  manager().OnJavaScriptChangedAutofilledValue(form, field.global_id(), {},
-                                               /*formatting_only=*/false);
+  manager().OnJavaScriptChangedAutofilledValue(form, field.global_id(), {});
 
   // TODO(crbug.com/) Test in browser_autofill_manager_unittest.cc that
   // FillOrPreviewForm() triggers OnFillOrPreviewDataModelForm().

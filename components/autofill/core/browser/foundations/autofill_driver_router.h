@@ -215,15 +215,14 @@ class AutofillDriverRouter {
   void FocusOnNonFormField(RoutedCallback<> callback, AutofillDriver& source);
   // This event is broadcast to all drivers.
   void HidePopup(RoutedCallback<> callback, AutofillDriver& source);
-  void JavaScriptChangedAutofilledValue(RoutedCallback<const FormData&,
-                                                       const FieldGlobalId&,
-                                                       const std::u16string&,
-                                                       bool> callback,
-                                        AutofillDriver& source,
-                                        FormData form,
-                                        const FieldGlobalId& field_id,
-                                        const std::u16string& old_value,
-                                        bool formatting_only);
+  void JavaScriptChangedAutofilledValue(
+      RoutedCallback<const FormData&,
+                     const FieldGlobalId&,
+                     const std::u16string&> callback,
+      AutofillDriver& source,
+      FormData form,
+      const FieldGlobalId& field_id,
+      const std::u16string& old_value);
   void SelectFieldOptionsDidChange(RoutedCallback<const FormData&> callback,
                                    AutofillDriver& source,
                                    FormData form);

@@ -2120,8 +2120,7 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
 void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
     const FormData& form,
     const FieldGlobalId& field_id,
-    const std::u16string& old_value,
-    bool formatting_only) {
+    const std::u16string& old_value) {
   // Log to chrome://autofill-internals that a field's value was set by
   // JavaScript.
   auto StructureOfString = [](std::u16string str) {
@@ -2165,11 +2164,8 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
                              &form_structure, &autofill_field)) {
     return;
   }
-  AnalyzeJavaScriptChangedAutofilledValue(
-      *form_structure, *autofill_field, field.value().empty(), formatting_only);
-  if (formatting_only) {
-    return;
-  }
+  AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field,
+                                          field.value().empty());
   form_filler_->MaybeTriggerRefillForExpirationDate(
       form, field, *form_structure, old_value,
       AutofillTriggerSource::kJavaScriptChangedAutofilledValue);
@@ -2178,13 +2174,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
     const FormStructure& form,
     AutofillField& field,
-    bool cleared_value,
-    bool formatting_only) {
-  if (!formatting_only &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillFixCachingOnJavaScriptChanges)) {
-    field.set_is_autofilled(false);
-  }
+    bool cleared_value) {
   // We are interested in reporting the events where JavaScript resets an
   // autofilled value immediately after filling. For a reset, the value
   // needs to be empty.

@@ -264,8 +264,7 @@ class AutofillManager
   virtual void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FieldGlobalId& field_id,
-      const std::u16string& old_value,
-      bool formatting_only);
+      const std::u16string& old_value);
 
   // Invoked when the suggestions are actually hidden.
   void OnSuggestionsHidden();
@@ -394,8 +393,7 @@ class AutofillManager
   virtual void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,
       const FieldGlobalId& field_id,
-      const std::u16string& old_value,
-      bool formatting_only) = 0;
+      const std::u16string& old_value) = 0;
 
   // Return whether the |forms| from OnFormSeen() should be parsed to
   // form_structures.

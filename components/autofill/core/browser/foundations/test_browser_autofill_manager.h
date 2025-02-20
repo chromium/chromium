@@ -62,10 +62,10 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                           const FieldGlobalId& field_id) override;
   void OnDidFillAutofillFormData(const FormData& form,
                                  const base::TimeTicks timestamp) override;
-  void OnJavaScriptChangedAutofilledValue(const FormData& form,
-                                          const FieldGlobalId& field_id,
-                                          const std::u16string& old_value,
-                                          bool formatting_only) override;
+  void OnJavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const std::u16string& old_value) override;
   void OnFormSubmitted(const FormData& form,
                        const mojom::SubmissionSource source) override;
 
