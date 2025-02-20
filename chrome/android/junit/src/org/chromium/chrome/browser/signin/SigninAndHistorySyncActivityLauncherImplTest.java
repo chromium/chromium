@@ -4,16 +4,9 @@
 
 package org.chromium.chrome.browser.signin;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,8 +16,10 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,11 +28,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -48,24 +47,25 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfi
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.widget.ToastManager;
 
-/** Tests {@link SigninAndHistorySyncActivityLauncherImpl}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+/**
+ * Tests {@link SigninAndHistorySyncActivityLauncherImpl}.
+ *
+ * <p>TODO(crbug.com/354912290): Update this test when the error UI will be implemented.
+ */
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowToast.class})
 public class SigninAndHistorySyncActivityLauncherImplTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    @Rule
-    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule(BlankUiTestActivity.class);
 
     private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
             new AccountPickerBottomSheetStrings.Builder(
@@ -81,7 +81,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                             HistorySyncConfig.OptInMode.REQUIRED)
                     .build();
 
-    @Mock private Context mContextMock;
+    private Context mContext = ContextUtils.getApplicationContext();
     @Mock private IdentityServicesProvider mIdentityProviderMock;
     @Mock private SigninManager mSigninManagerMock;
     @Mock private IdentityManager mIdentityManagerMock;
@@ -92,8 +92,13 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mIdentityProviderMock);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
-        mActivityTestRule.launchActivity(null);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
+    }
+
+    @After
+    public void tearDown() {
+        ShadowToast.reset();
+        ToastManager.resetForTesting();
     }
 
     @Test
@@ -107,7 +112,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             BOTTOM_SHEET_CONFIG,
                                             SigninAccessPoint.RECENT_TABS);
@@ -134,7 +139,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             config,
                                             SigninAccessPoint.RECENT_TABS);
@@ -156,7 +161,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             BOTTOM_SHEET_CONFIG,
                                             SigninAccessPoint.RECENT_TABS);
@@ -179,18 +184,17 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             BOTTOM_SHEET_CONFIG,
                                             SigninAccessPoint.RECENT_TABS);
                     assertNull(intent);
                 });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
+        verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
     }
 
     @Test
     @MediumTest
-    // TODO(crbug.com/41493758): Update this test when the error UI will be implemented.
     public void testCreateBottomSheetSigninIntentOrShowError_signinDisabledByPolicy() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
@@ -204,15 +208,13 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
                             .createBottomSheetSigninIntentOrShowError(
-                                    mActivityTestRule.getActivity(),
+                                    mContext,
                                     mProfileMock,
                                     BOTTOM_SHEET_CONFIG,
                                     SigninAccessPoint.RECENT_TABS);
                 });
 
-        onView(withText(R.string.managed_by_your_organization))
-                .inRoot(withDecorView(allOf(withId(R.id.toast_text))))
-                .check(matches(isDisplayed()));
+        verifyToastShown(R.string.managed_by_your_organization);
         watchSigninDisabledToastShownHistogram.assertExpected();
     }
 
@@ -230,13 +232,13 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             BOTTOM_SHEET_CONFIG,
                                             SigninAccessPoint.RECENT_TABS);
                     assertNull(intent);
                 });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
+        verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
     }
 
     @Test
@@ -261,13 +263,13 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             config,
                                             SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                     assertNull(intent);
                 });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
+        verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
     }
 
     @Test
@@ -282,7 +284,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
@@ -305,7 +307,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
@@ -330,7 +332,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
@@ -354,7 +356,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
@@ -378,7 +380,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
@@ -398,7 +400,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
@@ -421,13 +423,13 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
+        verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
     }
 
     @Test
@@ -447,7 +449,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
@@ -471,13 +473,13 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
+        verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
     }
 
     @Test
@@ -496,12 +498,19 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock,
+                                            mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
+        verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
+    }
+
+    private void verifyToastShown(@StringRes int stringId) {
+        assertTrue(
+                "Toast is not as expected",
+                ShadowToast.showedCustomToast(
+                        ContextUtils.getApplicationContext().getString(stringId), R.id.toast_text));
     }
 }
