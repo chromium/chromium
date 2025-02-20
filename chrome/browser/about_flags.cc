@@ -8733,9 +8733,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlobalVaapiLockDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(media::kGlobalVaapiLock)},
 
-#if BUILDFLAG(IS_WIN) ||                                      \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     {
         "ui-debug-tools",
         flag_descriptions::kUIDebugToolsName,
@@ -9189,7 +9187,7 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(switches::kDemoModeTestTag, "")},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
     {"enable-delegated-compositing",
      flag_descriptions::kEnableDelegatedCompositingName,
      flag_descriptions::kEnableDelegatedCompositingDescription, kOsAll,

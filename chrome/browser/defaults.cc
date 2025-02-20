@@ -6,41 +6,28 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace browser_defaults {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 const bool kBrowserAliveWithNoWindows = true;
-const bool kShowExitMenuItem = false;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-// Note: Lacros can get kicked out of memory when the last window closes.
-const bool kBrowserAliveWithNoWindows = false;
 const bool kShowExitMenuItem = false;
 #else
 const bool kBrowserAliveWithNoWindows = false;
 const bool kShowExitMenuItem = true;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const bool kShowUpgradeMenuItem = false;
 const bool kShowImportOnBookmarkBar = false;
 const bool kAlwaysOpenIncognitoBrowserIfStartedWithIncognitoSwitch = true;
+const bool kAlwaysCreateTabbedBrowserOnSessionRestore = false;
+const bool kShowHelpMenuItemIcon = true;
 #else
 const bool kShowUpgradeMenuItem = true;
 const bool kShowImportOnBookmarkBar = true;
 const bool kAlwaysOpenIncognitoBrowserIfStartedWithIncognitoSwitch = false;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-const bool kAlwaysCreateTabbedBrowserOnSessionRestore = false;
-#else
 const bool kAlwaysCreateTabbedBrowserOnSessionRestore = true;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const bool kShowHelpMenuItemIcon = true;
-#else
 const bool kShowHelpMenuItemIcon = false;
 #endif
 

@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -99,12 +98,9 @@ BASE_FEATURE(kUseFreedesktopSecretKeyProvider,
 
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
-// On Lacros the feature is enabled only for secondary profiles, check the
-// implementation of `ProfileManager::ProfileInfo::FromUnownedProfile()`.
 BASE_FEATURE(kDestroyProfileOnBrowserClose,
              "DestroyProfileOnBrowserClose",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
