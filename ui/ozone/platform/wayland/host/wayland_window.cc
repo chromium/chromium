@@ -685,7 +685,7 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
       // need it to traverse menu options, or type in text boxes.
       auto* bubble = active_bubble();
       while (bubble->active_bubble()) {
-        bubble = active_bubble();
+        bubble = bubble->active_bubble();
       }
       return bubble->DispatchEventToDelegate(event);
     } else {
