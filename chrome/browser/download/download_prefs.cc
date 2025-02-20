@@ -267,11 +267,12 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
     // automatically can change in the future. When the list is tightened, it is
     // expected that some entries in the users' auto open list will get dropped
     // permanently as a result.
-    if (FileTypePolicies::GetInstance()->IsAllowedToOpenAutomatically(
+    if (!FileTypePolicies::GetInstance()->IsAllowedToOpenAutomatically(
             filename_with_extension)) {
-      auto_open_by_user_.insert(extension);
+      continue;
     }
 #endif
+    auto_open_by_user_.insert(extension);
   }
 }
 
