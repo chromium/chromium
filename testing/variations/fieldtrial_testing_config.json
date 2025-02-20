@@ -621,7 +621,7 @@
             ],
             "experiments": [
                 {
-                    "name": "DefaultAfterLoading",
+                    "name": "CreateByDefault_AfterLoading",
                     "params": {
                         "spare_renderer_creation_timing": "after-loading",
                         "spare_renderer_timeout_seconds": "60"
