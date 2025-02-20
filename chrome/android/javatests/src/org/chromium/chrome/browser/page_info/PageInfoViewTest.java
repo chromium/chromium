@@ -1459,7 +1459,7 @@ public class PageInfoViewTest {
     /** Tests that the User Bypass has an accessibility live region set up correctly. */
     @Test
     @MediumTest
-    public void testA11yLiveRegionInUserBypass() throws Exception {
+    public void a11yLiveRegionInUserBypass() throws Exception {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
@@ -1492,6 +1492,29 @@ public class PageInfoViewTest {
                 context.getString(R.string.page_info_cookies_send_feedback_description)
                         .replaceAll("<link>|</link>", "");
         onView(withText(description))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
+    }
+
+    /** Tests that the User Bypass Launch UI has an accessibility live region set up correctly. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ACT_USER_BYPASS_UX,
+        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
+    })
+    public void a11yLiveRegionInUserBypassLauchUi() throws Exception {
+        setBlockAll3pc(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.IP_PROTECTION_ENABLED, true);
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, true);
+                });
+        launchAndCheckTrackingProtectionLaunchUi();
+        // Verify the a11y live region.
+        onView(withText(R.string.page_info_tracking_protection_title_on))
                 .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
     }
 

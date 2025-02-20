@@ -1129,9 +1129,7 @@ enum class PasskeyCreationEligibility {
   if (purpose == PasskeyWelcomeScreenPurpose::kEnroll) {
     userEmail = [self userEmail];
     if (!userEmail.length) {
-      // TODO(crbug.com/381284523): When on M135, show generic alert screen
-      // instead.
-      [self showSignedOutUserAlert];
+      [self showGenericErrorAlert];
       return;
     }
   }

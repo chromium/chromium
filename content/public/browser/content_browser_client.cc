@@ -1299,7 +1299,7 @@ ContentBrowserClient::CreateClientCertStore(BrowserContext* browser_context) {
 
 std::unique_ptr<LoginDelegate> ContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     BrowserContext* browser_context,
     const GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame_navigation,
@@ -1308,7 +1308,7 @@ std::unique_ptr<LoginDelegate> ContentBrowserClient::CreateLoginDelegate(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
     GuestPageHolder* guest,
-    LoginAuthRequiredCallback auth_required_callback) {
+    LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   return nullptr;
 }
 

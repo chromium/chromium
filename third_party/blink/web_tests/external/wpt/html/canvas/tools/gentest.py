@@ -9,11 +9,6 @@
 # -change to the directory with this script and run it
 #   python3 gentest.py
 
-from gentestutils import genTestUtils
 import gentestutilsunion
 
-genTestUtils('../element', '../element', 'templates.yaml',
-             'name2dir-canvas.yaml', False)
-genTestUtils('../offscreen', '../offscreen', 'templates.yaml',
-             'name2dir-offscreen.yaml', True)
 gentestutilsunion.generate_test_files('name2dir.yaml')

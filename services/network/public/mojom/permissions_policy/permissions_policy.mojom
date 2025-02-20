@@ -22,7 +22,7 @@ struct OriginWithPossibleWildcards {
 // This struct holds permissions policy allowlist data that needs to be replicated
 // between a RenderFrame and any of its associated RenderFrameProxies. A list of
 // these form a ParsedPermissionsPolicy.
-// NOTE: These types are used for replication frame state between processes.
+// NOTE: These types are used for replication of frame state between processes.
 struct ParsedPermissionsPolicyDeclaration {
   PermissionsPolicyFeature feature;
   array<OriginWithPossibleWildcards> allowed_origins;

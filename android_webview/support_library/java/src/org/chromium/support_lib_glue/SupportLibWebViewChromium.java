@@ -7,6 +7,7 @@ package org.chromium.support_lib_glue;
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -274,6 +275,14 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                             CallbackConverter.fromValueCallback(errorCallback));
         } catch (Exception e) {
             callbackExecutor.execute(() -> errorCallback.onReceiveValue(e));
+        }
+    }
+
+    @Override
+    public void saveState(Bundle outState, int maxSize, boolean includeForwardState) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.SAVE_STATE")) {
+            recordApiCall(ApiCall.SAVE_STATE);
+            mSharedWebViewChromium.saveState(outState, maxSize, includeForwardState);
         }
     }
 }

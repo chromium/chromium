@@ -39,6 +39,22 @@ class SaveAutofillAiDataController {
     kLostFocus,
   };
 
+  enum class EntityAttributeUpdateType {
+    kNewEntityAttributeAdded,
+    kNewEntityAttributeUpdated,
+    kNewEntityAttributeUnchanged,
+    kOldEntityAttributeUpdated
+  };
+
+  // Specifies for each attribute of a new instance whether the attribute is
+  // new, updated, or unchanged. Also includes updates of an old instance
+  // attribute that had its value changed.
+  struct EntityAttributeUpdateDetails {
+    std::u16string attribute_name;
+    std::u16string attribute_value;
+    EntityAttributeUpdateType update_type{};
+  };
+
   SaveAutofillAiDataController() = default;
   SaveAutofillAiDataController(const SaveAutofillAiDataController&) = delete;
   SaveAutofillAiDataController& operator=(const SaveAutofillAiDataController&) =
@@ -60,6 +76,12 @@ class SaveAutofillAiDataController {
   virtual void OnSaveButtonClicked() = 0;
 
   virtual std::u16string GetDialogTitle() const = 0;
+
+  // Returns details about the new/updated prompted entity. This is used by the
+  // UI layer to give users details about what changes will be done if they
+  // accept the prompt.
+  virtual std::vector<EntityAttributeUpdateDetails>
+  GetUpdatedAttributesDetails() const = 0;
 
   // Returns the Autofill AI data to be displayed in the UI.
   virtual base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()

@@ -49,8 +49,8 @@ class PdfInkModuleClient {
 
   // Gets the current scaled and rotated rectangle area of the page in CSS
   // screen coordinates for the 0-based page index.  Must be non-empty for any
-  // non-negative index returned from `VisiblePageIndexFromPoint()`.
-  virtual gfx::Rect GetPageContentsRect(int index) = 0;
+  // non-negative page index returned from `VisiblePageIndexFromPoint()`.
+  virtual gfx::Rect GetPageContentsRect(int page_index) = 0;
 
   // Gets the offset within the rendering viewport to where the page images
   // will be drawn.  Since the offset is a location within the viewport, it

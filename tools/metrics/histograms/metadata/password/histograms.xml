@@ -5072,7 +5072,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.SampleReportSent" enum="Boolean"
-    expires_after="2025-02-10">
+    expires_after="2026-02-20">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

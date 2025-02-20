@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"

@@ -237,6 +237,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_LEGACY_INITWITHPREV_LAYER_SIZING
 
+#define SK_DISABLE_GRAPHITE_CLIP_ATLAS
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,

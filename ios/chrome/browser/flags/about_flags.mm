@@ -846,6 +846,14 @@ const FeatureEntry::FeatureVariation kContextualPanelEntrypointArmVariations[] =
          std::size(kContextualPanelSmallIPHWithBlueHighlightArm), nullptr},
 };
 
+const FeatureEntry::FeatureParam kIdentityDiscAccountMenuNoEllipsis[] = {
+    {kDisableAccountMenuEllipsisParam, "true"},
+};
+const FeatureEntry::FeatureVariation kIdentityDiscAccountMenuVariations[] = {
+    {" - without account menu ellipsis", kIdentityDiscAccountMenuNoEllipsis,
+     std::size(kIdentityDiscAccountMenuNoEllipsis), nullptr},
+};
+
 const FeatureEntry::FeatureParam kIdentityConfirmationSnackbarTestingConfig[] =
     {{"IdentityConfirmationMinDisplayInterval1", "0"},
      {"IdentityConfirmationMinDisplayInterval2", "0"},
@@ -1974,7 +1982,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"identity-disc-account-menu",
      flag_descriptions::kIdentityDiscAccountMenuName,
      flag_descriptions::kIdentityDiscAccountMenuDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIdentityDiscAccountMenu)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIdentityDiscAccountMenu,
+                                    kIdentityDiscAccountMenuVariations,
+                                    "IdentityDiscAccountMenu")},
     {"identity-confirmation-snackbar",
      flag_descriptions::kIdentityConfirmationSnackbarName,
      flag_descriptions::kIdentityConfirmationSnackbarDescription,

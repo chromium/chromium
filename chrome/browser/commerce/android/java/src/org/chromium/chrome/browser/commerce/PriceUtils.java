@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.commerce;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 
 import java.util.Locale;
 
 /** Utilities to format price strings for UI. */
+@NullMarked
 public class PriceUtils {
     private static final int FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS = 2;
     private static final int FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS = 0;

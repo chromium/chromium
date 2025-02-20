@@ -20,11 +20,6 @@ namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
 
-// Notification sent when the user starts a side swipe (on tablet).
-extern NSString* const kSideSwipeWillStartNotification;
-// Notification sent when the user finishes a side swipe (on tablet).
-extern NSString* const kSideSwipeDidStopNotification;
-
 enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 
 @protocol SideSwipeMediatorDelegate
@@ -117,14 +112,15 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 // specified direction.
 //
 // This method sets up for an overlay navigation transition where the entire
-// screen is initially positioned offscreen. A snapshot of the screen is taken
-// and used to replace the current fullscreen view, creating a seamless slide-in
-// effect when `slideToCenterAnimated` is called.
+// screen is initially positioned offscreen. A snapshot of the screen is passed
+// as an argument and used to replace the current fullscreen view, creating a
+// seamless slide-in effect when `slideToCenterAnimated` is called.
 //
 // Important: After calling this method, you must call `slideToCenterAnimated`
 // to restore the fullscreen view to its original position and complete the
 // transition.
-- (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction;
+- (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction
+                     snapshotImage:(UIImage*)snapshotImage;
 
 // Restores the fullscreen view to its original position with an animation.
 //

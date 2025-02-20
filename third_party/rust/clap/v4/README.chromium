@@ -1,9 +1,9 @@
 Name: clap
 URL: https://crates.io/crates/clap
-Version: 4.5.28
-Revision: 336b645258d8433dff145785a4717ac3b991d241
+Version: 4.5.29
+Revision: 6717cf142f21d9761d58dccb8f37077b498dcedd
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/clap-4.5.28/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/clap-4.5.29/LICENSE-APACHE
 Shipped: no
 Security Critical: yes
 

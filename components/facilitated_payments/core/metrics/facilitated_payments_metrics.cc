@@ -17,7 +17,7 @@ namespace payments::facilitated {
 namespace {
 
 // Helper to convert `PurchaseActionResult` to a string for logging.
-std::string GetInitiatePurchaseActionResultString(PurchaseActionResult result) {
+std::string GetPurchaseActionResultString(PurchaseActionResult result) {
   switch (result) {
     case PurchaseActionResult::kResultOk:
       return "Succeeded";
@@ -299,7 +299,15 @@ void LogPixInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
                                                   base::TimeDelta duration) {
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
-                    GetInitiatePurchaseActionResultString(result), ".Latency"}),
+                    GetPurchaseActionResultString(result), ".Latency"}),
+      duration);
+}
+
+void LogPixTransactionResultAndLatency(PurchaseActionResult result,
+                                       base::TimeDelta duration) {
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.Pix.Transaction.",
+                    GetPurchaseActionResultString(result), ".Latency"}),
       duration);
 }
 
@@ -310,12 +318,12 @@ void LogEwalletInitiatePurchaseActionResultAndLatency(
     bool is_device_bound) {
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
-                    GetInitiatePurchaseActionResultString(result), ".Latency",
+                    GetPurchaseActionResultString(result), ".Latency",
                     is_device_bound ? ".DeviceBound" : ".DeviceNotBound"}),
       duration);
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
-                    GetInitiatePurchaseActionResultString(result), ".Latency.",
+                    GetPurchaseActionResultString(result), ".Latency.",
                     SchemeToString(scheme),
                     is_device_bound ? ".DeviceBound" : ".DeviceNotBound"}),
       duration);

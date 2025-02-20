@@ -104,16 +104,16 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   content::TtsPlatform* GetTtsPlatform() override;
   std::unique_ptr<LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
-      content::WebContents* web_contents,
-      content::BrowserContext* browser_context,
-      const content::GlobalRequestID& request_id,
+      WebContents* web_contents,
+      BrowserContext* browser_context,
+      const GlobalRequestID& request_id,
       bool is_request_for_primary_main_frame_navigation,
       bool is_request_for_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
       GuestPageHolder* guest,
-      LoginAuthRequiredCallback auth_required_callback) override;
+      LoginDelegate::LoginAuthRequiredCallback auth_required_callback) override;
 #if BUILDFLAG(IS_WIN)
   bool PreSpawnChild(sandbox::TargetConfig* config,
                      sandbox::mojom::Sandbox sandbox_type,

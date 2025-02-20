@@ -49,6 +49,8 @@ class FullscreenControllerImpl : public FullscreenController {
   void EnterForceFullscreenMode(bool insets_update_enabled) override;
   void ExitForceFullscreenMode() override;
   void ResizeHorizontalViewport() override;
+  void SetToolbarUIState(ToolbarUIState* toolbar_ui_state) override;
+  ToolbarUIState* GetToolbarUIState() const override;
 
  private:
   // The broadcaster that drives the model.
@@ -66,6 +68,10 @@ class FullscreenControllerImpl : public FullscreenController {
   __strong ChromeBroadcastOberverBridge* bridge_ = nil;
   // A helper object that listens for system notifications.
   __strong FullscreenSystemNotificationObserver* notification_observer_ = nil;
+  // The toolbar UI state that is used to determine the toolbar's visibility.
+  // TODO(crbug.com/397683088): Move this to the browser so that it is not a
+  // dependency of fullscreen.
+  __strong ToolbarUIState* toolbar_ui_state_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_CONTROLLER_IMPL_H_

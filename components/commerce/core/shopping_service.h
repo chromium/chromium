@@ -241,6 +241,14 @@ class ShoppingService : public KeyedService,
   virtual void GetProductInfoForUrl(const GURL& url,
                                     ProductInfoCallback callback);
 
+  // Attempts to retrieve product info for all of the URLs provided in |urls|.
+  // This API behaves the same as |GetProductInfoForUrl| with the exception of
+  // how on-demand requests are handled - rather than fetching individually,
+  // they are batched. The entire set of info is provided to the callback once
+  // complete.
+  virtual void GetProductInfoForUrls(const std::vector<GURL>& urls,
+                                     ProductInfoBatchCallback callback);
+
   // This API returns whatever product information is currently available for
   // the specified |url|. This method is less reliable than GetProductInfoForUrl
   // above as it may return an empty or partial result prior to the page being
@@ -492,10 +500,17 @@ class ShoppingService : public KeyedService,
       const optimization_guide::OptimizationMetadata& metadata,
       const GURL& url);
 
+  // The internal impl that supports the different variations of the public
+  // ProductInfo APIs.
+  void GetProductInfoForUrlInternal(const GURL& url,
+                                    ProductInfoCallback callback,
+                                    bool attempt_on_demand_fetch);
+
   void HandleOptGuideProductInfoResponse(
       const GURL& url,
       WebWrapper* web,
       ProductInfoCallback callback,
+      bool attempt_on_demand,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
@@ -514,6 +529,22 @@ class ShoppingService : public KeyedService,
   // accepts a repeating callback, it should only ever be called once.
   void HandleOnDemandProductInfoResponse(
       RepeatingProductInfoCallback callback,
+      const GURL& url,
+      const base::flat_map<
+          optimization_guide::proto::OptimizationType,
+          optimization_guide::OptimizationGuideDecisionWithMetadata>&
+          decisions);
+
+  // Handles the on-demand part of |GetProductInfoForUrls|, waiting for all
+  // fetches to complete before executing the callback.
+  void DoOnDemandFetchForProductInfoUrlBatch(
+      std::vector<GURL> urls,
+      std::map<GURL, std::optional<ProductInfo>> info_map,
+      ProductInfoBatchCallback callback);
+
+  // Process the result of an on-demand request for product info and handle any
+  // related cache maintenance.
+  std::optional<ProductInfo> HandleAndStoreProductInfoFromOnDemand(
       const GURL& url,
       const base::flat_map<
           optimization_guide::proto::OptimizationType,

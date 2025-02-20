@@ -32,8 +32,10 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
@@ -42,6 +44,10 @@
 class AutocompleteControllerTest : public testing::Test {
  public:
   AutocompleteControllerTest() : controller_(&task_environment_) {}
+
+  void SetUp() override {
+    EnterpriseSearchManager::RegisterProfilePrefs(pref_service()->registry());
+  }
 
   void SetAutocompleteMatches(const std::vector<AutocompleteMatch>& matches) {
     controller_.internal_result_.ClearMatches();
@@ -61,6 +67,11 @@ class AutocompleteControllerTest : public testing::Test {
   FakeAutocompleteProviderClient* provider_client() {
     return static_cast<FakeAutocompleteProviderClient*>(
         controller_.autocomplete_provider_client());
+  }
+
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+        provider_client()->GetPrefs());
   }
 
  protected:
@@ -2131,15 +2142,13 @@ TEST_F(AutocompleteControllerTest,
   add_template_url("aggregator_featured",
                    TemplateURLData::PolicyOrigin::kSearchAggregator, true);
 
+  // Setup the providers.
   auto aggregator_provider = base::MakeRefCounted<FakeAutocompleteProvider>(
       AutocompleteProvider::Type::TYPE_ENTERPRISE_SEARCH_AGGREGATOR);
   controller_.providers_.push_back(aggregator_provider);
   auto document_provider = base::MakeRefCounted<FakeAutocompleteProvider>(
       AutocompleteProvider::Type::TYPE_DOCUMENT);
   controller_.providers_.push_back(document_provider);
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::SearchAggregatorProvider>
-      scoped_config;
 
   // In unscoped mode (not keyword mode), aggregator is run when
   // `require_shortcut` policy field is false, and is not run when
@@ -2150,13 +2159,10 @@ TEST_F(AutocompleteControllerTest,
   EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
   EXPECT_FALSE(controller_.ShouldRunProvider(document_provider.get()));
 
-  scoped_config.Get().require_shortcut = true;
-  scoped_config.Get().enabled = true;
-  scoped_config.Get().shortcut = "siteSearch";
-  scoped_config.Get().name = "scoped";
-  scoped_config.Get().search_url = "siteSearch/{searchTerms}";
-  scoped_config.Get().suggest_url = "siteSearch";
-
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      base::Value(true));
   EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
   EXPECT_TRUE(controller_.ShouldRunProvider(document_provider.get()));
 
@@ -2165,13 +2171,16 @@ TEST_F(AutocompleteControllerTest,
       metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
 
   // Aggregator not ran when in site search mode, regardless of
-  // `require_shortcut` value.
+  // `enterprise_search_aggregator_settings.require_shortcut` pref value.
   controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
   EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
   controller_.input_.UpdateText(u"site_search_featured", 0, {});
   EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
 
-  scoped_config.Get().require_shortcut = false;
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      base::Value(false));
   controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
   EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
   controller_.input_.UpdateText(u"site_search_featured", 0, {});

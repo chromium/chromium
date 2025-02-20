@@ -62,8 +62,9 @@
 
 namespace {
 
-static constexpr std::array<PageActionIconType, 2> kMigratedPageActionTypes = {
+static constexpr std::array<PageActionIconType, 3> kMigratedPageActionTypes = {
     PageActionIconType::kLensOverlay,
+    PageActionIconType::kMemorySaver,
     PageActionIconType::kTranslate,
 };
 

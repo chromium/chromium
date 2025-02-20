@@ -10023,7 +10023,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"deprecate-unload", flag_descriptions::kDeprecateUnloadName,
      flag_descriptions::kDeprecateUnloadDescription, kOsAll | kDeprecated,
-     FEATURE_VALUE_TYPE(blink::features::kDeprecateUnload)},
+     FEATURE_VALUE_TYPE(network::features::kDeprecateUnload)},
 
     {"autofill-enable-fpan-risk-based-authentication",
      flag_descriptions::kAutofillEnableFpanRiskBasedAuthenticationName,

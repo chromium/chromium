@@ -18,6 +18,13 @@ declare_args() {
   # If toolchain roll breaks due to usage of nightly features, it is OK to flip
   # this off. Please ping OWNERS of texture_compressor on the CL.
   enable_new_texture_compressor = true
+
+  # TODO(crbug.com/393494744): The Rust compiler does not assume NEON for
+  # ARMv6/v7, so disable the new compressor as it results in slow scalar code
+  # and binary size bloat.
+  if (current_cpu == "arm") {
+    enable_new_texture_compressor = false
+  }
 }
 
 buildflag_header("buildflags") {

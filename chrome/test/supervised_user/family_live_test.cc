@@ -330,8 +330,7 @@ InteractiveFamilyLiveTest::WaitForStateSeeding(
   return Steps(
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: start"})),
       If([&]() { return !state.Check(browser_user.GetServices()); },
-         /*then_steps=*/
-         Steps(
+         Then(
              Do([&]() {
                state.Seed(rpc_issuer().identity_manager(),
                           rpc_issuer().url_loader_factory(),
@@ -346,8 +345,7 @@ InteractiveFamilyLiveTest::WaitForStateSeeding(
                  },
                  /*polling_interval=*/base::Seconds(2)),
              WaitForState(id, true), StopObservingState(id)),
-         /*else_steps=*/
-         Steps(Log(base::StrCat(
+         Else(Log(base::StrCat(
              {"WaitForState[", state.ToString(), "]: seeding skipped"})))),
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: completed"})));
 }

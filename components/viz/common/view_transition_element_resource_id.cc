@@ -15,8 +15,11 @@ ViewTransitionElementResourceId::~ViewTransitionElementResourceId() = default;
 
 ViewTransitionElementResourceId::ViewTransitionElementResourceId(
     const blink::ViewTransitionToken& transition_token,
-    uint32_t local_id)
-    : transition_token_(transition_token), local_id_(local_id) {
+    uint32_t local_id,
+    bool for_subframe_snapshot)
+    : transition_token_(transition_token),
+      local_id_(local_id),
+      for_subframe_snapshot_(for_subframe_snapshot) {
   CHECK_NE(local_id, kInvalidLocalId);
 }
 
@@ -27,7 +30,8 @@ bool operator==(const ViewTransitionElementResourceId& lhs,
   }
 
   return lhs.local_id_ == rhs.local_id_ &&
-         lhs.transition_token_ == rhs.transition_token_;
+         lhs.transition_token_ == rhs.transition_token_ &&
+         lhs.for_subframe_snapshot_ == rhs.for_subframe_snapshot_;
 }
 
 bool ViewTransitionElementResourceId::IsValid() const {
@@ -36,8 +40,10 @@ bool ViewTransitionElementResourceId::IsValid() const {
 
 std::string ViewTransitionElementResourceId::ToString() const {
   return base::StringPrintf(
-      "ViewTransitionElementResourceId : %u [transition: %s]", local_id_,
-      transition_token_ ? transition_token_->ToString().c_str() : "invalid");
+      "ViewTransitionElementResourceId : %u [transition: %s, for_subframe: %d]",
+      local_id_,
+      transition_token_ ? transition_token_->ToString().c_str() : "invalid",
+      for_subframe_snapshot_);
 }
 
 bool ViewTransitionElementResourceId::MatchesToken(

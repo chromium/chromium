@@ -642,8 +642,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         public void onPageLoadStopped() {
-            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                    && !ChromeFeatureList.sBcivWithSuppression.isEnabled()) {
+            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
                 // With capture suppression, we don't capture after navigating. Instead, we schedule
                 // a capture to happen when the controls become unlocked. With BCIV, there is no
                 // surface sync, so it's more likely to scroll before the capture is complete. To

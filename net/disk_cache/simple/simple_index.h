@@ -9,8 +9,6 @@
 
 #include <list>
 #include <memory>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -29,6 +27,8 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/disk_cache.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -168,7 +168,7 @@ class NET_EXPORT_PRIVATE SimpleIndex final {
   bool UpdateEntrySize(uint64_t entry_hash,
                        base::StrictNumeric<uint32_t> entry_size);
 
-  using EntrySet = std::unordered_map<uint64_t, EntryMetadata>;
+  using EntrySet = absl::flat_hash_map<uint64_t, EntryMetadata>;
 
   // Insert an entry in the given set if there is not already entry present.
   // Returns true if the set was modified.
@@ -280,7 +280,7 @@ class NET_EXPORT_PRIVATE SimpleIndex final {
 
   // This stores all the entry_hash of entries that are removed during
   // initialization.
-  std::unordered_set<uint64_t> removed_entries_;
+  absl::flat_hash_set<uint64_t> removed_entries_;
   bool initialized_ = false;
   IndexInitMethod init_method_ = INITIALIZE_METHOD_MAX;
 

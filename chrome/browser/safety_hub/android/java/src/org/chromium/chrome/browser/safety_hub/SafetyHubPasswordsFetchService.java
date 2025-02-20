@@ -108,15 +108,21 @@ public class SafetyHubPasswordsFetchService {
 
     /** Returns true if a password fetch can be performed, namely if GMSCore can be called. */
     public boolean canPerformFetch() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB)
-                && PasswordManagerUtilBridge.areMinUpmRequirementsMet()
-                && mPasswordManagerHelper.canUseUpm();
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB) && canUseUpm();
     }
 
     public void clearPrefs() {
         mPrefService.clearPref(getBreachedPreference());
         mPrefService.clearPref(getWeakPreference());
         mPrefService.clearPref(getReusedPreference());
+    }
+
+    private boolean canUseUpm() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            return PasswordManagerUtilBridge.isPasswordManagerAvailable(mPrefService);
+        }
+        return PasswordManagerUtilBridge.areMinUpmRequirementsMet()
+                && mPasswordManagerHelper.canUseUpm();
     }
 
     private String getBreachedPreference() {

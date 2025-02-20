@@ -138,6 +138,10 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads) {
                .diskWriteExceptionDiagnostics) {
         SendDiagnostic(diagnostic, "diskwrite-exception");
       }
+      for (MXCPUExceptionDiagnostic* diagnostic in payload
+               .appLaunchDiagnostics) {
+        SendDiagnostic(diagnostic, "app-launch");
+      }
     }
   }
 }

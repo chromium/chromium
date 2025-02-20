@@ -449,9 +449,7 @@
                         "AndroidBrowserControlsInViz"
                     ],
                     "disable_features": [
-                        "AndroidBcivBottomControls",
-                        "AndroidBcivWithSimpleScheduler",
-                        "AndroidBcivWithSuppression"
+                        "AndroidBcivBottomControls"
                     ]
                 }
             ]
@@ -7172,13 +7170,17 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CustomizableSelect"
+                        "CustomizableSelect",
+                        "InputClosesSelect",
+                        "SelectParserRelaxation"
                     ]
                 },
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "CustomizableSelect"
+                        "CustomizableSelect",
+                        "InputClosesSelect",
+                        "SelectParserRelaxation"
                     ]
                 }
             ]
@@ -8654,6 +8656,25 @@
             ]
         }
     ],
+    "DwaFeature": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DwaFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "EagerPrefetchBlockUntilHeadDifferentTimeoutsRetrospective": [
         {
             "platforms": [
@@ -9717,42 +9738,6 @@
             ]
         }
     ],
-    "FeedMemoryImprovement": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2GB_20241104",
-                    "params": {
-                        "low_memory_threshold": "2048"
-                    },
-                    "enable_features": [
-                        "FeedLowMemoryImprovement"
-                    ]
-                },
-                {
-                    "name": "Enabled_4GB_20241104",
-                    "params": {
-                        "low_memory_threshold": "4096"
-                    },
-                    "enable_features": [
-                        "FeedLowMemoryImprovement"
-                    ]
-                },
-                {
-                    "name": "Enabled_All_20241104",
-                    "params": {
-                        "low_memory_threshold": "-1"
-                    },
-                    "enable_features": [
-                        "FeedLowMemoryImprovement"
-                    ]
-                }
-            ]
-        }
-    ],
     "FeedRecyclerBinderUnmountOnDetach": [
         {
             "platforms": [
@@ -10260,6 +10245,25 @@
                     },
                     "enable_features": [
                         "UseFusedLocationProvider"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GCMUseDedicatedNetworkThread": [
+        {
+            "platforms": [
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GCMUseDedicatedNetworkThread"
                     ]
                 }
             ]
@@ -12784,31 +12788,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InlineFullscreenPerfExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InputClosesSelect": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InputClosesSelect"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "InputClosesSelect"
                     ]
                 }
             ]
@@ -19885,9 +19864,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
+                    "name": "RustyPngExperimentForTests",
                     "enable_features": [
-                        "RustPng"
+                        "RustyPng"
                     ]
                 }
             ]
@@ -21728,31 +21707,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SelectFileOpenDocument"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SelectParserRelaxation": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SelectParserRelaxation"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "SelectParserRelaxation"
                     ]
                 }
             ]

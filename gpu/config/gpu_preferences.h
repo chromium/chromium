@@ -11,7 +11,6 @@
 
 #include "build/build_config.h"
 #include "gpu/gpu_export.h"
-#include "media/media_buildflags.h"
 #include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(IS_OZONE)

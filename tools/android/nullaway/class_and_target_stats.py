@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
 import collections
 import pathlib
 import subprocess
@@ -19,10 +20,16 @@ _DEPENDENCY_JSON_PATH = '/tmp/class_and_target_stats_deps.json'
 _NOMARK_LIST_PATH = pathlib.Path('/tmp/java_file_stats_file_nomark')
 _FILE_CACHE_PATH = pathlib.Path('/tmp/java_file_stats_file_cache')
 _CHROME_PACKAGE_PREFIXES = ('org.chromium', 'com.google')
-_TOP_N_RESULTS = 50
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n',
+                        '--num',
+                        type=int,
+                        default=50,
+                        help='Number of results to print, default 50.')
+    args = parser.parse_args()
     subprocess.run([
         'gsutil.py', 'cp', 'gs://clank-dependency-graphs/latest/all.json',
         _DEPENDENCY_JSON_PATH
@@ -74,10 +81,10 @@ def main():
     targets_list = list(targets.items())
     targets_list.sort(key=lambda t: t[1], reverse=True)
 
-    for n in class_nodes[:_TOP_N_RESULTS]:
+    for n in class_nodes[:args.num]:
         print(f'{len(n.inbound)=} {n.name} {n.build_targets}')
 
-    for t, num in targets_list[:_TOP_N_RESULTS]:
+    for t, num in targets_list[:args.num]:
         print(f'{t} {num=}')
 
 

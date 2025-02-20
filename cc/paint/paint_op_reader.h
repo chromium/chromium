@@ -126,6 +126,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkColorType* color_type) {
     ReadEnum<SkColorType, kLastEnum_SkColorType>(color_type);
   }
+  void Read(SkAlphaType* alpha_type) {
+    ReadEnum<SkAlphaType, kLastEnum_SkAlphaType>(alpha_type);
+  }
   void Read(PaintFlags::FilterQuality* quality) {
     ReadEnum<PaintFlags::FilterQuality, PaintFlags::FilterQuality::kLast>(
         quality);

@@ -2190,6 +2190,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Theme.ThemePrefMigration.AlreadyMigrated" enum="Boolean"
+    expires_after="2026-02-16">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records whether the theme prefs have already been migrated from the syncing
+    version to the non-syncing replacement. Recorded once per browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Theme.ThemePrefMigration.IncomingSyncingPrefApplied"
+    enum="ThemePrefInMigration" expires_after="2026-02-16">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the incoming syncing theme pref. Recorded once upon browser startup
+    when remote theme prefs are received from the server, iff they have been
+    never read before. The count of the metric should ultimately reach zero.
+  </summary>
+</histogram>
+
+<histogram name="Theme.ThemePrefMigration.MigratedPref"
+    enum="ThemePrefInMigration" expires_after="2026-02-16">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the theme pref migrated from the syncing version to the non-syncing
+    replacement. Recorded once per browser startup during pref migration iff the
+    theme pref has not already been migrated.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -187,6 +187,7 @@
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -3447,7 +3448,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       blink::switches::kDarkModeSettings,
       blink::switches::kDefaultTileWidth,
       blink::switches::kDefaultTileHeight,
-      blink::switches::kForcePermissionPolicyUnloadDefaultEnabled,
       blink::switches::kDisableImageAnimationResync,
       blink::switches::kDisableLowResTiling,
       blink::switches::kDisablePreferCompositingToLCDText,
@@ -3486,6 +3486,8 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kBrowserControlsHideThreshold,
       switches::kBrowserControlsShowThreshold,
       switches::kRunAllCompositorStagesBeforeDraw,
+
+      network::switches::kForcePermissionPolicyUnloadDefaultEnabled,
 
 #if BUILDFLAG(ENABLE_PPAPI)
       switches::kEnablePepperTesting,

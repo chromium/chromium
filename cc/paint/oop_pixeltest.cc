@@ -92,9 +92,12 @@ scoped_refptr<DisplayItemList> MakeNoopDisplayItemList() {
 }
 
 // Creates a bitmap of |size| filled with pixels of |color|.
-SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor4f color) {
+SkBitmap MakeSolidColorBitmap(gfx::Size size,
+                              SkColor4f color,
+                              SkAlphaType alpha_type = kPremul_SkAlphaType) {
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(size.width(), size.height()));
+  bitmap.allocPixels(SkImageInfo::Make(size.width(), size.height(),
+                                       kN32_SkColorType, alpha_type));
   bitmap.eraseColor(color);
   return bitmap;
 }
@@ -509,6 +512,68 @@ TEST_F(OopPixelTest, DrawImage) {
 
   auto actual = Raster(display_item_list, rect.size());
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image.png"));
+}
+
+TEST_F(OopPixelTest, DrawImageAlpha) {
+  constexpr gfx::Rect rect(100, 100);
+
+  auto bitmap_black = MakeSolidColorBitmap(rect.size(), SkColors::kBlack);
+
+  // Initialize the premul and unpremul SkPixmaps with the same color (note
+  // that SkColor4f is always unpremultiplied).
+  const SkColor4f kTestColor = {128.f / 255.f, 0.f, 0.f, 128.f / 255.f};
+  auto bitmap_premul =
+      MakeSolidColorBitmap(gfx::Size(50, 50), kTestColor, kPremul_SkAlphaType);
+  auto bitmap_unpremul = MakeSolidColorBitmap(gfx::Size(50, 50), kTestColor,
+                                              kUnpremul_SkAlphaType);
+
+  // Despite being initialized by the same SkColor, the premultiplied and
+  // unpremultiplied bitmaps will end up with different bits in them (reflecting
+  // the premultiplied vs unpremultiplied representations of the color).
+  EXPECT_NE(bitmap_premul.getAddr32(0, 0), bitmap_unpremul.getAddr32(0, 0));
+
+  const PaintImage::Id kIdBlack = 32;
+  const PaintImage::Id kIdPremul = 33;
+  const PaintImage::Id kIdUnpremul = 34;
+
+  auto paint_image_black =
+      PaintImageBuilder::WithDefault()
+          .set_image(SkImages::RasterFromBitmap(bitmap_black), 0)
+          .set_id(kIdBlack)
+          .TakePaintImage();
+  auto paint_image_premul =
+      PaintImageBuilder::WithDefault()
+          .set_image(SkImages::RasterFromBitmap(bitmap_premul), 1)
+          .set_id(kIdPremul)
+          .TakePaintImage();
+  auto paint_image_unpremul =
+      PaintImageBuilder::WithDefault()
+          .set_image(SkImages::RasterFromBitmap(bitmap_unpremul), 2)
+          .set_id(kIdUnpremul)
+          .TakePaintImage();
+
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
+
+  // Draw a black background.
+  display_item_list->push<DrawImageOp>(paint_image_black, 0.f, 0.f, sampling,
+                                       nullptr);
+  // Draw a premul image on the left.
+  display_item_list->push<DrawImageOp>(paint_image_premul, 0.f, 25.f, sampling,
+                                       nullptr);
+  // Draw an unpremul image on the right.
+  display_item_list->push<DrawImageOp>(paint_image_unpremul, 50.f, 25.f,
+                                       sampling, nullptr);
+
+  display_item_list->EndPaintOfUnpaired(rect);
+  display_item_list->Finalize();
+
+  auto actual = Raster(display_item_list, rect.size());
+
+  // The premul and unpremul images should be identical.
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_alpha_premul_unpremul.png"));
 }
 
 TEST_F(OopPixelTest, DrawImageScaled) {

@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_simulate_preconnected_peripheral
+  AttributeError: 'Bluetooth' object has no attribute 'simulate_preconnected_peripheral'
+Harness: the test ran to completion.
+

@@ -15,6 +15,7 @@ class Browser;
 class ShareKitService;
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @protocol SystemIdentity;
+class TabGroup;
 
 namespace collaboration {
 
@@ -58,6 +59,9 @@ class IOSCollaborationControllerDelegate
   void OnAuthenticationComplete(ResultCallback result,
                                 SigninCoordinatorResult sign_in_result,
                                 id<SystemIdentity> completion_info);
+
+  // Returns the local tab group that matches `either_id`.
+  const TabGroup* GetLocalGroup(const tab_groups::EitherGroupID& either_id);
 
   raw_ptr<ShareKitService> share_kit_service_;
   raw_ptr<Browser> browser_;

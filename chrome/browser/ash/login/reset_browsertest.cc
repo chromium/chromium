@@ -126,10 +126,6 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
   ~ResetTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(b/353731379): Remove when removing legacy state determination code.
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableUnifiedStateDetermination,
-        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 
@@ -170,10 +166,6 @@ class ResetOobeTest : public OobeBaseTest {
 
   // OobeBaseTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(b/353731379): Remove when removing legacy state determination code.
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableUnifiedStateDetermination,
-        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
     command_line->AppendSwitch(switches::kFirstExecAfterBoot);
     OobeBaseTest::SetUpCommandLine(command_line);
   }

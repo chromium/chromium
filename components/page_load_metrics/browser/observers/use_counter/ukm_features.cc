@@ -455,6 +455,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8AILanguageDetectorFactory_Create_Method,
           WebFeature::kV8AILanguageDetector_Destroy_Method,
           WebFeature::kCredentialManagerGetPasswordCredential,
+          WebFeature::kGeolocationWouldSucceedWhenAdScriptInStack,
+          WebFeature::kAdScriptInStackOnWatchGeoLocation,
       }));
   return *opt_in_features;
 }

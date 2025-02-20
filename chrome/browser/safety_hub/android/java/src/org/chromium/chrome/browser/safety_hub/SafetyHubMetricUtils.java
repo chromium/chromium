@@ -70,7 +70,8 @@ public class SafetyHubMetricUtils {
      */
     @StringDef({
         DashboardModuleType.UPDATE_CHECK,
-        DashboardModuleType.PASSWORDS,
+        DashboardModuleType.ACCOUNT_PASSWORDS,
+        DashboardModuleType.LOCAL_PASSWORDS,
         DashboardModuleType.SAFE_BROWSING,
         DashboardModuleType.REVOKED_PERMISSIONS,
         DashboardModuleType.NOTIFICATION_REVIEW,
@@ -79,7 +80,8 @@ public class SafetyHubMetricUtils {
     @Retention(RetentionPolicy.SOURCE)
     @interface DashboardModuleType {
         String UPDATE_CHECK = "UpdateCheck";
-        String PASSWORDS = "Passwords";
+        String ACCOUNT_PASSWORDS = "AccountPasswords";
+        String LOCAL_PASSWORDS = "LocalPasswords";
         String SAFE_BROWSING = "SafeBrowsing";
         String REVOKED_PERMISSIONS = "RevokedPermissions";
         String NOTIFICATION_REVIEW = "NotificationReview";
@@ -194,7 +196,9 @@ public class SafetyHubMetricUtils {
             case ModuleOption.UPDATE_CHECK:
                 return DashboardModuleType.UPDATE_CHECK;
             case ModuleOption.ACCOUNT_PASSWORDS:
-                return DashboardModuleType.PASSWORDS;
+                return DashboardModuleType.ACCOUNT_PASSWORDS;
+            case ModuleOption.LOCAL_PASSWORDS:
+                return DashboardModuleType.LOCAL_PASSWORDS;
             case ModuleOption.SAFE_BROWSING:
                 return DashboardModuleType.SAFE_BROWSING;
             case ModuleOption.UNUSED_PERMISSIONS:

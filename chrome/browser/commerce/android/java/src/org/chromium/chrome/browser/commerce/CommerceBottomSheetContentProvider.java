@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.commerce;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * The interface to be implemented by the individual feature to show a View in the
  * CommerceBottomSheet.
  */
+@NullMarked
 public interface CommerceBottomSheetContentProvider {
 
     /**

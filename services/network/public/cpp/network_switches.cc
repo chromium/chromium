@@ -10,6 +10,10 @@ namespace network::switches {
 // connection type.
 const char kForceEffectiveConnectionType[] = "force-effective-connection-type";
 
+// If set, the unload event cannot be disabled by default by Permissions-Policy.
+const char kForcePermissionPolicyUnloadDefaultEnabled[] =
+    "force-permission-policy-unload-default-enabled";
+
 // These mappings only apply to the host resolver.
 const char kHostResolverRules[] = "host-resolver-rules";
 

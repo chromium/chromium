@@ -124,14 +124,15 @@ class RecentActivityListMediator {
                     descriptionAndTimestamp);
 
             // Set favicon provider if favicon should be shown.
+            Callback<ImageView> faviconCallback = null;
             if (logItem.showFavicon) {
                 GURL tabUrl = new GURL(getTabLastKnownUrl(logItem));
-                Callback<ImageView> faviconCallback =
+                faviconCallback =
                         faviconView -> {
                             mFaviconProvider.fetchFavicon(tabUrl, faviconView::setImageDrawable);
                         };
-                propertyModel.set(RecentActivityListProperties.FAVICON_PROVIDER, faviconCallback);
             }
+            propertyModel.set(RecentActivityListProperties.FAVICON_PROVIDER, faviconCallback);
 
             // Set avatar provider.
             Callback<ImageView> avatarCallback =

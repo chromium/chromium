@@ -895,11 +895,10 @@ TemplateURL* TemplateURLService::GetEnterpriseSearchAggregatorEngine() const {
   return it == enterprise_search_keyword_to_turl_.end() ? nullptr : it->second;
 }
 
-bool TemplateURLService::IsShortcutRequiredForSearchAggregator() {
-  if (!enterprise_search_manager_) {
-    return true;
-  }
-  return enterprise_search_manager_->GetRequireShortcutValue();
+bool TemplateURLService::IsShortcutRequiredForSearchAggregatorEngine() const {
+  return enterprise_search_manager_
+             ? enterprise_search_manager_->GetRequireShortcutValue()
+             : false;
 }
 
 #if BUILDFLAG(IS_ANDROID)

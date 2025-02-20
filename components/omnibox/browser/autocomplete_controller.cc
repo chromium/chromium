@@ -1141,12 +1141,10 @@ bool AutocompleteController::ShouldRunProvider(
 
   // Some providers should only run in starter pack mode or in the CrOS
   // launcher. If we reach here, we're not in starter pack mode.
-  // TODO(crbug.com/384540016): Check policy field instead of finch param
-  // after policy is handled.
   bool should_run_search_aggregator_provider =
       template_url_service_ &&
       template_url_service_->GetEnterpriseSearchAggregatorEngine() &&
-      !template_url_service_->IsShortcutRequiredForSearchAggregator();
+      !template_url_service_->IsShortcutRequiredForSearchAggregatorEngine();
 
   switch (provider->type()) {
     case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:

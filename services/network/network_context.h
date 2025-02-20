@@ -406,12 +406,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CreateHostResolver(
       const std::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<mojom::HostResolver> receiver) override;
-  void VerifyCertForSignedExchange(
-      const scoped_refptr<net::X509Certificate>& certificate,
-      const GURL& url,
-      const std::string& ocsp_result,
-      const std::string& sct_list,
-      VerifyCertForSignedExchangeCallback callback) override;
+  void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
+                  const net::HostPortPair& host_port,
+                  const std::string& ocsp_result,
+                  const std::string& sct_list,
+                  VerifyCertCallback callback) override;
   void AddHSTS(const std::string& host,
                base::Time expiry,
                bool include_subdomains,
@@ -764,8 +763,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CanUploadDomainReliability(const url::Origin& origin,
                                   base::OnceCallback<void(bool)> callback);
 
-  void OnVerifyCertForSignedExchangeComplete(uint64_t cert_verify_id,
-                                             int result);
+  void OnVerifyCertComplete(uint64_t cert_verify_id, int result);
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   // Checks the Certificate Transparency policy compliance for a given
@@ -776,9 +774,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // TODO(crbug.com/41380502): This code is more-or-less duplicated in
   // SSLClientSocket and QUIC. Fold this into some CertVerifier-shaped class
   // in //net.
-  int CheckCTRequirementsForSignedExchange(
-      net::CertVerifyResult& cert_verify_result,
-      const net::HostPortPair& host_port_pair);
+  int CheckCTRequirements(net::CertVerifyResult& cert_verify_result,
+                          const net::HostPortPair& host_port_pair);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
@@ -951,9 +948,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     // So |result| must be written before |request|.
     std::unique_ptr<net::CertVerifyResult> result;
     std::unique_ptr<net::CertVerifier::Request> request;
-    VerifyCertForSignedExchangeCallback callback;
+    VerifyCertCallback callback;
     scoped_refptr<net::X509Certificate> certificate;
-    GURL url;
+    net::HostPortPair host_port;
     std::string ocsp_result;
     std::string sct_list;
   };

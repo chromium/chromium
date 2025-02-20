@@ -230,9 +230,10 @@ void HandleBadMessage(const std::string& error) {
   }
   // Don't expect bad message in normal testing and usage, but it could happen
   // if a compromised renderer process sends a bad message. Therefore, create
-  // dump in official build and crash otherwise so that it is more visible when
-  // unexpected bad message is encountered in tests.
-#if defined(OFFICIAL_BUILD)
+  // dump in official build or ipc fuzzer build where it is expected to received
+  // bad message, and crash otherwise so that it is more visible when unexpected
+  // bad message is encountered in tests.
+#if defined(OFFICIAL_BUILD) || defined(ENABLE_IPC_FUZZER)
   mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
   base::debug::DumpWithoutCrashing();
   network::debug::ClearDeserializationCrashKeyString();

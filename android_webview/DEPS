@@ -20,6 +20,7 @@ include_rules = [
   "+components/js_injection",
   "+components/network_session_configurator/common",
   "+components/metrics",
+  "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/prefs",
   "+components/services/heap_profiling/public",
   "+components/url_formatter",

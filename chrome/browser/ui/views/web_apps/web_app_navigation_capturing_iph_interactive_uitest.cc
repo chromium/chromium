@@ -273,10 +273,10 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       OpenStartPage(),
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
       If([this]() { return NavigationCapturingV2Enabled(); },
-         InSameContextAs(
+         Then(InSameContextAs(
              kDestinationPageId,
              WaitForPromo(
-                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch))),
+                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
           CheckPromoIsActive(
@@ -299,10 +299,10 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
 #endif
                        ),
       If([this]() { return NavigationCapturingV2Enabled(); },
-         InSameContextAs(
+         Then(InSameContextAs(
              kDestinationPageId,
              WaitForPromo(
-                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch))),
+                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
           CheckPromoIsActive(
@@ -327,10 +327,10 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
 #endif
                            ),
       If([this]() { return NavigationCapturingV2Enabled(); },
-         InSameContextAs(
+         Then(InSameContextAs(
              kDestinationPageId,
              WaitForPromo(
-                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch))),
+                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
           CheckPromoIsActive(
@@ -349,10 +349,10 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       OpenStartPage(), OpenApp(app_id),
       ClickLaunchLink(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
       If([this]() { return NavigationCapturingV2Enabled(); },
-         InSameContextAs(
+         Then(InSameContextAs(
              kAppPageId,
              WaitForPromo(
-                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch))),
+                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InAnyContext(CheckPromoIsActive(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
           NavigationCapturingV2Enabled())));
@@ -435,8 +435,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       // The app will launch in a new tab in the same browser window, so
       // InSameContext can be used throughout.
       If([this]() { return NavigationCapturingV2Enabled(); },
-         InSameContext(WaitForPromo(
-             feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab))),
+         Then(InSameContext(WaitForPromo(
+             feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)))),
       InSameContext(CheckPromoIsActive(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
           NavigationCapturingV2Enabled())));
@@ -458,8 +458,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       TriggerNavigateExisting(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
                               ui_controls::kNoAccelerator),
       If([this]() { return NavigationCapturingV2Enabled(); },
-         InSameContext(WaitForPromo(
-             feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab))),
+         Then(InSameContext(WaitForPromo(
+             feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)))),
       InSameContext(CheckPromoIsActive(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
           NavigationCapturingV2Enabled())),

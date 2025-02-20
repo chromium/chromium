@@ -21,6 +21,7 @@
 #include "base/trace_event/histogram_scope.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "base/unguessable_token.h"
 #include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -182,6 +183,7 @@ class HistogramRule : public BackgroundTracingRule,
                 int histogram_lower_value,
                 int histogram_upper_value)
       : histogram_name_(histogram_name),
+        rule_id_(base::UnguessableToken::Create().ToString()),
         histogram_lower_value_(histogram_lower_value),
         histogram_upper_value_(histogram_upper_value) {}
 
@@ -218,7 +220,7 @@ class HistogramRule : public BackgroundTracingRule,
                             base::Unretained(this), histogram_lower_value_,
                             histogram_upper_value_));
     BackgroundTracingManagerImpl::GetInstance().AddNamedTriggerObserver(
-        rule_name(), this);
+        rule_id_, this);
     BackgroundTracingManagerImpl::GetInstance().AddAgentObserver(this);
   }
 
@@ -226,7 +228,7 @@ class HistogramRule : public BackgroundTracingRule,
     histogram_sample_callback_.reset();
     BackgroundTracingManagerImpl::GetInstance().RemoveAgentObserver(this);
     BackgroundTracingManagerImpl::GetInstance().RemoveNamedTriggerObserver(
-        rule_name(), this);
+        rule_id_, this);
   }
 
   perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
@@ -253,14 +255,14 @@ class HistogramRule : public BackgroundTracingRule,
 
   // BackgroundTracingManagerImpl::AgentObserver implementation
   void OnAgentAdded(tracing::mojom::BackgroundTracingAgent* agent) override {
-    agent->SetUMACallback(
-        tracing::mojom::BackgroundTracingRule::New(rule_name()),
-        histogram_name_, histogram_lower_value_, histogram_upper_value_);
+    agent->SetUMACallback(tracing::mojom::BackgroundTracingRule::New(rule_id_),
+                          histogram_name_, histogram_lower_value_,
+                          histogram_upper_value_);
   }
 
   void OnAgentRemoved(tracing::mojom::BackgroundTracingAgent* agent) override {
     agent->ClearUMACallback(
-        tracing::mojom::BackgroundTracingRule::New(rule_name()));
+        tracing::mojom::BackgroundTracingRule::New(rule_id_));
   }
 
   void OnHistogramChangedCallback(
@@ -297,6 +299,7 @@ class HistogramRule : public BackgroundTracingRule,
 
  private:
   std::string histogram_name_;
+  std::string rule_id_;
   int histogram_lower_value_;
   int histogram_upper_value_;
   std::optional<base::StatisticsRecorder::ScopedHistogramSampleObserver>

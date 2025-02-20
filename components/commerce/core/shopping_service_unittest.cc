@@ -293,6 +293,89 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse_FallbackToOnDemand) {
   GetCache().RemoveRef(GURL(kProductUrl));
 }
 
+TEST_P(ShoppingServiceTest, TestBatchProductInfoResponse) {
+  // Ensure a feature that uses product info is enabled. This doesn't
+  // necessarily need to be the shopping list.
+  test_features_.InitWithFeatures({commerce::kShoppingList}, {});
+
+  const std::string url1 = "http://example.com/1";
+  const uint64_t cluster_id1 = 12345L;
+
+  const std::string url2 = "http://example.com/2";
+  const uint64_t cluster_id2 = 34567L;
+
+  const std::string url3 = "http://example.com/3";
+  const uint64_t cluster_id3 = 56789L;
+
+  const std::string url4 = "http://example.com/not_allowed";
+  const uint64_t cluster_id4 = 10000L;
+
+  // Assume 3 of the 4 URLs above are already referenced in the cache.
+  GetCache().AddRef(GURL(url1));
+  GetCache().AddRef(GURL(url2));
+  GetCache().AddRef(GURL(url3));
+
+  // Set up one URL through the "normal" not on-demand path.
+  OptimizationMetadata meta1 = opt_guide_->BuildPriceTrackingResponse(
+      "", "", 0L, cluster_id1, kCountryCode, 0, kCurrencyCode, "");
+  opt_guide_->SetResponse(GURL(url1), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta1);
+
+  // Set up two that use on-demand.
+  OptimizationMetadata meta2 = opt_guide_->BuildPriceTrackingResponse(
+      "", "", 0L, cluster_id2, kCountryCode, 0, kCurrencyCode, "");
+  opt_guide_->AddOnDemandShoppingResponse(
+      GURL(url2), OptimizationGuideDecision::kTrue, meta2);
+
+  OptimizationMetadata meta3 = opt_guide_->BuildPriceTrackingResponse(
+      "", "", 0L, cluster_id3, kCountryCode, 0, kCurrencyCode, "");
+  opt_guide_->AddOnDemandShoppingResponse(
+      GURL(url3), OptimizationGuideDecision::kTrue, meta3);
+
+  // Set up a final URL that isn't referenced in the cache. This is not
+  // expected to be in the result map.
+  OptimizationMetadata meta4 = opt_guide_->BuildPriceTrackingResponse(
+      "", "", 0L, cluster_id4, kCountryCode, 0, kCurrencyCode, "");
+  opt_guide_->AddOnDemandShoppingResponse(
+      GURL(url4), OptimizationGuideDecision::kTrue, meta4);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetProductInfoForUrls(
+      {GURL(url1), GURL(url2), GURL(url3), GURL(url4)},
+      base::BindOnce([](const std::map<GURL, std::optional<ProductInfo>>
+                            results) {
+        ASSERT_EQ(4u, results.size());
+
+        auto r1 = results.find(GURL("http://example.com/1"));
+        auto r2 = results.find(GURL("http://example.com/2"));
+        auto r3 = results.find(GURL("http://example.com/3"));
+        auto r4 = results.find(GURL("http://example.com/not_allowed"));
+
+        // We should have found an entry for all URLs.
+        ASSERT_NE(results.end(), r1);
+        ASSERT_NE(results.end(), r2);
+        ASSERT_NE(results.end(), r3);
+        ASSERT_NE(results.end(), r4);
+
+        // All but "not_allowed" should have data.
+        ASSERT_TRUE(r1->second.has_value());
+        ASSERT_TRUE(r2->second.has_value());
+        ASSERT_TRUE(r3->second.has_value());
+        ASSERT_FALSE(r4->second.has_value());
+
+        // Ensure we got the correct cluster IDs for the valid URLs.
+        ASSERT_EQ(12345L, r1->second->product_cluster_id);
+        ASSERT_EQ(34567L, r2->second->product_cluster_id);
+        ASSERT_EQ(56789L, r3->second->product_cluster_id);
+      }).Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  GetCache().RemoveRef(GURL(url1));
+  GetCache().RemoveRef(GURL(url2));
+  GetCache().RemoveRef(GURL(url3));
+}
+
 // Test multiple on demand calls to get product info.
 TEST_P(ShoppingServiceTest, TestProductInfoResponse_MultipleOnDemandRequests) {
   test_features_.InitWithFeatures({commerce::kShoppingList}, {});

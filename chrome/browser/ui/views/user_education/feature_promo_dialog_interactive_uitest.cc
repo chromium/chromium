@@ -130,7 +130,7 @@ class FeaturePromoDialogTest : public TestBase {
     // The browser may have already queued a promo for startup. Since the test
     // uses a mock, cancel that and just show it directly.
     const auto status = promo_controller->GetPromoStatus(*feature_);
-    if (status == user_education::FeaturePromoStatus::kQueuedForStartup) {
+    if (status == user_education::FeaturePromoStatus::kQueued) {
       promo_controller->EndPromo(
           *feature_, user_education::EndFeaturePromoReason::kAbortPromo);
     }

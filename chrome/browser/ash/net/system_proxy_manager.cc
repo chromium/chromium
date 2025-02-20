@@ -69,7 +69,8 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
   void AuthenticateWithCredentials(
       const std::string& username,
       const std::string& password,
-      LoginAuthRequiredCallback auth_required_callback) {
+      content::LoginDelegate::LoginAuthRequiredCallback
+          auth_required_callback) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SystemProxyLoginHandler::InvokeWithCredentials,
@@ -80,7 +81,8 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
  private:
   void InvokeWithCredentials(const std::string& username,
                              const std::string& password,
-                             LoginAuthRequiredCallback auth_required_callback) {
+                             content::LoginDelegate::LoginAuthRequiredCallback
+                                 auth_required_callback) {
     std::move(auth_required_callback)
         .Run(std::make_optional<net::AuthCredentials>(
             base::UTF8ToUTF16(username), base::UTF8ToUTF16(password)));
@@ -497,7 +499,7 @@ bool SystemProxyManager::CanUsePolicyCredentials(
 }
 
 std::unique_ptr<content::LoginDelegate> SystemProxyManager::CreateLoginDelegate(
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   auto login_delegate = std::make_unique<SystemProxyLoginHandler>();
   login_delegate->AuthenticateWithCredentials(
       system_services_username_, system_services_password_,

@@ -1081,7 +1081,9 @@ bool AwContents::IsDisplayingInterstitialForTesting(JNIEnv* env) {
 }
 
 base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
-    JNIEnv* env) {
+    JNIEnv* env,
+    jint max_size,
+    jboolean include_forward_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Required optimization in WebViewClassic to not save any state if
   // there has been no navigations.
@@ -1091,7 +1093,8 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
     return nullptr;
   }
 
-  std::optional<base::Pickle> pickle = WriteToPickle(*web_contents_);
+  std::optional<base::Pickle> pickle =
+      WriteToPickle(*web_contents_, max_size, include_forward_state);
 
   if (!pickle.has_value()) {
     return nullptr;

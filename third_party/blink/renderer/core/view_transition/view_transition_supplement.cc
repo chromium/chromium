@@ -337,9 +337,10 @@ ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
 
 viz::ViewTransitionElementResourceId
 ViewTransitionSupplement::GenerateResourceId(
-    const blink::ViewTransitionToken& transition_token) {
-  return viz::ViewTransitionElementResourceId(transition_token,
-                                              ++resource_local_id_sequence_);
+    const blink::ViewTransitionToken& transition_token,
+    bool for_subframe_snapshot) {
+  return viz::ViewTransitionElementResourceId(
+      transition_token, ++resource_local_id_sequence_, for_subframe_snapshot);
 }
 
 void ViewTransitionSupplement::InitializeResourceIdSequence(

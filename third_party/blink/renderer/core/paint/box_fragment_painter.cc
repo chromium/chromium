@@ -1396,21 +1396,16 @@ void BoxFragmentPainter::PaintGridGaps(
 
     if (track_direction == kForColumns) {
       // For columns, paint a vertical strip at the center of the gap.
-      const LayoutUnit center =
-          (gap.start_offset.value() + gap.end_offset.value()) / 2;
+      const LayoutUnit center = (gap.start_offset + gap.end_offset) / 2;
       inline_start = center - (rule_thickness / 2);
       inline_size = rule_thickness;
       block_start = cross_track_offset;
       block_size = cross_track_size;
     } else {
-      // TODO(crbug.com/357648037): For rows, paint the "full gap". This paint
-      // logic does not take row fragmentation into account, hence we expect
-      // start and end offset for row gaps to be present. This logic will be
-      // updated once fragmentation bits are implemented.
       inline_start = cross_track_offset;
       inline_size = cross_track_size;
-      block_start = gap.start_offset.value();
-      block_size = gap.end_offset.value() - gap.start_offset.value();
+      block_start = gap.start_offset;
+      block_size = gap.end_offset - gap.start_offset;
     }
 
     const LogicalRect gap_logical(inline_start, block_start, inline_size,

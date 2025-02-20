@@ -1038,7 +1038,8 @@ TEST_F(InteractiveTestTest, IfTrue) {
 
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(true));
   EXPECT_CALL(step, Run);
-  RunTestSequenceInContext(e1.context(), If(condition.Get(), Do(step.Get())));
+  RunTestSequenceInContext(e1.context(),
+                           If(condition.Get(), Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfFalse) {
@@ -1049,7 +1050,8 @@ TEST_F(InteractiveTestTest, IfFalse) {
   e1.Show();
 
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(false));
-  RunTestSequenceInContext(e1.context(), If(condition.Get(), Do(step.Get())));
+  RunTestSequenceInContext(e1.context(),
+                           If(condition.Get(), Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfMatcherTrue) {
@@ -1062,7 +1064,8 @@ TEST_F(InteractiveTestTest, IfMatcherTrue) {
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(1));
   EXPECT_CALL(step, Run);
   RunTestSequenceInContext(
-      e1.context(), IfMatches(condition.Get(), testing::Eq(1), Do(step.Get())));
+      e1.context(),
+      IfMatches(condition.Get(), testing::Eq(1), Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfMatcherFalse) {
@@ -1074,7 +1077,8 @@ TEST_F(InteractiveTestTest, IfMatcherFalse) {
 
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(0));
   RunTestSequenceInContext(
-      e1.context(), IfMatches(condition.Get(), testing::Eq(1), Do(step.Get())));
+      e1.context(),
+      IfMatches(condition.Get(), testing::Eq(1), Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfImplicitMatcherTrue) {
@@ -1087,7 +1091,7 @@ TEST_F(InteractiveTestTest, IfImplicitMatcherTrue) {
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(1));
   EXPECT_CALL(step, Run);
   RunTestSequenceInContext(e1.context(),
-                           IfMatches(condition.Get(), 1, Do(step.Get())));
+                           IfMatches(condition.Get(), 1, Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfImplicitMatcherFalse) {
@@ -1099,7 +1103,7 @@ TEST_F(InteractiveTestTest, IfImplicitMatcherFalse) {
 
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(0));
   RunTestSequenceInContext(e1.context(),
-                           IfMatches(condition.Get(), 1, Do(step.Get())));
+                           IfMatches(condition.Get(), 1, Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfWithMultiStep) {
@@ -1115,7 +1119,7 @@ TEST_F(InteractiveTestTest, IfWithMultiStep) {
   EXPECT_CALL(step2, Run);
   RunTestSequenceInContext(
       e1.context(),
-      If(condition.Get(), Steps(Do(step1.Get()), Do(step2.Get()))));
+      If(condition.Get(), Then(Do(step1.Get()), Do(step2.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfElementTrue) {
@@ -1130,7 +1134,7 @@ TEST_F(InteractiveTestTest, IfElementTrue) {
   EXPECT_CALL(step, Run);
   RunTestSequenceInContext(
       e1.context(),
-      IfElement(e1.identifier(), condition.Get(), Do(step.Get())));
+      IfElement(e1.identifier(), condition.Get(), Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfElementFalse) {
@@ -1144,7 +1148,7 @@ TEST_F(InteractiveTestTest, IfElementFalse) {
   EXPECT_CALL(condition, Run(&e1)).WillOnce(testing::Return(false));
   RunTestSequenceInContext(
       e1.context(),
-      IfElement(e1.identifier(), condition.Get(), Do(step.Get())));
+      IfElement(e1.identifier(), condition.Get(), Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfElementMatchesTrue) {
@@ -1160,7 +1164,7 @@ TEST_F(InteractiveTestTest, IfElementMatchesTrue) {
   EXPECT_CALL(step, Run);
   RunTestSequenceInContext(
       e1.context(), IfElementMatches(e1.identifier(), condition.Get(), "foo",
-                                     Do(step.Get())));
+                                     Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfElementMatchesFalse) {
@@ -1175,7 +1179,7 @@ TEST_F(InteractiveTestTest, IfElementMatchesFalse) {
       .WillOnce(testing::Return(std::string("bar")));
   RunTestSequenceInContext(
       e1.context(), IfElementMatches(e1.identifier(), condition.Get(), "foo",
-                                     Do(step.Get())));
+                                     Then(Do(step.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfElementWithMultiStep) {
@@ -1192,7 +1196,7 @@ TEST_F(InteractiveTestTest, IfElementWithMultiStep) {
   EXPECT_CALL(step2, Run);
   RunTestSequenceInContext(e1.context(),
                            IfElement(e1.identifier(), condition.Get(),
-                                     Steps(Do(step1.Get()), Do(step2.Get()))));
+                                     Then(Do(step1.Get()), Do(step2.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfFails) {
@@ -1208,7 +1212,7 @@ TEST_F(InteractiveTestTest, IfFails) {
   EXPECT_CALL(aborted, Run);
   RunTestSequenceInContext(
       e1.context(),
-      If(condition.Get(), Check(base::BindOnce([]() { return false; }))));
+      If(condition.Get(), Then(Check(base::BindOnce([]() { return false; })))));
 }
 
 TEST_F(InteractiveTestTest, IfThenElse_OnlyRunsThen) {
@@ -1218,8 +1222,8 @@ TEST_F(InteractiveTestTest, IfThenElse_OnlyRunsThen) {
 
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(true));
   EXPECT_CALL(a, Run);
-  RunTestSequenceInContext(kTestContext1,
-                           If(condition.Get(), Do(a.Get()), Do(b.Get())));
+  RunTestSequenceInContext(
+      kTestContext1, If(condition.Get(), Then(Do(a.Get())), Else(Do(b.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfThenElse_OnlyRunsElse) {
@@ -1229,8 +1233,8 @@ TEST_F(InteractiveTestTest, IfThenElse_OnlyRunsElse) {
 
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(false));
   EXPECT_CALL(b, Run);
-  RunTestSequenceInContext(kTestContext1,
-                           If(condition.Get(), Do(a.Get()), Do(b.Get())));
+  RunTestSequenceInContext(
+      kTestContext1, If(condition.Get(), Then(Do(a.Get())), Else(Do(b.Get()))));
 }
 
 TEST_F(InteractiveTestTest, IfThenElse_ThenFails) {
@@ -1243,8 +1247,8 @@ TEST_F(InteractiveTestTest, IfThenElse_ThenFails) {
   EXPECT_CALL(aborted, Run);
   RunTestSequenceInContext(
       kTestContext1,
-      If(condition.Get(), Check(base::BindOnce([]() { return false; })),
-         Do(base::BindOnce([]() {}))));
+      If(condition.Get(), Then(Check(base::BindOnce([]() { return false; }))),
+         Else(Do(base::BindOnce([]() {})))));
 }
 
 TEST_F(InteractiveTestTest, IfThenElse_ElseFails) {
@@ -1255,9 +1259,9 @@ TEST_F(InteractiveTestTest, IfThenElse_ElseFails) {
 
   EXPECT_CALL(condition, Run).WillOnce(testing::Return(false));
   EXPECT_CALL(aborted, Run);
-  RunTestSequenceInContext(kTestContext1,
-                           If(condition.Get(), Do(base::BindOnce([]() {}))),
-                           Check(base::BindOnce([]() { return false; })));
+  RunTestSequenceInContext(
+      kTestContext1, If(condition.Get(), Then(Do(base::BindOnce([]() {}))),
+                        Else(Check(base::BindOnce([]() { return false; })))));
 }
 
 TEST_F(InteractiveTestTest, InParallel) {
@@ -1267,7 +1271,8 @@ TEST_F(InteractiveTestTest, InParallel) {
   EXPECT_CALL(seq1, Run);
   EXPECT_CALL(seq2, Run);
   RunTestSequenceInContext(kTestContext1,
-                           InParallel(Do(seq1.Get()), Do(seq2.Get())));
+                           InParallel(RunSubsequence(Do(seq1.Get())),
+                                      RunSubsequence(Do(seq2.Get()))));
 }
 
 TEST_F(InteractiveTestTest, InParallelMultiStep) {
@@ -1280,9 +1285,10 @@ TEST_F(InteractiveTestTest, InParallelMultiStep) {
   EXPECT_CALL(seq12, Run);
   EXPECT_CALL(seq21, Run);
   EXPECT_CALL(seq22, Run);
-  RunTestSequenceInContext(kTestContext1,
-                           InParallel(Steps(Do(seq11.Get()), Do(seq12.Get())),
-                                      Steps(Do(seq21.Get()), Do(seq22.Get()))));
+  RunTestSequenceInContext(
+      kTestContext1,
+      InParallel(RunSubsequence(Do(seq11.Get()), Do(seq12.Get())),
+                 RunSubsequence(Do(seq21.Get()), Do(seq22.Get()))));
 }
 
 TEST_F(InteractiveTestTest, InParallelAsync) {
@@ -1295,9 +1301,10 @@ TEST_F(InteractiveTestTest, InParallelAsync) {
   QueueActions([&e1]() { e1.Show(); }, [&e2]() { e2.Show(); });
   EXPECT_CALL(seq1, Run(&e1));
   EXPECT_CALL(seq2, Run(&e2));
-  RunTestSequenceInContext(kTestContext1,
-                           InParallel(AfterShow(e1.identifier(), seq1.Get()),
-                                      AfterShow(e2.identifier(), seq2.Get())));
+  RunTestSequenceInContext(
+      kTestContext1,
+      InParallel(RunSubsequence(AfterShow(e1.identifier(), seq1.Get())),
+                 RunSubsequence(AfterShow(e2.identifier(), seq2.Get()))));
 }
 
 // Parallel sequences where one sequence triggers a step in another.
@@ -1311,9 +1318,10 @@ TEST_F(InteractiveTestTest, InParallelDependent) {
   QueueActions([&e1]() { e1.Show(); });
   EXPECT_CALL(seq1, Run(&e1)).WillOnce([&e2](TrackedElement*) { e2.Show(); });
   EXPECT_CALL(seq2, Run(&e2));
-  RunTestSequenceInContext(kTestContext1,
-                           InParallel(AfterShow(e1.identifier(), seq1.Get()),
-                                      AfterShow(e2.identifier(), seq2.Get())));
+  RunTestSequenceInContext(
+      kTestContext1,
+      InParallel(RunSubsequence(AfterShow(e1.identifier(), seq1.Get())),
+                 RunSubsequence(AfterShow(e2.identifier(), seq2.Get()))));
 }
 
 // Parallel sequences where one sequence triggers a step in another, which then
@@ -1334,9 +1342,10 @@ TEST_F(InteractiveTestTest, InParallelPingPong) {
   EXPECT_CALL(seq3, Run(&e1));
   RunTestSequenceInContext(
       kTestContext1,
-      InParallel(Steps(AfterShow(e1.identifier(), seq1.Get()),
-                       AfterEvent(e1.identifier(), kTestEvent1, seq3.Get())),
-                 AfterShow(e2.identifier(), seq2.Get())));
+      InParallel(
+          RunSubsequence(AfterShow(e1.identifier(), seq1.Get()),
+                         AfterEvent(e1.identifier(), kTestEvent1, seq3.Get())),
+          RunSubsequence(AfterShow(e2.identifier(), seq2.Get()))));
 }
 
 TEST_F(InteractiveTestTest, InParallelFails) {
@@ -1349,25 +1358,29 @@ TEST_F(InteractiveTestTest, InParallelFails) {
 
   EXPECT_CALL(aborted, Run);
   RunTestSequenceInContext(
-      e1.context(), InParallel(Do(base::DoNothing()),
-                               Check(base::BindOnce([]() { return false; }))));
+      e1.context(),
+      InParallel(
+          RunSubsequence(Do(base::DoNothing())),
+          RunSubsequence(Check(base::BindOnce([]() { return false; })))));
 }
 
 TEST_F(InteractiveTestTest, AnyOf) {
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq1);
 
   EXPECT_CALL(seq1, Run).Times(1);
-  RunTestSequenceInContext(kTestContext1,
-                           AnyOf(Do(seq1.Get()), Do(seq1.Get())));
+  RunTestSequenceInContext(
+      kTestContext1,
+      AnyOf(RunSubsequence(Do(seq1.Get())), RunSubsequence(Do(seq1.Get()))));
 }
 
 TEST_F(InteractiveTestTest, AnyOfOneFailsOneSucceeds) {
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq1);
 
   EXPECT_CALL(seq1, Run).Times(1);
-  RunTestSequenceInContext(kTestContext1,
-                           AnyOf(Check(base::BindOnce([]() { return false; })),
-                                 Do(seq1.Get()), Do(seq1.Get())));
+  RunTestSequenceInContext(
+      kTestContext1,
+      AnyOf(RunSubsequence(Check(base::BindOnce([]() { return false; }))),
+            RunSubsequence(Do(seq1.Get()))));
 }
 
 TEST_F(InteractiveTestTest, AnyOfAllFail) {
@@ -1380,8 +1393,10 @@ TEST_F(InteractiveTestTest, AnyOfAllFail) {
 
   EXPECT_CALL(aborted, Run);
   RunTestSequenceInContext(
-      e1.context(), InParallel(Check(base::BindOnce([]() { return false; })),
-                               Check(base::BindOnce([]() { return false; }))));
+      e1.context(),
+      InParallel(
+          RunSubsequence(Check(base::BindOnce([]() { return false; }))),
+          RunSubsequence(Check(base::BindOnce([]() { return false; })))));
 }
 
 // This is a regression test for an issue where there is a UAF when tearing down
@@ -1392,11 +1407,13 @@ TEST_F(InteractiveTestTest, AnyOfInsideIf) {
                [&el]() { el.SendCustomEvent(kTestEvent1); });
 
   RunTestSequenceInContext(
-      kTestContext1, If([]() { return true; },
-                        AnyOf(std::move(WaitForEvent(kTestId1, kTestEvent1)
-                                            .SetMustBeVisibleAtStart(false)),
-                              Steps(WaitForShow(kTestId1),
-                                    WaitForEvent(kTestId1, kTestEvent2)))));
+      kTestContext1,
+      If([]() { return true; },
+         Then(AnyOf(
+             RunSubsequence(std::move(WaitForEvent(kTestId1, kTestEvent1)
+                                          .SetMustBeVisibleAtStart(false))),
+             RunSubsequence(WaitForShow(kTestId1),
+                            WaitForEvent(kTestId1, kTestEvent2))))));
 }
 
 // This test that various types of logging can compile with different types of
@@ -1534,15 +1551,16 @@ TEST_F(InteractiveTestTest, ConditionalBindingMethods) {
   EXPECT_CALL(correct, Run).Times(4);
   RunTestSequenceInContext(
       e1.context(),
-      If([]() { return true; }, Do(correct.Get()), Do(incorrect.Get())),
-      IfMatches([x, &y]() { return x + y; }, 2, Do(incorrect.Get()),
-                Do(correct.Get())),
+      If([]() { return true; }, Then(Do(correct.Get())),
+         Else(Do(incorrect.Get()))),
+      IfMatches([x, &y]() { return x + y; }, 2, Then(Do(incorrect.Get())),
+                Else(Do(correct.Get()))),
       IfElement(
           e1.identifier(),
           [&e1](const TrackedElement* el) { return el == &e1; },
-          Do(correct.Get()), Do(incorrect.Get())),
+          Then(Do(correct.Get())), Else(Do(incorrect.Get()))),
       IfElementMatches(kTestId2, &CheckElementFunction, testing::Ne(nullptr),
-                       Do(incorrect.Get()), Do(correct.Get())));
+                       Then(Do(incorrect.Get())), Else(Do(correct.Get()))));
 }
 
 namespace {
@@ -1815,7 +1833,8 @@ TEST_F(InteractiveTestTest, SubsequenceHidesElement) {
 
   RunTestSequenceInContext(
       kTestContext1, WaitForShow(el1.identifier()),
-      InParallel(Do([&el1]() { el1.Hide(); }), WaitForShow(el2.identifier())));
+      InParallel(RunSubsequence(Do([&el1]() { el1.Hide(); })),
+                 RunSubsequence(WaitForShow(el2.identifier()))));
 }
 
 namespace {

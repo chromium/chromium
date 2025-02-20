@@ -51,6 +51,8 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms);
 // Logs the duration of the cold start startup. Does nothing if there isn't a
 // cold start.
 + (void)logStartupDuration:(id<StartupInformation>)startupInformation;
+// Logs memory usage to UMA given a histogram name.
++ (void)logMemoryToUMA:(const std::string&)histogramName;
 // Creates a MetricKit extended launch task to track startup duration. This must
 // be called before the first scene becomes active.
 + (void)createStartupTrackingTask;

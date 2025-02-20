@@ -421,9 +421,9 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
     // the contents *are* painted from hanging.
     wait_step = AnyOf(
         // Ideally this finishes pretty quickly and we can move on.
-        std::move(wait_step),
+        RunSubsequence(std::move(wait_step)),
         // Otherwise, create a timeout after the WebContents is shown.
-        Steps(
+        RunSubsequence(
             // Ensure that the contents are loaded, then wait a short time.
             AfterShow(webcontents_id, &MaybePostPaintWorkaroundEvent),
             // After the timeout, first post a verbose warning describing the
@@ -462,7 +462,7 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
                                             ->owner()
                                             ->HasPageBeenPainted();
                        },
-                       std::move(wait_step))
+                       Then(std::move(wait_step)))
                        .AddDescriptionPrefix("WaitForWebContentsPainted()"));
 }
 
@@ -929,7 +929,7 @@ InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element) {
       [this, element_id]() {
         return test_impl().IsInstrumentedWebContents(element_id);
       },
-      WaitForWebContentsPainted(element_id)));
+      Then(WaitForWebContentsPainted(element_id))));
 }
 
 Browser* InteractiveBrowserTestApi::GetBrowserFor(

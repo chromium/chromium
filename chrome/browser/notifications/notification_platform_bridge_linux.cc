@@ -15,6 +15,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -320,7 +321,7 @@ void ConnectToSignal(
     const std::string& signal_name,
     base::RepeatingCallback<void(Ts...)> signal_callback,
     dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
-  proxy->ConnectToSignal(
+  CHECK_DEREF(proxy).ConnectToSignal(
       interface, signal_name,
       base::BindRepeating(
           [](const std::string& interface, const std::string& signal_name,
@@ -489,6 +490,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     notification_proxy_ = nullptr;
     bus_.reset();
     notifications_.clear();
+    weak_factory_.InvalidateWeakPtrs();
   }
 
  private:

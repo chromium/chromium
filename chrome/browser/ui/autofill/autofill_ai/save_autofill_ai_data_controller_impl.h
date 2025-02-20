@@ -52,6 +52,8 @@ class SaveAutofillAiDataControllerImpl
   void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) override;
   base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() override;
   std::u16string GetDialogTitle() const override;
+  std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()
+      const override;
 
  protected:
   explicit SaveAutofillAiDataControllerImpl(content::WebContents* web_contents);

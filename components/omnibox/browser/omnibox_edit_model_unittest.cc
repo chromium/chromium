@@ -1392,10 +1392,7 @@ TEST_F(OmniboxEditModelPopupTest,
   gfx::test::CheckColors(bitmap.getColor(0, 0),
                          image.ToSkBitmap()->getColor(0, 0));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
 // Tests the `GetMatchIcon()` method, verifying that no favicon is used for
 // `FEATURED_ENTERPRISE_SEARCH` matches with `kSearchAggregator` policy origin.
 TEST_F(OmniboxEditModelPopupTest,
@@ -1439,8 +1436,7 @@ TEST_F(OmniboxEditModelPopupTest,
   gfx::test::CheckColors(bitmap.getColor(0, 0),
                          image.ToSkBitmap()->getColor(0, 0));
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-       // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests the `GetMatchIcon()` method, verifying that the extension's icon is

@@ -103,9 +103,10 @@
   return YES;
 }
 
-- (void)prepareForSlideInDirection:
-    (UISwipeGestureRecognizerDirection)direction {
-  [_sideSwipeMediator prepareForSlideInDirection:direction];
+- (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction
+                     snapshotImage:(UIImage*)snapshotImage {
+  [_sideSwipeMediator prepareForSlideInDirection:direction
+                                   snapshotImage:snapshotImage];
 }
 
 - (void)slideToCenterAnimated {

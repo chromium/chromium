@@ -65,6 +65,11 @@ class BrowserUserEducationInterface {
     return GetFeaturePromoControllerImpl();
   }
 
+  // Returns whether `iph_feature` is queued to be shown. Promos can be queued
+  // for a period of time before they become active, if they are being held due
+  // to an incompatible UI state or a blocking IPH.
+  virtual bool IsFeaturePromoQueued(const base::Feature& iph_feature) const = 0;
+
   // Returns whether the promo associated with `iph_feature` is running.
   //
   // Includes promos with visible bubbles and those which have been continued

@@ -690,7 +690,7 @@ TEST_P(BrowserFeaturePromoController2xTest,
       Run(FeaturePromoResult(FeaturePromoResult::kError)), {
         controller_->MaybeShowStartupPromo(
             MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
-        EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
+        EXPECT_EQ(FeaturePromoStatus::kQueued,
                   controller_->GetPromoStatus(kTestIPHFeature));
         TimeOutQueuedPromo();
       });
@@ -713,7 +713,7 @@ TEST_P(BrowserFeaturePromoController2xTest,
       Run(FeaturePromoResult(FeaturePromoResult::Success())), {
         controller_->MaybeShowStartupPromo(
             MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
-        EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
+        EXPECT_EQ(FeaturePromoStatus::kQueued,
                   controller_->GetPromoStatus(kTestIPHFeature));
       });
   EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
@@ -755,7 +755,7 @@ TEST_P(BrowserFeaturePromoController2xTest,
       callback, Run(FeaturePromoResult(FeaturePromoResult::kAlreadyQueued)),
       controller_->MaybeShowStartupPromo(
           MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
-  EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
+  EXPECT_EQ(FeaturePromoStatus::kQueued,
             controller_->GetPromoStatus(kTestIPHFeature));
 }
 
@@ -773,7 +773,7 @@ TEST_P(BrowserFeaturePromoController2xTest, CancelPromoBeforeStartup) {
 
   controller_->MaybeShowStartupPromo(
       MakeParams(kTestIPHFeature, base::DoNothing(), result_callback.Get()));
-  EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
+  EXPECT_EQ(FeaturePromoStatus::kQueued,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_ASYNC_CALL_IN_SCOPE(
       result_callback, Run(FeaturePromoResult(FeaturePromoResult::kCanceled)),
@@ -2560,14 +2560,13 @@ TEST_P(BrowserFeaturePromoController2xPriorityTest,
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
 
       CheckPromoStatus(kSnoozeIPHFeature, FeaturePromoStatus::kBubbleShowing),
-      InParallel(
-          MaybeShowPromo(kLegalNoticeFeature),
-          WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting, true)),
+      InParallel(RunSubsequence(MaybeShowPromo(kLegalNoticeFeature)),
+                 RunSubsequence(WaitForShow(
+                     HelpBubbleView::kHelpBubbleElementIdForTesting, true))),
 
       CheckPromoStatus(kLegalNoticeFeature, FeaturePromoStatus::kBubbleShowing),
       CheckPromoStatus(kSnoozeIPHFeature, FeaturePromoStatus::kNotRunning),
-      CheckPromoStatus(kTutorialIPHFeature,
-                       FeaturePromoStatus::kQueuedForStartup));
+      CheckPromoStatus(kTutorialIPHFeature, FeaturePromoStatus::kQueued));
 }
 
 namespace {

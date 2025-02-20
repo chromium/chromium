@@ -31,13 +31,14 @@ interface SafetyHubModuleMediator {
     }
 
     /**
-     * Values used in "for" loop below - should start from 0 and can't have gaps, lowest value is
-     * additionally used for starting loop. Order reflects the way modules should be ordered if they
-     * have the same state.
+     * Values used in "switch" statements below - should start from 0 and can't have gaps, lowest
+     * value is additionally used for starting loop. Order reflects the way modules should be
+     * ordered if they have the same state.
      */
     @IntDef({
         ModuleOption.UPDATE_CHECK,
         ModuleOption.ACCOUNT_PASSWORDS,
+        ModuleOption.LOCAL_PASSWORDS,
         ModuleOption.SAFE_BROWSING,
         ModuleOption.UNUSED_PERMISSIONS,
         ModuleOption.NOTIFICATION_REVIEW,
@@ -46,11 +47,11 @@ interface SafetyHubModuleMediator {
     public @interface ModuleOption {
         int UPDATE_CHECK = 0;
         int ACCOUNT_PASSWORDS = 1;
-        int SAFE_BROWSING = 2;
-        int UNUSED_PERMISSIONS = 3;
-        int NOTIFICATION_REVIEW = 4;
-        int OPTION_FIRST = UPDATE_CHECK;
-        int NUM_ENTRIES = 5;
+        int LOCAL_PASSWORDS = 2;
+        int SAFE_BROWSING = 3;
+        int UNUSED_PERMISSIONS = 4;
+        int NOTIFICATION_REVIEW = 5;
+        int NUM_ENTRIES = 6;
     }
 
     public void setUpModule();

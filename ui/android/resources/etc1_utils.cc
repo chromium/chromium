@@ -5,14 +5,21 @@
 #include "ui/android/resources/etc1_utils.h"
 
 #include "base/files/file.h"
+#include "base/memory/aligned_memory.h"
 #include "base/numerics/byte_conversions.h"
 #include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
-#include "ui/gfx/geometry/size.h"
+#include "ui/android/buildflags.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
+#include "ui/android/texture_compressor/cxx.rs.h"
+#endif
 
 namespace ui {
 
@@ -93,6 +100,14 @@ gfx::Size GetETCEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
   }
 }
 
+#if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
+template <typename T>
+rust::Slice<T> CastToAlignedSlice(void* data, size_t bytes) {
+  CHECK(base::IsAligned(data, sizeof(T)));
+  return {reinterpret_cast<T*>(data), bytes / sizeof(T)};
+}
+#endif
+
 }  // namespace
 
 // static
@@ -116,6 +131,19 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(SkBitmap raw_data,
   sk_sp<SkData> etc1_pixel_data(SkData::MakeUninitialized(encoded_bytes));
   sk_sp<SkPixelRef> etc1_pixel_ref(SkMallocPixelRef::MakeWithData(
       info, ETC1RowBytes(encoded_size.width()), std::move(etc1_pixel_data)));
+
+#if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
+  constexpr int kBlockSize = 4;
+  if (base::FeatureList::IsEnabled(kUseNewEtc1Encoder)) {
+    compress_etc1(
+        CastToAlignedSlice<const uint32_t>(raw_data.getPixels(),
+                                           raw_data.computeByteSize()),
+        CastToAlignedSlice<uint64_t>(etc1_pixel_ref->pixels(), encoded_bytes),
+        raw_data.width(), raw_data.height(), raw_data.rowBytesAsPixels(),
+        encoded_size.width() / kBlockSize);
+    return etc1_pixel_ref;
+  }
+#endif
 
   if (etc1_encode_image(
           reinterpret_cast<unsigned char*>(raw_data.getPixels()),

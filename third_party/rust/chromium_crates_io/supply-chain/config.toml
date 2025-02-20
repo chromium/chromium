@@ -92,10 +92,10 @@ criteria = []
 [policy."cfg-if:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.5.28"]
+[policy."clap:4.5.29"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_builder:4.5.27"]
+[policy."clap_builder:4.5.29"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_lex:0.7.4"]
@@ -110,16 +110,16 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.140"]
+[policy."cxx:1.0.141"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.140"]
+[policy."cxxbridge-cmd:1.0.141"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.140"]
+[policy."cxxbridge-flags:1.0.141"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.140"]
+[policy."cxxbridge-macro:1.0.141"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."diplomat-runtime:0.9.0"]
@@ -347,7 +347,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."prost-derive:0.13.5"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."prost:0.13.4"]
+[policy."prost:0.13.5"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."qr_code:2.0.0"]
@@ -440,7 +440,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."small_ctor:0.1.2"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."smallvec:1.13.2"]
+[policy."smallvec:1.14.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."stable_deref_trait:1.2.0"]
@@ -577,7 +577,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.cxx]]
-version = "1.0.140"
+version = "1.0.141"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -599,10 +599,11 @@ Exemption updated to 1.0.135 in December 2024.
 Exemption updated to 1.0.136 in January 2025.
 Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
+Exemption updated to 1.0.141 in February 2025.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.140"
+version = "1.0.141"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -624,6 +625,7 @@ Exemption updated to 1.0.135 in December 2024.
 Exemption updated to 1.0.136 in January 2025.
 Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
+Exemption updated to 1.0.141 in February 2025.
 """
 
 [[exemptions.icu_experimental]]
@@ -750,7 +752,7 @@ Exemption updated to 1.0.19 in Feb 2025.
 """
 
 [[exemptions.smallvec]]
-version = "1.13.2"
+version = "1.14.0"
 criteria = "ub-risk-2"
 notes = """
 Part of ICU4X import. Audited in google3 with ub-risk-3, however it's a widely used crate and it should
@@ -758,6 +760,12 @@ be fine to temporarily up its rating. The google3 audit showed that it needed be
 more comments (which disqualifies it from ub-risk-2), but it is still known to be sound.
 
 https://crbug.com/366411886
+
+Bumped up the exemption to 1.14.0 in February 2025.
+WARNING: The `malloc_size_of` feature has **not** been audited because
+this feature does not explicitly document its safetly requirements.
+See also https://chromium-review.googlesource.com/c/chromium/src/+/6275133/comment/ea0d7a93_98051a2e/
+and https://github.com/servo/malloc_size_of/issues/8.
 """
 
 [[exemptions.syn]]

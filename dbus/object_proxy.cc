@@ -5,8 +5,10 @@
 #include "dbus/object_proxy.h"
 
 #include <stddef.h>
+
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/leak_annotations.h"
@@ -18,6 +20,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "dbus/bus.h"
 #include "dbus/dbus_statistics.h"
 #include "dbus/error.h"
@@ -132,6 +135,11 @@ base::expected<std::unique_ptr<Response>, Error>
 ObjectProxy::CallMethodAndBlock(MethodCall* method_call, int timeout_ms) {
   bus_->AssertOnDBusThread();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS system daemon has `reply_timeout` configured.
+  CHECK_LE(timeout_ms, TIMEOUT_MAX);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   if (!bus_->Connect() || !method_call->SetDestination(service_name_) ||
       !method_call->SetPath(object_path_)) {
     // Not an error from libdbus, so returns invalid error.
@@ -166,6 +174,11 @@ void ObjectProxy::CallMethodWithErrorResponse(
     int timeout_ms,
     ResponseOrErrorCallback callback) {
   bus_->AssertOnOriginThread();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS system daemon has `reply_timeout` configured.
+  CHECK_LE(timeout_ms, TIMEOUT_MAX);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   ReplyCallbackHolder callback_holder(bus_->GetOriginTaskRunner(),
                                       std::move(callback));

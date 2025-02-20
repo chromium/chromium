@@ -461,21 +461,7 @@ def _package_dmg(paths, dist, config):
         '--copy', '{}:/'.format(app_path),
     ]
     # yapf: enable
-    if dist.use_alternative_dmg_visuals:
-        pkg_dmg += [
-            '--mkdir',
-            'Double-click to Install.localized/.localized/',
-            '--file-icon',
-            '{}/empty_icon.png:Double-click to Install.localized/'.format(
-                packaging_dir),
-            '--copy',
-            '{}/localized_dmg_label/.localized/en.strings:/Double-click to Install.localized/.localized/'
-            .format(packaging_dir),
-            '--symlink',
-            '../{}:Double-click to Install.localized/{}'.format(
-                config.app_dir, config.app_dir),
-        ]
-    else:
+    if not dist.use_alternative_dmg_visuals:
         pkg_dmg += ['--symlink', '/Applications:/ ']
 
     if dist.inflation_kilobytes:

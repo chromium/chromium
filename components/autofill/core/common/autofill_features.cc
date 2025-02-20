@@ -57,6 +57,9 @@ BASE_FEATURE(kAutofillAiWithDataSchema,
              "AutofillAiWithDataSchema",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This parameter enables adding an experiment id to requests to the Autofill
+// to enable Autofill AI predictions. The experiment id is not used for other
+// backends.
 const base::FeatureParam<int> kAutofillAiWithDataSchemaServerExperimentId{
     &kAutofillAiWithDataSchema, "autofill_ai_server_experiment_id", 0};
 
@@ -244,6 +247,12 @@ BASE_FEATURE(kAutofillFixCurrentValueInImport,
 // will affect many correctness metrics.
 BASE_FEATURE(kAutofillRecordCorrectionOfSelectElements,
              "AutofillRecordCorrectionOfSelectElements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, chrome will support home and work addresses from account.
+// TODO: crbug.com/397940269 - Clean up when launched.
+BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,
+             "AutofillEnableSupportForHomeAndWork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Gives precedence to local heuristics if they indicate that a field is an

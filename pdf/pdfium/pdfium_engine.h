@@ -311,7 +311,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   PageOrientation GetCurrentOrientation() const;
 
   // Gets the rectangle of the page excluding any additional areas.
-  virtual gfx::Rect GetPageContentsRect(int index);
+  virtual gfx::Rect GetPageContentsRect(int page_index);
 
   // Returns a page's rect in screen coordinates, as well as its surrounding
   // border areas and bottom separator.

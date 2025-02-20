@@ -1,3 +1,224 @@
+# Try most of the CSS3 Color <color> values.
+# http://www.w3.org/TR/css3-color/#colorunits
+- name: 2d.fillStyle.parse
+  macros: |
+    {% macro js_format(color) %}
+      {% set r, g, b, a = color %}
+      {{- '%d,%d,%d,%d' | format(r, g, b, a) -}}
+    {% endmacro %}
+
+    {% macro cairo_format(color) %}
+      {% set r, g, b, a = color %}
+      {{- '%f, %f, %f, %f' |
+          format(r / 255.0, g / 255.0, b / 255.0, a / 255.0) -}}
+    {% endmacro %}
+  code: |
+    {% import 'macros' as m %}
+    ctx.fillStyle = '#f00';
+    ctx.fillStyle = '{{ string }}';
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 == {{ m.js_format(color) }};
+  expected: |
+    {% import 'macros' as m %}
+    size 100 50
+    cr.set_source_rgba({{ m.cairo_format(color) }})
+    cr.rectangle(0, 0, 100, 50)
+    cr.fill()
+  big_float: '1{% for i in range(39) %}0{% endfor %}'
+  big_double: '1{% for i in range(310) %}0{% endfor %}'
+  variants:
+  - html4: {string: 'limE', color: [0, 255, 0, 255]}
+    hex3: {string: '#0f0', color: [0, 255, 0, 255]}
+    hex4: {string: '#0f0f', color: [0, 255, 0, 255]}
+    hex6: {string: '#00fF00', color: [0, 255, 0, 255]}
+    hex8: {string: '#00ff00ff', color: [0, 255, 0, 255]}
+    rgb-num: {string: 'rgb(0,255,0)', color: [0, 255, 0, 255]}
+    rgb-clamp-1: {string: 'rgb(-1000, 1000, -1000)', color: [0, 255, 0, 255],
+                  notes: 'Assumes colors are clamped to [0,255].'}
+    rgb-clamp-2: {string: 'rgb(-200%, 200%, -200%)', color: [0, 255, 0, 255],
+                  notes: 'Assumes colors are clamped to [0,255].'}
+    rgb-clamp-3: {string: 'rgb(-2147483649, 4294967298, -18446744073709551619)',
+                  color: [0, 255, 0, 255],
+                  notes: 'Assumes colors are clamped to [0,255].'}
+    rgb-clamp-4:
+      string: 'rgb(-{{ big_float }}, {{ big_float }}, -{{ big_float }})'
+      color: [0, 255, 0, 255]
+      notes: 'Assumes colors are clamped to [0,255].'
+    rgb-clamp-5:
+      string: 'rgb(-{{ big_double }}, {{ big_double }}, -{{ big_double }})'
+      color: [0, 255, 0, 255]
+      notes: 'Assumes colors are clamped to [0,255].'
+    rgb-percent:
+      string: 'rgb(0% ,100% ,0%)'
+      color: [0, 255, 0, 255]
+      notes: >-
+        CSS3 Color says "The integer value 255 corresponds to 100%". (In
+        particular, it is not 254...)
+    # See CSS2.1 4.2 "Unexpected end of style sheet".
+    rgb-eof: {string: 'rgb(0, 255, 0', color: [0, 255, 0, 255]}
+    rgba-solid-1: {string: 'rgba(  0  ,  255  ,  0  ,  1  )',
+                   color: [0, 255, 0, 255]}
+    rgba-solid-2: {string: 'rgba(  0  ,  255  ,  0  ,  1.0  )',
+                   color: [0, 255, 0, 255]}
+    rgba-solid-3: {string: 'rgba(  0  ,  255  ,  0  , +1  )',
+                   color: [0, 255, 0, 255]}
+    rgba-solid-4: {string: 'rgba( -0  ,  255  , +0  ,  1  )',
+                   color: [0, 255, 0, 255]}
+    rgba-num-1: {string: 'rgba(  0  ,  255  ,  0  ,  .499  )',
+                 color: [0, 255, 0, 127]}
+    rgba-num-2: {string: 'rgba(  0  ,  255  ,  0  ,  0.499  )',
+                 color: [0, 255, 0, 127]}
+    rgba-percent:
+      string: 'rgba(0%,100%,0%,0.499)'
+      # 0.499*255 rounds to 127, both down and nearest, so it should be safe.
+      color: [0, 255, 0, 127]
+    rgba-clamp-1: {string: 'rgba(0, 255, 0, -2)', color: [0, 0, 0, 0]}
+    rgba-clamp-2: {string: 'rgba(0, 255, 0, 2)', color: [0, 255, 0, 255]}
+    rgba-eof: {string: 'rgba(0, 255, 0, 1', color: [0, 255, 0, 255]}
+    transparent-1: {string: 'transparent', color: [0, 0, 0, 0]}
+    transparent-2: {string: 'TrAnSpArEnT', color: [0, 0, 0, 0]}
+    hsl-1: {string: 'hsl(120, 100%, 50%)', color: [0, 255, 0, 255]}
+    hsl-2: {string: 'hsl( -240 , 100% , 50% )', color: [0, 255, 0, 255]}
+    hsl-3: {string: 'hsl(360120, 100%, 50%)', color: [0, 255, 0, 255]}
+    hsl-4: {string: 'hsl(-360240, 100%, 50%)', color: [0, 255, 0, 255]}
+    hsl-5: {string: 'hsl(120.0, 100.0%, 50.0%)', color: [0, 255, 0, 255]}
+    hsl-6: {string: 'hsl(+120, +100%, +50%)', color: [0, 255, 0, 255]}
+    hsl-clamp-negative-saturation: {string: 'hsl(120, -200%, 49.9%)',
+                                    color: [127, 127, 127, 255]}
+    hsla-1: {string: 'hsla(120, 100%, 50%, 0.499)', color: [0, 255, 0, 127]}
+    hsla-2: {string: 'hsla( 120.0 , 100.0% , 50.0% , 1 )',
+             color: [0, 255, 0, 255]}
+    hsla-clamp-negative-saturation: {string: 'hsla(120, -200%, 49.9%, 1)',
+                                     color: [127, 127, 127, 255]}
+    hsla-clamp-alpha-1: {string: 'hsla(120, 100%, 50%, 2)',
+                         color: [0, 255, 0, 255]}
+    hsla-clamp-alpha-2: {string: 'hsla(120, 100%, 0%, -2)',
+                         color: [0, 0, 0, 0]}
+    svg-1: {string: 'gray', color: [128, 128, 128, 255]}
+    svg-2: {string: 'grey', color: [128, 128, 128, 255]}
+    # css-color-4 rgb() color function.
+    # https://drafts.csswg.org/css-color/#numeric-rgb
+    css-color-4-rgb-1: {string: 'rgb(0, 255.0, 0)', color: [0, 255, 0, 255]}
+    css-color-4-rgb-2: {string: 'rgb(0, 255, 0, 0.2)', color: [0, 255, 0, 51]}
+    css-color-4-rgb-3: {string: 'rgb(0, 255, 0, 20%)', color: [0, 255, 0, 51]}
+    css-color-4-rgb-4: {string: 'rgb(0 255 0)', color: [0, 255, 0, 255]}
+    css-color-4-rgb-5: {string: 'rgb(0 255 0 / 0.2)', color: [0, 255, 0, 51]}
+    css-color-4-rgb-6: {string: 'rgb(0 255 0 / 20%)', color: [0, 255, 0, 51]}
+    css-color-4-rgba-1: {string: 'rgba(0, 255.0, 0)', color: [0, 255, 0, 255]}
+    css-color-4-rgba-2: {string: 'rgba(0, 255, 0, 0.2)', color: [0, 255, 0, 51]}
+    css-color-4-rgba-3: {string: 'rgba(0, 255, 0, 20%)', color: [0, 255, 0, 51]}
+    css-color-4-rgba-4: {string: 'rgba(0 255 0)', color: [0, 255, 0, 255]}
+    css-color-4-rgba-5: {string: 'rgba(0 255 0 / 0.2)', color: [0, 255, 0, 51]}
+    css-color-4-rgba-6: {string: 'rgba(0 255 0 / 20%)', color: [0, 255, 0, 51]}
+    # css-color-4 hsl() color function.
+    # https://drafts.csswg.org/css-color/#the-hsl-notation
+    css-color-4-hsl-1: {string: 'hsl(120 100.0% 50.0%)',
+                        color: [0, 255, 0, 255]}
+    css-color-4-hsl-2: {string: 'hsl(120 100.0% 50.0% / 0.2)',
+                        color: [0, 255, 0, 51]}
+    css-color-4-hsl-3: {string: 'hsl(120.0, 100.0%, 50.0%, 0.2)',
+                        color: [0, 255, 0, 51]}
+    css-color-4-hsl-4: {string: 'hsl(120.0, 100.0%, 50.0%, 20%)',
+                        color: [0, 255, 0, 51]}
+    css-color-4-hsl-5: {string: 'hsl(120deg, 100.0%, 50.0%, 0.2)',
+                        color: [0, 255, 0, 51]}
+    css-color-4-hsl-6: {string: 'hsl(120deg, 100.0%, 50.0%)',
+                        color: [0, 255, 0, 255]}
+    css-color-4-hsl-7: {string: 'hsl(133.33333333grad, 100.0%, 50.0%)',
+                        color: [0, 255, 0, 255]}
+    css-color-4-hsl-8: {string: 'hsl(2.0943951024rad, 100.0%, 50.0%)',
+                        color: [0, 255, 0, 255]}
+    css-color-4-hsl-9: {string: 'hsl(0.3333333333turn, 100.0%, 50.0%)',
+                        color: [0, 255, 0, 255]}
+    css-color-4-hsla-1: {string: 'hsl(120 100.0% 50.0%)',
+                         color: [0, 255, 0, 255]}
+    css-color-4-hsla-2: {string: 'hsl(120 100.0% 50.0% / 0.2)',
+                         color: [0, 255, 0, 51]}
+    css-color-4-hsla-3: {string: 'hsl(120.0, 100.0%, 50.0%, 0.2)',
+                         color: [0, 255, 0, 51]}
+    css-color-4-hsla-4: {string: 'hsl(120.0, 100.0%, 50.0%, 20%)',
+                         color: [0, 255, 0, 51]}
+    css-color-4-hsla-5: {string: 'hsl(120deg, 100.0%, 50.0%, 0.2)',
+                         color: [0, 255, 0, 51]}
+    css-color-4-hsla-6: {string: 'hsl(120deg, 100.0%, 50.0%)',
+                         color: [0, 255, 0, 255]}
+    css-color-4-hsla-7: {string: 'hsl(133.33333333grad, 100.0%, 50.0%)',
+                         color: [0, 255, 0, 255]}
+    css-color-4-hsla-8: {string: 'hsl(2.0943951024rad, 100.0%, 50.0%)',
+                         color: [0, 255, 0, 255]}
+    css-color-4-hsla-9: {string: 'hsl(0.3333333333turn, 100.0%, 50.0%)',
+                         color: [0, 255, 0, 255]}
+    # currentColor is handled later.
+
+# Test that invalid colors are ignored.
+- name: 2d.fillStyle.parse.invalid
+  code: |
+    ctx.fillStyle = '#0f0';
+    try { ctx.fillStyle = '{{ string }}'; } catch (e) { } \-
+        // this shouldn't throw, but it shouldn't matter here if it does
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 == 0,255,0,255;
+  expected: 'green'
+  variants:
+  - hex1: {string: '#f'}
+    hex2: {string: '#f0'}
+    hex3: {string: '#g00'}
+    hex4: {string: '#fg00'}
+    hex5: {string: '#ff000'}
+    hex6: {string: '#fg0000'}
+    hex7: {string: '#ff0000f'}
+    hex8: {string: '#fg0000ff'}
+    rgb-1: {string: 'rgb(255.0, 0, 0,)'}
+    rgb-2: {string: 'rgb(100%, 0, 0)'}
+    rgb-3: {string: 'rgb(255, - 1, 0)'}
+    rgba-1: {string: 'rgba(100%, 0, 0, 1)'}
+    rgba-2: {string: 'rgba(255, 0, 0, 1. 0)'}
+    rgba-3: {string: 'rgba(255, 0, 0, 1.)'}
+    rgba-4: {string: 'rgba(255, 0, 0, '}
+    rgba-5: {string: 'rgba(255, 0, 0, 1,)'}
+    hsl-1: {string: 'hsl(0%, 100%, 50%)'}
+    hsl-2: {string: 'hsl(z, 100%, 50%)'}
+    hsl-3: {string: 'hsl(0, 0, 50%)'}
+    hsl-4: {string: 'hsl(0, 100%, 0)'}
+    hsl-5: {string: 'hsl(0, 100.%, 50%)'}
+    hsl-6: {string: 'hsl(0, 100%, 50%,)'}
+    hsla-1: {string: 'hsla(0%, 100%, 50%, 1)'}
+    hsla-2: {string: 'hsla(0, 0, 50%, 1)'}
+    hsla-3: {string: 'hsla(0, 0, 50%, 1,)'}
+    name-1: {string: 'darkbrown'}
+    name-2: {string: 'firebrick1'}
+    name-3: {string: 'red blue'}
+    name-4: {string: '"red"'}
+    name-5: {string: '"red'}
+    # css-color-4 color function.
+    # Comma and comma-less expressions should not mix together.
+    css-color-4-rgb-1: {string: 'rgb(255, 0, 0 / 1)'}
+    css-color-4-rgb-2: {string: 'rgb(255 0 0, 1)'}
+    css-color-4-rgb-3: {string: 'rgb(255, 0 0)'}
+    css-color-4-rgba-1: {string: 'rgba(255, 0, 0 / 1)'}
+    css-color-4-rgba-2: {string: 'rgba(255 0 0, 1)'}
+    css-color-4-rgba-3: {string: 'rgba(255, 0 0)'}
+    css-color-4-hsl-1: {string: 'hsl(0, 100%, 50% / 1)'}
+    css-color-4-hsl-2: {string: 'hsl(0 100% 50%, 1)'}
+    css-color-4-hsl-3: {string: 'hsl(0, 100% 50%)'}
+    css-color-4-hsla-1: {string: 'hsla(0, 100%, 50% / 1)'}
+    css-color-4-hsla-2: {string: 'hsla(0 100% 50%, 1)'}
+    css-color-4-hsla-3: {string: 'hsla(0, 100% 50%)'}
+    # Trailing slash.
+    css-color-4-rgb-4: {string: 'rgb(0 0 0 /)'}
+    css-color-4-rgb-5: {string: 'rgb(0, 0, 0 /)'}
+    css-color-4-hsl-4: {string: 'hsl(0 100% 50% /)'}
+    css-color-4-hsl-5: {string: 'hsl(0, 100%, 50% /)'}
+
+# Implemented as a negative test because we don't know what color it's meant to
+# be.
+- name: 2d.fillStyle.parse.system
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillStyle = 'ThreeDDarkShadow';
+    @assert ctx.fillStyle =~ /^#(?!(FF0000|ff0000|f00)$)/; // test that it's \-
+        not red
+
 - name: 2d.fillStyle.parse.current.basic
   desc: currentColor is computed from the canvas element
   canvas_types: ['HtmlCanvas']

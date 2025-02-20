@@ -258,7 +258,7 @@ AutofillAiManager::GetFieldValueSensitivityMap(
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-bool AutofillAiManager::IsEligibleForAutofillAi(
+bool AutofillAiManager::IsFormAndFieldEligibleForAutofillAi(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
   if (base::FeatureList::IsEnabled(
@@ -266,13 +266,17 @@ bool AutofillAiManager::IsEligibleForAutofillAi(
     // TODO(crbug.com/389629573): If triggering via manual fallback, the check
     // `field.GetAutofillAiServerTypePredictions()` does not apply.
     return field.GetAutofillAiServerTypePredictions() &&
-           client_->IsAutofillAiEnabledPref() && IsUserEligible();
+           IsUserEligibleForFillingAndImporting();
   }
   return false;
 }
 
 bool AutofillAiManager::IsUserEligible() const {
   return client_->IsUserEligible();
+}
+
+bool AutofillAiManager::IsUserEligibleForFillingAndImporting() const {
+  return client_->IsAutofillAiEnabledPref() && IsUserEligible();
 }
 
 void AutofillAiManager::OnReceivedAXTree(

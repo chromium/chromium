@@ -462,7 +462,7 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
       base::EraseIf(
           sets, [&validator](const std::pair<net::SchemefulSite,
                                              net::FirstPartySetEntry>& pair) {
-            return !validator.IsSitePrimaryValid(pair.second.primary());
+            return !validator.IsSiteValid(pair.first);
           });
     }
 

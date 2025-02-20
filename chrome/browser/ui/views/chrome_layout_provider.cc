@@ -225,6 +225,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 2;
     case DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS:
       return 8;
+    case DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL:
+      return 8;
   }
   NOTREACHED();
 }

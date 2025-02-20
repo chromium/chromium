@@ -60,6 +60,8 @@
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
+#include "third_party/webrtc_overrides/init_webrtc.h"
+#include "v8/include/v8-trace-categories.h"
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -171,9 +173,15 @@ std::string GetClockOffsetSinceEpoch() {
 }
 #endif
 
-bool IsSpecialCategory(const std::string& name) {
-  return name == "__metadata" || name == "tracing_already_shutdown" ||
-         name == "tracing_categories_exhausted._must_increase_kMaxCategories";
+void AddCategoriesToSet(
+    const perfetto::internal::TrackEventCategoryRegistry& registry,
+    std::set<std::string>& category_set) {
+  for (size_t i = 0; i < registry.category_count(); ++i) {
+    if (registry.GetCategory(i)->IsGroup()) {
+      continue;
+    }
+    category_set.insert(registry.GetCategory(i)->name);
+  }
 }
 
 }  // namespace
@@ -411,15 +419,10 @@ TracingControllerImpl* TracingControllerImpl::GetInstance() {
 bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
   std::set<std::string> category_set;
 
-  using base::perfetto_track_event::internal::kCategoryRegistry;
-  for (size_t i = 0; i < kCategoryRegistry.category_count(); ++i) {
-    std::string category_name = kCategoryRegistry.GetCategory(i)->name;
-    // Only add single categories, not groups. Also exclude special categories.
-    if (category_name.find(',') == std::string::npos &&
-        !IsSpecialCategory(category_name)) {
-      category_set.insert(category_name);
-    }
-  }
+  AddCategoriesToSet(base::perfetto_track_event::internal::kCategoryRegistry,
+                     category_set);
+  AddCategoriesToSet(v8::GetTrackEventCategoryRegistry(), category_set);
+  AddCategoriesToSet(GetWebRtcTrackEventCategoryRegistry(), category_set);
 
   std::move(callback).Run(category_set);
   return true;

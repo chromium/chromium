@@ -39,11 +39,7 @@ void PostProcessNodePriority(content::RenderProcessHost* rph,
                              base::Process::Priority priority) {
   auto* rpud = RenderProcessUserData::GetForRenderProcessHost(rph);
   auto* process_node = rpud->process_node();
-
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([process_node, priority]() {
-        process_node->set_priority(ToTaskPriority(priority));
-      }));
+  process_node->set_priority(ToTaskPriority(priority));
 }
 
 // Tests ProcessPriorityPolicy in different threading configurations.

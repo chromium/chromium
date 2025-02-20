@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] event and promise ordering for navigation.reload() intercepted by intercept()
+  assert_array_equals: lengths differ, expected array ["navigate", "currententrychange", "handler run", "committed fulfilled", "promise microtask", "navigatesuccess", "finished fulfilled", "transition.finished fulfilled"] length 8, got ["navigate", "currententrychange", "handler run", "popstate", "committed fulfilled", "promise microtask", "navigatesuccess", "finished fulfilled", "transition.finished fulfilled"] length 9
+Harness: the test ran to completion.
+

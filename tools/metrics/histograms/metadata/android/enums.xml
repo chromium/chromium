@@ -209,18 +209,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Abort"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidRestoreResult) -->
+
 <enum name="AndroidRestoreResult">
   <int value="0" label="No restore attempted"/>
   <int value="1" label="Restore successful"/>
   <int value="2" label="Failed: Chrome already run locally"/>
   <int value="3" label="Failed: Chrome startup failed"/>
-  <int value="4" label="Failed: Cannot sign in as previous user"/>
+  <int value="4" label="Failed: Previous user not found on the device"/>
   <int value="5" label="DEPRECATED: Failed: Sign-in timed-out or interrupted"/>
   <int value="6"
       label="DEPRECATED: Restore status histogram sent (never recorded)"/>
   <int value="7" label="Failed: Sign-in timed-out or interrupted"/>
   <int value="8" label="Failed: Restore flow timed-out or crashed"/>
+  <int value="9" label="Failed: Backup contains no signed-in account"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java:RestoreStatus)-->
 
 <enum name="AndroidSearchEngineChoiceEvents">
   <summary>Events related to Search Engine Choice feature.</summary>
@@ -616,6 +621,7 @@ chromium-metrics-reviews@google.com.
   <int value="117" label="WebStorageCompat.deleteBrowsingData"/>
   <int value="118" label="WebStorageCompat.deleteBrowsingDataForSite"/>
   <int value="119" label="Profile.setSpeculativeLoadingConfig"/>
+  <int value="120" label="WebViewCompat.saveState"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

@@ -308,10 +308,12 @@ void PixManager::OnPurchaseActionResult(base::TimeTicks start_time,
       DismissPrompt();
       break;
   }
-  // Logs the general histograms.
+  // Log the general histograms.
   LogPixInitiatePurchaseActionResultAndLatency(
       result, base::TimeTicks::Now() - start_time);
   LogInitiatePurchaseActionResultUkm(result, ukm_source_id_);
+  LogPixTransactionResultAndLatency(
+      result, base::TimeTicks::Now() - pix_code_copied_timestamp_);
 }
 
 void PixManager::OnUiEvent(UiEvent ui_event_type) {

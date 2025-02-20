@@ -3607,13 +3607,21 @@ public class AwContents implements SmartClipProvider {
 
     /**
      * Save the state of this AwContents into provided Bundle.
+     *
+     * @param maxSize a limit on the size of the state.
+     * @param includeForwardState whether to include state accessible through goForward (not
+     *     necessary for embedders without a forward button).
      * @return False if saving state failed.
      */
-    public boolean saveState(Bundle outState) {
+    public boolean saveState(Bundle outState, int maxSize, boolean includeForwardState) {
         if (TRACE) Log.i(TAG, "%s saveState", this);
         if (isDestroyed(WARN) || outState == null) return false;
+        if (maxSize < 0) {
+            throw new IllegalArgumentException("maxSize can't be less than zero.");
+        }
 
-        byte[] state = AwContentsJni.get().getOpaqueState(mNativeAwContents);
+        byte[] state =
+                AwContentsJni.get().getOpaqueState(mNativeAwContents, maxSize, includeForwardState);
         if (state == null) return false;
 
         int stateSizeKb = state.length / 1024;
@@ -3622,8 +3630,14 @@ public class AwContents implements SmartClipProvider {
         return true;
     }
 
+    /** See {@link AwContents#saveState(Bundle, int, boolean)}. */
+    public boolean saveState(Bundle outState) {
+        return saveState(outState, Integer.MAX_VALUE, true);
+    }
+
     /**
      * Restore the state of this AwContents into provided Bundle.
+     *
      * @param inState Must be a bundle returned by saveState.
      * @return False if restoring state failed.
      */
@@ -4853,7 +4867,7 @@ public class AwContents implements SmartClipProvider {
         void onInputEvent(long nativeAwContents);
 
         // Returns null if save state fails.
-        byte[] getOpaqueState(long nativeAwContents);
+        byte[] getOpaqueState(long nativeAwContents, int maxSize, boolean includeForwardState);
 
         // Returns false if restore state fails.
         boolean restoreFromOpaqueState(long nativeAwContents, byte[] state);

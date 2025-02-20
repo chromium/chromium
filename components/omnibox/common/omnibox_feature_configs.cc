@@ -112,16 +112,6 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
   require_shortcut = base::FeatureParam<bool>(&kSearchAggregatorProvider,
                                               "require_shortcut", false)
                          .Get();
-  callback_delay =
-      base::FeatureParam<base::TimeDelta>(
-          &kSearchAggregatorProvider, "callback_delay", base::Milliseconds(0))
-          .Get();
-  num_suggestions =
-      base::FeatureParam<int>(&kSearchAggregatorProvider, "num_suggestions", 0)
-          .Get();
-  response_type = base::FeatureParam<std::string>(&kSearchAggregatorProvider,
-                                                  "response_type", "success")
-                      .Get();
 }
 
 SearchAggregatorProvider::SearchAggregatorProvider(

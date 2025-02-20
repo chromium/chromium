@@ -555,8 +555,8 @@ IN_PROC_BROWSER_TEST_P(DiscountDialogAutoPopupCounterfactual,
       WaitForViewProperty(kDiscountsChipElementId, DiscountsIconView,
                           IsLabelExpanded, true),
       If([&]() { return is_counterfactual_enabled; },
-         EnsureNotPresent(kDiscountsBubbleDialogId),
-         WaitForShow(kDiscountsBubbleDialogId)),
+         Then(EnsureNotPresent(kDiscountsBubbleDialogId)),
+         Else(WaitForShow(kDiscountsBubbleDialogId))),
       Do([&]() {
         entries = test_ukm_recorder.GetEntriesByName(
             ukm::builders::Shopping_Discounts::kEntryName);

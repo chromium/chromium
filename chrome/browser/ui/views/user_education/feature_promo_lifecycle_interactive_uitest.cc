@@ -457,9 +457,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                  bubble_widget = view->GetWidget();
                }),
       If([&bubble_widget]() { return !bubble_widget->IsActive(); },
-         WaitForState(
+         Then(WaitForState(
              views::test::kCurrentWidgetFocus,
-             [&bubble_widget]() { return bubble_widget->GetNativeView(); })),
+             [&bubble_widget]() { return bubble_widget->GetNativeView(); }))),
       SendAccelerator(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting, kEsc),
       WaitForHide(

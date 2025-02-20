@@ -45,14 +45,6 @@ BASE_FEATURE(kAndroidBcivBottomControls,
              "AndroidBcivBottomControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidBcivWithSimpleScheduler,
-             "AndroidBcivWithSimpleScheduler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidBcivWithSuppression,
-             "AndroidBcivWithSuppression",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAndroidBcivZeroBrowserFrames,
              "AndroidBcivZeroBrowserFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);

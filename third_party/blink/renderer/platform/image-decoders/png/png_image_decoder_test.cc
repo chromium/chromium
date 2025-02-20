@@ -1300,6 +1300,24 @@ TEST_P(StaticPNGTests, MetaDataTest) {
   EXPECT_EQ(kExpectedDuration, decoder->FrameDurationAtIndex(0));
 }
 
+TEST_P(StaticPNGTests, RepetitionCountForPartialNonanimatedInput) {
+  // IDAT begins at offset 85 and ends at offset 1295.
+  const size_t kOffsetInMiddleOfIDAT = 200u;
+  const bool kAllDataReceived = false;
+  const char kTestFile[] = "/images/resources/png-simple.png";
+
+  Vector<char> full_data = ReadFile(kTestFile);
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(base::span(full_data).first(kOffsetInMiddleOfIDAT));
+
+  std::unique_ptr<ImageDecoder> decoder = CreatePNGDecoder();
+  decoder->SetData(partial_data.get(), kAllDataReceived);
+
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(kAnimationNone, decoder->RepetitionCount());
+  EXPECT_EQ(1u, decoder->FrameCount());
+}
+
 // circle-trns-before-plte.png is of color type 2 (PNG_COLOR_TYPE_RGB) and has
 // a tRNS chunk before a PLTE chunk. The image has an opaque blue circle on a
 // transparent green background.

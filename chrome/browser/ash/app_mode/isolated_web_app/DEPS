@@ -31,6 +31,7 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/common/chrome_paths.h",
+  "+chrome/common/pref_names.h",
   "+chrome/common/url_constants.h",
   "+chrome/test/base",
 

@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"

@@ -90,6 +90,14 @@ bool IsPasswordManagerAvailable(
 bool IsPasswordManagerAvailable(const PrefService* prefs,
                                 bool is_internal_backend_present);
 
+// The login DB is ready to be deprecated when all the passwords have either
+// been already migrated to UPM or exported.
+//
+// Note: This should only be used if looking to identify whether deprecation
+// is ongoing or not. For most other  purposes `IsPasswordManagerAvailable` is
+// the correct util to check.
+bool LoginDbDeprecationReady(PrefService* pref_service);
+
 // Used to prevent static casting issues with
 // `PasswordsUseUPMLocalAndSeparateStores` pref.
 password_manager::prefs::UseUpmLocalAndSeparateStoresState

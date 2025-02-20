@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.settings;
 import androidx.annotation.LayoutRes;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** A ManagedPreferenceDelegate with Chrome-specific default behavior. */
+@NullMarked
 public abstract class ChromeManagedPreferenceDelegate implements ManagedPreferenceDelegate {
     private Profile mProfile;
 

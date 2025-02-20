@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -3424,7 +3425,7 @@ TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForAll) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures({},
-                                         {blink::features::kDeprecateUnload});
+                                         {network::features::kDeprecateUnload});
     std::unique_ptr<PermissionsPolicy> policy =
         CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
     EXPECT_EQ(PermissionsPolicyFeatureDefault::EnableForAll,
@@ -3438,7 +3439,7 @@ TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForAll) {
 TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForNone) {
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({blink::features::kDeprecateUnload},
+    feature_list.InitWithFeatures({network::features::kDeprecateUnload},
                                   /*disabled_features=*/{});
     std::unique_ptr<PermissionsPolicy> policy =
         CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
@@ -3469,10 +3470,10 @@ TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
       SCOPED_TRACE(base::StringPrintf("bucket=%d", bucket));
       base::test::ScopedFeatureList feature_list;
       feature_list.InitWithFeaturesAndParameters(
-          {{blink::features::kDeprecateUnload,
-            {{features::kDeprecateUnloadPercent.name,
+          {{network::features::kDeprecateUnload,
+            {{network::features::kDeprecateUnloadPercent.name,
               base::StringPrintf("%d", percent)},
-             {features::kDeprecateUnloadBucket.name,
+             {network::features::kDeprecateUnloadBucket.name,
               base::StringPrintf("%d", bucket)}}}},
           /*disabled_features=*/{});
       const PermissionsPolicyFeatureDefault unload_default =
@@ -3517,7 +3518,7 @@ class DeprecateUnloadTest : public PermissionsPolicyTest {
 // The parameter should default to "" and be parsed correctly.
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Empty) {
   // Make sure the default is the empty string.
-  ASSERT_EQ(features::kDeprecateUnloadAllowlist.Get(), "");
+  ASSERT_EQ(network::features::kDeprecateUnloadAllowlist.Get(), "");
   EXPECT_EQ(std::unordered_set<std::string>({}),
             UnloadDeprecationAllowedHosts());
 }
@@ -3526,8 +3527,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Empty) {
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Simple) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnloadByAllowList,
-        {{features::kDeprecateUnloadAllowlist.name, "testing1,testing2"}}}},
+      {{network::features::kDeprecateUnloadByAllowList,
+        {{network::features::kDeprecateUnloadAllowlist.name,
+          "testing1,testing2"}}}},
       /*disabled_features=*/{});
 
   EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
@@ -3538,8 +3540,8 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Simple) {
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Messy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnloadByAllowList,
-        {{features::kDeprecateUnloadAllowlist.name,
+      {{network::features::kDeprecateUnloadByAllowList,
+        {{network::features::kDeprecateUnloadAllowlist.name,
           "testing1,, testing2,testing1"}}}},
       /*disabled_features=*/{});
 
@@ -3552,8 +3554,8 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Messy) {
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_EmptyAllowList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnloadByAllowList,
-        {{features::kDeprecateUnloadAllowlist.name, ""}}}},
+      {{network::features::kDeprecateUnloadByAllowList,
+        {{network::features::kDeprecateUnloadAllowlist.name, ""}}}},
       /*disabled_features=*/{});
   const auto hosts = UnloadDeprecationAllowedHosts();
   // With no allowlist, every origin is allowed.
@@ -3572,8 +3574,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_NonEmptyAllowList) {
   // deprecation.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnloadByAllowList,
-        {{features::kDeprecateUnloadAllowlist.name, "testing1,testing2"}}}},
+      {{network::features::kDeprecateUnloadByAllowList,
+        {{network::features::kDeprecateUnloadAllowlist.name,
+          "testing1,testing2"}}}},
       /*disabled_features=*/{});
 
   const auto hosts = UnloadDeprecationAllowedHosts();
@@ -3590,9 +3593,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
   // Set to 100% deprecation.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnload,
-        {{features::kDeprecateUnloadPercent.name, "100"},
-         {features::kDeprecateUnloadBucket.name, "0"}}}},
+      {{network::features::kDeprecateUnload,
+        {{network::features::kDeprecateUnloadPercent.name, "100"},
+         {network::features::kDeprecateUnloadBucket.name, "0"}}}},
       /*disabled_features=*/{});
   const url::Origin chrome_origin =
       url::Origin::Create(GURL("chrome://settings"));
@@ -3605,9 +3608,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_0Percent) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnload,
-        {{features::kDeprecateUnloadPercent.name, "0"},
-         {features::kDeprecateUnloadBucket.name, "0"}}}},
+      {{network::features::kDeprecateUnload,
+        {{network::features::kDeprecateUnloadPercent.name, "0"},
+         {network::features::kDeprecateUnloadBucket.name, "0"}}}},
       /*disabled_features=*/{});
   EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_FALSE(
@@ -3618,9 +3621,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_0Percent) {
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_100Percent) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnload,
-        {{features::kDeprecateUnloadPercent.name, "100"},
-         {features::kDeprecateUnloadBucket.name, "0"}}}},
+      {{network::features::kDeprecateUnload,
+        {{network::features::kDeprecateUnloadPercent.name, "100"},
+         {network::features::kDeprecateUnloadBucket.name, "0"}}}},
       /*disabled_features=*/{});
   EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_TRUE(
@@ -3633,11 +3636,12 @@ TEST_F(DeprecateUnloadTest,
        UnloadDeprecationAllowedForOrigin_0PercentAndAllowList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnload,
-        {{features::kDeprecateUnloadPercent.name, "0"},
-         {features::kDeprecateUnloadBucket.name, "0"}}},
-       {blink::features::kDeprecateUnloadByAllowList,
-        {{features::kDeprecateUnloadAllowlist.name, http_origin1_.host()}}}},
+      {{network::features::kDeprecateUnload,
+        {{network::features::kDeprecateUnloadPercent.name, "0"},
+         {network::features::kDeprecateUnloadBucket.name, "0"}}},
+       {network::features::kDeprecateUnloadByAllowList,
+        {{network::features::kDeprecateUnloadAllowlist.name,
+          http_origin1_.host()}}}},
       /*disabled_features=*/{});
   EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_TRUE(
@@ -3652,11 +3656,12 @@ TEST_F(DeprecateUnloadTest,
        UnloadDeprecationAllowedForOrigin_100PercentAndAllowList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnload,
-        {{features::kDeprecateUnloadPercent.name, "100"},
-         {features::kDeprecateUnloadBucket.name, "0"}}},
-       {blink::features::kDeprecateUnloadByAllowList,
-        {{features::kDeprecateUnloadAllowlist.name, http_origin1_.host()}}}},
+      {{network::features::kDeprecateUnload,
+        {{network::features::kDeprecateUnloadPercent.name, "100"},
+         {network::features::kDeprecateUnloadBucket.name, "0"}}},
+       {network::features::kDeprecateUnloadByAllowList,
+        {{network::features::kDeprecateUnloadAllowlist.name,
+          http_origin1_.host()}}}},
       /*disabled_features=*/{});
   EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_TRUE(

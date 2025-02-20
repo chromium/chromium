@@ -330,10 +330,11 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
   // icon and the most recently used window for the glic profile is active,
   // treat this as if the user clicked the glic button on that window if
   // Chrome is currently in the foreground and we aren't in detached state.
-  if (!new_attached_browser && !is_detached &&
-      glic::IsAnyBrowserInForeground()) {
-    Browser* last_active_browser = glic::FindBrowserForAttachment(profile_);
-    if (last_active_browser) {
+  if (!new_attached_browser && !is_detached) {
+    Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+    if (last_active_browser &&
+        IsBrowserGlicCompatible(profile_, last_active_browser) &&
+        IsBrowserInForeground(last_active_browser)) {
       new_attached_browser = last_active_browser;
     }
   }

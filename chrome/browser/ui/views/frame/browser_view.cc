@@ -5552,6 +5552,12 @@ BrowserView::GetFeaturePromoControllerImpl() {
   return feature_promo_controller_.get();
 }
 
+bool BrowserView::IsFeaturePromoQueued(const base::Feature& iph_feature) const {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->GetPromoStatus(iph_feature) ==
+             user_education::FeaturePromoStatus::kQueued;
+}
+
 bool BrowserView::IsFeaturePromoActive(const base::Feature& iph_feature) const {
   return feature_promo_controller_ &&
          feature_promo_controller_->IsPromoActive(

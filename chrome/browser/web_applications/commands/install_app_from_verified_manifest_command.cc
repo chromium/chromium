@@ -128,6 +128,12 @@ void InstallAppFromVerifiedManifestCommand::StartWithLock(
 
 void InstallAppFromVerifiedManifestCommand::OnAboutBlankLoaded(
     webapps::WebAppUrlLoaderResult result) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
+    Abort(CommandResult::kFailure,
+          webapps::InstallResultCode::kInstallURLLoadFailed);
+    return;
+  }
+
   // The shared web contents must have been reset to about:blank before command
   // execution.
   DCHECK_EQ(web_contents_lock_->shared_web_contents().GetURL(),

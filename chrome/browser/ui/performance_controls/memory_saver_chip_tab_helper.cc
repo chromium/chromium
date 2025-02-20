@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 
+#include <cstdint>
+
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/browser/visibility.h"
@@ -43,6 +48,7 @@ void MemorySaverChipTabHelper::OnVisibilityChanged(
     if (chip_state_ == memory_saver::ChipState::EXPANDED_WITH_SAVINGS ||
         chip_state_ == memory_saver::ChipState::EXPANDED_EDUCATION) {
       chip_state_ = memory_saver::ChipState::COLLAPSED_FROM_EXPANDED;
+      // TODO(crbug.com/376283619): Invoke UpdatePageActionState();
     }
   }
 }
@@ -122,6 +128,42 @@ void MemorySaverChipTabHelper::ComputeChipState(
     chip_state_ = memory_saver::ChipState::EXPANDED_WITH_SAVINGS;
   } else {
     chip_state_ = memory_saver::ChipState::COLLAPSED;
+  }
+
+  // TODO(crbug.com/376283619): Invoke UpdatePageActionState();
+}
+
+void MemorySaverChipTabHelper::UpdatePageActionState() {
+  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    return;
+  }
+
+  tabs::TabFeatures* tab_features =
+      tabs::TabInterface::GetFromContents(&GetWebContents())->GetTabFeatures();
+  if (!tab_features) {
+    // Tab features may not be present at shutdown.
+    return;
+  }
+  memory_saver::MemorySaverChipController* controller =
+      tab_features->memory_saver_chip_controller();
+
+  switch (chip_state_) {
+    case memory_saver::ChipState::HIDDEN:
+      controller->Hide();
+      break;
+    case memory_saver::ChipState::COLLAPSED:
+    case memory_saver::ChipState::COLLAPSED_FROM_EXPANDED:
+      controller->ShowIcon();
+      break;
+    case memory_saver::ChipState::EXPANDED_EDUCATION:
+      controller->ShowEducationChip();
+      break;
+
+    case memory_saver::ChipState::EXPANDED_WITH_SAVINGS:
+      const int64_t bytes_saved =
+          memory_saver::GetDiscardedMemorySavingsInBytes(&GetWebContents());
+      controller->ShowMemorySavedChip(bytes_saved);
+      break;
   }
 }
 

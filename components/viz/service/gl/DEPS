@@ -18,6 +18,7 @@ include_rules = [
   "+media/base/media_log.h",
   "+media/base/media_switches.h",
   "+media/base/win/mf_feature_checks.h",
+  "+media/media_buildflags.h",
   "+media/gpu",
   "+media/mojo",
   "+mojo/public/cpp",

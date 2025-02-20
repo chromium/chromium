@@ -30,9 +30,9 @@ Found 103 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: operation abort()
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
-[FAIL] SpeechRecognition interface: operation onDeviceWebSpeechAvailable(DOMString)
+[FAIL] SpeechRecognition interface: operation availableOnDevice(DOMString)
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
-[FAIL] SpeechRecognition interface: operation installOnDeviceSpeechRecognition(DOMString)
+[FAIL] SpeechRecognition interface: operation installOnDevice(DOMString)
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: attribute onaudiostart
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
@@ -80,13 +80,13 @@ Found 103 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "abort()" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
-[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "onDeviceWebSpeechAvailable(DOMString)" with the proper type
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "availableOnDevice(DOMString)" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
-[FAIL] SpeechRecognition interface: calling onDeviceWebSpeechAvailable(DOMString) on new SpeechRecognition() with too few arguments must throw TypeError
+[FAIL] SpeechRecognition interface: calling availableOnDevice(DOMString) on new SpeechRecognition() with too few arguments must throw TypeError
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
-[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "installOnDeviceSpeechRecognition(DOMString)" with the proper type
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "installOnDevice(DOMString)" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
-[FAIL] SpeechRecognition interface: calling installOnDeviceSpeechRecognition(DOMString) on new SpeechRecognition() with too few arguments must throw TypeError
+[FAIL] SpeechRecognition interface: calling installOnDevice(DOMString) on new SpeechRecognition() with too few arguments must throw TypeError
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "onaudiostart" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"

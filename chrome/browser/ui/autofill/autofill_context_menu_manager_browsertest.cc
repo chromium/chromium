@@ -368,13 +368,13 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
 };
 
 // Tests if the prediction improvements entry is not added based on
-// `IsEligibleForAutofillAi()` returning `false`.
+// `IsFormAndFieldEligibleForAutofillAi()` returning `false`.
 class AutofillAiDisabledTest : public BaseAutofillContextMenuManagerTest {
  public:
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
     ON_CALL(*autofill_client()->GetAutofillAiDelegate(),
-            IsEligibleForAutofillAi)
+            IsFormAndFieldEligibleForAutofillAi)
         .WillByDefault(::testing::Return(false));
   }
 };
@@ -391,13 +391,13 @@ IN_PROC_BROWSER_TEST_F(AutofillAiDisabledTest, AutofillAiEntryNotAdded) {
 }
 
 // Tests if the prediction improvements entry is added based on
-// `IsEligibleForAutofillAi()` returning `true`.
+// `IsFormAndFieldEligibleForAutofillAi()` returning `true`.
 class AutofillAiEnabledTest : public BaseAutofillContextMenuManagerTest {
  public:
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
     ON_CALL(*autofill_client()->GetAutofillAiDelegate(),
-            IsEligibleForAutofillAi)
+            IsFormAndFieldEligibleForAutofillAi)
         .WillByDefault(::testing::Return(true));
   }
 };

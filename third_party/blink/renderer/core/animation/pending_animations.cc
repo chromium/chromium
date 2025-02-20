@@ -113,6 +113,11 @@ bool PendingAnimations::Update(
             animation->TimelineInternal()->CurrentTime().value());
       }
     } else if (animation->CurrentTimeInternal()) {
+      // TODO(crbug.com/397451098): We shouldn't need to push these on a
+      // deferred list for re-injection into the pending list. The start of the
+      // animation on the compositor will trigger NotifyReady. Any change to the
+      // animation that would affect the state of the animation must call
+      // SetCompositorPending, which will add it back to the pending list.
       deferred.push_back(animation);
     }
   }
@@ -125,14 +130,17 @@ bool PendingAnimations::Update(
     waiting_for_compositor_animation_start_.AppendVector(
         waiting_for_start_time);
   } else {
+    // Main-threaded animations previously held up for sync with the compositor
+    // are no longer held up.
     for (auto& animation : waiting_for_start_time) {
+      if (animation->HasActiveAnimationsOnCompositor()) {
+        // A composited animation needs to continue waiting, otherwise the
+        // start time on the compositor and main-thread will be misaligned.
+        continue;
+      }
       DCHECK(!animation->StartTimeInternal());
       DCHECK(animation->TimelineInternal()->IsActive() &&
              animation->TimelineInternal()->CurrentTime());
-      // TODO(bokan): This call is intended only to start main thread
-      // animations but nothing prevents it from starting compositor
-      // animations. See discussion at
-      // https://chromium-review.googlesource.com/c/chromium/src/+/4605129/comment/606f1f36_a5725f99/
       animation->NotifyReady(
           animation->TimelineInternal()->CurrentTime().value());
     }

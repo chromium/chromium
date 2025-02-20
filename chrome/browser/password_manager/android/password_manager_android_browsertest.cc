@@ -17,6 +17,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -110,6 +111,7 @@ class PasswordManagerAndroidBrowserTest
   }
 
  private:
+  autofill::test::AutofillBrowserTestEnvironment environment_;
   net::EmbeddedTestServer https_server_;
 };
 

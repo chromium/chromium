@@ -188,32 +188,7 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
 void IOSCollaborationControllerDelegate::ShowShareDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultWithGroupTokenCallback result) {
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->GetProfile());
-  if (!tab_group_sync_service) {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure,
-                          data_sharing::GroupToken());
-    return;
-  }
-
-  std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_sync_service->GetGroup(either_id);
-
-  if (!saved_group.has_value()) {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure,
-                          data_sharing::GroupToken());
-    return;
-  }
-
-  const TabGroup* tab_group = nullptr;
-  for (const TabGroup* group : browser_->GetWebStateList()->GetGroups()) {
-    if (group->tab_group_id() == saved_group->local_group_id()) {
-      tab_group = group;
-      break;
-    }
-  }
-
+  const TabGroup* tab_group = GetLocalGroup(either_id);
   if (!tab_group) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure,
                           data_sharing::GroupToken());
@@ -242,6 +217,12 @@ void IOSCollaborationControllerDelegate::OnUrlReadyToShare(
 void IOSCollaborationControllerDelegate::ShowManageDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
+  const TabGroup* tab_group = GetLocalGroup(either_id);
+  if (!tab_group) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    return;
+  }
+
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->GetProfile());
@@ -255,6 +236,7 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
   ShareKitManageConfiguration* config =
       [[ShareKitManageConfiguration alloc] init];
   config.baseViewController = base_view_controller_;
+  config.tabGroup = tab_group;
   config.collabID = base::SysUTF8ToNSString(collaboration_id.value());
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
@@ -325,6 +307,31 @@ void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
                     : CollaborationControllerDelegate::Outcome::kFailure;
 
   std::move(result).Run(outcome);
+}
+
+const TabGroup* IOSCollaborationControllerDelegate::GetLocalGroup(
+    const tab_groups::EitherGroupID& either_id) {
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  if (!tab_group_sync_service) {
+    return nullptr;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_sync_service->GetGroup(either_id);
+  if (!saved_group.has_value()) {
+    return nullptr;
+  }
+
+  const TabGroup* tab_group = nullptr;
+  for (const TabGroup* group : browser_->GetWebStateList()->GetGroups()) {
+    if (group->tab_group_id() == saved_group->local_group_id()) {
+      tab_group = group;
+      break;
+    }
+  }
+  return tab_group;
 }
 
 }  // namespace collaboration

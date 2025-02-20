@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/card_side_swipe_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_constants.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator+Testing.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_navigation_view.h"
@@ -39,11 +40,6 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
-
-NSString* const kSideSwipeWillStartNotification =
-    @"kSideSwipeWillStartNotification";
-NSString* const kSideSwipeDidStopNotification =
-    @"kSideSwipeDidStopNotification";
 
 namespace {
 
@@ -213,16 +209,17 @@ const CGFloat kIpadTabSwipeDistance = 100;
   }
 }
 
-- (void)prepareForSlideInDirection:
-    (UISwipeGestureRecognizerDirection)direction {
-  if (_inSwipe || [_swipeDelegate preventSideSwipe]) {
+- (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction
+                     snapshotImage:(UIImage*)snapshotImage {
+  if (_inSwipe || [_swipeDelegate preventSideSwipe] || !snapshotImage) {
     return;
   }
 
   _inSwipe = YES;
   [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:NO];
 
-  _pageSideSwipeView = [self fullscreenSnapshotSideSwipeView:direction];
+  _pageSideSwipeView = [self fullscreenSnapshotSideSwipeView:direction
+                                               snapshotImage:snapshotImage];
 
   UIView* fullscreenView = [_swipeDelegate sideSwipeFullscreenView];
 
@@ -414,11 +411,16 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
     if ([self swipingFullScreenContent:gesture.direction]) {
       _pageSideSwipeView =
-          [self fullscreenSnapshotSideSwipeView:gesture.direction];
+          [self fullscreenSnapshotSideSwipeView:gesture.direction
+                                  snapshotImage:SwipeNavigationSnapshot(
+                                                    gesture.direction,
+                                                    self.activeWebState)];
       UIView* fullscreenView = [_swipeDelegate sideSwipeFullscreenView];
       [_pageSideSwipeView setTargetView:fullscreenView];
-      [fullscreenView.superview insertSubview:_pageSideSwipeView
-                                 belowSubview:fullscreenView];
+      if (_pageSideSwipeView) {
+        [fullscreenView.superview insertSubview:_pageSideSwipeView
+                                   belowSubview:fullscreenView];
+      }
     } else {
       _pageSideSwipeView =
           [self webContentSideSwipeView:navigationFrame
@@ -464,11 +466,16 @@ const CGFloat kIpadTabSwipeDistance = 100;
   BOOL canNavigate = [self canNavigate:IsSwipingBack(direction)];
 
   if ([self swipingFullScreenContent:direction]) {
-    _pageSideSwipeView = [self fullscreenSnapshotSideSwipeView:direction];
+    _pageSideSwipeView = [self
+        fullscreenSnapshotSideSwipeView:direction
+                          snapshotImage:SwipeNavigationSnapshot(
+                                            direction, self.activeWebState)];
     UIView* fullscreenView = [_swipeDelegate sideSwipeFullscreenView];
     [_pageSideSwipeView setTargetView:fullscreenView];
-    [fullscreenView.superview insertSubview:_pageSideSwipeView
-                               belowSubview:fullscreenView];
+    if (_pageSideSwipeView) {
+      [fullscreenView.superview insertSubview:_pageSideSwipeView
+                                 belowSubview:fullscreenView];
+    }
   } else {
     _pageSideSwipeView = [self webContentSideSwipeView:navigationFrame
                                              direction:direction
@@ -636,14 +643,9 @@ const CGFloat kIpadTabSwipeDistance = 100;
     self.trailingEdgeNavigationEnabled = YES;
   }
 
-  if (IsLensOverlayAvailable() && IsLensOverlaySameTabNavigationEnabled()) {
-    LensOverlayTabHelper* lensOverlayTabHelper =
-        LensOverlayTabHelper::FromWebState(webState);
-    // if the previous page has lens overlay invoked, enable leading edge swipe.
-    if (lensOverlayTabHelper &&
-        lensOverlayTabHelper->IsLensOverlayInvokedOnMostRecentBackItem()) {
-      self.leadingEdgeNavigationEnabled = YES;
-    }
+  // If the previous page has lens overlay invoked, enable leading edge swipe.
+  if (SwipingBackLeadsToLensOverlay(self.activeWebState)) {
+    self.leadingEdgeNavigationEnabled = YES;
   }
 
   // If the previous page is an NTP, enable leading edge swipe.
@@ -826,43 +828,32 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
 // Returns YES, if the the whole page should be swiped.
 - (BOOL)swipingFullScreenContent:(UISwipeGestureRecognizerDirection)direction {
-  if ([self swipingBackToLensOverlay:direction]) {
-    // The Lens overlay is locked to portrait orientation.Full-screen swipes
-    // are only enabled in portrait mode to prevent stretching the overlay
-    // snapshot.
-    return !IsCompactHeight([_swipeDelegate sideSwipeFullscreenView]);
+  if (IsSwipingToAnOverlay(direction, self.activeWebState)) {
+    // Full-screen swipes are only enabled in portrait orientation to avoid
+    // distorted overlay snapshots.
+    BOOL isPortrait =
+        !IsCompactHeight([_swipeDelegate sideSwipeFullscreenView]);
+    // Ensure a snapshot exists for the swipe preview display.
+    BOOL swipePreviewHasValidSnapshot =
+        SwipeNavigationSnapshot(direction, self.activeWebState) != nil;
+
+    return isPortrait && swipePreviewHasValidSnapshot;
   }
 
   return NO;
 }
 
-// Returns YES, if the the side swipe leads to navigating back to lens
-// overlay.
-- (BOOL)swipingBackToLensOverlay:(UISwipeGestureRecognizerDirection)direction {
-  if (!IsLensOverlaySameTabNavigationEnabled()) {
-    return NO;
+// Creates and returns a view, showing a `snapshotImage` on fullscreen.
+- (SideSwipeSnapshotNavigationView*)
+    fullscreenSnapshotSideSwipeView:(UISwipeGestureRecognizerDirection)direction
+                      snapshotImage:(UIImage*)snapshotImage {
+  if (!snapshotImage) {
+    return nil;
   }
-
-  LensOverlayTabHelper* lensOverlayTabHelper =
-      LensOverlayTabHelper::FromWebState(self.activeWebState);
-
-  BOOL isSwipingBackToLensOverlay =
-      IsSwipingBack(direction) && lensOverlayTabHelper &&
-      lensOverlayTabHelper->IsLensOverlayInvokedOnMostRecentBackItem();
-
-  return isSwipingBackToLensOverlay;
-}
-
-// Creates and returns a view, showing a fullscreen snapshot of the lens
-// overlay.
-- (SideSwipeSnapshotNavigationView*)fullscreenSnapshotSideSwipeView:
-    (UISwipeGestureRecognizerDirection)direction {
-  LensOverlayTabHelper* lensOverlayTabHelper =
-      LensOverlayTabHelper::FromWebState(self.activeWebState);
 
   return [[SideSwipeSnapshotNavigationView alloc]
       initWithFrame:[[_swipeDelegate sideSwipeFullscreenView] frame]
-           snapshot:lensOverlayTabHelper->GetViewportSnapshot()];
+           snapshot:snapshotImage];
 }
 
 @end

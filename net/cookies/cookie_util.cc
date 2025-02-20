@@ -1145,17 +1145,15 @@ bool ShouldAddInitialStorageAccessApiOverride(
     return false;
   }
 
+  const url::Origin origin = url::Origin::Create(url);
+
   using enum StorageAccessNetRequestKind;
   StorageAccessNetRequestKind kind = kCrossSite;
-  if (request_initiator->IsSameOriginWith(url)) {
+  if (request_initiator->IsSameOriginWith(origin)) {
     kind = kSameOrigin;
-  } else {
-    SchemefulSite request_site(url.SchemeIsHTTPOrHTTPS()
-                                   ? url
-                                   : ChangeWebSocketSchemeToHttpScheme(url));
-    if (SchemefulSite(request_initiator.value()) == request_site) {
-      kind = kCrossOriginSameSite;
-    }
+  } else if (SchemefulSite(request_initiator.value()) ==
+             SchemefulSite(origin)) {
+    kind = kCrossOriginSameSite;
   }
   if (emit_metrics) {
     RecordStorageAccessNetRequestMetric(kind);

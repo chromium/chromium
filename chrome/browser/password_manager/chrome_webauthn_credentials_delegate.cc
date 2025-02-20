@@ -166,9 +166,12 @@ bool ChromeWebAuthnCredentialsDelegate::IsSecurityKeyOrHybridFlowAvailable()
   return security_key_or_hybrid_flow_available_.value();
 }
 
-void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
+void ChromeWebAuthnCredentialsDelegate::RequestNotificationWhenPasskeysReady(
     base::OnceClosure callback) {
-  passkey_retrieval_timer_ = std::make_unique<base::ElapsedTimer>();
+  if (!passkey_retrieval_timer_started_) {
+    passkey_retrieval_timer_ = std::make_unique<base::ElapsedTimer>();
+    passkey_retrieval_timer_started_ = true;
+  }
   if (passkeys_.has_value()) {
     RecordPasskeyRetrievalDelay();
     // Entries were already populated from the WebAuthn request.
@@ -176,7 +179,7 @@ void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
     return;
   }
 
-  retrieve_passkeys_callback_ = std::move(callback);
+  passkeys_available_callbacks_.push_back(std::move(callback));
 }
 
 void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
@@ -192,17 +195,13 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
   passkeys_ = std::move(credentials);
   security_key_or_hybrid_flow_available_ =
       security_key_or_hybrid_flow_available;
-  if (retrieve_passkeys_callback_) {
-    RecordPasskeyRetrievalDelay();
-    std::move(retrieve_passkeys_callback_).Run();
-  }
+  RecordPasskeyRetrievalDelay();
+  NotifyClientsOfPasskeyAvailability();
 }
 
 void ChromeWebAuthnCredentialsDelegate::NotifyWebAuthnRequestAborted() {
   passkeys_ = std::nullopt;
-  if (retrieve_passkeys_callback_) {
-    std::move(retrieve_passkeys_callback_).Run();
-  }
+  NotifyClientsOfPasskeyAvailability();
 #if !BUILDFLAG(IS_ANDROID)
   // Also dismiss the autofill popup if it is being displayed and a webauthn
   // request is loading.
@@ -219,5 +218,14 @@ void ChromeWebAuthnCredentialsDelegate::RecordPasskeyRetrievalDelay() {
     base::UmaHistogramTimes("PasswordManager.PasskeyRetrievalWaitDuration",
                             passkey_retrieval_timer_->Elapsed());
     passkey_retrieval_timer_.reset();
+  }
+}
+
+void ChromeWebAuthnCredentialsDelegate::NotifyClientsOfPasskeyAvailability() {
+  std::vector<base::OnceClosure> callbacks;
+  callbacks.swap(passkeys_available_callbacks_);
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
   }
 }

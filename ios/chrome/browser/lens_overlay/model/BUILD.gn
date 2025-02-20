@@ -138,6 +138,7 @@ source_set("entrypoint") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "lens_overlay_detents_manager_unittest.mm",
     "lens_overlay_navigation_manager_unittest.mm",
     "lens_overlay_tab_helper_unittest.mm",
   ]

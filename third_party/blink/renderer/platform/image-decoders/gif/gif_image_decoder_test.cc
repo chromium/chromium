@@ -351,6 +351,28 @@ TEST(GIFImageDecoderTest, verifyRepetitionCount) {
                       kAnimationLoopInfinite);
 }
 
+TEST(GIFImageDecoderTest, repetitionCountOfPartialStaticGif) {
+  // Data section begins at offset 397 and ends at offset 1033.
+  const size_t kOffsetInMiddleOfData = 500u;
+  const bool kAllDataReceived = false;
+
+  const Vector<char> full_data = ReadFile(kDecodersTestingDir, "radient.gif");
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(base::span(full_data).first(kOffsetInMiddleOfData));
+
+  std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
+  decoder->SetData(partial_data.get(), kAllDataReceived);
+
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(1u, decoder->FrameCount());
+
+  // TODO(lukasza): This is incorrect - for a static image we should get
+  // `kAnimationNone`.  OTOH, the GIF input doesn't specify upfront how
+  // many frame there are, so a partially received input is ambiguous
+  // wrt whether more animation frames will come or not.
+  EXPECT_EQ(kAnimationLoopInfinite, decoder->RepetitionCount());
+}
+
 TEST(GIFImageDecoderTest, repetitionCountChangesWhenSeen) {
   const Vector<char> full_data =
       ReadFile(kWebTestsResourcesDir, "animated-10color.gif");

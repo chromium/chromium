@@ -36,8 +36,9 @@ class KioskIwaLauncher : public KioskWebAppLauncherBase {
   void ContinueWithNetworkReady() override;
 
  private:
-  const KioskIwaData& iwa_data() { return iwa_data_.get(); }
+  const KioskIwaData& iwa_data() const { return iwa_data_.get(); }
 
+  bool IsIsolatedWebAppInstalled() const;
   void InstallIsolatedWebApp();
   void OnInstallComplete(web_app::IwaInstallerResult result);
 

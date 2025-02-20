@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_system_notification_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
 #import "ios/web/common/features.h"
 
 // static
@@ -52,14 +53,17 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
     [broadcaster_ addObserver:bridge_
                   forSelector:@selector(broadcastContentScrollOffset:)];
   }
-  [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
-  [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastExpandedTopToolbarHeight:)];
-  [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastCollapsedBottomToolbarHeight:)];
-  [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastExpandedBottomToolbarHeight:)];
+  if (!IsRefactorToolbarUI()) {
+    [broadcaster_ addObserver:bridge_
+                  forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
+    [broadcaster_ addObserver:bridge_
+                  forSelector:@selector(broadcastExpandedTopToolbarHeight:)];
+    [broadcaster_
+        addObserver:bridge_
+        forSelector:@selector(broadcastCollapsedBottomToolbarHeight:)];
+    [broadcaster_ addObserver:bridge_
+                  forSelector:@selector(broadcastExpandedBottomToolbarHeight:)];
+  }
 }
 
 FullscreenControllerImpl::~FullscreenControllerImpl() {
@@ -82,16 +86,19 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
     [broadcaster_ removeObserver:bridge_
                      forSelector:@selector(broadcastContentScrollOffset:)];
   }
-  [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
-  [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastExpandedTopToolbarHeight:)];
-  [broadcaster_
-      removeObserver:bridge_
-         forSelector:@selector(broadcastExpandedBottomToolbarHeight:)];
-  [broadcaster_
-      removeObserver:bridge_
-         forSelector:@selector(broadcastCollapsedBottomToolbarHeight:)];
+  if (!IsRefactorToolbarUI()) {
+    [broadcaster_
+        removeObserver:bridge_
+           forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
+    [broadcaster_ removeObserver:bridge_
+                     forSelector:@selector(broadcastExpandedTopToolbarHeight:)];
+    [broadcaster_
+        removeObserver:bridge_
+           forSelector:@selector(broadcastExpandedBottomToolbarHeight:)];
+    [broadcaster_
+        removeObserver:bridge_
+           forSelector:@selector(broadcastCollapsedBottomToolbarHeight:)];
+  }
 }
 
 ChromeBroadcaster* FullscreenControllerImpl::broadcaster() {
@@ -191,4 +198,14 @@ void FullscreenControllerImpl::ResizeHorizontalViewport() {
   // width insets to trigger a width recomputation of its content. It will cause
   // two relayouts.
   mediator_.ResizeHorizontalInsets();
+}
+
+void FullscreenControllerImpl::SetToolbarUIState(
+    ToolbarUIState* toolbar_ui_state) {
+  toolbar_ui_state_ = toolbar_ui_state;
+  model_.SetToolbarUIState(toolbar_ui_state);
+}
+
+ToolbarUIState* FullscreenControllerImpl::GetToolbarUIState() const {
+  return toolbar_ui_state_;
 }

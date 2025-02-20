@@ -12,7 +12,7 @@
 #include "base/hash/hash.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
-#include "third_party/blink/public/common/features.h"
+#include "services/network/public/cpp/features.h"
 #include "url/scheme_host_port.h"
 
 namespace blink {
@@ -21,7 +21,7 @@ using HostSet = std::unordered_set<std::string>;
 
 const HostSet UnloadDeprecationAllowedHosts() {
   auto hosts =
-      base::SplitString(features::kDeprecateUnloadAllowlist.Get(), ",",
+      base::SplitString(network::features::kDeprecateUnloadAllowlist.Get(), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   return HostSet(hosts.begin(), hosts.end());
 }
@@ -70,7 +70,8 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
   }
 
   // Hosts on the allowlist are deprecated regardless of other parameters.
-  if (base::FeatureList::IsEnabled(features::kDeprecateUnloadByAllowList)) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kDeprecateUnloadByAllowList)) {
     static const base::NoDestructor<HostSet> hosts(
         UnloadDeprecationAllowedHosts());
     if (UnloadDeprecationAllowedForHost(shp.host(), *hosts)) {
@@ -78,9 +79,9 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
     }
   }
 
-  return IsIncludedInGradualRollout(shp.host(),
-                                    features::kDeprecateUnloadPercent.Get(),
-                                    features::kDeprecateUnloadBucket.Get());
+  return IsIncludedInGradualRollout(
+      shp.host(), network::features::kDeprecateUnloadPercent.Get(),
+      network::features::kDeprecateUnloadBucket.Get());
 }
 
 }  // namespace blink

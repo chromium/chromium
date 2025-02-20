@@ -52,7 +52,9 @@
 
 - (void)hideParentAccessBottomSheetOnTimeout {
   CHECK(_completion);
-  std::move(_completion).Run(supervised_user::LocalApprovalResult::kCanceled);
+  std::move(_completion)
+      .Run(supervised_user::LocalApprovalResult::kCanceled,
+           /*error_type=*/std::nullopt);
   _isBottomSheetDismissed = YES;
 }
 

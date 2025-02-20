@@ -76,6 +76,10 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   // Returns whether decoding of the current frame has failed.
   bool IsFailedFrameIndex(wtf_size_t index) const;
 
+  // Translates `SkCodec`'s values into Blink API values, but leaves field-based
+  // statefulness to the non-internal `RepetitionCount`.
+  int RepetitionCountInternal() const;
+
   std::unique_ptr<SkCodec> codec_;
 
   // |codec_| owns the SegmentStream, but we need access to it to append more

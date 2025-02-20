@@ -172,6 +172,10 @@ interface ShoppingServiceHandler {
   GetProductInfoForUrl(url.mojom.Url url)
       => (url.mojom.Url url, commerce.shared.mojom.ProductInfo productInfo);
 
+  // Get the product info for the provided URLs as a single batch.
+  GetProductInfoForUrls(array<url.mojom.Url> urls)
+      => (array<commerce.shared.mojom.ProductInfo> productInfos);
+
   // Returns the price insights info for current url.
   GetPriceInsightsInfoForCurrentUrl()
       => (PriceInsightsInfo priceInsightsInfo);

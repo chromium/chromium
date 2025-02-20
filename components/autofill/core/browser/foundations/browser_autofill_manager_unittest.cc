@@ -6742,7 +6742,8 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
   FormsSeen({form});
 
   MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsEligibleForAutofillAi).WillByDefault(Return(true));
+  ON_CALL(delegate, IsFormAndFieldEligibleForAutofillAi)
+      .WillByDefault(Return(true));
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kFillAutofillAi)};
   EXPECT_CALL(delegate, GetSuggestions)
@@ -6762,7 +6763,8 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
   FormsSeen({form});
 
   MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsEligibleForAutofillAi).WillByDefault(Return(false));
+  ON_CALL(delegate, IsFormAndFieldEligibleForAutofillAi)
+      .WillByDefault(Return(false));
   ON_CALL(delegate, ShouldDisplayIph).WillByDefault(Return(true));
 
   EXPECT_CALL(client(), ShowAutofillFieldIphForFeature(
@@ -6782,7 +6784,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
+  ON_CALL(delegate, IsUserEligibleForFillingAndImporting)
+      .WillByDefault(Return(true));
 
   // Fill the form.
   FormData response_data =
@@ -6817,7 +6820,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
+  ON_CALL(delegate, IsUserEligibleForFillingAndImporting)
+      .WillByDefault(Return(true));
 
   // Fill the form.
   FormData response_data =

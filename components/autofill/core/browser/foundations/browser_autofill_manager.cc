@@ -861,7 +861,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   // `MaybeImportFromSubmittedForm()` will be called if the import was not
   // successful.
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-      delegate && delegate->IsUserEligible()) {
+      delegate && delegate->IsUserEligibleForFillingAndImporting()) {
     // Only upload server statistics and UMA metrics if at least some local data
     // is available to use as a baseline.
     std::vector<const AutofillProfile*> profiles =
@@ -1187,7 +1187,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
 
   if (delegate && form_structure && autofill_field &&
-      delegate->IsEligibleForAutofillAi(*form_structure, *autofill_field)) {
+      delegate->IsFormAndFieldEligibleForAutofillAi(*form_structure,
+                                                    *autofill_field)) {
     delegate->GetSuggestions(
         form.global_id(), field.global_id(),
         /*is_manual_fallback=*/trigger_source ==

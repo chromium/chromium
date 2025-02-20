@@ -1158,7 +1158,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.signin") {
     "src/org/chromium/chrome/browser/signin/AccountsReloadingTest.java",
     "src/org/chromium/chrome/browser/signin/BottomSheetSigninAndHistorySyncIntegrationTest.java",
     "src/org/chromium/chrome/browser/signin/FullscreenSigninAndHistorySyncIntegrationTest.java",
-    "src/org/chromium/chrome/browser/signin/SigninAndHistorySyncActivityLauncherImplTest.java",
     "src/org/chromium/chrome/browser/signin/SigninCheckerTest.java",
     "src/org/chromium/chrome/browser/signin/SigninFirstRunFragmentRenderTest.java",
     "src/org/chromium/chrome/browser/signin/SigninFirstRunFragmentTest.java",

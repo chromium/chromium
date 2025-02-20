@@ -26,6 +26,7 @@ interface PageElementTypes {
   getUserProfileInfoImg: HTMLImageElement;
   changeProfileBn: HTMLButtonElement;
   testPermissionSwitch: HTMLButtonElement;
+  openSettings: HTMLButtonElement;
   microphoneSwitch: HTMLInputElement;
   geolocationSwitch: HTMLInputElement;
   tabContextSwitch: HTMLInputElement;
@@ -250,6 +251,10 @@ $.testPermissionSwitch.addEventListener('click', () => {
   logMessage(
       `Setting permission ${selectedPermission} to ${isEnabled}.`,
   );
+});
+
+$.openSettings.addEventListener('click', () => {
+  getBrowser()!.openGlicSettingsPage!();
 });
 
 $.syncCookiesBn.addEventListener('click', async () => {

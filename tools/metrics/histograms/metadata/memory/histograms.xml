@@ -370,6 +370,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Browser.MemoryFootprint.Startup" units="MB"
+    expires_after="2025-08-14">
+  <owner>justincohen@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
+    but recorded during startup after the deferred initialization blocks queue
+    becomes empty.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Browser.PrivateMemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

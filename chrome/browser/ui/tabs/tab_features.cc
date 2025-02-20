@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/tabs/disconnect_file_chooser_on_background_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -186,6 +187,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                                           page_actions::kActionIds.end()));
   translate_page_action_controller_ =
       std::make_unique<TranslatePageActionController>(tab);
+
+  memory_saver_chip_controller_ =
+      std::make_unique<memory_saver::MemorySaverChipController>(
+          *page_action_controller());
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);

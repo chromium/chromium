@@ -30,7 +30,7 @@ class WebAuthnCredentialsDelegate {
 
   // Called when the user selects a passkey from the autofill suggestion list
   // The selected credential must be from the list returned by the last call to
-  // GetPasskeys(). |callback| should be invoked when the selected passkey is
+  // GetPasskeys(). `callback` should be invoked when the selected passkey is
   // consumed.
   virtual void SelectPasskey(const std::string& backend_id,
                              OnPasskeySelectedCallback callback) = 0;
@@ -51,10 +51,15 @@ class WebAuthnCredentialsDelegate {
   // to trigger `LaunchSecurityKeyOrHybridFlow`.
   virtual bool IsSecurityKeyOrHybridFlowAvailable() const = 0;
 
-  // Initiates retrieval of passkeys from the platform authenticator.
-  // |callback| is invoked when credentials have been received, which could be
-  // immediately.
-  virtual void RetrievePasskeys(base::OnceCallback<void()> callback) = 0;
+  // Retrieval of passkeys is initiated by the navigator.credentials.get()
+  // WebAuthn call. Callers of this method will be notified via `callback` when
+  // the passkey list is available, or if the WebAuthn request is aborted
+  // before passkeys become available.
+  // `callback` can be invoked mmediately if the passkey list has already been
+  // received.
+  // This can be called multiple times and all callbacks will be invoked.
+  virtual void RequestNotificationWhenPasskeysReady(
+      base::OnceCallback<void()> callback) = 0;
 
   // Returns true iff a passkey was selected via `SelectPasskey` and
   // `OnPasskeySelectedCallback` has not been called yet.

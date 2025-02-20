@@ -39,10 +39,11 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
                       autofill::FieldGlobalId field_global_id,
                       bool is_manual_fallback,
                       GetSuggestionsCallback callback) override;
-  bool IsEligibleForAutofillAi(
+  bool IsFormAndFieldEligibleForAutofillAi(
       const autofill::FormStructure& form,
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;
+  bool IsUserEligibleForFillingAndImporting() const override;
   void MaybeImportForm(
       std::unique_ptr<autofill::FormStructure> form,
       base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,

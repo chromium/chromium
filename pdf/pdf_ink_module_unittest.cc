@@ -244,16 +244,21 @@ class FakeClient : public PdfInkModuleClient {
   ~FakeClient() override = default;
 
   // PdfInkModuleClient:
+  MOCK_METHOD(void,
+              DiscardStroke,
+              (int page_index, InkStrokeId id),
+              (override));
+
   PageOrientation GetOrientation() const override { return orientation_; }
 
   gfx::Vector2dF GetViewportOriginOffset() override {
     return viewport_origin_offset_;
   }
 
-  gfx::Rect GetPageContentsRect(int index) override {
-    CHECK_GE(index, 0);
-    CHECK_LT(static_cast<size_t>(index), page_layouts_.size());
-    return gfx::ToEnclosedRect(page_layouts_[index]);
+  gfx::Rect GetPageContentsRect(int page_index) override {
+    CHECK_GE(page_index, 0);
+    CHECK_LT(static_cast<size_t>(page_index), page_layouts_.size());
+    return gfx::ToEnclosedRect(page_layouts_[page_index]);
   }
 
   float GetZoom() const override { return zoom_; }
@@ -290,11 +295,6 @@ class FakeClient : public PdfInkModuleClient {
   MOCK_METHOD(void,
               UpdateStrokeActive,
               (int page_index, InkStrokeId id, bool active),
-              (override));
-
-  MOCK_METHOD(void,
-              DiscardStroke,
-              (int page_index, InkStrokeId id),
               (override));
 
   void UpdateThumbnail(int page_index) override {

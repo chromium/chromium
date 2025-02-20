@@ -1,1 +1,1 @@
--Xclang -plugin-arg-unsafe-buffers -Xclang check-libc-calls -Xclang -plugin-arg-unsafe-buffers -Xclang unsafe_buffers_paths.txt
+-Xclang -plugin-arg-unsafe-buffers -Xclang unsafe_buffers_paths.txt

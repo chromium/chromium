@@ -1729,7 +1729,7 @@ void NetworkContext::SetCTPolicy(mojom::CTPolicyPtr ct_policy) {
                                          ct_policy->excluded_spkis);
 }
 
-int NetworkContext::CheckCTRequirementsForSignedExchange(
+int NetworkContext::CheckCTRequirements(
     net::CertVerifyResult& cert_verify_result,
     const net::HostPortPair& host_port_pair) {
   net::X509Certificate* verified_cert = cert_verify_result.verified_cert.get();
@@ -2035,30 +2035,29 @@ void NetworkContext::CreateHostResolver(
       url_request_context_->net_log()));
 }
 
-void NetworkContext::VerifyCertForSignedExchange(
+void NetworkContext::VerifyCert(
     const scoped_refptr<net::X509Certificate>& certificate,
-    const GURL& url,
+    const net::HostPortPair& host_port,
     const std::string& ocsp_result,
     const std::string& sct_list,
-    VerifyCertForSignedExchangeCallback callback) {
+    VerifyCertCallback callback) {
   uint64_t cert_verify_id = ++next_cert_verify_id_;
   CHECK_NE(0u, next_cert_verify_id_);  // The request ID should not wrap around.
   auto pending_cert_verify = std::make_unique<PendingCertVerify>();
   pending_cert_verify->callback = std::move(callback);
   pending_cert_verify->result = std::make_unique<net::CertVerifyResult>();
   pending_cert_verify->certificate = certificate;
-  pending_cert_verify->url = url;
+  pending_cert_verify->host_port = host_port;
   pending_cert_verify->ocsp_result = ocsp_result;
   pending_cert_verify->sct_list = sct_list;
   net::CertVerifier* cert_verifier =
       g_cert_verifier_for_testing ? g_cert_verifier_for_testing
                                   : url_request_context_->cert_verifier();
   int result = cert_verifier->Verify(
-      net::CertVerifier::RequestParams(certificate, url.host(),
-                                       0 /* cert_verify_flags */, ocsp_result,
-                                       sct_list),
+      net::CertVerifier::RequestParams(certificate, host_port.host(),
+                                       /*flags=*/0, ocsp_result, sct_list),
       pending_cert_verify->result.get(),
-      base::BindOnce(&NetworkContext::OnVerifyCertForSignedExchangeComplete,
+      base::BindOnce(&NetworkContext::OnVerifyCertComplete,
                      base::Unretained(this), cert_verify_id),
       &pending_cert_verify->request,
       net::NetLogWithSource::Make(url_request_context_->net_log(),
@@ -2066,7 +2065,7 @@ void NetworkContext::VerifyCertForSignedExchange(
   cert_verifier_requests_[cert_verify_id] = std::move(pending_cert_verify);
 
   if (result != net::ERR_IO_PENDING) {
-    OnVerifyCertForSignedExchangeComplete(cert_verify_id, result);
+    OnVerifyCertComplete(cert_verify_id, result);
   }
 }
 
@@ -3138,9 +3137,7 @@ void NetworkContext::CanUploadDomainReliability(
                      std::move(callback)));
 }
 
-void NetworkContext::OnVerifyCertForSignedExchangeComplete(
-    uint64_t cert_verify_id,
-    int result) {
+void NetworkContext::OnVerifyCertComplete(uint64_t cert_verify_id, int result) {
   auto iter = cert_verifier_requests_.find(cert_verify_id);
   CHECK(iter != cert_verifier_requests_.end(), base::NotFatalUntil::M130);
 
@@ -3150,13 +3147,12 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   bool pkp_bypassed = false;
   if (result == net::OK) {
 #if BUILDFLAG(IS_CT_SUPPORTED)
-    int ct_result = CheckCTRequirementsForSignedExchange(
-        *pending_cert_verify->result,
-        net::HostPortPair::FromURL(pending_cert_verify->url));
+    int ct_result = CheckCTRequirements(*pending_cert_verify->result,
+                                        pending_cert_verify->host_port);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
     net::TransportSecurityState::PKPStatus pin_validity =
         url_request_context_->transport_security_state()->CheckPublicKeyPins(
-            pending_cert_verify->url.host(),
+            pending_cert_verify->host_port.host(),
             pending_cert_verify->result->is_issued_by_known_root,
             pending_cert_verify->result->public_key_hashes);
     switch (pin_validity) {

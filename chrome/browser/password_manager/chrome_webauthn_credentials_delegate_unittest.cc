@@ -286,11 +286,30 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequest) {
 // Test aborting a request when a retrieve suggestions callback is pending.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequestPendingCallback) {
   base::test::TestFuture<void> future;
-  credentials_delegate()->RetrievePasskeys(future.GetCallback());
+  credentials_delegate()->RequestNotificationWhenPasskeysReady(
+      future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   credentials_delegate()->NotifyWebAuthnRequestAborted();
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(credentials_delegate()->GetPasskeys());
+}
+
+// Test that multiple clients can receive notifications for passkey
+// availability.
+TEST_F(ChromeWebAuthnCredentialsDelegateTest,
+       MultipleClientsWaitingForPasskeys) {
+  base::test::TestFuture<void> future1, future2;
+  credentials_delegate()->RequestNotificationWhenPasskeysReady(
+      future1.GetCallback());
+  credentials_delegate()->RequestNotificationWhenPasskeysReady(
+      future2.GetCallback());
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+  credentials_delegate()->OnCredentialsReceived(
+      {passkey1, passkey2}, SecurityKeyOrHybridFlowAvailable(true));
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_EQ(credentials_delegate()->GetPasskeys()->size(), 2ul);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

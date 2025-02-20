@@ -5,6 +5,7 @@
 package org.chromium.support_lib_boundary;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -69,4 +70,6 @@ public interface WebViewProviderBoundaryInterface {
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParameters,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback);
+
+    void saveState(Bundle outState, int maxSize, boolean includeForwardState);
 }

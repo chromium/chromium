@@ -28,9 +28,10 @@ namespace {
 // `auth_required_callback`.
 class LoginHandlerViews : public LoginHandler {
  public:
-  LoginHandlerViews(const net::AuthChallengeInfo& auth_info,
-                    content::WebContents* web_contents,
-                    LoginAuthRequiredCallback auth_required_callback)
+  LoginHandlerViews(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
       : LoginHandler(auth_info,
                      web_contents,
                      std::move(auth_required_callback)),
@@ -191,7 +192,7 @@ class LoginHandlerViews : public LoginHandler {
 std::unique_ptr<LoginHandler> LoginHandler::Create(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   return std::make_unique<LoginHandlerViews>(auth_info, web_contents,
                                              std::move(auth_required_callback));
 }

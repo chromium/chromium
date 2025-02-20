@@ -32,6 +32,7 @@ class SafetyHubUtils {
      *
      * @param context used to show the dialog.
      */
+    // TODO(crbug.com/388788969): Rename to `showAccountPasswordCheckUi`.
     static void showPasswordCheckUi(
             Context context,
             Profile profile,
@@ -42,6 +43,23 @@ class SafetyHubUtils {
                 : "The password check UI should only be launched for signed in Safety Hub users.";
         passwordManagerHelper.showPasswordCheckup(
                 context, PasswordCheckReferrer.SAFETY_CHECK, modalDialogManagerSupplier, account);
+    }
+
+    /**
+     * Launches the Local Password Checkup UI from GMSCore.
+     *
+     * @param context used to show the dialog.
+     */
+    static void showLocalPasswordCheckUi(
+            Context context,
+            Profile profile,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
+        passwordManagerHelper.showPasswordCheckup(
+                context,
+                PasswordCheckReferrer.SAFETY_CHECK,
+                modalDialogManagerSupplier,
+                /* accountEmail= */ null);
     }
 
     /**

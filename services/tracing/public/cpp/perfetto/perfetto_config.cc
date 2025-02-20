@@ -414,7 +414,7 @@ bool AdaptPerfettoConfigForChrome(
   for (auto& data_source_config : *perfetto_config->mutable_data_sources()) {
     AdaptDataSourceConfig(data_source_config.mutable_config(),
                           chrome_config_string, privacy_filtering_enabled,
-                          client_priority);
+                          client_priority, enable_system_backend);
   }
   return true;
 }

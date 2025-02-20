@@ -79,6 +79,10 @@ class MemorySaverChipTabHelper
   // recent navigation.
   void ComputeChipState(content::NavigationHandle* navigation_handle);
 
+  // Applies the computed page action icon or chip state to the new page action
+  // framework.
+  void UpdatePageActionState();
+
   memory_saver::ChipState chip_state_ = memory_saver::ChipState::HIDDEN;
   // Represents whether the current chip state has been properly rendered. This
   // gets reset when a tab gets hidden so the chip can be redrawn.
