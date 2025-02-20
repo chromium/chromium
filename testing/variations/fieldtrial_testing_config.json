@@ -18885,6 +18885,21 @@
             ]
         }
     ],
+    "QuickShareV2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickShareV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "RTCAlignReceivedEncodedVideoTransforms": [
         {
             "platforms": [
