@@ -48,6 +48,10 @@ jobs:
         if: matrix.toolchain != '1.36.0'
         run: cargo test --verbose --features serde
 
+      - name: Cargo test w/ malloc_size_of
+        if: matrix.toolchain != '1.36.0'
+        run: cargo test --verbose --features malloc_size_of
+
       - name: Cargo check w/o default features
         if: matrix.toolchain == 'nightly'
         run: cargo check --verbose --no-default-features

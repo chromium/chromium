@@ -1,6 +1,6 @@
 [package]
 name = "smallvec"
-version = "1.13.2"
+version = "1.14.0"
 edition = "2018"
 authors = ["The Servo Project Developers"]
 license = "MIT OR Apache-2.0"
@@ -27,9 +27,10 @@ debugger_visualizer = []
 
 [dependencies]
 serde = { version = "1", optional = true, default-features = false }
+malloc_size_of = { version = "0.1", optional = true, default-features = false }
 arbitrary = { version = "1", optional = true }
 
-[dev_dependencies]
+[dev-dependencies]
 bincode = "1.0.1"
 debugger_test = "0.1.0"
 debugger_test_parser = "0.1.0"

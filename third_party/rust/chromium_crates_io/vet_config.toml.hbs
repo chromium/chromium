@@ -245,7 +245,7 @@ Exemption updated to 1.0.19 in Feb 2025.
 """
 
 [[exemptions.smallvec]]
-version = "1.13.2"
+version = "1.14.0"
 criteria = "ub-risk-2"
 notes = """
 Part of ICU4X import. Audited in google3 with ub-risk-3, however it's a widely used crate and it should
@@ -253,6 +253,13 @@ be fine to temporarily up its rating. The google3 audit showed that it needed be
 more comments (which disqualifies it from ub-risk-2), but it is still known to be sound.
 
 https://crbug.com/366411886
+
+Bumped up the exemption to 1.14.0 in February 2025.
+WARNING: The `malloc_size_of` feature has **not** been audited because
+this feature does not explicitly document its safety requirements.
+See also https://chromium-review.googlesource.com/c/chromium/src/+/6275133/comment/ea0d7a93_98051a2e/
+and https://github.com/servo/malloc_size_of/issues/8.
+This feature is banned in gnrt_config.toml.
 """
 
 [[exemptions.syn]]

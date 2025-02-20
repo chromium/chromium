@@ -996,7 +996,23 @@ fn test_clone_from() {
 #[test]
 fn test_size() {
     use core::mem::size_of;
-    assert_eq!(24, size_of::<SmallVec<[u8; 8]>>());
+    const PTR_SIZE: usize = size_of::<usize>();
+    #[cfg(feature = "union")]
+    {
+        assert_eq!(3 * PTR_SIZE, size_of::<SmallVec<[u8; 0]>>());
+        assert_eq!(3 * PTR_SIZE, size_of::<SmallVec<[u8; 1]>>());
+        assert_eq!(3 * PTR_SIZE, size_of::<SmallVec<[u8; PTR_SIZE]>>());
+        assert_eq!(3 * PTR_SIZE, size_of::<SmallVec<[u8; PTR_SIZE + 1]>>());
+        assert_eq!(3 * PTR_SIZE, size_of::<SmallVec<[u8; 2 * PTR_SIZE]>>());
+        assert_eq!(4 * PTR_SIZE, size_of::<SmallVec<[u8; 2 * PTR_SIZE + 1]>>());
+    }
+    #[cfg(not(feature = "union"))]
+    {
+        assert_eq!(3 * PTR_SIZE, size_of::<SmallVec<[u8; 0]>>());
+        assert_eq!(3 * PTR_SIZE, size_of::<SmallVec<[u8; 1]>>());
+        assert_eq!(3 * PTR_SIZE, size_of::<SmallVec<[u8; PTR_SIZE]>>());
+        assert_eq!(4 * PTR_SIZE, size_of::<SmallVec<[u8; PTR_SIZE + 1]>>());
+    }
 }
 
 #[cfg(feature = "drain_filter")]

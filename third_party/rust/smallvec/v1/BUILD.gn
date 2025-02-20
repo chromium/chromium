@@ -13,18 +13,18 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/smallvec-1.13.2/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.13.2/src/arbitrary.rs",
-    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.13.2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.13.2/src/specialization.rs",
-    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.13.2/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/arbitrary.rs",
+    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/specialization.rs",
+    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/tests.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.13.2"
+  cargo_pkg_version = "1.14.0"
   cargo_pkg_authors = "The Servo Project Developers"
   cargo_pkg_name = "smallvec"
   cargo_pkg_description = "'Small vector' optimization: store up to a small number of items on the stack"

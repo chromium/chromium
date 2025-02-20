@@ -126,6 +126,9 @@ use core::ops::{self, Range, RangeBounds};
 use core::ptr::{self, NonNull};
 use core::slice::{self, SliceIndex};
 
+#[cfg(feature = "malloc_size_of")]
+use malloc_size_of::{MallocShallowSizeOf, MallocSizeOf, MallocSizeOfOps};
+
 #[cfg(feature = "serde")]
 use serde::{
     de::{Deserialize, Deserializer, SeqAccess, Visitor},
@@ -1968,6 +1971,32 @@ where
         }
 
         Ok(values)
+    }
+}
+
+#[cfg(feature = "malloc_size_of")]
+impl<A: Array> MallocShallowSizeOf for SmallVec<A> {
+    fn shallow_size_of(&self, ops: &mut MallocSizeOfOps) -> usize {
+        if self.spilled() {
+            unsafe { ops.malloc_size_of(self.as_ptr()) }
+        } else {
+            0
+        }
+    }
+}
+
+#[cfg(feature = "malloc_size_of")]
+impl<A> MallocSizeOf for SmallVec<A>
+where
+    A: Array,
+    A::Item: MallocSizeOf,
+{
+    fn size_of(&self, ops: &mut MallocSizeOfOps) -> usize {
+        let mut n = self.shallow_size_of(ops);
+        for elem in self.iter() {
+            n += elem.size_of(ops);
+        }
+        n
     }
 }
 

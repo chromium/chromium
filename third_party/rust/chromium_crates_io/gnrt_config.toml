@@ -307,6 +307,9 @@ extra_src_roots = ['../generated']
 [crate.small_ctor]
 group = 'test'
 
+[crate.smallvec]
+ban_features = ['malloc_size_of']
+
 [crate.unicode-linebreak]
 allow_first_party_usage = false
 build_script_outputs = [ "tables.rs" ]
