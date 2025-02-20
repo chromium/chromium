@@ -22,7 +22,7 @@ extern const char kLanguageHistogramName[];
 extern const char kReadingModeName[];
 }  // namespace string_constants
 
-namespace {
+namespace read_anything {
 
 // Used for text formatting correction in PDFs. This value should match the line
 // width limit in app.html.
@@ -62,6 +62,6 @@ enum class ReadAnythingEmptyState {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingFontName)
 
-}  // namespace
+}  // namespace read_anything
 
 #endif  // CHROME_COMMON_READ_ANYTHING_READ_ANYTHING_CONSTANTS_H_

@@ -314,7 +314,7 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
   bool expected_images_enabled = true;
   read_anything::mojom::Colors expected_color =
       read_anything::mojom::Colors::kBlue;
-  double expected_speech_rate = kReadAnythingDefaultSpeechRate;
+  double expected_speech_rate = read_anything::kReadAnythingDefaultSpeechRate;
   read_anything::mojom::HighlightGranularity expected_highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
   PrefService* prefs = profile()->GetPrefs();

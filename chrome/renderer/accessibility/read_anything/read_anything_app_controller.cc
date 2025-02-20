@@ -788,8 +788,9 @@ void ReadAnythingAppController::DrawSelection() {
 
 void ReadAnythingAppController::DrawEmptyState() {
   ExecuteJavaScript("chrome.readingMode.showEmpty();");
-  base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
-                                ReadAnythingEmptyState::kEmptyStateShown);
+  base::UmaHistogramEnumeration(
+      string_constants::kEmptyStateHistogramName,
+      read_anything::ReadAnythingEmptyState::kEmptyStateShown);
 }
 
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(

@@ -2407,8 +2407,9 @@ TEST_F(ReadAnythingAppControllerTest, OnFontSizeReset_SetsFontSizeToDefault) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnLinksEnabledChanged_SetsEnabledToFalse) {
-  EXPECT_CALL(page_handler_,
-              OnLinksEnabledChanged(!kReadAnythingDefaultLinksEnabled))
+  EXPECT_CALL(
+      page_handler_,
+      OnLinksEnabledChanged(!read_anything::kReadAnythingDefaultLinksEnabled))
       .Times(1);
   OnLinksEnabledToggled();
 }
