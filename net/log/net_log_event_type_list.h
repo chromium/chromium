@@ -1441,6 +1441,10 @@ EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 //      "origin_destination": <The destination of the origin>,
 //      "alternative_destination": <The destination of the alternative, if
 //                                  exists>,
+//      "enable_ip_based_pooling": <True when the job enables IP based pooling>,
+//      "enable_alternative_services": <True when the job enables alternative
+//                                      services>,
+//      "respect_limits": <True when the job respects stream limits>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE)
 
