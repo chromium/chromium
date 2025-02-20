@@ -395,6 +395,18 @@ bool IsPasswordManagerAvailable(const PrefService* prefs,
   return upm_already_active || exported_umigrated_passwords;
 }
 
+bool LoginDbDeprecationReady(PrefService* prefs) {
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kLoginDbDeprecationAndroid));
+  bool upm_already_active =
+      static_cast<UseUpmLocalAndSeparateStoresState>(prefs->GetInteger(
+          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores)) ==
+      password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
+  bool exported_umigrated_passwords = prefs->GetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported);
+  return upm_already_active || exported_umigrated_passwords;
+}
+
 UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
     PrefService* pref_service) {
   auto value = static_cast<UseUpmLocalAndSeparateStoresState>(

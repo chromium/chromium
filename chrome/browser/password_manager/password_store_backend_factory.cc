@@ -93,20 +93,6 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBuiltInBackend(
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
-// The login DB is ready to be deprecated when all the passwords have either
-// been already migrated to UPM or exported.
-bool LoginDbDeprecationReady(PrefService* prefs) {
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kLoginDbDeprecationAndroid));
-  bool upm_already_active =
-      static_cast<UseUpmLocalAndSeparateStoresState>(prefs->GetInteger(
-          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores)) ==
-      password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
-  bool exported_umigrated_passwords = prefs->GetBoolean(
-      password_manager::prefs::kUpmUnmigratedPasswordsExported);
-  return upm_already_active || exported_umigrated_passwords;
-}
-
 // Creates the backend for the profile `PasswordStore` on Android, after
 // login db deprecation.
 std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
@@ -117,7 +103,7 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   CHECK(base::FeatureList::IsEnabled(
       password_manager::features::kLoginDbDeprecationAndroid));
-  if (!LoginDbDeprecationReady(prefs)) {
+  if (!password_manager_android_util::LoginDbDeprecationReady(prefs)) {
     // There are still passwords that need exporting, so instantiate the
     // backend that connects to the login DB.
     return CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
