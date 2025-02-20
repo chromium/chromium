@@ -60,12 +60,6 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
     return registration;
   }
 
-  std::string GetRootSecret() override { return root_secret_; }
-
-  void SetRootSecret(std::string secret) override {
-    root_secret_ = std::move(secret);
-  }
-
   void CanDeviceSupportCable(base::OnceCallback<void(bool)> callback) override {
     CHECK(!support_callback_);
     support_callback_ = std::move(callback);
@@ -87,7 +81,6 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
     prelink_callback_ = std::move(callback);
   }
 
-  std::string root_secret_;
   raw_ptr<TestRegistration> linking_registration_ = nullptr;
   raw_ptr<TestRegistration> syncing_registration_ = nullptr;
   bool refresh_local_device_info_called_ = false;
@@ -116,27 +109,6 @@ class CableRegistrationStateTest : public testing::Test {
   raw_ptr<TestSystemInterface> interface_ = nullptr;
   std::unique_ptr<RegistrationState> state_;
 };
-
-constexpr unsigned kLengthOf32BytesBase64Encoded = 44;
-
-TEST_F(CableRegistrationStateTest, EmptySecret) {
-  state_->Register();
-  // 44 is the length of a 32-byte secret, base64-encoded.
-  EXPECT_EQ(interface_->root_secret_.size(), kLengthOf32BytesBase64Encoded);
-}
-
-TEST_F(CableRegistrationStateTest, WrongLengthSecret) {
-  interface_->root_secret_ = "AAAA";
-  state_->Register();
-  EXPECT_EQ(interface_->root_secret_.size(), kLengthOf32BytesBase64Encoded);
-}
-
-TEST_F(CableRegistrationStateTest, SecretMaintained) {
-  const std::string secret = "zs0gi/qLipq53eg24sccdaPKcpSEgSwE0Jd9kZLj4DU=";
-  interface_->root_secret_ = secret;
-  state_->Register();
-  EXPECT_EQ(interface_->root_secret_, secret);
-}
 
 TEST_F(CableRegistrationStateTest, HaveDataForSync) {
   state_->Register();

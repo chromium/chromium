@@ -1084,6 +1084,12 @@ inline constexpr char kUserMicrophoneCaptionLanguageCode[] =
 constexpr char kScannerFeedbackEnabled[] = "ash.scanner.feedback_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 02/2025.
+inline constexpr char kRootSecretPrefName[] =
+    "webauthn.authenticator_root_secret";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1104,7 +1110,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kDeviceRegisteredTime, base::Time());
   registry->RegisterDictionaryPref(kArcKioskDictionaryName);
 
-// Deprecated 04/2024.
+  // Deprecated 04/2024.
   registry->RegisterDictionaryPref(kLastUploadedEuiccStatusPrefLegacy);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1176,6 +1182,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 02/2025.
   registry->RegisterBooleanPref(kUserAgentClientHintsGREASEUpdateEnabled, true);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 02/2025.
+  registry->RegisterStringPref(kRootSecretPrefName, std::string());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1316,7 +1327,7 @@ void RegisterProfilePrefsForMigration(
                              base::Time());
   registry->RegisterBooleanPref(kShowTunaScreenEnabled, true);
 
-// Deprecated 08/2024
+  // Deprecated 08/2024
   registry->RegisterBooleanPref(kStandaloneWindowMigrationNudgeShown, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -2406,6 +2417,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   local_state->ClearPref(prefs::kDefaultBrowserPromptRefreshStudyGroup);
 #endif
+
+  // Added 02/2025
+#if BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(kRootSecretPrefName);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

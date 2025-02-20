@@ -58,10 +58,6 @@ namespace authenticator {
 
 namespace {
 
-// kRootSecretPrefName is the name of a string preference that is kept in the
-// browser's local state and which stores the base64-encoded root secret for
-// the authenticator.
-const char kRootSecretPrefName[] = "webauthn.authenticator_root_secret";
 const char kSerializedPaaskFieldsName[] = "webauthn.authenticator_info";
 
 const char kWorkProfilePrefName[] = "webauthn.in_work_profile";
@@ -86,17 +82,6 @@ class SystemInterface : public RegistrationState::SystemInterface {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     return device::cablev2::authenticator::Register(
         GetDriver(), type, std::move(on_ready), std::move(event_callback));
-  }
-
-  std::string GetRootSecret() override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    return g_browser_process->local_state()->GetString(kRootSecretPrefName);
-  }
-
-  void SetRootSecret(std::string secret) override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    g_browser_process->local_state()->SetString(kRootSecretPrefName,
-                                                std::move(secret));
   }
 
   void CanDeviceSupportCable(base::OnceCallback<void(bool)> callback) override {
@@ -414,7 +399,6 @@ void RegisterForCloudMessages() {
 }
 
 void RegisterLocalState(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(kRootSecretPrefName, std::string());
   registry->RegisterStringPref(kSerializedPaaskFieldsName, std::string());
   registry->RegisterStringPref(kWorkProfilePrefName, std::string());
 }

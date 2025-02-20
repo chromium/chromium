@@ -43,23 +43,6 @@ void RegistrationState::Register() {
       &RegistrationState::OnDeviceSupportResult, base::Unretained(this)));
   interface_->AmInWorkProfile(base::BindOnce(
       &RegistrationState::OnWorkProfileResult, base::Unretained(this)));
-
-  std::string secret_base64 = interface_->GetRootSecret();
-
-  if (!secret_base64.empty()) {
-    std::string secret_str;
-    if (base::Base64Decode(secret_base64, &secret_str) &&
-        secret_str.size() == secret_.size()) {
-      memcpy(secret_.data(), secret_str.data(), secret_.size());
-    } else {
-      secret_base64.clear();
-    }
-  }
-
-  if (secret_base64.empty()) {
-    crypto::RandBytes(secret_);
-    interface_->SetRootSecret(base::Base64Encode(secret_));
-  }
 }
 
 // have_data_for_sync returns true if this object has loaded enough state to
