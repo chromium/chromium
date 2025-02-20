@@ -150,7 +150,8 @@ void LoginHandler::SetAuth(std::u16string_view username,
     }
   }
 
-  LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
+  content::LoginDelegate::LoginAuthRequiredCallback callback =
+      std::move(auth_required_callback_);
 
   // Calling NotifyAuthSupplied() first allows other LoginHandler instances to
   // call CloseContents() before us. Closing dialogs in the opposite order as
@@ -168,7 +169,8 @@ void LoginHandler::CancelAuth(bool notify_others) {
     return;
   }
 
-  LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
+  content::LoginDelegate::LoginAuthRequiredCallback callback =
+      std::move(auth_required_callback_);
 
   if (notify_others) {
     NotifyAuthCancelled();
@@ -178,9 +180,10 @@ void LoginHandler::CancelAuth(bool notify_others) {
   std::move(callback).Run(std::nullopt);
 }
 
-LoginHandler::LoginHandler(const net::AuthChallengeInfo& auth_info,
-                           content::WebContents* web_contents,
-                           LoginAuthRequiredCallback auth_required_callback)
+LoginHandler::LoginHandler(
+    const net::AuthChallengeInfo& auth_info,
+    content::WebContents* web_contents,
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
     : web_contents_(web_contents->GetWeakPtr()),
       auth_info_(auth_info),
       auth_required_callback_(std::move(auth_required_callback)) {

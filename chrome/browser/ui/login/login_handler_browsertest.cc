@@ -164,7 +164,8 @@ class LoginTabHelperFake : public LoginTabHelper {
   std::unique_ptr<LoginHandler> CreateLoginHandler(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
-      LoginAuthRequiredCallback auth_required_callback) override {
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      override {
     return std::make_unique<LoginHandlerFake>(auth_info, web_contents,
                                               std::move(auth_required_callback),
                                               browser_client_);

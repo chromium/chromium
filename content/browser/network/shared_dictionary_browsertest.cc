@@ -385,16 +385,17 @@ class DummyAuthContentBrowserClient
   // ContentBrowserClient method:
   std::unique_ptr<LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
-      content::WebContents* web_contents,
-      content::BrowserContext* browser_context,
+      WebContents* web_contents,
+      BrowserContext* browser_context,
       const GlobalRequestID& request_id,
       bool is_request_for_primary_main_frame_navigation,
       bool is_request_for_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
-      content::GuestPageHolder* guest,
-      LoginAuthRequiredCallback auth_required_callback) override {
+      GuestPageHolder* guest,
+      LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      override {
     create_login_delegate_called_ = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

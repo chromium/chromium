@@ -55,7 +55,7 @@ class LoginHandler : public content::LoginDelegate {
   static std::unique_ptr<LoginHandler> Create(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
-      LoginAuthRequiredCallback auth_required_callback);
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   // Call after `Create()` to show the dialog.
   void ShowLoginPrompt(const GURL& request_url);
@@ -79,9 +79,10 @@ class LoginHandler : public content::LoginDelegate {
   content::WebContents* web_contents() { return web_contents_.get(); }
 
  protected:
-  LoginHandler(const net::AuthChallengeInfo& auth_info,
-               content::WebContents* web_contents,
-               LoginAuthRequiredCallback auth_required_callback);
+  LoginHandler(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   // Implement this to initialize the underlying platform specific view. If
   // |login_model_data| is not null, the contained LoginModel and PasswordForm
@@ -166,7 +167,7 @@ class LoginHandler : public content::LoginDelegate {
   // or rejected.  This should only be accessed on the UI loop.
   password_manager::PasswordForm password_form_;
 
-  LoginAuthRequiredCallback auth_required_callback_;
+  content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback_;
 
   base::WeakPtrFactory<LoginHandler> weak_factory_{this};
 };

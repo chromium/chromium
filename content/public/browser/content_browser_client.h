@@ -118,12 +118,6 @@ class IsolationInfo;
 
 class GURL;
 
-// TODO(ellyjones): This synonym shouldn't need to exist - call sites should get
-// the definition from LoginDelegate directly. Migrate all users over, then
-// delete this.
-using LoginAuthRequiredCallback =
-    content::LoginDelegate::LoginAuthRequiredCallback;
-
 namespace base {
 class CommandLine;
 class FilePath;
@@ -2407,7 +2401,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
       GuestPageHolder* guest_page_holder,
-      LoginAuthRequiredCallback auth_required_callback);
+      LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   // Launches the url for the given tab. Returns true if an attempt to handle
   // the url was made, e.g. by launching an app. Note that this does not

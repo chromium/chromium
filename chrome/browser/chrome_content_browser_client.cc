@@ -7012,7 +7012,7 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
     content::GuestPageHolder* guest,
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Negotiate challenge is handled via GSSAPI library, which can not receive
   // external credentials. However, on ChromeOS we can suggest the user to

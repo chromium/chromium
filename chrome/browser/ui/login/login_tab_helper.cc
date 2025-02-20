@@ -193,7 +193,7 @@ LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
 std::unique_ptr<LoginHandler> LoginTabHelper::CreateLoginHandler(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   return LoginHandler::Create(auth_info, web_contents,
                               std::move(auth_required_callback));
 }

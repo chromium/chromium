@@ -787,7 +787,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
       content::GuestPageHolder* guest,
-      LoginAuthRequiredCallback auth_required_callback) override;
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      override;
   bool HandleExternalProtocol(
       const GURL& url,
       content::WebContents::Getter web_contents_getter,
