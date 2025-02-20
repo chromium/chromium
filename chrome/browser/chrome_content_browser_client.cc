@@ -2822,7 +2822,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       if (prefs->GetBoolean(policy::policy_prefs::
                                 kForcePermissionPolicyUnloadDefaultEnabled)) {
         command_line->AppendSwitch(
-            blink::switches::kForcePermissionPolicyUnloadDefaultEnabled);
+            network::switches::kForcePermissionPolicyUnloadDefaultEnabled);
       }
 
       if (prefs->GetBoolean(prefs::kWebAudioOutputBufferingEnabled)) {

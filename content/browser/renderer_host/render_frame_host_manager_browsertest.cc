@@ -88,6 +88,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/url_request/url_request_failed_job.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
@@ -5619,7 +5620,7 @@ class RenderFrameHostManagerUnloadBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     RenderFrameHostManagerTest::SetUpCommandLine(command_line);
-    feature_list_.InitAndDisableFeature(blink::features::kDeprecateUnload);
+    feature_list_.InitAndDisableFeature(network::features::kDeprecateUnload);
   }
 
  protected:

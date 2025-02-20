@@ -72,6 +72,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
@@ -2842,7 +2843,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
 
   bool unload_never_blocks = IsUnloadAllowed();
   bool unload_deprecated_and_not_opted_out =
-      (base::FeatureList::IsEnabled(blink::features::kDeprecateUnload) &&
+      (base::FeatureList::IsEnabled(network::features::kDeprecateUnload) &&
        !IsUnloadDeprecationOptedOut());
   if (unload_never_blocks || unload_deprecated_and_not_opted_out) {
     // Pages with unload handlers are eligible for bfcache only if it is

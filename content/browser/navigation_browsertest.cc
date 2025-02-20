@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <stdint.h>
 
 #include <array>
@@ -7946,7 +7945,7 @@ class NavigationSuddenTerminationDisablerTypeBrowserTest
   NavigationSuddenTerminationDisablerTypeBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{},
-        /*disabled_features=*/{blink::features::kDeprecateUnload});
+        /*disabled_features=*/{network::features::kDeprecateUnload});
   }
 
  private:
@@ -8488,12 +8487,12 @@ class NavigationBrowserTestDeprecateUnloadOptOut
     NavigationBrowserTest::SetUpCommandLine(command_line);
     if (IsOptOutEnabled()) {
       scoped_feature_list_.InitWithFeatures(
-          {blink::features::kDeprecateUnload,
+          {network::features::kDeprecateUnload,
            blink::features::kDeprecateUnloadOptOut},
           {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {blink::features::kDeprecateUnload},
+          {network::features::kDeprecateUnload},
           {blink::features::kDeprecateUnloadOptOut});
     }
   }

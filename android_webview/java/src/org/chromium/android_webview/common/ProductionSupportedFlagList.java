@@ -431,10 +431,10 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.RUN_TASKS_BY_BATCHES,
                 "Run tasks in queue for 8ms before before sending a system message."),
         Flag.baseFeature(
-                BlinkFeatures.DEPRECATE_UNLOAD,
+                NetworkServiceFeatures.DEPRECATE_UNLOAD,
                 "If false prevents the gradual deprecation of the unload event."),
         Flag.baseFeature(
-                BlinkFeatures.DEPRECATE_UNLOAD_BY_ALLOW_LIST,
+                NetworkServiceFeatures.DEPRECATE_UNLOAD_BY_ALLOW_LIST,
                 "Unload Deprecation respects a list of allowed origins."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_RECORD_APP_DATA_DIRECTORY_SIZE,

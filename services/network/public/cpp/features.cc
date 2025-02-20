@@ -371,4 +371,37 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
              "AdInterestGroupAPIRestrictedPolicyByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables unload handler deprecation via Permissions-Policy.
+// https://crbug.com/1324111
+BASE_FEATURE(kDeprecateUnload,
+             "DeprecateUnload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// If < 100, each user experiences the deprecation on this % of origins.
+// Which origins varies per user.
+BASE_FEATURE_PARAM(int,
+                   kDeprecateUnloadPercent,
+                   &kDeprecateUnload,
+                   "rollout_percent",
+                   100);
+// This buckets users, with users in each bucket having a consistent experience
+// of the unload deprecation rollout.
+BASE_FEATURE_PARAM(int,
+                   kDeprecateUnloadBucket,
+                   &kDeprecateUnload,
+                   "rollout_bucket",
+                   0);
+
+// Only used if `kDeprecateUnload` is enabled. The deprecation will only apply
+// if the host is on the allow-list.
+BASE_FEATURE(kDeprecateUnloadByAllowList,
+             "DeprecateUnloadByAllowList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// A list of hosts for which deprecation of unload is allowed. If it's empty
+// the all hosts are allowed.
+BASE_FEATURE_PARAM(std::string,
+                   kDeprecateUnloadAllowlist,
+                   &kDeprecateUnloadByAllowList,
+                   "allowlist",
+                   "");
+
 }  // namespace network::features
