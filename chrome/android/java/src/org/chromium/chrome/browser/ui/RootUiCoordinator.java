@@ -104,6 +104,8 @@ import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.pdf.PdfPage;
+import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
@@ -1511,13 +1513,26 @@ public class RootUiCoordinator
                 () -> mToolbarManager.getVoiceRecognitionHandler(), trackerSupplier);
     }
 
+    private PriceTrackingBottomSheetContentCoordinator createPriceTrackingContentProvider() {
+        return new PriceTrackingBottomSheetContentCoordinator(
+                mActivity,
+                mActivityTabProvider,
+                new PriceInsightsDelegateImpl(
+                        mActivity,
+                        new CurrentTabPriceTrackingStateSupplier(
+                                mActivityTabProvider, mProfileSupplier)));
+    }
+
     @Nullable
     private CommerceBottomSheetContentController getCommerceBottomSheetContentController() {
         if (mCommerceBottomSheetContentCoordinator == null
                 && CommerceFeatureUtils.isDiscountInfoApiEnabled(
                         ShoppingServiceFactory.getForProfile(mProfileSupplier.get()))) {
             mCommerceBottomSheetContentCoordinator =
-                    new CommerceBottomSheetContentCoordinator(mActivity, mBottomSheetController);
+                    new CommerceBottomSheetContentCoordinator(
+                            mActivity,
+                            mBottomSheetController,
+                            this::createPriceTrackingContentProvider);
         }
 
         return mCommerceBottomSheetContentCoordinator;

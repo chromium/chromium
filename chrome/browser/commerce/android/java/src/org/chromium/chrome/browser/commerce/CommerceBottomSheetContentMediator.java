@@ -62,6 +62,7 @@ public class CommerceBottomSheetContentMediator {
     }
 
     void timeOut() {
+        if (mContentReadyCount == 0) return;
         showBottomSheet();
     }
 
