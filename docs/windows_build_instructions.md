@@ -108,26 +108,18 @@ $ git version
 
 ## Install `depot_tools`
 
-***
-**Warning:** `depot_tools` will stop bundling Git for Windows from Sep 23, 2024
-onwards. To prepare for this change, Windows users should
-[install Git](#git-installation) directly before then.
-***
+From a command shell, navigate to the directory where you want to put
+`depot_tools` and clone the `depot_tools` repository. For example, if you
+want it to be cloned to `C:\src\depot_tools`:
 
-Download the
-[depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
-and extract it somewhere (eg: C:\src\depot_tools).
-
-***
-**Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
-this will not extract the hidden “.git” folder which is necessary for
-depot_tools to autoupdate itself. You can use “Extract all…” from the
-context menu though.
-***
+```shell
+$ cd C:\src
+$ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+```
 
 Add depot_tools to the start of your PATH (must be ahead of any installs of
 Python. Note that environment variable names are case insensitive).
-* Assuming you unzipped the bundle to `C:\src\depot_tools`, open:
+* Assuming you cloned the repo to `C:\src\depot_tools`, open:
   Control Panel → System and Security → System
 * Select which PATH variable to edit.
   * If you have Administrator access, you can edit the **system** PATH. Click
