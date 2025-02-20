@@ -160,6 +160,30 @@ BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
              "AdjustCanCreateCanvas2dResourceProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Serves as killswitch for migrating CanvasRenderingContext2D::IsPaintable()
+// from checking the existence of the canvas' Canvas2DLayerBridge to checking
+// for the existence of its resource provider.
+// NOTE: Do not check this feature directly: Check
+// IsPaintableChecksResourceProvider() instead.
+// TODO(crbug.com/40280152): Eliminate post safe-rollout.
+BASE_FEATURE(kIsPaintableChecksResourceProviderInsteadOfBridge,
+             "IsPaintableChecksResourceProviderInsteadOfBridge",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsPaintableChecksResourceProvider() {
+  // The change to IsPaintable() is safe only if the below feature is enabled,
+  // as (a) our reasoning about the IsPaintable() change is built on the
+  // behavior enabled by this feature, and (b) if we were to ever disable this
+  // feature but leave the IsPaintable() change in place we would be putting
+  // the codebase in an untested state.
+  if (!base::FeatureList::IsEnabled(kAdjustCanCreateCanvas2dResourceProvider)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      kIsPaintableChecksResourceProviderInsteadOfBridge);
+}
+
 }  // namespace
 
 CanvasRenderingContext* CanvasRenderingContext2D::Factory::Create(
@@ -285,9 +309,17 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     }
   }
 
-  // If RealLostContext, it means the context was not lost due to surface
-  // failure but rather due to a an eviction, which means image buffer exists.
-  if (context_lost_mode_ == kRealLostContext && IsPaintable() && Restore()) {
+  // This code historically checked whether the bridge existed because it called
+  // into the bridge to restore the resource provider. However, it no longer
+  // does so, and there is no logical reason to guard restoring the resource
+  // provider by whether the bridge is present or not. Note that it doesn't make
+  // sense to call IsPaintable() here when IsPaintable() is returning whether
+  // the resource provider is present, since we are trying to restore the
+  // resource provider here :). Instead, just ensure that the canvas is present,
+  // since this method is called on a timer.
+  bool can_restore =
+      IsPaintableChecksResourceProvider() ? canvas() != nullptr : IsPaintable();
+  if (context_lost_mode_ == kRealLostContext && can_restore && Restore()) {
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -730,8 +762,18 @@ bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
     FlushReason reason) {
-  if (!IsPaintable()) {
-    return nullptr;
+  if (IsPaintableChecksResourceProvider()) {
+    // We can get an image if either (a) there is a ResourceProvider or (b) the
+    // canvas is hibernating (in which case there will be no resource provider
+    // but we can get a snapshot from the hibernation handler).
+    bool is_hibernating = canvas() && canvas()->IsHibernating();
+    if (!IsPaintable() && !is_hibernating) {
+      return nullptr;
+    }
+  } else {
+    if (!IsPaintable()) {
+      return nullptr;
+    }
   }
 
   if (canvas()->IsHibernating()) {
@@ -841,10 +883,15 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
     return;
   }
 
-  // Make sure surface is ready for painting: fix the rendering mode now
-  // because it will be too late during the paint invalidation phase.
-  if (!canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
-    return;
+  // NOTE: Historically IsPaintable() checked for the existence of the canvas'
+  // bridge rather than its ResourceProvider. When IsPaintable() checks for the
+  // existence of the ResourceProvider, the below code is unnecessary.
+  if (!IsPaintableChecksResourceProvider()) {
+    // Make sure surface is ready for painting: fix the rendering mode now
+    // because it will be too late during the paint invalidation phase.
+    if (!canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
+      return;
+    }
   }
 
   CanvasRenderingContextHost* host = Host();
@@ -878,6 +925,14 @@ ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
   return Host()->GetTopExecutionContext();
 }
 
+bool CanvasRenderingContext2D::IsPaintable() const {
+  if (IsPaintableChecksResourceProvider()) {
+    return canvas() && canvas()->ResourceProvider();
+  } else {
+    return canvas() && canvas()->GetCanvas2DLayerBridge();
+  }
+}
+
 Color CanvasRenderingContext2D::GetCurrentColor() const {
   const HTMLCanvasElement* const element = canvas();
   if (!element || !element->isConnected() || !element->InlineStyle()) {
@@ -891,7 +946,18 @@ Color CanvasRenderingContext2D::GetCurrentColor() const {
 
 void CanvasRenderingContext2D::PageVisibilityChanged() {
   HTMLCanvasElement* const element = canvas();
-  if (IsPaintable()) {
+
+  // NOTE: Historically this method executed the code in
+  // OnPageVisibilityChangeWhenPaintable() only when the bridge existed because
+  // that method used to be on the bridge itself.  It is not correct to guard
+  // the execution of this call on the presence of the resource provider since
+  // OnPageVisibilityChangeWhenPaintable() internally has logic to handle the
+  // case where the resource provider isn't present. Code inspection shows that
+  // there is no indication that the execution of this code needs to have any
+  // restriction.
+  // TODO(crbug.com/40280152): Merge OnPageVisibilityChangeWhenPaintable() into
+  // this method post-safe rollout.
+  if (IsPaintable() || IsPaintableChecksResourceProvider()) {
     OnPageVisibilityChangeWhenPaintable();
   }
   if (!element->IsPageVisible()) {
@@ -900,7 +966,10 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 }
 
 void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
-  CHECK(IsPaintable());
+  // NOTE: See the comment at the callsite of this method.
+  if (!IsPaintableChecksResourceProvider()) {
+    CHECK(IsPaintable());
+  }
   HTMLCanvasElement* const element = canvas();
 
   bool page_is_visible = element->IsPageVisible();
@@ -950,9 +1019,17 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
 }
 
 cc::Layer* CanvasRenderingContext2D::CcLayer() const {
-  if (!IsPaintable()) {
+  // This check of IsPaintable() originated when the CC layer was held and
+  // obtained by the bridge. It is now held and obtained by the canvas, so it
+  // makes sense to simply check whether the canvas is present before asking it
+  // to get/create the CC layer.
+  bool can_get_cc_layer =
+      IsPaintableChecksResourceProvider() ? canvas() != nullptr : IsPaintable();
+
+  if (!can_get_cc_layer) {
     return nullptr;
   }
+
   return canvas()->GetOrCreateCcLayerIfNeeded();
 }
 
