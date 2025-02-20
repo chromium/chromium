@@ -35,6 +35,7 @@ static_library("recorder_app") {
     "//components/signin/public/identity_manager",
     "//components/soda",
     "//components/soda:utils",
+    "//components/variations/service",
     "//url",
   ]
 }
