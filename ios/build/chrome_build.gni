@@ -31,9 +31,7 @@ declare_args() {
   ios_enable_open_extension = true
 
   # Enable credential provider extension.
-  # TODO(crbug.com/356196908): The iOS for Blink should be built without
-  # //components/keyed_service/core dependency.
-  ios_enable_credential_provider_extension = !use_blink
+  ios_enable_credential_provider_extension = true
 
   # Enable intents extension.
   ios_enable_intents_extension = true
