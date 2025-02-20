@@ -4019,20 +4019,30 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchNoCancelBrowserTest,
 }
 
 class SearchNavigationPrefetchDefaultMatchBrowserTest
-    : public SearchPrefetchBaseBrowserTest {
+    : public testing::WithParamInterface<bool>,
+      public SearchPrefetchBaseBrowserTest {
  public:
   SearchNavigationPrefetchDefaultMatchBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {kSearchPrefetchServicePrefetching,
          {{"max_attempts_per_caching_duration", "3"},
           {"cache_size", "1"},
-          {"device_memory_threshold_MB", "0"}}},
-        {kSearchPrefetchOnlyAllowDefaultMatchPreloading, {{}}}};
+          {"device_memory_threshold_MB", "0"}}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (OnlyAllowDefaultMatchPreloading()) {
+      enabled_features.push_back(
+          {{kSearchPrefetchOnlyAllowDefaultMatchPreloading}, {{}}});
+    } else {
+      disabled_features.push_back(
+          kSearchPrefetchOnlyAllowDefaultMatchPreloading);
+    }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
+
+  bool OnlyAllowDefaultMatchPreloading() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
@@ -4042,7 +4052,14 @@ class SearchNavigationPrefetchDefaultMatchBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchDefaultMatchBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchNavigationPrefetchDefaultMatchBrowserTest,
+                         testing::Bool());
+
+// Tests the case where the search suggestion does not match the omnibox
+// default match. In this case, Chrome may run prefetching depending on the
+// kSearchPrefetchOnlyAllowDefaultMatchPreloading flag.
+IN_PROC_BROWSER_TEST_P(SearchNavigationPrefetchDefaultMatchBrowserTest,
                        NotDefaultMatch) {
   SetDSEWithURL(
       GetSearchServerQueryURL(
@@ -4072,16 +4089,25 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchDefaultMatchBrowserTest,
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
 
-  GURL canonical_search_url = GetCanonicalSearchURL(
-      autocomplete_controller->result().match_at(0).destination_url);
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_prefetch_url = GetCanonicalSearchURL(prefetch_url);
 
-  WaitForDuration(base::Milliseconds(50));
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
-          GetCanonicalSearchURL(canonical_search_url));
-  EXPECT_FALSE(prefetch_status.has_value());
+          canonical_prefetch_url);
 
-  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+  if (OnlyAllowDefaultMatchPreloading()) {
+    // The search suggestion doesn't match the default match, so it shouldn't be
+    // prefetched.
+    EXPECT_FALSE(prefetch_status.has_value());
+  } else {
+    // The search suggestion doesn't match the default match, but it should be
+    // prefetched anyway.
+    ASSERT_TRUE(prefetch_status.has_value());
+    EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+    WaitUntilStatusChangesTo(canonical_prefetch_url,
+                             SearchPrefetchStatus::kComplete);
+  }
 }
 
 // Test suite to check the AutocompleteDictionaryPreload feature.
