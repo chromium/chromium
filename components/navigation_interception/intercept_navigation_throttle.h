@@ -98,6 +98,10 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
 
   base::TimeTicks defer_start_;
 
+  // Tracks whether we're in a synchronous intercept navigation check so we can
+  // crash if we're deleted during the check and get a stack trace.
+  bool in_sync_check_ = false;
+
   base::WeakPtrFactory<InterceptNavigationThrottle> weak_factory_{this};
 };
 
