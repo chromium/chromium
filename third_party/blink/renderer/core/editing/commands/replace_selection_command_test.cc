@@ -83,6 +83,26 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
       << "'bar' should have been inserted";
 }
 
+TEST_F(ReplaceSelectionCommandTest, PasteNonEditableSpanInEditableArea) {
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable=\"true\">Editable<span "
+          "contenteditable=\"false\">Non-Editable</span>Edit|able</div>"),
+      SetSelectionOptions());
+
+  Element* span_element = GetDocument().QuerySelector(AtomicString("span"));
+  DocumentFragment* fragment = GetDocument().createDocumentFragment();
+  fragment->ParseHTML("<span contenteditable=\"false\">ToPaste</span>",
+                      span_element);
+
+  ReplaceSelectionCommand::CommandOptions options = 0;
+  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), fragment, options);
+
+  EXPECT_TRUE(command->Apply())
+      << "the replace command should have succeeded without crash";
+}
+
 // Helper function to set autosizing multipliers on a document.
 bool SetTextAutosizingMultiplier(Document* document, float multiplier) {
   bool multiplier_set = false;
