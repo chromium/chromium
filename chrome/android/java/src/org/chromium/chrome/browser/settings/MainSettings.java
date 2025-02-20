@@ -119,6 +119,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_PLUS_ADDRESSES = "plus_addresses";
     public static final String PREF_SAFETY_HUB = "safety_hub";
     public static final String PREF_ADDRESS_BAR = "address_bar";
+    public static final String PREF_APPEARANCE = "appearance";
     @VisibleForTesting static final int ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT = 6;
 
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
@@ -284,25 +285,32 @@ public class MainSettings extends ChromeBaseSettingsFragment
             templateUrlService.load();
         }
 
-        new AdaptiveToolbarStatePredictor(
-                        getContext(),
-                        getProfile(),
-                        /* androidPermissionDelegate= */ null,
-                        /* behavior= */ null)
-                .recomputeUiState(
-                        uiState -> {
-                            // We don't show the toolbar shortcut settings page if disabled from
-                            // finch.
-                            if (uiState.canShowUi) return;
-                            getPreferenceScreen()
-                                    .removePreference(findPreference(PREF_TOOLBAR_SHORTCUT));
-                        });
+        if (!ChromeFeatureList.sAndroidAppearanceSettings.isEnabled()) {
+            removePreferenceIfPresent(PREF_APPEARANCE);
 
-        findPreference(PREF_UI_THEME)
-                .getExtras()
-                .putInt(
-                        ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                        ThemeSettingsEntry.SETTINGS);
+            new AdaptiveToolbarStatePredictor(
+                            getContext(),
+                            getProfile(),
+                            /* androidPermissionDelegate= */ null,
+                            /* behavior= */ null)
+                    .recomputeUiState(
+                            uiState -> {
+                                // Don't show toolbar shortcut settings if disabled from finch.
+                                if (!uiState.canShowUi) {
+                                    removePreferenceIfPresent(PREF_TOOLBAR_SHORTCUT);
+                                }
+                            });
+
+            findPreference(PREF_UI_THEME)
+                    .getExtras()
+                    .putInt(
+                            ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                            ThemeSettingsEntry.SETTINGS);
+        } else {
+            // NOTE: "Theme" and "Toolbar shortcut" move to "Appearance" settings when enabled.
+            removePreferenceIfPresent(PREF_TOOLBAR_SHORTCUT);
+            removePreferenceIfPresent(PREF_UI_THEME);
+        }
 
         if (BuildInfo.getInstance().isAutomotive) {
             getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));

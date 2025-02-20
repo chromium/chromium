@@ -629,6 +629,7 @@ chrome_java_resources = [
   "java/res/xml/about_chrome_preferences.xml",
   "java/res/xml/account_management_preferences.xml",
   "java/res/xml/ad_services_config.xml",
+  "java/res/xml/appearance_preferences.xml",
   "java/res/xml/bookmark_widget_info.xml",
   "java/res/xml/clear_browsing_data_preferences.xml",
   "java/res/xml/contextual_search_preferences.xml",

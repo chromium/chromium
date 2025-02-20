@@ -125,39 +125,44 @@ for the previous order (main_preferences_legacy). -->
         android:order="22"
         android:title="@string/prefs_notifications"/>
     <Preference
+        android:fragment="org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment"
+        android:key="appearance"
+        android:order="23"
+        android:title="@string/appearance_settings" />
+    <Preference
         android:fragment="org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment"
         android:key="ui_theme"
-        android:order="23"
+        android:order="24"
         android:title="@string/theme_settings" />
     <Preference
         android:fragment="org.chromium.components.browser_ui.accessibility.AccessibilitySettings"
         android:key="accessibility"
-        android:order="24"
+        android:order="25"
         android:title="@string/prefs_accessibility"/>
     <Preference
         android:fragment="org.chromium.components.browser_ui.site_settings.SiteSettings"
         android:key="content_settings"
-        android:order="25"
+        android:order="26"
         android:title="@string/prefs_site_settings"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.language.settings.LanguageSettings"
         android:key="languages"
-        android:order="26"
+        android:order="27"
         android:title="@string/language_settings"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.download.settings.DownloadSettings"
         android:key="downloads"
-        android:order="27"
+        android:order="28"
         android:title="@string/menu_downloads"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.tracing.settings.DeveloperSettings"
         android:key="developer"
-        android:order="28"
+        android:order="29"
         android:title="Developer options"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.about_settings.AboutChromeSettings"
         android:key="about_chrome"
-        android:order="29"
+        android:order="30"
         android:title="@string/prefs_about_chrome"/>
 
 </PreferenceScreen>
