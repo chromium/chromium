@@ -1110,7 +1110,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
         pathlib.Path(name_to_dir_file).read_text(encoding='utf-8')))
 
     tests = []
-    test_yaml_directory = 'yaml-new'
+    test_yaml_directory = 'yaml'
     yaml_files = [
         os.path.join(test_yaml_directory, f)
         for f in os.listdir(test_yaml_directory) if f.endswith('.yaml')
