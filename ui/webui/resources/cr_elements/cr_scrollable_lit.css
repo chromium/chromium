@@ -1,0 +1,55 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=./cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+/* Common CSS classes used to make an element scrollable and add anchored
+ * elements at the top and bottom of the scrollable element. By default, the
+ * anchored top and bottom elements show a border when the cr-scrollable element
+ * is scrollable in their respective directions. */
+
+.cr-scrollable {
+  anchor-name: --cr-scrollable;
+  anchor-scope: --cr-scrollable;
+  container-type: scroll-state;
+  overflow: auto;
+}
+
+.cr-scrollable-top,
+.cr-scrollable-bottom {
+  display: none;
+  position: fixed;
+  position-anchor: --cr-scrollable;
+  left: anchor(left);
+  width: anchor-size(width);
+  pointer-events: none;
+}
+
+.cr-scrollable-top {
+  top: anchor(top);
+  border-top: 1px solid var(--cr-scrollable-border-color);
+}
+
+.cr-scrollable-bottom {
+  bottom: anchor(bottom);
+  border-bottom: 1px solid var(--cr-scrollable-border-color);
+}
+
+/* clean-css ignore:start */
+@container scroll-state(scrollable: top) {
+  .cr-scrollable-top {
+    display: block;
+  }
+}
+
+@container scroll-state(scrollable: bottom) {
+  .cr-scrollable-bottom {
+    display: block;
+  }
+}
+/* clean-css ignore:end */
