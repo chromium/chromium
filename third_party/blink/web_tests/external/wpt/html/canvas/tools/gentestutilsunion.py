@@ -11,6 +11,16 @@
 # of each test case of varying verbosity, Mozilla mochitests, semi-automated
 # test harness). It also had a different directory structure.
 
+# To use this script:
+# -make a python virtual environment somewhere (it doesn't matter where)
+#   python3 -m venv venv
+# -enter the virtual environment
+#   source venv/bin/activate
+# -install required packages in the venv
+#   pip3 install cairocffi jinja2 pyyaml
+# -change to the directory with this script and run it
+#   python3 gentest.py
+
 # To update or add test cases:
 #
 # * Modify the tests*.yaml files.
@@ -1090,7 +1100,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
 
     jinja_env = jinja2.Environment(
         loader=jinja2.ChoiceLoader([
-            jinja2.PackageLoader('gentestutilsunion'),
+            jinja2.PackageLoader('gentest'),
             params_template_loader,
         ]),
         keep_trailing_newline=True,
@@ -1153,3 +1163,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
             grid.generate_test(jinja_env, output_dirs.sub_path(sub_dir))
 
     print()
+
+
+if __name__ == '__main__':
+    generate_test_files('name2dir.yaml')
