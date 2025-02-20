@@ -116,12 +116,12 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   gfx::Size GetSize() const {
     return gfx::Size(GetSkImageInfo().width(), GetSkImageInfo().height());
   }
-  SkAlphaType GetAlphaType() { return GetSkImageInfo().alphaType(); }
-  SkColorType GetSkColorType() { return GetSkImageInfo().colorType(); }
-  sk_sp<SkColorSpace> GetSkColorSpace() {
+  SkAlphaType GetAlphaType() const { return GetSkImageInfo().alphaType(); }
+  SkColorType GetSkColorType() const { return GetSkImageInfo().colorType(); }
+  sk_sp<SkColorSpace> GetSkColorSpace() const {
     return GetSkImageInfo().refColorSpace();
   }
-  viz::SharedImageFormat GetSharedImageFormat() {
+  viz::SharedImageFormat GetSharedImageFormat() const {
     return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
   }
 
