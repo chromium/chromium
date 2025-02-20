@@ -9,6 +9,7 @@ import android.app.backup.BackupDataOutput;
 import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
 import android.os.ParcelFileDescriptor;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -74,18 +75,28 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     @VisibleForTesting
     static final String HISTOGRAM_ANDROID_RESTORE_RESULT = "Android.RestoreResult";
 
-    // Restore status is used to pass the result of any restore to Chrome's first run, so that
-    // it can be recorded as a histogram.
+    /**
+     * Restore status is used to pass the result of any restore to Chrome's first run, so that it
+     * can be recorded as a histogram.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     *
+     * <p>Used to record Android.RestoreResult histogram.
+     */
+
+    // LINT.IfChange(RestoreStatus)
     @IntDef({
         RestoreStatus.NO_RESTORE,
         RestoreStatus.RESTORE_COMPLETED,
         RestoreStatus.RESTORE_AFTER_FIRST_RUN,
         RestoreStatus.BROWSER_STARTUP_FAILED,
-        RestoreStatus.NOT_SIGNED_IN,
+        RestoreStatus.ACCOUNT_NOT_FOUND,
         RestoreStatus.DEPRECATED_SIGNIN_TIMED_OUT,
         RestoreStatus.DEPRECATED_RESTORE_STATUS_RECORDED,
         RestoreStatus.SIGNIN_TIMED_OUT,
         RestoreStatus.RESTORE_STARTED_NOT_FINISHED,
+        RestoreStatus.NO_SIGNED_IN_ACCOUNT_IN_BACKUP,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RestoreStatus {
@@ -94,7 +105,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         int RESTORE_COMPLETED = 1;
         int RESTORE_AFTER_FIRST_RUN = 2;
         int BROWSER_STARTUP_FAILED = 3;
-        int NOT_SIGNED_IN = 4;
+
+        // Recorded if the backup contains a signed-in account record, but the corresponding account
+        //  is not found on the device being restored.
+        int ACCOUNT_NOT_FOUND = 4;
+
         // This enum value has taken the previous value indicating that the histogram has been
         // recorded, when it was introduced. Deprecating since the metric is polluted consequently.
         int DEPRECATED_SIGNIN_TIMED_OUT = 5;
@@ -109,8 +124,14 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // record a more specific result.
         int RESTORE_STARTED_NOT_FINISHED = 8;
 
-        int NUM_ENTRIES = RESTORE_STARTED_NOT_FINISHED;
+        // No record found in the backup for the previous signed-in account (signed in only or
+        // syncing)
+        int NO_SIGNED_IN_ACCOUNT_IN_BACKUP = 9;
+
+        int NUM_ENTRIES = NO_SIGNED_IN_ACCOUNT_IN_BACKUP;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidRestoreResult)
 
     @VisibleForTesting static final String RESTORE_STATUS = "android_restore_status";
     private static final String RESTORE_STATUS_RECORDED = "android_restore_status_recorded";
@@ -379,11 +400,20 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             if (key.equals(ANDROID_DEFAULT_PREFIX + SYNCING_ACCOUNT_KEY)) {
                 restoredSyncUserEmail = new String(buffer);
             } else if (key.equals(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY)) {
-                restoredSignedInUserID = new GaiaId(new String(buffer));
+                String signedInUserId = new String(buffer);
+                restoredSignedInUserID =
+                        TextUtils.isEmpty(signedInUserId) ? null : new GaiaId(signedInUserId);
             } else {
                 backupNames.add(key);
                 backupValues.add(buffer);
             }
+        }
+
+        // If the backup contains no signed-in user, then don't restore anything.
+        if (restoredSignedInUserID == null && TextUtils.isEmpty(restoredSyncUserEmail)) {
+            setRestoreStatus(RestoreStatus.NO_SIGNED_IN_ACCOUNT_IN_BACKUP);
+            Log.i(TAG, "The backup doesn't contain any signed-in user, not restoring");
+            return;
         }
 
         PostTask.runSynchronously(
@@ -475,10 +505,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         @Nullable
         CoreAccountInfo syncAccountInfo = getDeviceAccountWithEmail(restoredSyncUserEmail);
 
-        // If the user hasn't signed in, or can't sign in, then don't restore anything.
+        // If the previously signed-in account not found on the device, then don't restore
+        // anything.
         if (syncAccountInfo == null && signedInAccountInfo == null) {
-            setRestoreStatus(RestoreStatus.NOT_SIGNED_IN);
-            Log.i(TAG, "Chrome was not signed in with a known account name, not restoring");
+            setRestoreStatus(RestoreStatus.ACCOUNT_NOT_FOUND);
+            Log.i(TAG, "Previously signed-in account is not found on the device, not restoring");
             return;
         }
 
@@ -547,7 +578,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
             // signedInAccountInfo and syncAccountInfo should not be null at the same at this point.
             // Otherwise the restore should already be stopped and the restore state set to
-            // `NOT_SIGNED_IN`.
+            // `ACCOUNT_NOT_FOUND`.
             if (signedInAccountInfo == null) {
                 throw new IllegalStateException("No valid account can be signed-in");
             }
