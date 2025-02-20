@@ -60,6 +60,11 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
+    public void showLocalPasswordCheckUi(Context context) {
+        SafetyHubUtils.showLocalPasswordCheckUi(context, mProfile, mModalDialogManagerSupplier);
+    }
+
+    @Override
     public void openGooglePlayStore(Context context) {
         if (!BuildConfig.IS_CHROME_BRANDED) {
             return;

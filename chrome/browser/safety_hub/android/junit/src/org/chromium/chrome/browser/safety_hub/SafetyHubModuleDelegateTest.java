@@ -70,6 +70,7 @@ public class SafetyHubModuleDelegateTest {
     private SafetyHubModuleDelegate mSafetyHubModuleDelegate;
     private Profile mProfile;
     private PendingIntent mPasswordCheckIntentForAccountCheckup;
+    private PendingIntent mPasswordCheckIntentForLocalCheckup;
 
     @Before
     public void setUp() {
@@ -81,6 +82,7 @@ public class SafetyHubModuleDelegateTest {
         mProfile = mSafetyHubTestRule.getProfile();
         mPasswordCheckIntentForAccountCheckup =
                 mSafetyHubTestRule.getIntentForAccountPasswordCheckup();
+        mPasswordCheckIntentForLocalCheckup = mSafetyHubTestRule.getIntentForLocalPasswordCheckup();
 
         ModalDialogManager modalDialogManager =
                 new ModalDialogManager(
@@ -102,6 +104,17 @@ public class SafetyHubModuleDelegateTest {
         Context context = ContextUtils.getApplicationContext();
         mSafetyHubModuleDelegate.showPasswordCheckUi(context);
         verify(mPasswordCheckIntentForAccountCheckup, times(1)).send();
+    }
+
+    @Test
+    public void testOpenLocalPasswordCheckUi() throws PendingIntent.CanceledException {
+        mSafetyHubTestRule.setSignedInState(true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(
+                true, ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID));
+
+        Context context = ContextUtils.getApplicationContext();
+        mSafetyHubModuleDelegate.showLocalPasswordCheckUi(context);
+        verify(mPasswordCheckIntentForLocalCheckup, times(1)).send();
     }
 
     @Test

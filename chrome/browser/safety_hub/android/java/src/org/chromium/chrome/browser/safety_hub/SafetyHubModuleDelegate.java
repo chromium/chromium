@@ -18,7 +18,15 @@ public interface SafetyHubModuleDelegate {
      *
      * @param context used to show the dialog.
      */
+    // TODO(crbug.com/388788969): Rename to `showAccountPasswordCheckUi`.
     void showPasswordCheckUi(Context context);
+
+    /**
+     * Launches the Local Password Checkup UI from GMSCore.
+     *
+     * @param context used to show the dialog.
+     */
+    void showLocalPasswordCheckUi(Context context);
 
     /**
      * Opens the Play Store page for the installed Chrome channel.

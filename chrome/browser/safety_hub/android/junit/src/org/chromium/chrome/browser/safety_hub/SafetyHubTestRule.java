@@ -54,6 +54,7 @@ public class SafetyHubTestRule implements TestRule {
     @Mock private SigninManager mSigninManager;
     @Mock private SyncService mSyncService;
     @Mock private PendingIntent mPasswordCheckIntentForAccountCheckup;
+    @Mock private PendingIntent mPasswordCheckIntentForLocalCheckup;
 
     private FakePasswordCheckupClientHelper mFakePasswordCheckupClientHelper;
 
@@ -93,6 +94,8 @@ public class SafetyHubTestRule implements TestRule {
                 (FakePasswordCheckupClientHelper) passwordCheckupClientHelperFactory.createHelper();
         mFakePasswordCheckupClientHelper.setIntentForAccountCheckup(
                 mPasswordCheckIntentForAccountCheckup);
+        mFakePasswordCheckupClientHelper.setIntentForLocalCheckup(
+                mPasswordCheckIntentForLocalCheckup);
     }
 
     public void setSignedInState(boolean isSignedIn) {
@@ -120,6 +123,10 @@ public class SafetyHubTestRule implements TestRule {
 
     public PendingIntent getIntentForAccountPasswordCheckup() {
         return mPasswordCheckIntentForAccountCheckup;
+    }
+
+    public PendingIntent getIntentForLocalPasswordCheckup() {
+        return mPasswordCheckIntentForLocalCheckup;
     }
 
     public FakePasswordCheckupClientHelper getPasswordCheckupClientHelper() {

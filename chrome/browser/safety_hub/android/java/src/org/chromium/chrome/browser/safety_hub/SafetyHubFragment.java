@@ -137,7 +137,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new SafetyHubAccountPasswordsModuleMediator(
                         findPreference(PREF_PASSWORDS),
                         accountPasswordsDataSource,
-                        this,
+                        /* mediatorDelegate= */ this,
                         mDelegate);
 
         mModuleMediators =
@@ -157,7 +157,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                             new PasswordStoreBridge(getProfile()));
             SafetyHubLocalPasswordsModuleMediator localPasswordsModuleMediator =
                     new SafetyHubLocalPasswordsModuleMediator(
-                            findPreference(PREF_LOCAL_PASSWORDS), localPasswordsDataSource, this);
+                            findPreference(PREF_LOCAL_PASSWORDS),
+                            localPasswordsDataSource,
+                            /* mediatorDelegate= */ this,
+                            mDelegate);
             mModuleMediators.add(localPasswordsModuleMediator);
         }
 

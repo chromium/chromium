@@ -900,6 +900,35 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
+    public void testLocalPasswordModule_AllCountsUnavailable() {
+        // TODO(crbug.com/388788969): After adding logic to the local password module, set
+        // appropriate counts for the unavailable state.
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that local passwords module which is in the unavailable state is expanded by
+        // default.
+        String unavailableTitle =
+                safetyHubFragment.getString(
+                        R.string.safety_hub_local_password_check_unavailable_title);
+        scrollToExpandedPreference(unavailableTitle);
+        verifyButtonsNextToTextVisibility(unavailableTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
+    @Test
+    @MediumTest
     @Feature({"SafetyHubPermissions"})
     public void testPermissionsModule_ClearList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(

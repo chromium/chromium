@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import android.content.Context;
+import android.view.View;
+
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safety_hub.SafetyHubLocalPasswordsDataSource.ModuleType;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
@@ -21,17 +24,21 @@ public class SafetyHubLocalPasswordsModuleMediator
         implements SafetyHubModuleMediator, SafetyHubLocalPasswordsDataSource.Observer {
     private final SafetyHubExpandablePreference mPreference;
     private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
+    private final SafetyHubModuleDelegate mModuleDelegate;
 
     private SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
+    private SafetyHubModuleHelper mModuleHelper;
     private PropertyModel mModel;
 
     SafetyHubLocalPasswordsModuleMediator(
             SafetyHubExpandablePreference preference,
             SafetyHubLocalPasswordsDataSource localPasswordsDataSource,
-            SafetyHubModuleMediatorDelegate mediatorDelegate) {
+            SafetyHubModuleMediatorDelegate mediatorDelegate,
+            SafetyHubModuleDelegate moduleDelegate) {
         mPreference = preference;
         mLocalPasswordsDataSource = localPasswordsDataSource;
         mMediatorDelegate = mediatorDelegate;
+        mModuleDelegate = moduleDelegate;
     }
 
     @Override
@@ -64,9 +71,41 @@ public class SafetyHubLocalPasswordsModuleMediator
         mLocalPasswordsDataSource.updateState();
     }
 
-    // TODO(crbug.com/388788969): Set all other model properties based on the value of `moduleType`.
-    @SuppressWarnings("unused")
+    private SafetyHubModuleHelper getModuleHelper(@ModuleType int moduleType) {
+        Context context = mPreference.getContext();
+
+        // TODO(crbug.com/388788969): Add module helpers for all `moduleType`s.
+        switch (moduleType) {
+            case ModuleType.UNAVAILABLE_PASSWORDS:
+                return new SafetyHubLocalPasswordsUnavailableAllPasswordsModuleHelper(
+                        context, mModuleDelegate);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     private void updateModule(@ModuleType int moduleType) {
+        mModuleHelper = getModuleHelper(moduleType);
+
+        mModel.set(SafetyHubModuleProperties.TITLE, mModuleHelper.getTitle());
+        mModel.set(SafetyHubModuleProperties.SUMMARY, mModuleHelper.getSummary());
+        mModel.set(
+                SafetyHubModuleProperties.PRIMARY_BUTTON_TEXT,
+                mModuleHelper.getPrimaryButtonText());
+        mModel.set(
+                SafetyHubModuleProperties.SECONDARY_BUTTON_TEXT,
+                mModuleHelper.getSecondaryButtonText());
+        mModel.set(
+                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                mModuleHelper.getPrimaryButtonListener());
+        mModel.set(
+                SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
+                mModuleHelper.getSecondaryButtonListener());
+
+        if (isManaged()) {
+            overridePreferenceForManaged();
+        }
+
         mModel.set(SafetyHubModuleProperties.ORDER, getOrder());
         mModel.set(SafetyHubModuleProperties.ICON, getIcon(mPreference.getContext()));
     }
@@ -78,7 +117,11 @@ public class SafetyHubLocalPasswordsModuleMediator
 
     @Override
     public @ModuleState int getModuleState() {
-        return ModuleState.UNAVAILABLE;
+        // TODO(crbug.com/388788969): Decide on a proper state while the module is still loading.
+        if (mModuleHelper == null) {
+            return ModuleState.UNAVAILABLE;
+        }
+        return mModuleHelper.getModuleState();
     }
 
     @Override
@@ -95,5 +138,24 @@ public class SafetyHubLocalPasswordsModuleMediator
     public void stateChanged(@ModuleType int moduleType) {
         updateModule(moduleType);
         mMediatorDelegate.onUpdateNeeded();
+    }
+
+    // Overrides the summary and primary button fields of `preference` if passwords are controlled
+    // by a policy.
+    private void overridePreferenceForManaged() {
+        assert isManaged();
+        mPreference.setSummary(
+                mPreference
+                        .getContext()
+                        .getString(R.string.safety_hub_no_passwords_summary_managed));
+        String primaryButtonText = mPreference.getPrimaryButtonText();
+        View.OnClickListener primaryButtonListener = mPreference.getPrimaryButtonClickListener();
+        if (primaryButtonText != null) {
+            assert mPreference.getSecondaryButtonText() == null;
+            mPreference.setSecondaryButtonText(primaryButtonText);
+            mPreference.setSecondaryButtonClickListener(primaryButtonListener);
+            mPreference.setPrimaryButtonText(null);
+            mPreference.setPrimaryButtonClickListener(null);
+        }
     }
 }
