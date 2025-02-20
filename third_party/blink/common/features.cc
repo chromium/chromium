@@ -1251,6 +1251,15 @@ BASE_FEATURE(kAttributionReportingInBrowserMigration,
              "AttributionReportingInBrowserMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLimitLayerMergeDistance,
+             "LimitLayerMergeDistance",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kLayerMergeDistanceLimit,
+                   &kLimitLayerMergeDistance,
+                   "limit",
+                   0x10000000);
+
 BASE_FEATURE(kLCPCriticalPathPredictor,
              "LCPCriticalPathPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -755,6 +755,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanHeuristics);
 // the current direction.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanDirectionCutOff);
 
+// When enabled, PaintArtifactCompositor::Layerizer will limit the distance
+// (in number of non-mergeable intermediate PendingLayers) between merged
+// layers to kLayerMergeDistanceLimit, to reduce the cost of layerization.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLimitLayerMergeDistance);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                               kLayerMergeDistanceLimit);
+
 // When enabled, LCP critical path predictor will optimize the subsequent visits
 // to websites using performance hints collected in the past page loads.
 // It enables boosting a loading priority of the possible LCP element.
