@@ -15590,24 +15590,6 @@
             ]
         }
     ],
-    "OnDeviceNotificationContentDetectionModel": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithAllowlistSampling",
-                    "params": {
-                        "OnDeviceNotificationContentDetectionModelAllowlistSamplingRate": "100"
-                    },
-                    "enable_features": [
-                        "OnDeviceNotificationContentDetectionModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "OneCopyLegacyMPVideoFrameUploadViaSI": [
         {
             "platforms": [
