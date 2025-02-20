@@ -1404,9 +1404,9 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
     const std::string& port_forwarding_config,
     bool network_discovery_enabled,
     const std::string& network_discovery_config) {
-  std::optional<base::Value> parsed_port_forwarding =
-      base::JSONReader::Read(port_forwarding_config);
-  if (!parsed_port_forwarding || !parsed_port_forwarding->is_dict()) {
+  std::optional<base::Value::Dict> parsed_port_forwarding =
+      base::JSONReader::ReadDict(port_forwarding_config);
+  if (!parsed_port_forwarding) {
     return;
   }
   std::optional<base::Value> parsed_network =
@@ -1419,7 +1419,7 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
   profile_->GetPrefs()->SetBoolean(prefs::kDevToolsPortForwardingEnabled,
                                    port_forwarding_enabled);
   profile_->GetPrefs()->Set(prefs::kDevToolsPortForwardingConfig,
-                            *parsed_port_forwarding);
+                            base::Value(std::move(*parsed_port_forwarding)));
   profile_->GetPrefs()->SetBoolean(prefs::kDevToolsDiscoverTCPTargetsEnabled,
                                    network_discovery_enabled);
   profile_->GetPrefs()->Set(prefs::kDevToolsTCPDiscoveryConfig,

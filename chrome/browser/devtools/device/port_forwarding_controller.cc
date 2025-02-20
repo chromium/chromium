@@ -70,17 +70,17 @@ const char kConnectionIdParam[] = "connectionId";
 static bool ParseNotification(const std::string& json,
                               std::string& method,
                               std::optional<base::Value::Dict>& params) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
-  if (!value || !value->is_dict())
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(json);
+  if (!value) {
     return false;
+  }
 
-  base::Value::Dict& dict = value->GetDict();
-  std::string* method_value = dict.FindString(kMethodParam);
+  std::string* method_value = value->FindString(kMethodParam);
   if (!method_value)
     return false;
   method = std::move(*method_value);
 
-  base::Value::Dict* param_dict = dict.FindDict(kParamsParam);
+  base::Value::Dict* param_dict = value->FindDict(kParamsParam);
   if (param_dict) {
     params = std::move(*param_dict);
   }
@@ -90,16 +90,16 @@ static bool ParseNotification(const std::string& json,
 static bool ParseResponse(const std::string& json,
                           int* command_id,
                           int* error_code) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
-  if (!value || !value->is_dict())
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(json);
+  if (!value) {
     return false;
-  const base::Value::Dict& dict = value->GetDict();
-  std::optional<int> command_id_opt = dict.FindInt(kIdParam);
+  }
+  std::optional<int> command_id_opt = value->FindInt(kIdParam);
   if (!command_id_opt)
     return false;
   *command_id = *command_id_opt;
 
-  std::optional<int> error_value = dict.FindIntByDottedPath(kErrorCodePath);
+  std::optional<int> error_value = value->FindIntByDottedPath(kErrorCodePath);
   if (error_value)
     *error_code = *error_value;
 
