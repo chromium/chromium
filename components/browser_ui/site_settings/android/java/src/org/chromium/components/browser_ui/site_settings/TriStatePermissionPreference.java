@@ -90,7 +90,7 @@ public class TriStatePermissionPreference extends Preference
         if (mShowTitle) {
             mTitleView.setVisibility(View.VISIBLE);
         } else {
-            mTitleView.setVisibility(View.INVISIBLE);
+            mTitleView.setVisibility(View.GONE);
         }
         mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
         assumeNonNull(mRadioGroup);
