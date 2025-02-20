@@ -1300,7 +1300,7 @@ html/details_summary/details-add-summary.html
 html/document_metadata/head-has-text-1.html
 html/grouping_content/listing.html
 html/tabular_data/table_createcaption.html
-html/text_level_semantics/font-weight-bold-for-b-and-strong.html
+html/text_level_semantics/font-weight-bolder-for-b-and-strong.html
 http/tests/css/css-resources-referrer.html
 http/tests/csspaint/border-color.html
 http/tests/csspaint/entire-canvas-visible-zoom.html
