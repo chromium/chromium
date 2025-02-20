@@ -6,13 +6,17 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
+#import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/commerce_types.h"
-#import "components/commerce/core/shopping_service.h"
+#import "components/commerce/core/proto/price_tracking.pb.h"
+#import "components/optimization_guide/core/optimization_guide_decision.h"
+#import "components/optimization_guide/proto/common_types.pb.h"
+#import "components/optimization_guide/proto/hints.pb.h"
 #import "components/page_image_service/features.h"
 #import "components/page_image_service/image_service.h"
 #import "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -33,6 +37,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -187,28 +192,69 @@ PriceDrop GetPriceDrop(payments::CurrencyFormatter* formatter,
   return price_drop;
 }
 
+bool HasPriceDrop(const std::optional<const commerce::PriceTrackingData>&
+                      price_tracking_data) {
+  return price_tracking_data.has_value() &&
+         price_tracking_data->has_product_update() &&
+         price_tracking_data->product_update().has_old_price() &&
+         price_tracking_data->product_update().has_new_price() &&
+         price_tracking_data->product_update()
+             .old_price()
+             .has_currency_code() &&
+         price_tracking_data->product_update()
+             .new_price()
+             .has_currency_code() &&
+         price_tracking_data->product_update().old_price().currency_code() ==
+             price_tracking_data->product_update().new_price().currency_code();
+}
+
+// A Product Detail Page is price trackable if it has a cluster ID.
+bool IsPriceTrackable(const std::optional<const commerce::PriceTrackingData>&
+                          price_tracking_data) {
+  return price_tracking_data.has_value() &&
+         price_tracking_data->has_buyable_product() &&
+         price_tracking_data->buyable_product().has_product_cluster_id();
+}
+
 void ConfigureTabResumptionItemForShopCard(
-    const std::optional<const commerce::ProductInfo>& product_info,
+    const base::flat_map<
+        optimization_guide::proto::OptimizationType,
+        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions,
     TabResumptionItem* item) {
+  auto iter = decisions.find(optimization_guide::proto::PRICE_TRACKING);
+  if (iter == decisions.end()) {
+    return;
+  }
+
+  optimization_guide::OptimizationGuideDecisionWithMetadata
+      decisionWithMetadata = iter->second;
+  if (decisionWithMetadata.decision !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return;
+  }
+  const std::optional<const commerce::PriceTrackingData>& price_tracking_data =
+      decisionWithMetadata.metadata
+          .ParsedMetadata<commerce::PriceTrackingData>();
+
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 &&
-      product_info.has_value() &&
-      product_info->previous_amount_micros.has_value()) {
+      HasPriceDrop(price_tracking_data)) {
     item.shopCardData = [[ShopCardData alloc] init];
     item.shopCardData.shopCardItemType = ShopCardItemType::kPriceDropOnTab;
 
     std::unique_ptr<payments::CurrencyFormatter> formatter =
         std::make_unique<payments::CurrencyFormatter>(
-            product_info->currency_code, product_info->country_code);
+            price_tracking_data->product_update().new_price().currency_code(),
+            GetApplicationContext()->GetApplicationLocale());
     formatter->SetMaxFractionalDigits(2);
-    item.shopCardData.priceDrop =
-        GetPriceDrop(formatter.get(), product_info->amount_micros,
-                     product_info->previous_amount_micros.value());
+    item.shopCardData.priceDrop = GetPriceDrop(
+        formatter.get(),
+        price_tracking_data->product_update().old_price().amount_micros(),
+        price_tracking_data->product_update().new_price().amount_micros());
   }
 
   // A URL is price trackable if it has a cluster ID.
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 &&
-      product_info.has_value() &&
-      product_info->product_cluster_id.has_value()) {
+      IsPriceTrackable(price_tracking_data)) {
     item.shopCardData = [[ShopCardData alloc] init];
     item.shopCardData.shopCardItemType =
         ShopCardItemType::kPriceTrackableProductOnTab;
@@ -216,6 +262,25 @@ void ConfigureTabResumptionItemForShopCard(
 }
 
 }  // namespace
+
+// Call through to OptimizationGuide's OnDemand API which is a restricted
+// API. In order to call the private function CanApplyOptimizationOnDemand,
+// a class to friend OptimizationGuideService is needed.
+class TabResumptionMediatorProxy {
+ public:
+  // Call through to optimizationGuideService->CanApplyOptimizationOnDemand
+  static void CanApplyOptimizationOnDemand(
+      OptimizationGuideService* optimizationGuideService,
+      const GURL& url,
+      const optimization_guide::proto::OptimizationType& optimization_type,
+      optimization_guide::proto::RequestContext request_context,
+      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+          callback) {
+    optimizationGuideService->CanApplyOptimizationOnDemand(
+        {url}, {optimization_type}, request_context, std::move(callback),
+        std::nullopt);
+  }
+};
 
 @interface TabResumptionMediator () <BooleanObserver,
                                      IdentityManagerObserverBridgeDelegate,
@@ -277,14 +342,15 @@ void ConfigureTabResumptionItemForShopCard(
   // Whether the item is currently presented as Top Module by Magic Stack.
   BOOL _currentlyTopModule;
   PrefBackedBoolean* _tabResumptionDisabled;
-  raw_ptr<commerce::ShoppingService> _shoppingService;
+  raw_ptr<OptimizationGuideService> _optimizationGuideService;
 }
 
-- (instancetype)initWithPrefService:(PrefService*)prefService
-                    identityManager:(signin::IdentityManager*)identityManager
-                            browser:(Browser*)browser
-                    shoppingService:
-                        (commerce::ShoppingService*)shoppingService {
+- (instancetype)initWithLocalState:(PrefService*)localState
+                       prefService:(PrefService*)prefService
+                   identityManager:(signin::IdentityManager*)identityManager
+                           browser:(Browser*)browser
+          optimizationGuideService:
+              (OptimizationGuideService*)optimizationGuideService {
   self = [super init];
   if (self) {
     CHECK(IsTabResumptionEnabled());
@@ -344,7 +410,11 @@ void ConfigureTabResumptionItemForShopCard(
       _identityManagerObserverBridge.reset(
           new signin::IdentityManagerObserverBridge(identityManager, self));
     }
-    _shoppingService = shoppingService;
+    if (optimizationGuideService) {
+      _optimizationGuideService = optimizationGuideService;
+      _optimizationGuideService->RegisterOptimizationTypes(
+          {optimization_guide::proto::PRICE_TRACKING});
+    }
   }
   return self;
 }
@@ -938,18 +1008,17 @@ void ConfigureTabResumptionItemForShopCard(
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
       commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
     __weak __typeof(self) weakSelf = self;
-    // TODO(crbug.com/394947595) this currently returns no product info for
-    // any shopping URL on startup, likely because OptimizationGuide hasn't
-    // fetched the URL data yet. Ensure product data is available on first
-    // rendering of the magic stack either by waiting for the OptimziationGudide
-    // fetch or forcing a fetch as part of this call.
-    _shoppingService->GetProductInfoForUrl(
-        visit->url,
-        base::BindOnce(
+    TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
+        _optimizationGuideService, visit->url,
+        optimization_guide::proto::PRICE_TRACKING,
+        optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
+        base::BindRepeating(
             ^(const GURL& url,
-              const std::optional<const commerce::ProductInfo>& product_info) {
-              ConfigureTabResumptionItemForShopCard(product_info, item);
-
+              const base::flat_map<
+                  optimization_guide::proto::OptimizationType,
+                  optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                  decisions) {
+              ConfigureTabResumptionItemForShopCard(decisions, item);
               // Fetch the favicon.
               [weakSelf fetchImageForItem:item];
             }));

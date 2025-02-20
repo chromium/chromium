@@ -10,13 +10,10 @@
 class Browser;
 @class ContentSuggestionsMetricsRecorder;
 @protocol NewTabPageActionsDelegate;
+class OptimizationGuideService;
 class PrefService;
 @protocol TabResumptionHelperDelegate;
 @class TabResumptionItem;
-
-namespace commerce {
-class ShoppingService;
-}
 
 namespace signin {
 class IdentityManager;
@@ -39,10 +36,12 @@ class IdentityManager;
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Default initializer.
-- (instancetype)initWithPrefService:(PrefService*)prefService
-                    identityManager:(signin::IdentityManager*)identityManager
-                            browser:(Browser*)browser
-                    shoppingService:(commerce::ShoppingService*)shoppingService
+- (instancetype)initWithLocalState:(PrefService*)localState
+                       prefService:(PrefService*)prefService
+                   identityManager:(signin::IdentityManager*)identityManager
+                           browser:(Browser*)browser
+          optimizationGuideService:
+              (OptimizationGuideService*)optimizationGuideService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

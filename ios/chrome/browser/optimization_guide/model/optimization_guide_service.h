@@ -55,6 +55,7 @@ class BrowserList;
 class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
 class PrefService;
+class TabResumptionMediatorProxy;
 
 // A BrowserState keyed service that is used to own the underlying Optimization
 // Guide components. This is a rough copy of the OptimizationGuideKeyedService
@@ -186,6 +187,7 @@ class OptimizationGuideService
   friend class OptimizationGuideServiceTest;
   friend class OptimizationGuideTabHelper;
   friend class OptimizationGuideTestAppInterfaceWrapper;
+  friend class TabResumptionMediatorProxy;
 
   // Notifies `hints_manager_` that the navigation associated with
   // `navigation_data` has started or redirected.

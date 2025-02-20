@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
@@ -392,11 +393,12 @@ using segmentation_platform::TipIdentifier;
 
   if (IsTabResumptionEnabled()) {
     _tabResumptionMediator = [[TabResumptionMediator alloc]
-        initWithPrefService:prefs
-            identityManager:identityManager
-                    browser:self.browser
-            shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
-                                profile)];
+              initWithLocalState:GetApplicationContext()->GetLocalState()
+                     prefService:prefs
+                 identityManager:identityManager
+                         browser:self.browser
+        optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
+                                     profile)];
     _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     _tabResumptionMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
