@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <meta charset=utf-8>
-<title>Bounce Tracking Mitigations: Stateful Client Bounce</title>
+<title>Bounce Tracking Mitigations: Stateless Client Bounce</title>
 <body>body for test_driver.bless</body>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -23,7 +23,7 @@
     // Open a new tab and retrieve the link to start the test.
     await test_driver.bless('open page to start test', async () => {
       const otherTab = window.open(
-        'resources/redirect-chain-start-stateful.sub.https.html');
+        'resources/redirect-chain-start-stateless.sub.https.html');
 
       await new Promise(resolve => otherTab.addEventListener('load', resolve));
       linkInNewPage = otherTab.document.getElementById('navigate-link');
@@ -47,23 +47,5 @@
       result = await test_driver.run_bounce_tracking_mitigations();
     }
     assert_array_equals(result, ['{{hosts[alt][]}}']);
-
-    // Open a page on the bounce origin, and check that cookies have been
-    // cleared.
-    const getCookiesFromBounceOrigin = new Promise(
-      resolve => {
-        window.addEventListener(
-          'message',
-          (event) => { resolve(event.data.cookie) },
-          {once: true})
-    });
-
-    const url = new URL(
-      'resources/cross-origin-get-cookie.sub.https.html',
-      window.location.href);
-    url.hostname = '{{hosts[alt][]}}';
-    window.open(url);
-
-    assert_equals(await getCookiesFromBounceOrigin, '');
-  }, 'Bounce tracking mitigations deleting state for a bounce tracker');
+  }, 'Bounce tracking mitigations catching a stateless bounce tracker');
 </script>
