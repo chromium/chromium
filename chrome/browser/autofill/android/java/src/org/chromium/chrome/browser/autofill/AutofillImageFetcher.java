@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import androidx.annotation.Px;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -67,16 +65,12 @@ public class AutofillImageFetcher {
      */
     @CalledByNative
     void prefetchPixAccountImages(@JniType("base::span<const GURL>") GURL[] urls) {
-        @Px
-        int logoSize = AutofillImageFetcherUtils.getPixelSize(R.dimen.square_card_icon_side_length);
-
         for (GURL url : urls) {
             if (!url.isValid()) {
                 continue;
             }
 
-            GURL urlWithParams =
-                    AutofillUiUtils.getCreditCardIconUrlWithParams(url, logoSize, logoSize);
+            GURL urlWithParams = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
 
             if (mImagesCache.containsKey(urlWithParams.getSpec())) {
                 continue;

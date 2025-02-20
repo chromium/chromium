@@ -17,6 +17,7 @@ import androidx.annotation.Px;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.url.GURL;
 
 /** Helper methods to treat Autofill images. */
 final class AutofillImageFetcherUtils {
@@ -108,6 +109,24 @@ final class AutofillImageFetcherUtils {
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
 
         return outputBitmap;
+    }
+
+    /**
+     * Adds size parameters to a FIFE supported Pix account image asset URL.
+     *
+     * <p>The image fetched with the formatted URL preserves the original aspect ratio. If the size
+     * dimensions do not match the original aspect ratio, the side with the more restrictive size is
+     * matched.
+     *
+     * @param url A FIFE URL to fetch the image.
+     * @return {@link GURL} formatted with the required image size.
+     */
+    static GURL getPixAccountImageUrlWithParams(GURL url) {
+        @Px int logoSize = getPixelSize(R.dimen.square_card_icon_side_length);
+        StringBuilder output = new StringBuilder(url.getSpec());
+        output.append("=w").append(logoSize).append("-h").append(logoSize);
+
+        return new GURL(output.toString());
     }
 
     /**
