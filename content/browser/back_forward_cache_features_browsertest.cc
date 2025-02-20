@@ -7,6 +7,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/back_forward_cache_browsertest.h"
+#include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
+#include "content/browser/bluetooth/test/mock_bluetooth_delegate.h"
 #include "content/browser/browser_interface_binders.h"
 #include "content/browser/generic_sensor/frame_sensor_provider_proxy.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
@@ -32,7 +34,6 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_transport_simple_test_server.h"
 #include "content/shell/browser/shell.h"
-#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -4004,50 +4005,88 @@ IN_PROC_BROWSER_TEST_F(GeolocationBackForwardCacheBrowserTest,
       << "watchPosition API should have reported no errors";
 }
 
-class BluetoothForwardCacheBrowserTest : public BackForwardCacheBrowserTest {
- protected:
-  BluetoothForwardCacheBrowserTest() = default;
+class BluetoothBrowserTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  // ContentBrowserClient:
+  BluetoothDelegate* GetBluetoothDelegate() override { return &delegate_; }
 
-  ~BluetoothForwardCacheBrowserTest() override = default;
+  MockBluetoothDelegate& delegate() { return delegate_; }
+
+ private:
+  testing::NiceMock<MockBluetoothDelegate> delegate_;
+};
+
+class BackForwardCacheWebBluetoothTest : public BackForwardCacheBrowserTest {
+ protected:
+  BackForwardCacheWebBluetoothTest() = default;
+
+  ~BackForwardCacheWebBluetoothTest() override = default;
+
+  void SetUpOnMainThread() override {
+    BackForwardCacheBrowserTest::SetUpOnMainThread();
+    test_client_ = std::make_unique<BluetoothBrowserTestContentBrowserClient>();
+    ON_CALL(delegate(), MayUseBluetooth).WillByDefault(Return(true));
+  }
 
   void SetUp() override {
-    // Fake the BluetoothAdapter to say it's present.
-    // Used in WebBluetooth test.
+    // The test requires a mock Bluetooth adapter to perform WebBluetooth API
+    // calls. To avoid conflicts with the default Bluetooth adapter, e.g.
+    // Windows adapter, which is configured during Bluetooth initialization, the
+    // mock adapter is configured in SetUp().
     adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
-#if BUILDFLAG(IS_CHROMEOS)
-    // In CHROMEOS build, even when |adapter_| object is released at TearDown()
-    // it causes the test to fail on exit with an error indicating |adapter_| is
-    // leaked.
-    testing::Mock::AllowLeak(adapter_.get());
-#endif
+    BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter_);
+    ON_CALL(*adapter_, IsPresent).WillByDefault(Return(true));
+
+    // Configure the mock adapter to return a scanning error to avoid leaking
+    // the adapter after teardown due to an ongoing scanning session.
+    ON_CALL(*adapter_, StartScanWithFilter_)
+        .WillByDefault(
+            [](const device::BluetoothDiscoveryFilter* filter,
+               base::OnceCallback<void(
+                   bool, device::UMABluetoothDiscoverySessionOutcome)>&
+                   callback) {
+              std::move(callback).Run(
+                  /*is_error=*/true,
+                  device::UMABluetoothDiscoverySessionOutcome::UNKNOWN);
+            });
 
     BackForwardCacheBrowserTest::SetUp();
   }
 
   void TearDown() override {
     testing::Mock::VerifyAndClearExpectations(adapter_.get());
+    BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(nullptr);
     adapter_.reset();
     BackForwardCacheBrowserTest::TearDown();
   }
 
+  MockBluetoothDelegate& delegate() { return test_client_->delegate(); }
+
   scoped_refptr<device::MockBluetoothAdapter> adapter_;
+  std::unique_ptr<BluetoothBrowserTestContentBrowserClient> test_client_;
 };
 
-IN_PROC_BROWSER_TEST_F(BluetoothForwardCacheBrowserTest, WebBluetooth) {
-  // The test requires a mock Bluetooth adapter to perform a
-  // WebBluetooth API call. To avoid conflicts with the default Bluetooth
-  // adapter, e.g. Windows adapter, which is configured during Bluetooth
-  // initialization, the mock adapter is configured in SetUp().
-
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWebBluetoothTest,
+                       DoesNotCacheIfRequestDeviceWasCalled) {
   // WebBluetooth requires HTTPS.
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url(https_server()->GetURL("a.test", "/back_forward_cache/empty.html"));
 
-  ASSERT_TRUE(NavigateToURL(web_contents(), url));
-  BackForwardCacheDisabledTester tester;
+  // Navigate to an empty page.
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL("a.test", "/back_forward_cache/empty.html")));
+  RenderFrameHostWrapper rfh_wrapper(current_frame_host());
 
+  // Call requestDevice to open a permission request dialog. Cancel the dialog
+  // once it is opened.
+  EXPECT_CALL(delegate(), RunBluetoothChooser)
+      .WillOnce([](RenderFrameHost* frame,
+                   const BluetoothChooser::EventHandler& event_handler) {
+        event_handler.Run(BluetoothChooserEvent::CANCELLED, std::string());
+        return std::make_unique<BluetoothChooser>();
+      });
   EXPECT_EQ("device not found", EvalJs(current_frame_host(), R"(
     new Promise(resolve => {
       navigator.bluetooth.requestDevice({
@@ -4059,17 +4098,112 @@ IN_PROC_BROWSER_TEST_F(BluetoothForwardCacheBrowserTest, WebBluetooth) {
       .catch(() => resolve("device not found"))
     });
   )"));
-  auto reason = BackForwardCacheDisable::DisabledReason(
-      BackForwardCacheDisable::DisabledReasonId::kWebBluetooth);
-  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      current_frame_host()->GetProcess()->GetDeprecatedID(),
-      current_frame_host()->GetRoutingID(), reason));
 
+  // Navigate away.
   ASSERT_TRUE(NavigateToURL(web_contents(),
                             https_server()->GetURL("b.test", "/title1.html")));
+
+  // The page called requestDevice so it should be deleted.
+  EXPECT_TRUE(rfh_wrapper.WaitUntilRenderFrameDeleted());
+
+  // Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                    {}, {reason}, {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth}, {}, {}, {},
+      FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWebBluetoothTest,
+                       DoesNotCacheIfGetDevicesWasCalled) {
+  // WebBluetooth requires HTTPS.
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+
+  // Navigate to an empty page.
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL("a.test", "/back_forward_cache/empty.html")));
+  RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // Call getDevices to get a list of devices the page is allowed to access.
+  EXPECT_TRUE(ExecJs(current_frame_host(), "navigator.bluetooth.getDevices()"));
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            https_server()->GetURL("b.test", "/title1.html")));
+
+  // The page called getDevices so it should be deleted.
+  EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth}, {}, {}, {},
+      FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWebBluetoothTest,
+                       DoesNotCacheIfScanningWasStarted) {
+  // WebBluetooth requires HTTPS.
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+
+  // Navigate to an empty page.
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL("a.test", "/back_forward_cache/empty.html")));
+  RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // Call requestLEScan to start scanning for nearby devices.
+  EXPECT_EQ("scan error", EvalJs(current_frame_host(),
+                                 R"(
+    new Promise(resolve => {
+      navigator.bluetooth.requestLEScan({acceptAllAdvertisements: true})
+      .then(() => resolve("scan started"))
+      .catch(() => resolve("scan error"))
+    });
+  )"));
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            https_server()->GetURL("b.test", "/title1.html")));
+
+  // The page started scanning so it should be deleted.
+  EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth}, {}, {}, {},
+      FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWebBluetoothTest,
+                       DoesCacheIfGetAvailabilityWasCalled) {
+  // WebBluetooth requires HTTPS.
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+
+  // Navigate to an empty page.
+  GURL url(https_server()->GetURL("a.test", "/back_forward_cache/empty.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // Call getAvailability to check for a Bluetooth adapter.
+  EXPECT_TRUE(
+      ExecJs(current_frame_host(), "navigator.bluetooth.getAvailability()"));
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            https_server()->GetURL("b.test", "/title1.html")));
+  ASSERT_FALSE(rfh_a.IsDestroyed());
+  EXPECT_TRUE(
+      static_cast<RenderFrameHostImpl*>(rfh_a.get())->IsInBackForwardCache());
+
+  // Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(current_frame_host(), rfh_a.get());
+  ExpectRestored(FROM_HERE);
 }
 
 enum class SerialContext {

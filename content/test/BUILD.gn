@@ -87,6 +87,8 @@ static_library("test_support") {
     "../browser/background_fetch/background_fetch_test_service_worker.h",
     "../browser/background_fetch/mock_background_fetch_delegate.cc",
     "../browser/background_fetch/mock_background_fetch_delegate.h",
+    "../browser/bluetooth/test/mock_bluetooth_delegate.cc",
+    "../browser/bluetooth/test/mock_bluetooth_delegate.h",
     "../browser/browsing_data/browsing_data_test_utils.cc",
     "../browser/browsing_data/browsing_data_test_utils.h",
     "../browser/browsing_topics/test_util.cc",

@@ -585,6 +585,18 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     // Use Wait() instead of Get() because we don't care about the result.
     EXPECT_TRUE(future_1.Wait());
     EXPECT_TRUE(future_2.Wait());
+
+    // WebBluetoothServiceImpl assumes one of GetDevices, RequestDevice, or
+    // RequestScanningStart will be called before device objects and their IDs
+    // are available. This assumption may be violated in tests when a simulated
+    // device is added and its IDs are used to invoke service methods without
+    // first invoking one of the entry point methods.
+    //
+    // To satisfy this requirement, call GetDevices before the test case runs.
+    TestFuture<std::vector<blink::mojom::WebBluetoothDevicePtr>>
+        get_devices_future;
+    service_ptr_->GetDevices(get_devices_future.GetCallback());
+    ASSERT_TRUE(get_devices_future.IsReady());
   }
 
   void TearDown() override {
