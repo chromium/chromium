@@ -9,6 +9,7 @@
 
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/filter/source_stream_type.h"
 
 namespace net {
 
@@ -17,17 +18,8 @@ class IOBuffer;
 // The SourceStream class implements a producer of bytes.
 class NET_EXPORT_PRIVATE SourceStream {
  public:
-  enum SourceType {
-    TYPE_BROTLI,
-    TYPE_DEFLATE,
-    TYPE_GZIP,
-    TYPE_ZSTD,
-    TYPE_UNKNOWN,
-    TYPE_NONE,
-  };
-
   // |type| is the type of the SourceStream.
-  explicit SourceStream(SourceType type);
+  explicit SourceStream(SourceStreamType type);
 
   SourceStream(const SourceStream&) = delete;
   SourceStream& operator=(const SourceStream&) = delete;
@@ -60,10 +52,10 @@ class NET_EXPORT_PRIVATE SourceStream {
   // is guaranteed to be complete.
   virtual bool MayHaveMoreBytes() const = 0;
 
-  SourceType type() const { return type_; }
+  SourceStreamType type() const { return type_; }
 
  private:
-  SourceType type_;
+  const SourceStreamType type_;
 };
 
 }  // namespace net

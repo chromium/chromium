@@ -25,7 +25,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
-#include "net/filter/source_stream.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/socket/connection_attempts.h"
@@ -43,6 +42,7 @@ class HttpResponseInfo;
 class IOBuffer;
 struct LoadTimingInfo;
 class ProxyChain;
+class SourceStream;
 class SSLCertRequestInfo;
 class SSLInfo;
 class SSLPrivateKey;

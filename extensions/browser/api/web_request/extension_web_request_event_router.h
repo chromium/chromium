@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern_set.h"
+#include "net/base/completion_once_callback.h"
 
 namespace content {
 class BrowserContext;

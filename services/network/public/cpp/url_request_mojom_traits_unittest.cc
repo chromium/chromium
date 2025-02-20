@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
@@ -109,11 +109,9 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID()));
   original.net_log_reference_info = std::make_optional(net::NetLogSource(
       net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID()));
-  original.devtools_accepted_stream_types =
-      std::vector<net::SourceStream::SourceType>(
-          {net::SourceStream::SourceType::TYPE_BROTLI,
-           net::SourceStream::SourceType::TYPE_GZIP,
-           net::SourceStream::SourceType::TYPE_DEFLATE});
+  original.devtools_accepted_stream_types = std::vector<net::SourceStreamType>(
+      {net::SourceStreamType::kBrotli, net::SourceStreamType::kGzip,
+       net::SourceStreamType::kDeflate});
   original.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
   original.storage_access_api_status =
       net::StorageAccessApiStatus::kAccessViaAPI;

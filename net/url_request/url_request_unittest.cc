@@ -8688,14 +8688,13 @@ TEST_F(URLRequestTestHTTP, DefaultAcceptEncodingOverridden) {
   ASSERT_TRUE(http_test_server()->Start());
 
   struct {
-    base::flat_set<net::SourceStream::SourceType> accepted_types;
+    base::flat_set<SourceStreamType> accepted_types;
     const char* expected_accept_encoding;
-  } tests[] = {{{net::SourceStream::SourceType::TYPE_DEFLATE}, "deflate"},
-               {{}, "None"},
-               {{net::SourceStream::SourceType::TYPE_GZIP}, "gzip"},
-               {{net::SourceStream::SourceType::TYPE_GZIP,
-                 net::SourceStream::SourceType::TYPE_DEFLATE},
-                "gzip, deflate"}};
+  } tests[] = {
+      {{SourceStreamType::kDeflate}, "deflate"},
+      {{}, "None"},
+      {{SourceStreamType::kGzip}, "gzip"},
+      {{SourceStreamType::kGzip, SourceStreamType::kDeflate}, "gzip, deflate"}};
   for (auto test : tests) {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(

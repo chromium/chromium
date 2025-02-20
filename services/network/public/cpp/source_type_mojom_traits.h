@@ -7,17 +7,17 @@
 
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "services/network/public/mojom/source_type.mojom-shared.h"
 
 namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType> {
-  static network::mojom::SourceType ToMojom(net::SourceStream::SourceType type);
+    EnumTraits<network::mojom::SourceType, net::SourceStreamType> {
+  static network::mojom::SourceType ToMojom(net::SourceStreamType type);
   static bool FromMojom(network::mojom::SourceType in,
-                        net::SourceStream::SourceType* out);
+                        net::SourceStreamType* out);
 };
 
 }  // namespace mojo

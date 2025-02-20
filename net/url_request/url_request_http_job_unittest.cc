@@ -40,6 +40,8 @@
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_store_test_helpers.h"
 #include "net/cookies/test_cookie_access_delegate.h"
+#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/transport_security_state.h"
@@ -1930,52 +1932,51 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
 
 TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
   struct {
-    base::flat_set<net::SourceStream::SourceType> accepted_types;
+    base::flat_set<net::SourceStreamType> accepted_types;
     const char* expected_request_headers;
-  } kTestCases[] = {{{net::SourceStream::SourceType::TYPE_DEFLATE},
-                     "GET / HTTP/1.1\r\n"
-                     "Host: www.example.com\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: deflate\r\n"
-                     "Accept-Language: en-us,fr\r\n\r\n"},
-                    {{},
-                     "GET / HTTP/1.1\r\n"
-                     "Host: www.example.com\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Language: en-us,fr\r\n\r\n"},
-                    {{net::SourceStream::SourceType::TYPE_GZIP},
-                     "GET / HTTP/1.1\r\n"
-                     "Host: www.example.com\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip\r\n"
-                     "Accept-Language: en-us,fr\r\n\r\n"},
-                    {{net::SourceStream::SourceType::TYPE_GZIP,
-                      net::SourceStream::SourceType::TYPE_DEFLATE},
-                     "GET / HTTP/1.1\r\n"
-                     "Host: www.example.com\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate\r\n"
-                     "Accept-Language: en-us,fr\r\n\r\n"},
-                    {{net::SourceStream::SourceType::TYPE_BROTLI},
-                     "GET / HTTP/1.1\r\n"
-                     "Host: www.example.com\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: br\r\n"
-                     "Accept-Language: en-us,fr\r\n\r\n"},
-                    {{net::SourceStream::SourceType::TYPE_BROTLI,
-                      net::SourceStream::SourceType::TYPE_GZIP,
-                      net::SourceStream::SourceType::TYPE_DEFLATE},
-                     "GET / HTTP/1.1\r\n"
-                     "Host: www.example.com\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate, br\r\n"
-                     "Accept-Language: en-us,fr\r\n\r\n"}};
+  } kTestCases[] = {
+      {{net::SourceStreamType::kDeflate},
+       "GET / HTTP/1.1\r\n"
+       "Host: www.example.com\r\n"
+       "Connection: keep-alive\r\n"
+       "User-Agent: \r\n"
+       "Accept-Encoding: deflate\r\n"
+       "Accept-Language: en-us,fr\r\n\r\n"},
+      {{},
+       "GET / HTTP/1.1\r\n"
+       "Host: www.example.com\r\n"
+       "Connection: keep-alive\r\n"
+       "User-Agent: \r\n"
+       "Accept-Language: en-us,fr\r\n\r\n"},
+      {{net::SourceStreamType::kGzip},
+       "GET / HTTP/1.1\r\n"
+       "Host: www.example.com\r\n"
+       "Connection: keep-alive\r\n"
+       "User-Agent: \r\n"
+       "Accept-Encoding: gzip\r\n"
+       "Accept-Language: en-us,fr\r\n\r\n"},
+      {{net::SourceStreamType::kGzip, net::SourceStreamType::kDeflate},
+       "GET / HTTP/1.1\r\n"
+       "Host: www.example.com\r\n"
+       "Connection: keep-alive\r\n"
+       "User-Agent: \r\n"
+       "Accept-Encoding: gzip, deflate\r\n"
+       "Accept-Language: en-us,fr\r\n\r\n"},
+      {{net::SourceStreamType::kBrotli},
+       "GET / HTTP/1.1\r\n"
+       "Host: www.example.com\r\n"
+       "Connection: keep-alive\r\n"
+       "User-Agent: \r\n"
+       "Accept-Encoding: br\r\n"
+       "Accept-Language: en-us,fr\r\n\r\n"},
+      {{net::SourceStreamType::kBrotli, net::SourceStreamType::kGzip,
+        net::SourceStreamType::kDeflate},
+       "GET / HTTP/1.1\r\n"
+       "Host: www.example.com\r\n"
+       "Connection: keep-alive\r\n"
+       "User-Agent: \r\n"
+       "Accept-Encoding: gzip, deflate, br\r\n"
+       "Accept-Language: en-us,fr\r\n\r\n"}};
 
   for (auto test : kTestCases) {
     net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);

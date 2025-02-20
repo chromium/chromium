@@ -15,6 +15,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 
 namespace net {
 
@@ -29,7 +30,8 @@ class NET_EXPORT_PRIVATE FilterSourceStream : public SourceStream {
  public:
   // |upstream| is the SourceStream from which |this| will read data.
   // |upstream| cannot be null.
-  FilterSourceStream(SourceType type, std::unique_ptr<SourceStream> upstream);
+  FilterSourceStream(SourceStreamType type,
+                     std::unique_ptr<SourceStream> upstream);
 
   FilterSourceStream(const FilterSourceStream&) = delete;
   FilterSourceStream& operator=(const FilterSourceStream&) = delete;
@@ -43,7 +45,7 @@ class NET_EXPORT_PRIVATE FilterSourceStream : public SourceStream {
   std::string Description() const override;
   bool MayHaveMoreBytes() const override;
 
-  static SourceType ParseEncodingType(std::string_view encoding);
+  static SourceStreamType ParseEncodingType(std::string_view encoding);
 
  private:
   enum State {

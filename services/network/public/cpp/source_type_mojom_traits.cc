@@ -9,46 +9,46 @@
 namespace mojo {
 
 network::mojom::SourceType
-EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::ToMojom(
-    net::SourceStream::SourceType type) {
+EnumTraits<network::mojom::SourceType, net::SourceStreamType>::ToMojom(
+    net::SourceStreamType type) {
   switch (type) {
-    case net::SourceStream::SourceType::TYPE_BROTLI:
+    case net::SourceStreamType::kBrotli:
       return network::mojom::SourceType::kBrotli;
-    case net::SourceStream::SourceType::TYPE_DEFLATE:
+    case net::SourceStreamType::kDeflate:
       return network::mojom::SourceType::kDeflate;
-    case net::SourceStream::SourceType::TYPE_GZIP:
+    case net::SourceStreamType::kGzip:
       return network::mojom::SourceType::kGzip;
-    case net::SourceStream::SourceType::TYPE_ZSTD:
+    case net::SourceStreamType::kZstd:
       return network::mojom::SourceType::kZstd;
-    case net::SourceStream::SourceType::TYPE_NONE:
+    case net::SourceStreamType::kNone:
       return network::mojom::SourceType::kNone;
-    case net::SourceStream::SourceType::TYPE_UNKNOWN:
+    case net::SourceStreamType::kUnknown:
       return network::mojom::SourceType::kUnknown;
   }
   NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::
-    FromMojom(network::mojom::SourceType in,
-              net::SourceStream::SourceType* out) {
+bool EnumTraits<network::mojom::SourceType, net::SourceStreamType>::FromMojom(
+    network::mojom::SourceType in,
+    net::SourceStreamType* out) {
   switch (in) {
     case network::mojom::SourceType::kBrotli:
-      *out = net::SourceStream::SourceType::TYPE_BROTLI;
+      *out = net::SourceStreamType::kBrotli;
       return true;
     case network::mojom::SourceType::kDeflate:
-      *out = net::SourceStream::SourceType::TYPE_DEFLATE;
+      *out = net::SourceStreamType::kDeflate;
       return true;
     case network::mojom::SourceType::kGzip:
-      *out = net::SourceStream::SourceType::TYPE_GZIP;
+      *out = net::SourceStreamType::kGzip;
       return true;
     case network::mojom::SourceType::kZstd:
-      *out = net::SourceStream::SourceType::TYPE_ZSTD;
+      *out = net::SourceStreamType::kZstd;
       return true;
     case network::mojom::SourceType::kNone:
-      *out = net::SourceStream::SourceType::TYPE_NONE;
+      *out = net::SourceStreamType::kNone;
       return true;
     case network::mojom::SourceType::kUnknown:
-      *out = net::SourceStream::SourceType::TYPE_UNKNOWN;
+      *out = net::SourceStreamType::kUnknown;
       return true;
   }
 

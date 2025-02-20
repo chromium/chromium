@@ -80,6 +80,7 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -1118,18 +1119,18 @@ BuildProtocolAssociatedCookies(const net::CookieAccessResultList& net_list) {
   return protocol_list;
 }
 
-using SourceTypeEnum = net::SourceStream::SourceType;
+using SourceTypeEnum = net::SourceStreamType;
 namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
 std::optional<SourceTypeEnum> SourceTypeFromProtocol(
     const protocol::Network::ContentEncoding& encoding) {
   if (ContentEncodingEnum::Gzip == encoding)
-    return SourceTypeEnum::TYPE_GZIP;
+    return SourceTypeEnum::kGzip;
   if (ContentEncodingEnum::Br == encoding)
-    return SourceTypeEnum::TYPE_BROTLI;
+    return SourceTypeEnum::kBrotli;
   if (ContentEncodingEnum::Deflate == encoding)
-    return SourceTypeEnum::TYPE_DEFLATE;
+    return SourceTypeEnum::kDeflate;
   if (ContentEncodingEnum::Zstd == encoding) {
-    return SourceTypeEnum::TYPE_ZSTD;
+    return SourceTypeEnum::kZstd;
   }
   return std::nullopt;
 }
@@ -1596,7 +1597,7 @@ Response NetworkHandler::SetCacheDisabled(bool cache_disabled) {
 
 Response NetworkHandler::SetAcceptedEncodings(
     std::unique_ptr<Array<Network::ContentEncoding>> encodings) {
-  std::set<net::SourceStream::SourceType> accepted_stream_types;
+  std::set<net::SourceStreamType> accepted_stream_types;
   for (auto encoding : *encodings) {
     auto type = SourceTypeFromProtocol(encoding);
     if (!type)
@@ -3181,8 +3182,7 @@ void NetworkHandler::ApplyOverrides(
     net::HttpRequestHeaders* headers,
     bool* skip_service_worker,
     bool* disable_cache,
-    std::optional<std::vector<net::SourceStream::SourceType>>*
-        accepted_stream_types) {
+    std::optional<std::vector<net::SourceStreamType>>* accepted_stream_types) {
   for (auto& entry : extra_headers_)
     headers->SetHeader(entry.first, entry.second);
   *skip_service_worker |= bypass_service_worker_;
@@ -3190,7 +3190,7 @@ void NetworkHandler::ApplyOverrides(
   if (!accepted_stream_types_)
     return;
   if (!*accepted_stream_types)
-    *accepted_stream_types = std::vector<net::SourceStream::SourceType>();
+    *accepted_stream_types = std::vector<net::SourceStreamType>();
   (*accepted_stream_types)
       ->insert((*accepted_stream_types)->end(), accepted_stream_types_->begin(),
                accepted_stream_types_->end());

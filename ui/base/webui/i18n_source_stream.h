@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "net/filter/filter_source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "ui/base/template_expressions.h"
 
 namespace ui {
@@ -27,12 +28,12 @@ class COMPONENT_EXPORT(UI_BASE) I18nSourceStream
   // |replacements| is a dictionary of i18n replacements.
   static std::unique_ptr<I18nSourceStream> Create(
       std::unique_ptr<SourceStream> previous,
-      SourceStream::SourceType type,
+      net::SourceStreamType type,
       const ui::TemplateReplacements* replacements);
 
  private:
   I18nSourceStream(std::unique_ptr<SourceStream> previous,
-                   SourceStream::SourceType type,
+                   net::SourceStreamType type,
                    const TemplateReplacements* replacements);
 
   // SourceStream implementation.

@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "net/filter/filter_source_stream.h"
+
 #include <algorithm>
 #include <string>
 
@@ -17,8 +19,8 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
-#include "net/filter/filter_source_stream.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -31,7 +33,7 @@ const size_t kSmallBufferSize = 1;
 class TestFilterSourceStreamBase : public FilterSourceStream {
  public:
   explicit TestFilterSourceStreamBase(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+      : FilterSourceStream(SourceStreamType::kNone, std::move(upstream)) {}
 
   TestFilterSourceStreamBase(const TestFilterSourceStreamBase&) = delete;
   TestFilterSourceStreamBase& operator=(const TestFilterSourceStreamBase&) =
@@ -217,7 +219,7 @@ class NoOutputSourceStream : public TestFilterSourceStreamBase {
 class ErrorFilterSourceStream : public FilterSourceStream {
  public:
   explicit ErrorFilterSourceStream(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+      : FilterSourceStream(SourceStreamType::kNone, std::move(upstream)) {}
 
   ErrorFilterSourceStream(const ErrorFilterSourceStream&) = delete;
   ErrorFilterSourceStream& operator=(const ErrorFilterSourceStream&) = delete;

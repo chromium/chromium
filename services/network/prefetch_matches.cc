@@ -36,6 +36,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_flags_to_string.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"

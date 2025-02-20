@@ -19,7 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/log/net_log_capture_mode.h"
 #include "url/gurl.h"
 
@@ -198,7 +198,7 @@ class NET_EXPORT HttpRequestHeaders {
   // it does not exist. "br" is appended only when `enable_brotli` is true.
   void SetAcceptEncodingIfMissing(
       const GURL& url,
-      const std::optional<base::flat_set<SourceStream::SourceType>>&
+      const std::optional<base::flat_set<SourceStreamType>>&
           accepted_stream_types,
       bool enable_brotli,
       bool enable_zstd);

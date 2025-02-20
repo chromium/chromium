@@ -40,10 +40,8 @@ specific_include_rules = {
   "inspector_contrast.h": [
     "+cc/base/rtree.h",
   ],
-  "inspector_network_agent.h": [
-    "+net/filter/source_stream.h",
-  ],
   "inspector_network_agent.cc": [
+    "+net/filter/source_stream_type.h",
     "+third_party/boringssl/src/include",
   ],
 }

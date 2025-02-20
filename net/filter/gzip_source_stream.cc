@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "net/base/io_buffer.h"
+#include "net/filter/source_stream_type.h"
 #include "third_party/zlib/zlib.h"
 
 namespace net {
@@ -47,8 +48,8 @@ GzipSourceStream::~GzipSourceStream() {
 
 std::unique_ptr<GzipSourceStream> GzipSourceStream::Create(
     std::unique_ptr<SourceStream> upstream,
-    SourceStream::SourceType type) {
-  DCHECK(type == TYPE_GZIP || type == TYPE_DEFLATE);
+    SourceStreamType type) {
+  DCHECK(type == SourceStreamType::kGzip || type == SourceStreamType::kDeflate);
   auto source =
       base::WrapUnique(new GzipSourceStream(std::move(upstream), type));
 
@@ -58,7 +59,7 @@ std::unique_ptr<GzipSourceStream> GzipSourceStream::Create(
 }
 
 GzipSourceStream::GzipSourceStream(std::unique_ptr<SourceStream> upstream,
-                                   SourceStream::SourceType type)
+                                   SourceStreamType type)
     : FilterSourceStream(type, std::move(upstream)) {}
 
 bool GzipSourceStream::Init() {
@@ -68,7 +69,7 @@ bool GzipSourceStream::Init() {
   memset(zlib_stream_.get(), 0, sizeof(z_stream));
 
   int ret;
-  if (type() == TYPE_GZIP) {
+  if (type() == SourceStreamType::kGzip) {
     ret = inflateInit2(zlib_stream_.get(), -MAX_WBITS);
   } else {
     ret = inflateInit(zlib_stream_.get());
@@ -79,9 +80,9 @@ bool GzipSourceStream::Init() {
 
 std::string GzipSourceStream::GetTypeAsString() const {
   switch (type()) {
-    case TYPE_GZIP:
+    case SourceStreamType::kGzip:
       return kGzip;
-    case TYPE_DEFLATE:
+    case SourceStreamType::kDeflate:
       return kDeflate;
     default:
       NOTREACHED();
@@ -104,7 +105,7 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
     InputState state = input_state_;
     switch (state) {
       case STATE_START: {
-        if (type() == TYPE_DEFLATE) {
+        if (type() == SourceStreamType::kDeflate) {
           input_state_ = STATE_SNIFFING_DEFLATE_HEADER;
           break;
         }
@@ -113,7 +114,7 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         break;
       }
       case STATE_GZIP_HEADER: {
-        DCHECK_NE(TYPE_DEFLATE, type());
+        DCHECK_NE(SourceStreamType::kDeflate, type());
 
         const size_t kGzipFooterBytes = 8;
         size_t header_end = 0u;
@@ -135,7 +136,7 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         break;
       }
       case STATE_SNIFFING_DEFLATE_HEADER: {
-        DCHECK_EQ(TYPE_DEFLATE, type());
+        DCHECK_EQ(SourceStreamType::kDeflate, type());
 
         zlib_stream_.get()->next_in = reinterpret_cast<Bytef*>(input_data);
         zlib_stream_.get()->avail_in = input_data_size;
@@ -181,7 +182,7 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         break;
       }
       case STATE_REPLAY_DATA: {
-        DCHECK_EQ(TYPE_DEFLATE, type());
+        DCHECK_EQ(SourceStreamType::kDeflate, type());
 
         if (replay_data_.empty()) {
           input_state_ = replay_state_;

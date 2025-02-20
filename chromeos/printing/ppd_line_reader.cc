@@ -22,6 +22,7 @@
 #include "net/filter/gzip_header.h"
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 
 namespace chromeos {
 namespace {
@@ -40,7 +41,7 @@ bool IsNewline(char c) {
 class StringSourceStream : public net::SourceStream {
  public:
   explicit StringSourceStream(const std::string& src)
-      : SourceStream(TYPE_UNKNOWN), src_(src) {}
+      : SourceStream(net::SourceStreamType::kUnknown), src_(src) {}
 
   // This source always reads sychronously, so never uses the callback.
   int Read(net::IOBuffer* dest_buffer,
@@ -73,7 +74,7 @@ class PpdLineReaderImpl : public PpdLineReader {
     input_ = std::make_unique<StringSourceStream>(ppd_contents);
     if (net::GZipHeader::HasGZipHeader(base::as_byte_span(ppd_contents))) {
       input_ = net::GzipSourceStream::Create(std::move(input_),
-                                             net::SourceStream::TYPE_GZIP);
+                                             net::SourceStreamType::kGzip);
     }
   }
   ~PpdLineReaderImpl() override = default;

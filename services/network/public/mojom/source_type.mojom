@@ -4,7 +4,8 @@
 
 module network.mojom;
 
-// This enums corresponds to net::SourceStream::SourceType.
+// This enums corresponds to net::SourceStreamType.
+// LINT.IfChange(SourceType)
 enum SourceType {
   kBrotli,
   kDeflate,
@@ -13,3 +14,4 @@ enum SourceType {
   kNone,
   kUnknown,
 };
+// LINT.ThenChange(//net/filter/source_stream_type.h:SourceStreamType)

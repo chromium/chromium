@@ -529,6 +529,7 @@ component("net") {
     "filter/gzip_source_stream.h",
     "filter/source_stream.cc",
     "filter/source_stream.h",
+    "filter/source_stream_type.h",
     "first_party_sets/addition_overlaps_union_find.cc",
     "first_party_sets/addition_overlaps_union_find.h",
     "first_party_sets/first_party_set_entry.cc",

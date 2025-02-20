@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -262,10 +262,9 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->upgrade_if_insecure = src.UpgradeIfInsecure();
   dest->is_revalidating = src.IsRevalidating();
   if (src.GetDevToolsAcceptedStreamTypes()) {
-    dest->devtools_accepted_stream_types =
-        std::vector<net::SourceStream::SourceType>(
-            src.GetDevToolsAcceptedStreamTypes()->data.begin(),
-            src.GetDevToolsAcceptedStreamTypes()->data.end());
+    dest->devtools_accepted_stream_types = std::vector<net::SourceStreamType>(
+        src.GetDevToolsAcceptedStreamTypes()->data.begin(),
+        src.GetDevToolsAcceptedStreamTypes()->data.end());
   }
   if (src.RequestorOrigin()->ToString() == "null") {
     // "file:" origin is treated like an opaque unique origin when

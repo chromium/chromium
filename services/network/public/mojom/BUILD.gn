@@ -764,7 +764,7 @@ mojom("url_loader_base") {
       types = [
         {
           mojom = "network.mojom.SourceType"
-          cpp = "::net::SourceStream::SourceType"
+          cpp = "::net::SourceStreamType"
         },
       ]
       traits_headers =

@@ -43,6 +43,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/cert/ct_sct_to_string.h"
 #include "net/cert/x509_util.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -745,16 +746,16 @@ String AcceptedEncodingFromProtocol(
   return result;
 }
 
-using SourceTypeEnum = net::SourceStream::SourceType;
+using SourceTypeEnum = net::SourceStreamType;
 SourceTypeEnum SourceTypeFromString(const String& type) {
   if (type == ContentEncodingEnum::Gzip)
-    return SourceTypeEnum::TYPE_GZIP;
+    return SourceTypeEnum::kGzip;
   if (type == ContentEncodingEnum::Deflate)
-    return SourceTypeEnum::TYPE_DEFLATE;
+    return SourceTypeEnum::kDeflate;
   if (type == ContentEncodingEnum::Br)
-    return SourceTypeEnum::TYPE_BROTLI;
+    return SourceTypeEnum::kBrotli;
   if (type == ContentEncodingEnum::Zstd) {
-    return SourceTypeEnum::TYPE_ZSTD;
+    return SourceTypeEnum::kZstd;
   }
   NOTREACHED();
 }
@@ -1444,12 +1445,11 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
     }
   }
   if (!accepted_encodings_.IsEmpty()) {
-    scoped_refptr<
-        base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>
+    scoped_refptr<base::RefCountedData<base::flat_set<net::SourceStreamType>>>
         accepted_stream_types = request.GetDevToolsAcceptedStreamTypes();
     if (!accepted_stream_types) {
-      accepted_stream_types = base::MakeRefCounted<base::RefCountedData<
-          base::flat_set<net::SourceStream::SourceType>>>();
+      accepted_stream_types = base::MakeRefCounted<
+          base::RefCountedData<base::flat_set<net::SourceStreamType>>>();
     }
     if (!accepted_encodings_.Get("none")) {
       for (auto key : accepted_encodings_.Keys())

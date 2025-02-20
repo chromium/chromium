@@ -20,6 +20,7 @@
 #include "net/filter/filter_source_stream_test_util.h"
 #include "net/filter/gzip_header.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/zlib.h"
 
@@ -68,9 +69,9 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
   // Helpful function to initialize the test fixture.|type| specifies which type
   // of GzipSourceStream to create. It must be one of TYPE_GZIP and
   // TYPE_DEFLATE.
-  void Init(SourceStream::SourceType type) {
-    EXPECT_TRUE(SourceStream::TYPE_GZIP == type ||
-                SourceStream::TYPE_DEFLATE == type);
+  void Init(SourceStreamType type) {
+    EXPECT_TRUE(SourceStreamType::kGzip == type ||
+                SourceStreamType::kDeflate == type);
     source_data_len_ = kBigBufferSize - kEOFMargin;
 
     for (size_t i = 0; i < source_data_len_; i++)
@@ -78,7 +79,7 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
 
     encoded_data_len_ = kBigBufferSize;
     CompressGzip(source_data_, source_data_len_, encoded_data_,
-                 &encoded_data_len_, type != SourceStream::TYPE_DEFLATE);
+                 &encoded_data_len_, type != SourceStreamType::kDeflate);
 
     output_buffer_ =
         base::MakeRefCounted<IOBufferWithSize>(output_buffer_size_);
@@ -186,7 +187,7 @@ INSTANTIATE_TEST_SUITE_P(
                                     ReadResultType::ONE_BYTE_AT_A_TIME)));
 
 TEST_P(GzipSourceStreamTest, EmptyStream) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
   TestCompletionCallback callback;
   std::string actual_output;
@@ -197,7 +198,7 @@ TEST_P(GzipSourceStreamTest, EmptyStream) {
 }
 
 TEST_P(GzipSourceStreamTest, DeflateOneBlock) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   source()->AddReadResult(encoded_data(), encoded_data_len(), OK,
                           GetParam().mode);
   source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
@@ -210,7 +211,7 @@ TEST_P(GzipSourceStreamTest, DeflateOneBlock) {
 }
 
 TEST_P(GzipSourceStreamTest, GzipOneBloc) {
-  Init(SourceStream::TYPE_GZIP);
+  Init(SourceStreamType::kGzip);
   source()->AddReadResult(encoded_data(), encoded_data_len(), OK,
                           GetParam().mode);
   source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
@@ -223,7 +224,7 @@ TEST_P(GzipSourceStreamTest, GzipOneBloc) {
 }
 
 TEST_P(GzipSourceStreamTest, DeflateTwoReads) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   source()->AddReadResult(encoded_data(), 10, OK, GetParam().mode);
   source()->AddReadResult(encoded_data() + 10, encoded_data_len() - 10, OK,
                           GetParam().mode);
@@ -238,7 +239,7 @@ TEST_P(GzipSourceStreamTest, DeflateTwoReads) {
 // Check that any extra bytes after the end of the gzipped data are silently
 // ignored.
 TEST_P(GzipSourceStreamTest, IgnoreDataAfterEof) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const char kExtraData[] = "Hello, World!";
   std::string encoded_data_with_trailing_data(encoded_data(),
                                               encoded_data_len());
@@ -258,7 +259,7 @@ TEST_P(GzipSourceStreamTest, IgnoreDataAfterEof) {
 }
 
 TEST_P(GzipSourceStreamTest, MissingZlibHeader) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const size_t kZlibHeaderLen = 2;
   source()->AddReadResult(encoded_data() + kZlibHeaderLen,
                           encoded_data_len() - kZlibHeaderLen, OK,
@@ -273,7 +274,7 @@ TEST_P(GzipSourceStreamTest, MissingZlibHeader) {
 }
 
 TEST_P(GzipSourceStreamTest, CorruptGzipHeader) {
-  Init(SourceStream::TYPE_GZIP);
+  Init(SourceStreamType::kGzip);
   encoded_data()[1] = 0;
   int read_len = encoded_data_len();
   // Needed to a avoid a DCHECK that all reads were consumed.
@@ -290,7 +291,7 @@ TEST_P(GzipSourceStreamTest, CorruptGzipHeader) {
 // This test checks that the gzip stream source works correctly on 'golden' data
 // as produced by gzip(1).
 TEST_P(GzipSourceStreamTest, GzipCorrectness) {
-  Init(SourceStream::TYPE_GZIP);
+  Init(SourceStreamType::kGzip);
   const char kDecompressedData[] = "Hello, World!";
   const unsigned char kGzipData[] = {
       // From:
@@ -313,7 +314,7 @@ TEST_P(GzipSourceStreamTest, GzipCorrectness) {
 // Same as GzipCorrectness except that last 8 bytes are removed to test that the
 // implementation can handle missing footer.
 TEST_P(GzipSourceStreamTest, GzipCorrectnessWithoutFooter) {
-  Init(SourceStream::TYPE_GZIP);
+  Init(SourceStreamType::kGzip);
   const char kDecompressedData[] = "Hello, World!";
   const unsigned char kGzipData[] = {
       // From:
@@ -337,7 +338,7 @@ TEST_P(GzipSourceStreamTest, GzipCorrectnessWithoutFooter) {
 // header and checksum. Tests the Z_STREAM_END case in
 // STATE_SNIFFING_DEFLATE_HEADER.
 TEST_P(GzipSourceStreamTest, DeflateWithAdler32) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const char kDecompressedData[] = "Hello, World!";
   const unsigned char kGzipData[] = {0x78, 0x01, 0xf3, 0x48, 0xcd, 0xc9, 0xc9,
                                      0xd7, 0x51, 0x08, 0xcf, 0x2f, 0xca, 0x49,
@@ -354,7 +355,7 @@ TEST_P(GzipSourceStreamTest, DeflateWithAdler32) {
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithBadAdler32) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const unsigned char kGzipData[] = {0x78, 0x01, 0xf3, 0x48, 0xcd, 0xc9, 0xc9,
                                      0xd7, 0x51, 0x08, 0xcf, 0x2f, 0xca, 0x49,
                                      0x51, 0x04, 0x00, 0xFF, 0xFF, 0xFF, 0xFF};
@@ -368,7 +369,7 @@ TEST_P(GzipSourceStreamTest, DeflateWithBadAdler32) {
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithAdler32) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const char kDecompressedData[] = "Hello, World!";
   const unsigned char kGzipData[] = {0xf3, 0x48, 0xcd, 0xc9, 0xc9, 0xd7, 0x51,
                                      0x08, 0xcf, 0x2f, 0xca, 0x49, 0x51, 0x04,
@@ -385,7 +386,7 @@ TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithAdler32) {
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithBadAdler32) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const unsigned char kGzipData[] = {0xf3, 0x48, 0xcd, 0xc9, 0xc9, 0xd7, 0x51,
                                      0x08, 0xcf, 0x2f, 0xca, 0x49, 0x51, 0x04,
                                      0x00, 0xFF, 0xFF, 0xFF, 0xFF};
