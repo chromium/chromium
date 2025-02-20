@@ -443,7 +443,10 @@ if (!is_android) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "autofill_context_menu_manager_browsertest.cc" ]
+    sources = [
+      "autofill_ai/save_autofill_ai_data_controller_impl_browsertest.cc",
+      "autofill_context_menu_manager_browsertest.cc",
+    ]
 
     deps = [
       ":autofill",

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller_impl.h"
 
+#include <algorithm>
+
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"
@@ -27,6 +29,7 @@ namespace autofill_ai {
 namespace {
 
 using autofill::AutofillAiDelegate;
+using enum SaveAutofillAiDataController::EntityAttributeUpdateType;
 
 // Returns whether user interacted with the bubble, based on its closed reason.
 bool GetUserInteractionFromAutofillAiBubbleClosedReason(
@@ -82,6 +85,75 @@ void SaveAutofillAiDataControllerImpl::OfferSave(
 
 void SaveAutofillAiDataControllerImpl::OnSaveButtonClicked() {
   OnBubbleClosed(AutofillAiBubbleClosedReason::kAccepted);
+}
+
+std::vector<SaveAutofillAiDataController::EntityAttributeUpdateDetails>
+SaveAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
+  std::vector<SaveAutofillAiDataController::EntityAttributeUpdateDetails>
+      details;
+
+  auto get_attribute_update_type = [&](const autofill::AttributeInstance&
+                                           new_entity_attribute_instance) {
+    if (!old_entity_) {
+      return kNewEntityAttributeAdded;
+    }
+
+    base::optional_ref<const autofill::AttributeInstance> old_entity_attribute =
+        old_entity_->attribute(new_entity_attribute_instance.type());
+    if (!old_entity_attribute) {
+      return kNewEntityAttributeAdded;
+    }
+
+    return old_entity_attribute->NormalizedValue() ==
+                   new_entity_attribute_instance.NormalizedValue()
+               ? kNewEntityAttributeUnchanged
+               : kNewEntityAttributeUpdated;
+  };
+
+  for (const autofill::AttributeInstance& attribute_instance :
+       new_entity_->attributes()) {
+    EntityAttributeUpdateType update_type =
+        get_attribute_update_type(attribute_instance);
+    details.push_back({attribute_instance.type().GetNameForI18n(),
+                       attribute_instance.value(), update_type});
+
+    // Also add the old value when an attribute is updated to display
+    // before/after to the user.
+    if (update_type == kNewEntityAttributeUpdated) {
+      CHECK(old_entity_);
+      base::optional_ref<const autofill::AttributeInstance>
+          old_entity_attribute =
+              old_entity_->attribute(attribute_instance.type());
+      CHECK(old_entity_attribute);
+      details.push_back({old_entity_attribute->type().GetNameForI18n(),
+                         old_entity_attribute->value(),
+                         kOldEntityAttributeUpdated});
+    }
+  }
+
+  // Move new entity values that were either added or updated to the top.
+  std::ranges::stable_sort(
+      details,
+      [](const SaveAutofillAiDataController::EntityAttributeUpdateDetails& a,
+         const SaveAutofillAiDataController::EntityAttributeUpdateDetails& b) {
+        // Returns true if `attribute` is a new entity attribute that was either
+        // added or updated.
+        auto added_or_updated =
+            [](const SaveAutofillAiDataController::EntityAttributeUpdateDetails&
+                   attribute) {
+              return attribute.update_type == kNewEntityAttributeAdded ||
+                     attribute.update_type == kNewEntityAttributeUpdated;
+            };
+        if (added_or_updated(a) && !added_or_updated(b)) {
+          return true;
+        }
+
+        if (!added_or_updated(a) && added_or_updated(b)) {
+          return false;
+        }
+        return false;
+      });
+  return details;
 }
 
 std::u16string SaveAutofillAiDataControllerImpl::GetDialogTitle() const {
