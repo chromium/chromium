@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.components.payments;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -16,9 +16,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.payments.AndroidPaymentAppFinder;
-import org.chromium.components.payments.PackageManagerDelegate;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Simulates a package manager in memory. */
-class MockPackageManagerDelegate extends PackageManagerDelegate {
+public class MockPackageManagerDelegate extends PackageManagerDelegate {
     private static final int PAYMENT_METHOD_NAMES_STRING_ARRAY_RESOURCE_ID = 1;
     private static final int SUPPORTED_DELEGATIONS_STRING_ARRAY_RESOURCE_ID = 2;
     private static final int RESOURCES_SIZE = 2;
