@@ -84,6 +84,7 @@ static_assert(static_cast<int>(LAUNCH_RESULT_START) >
 struct RenderProcessPriority {
   RenderProcessPriority(bool visible,
                         bool has_media_stream,
+                        bool has_immersive_xr_session,
                         bool has_foreground_service_worker,
                         unsigned int frame_depth,
                         bool intersects_viewport,
@@ -100,6 +101,7 @@ struct RenderProcessPriority {
                         )
       : visible(visible),
         has_media_stream(has_media_stream),
+        has_immersive_xr_session(has_immersive_xr_session),
         has_foreground_service_worker(has_foreground_service_worker),
         frame_depth(frame_depth),
         intersects_viewport(intersects_viewport),
@@ -141,6 +143,11 @@ struct RenderProcessPriority {
   // |has_media_stream| is true when the process is responsible for "hearable"
   // content.
   bool has_media_stream;
+
+  // |has_immersive_xr_session| is true when the process is responsible for
+  // rendering an XrSession. Such sessions typically take over the full screen
+  // for rendering, and may otherwise "background" the current process.
+  bool has_immersive_xr_session;
 
   // |has_foreground_service_worker| is true when the process has a service
   // worker that may need to service timely events from other, possibly visible,

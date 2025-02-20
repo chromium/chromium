@@ -642,6 +642,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void OnBoostForLoadingAdded() override;
   void OnBoostForLoadingRemoved() override;
 
+  void OnImmersiveXrSessionStarted() override;
+  void OnImmersiveXrSessionStopped() override;
+
   // Sets the global factory used to create new RenderProcessHosts in unit
   // tests.  It may be nullptr, in which case the default RenderProcessHost will
   // be created (this is the behavior if you don't call this function).  The
@@ -1522,6 +1525,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Tracks the count of render frame host that requested prioritize the
   // processing commit navigation and initial loading (crbug/351953350).
   int boost_for_loading_count_ = 0;
+
+  // Tracks whether or not the current process is in an immersive webxr session.
+  // Used to determine if a process should not be backgrounded.
+  bool has_immersive_xr_session_ = false;
 
   std::unique_ptr<mojo::Receiver<viz::mojom::CompositingModeReporter>>
       compositing_mode_reporter_;

@@ -107,6 +107,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   void OnForegroundServiceWorkerRemoved() override;
   void OnBoostForLoadingAdded() override;
   void OnBoostForLoadingRemoved() override;
+  void OnImmersiveXrSessionStarted() override;
+  void OnImmersiveXrSessionStopped() override;
   StoragePartition* GetStoragePartition() override;
   virtual void AddWord(const std::u16string& word);
   bool Shutdown(int exit_code) override;

@@ -1439,6 +1439,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
     int flags)
     : priority_(!blink::kLaunchingProcessIsBackgrounded,
                 false /* has_media_stream */,
+                false /* has_immersive_xr_session */,
                 false /* has_foreground_service_worker */,
                 frame_depth_,
                 false /* intersects_viewport */,
@@ -2996,6 +2997,18 @@ void RenderProcessHostImpl::OnBoostForLoadingRemoved() {
   if (boost_for_loading_count_ == 0) {
     UpdateProcessPriority();
   }
+}
+
+void RenderProcessHostImpl::OnImmersiveXrSessionStarted() {
+  // TODO(https://crbug.com/397907158): Evaluate upgrading to CHECK.
+  DUMP_WILL_BE_CHECK(!has_immersive_xr_session_);
+  has_immersive_xr_session_ = true;
+}
+
+void RenderProcessHostImpl::OnImmersiveXrSessionStopped() {
+  // TODO(https://crbug.com/397907158): Evaluate upgrading to CHECK.
+  DUMP_WILL_BE_CHECK(has_immersive_xr_session_);
+  has_immersive_xr_session_ = false;
 }
 
 // static
@@ -5294,8 +5307,8 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   RenderProcessPriority priority(
       visible_clients_ > 0 || base::CommandLine::ForCurrentProcess()->HasSwitch(
                                   switches::kDisableRendererBackgrounding),
-      media_stream_count_ > 0, foreground_service_worker_count_ > 0,
-      frame_depth_, intersects_viewport_,
+      media_stream_count_ > 0, has_immersive_xr_session_,
+      foreground_service_worker_count_ > 0, frame_depth_, intersects_viewport_,
       pending_views_ > 0, /* boost_for_pending_views */
       boost_for_loading_count_ > 0
 #if BUILDFLAG(IS_ANDROID)
