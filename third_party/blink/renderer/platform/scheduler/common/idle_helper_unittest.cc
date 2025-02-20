@@ -238,10 +238,6 @@ class BaseIdleHelperTest : public testing::Test {
     return IdleHelper::kRetryEnableLongIdlePeriodDelay;
   }
 
-  base::TimeTicks CurrentIdleTaskDeadline() {
-    return idle_helper_->CurrentIdleTaskDeadline();
-  }
-
   void CheckIdlePeriodStateIs(const char* expected) {
     EXPECT_STREQ(expected, idle_helper_->IdlePeriodStateForTracing());
   }

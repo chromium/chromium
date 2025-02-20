@@ -1282,7 +1282,7 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
 
 base::TimeTicks MainThreadSchedulerImpl::CurrentIdleTaskDeadlineForTesting()
     const {
-  return idle_helper_.CurrentIdleTaskDeadline();
+  return idle_helper_.CurrentIdleTaskDeadlineForTesting();
 }
 
 void MainThreadSchedulerImpl::StartIdlePeriodForTesting() {

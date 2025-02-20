@@ -209,7 +209,7 @@ bool WorkerThreadScheduler::CanEnterLongIdlePeriod(base::TimeTicks,
 
 base::TimeTicks WorkerThreadScheduler::CurrentIdleTaskDeadlineForTesting()
     const {
-  return idle_helper_.CurrentIdleTaskDeadline();
+  return idle_helper_.CurrentIdleTaskDeadlineForTesting();
 }
 
 void WorkerThreadScheduler::OnLifecycleStateChanged(
