@@ -44,6 +44,7 @@ class LobsterClientImpl : public ash::LobsterClient {
   void ShowUI() override;
   void CloseUI() override;
   const AccountId& GetAccountId() override;
+  void AnnounceLater(const std::u16string& message) override;
 
  private:
   // Not owned by this class
