@@ -755,12 +755,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_DESCRIPTION" desc="Description for the alert dialog warning the user they are about to hide the parcel tracking module.">
           If you hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>", Chrome will no longer auto-track your future packages and will delete all your past package tracking data.
       </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE" desc="Text for the subtitle string of the parcel tracking opt-in half-sheet screen.">
-        Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google shopping features for everyone. You can update this anytime in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Package Tracking Settings<ph name="END_LINK">END_LINK</ph>.
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TITLE" desc="Text for the title string of the parcel tracking opt-in half-sheet screen.">
-        Let Chrome help you track your packages
-      </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE" desc="Title of the password bottom sheet. [iOS only]">
           Google Password Manager
       </message>

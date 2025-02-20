@@ -350,7 +350,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/overscroll_actions/model:unit_tests",
     "//ios/chrome/browser/page_info:unit_tests",
     "//ios/chrome/browser/page_info/ui_bundled:unit_tests",
-    "//ios/chrome/browser/parcel_tracking/ui_bundled:unit_tests",
     "//ios/chrome/browser/passwords/model:unit_tests",
     "//ios/chrome/browser/passwords/model/metrics:unit_tests",
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:unit_tests",
