@@ -41,6 +41,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -461,6 +462,7 @@ public class ArchivedTabModelOrchestratorTest {
     @Test
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    @DisabledTest(message = "crbug.com/397730179")
     public void testOpenArchivedTabFromHubSearch() {
         finishLoading();
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));

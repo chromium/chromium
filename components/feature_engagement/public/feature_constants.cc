@@ -235,7 +235,7 @@ BASE_FEATURE(kIPHAccountSettingsHistorySync,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAndroidTabDeclutter,
              "IPH_AndroidTabDeclutter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
              "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
