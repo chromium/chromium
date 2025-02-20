@@ -85,36 +85,36 @@ TEST_F(VideoTransformationTest, MatrixToVideoTransformation) {
 TEST_F(VideoTransformationTest, ComputeMatrix) {
   // Standard 90 degree increments with no rotation all end up rotated normally
   VideoTransformation transformation = VideoTransformation(VIDEO_ROTATION_0);
-  ASSERT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
             VideoTransformation(VIDEO_ROTATION_0, false));
 
   transformation = VideoTransformation(VIDEO_ROTATION_90, false);
-  ASSERT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
             VideoTransformation(VIDEO_ROTATION_90, false));
 
   transformation = VideoTransformation(VIDEO_ROTATION_180);
-  ASSERT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
             VideoTransformation(VIDEO_ROTATION_180, false));
 
   transformation = VideoTransformation(VIDEO_ROTATION_270);
-  ASSERT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
             VideoTransformation(VIDEO_ROTATION_270, false));
 
   // Test the mirrored cases
   transformation = VideoTransformation(VIDEO_ROTATION_0, true);
-  ASSERT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
             VideoTransformation(VIDEO_ROTATION_0, true));
 
   transformation = VideoTransformation(VIDEO_ROTATION_90, true);
-  ASSERT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
             VideoTransformation(VIDEO_ROTATION_90, true));
 
   transformation = VideoTransformation(VIDEO_ROTATION_180, true);
-  ASSERT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
             VideoTransformation(VIDEO_ROTATION_180, true));
 
   transformation = VideoTransformation(VIDEO_ROTATION_270, true);
-  ASSERT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
             VideoTransformation(VIDEO_ROTATION_270, true));
 }
 
