@@ -7,7 +7,7 @@ import argparse
 import os
 import sys
 """
-Helper script for updating Polymer code to address https://crbug.com/389737066.
+Helper script for running jscodeshift codemods over a set of files.
 """
 
 _HERE_PATH = os.path.dirname(__file__)
@@ -30,25 +30,34 @@ import node
 
  3) Invoke the script from the root directory of the repository. For example
 
-    python3 ui/webui/resources/tools/codemods/389737066_migration.py \
-        --files chrome/browser/resources/print_preview/ui/color_settings.js
+    python3 ui/webui/resources/tools/codemods/jscodeshift.py \
+        --transform ui/webui/resources/tools/codemods/my_transform.js
+        --files ui/webui/resources/cr_elements/cr_button/cr_button.ts
 
-    python3 ui/webui/resources/tools/codemods/389737066_migration.py \
-        --files `find chrome/browser/resources/print_preview/ui/ -name '*.ts'`
+    python3 ui/webui/resources/tools/codemods/jscodeshift.py \
+        --transform ui/webui/resources/tools/codemods/my_transform.js
+        --files `find ui/webui/resources/cr_elements/cr_button/ -name '*.ts'`
 """
 
 
 def main(argv):
   parser = argparse.ArgumentParser()
+  parser.add_argument('--transform', required=True)
   parser.add_argument('--files', nargs='*', required=True)
   args = parser.parse_args(argv)
+
+  if not os.path.exists(args.transform):
+    print(
+        f'Error: jscodeshift.py: Could not file transform file \'args.transform\'',
+        file=sys.stderr)
+    sys.exit(1)
 
   print(f'Migrating {len(args.files)} files...')
 
   # Update TS file.
   out = node.RunNode([
       os.path.join(_HERE_PATH, 'node_modules/jscodeshift/bin/jscodeshift.js'),
-      '--transform=' + os.path.join(_HERE_PATH, '389737066_migration.js'),
+      '--transform=' + args.transform,
       '--extensions=ts',
       '--parser=ts',
   ] + args.files)

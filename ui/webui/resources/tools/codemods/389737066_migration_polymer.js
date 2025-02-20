@@ -11,7 +11,7 @@ module.exports = function transformer(file, api) {
   const j = api.jscodeshift;
   const root = j(source);
 
-  const polymerProperties = new Set();
+  const classProperties = new Set();
   root.find(j.Function, {key: {name: 'properties'}})
       .find(j.ObjectExpression)
       .forEach(p => {
@@ -20,14 +20,14 @@ module.exports = function transformer(file, api) {
           if (p.parentPath.value.type !== 'ReturnStatement') {
             return;
           }
-          polymerProperties.add(property.key.name);
+          classProperties.add(property.key.name);
         });
       });
 
   root.find(j.ClassDeclaration).forEach(path => {
     path.node.body.body.forEach(classMember => {
       if (classMember.type === 'ClassProperty' &&
-          polymerProperties.has(classMember.key.name)) {
+          classProperties.has(classMember.key.name)) {
         classMember.declare = true;
       }
     });

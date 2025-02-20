@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig_base_polymer.json",
+  "compilerOptions": {
+    "useDefineForClassFields": true
+  }
+}
