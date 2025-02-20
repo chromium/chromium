@@ -479,6 +479,12 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
     OpenDetached();
   }
 
+  // Immediately hook up the WebView to the WebContents.
+  GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+
+  // TODO(sanaakbani): fade this in.
+  GetGlicView()->SetVisible(false);
+
   // If the web client is already initialized, wait for it to load in parallel.
   if (web_client_) {
     WaitForGlicToLoad();
@@ -581,7 +587,11 @@ void GlicWindowController::OpenAnimationFinished() {
   if (state_ == State::kOpenAnimation) {
     state_ = State::kWaitingForGlicToLoad;
 
-    GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+    // Note: this logic may never be called if state_ != kOpenAnimation when the
+    // open animation is finished (or cancelled).
+    // TODO(sanaakbani): fade this in.
+    GetGlicView()->SetVisible(true);
+
     if (glic_loaded_) {
       ShowFinish();
     }
@@ -593,6 +603,8 @@ void GlicWindowController::ShowFinish() {
   if (state_ == State::kClosed || state_ == State::kOpen) {
     return;
   }
+  // TODO(sanaakbani): fade this in.
+  GetGlicView()->SetVisible(true);
   state_ = State::kOpen;
 
   // Record the presentation time of showing the glic panel in an UMA histogram.
@@ -841,9 +853,13 @@ void GlicWindowController::Close() {
 
   const bool reopen_detached = state_ == State::kClosingToReopenDetached;
 
+  // The webview should be faded out instead.
+  if (GetGlicView()) {
+    GetGlicView()->web_view()->SetWebContents(nullptr);
+  }
+
   if (attached_browser_) {
     state_ = State::kCloseAnimation;
-    GetGlicView()->web_view()->SetWebContents(nullptr);
     GlicButton* glic_button = GetGlicButton(*attached_browser_);
     glic_window_animator_->RunCloseAnimation(
         glic_button,
