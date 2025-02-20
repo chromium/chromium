@@ -52,4 +52,8 @@ BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
 BASE_FEATURE(kUsingCorrectWorkArea,
              "UsingCorrectWorkArea",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseNewEtc1Encoder,
+             "UseNewEtc1Encoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace ui
