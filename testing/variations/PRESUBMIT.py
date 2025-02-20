@@ -30,6 +30,7 @@ BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN,
                              flags=re.MULTILINE + re.DOTALL)
 
 
+# LINT.IfChange
 def PrettyPrint(contents):
   """Pretty prints a fieldtrial configuration.
 
@@ -49,7 +50,9 @@ def PrettyPrint(contents):
   #     'StudyName Alphabetical': [
   #         {
   #             'platforms': [sorted platforms]
-  #             'groups': [
+  #             'form_factors': [sorted form factors; optional]
+  #             'is_low_end_device': "'true' or 'false'; optional"
+  #             'experiments': [
   #                 {
   #                     name: ...
   #                     forcing_flag: "forcing flag string"
@@ -74,9 +77,15 @@ def PrettyPrint(contents):
     study = copy.deepcopy(config[key])
     ordered_study = []
     for experiment_config in study:
-      ordered_experiment_config = OrderedDict([('platforms',
-                                                experiment_config['platforms']),
-                                               ('experiments', [])])
+      ordered_experiment_config = OrderedDict()
+      ordered_experiment_config['platforms'] = experiment_config['platforms']
+      if 'form_factors' in experiment_config:
+        ordered_experiment_config['form_factors'] = experiment_config[
+            'form_factors']
+      if 'is_low_end_device' in experiment_config:
+        ordered_experiment_config['is_low_end_device'] = experiment_config[
+            'is_low_end_device']
+      ordered_experiment_config['experiments'] = []
       for experiment in experiment_config['experiments']:
         ordered_experiment = OrderedDict()
         for index in range(0, 10):
@@ -108,7 +117,9 @@ def PrettyPrint(contents):
     ordered_config[key] = ordered_study
   return json.dumps(
       ordered_config, sort_keys=False, indent=4, separators=(',', ': ')) + '\n'
-
+# pylint: disable=line-too-long
+# LINT.ThenChange(/components/variations/field_trial_config/field_trial_testing_config_schema.json)
+# pylint: enable=line-too-long
 
 def ValidateData(json_data, file_path, message_type):
   """Validates the format of a fieldtrial configuration.
