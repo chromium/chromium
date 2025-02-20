@@ -200,6 +200,9 @@ process but are generated using a script that pulls them from outside the repo.-
       <message name="IDS_SEZNAM_SEARCH_DESCRIPTION" use_name_for_id="true">
         Useful, entertaining, inspirational. Seznam – I find there what I don't know.
       </message>
+      <message name="IDS_STARTPAGE_SEARCH_DESCRIPTION" use_name_for_id="true">
+        A safer way to search online: no data collection, tracking, or targeting.
+      </message>
       <message name="IDS_YAHOO_SEARCH_DESCRIPTION" use_name_for_id="true">
         Search the web and answer life’s daily questions with Yahoo.
       </message>
