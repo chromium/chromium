@@ -91,12 +91,11 @@ namespace v8_memory {
 //   class MemoryMonitor {
 //    public:
 //     MemoryMonitor() {
-//       PerformanceManager::CallOnGraph(FROM_HERE,
-//           base::BindOnce(&Start, base::Unretained(this)));
+//       Start();
 //     }
 //
-//     void Start(Graph* graph) {
-//       DCHECK_ON_GRAPH_SEQUENCE(graph);
+//     void Start() {
+//       Graph* graph = PerformanceManager::GetGraph();
 //
 //       // Creating a V8DetailedMemoryRequest with the |graph| parameter
 //       // automatically starts measurements.
@@ -106,9 +105,7 @@ namespace v8_memory {
 //       request_->AddObserver(observer_.get());
 //     }
 //
-//     void Stop(Graph* graph) {
-//       DCHECK_ON_GRAPH_SEQUENCE(graph);
-//
+//     void Stop() {
 //       // |observer_| must be removed from |request_| before deleting it.
 //       // Afterwards they can be deleted in any order.
 //       request_->RemoveObserver(observer_.get());
