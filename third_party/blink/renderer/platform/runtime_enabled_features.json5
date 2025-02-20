@@ -2757,6 +2757,7 @@
       // This uses media::VideoEncoder implementation in MediaRecorder API
       // instead of using MediaRecorder own video encoder implementation.
       name: "MediaRecorderUseMediaVideoEncoder",
+      status: {"Android": "", "default": "stable"},
     },
     {
       name: "MediaSession",
