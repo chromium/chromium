@@ -224,10 +224,6 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
 
   void InitFeature() {
     scoped_config_.Get().enabled = true;
-    scoped_config_.Get().name = "keyword";
-    scoped_config_.Get().shortcut = "keyword";
-    scoped_config_.Get().search_url = "example.com/{searchTerms}";
-    scoped_config_.Get().suggest_url = "example.com";
   }
 
   void InitTemplateUrlService() {

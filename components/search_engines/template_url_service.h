@@ -313,12 +313,15 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   TemplateURLService::TemplateURLVector GetFeaturedEnterpriseSearchEngines()
       const;
+
   // Returns the TemplateURL created by the EnterpriseSearchAggregatorSettings
   // policy.
   TemplateURL* GetEnterpriseSearchAggregatorEngine() const;
 
-  // Returns the `require_shortcut` policy field from the current preferences.
-  bool IsShortcutRequiredForSearchAggregator();
+  // Returns the value of `EnterpriseSearchAggregatorSettings.require_shortcut`
+  // policy from the prefs indicating whether keyword mode is required for using
+  // the enterprise search aggregator TemplateURL.
+  bool IsShortcutRequiredForSearchAggregatorEngine() const;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the list prepopulated template URLs for `country_code`.

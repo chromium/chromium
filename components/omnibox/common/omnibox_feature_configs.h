@@ -6,8 +6,14 @@
 #define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
 
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+
+class EnterpriseSearchManager;
+class EnterpriseSearchManagerProviderInjectionTest;
+class EnterpriseSearchManagerRequireShortcutTest;
+FORWARD_DECLARE_TEST(EnterpriseSearchManagerProviderInjectionTest, Verify);
 
 namespace omnibox_feature_configs {
 
@@ -174,12 +180,20 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   SearchAggregatorProvider& operator=(const SearchAggregatorProvider&);
   ~SearchAggregatorProvider();
 
-  // Utility methods
+  bool enabled;
+
+ private:
+  // Utility methods and members for setting up a mock search engine via Finch.
+  // Restricted to `EnterpriseSearchManager` and its tests.
+  friend class ::EnterpriseSearchManager;
+  friend class ::EnterpriseSearchManagerProviderInjectionTest;
+  friend class ::EnterpriseSearchManagerRequireShortcutTest;
+  FRIEND_TEST_ALL_PREFIXES(::EnterpriseSearchManagerProviderInjectionTest,
+                           Verify);
+
   bool AreMockEnginesValid() const;
   std::vector<base::Value> CreateMockSearchEngines() const;
   base::Value::Dict CreateMockSearchAggregator(bool featured_by_policy) const;
-
-  bool enabled;
 
   // The search engine name, shown in the Omnibox.
   std::string name;
@@ -194,17 +208,6 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   // If enabled, Chrome will blend search suggestions with other Omnibox
   // suggestions without requiring keyword mode.
   bool require_shortcut;
-  // The amount of time to wait before calling the callback function after
-  // making a request to get enterprise suggestions.
-  base::TimeDelta callback_delay;
-  // The number of suggestions to show users.
-  int num_suggestions;
-  // Type of request response. Can be one of the following strings.
-  // - "success" - Successful response.
-  // - "success_no_suggestions" - Successful response but empty suggestions
-  //   field.
-  // - "backoff" - No response was sent or response took too long.
-  std::string response_type;
 };
 
 // If enabled, uses RichAnswerTemplate instead of SuggestionAnswer to display
