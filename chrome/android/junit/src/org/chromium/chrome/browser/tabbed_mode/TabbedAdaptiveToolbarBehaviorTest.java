@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.adaptive;
+package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,17 +15,19 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 
 import java.util.List;
 
-/** Unit tests for {@link AdaptiveToolbarFeatures}. */
+/** Unit tests for {@link TabbedAdaptiveToolbarBehavior}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AdaptiveToolbarFeaturesTest {
-    private Activity mActivity;
+public class TabbedAdaptiveToolbarBehaviorTest {
+    private TabbedAdaptiveToolbarBehavior mBehavior;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        mBehavior = new TabbedAdaptiveToolbarBehavior(activity, null, null, null, null);
     }
 
     @Test
@@ -81,6 +83,6 @@ public class AdaptiveToolbarFeaturesTest {
         assertEquals(
                 "Top segmentation result is not as expected.",
                 expectedTopResult,
-                AdaptiveToolbarFeatures.getTopSegmentationResult(mActivity, segmentationResults));
+                mBehavior.resultFilter(segmentationResults));
     }
 }

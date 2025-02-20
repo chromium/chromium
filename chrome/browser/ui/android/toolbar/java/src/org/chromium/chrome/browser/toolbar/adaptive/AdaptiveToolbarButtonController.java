@@ -77,6 +77,7 @@ public class AdaptiveToolbarButtonController
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
     private final CallbackController mCallbackController;
     private final Callback<AdaptiveToolbarStatePredictor.UiState> mUiStateCallback;
+    private final AdaptiveToolbarBehavior mToolbarBehavior;
 
     @Nullable private AdaptiveToolbarStatePredictor mAdaptiveToolbarStatePredictor;
     @Nullable private View.OnLongClickListener mMenuHandler;
@@ -103,6 +104,7 @@ public class AdaptiveToolbarButtonController
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ObservableSupplier<Profile> profileSupplier,
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
+            AdaptiveToolbarBehavior toolbarBehavior,
             AndroidPermissionDelegate androidPermissionDelegate) {
         mContext = context;
         mMenuClickListener =
@@ -118,6 +120,7 @@ public class AdaptiveToolbarButtonController
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mMenuCoordinator = menuCoordinator;
+        mToolbarBehavior = toolbarBehavior;
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
         mAndroidPermissionDelegate = androidPermissionDelegate;
         mCallbackController = new CallbackController();
@@ -273,7 +276,8 @@ public class AdaptiveToolbarButtonController
         assert mAdaptiveToolbarStatePredictor == null;
         profile = profile.getOriginalProfile();
         mAdaptiveToolbarStatePredictor =
-                new AdaptiveToolbarStatePredictor(mContext, profile, mAndroidPermissionDelegate);
+                new AdaptiveToolbarStatePredictor(
+                        mContext, profile, mAndroidPermissionDelegate, mToolbarBehavior);
         ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return;
