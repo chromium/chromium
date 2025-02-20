@@ -835,4 +835,36 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
   WaitForPasswordStore();
 }
 
+TEST_F(LeakDetectionDelegateTest,
+       LeakDetectionWithkMarkAllCredentialsAsLeaked) {
+  base::test::ScopedFeatureList features(features::kMarkAllCredentialsAsLeaked);
+
+  LeakDetectionDelegateInterface* delegate_interface = &delegate();
+  const PasswordForm form = CreateTestForm();
+
+  EXPECT_CALL(client(), GetProfilePasswordStore())
+      .WillRepeatedly(Return(profile_store()));
+
+  // Since is_leaked is false there are no calls to password store.
+  EXPECT_CALL(*profile_store(), GetAutofillableLogins).Times(0);
+  EXPECT_CALL(*profile_store(), UpdateLogin).Times(0);
+
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(
+          Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_CALL(client(),
+              NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
+                  password_manager::CreateLeakType(
+                      IsSaved(false), IsReused(false), IsSyncing(false)),
+                  form.url, form.username_value, form.password_value,
+                  /* in_account_store = */ false)));
+
+  delegate_interface->OnLeakDetectionDone(
+      /*is_leaked=*/false, form.url, form.username_value, form.password_value);
+  WaitForPasswordStore();
+}
+
 }  // namespace password_manager
