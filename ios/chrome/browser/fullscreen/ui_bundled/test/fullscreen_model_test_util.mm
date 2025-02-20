@@ -5,13 +5,18 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 void SetUpFullscreenModelForTesting(FullscreenModel* model,
                                     CGFloat toolbar_height) {
   EXPECT_GE(toolbar_height, 0.0);
-  model->SetCollapsedTopToolbarHeight(0.0);
-  model->SetExpandedTopToolbarHeight(toolbar_height);
+  ToolbarUIState* toolbarUIState =
+      [[ToolbarUIState alloc] initWithCollapsedTopToolbarHeight:0.0
+                                       expandedTopToolbarHeight:toolbar_height
+                                    expandedBottomToolbarHeight:0.0
+                                   collapsedBottomToolbarHeight:0.0];
+  model->SetToolbarUIState(toolbarUIState);
   model->SetScrollViewHeight(2 * toolbar_height);
   model->SetContentHeight(2 * model->GetScrollViewHeight());
   model->ResetForNavigation();
