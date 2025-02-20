@@ -8943,7 +8943,7 @@ crbug.com/379335371 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.an
 # Gardener 2024-11-21
 crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Failure Pass Timeout ]
 crbug.com/380327348 media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Failure Pass ]
-crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
+crbug.com/380327348 media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
 
 # This test will [PRECONDITION_FAILED] on some bots and not others based on its HW capabilities, skip the test on such bots.
 # TODO(crbug.com/381407888): See if we can replace Pass/Failure with platform-specific -expected.txt files and remove this.
