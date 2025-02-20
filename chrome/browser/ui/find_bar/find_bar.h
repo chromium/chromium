@@ -97,6 +97,9 @@ class FindBar {
   // if there is none.
   virtual const FindBarTesting* GetFindBarTesting() const = 0;
 
+  // Return |true| if find bar has focus.
+  virtual bool HasFocus() const = 0;
+
 #if BUILDFLAG(IS_MAC)
   // Get the host widget. Used by immersive fullscreen to detect the find bar
   // widget and reparent as necessary.
