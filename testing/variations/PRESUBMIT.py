@@ -76,44 +76,46 @@ def PrettyPrint(contents):
   for key in sorted(config.keys()):
     study = copy.deepcopy(config[key])
     ordered_study = []
-    for experiment_config in study:
-      ordered_experiment_config = OrderedDict()
-      ordered_experiment_config['platforms'] = experiment_config['platforms']
-      if 'form_factors' in experiment_config:
-        ordered_experiment_config['form_factors'] = experiment_config[
-            'form_factors']
-      if 'is_low_end_device' in experiment_config:
-        ordered_experiment_config['is_low_end_device'] = experiment_config[
+    for study_config in study:
+      ordered_study_config = OrderedDict()
+      ordered_study_config['platforms'] = study_config['platforms']
+      if 'form_factors' in study_config:
+        ordered_study_config['form_factors'] = study_config['form_factors']
+      if 'is_low_end_device' in study_config:
+        ordered_study_config['is_low_end_device'] = study_config[
             'is_low_end_device']
-      ordered_experiment_config['experiments'] = []
-      for experiment in experiment_config['experiments']:
-        ordered_experiment = OrderedDict()
+      ordered_study_config['experiments'] = []
+      for experiment_group in study_config['experiments']:
+        ordered_experiment_group = OrderedDict()
         for index in range(0, 10):
           comment_key = '//' + str(index)
-          if comment_key in experiment:
-            ordered_experiment[comment_key] = experiment[comment_key]
-        ordered_experiment['name'] = experiment['name']
-        if 'forcing_flag' in experiment:
-          ordered_experiment['forcing_flag'] = experiment['forcing_flag']
-        if 'params' in experiment:
-          ordered_experiment['params'] = OrderedDict(
-              sorted(experiment['params'].items(), key=lambda t: t[0]))
-        if 'enable_features' in experiment:
-          ordered_experiment['enable_features'] = \
-              sorted(experiment['enable_features'])
-        if 'disable_features' in experiment:
-          ordered_experiment['disable_features'] = \
-              sorted(experiment['disable_features'])
-        if 'min_os_version' in experiment:
-          ordered_experiment['min_os_version'] = experiment['min_os_version']
-        if 'hardware_classes' in experiment:
-          ordered_experiment['hardware_classes'] = \
-              sorted(experiment['hardware_classes'])
-        if 'exclude_hardware_classes' in experiment:
-          ordered_experiment['exclude_hardware_classes'] = \
-              sorted(experiment['exclude_hardware_classes'])
-        ordered_experiment_config['experiments'].append(ordered_experiment)
-      ordered_study.append(ordered_experiment_config)
+          if comment_key in experiment_group:
+            ordered_experiment_group[comment_key] = experiment_group[
+                comment_key]
+        ordered_experiment_group['name'] = experiment_group['name']
+        if 'forcing_flag' in experiment_group:
+          ordered_experiment_group['forcing_flag'] = experiment_group[
+              'forcing_flag']
+        if 'params' in experiment_group:
+          ordered_experiment_group['params'] = OrderedDict(
+              sorted(experiment_group['params'].items(), key=lambda t: t[0]))
+        if 'enable_features' in experiment_group:
+          ordered_experiment_group['enable_features'] = \
+              sorted(experiment_group['enable_features'])
+        if 'disable_features' in experiment_group:
+          ordered_experiment_group['disable_features'] = \
+              sorted(experiment_group['disable_features'])
+        if 'min_os_version' in experiment_group:
+          ordered_experiment_group['min_os_version'] = experiment_group[
+              'min_os_version']
+        if 'hardware_classes' in experiment_group:
+          ordered_experiment_group['hardware_classes'] = \
+              sorted(experiment_group['hardware_classes'])
+        if 'exclude_hardware_classes' in experiment_group:
+          ordered_experiment_group['exclude_hardware_classes'] = \
+              sorted(experiment_group['exclude_hardware_classes'])
+        ordered_study_config['experiments'].append(ordered_experiment_group)
+      ordered_study.append(ordered_study_config)
     ordered_config[key] = ordered_study
   return json.dumps(
       ordered_config, sort_keys=False, indent=4, separators=(',', ': ')) + '\n'
@@ -141,19 +143,19 @@ def ValidateData(json_data, file_path, message_type):
 
   if not isinstance(json_data, dict):
     return _CreateMessage('Expecting dict')
-  for (study, experiment_configs) in iter(json_data.items()):
-    warnings = _ValidateEntry(study, experiment_configs, _CreateMessage)
+  for (study, study_configs) in iter(json_data.items()):
+    warnings = _ValidateEntry(study, study_configs, _CreateMessage)
     if warnings:
       return warnings
 
   return []
 
 
-def _ValidateEntry(study, experiment_configs, create_message_fn):
+def _ValidateEntry(study, study_configs, create_message_fn):
   """Validates one entry of the field trial configuration."""
   if not isinstance(study, str):
     return create_message_fn('Expecting keys to be string, got %s', type(study))
-  if not isinstance(experiment_configs, list):
+  if not isinstance(study_configs, list):
     return create_message_fn('Expecting list for study %s', study)
 
   # Add context to other messages.
@@ -161,34 +163,34 @@ def _ValidateEntry(study, experiment_configs, create_message_fn):
     suffix = ' in Study[%s]' % study
     return create_message_fn(message_format + suffix, *args)
 
-  for experiment_config in experiment_configs:
-    warnings = _ValidateExperimentConfig(experiment_config, _CreateStudyMessage)
+  for study_config in study_configs:
+    warnings = _ValidateStudyConfig(study_config, _CreateStudyMessage)
     if warnings:
       return warnings
   return []
 
 
-def _ValidateExperimentConfig(experiment_config, create_message_fn):
+def _ValidateStudyConfig(study_config, create_message_fn):
   """Validates one config in a configuration entry."""
-  if not isinstance(experiment_config, dict):
+  if not isinstance(study_config, dict):
     return create_message_fn('Expecting dict for experiment config')
-  if not 'experiments' in experiment_config:
+  if not 'experiments' in study_config:
     return create_message_fn('Missing valid experiments for experiment config')
-  if not isinstance(experiment_config['experiments'], list):
+  if not isinstance(study_config['experiments'], list):
     return create_message_fn('Expecting list for experiments')
-  for experiment_group in experiment_config['experiments']:
+  for experiment_group in study_config['experiments']:
     warnings = _ValidateExperimentGroup(experiment_group, create_message_fn)
     if warnings:
       return warnings
-  if not 'platforms' in experiment_config:
+  if not 'platforms' in study_config:
     return create_message_fn('Missing valid platforms for experiment config')
-  if not isinstance(experiment_config['platforms'], list):
+  if not isinstance(study_config['platforms'], list):
     return create_message_fn('Expecting list for platforms')
   supported_platforms = [
       'android', 'android_weblayer', 'android_webview', 'chromeos',
       'chromeos_lacros', 'fuchsia', 'ios', 'linux', 'mac', 'windows'
   ]
-  experiment_platforms = experiment_config['platforms']
+  experiment_platforms = study_config['platforms']
   unsupported_platforms = list(
       set(experiment_platforms).difference(supported_platforms))
   if unsupported_platforms:
@@ -265,9 +267,9 @@ def CheckPretty(contents, file_path, message_type):
 def _GetStudyConfigFeatures(study_config):
   """Gets the set of features overridden in a study config."""
   features = set()
-  for experiment in study_config.get('experiments', []):
-    features.update(experiment.get('enable_features', []))
-    features.update(experiment.get('disable_features', []))
+  for experiment_group in study_config.get('experiments', []):
+    features.update(experiment_group.get('enable_features', []))
+    features.update(experiment_group.get('disable_features', []))
   return features
 
 
