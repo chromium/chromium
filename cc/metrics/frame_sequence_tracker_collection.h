@@ -12,9 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/shared_memory_mapping.h"
 #include "cc/cc_export.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
 

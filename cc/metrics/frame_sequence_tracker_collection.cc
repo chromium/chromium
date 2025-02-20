@@ -9,13 +9,9 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/shared_memory_mapping.h"
-#include "base/memory/writable_shared_memory_region.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
-#include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
-#include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
 
