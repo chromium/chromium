@@ -372,6 +372,13 @@ TestBrowserWindow::GetFeaturePromoControllerImpl() {
   return feature_promo_controller_.get();
 }
 
+bool TestBrowserWindow::IsFeaturePromoQueued(
+    const base::Feature& iph_feature) const {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->GetPromoStatus(iph_feature) ==
+             user_education::FeaturePromoStatus::kQueued;
+}
+
 bool TestBrowserWindow::IsFeaturePromoActive(
     const base::Feature& iph_feature) const {
   return feature_promo_controller_ &&

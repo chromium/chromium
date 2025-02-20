@@ -85,7 +85,7 @@ FeaturePromoControllerCommon::~FeaturePromoControllerCommon() = default;
 FeaturePromoStatus FeaturePromoControllerCommon::GetPromoStatus(
     const base::Feature& iph_feature) const {
   if (IsPromoQueued(iph_feature)) {
-    return FeaturePromoStatus::kQueuedForStartup;
+    return FeaturePromoStatus::kQueued;
   }
   if (GetCurrentPromoFeature() != &iph_feature) {
     return FeaturePromoStatus::kNotRunning;
@@ -729,8 +729,8 @@ std::ostream& operator<<(std::ostream& os, FeaturePromoStatus status) {
     case FeaturePromoStatus::kNotRunning:
       os << "kNotRunning";
       break;
-    case FeaturePromoStatus::kQueuedForStartup:
-      os << "kQueuedForStartup";
+    case FeaturePromoStatus::kQueued:
+      os << "kQueued";
       break;
   }
   return os;

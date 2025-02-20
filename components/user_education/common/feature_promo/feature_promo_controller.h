@@ -52,10 +52,10 @@ class TutorialService;
 
 // Describes the status of a feature promo.
 enum class FeaturePromoStatus {
-  kNotRunning,        // The promo is not running or queued.
-  kQueuedForStartup,  // The promo is waiting for the FE backend to initialize.
-  kBubbleShowing,     // The promo bubble is showing.
-  kContinued          // The bubble was closed but the promo is still active.
+  kNotRunning,     // The promo is not running or queued.
+  kQueued,         // The promo is queued but not yet shown.
+  kBubbleShowing,  // The promo bubble is showing.
+  kContinued       // The bubble was closed but the promo is still active.
 };
 
 // Enum for client code to specify why a promo should be programmatically ended.
