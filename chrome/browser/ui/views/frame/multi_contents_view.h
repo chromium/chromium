@@ -8,9 +8,11 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/resize_area_delegate.h"
 #include "ui/views/view.h"
 
 class ContentsWebView;
+class MultiContentsResizeArea;
 
 namespace blink {
 class WebMouseEvent;
@@ -23,7 +25,7 @@ class WebContents;
 
 // MultiContentsView shows up to two contents web views side by side, and
 // manages their layout relative to each other.
-class MultiContentsView : public views::View {
+class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   METADATA_HEADER(MultiContentsView, views::View)
 
  public:
@@ -57,12 +59,19 @@ class MultiContentsView : public views::View {
   // Handles a mouse event prior to it being passed along to the WebContents.
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
 
+  // views::ResizeAreaDelegate:
+  void OnResize(int resize_amount, bool done_resizing) override;
+
  private:
   // The left contents view, in LTR.
   raw_ptr<ContentsWebView> start_contents_view_ = nullptr;
 
   // The right contents view, in LTR.
   raw_ptr<ContentsWebView> end_contents_view_ = nullptr;
+
+  // The handle responsible for resizing the two contents views as relative to
+  // each other.
+  raw_ptr<MultiContentsResizeArea> resize_area_ = nullptr;
 
   // The index of the active context view. A value of 0 corresponds to
   // start_contents_view_.
