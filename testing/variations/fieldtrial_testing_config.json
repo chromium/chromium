@@ -11714,6 +11714,24 @@
             ]
         }
     ],
+    "IOSDeprecateFeedHeader": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "form_factors": [
+                "phone"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeprecateFeedHeader"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDockingPromo": [
         {
             "platforms": [
