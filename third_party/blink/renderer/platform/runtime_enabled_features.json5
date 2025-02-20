@@ -2803,7 +2803,12 @@
     },
     {
       name: "MediaStreamTrackWebSpeech",
-      status: "experimental",
+      status: {
+        "Linux": "stable",
+        "Mac": "stable",
+        "Win": "stable",
+        "default": "experimental",
+      },
     },
     {
       name: "MessagePortCloseEvent",
