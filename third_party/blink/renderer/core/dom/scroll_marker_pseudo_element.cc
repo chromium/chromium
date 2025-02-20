@@ -150,6 +150,12 @@ void ScrollMarkerPseudoElement::SetSelected(bool value,
       mojom::blink::ScrollIntoViewParamsPtr params =
           scroll_into_view_util::CreateScrollIntoViewParams(align_x, align_y);
       params->behavior = group_box->Style()->GetScrollBehavior();
+      // Indicate that this is for a scroll sequence so the ScrollIntoView uses
+      // the requested behavior.
+      // TODO(397989214): is_for_scroll_sequence might be obsolete as we no
+      // longer perform ScrollIntoView in sequence. We should delete
+      // or rename it.
+      params->is_for_scroll_sequence = true;
       group_scroller->ScrollIntoView(rect, scroll_margin, params);
     }
   }
