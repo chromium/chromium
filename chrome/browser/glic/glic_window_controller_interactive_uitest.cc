@@ -227,6 +227,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerWidgetMode(GlicWindowMode::kAttached));
 }
 
+// TODO(393203136): Once tests can observe window controller state rather than
+// polling, make a test like this one with glic initially attached.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyDetachedWithNotNormalBrowser) {
   RunTestSequence(
