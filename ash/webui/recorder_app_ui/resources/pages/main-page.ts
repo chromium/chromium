@@ -295,7 +295,7 @@ export class MainPage extends ReactiveLitElement {
     // Have some way to integrate with schema.ts so this is not needed?
     const includeSystemAudio = settings.value.includeSystemAudio.toString();
     const micId = this.microphoneManager.getSelectedMicId().value;
-    if (micId === null || micId === '') {
+    if (micId === null) {
       this.micConnectionErrorOccurred.value = true;
       return;
     }
