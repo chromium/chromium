@@ -4165,6 +4165,11 @@ const char kAccessibilityIncludeLongClickActionDescription[] =
     "When enabled, the accessibility tree for the web contents will include "
     "the ACTION_LONG_CLICK action on all relevant nodes.";
 
+const char kAccessibilityTextFormattingName[] = "Accessibility Text Formatting";
+const char kAccessibilityTextFormattingDescription[] =
+    "When enabled, text formatting information will be included in the "
+    "AccessibilityNodeInfo tree on Android";
+
 const char kAccessibilityUnifiedSnapshotsName[] =
     "Accessibility Unified Snapshots";
 const char kAccessibilityUnifiedSnapshotsDescription[] =

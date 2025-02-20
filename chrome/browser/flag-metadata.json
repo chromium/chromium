@@ -2413,6 +2413,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "enable-accessibility-text-formatting",
+    "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enable-accessibility-unified-snapshots",
     "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 140

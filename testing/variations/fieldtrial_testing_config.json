@@ -150,6 +150,21 @@
             ]
         }
     ],
+    "AccessibilityTextFormatting": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityTextFormatting"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityUnifiedSnapshots": [
         {
             "platforms": [
