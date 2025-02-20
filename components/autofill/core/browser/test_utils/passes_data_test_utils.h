@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_PASSES_DATA_TEST_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_PASSES_DATA_TEST_UTILS_H_
 
-#include "components/autofill/core/browser/data_model/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
 
 namespace autofill::test {
 

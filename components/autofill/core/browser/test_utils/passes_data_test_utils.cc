@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/test_utils/passes_data_test_utils.h"
 
-#include "components/autofill/core/browser/data_model/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
 
 namespace autofill::test {
 
