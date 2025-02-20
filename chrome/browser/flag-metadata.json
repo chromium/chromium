@@ -667,19 +667,17 @@
     "name": "autofill-enable-payment-settings-card-promo-and-scan-card",
     "owners": [
       "darwinyang@chromium.org",
-      "icer@chromium.org",
-      "chrome-payments-team@google.com"
+      "chrome-payments-eng@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 136
   },
   {
     "name": "autofill-enable-payment-settings-server-card-save",
     "owners": [
       "darwinyang@chromium.org",
-      "icer@chromium.org",
-      "chrome-payments-team@google.com"
+      "chrome-payments-eng@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 138
   },
   {
     "name": "autofill-enable-prefetching-risk-data-for-retrieval",
