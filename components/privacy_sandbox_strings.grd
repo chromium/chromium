@@ -773,7 +773,6 @@
     </message>
 
     <!-- Privacy Guide - Settings P1 -->
-    <!-- TODO(b:370008370): Make strings translateable when content is finalized -->
     <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_ONE" desc="This text is for a bullet that provides detail about the first setting option. It describes the primary content and site experience impacts of selecting the “Allow third-party cookies” option." translateable="true">
       Sites can use third-party cookies to personalize content and ads
     </message>
@@ -798,9 +797,6 @@
     <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_TWO" desc="This text is for a bullet that provides key considerations about the second setting option. It informs the user of advanced settings they can use to modify the scope of impact of selecting the “Block third-party cookies” option." translateable="true">
       You can create exceptions in Settings to always allow specific sites to use third-party cookies
     </message>
-    <message name="IDS_SETTINGS_PRIVACY_GUIDE_BLOCK_TPC_ALLOW_EXPAND_A11Y_LABEL" desc="" translateable="false">
-      More about allowing third-party cookies
-    </message>
     <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_ALLOW_SUBHEADER" desc="This text is for the label of the first setting option." translateable="true" formatter_data="android_java">
       Allow third-party cookies
     </message>
@@ -815,6 +811,14 @@
     </message>
     <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_DESCRIPTION" desc="This text is for the description of the second setting option. It describes the primary site experience and privacy impacts of selecting the “Block third-party cookies” option." translateable="true" formatter_data="android_java">
       Sites can't use third-party cookies to personalize content and ads, and learn about actions you take on other sites, unless you allow related sites to access them. Some site features may not work as expected.
+    </message>
+
+    <!-- A11y Labels - Settings P1 -->
+    <message name="IDS_SETTINGS_ALLOW_THIRD_PARTY_COOKIES_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice." translateable="true">
+      More about the Allow third-party cookies option
+    </message>
+    <message name="IDS_SETTINGS_BLOCK_THIRD_PARTY_COOKIES_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice." translateable="true">
+      More about the Block third-party cookies option
     </message>
 
     <!-- NTP - Settings P1 -->
