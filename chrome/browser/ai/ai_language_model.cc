@@ -351,7 +351,7 @@ void AILanguageModel::PromptGetInputSizeCompletion(
 }
 
 void AILanguageModel::Prompt(
-    const std::string& input,
+    on_device_model::mojom::InputPtr input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (!session_) {
@@ -362,13 +362,17 @@ void AILanguageModel::Prompt(
     return;
   }
 
+  CHECK_EQ(input->pieces.size(), 1u);
+  CHECK(std::holds_alternative<std::string>(input->pieces[0]));
+  const std::string& input_text = std::get<std::string>(input->pieces[0]);
+
   // Clear the response from the previous execution.
   current_response_ = "";
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   PromptApiRequest request;
   *request.add_current_prompts() =
-      MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
+      MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input_text);
 
   session_->GetExecutionInputSizeInTokens(
       request,

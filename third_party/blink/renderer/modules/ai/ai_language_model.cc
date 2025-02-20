@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -206,6 +207,9 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
     return promise;
   }
   const WTF::String& input_string = input->GetAsString();
+  auto odm_input = on_device_model::mojom::blink::Input::New();
+  odm_input->pieces.push_back(
+      on_device_model::mojom::blink::InputPiece::NewText(input_string));
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
@@ -233,7 +237,8 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
                     WrapWeakPersistent(this)),
       WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                          WrapWeakPersistent(this)));
-  language_model_remote_->Prompt(input_string, std::move(pending_remote));
+  language_model_remote_->Prompt(std::move(odm_input),
+                                 std::move(pending_remote));
   return promise;
 }
 
@@ -253,6 +258,9 @@ ReadableStream* AILanguageModel::promptStreaming(
     return nullptr;
   }
   const WTF::String& input_string = input->GetAsString();
+  auto odm_input = on_device_model::mojom::blink::Input::New();
+  odm_input->pieces.push_back(
+      on_device_model::mojom::blink::InputPiece::NewText(input_string));
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
@@ -280,7 +288,9 @@ ReadableStream* AILanguageModel::promptStreaming(
                         WrapWeakPersistent(this)),
           WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                              WrapWeakPersistent(this)));
-  language_model_remote_->Prompt(input_string, std::move(pending_remote));
+
+  language_model_remote_->Prompt(std::move(odm_input),
+                                 std::move(pending_remote));
   return readable_stream;
 }
 

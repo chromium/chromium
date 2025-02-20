@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_language_model.h"
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -25,6 +26,7 @@
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
@@ -71,6 +73,12 @@ const char kExpectedFormattedSystemPromptAndInitialPrompts[] =
      "U: How are you?\n"
      "M: I'm fine, thank you, and you?\n"
      "U: I'm fine too.\n");
+
+on_device_model::mojom::InputPtr MakeInput(const std::string& text) {
+  auto input = on_device_model::mojom::Input::New();
+  input->pieces.push_back(text);
+  return input;
+}
 
 std::vector<blink::mojom::AILanguageModelInitialPromptPtr>
 GetTestInitialPrompts() {
@@ -602,9 +610,11 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
               responder_run_loop_2.Quit();
             }));
 
-    mock_session->Prompt("A", mock_responder_1.BindNewPipeAndPassRemote());
+    mock_session->Prompt(MakeInput("A"),
+                         mock_responder_1.BindNewPipeAndPassRemote());
     responder_run_loop_1.Run();
-    mock_session->Prompt("B", mock_responder_2.BindNewPipeAndPassRemote());
+    mock_session->Prompt(MakeInput("B"),
+                         mock_responder_2.BindNewPipeAndPassRemote());
     responder_run_loop_2.Run();
   }
 
@@ -722,7 +732,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
               responder_run_loop.Quit();
             }));
 
-    mock_session->Prompt(prompt, mock_responder.BindNewPipeAndPassRemote());
+    mock_session->Prompt(MakeInput(prompt),
+                         mock_responder.BindNewPipeAndPassRemote());
     responder_run_loop.Run();
   }
 
@@ -881,7 +892,7 @@ TEST_P(AILanguageModelTest, PromptAfterDestroy) {
       [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
          AITestUtils::MockModelStreamingResponder& mock_responder) {
         mock_session->Destroy();
-        mock_session->Prompt(kTestPrompt,
+        mock_session->Prompt(MakeInput(kTestPrompt),
                              mock_responder.BindNewPipeAndPassRemote());
       }));
 }
@@ -892,7 +903,7 @@ TEST_P(AILanguageModelTest, PromptBeforeDestroy) {
   TestSessionDestroy(base::BindOnce(
       [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
          AITestUtils::MockModelStreamingResponder& mock_responder) {
-        mock_session->Prompt(kTestPrompt,
+        mock_session->Prompt(MakeInput(kTestPrompt),
                              mock_responder.BindNewPipeAndPassRemote());
         mock_session->Destroy();
       }));
