@@ -1150,10 +1150,7 @@ bool ShouldAddInitialStorageAccessApiOverride(
   if (request_initiator->IsSameOriginWith(url)) {
     kind = kSameOrigin;
   } else {
-    SchemefulSite request_site(url.SchemeIsHTTPOrHTTPS()
-                                   ? url
-                                   : ChangeWebSocketSchemeToHttpScheme(url));
-    if (SchemefulSite(request_initiator.value()) == request_site) {
+    if (SchemefulSite(request_initiator.value()) == SchemefulSite(url)) {
       kind = kCrossOriginSameSite;
     }
   }
