@@ -30,6 +30,8 @@ FUZZILLI = 'fuzzilli'
 ALL_FUZZER_TYPES = [LIBFUZZER, CENTIPEDE, FUZZILLI]
 REPORT_DIR = 'out/report'
 
+LLVM_PROFDATA = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata'
+
 
 def _profdata_merge(inputs: Sequence[str], output: str) -> bool:
   """Merges the given profraw files into a single file.
@@ -43,7 +45,7 @@ def _profdata_merge(inputs: Sequence[str], output: str) -> bool:
   Returns:
     True if it worked.
   """
-  llvm_profdata_cmd = [llvm_profdata, 'merge', '-sparse'
+  llvm_profdata_cmd = [LLVM_PROFDATA, 'merge', '-sparse'
                        ] + inputs + ['-o', output]
   try:
     subprocess.check_call(llvm_profdata_cmd)
@@ -386,17 +388,16 @@ def main():
   verified_fuzzer_targets = Manager().list()
   failed_targets = Manager().list()
   all_target_details = []
-  llvm_profdata = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata'
 
-  if not (os.path.isfile(llvm_profdata)):
-    print('No valid llvm_profdata at %s' % llvm_profdata)
+  if not (os.path.isfile(LLVM_PROFDATA)):
+    print('No valid llvm_profdata at %s' % LLVM_PROFDATA)
     exit(2)
 
   if not (os.path.isdir(args.profdata_outdir)):
     print('%s does not exist or is not a directory' % args.profdata_outdir)
     exit(2)
 
-  if args.fuzzer == 'FUZZILLI':
+  if args.fuzzer == FUZZILLI:
     all_target_details = _get_fuzzilli_target_details(args)
   else:
     all_target_details = _get_all_target_details(args)
