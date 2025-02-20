@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kAndroidAppIntegrationV2);
 BASE_DECLARE_FEATURE(kNewTabPageCustomization);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationWithFavicon);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationMultiDataSource);
+BASE_DECLARE_FEATURE(kAndroidAppearanceSettings);
 BASE_DECLARE_FEATURE(kAndroidBookmarkBar);
 BASE_DECLARE_FEATURE(kAndroidBottomToolbar);
 BASE_DECLARE_FEATURE(kAndroidDumpOnScrollWithoutResource);

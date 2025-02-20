@@ -187,6 +187,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-appearance-settings",
+    "owners": [ "dmblack@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-bookmark-bar",
     "owners": [ "dmblack@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 150

@@ -9844,6 +9844,7 @@ from previous Chrome versions.
   <int value="-1692967465"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:enabled"/>
   <int value="-1692916427" label="WipeDataOnChildAccountSignin:enabled"/>
+  <int value="-1692639418" label="AndroidAppearanceSettings:disabled"/>
   <int value="-1692384483" label="disambiguate-autofill-server-name-types"/>
   <int value="-1692107333" label="AccessibilityCursorColor:disabled"/>
   <int value="-1691892152" label="SafeSearchUrlReporting:disabled"/>
@@ -10770,6 +10771,7 @@ from previous Chrome versions.
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
   <int value="-1335360580" label="ReduceTransferSizeUpdatedIPC:enabled"/>
   <int value="-1335017208" label="KeyboardLockAPI:enabled"/>
+  <int value="-1334971444" label="AndroidAppearanceSettings:enabled"/>
   <int value="-1334909143" label="NtpModulesDragAndDrop:disabled"/>
   <int value="-1334336593" label="SystemKoreanPhysicalTyping:disabled"/>
   <int value="-1334327410" label="ash-enable-touch-view-testing"/>

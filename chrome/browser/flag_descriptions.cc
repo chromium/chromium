@@ -117,6 +117,12 @@ const char kAndroidAppIntegrationMultiDataSourceDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search with "
     "multiple data sources, e.g. custom Tabs.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidAppearanceSettingsName[] = "Appearance Settings";
+const char kAndroidAppearanceSettingsDescription[] =
+    "Enables the Appearance Settings preference screen.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAndroidBcivBottomControlsName[] =
     "Browser controls in viz for bottom controls";
 const char kAndroidBcivBottomControlsDescription[] =

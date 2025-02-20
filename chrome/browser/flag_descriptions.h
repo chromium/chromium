@@ -89,6 +89,11 @@ extern const char kAndroidAppIntegrationV2Description[];
 extern const char kAndroidAppIntegrationWithFaviconName[];
 extern const char kAndroidAppIntegrationWithFaviconDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidAppearanceSettingsName[];
+extern const char kAndroidAppearanceSettingsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAndroidBcivBottomControlsName[];
 extern const char kAndroidBcivBottomControlsDescription[];
 

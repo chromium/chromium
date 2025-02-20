@@ -170,6 +170,7 @@ public abstract class ChromeFeatureList {
             "AndroidAppIntegrationWithFavicon";
     public static final String ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE =
             "AndroidAppIntegrationMultiDataSource";
+    public static final String ANDROID_APPEARANCE_SETTINGS = "AndroidAppearanceSettings";
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
     public static final String ANDROID_DUMP_ON_SCROLL_WITHOUT_RESOURCE =
@@ -976,6 +977,8 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final MutableFlagWithSafeDefault sAdaptiveButtonInTopToolbarCustomizationV2 =
             newMutableFlagWithSafeDefault(ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, false);
+    public static final MutableFlagWithSafeDefault sAndroidAppearanceSettings =
+            newMutableFlagWithSafeDefault(ANDROID_APPEARANCE_SETTINGS, false);
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
             newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, false);
     public static final MutableFlagWithSafeDefault sAndroidDumpOnScrollWithoutResource =
