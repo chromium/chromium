@@ -210,6 +210,8 @@ class GraphBuilderOrt {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddLayerNormalizationOperation(
       const mojom::LayerNormalization& layer_normalization);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddLinearOperation(
+      const mojom::Linear& linear);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
   void AddMatMulOperation(const mojom::Matmul& matmul);

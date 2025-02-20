@@ -149,7 +149,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*leaky_relu_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*linear_input=*/{},
+       /*linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*lstm_input=*/{},
        /*lstm_cell_input=*/{},
        /*matmul_input=*/

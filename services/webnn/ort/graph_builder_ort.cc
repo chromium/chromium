@@ -1616,6 +1616,69 @@ void GraphBuilderOrt::AddLeakyReluOperation(
                          attributes);
 }
 
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
+  // Emulate a linear operation whose calculation follows the expression `alpha
+  // * x + beta`.
+  const mojom::Operand& input_operand = GetOperand(linear.input_operand_id);
+  const OperandDataType input_data_type = input_operand.descriptor.data_type();
+
+  std::string alpha_name;
+  switch (input_data_type) {
+    case OperandDataType::kFloat16: {
+      ASSIGN_OR_RETURN(alpha_name,
+                       CreateScalarInitializer<uint16_t>(
+                           fp16_ieee_from_fp32_value(linear.alpha)));
+      break;
+    }
+    case OperandDataType::kFloat32: {
+      ASSIGN_OR_RETURN(alpha_name,
+                       CreateScalarInitializer<float>(linear.alpha));
+      break;
+    }
+    default:
+      NOTREACHED()
+          << "[WebNN] Linear only supports float32 and float16 data type.";
+  }
+  const std::string linear_mul_label =
+      base::JoinString({linear.label, "mul"}, kUnderscore);
+  const std::string mul_node_name = GenerateNextOperationName(linear_mul_label);
+  const std::string input_name = GetOperandNameById(linear.input_operand_id);
+  std::array<const char*, 2> mul_input_names = {input_name.c_str(),
+                                                alpha_name.c_str()};
+  const std::string mul_output_name = GenerateNextOperandName();
+  std::array<const char*, 1> mul_output_names = {mul_output_name.c_str()};
+  model_builder_.AddNode(kOpTypeMul, mul_node_name, mul_input_names,
+                         mul_output_names);
+
+  std::string beta_name;
+  switch (input_data_type) {
+    case OperandDataType::kFloat16: {
+      ASSIGN_OR_RETURN(beta_name, CreateScalarInitializer<uint16_t>(
+                                      fp16_ieee_from_fp32_value(linear.beta)));
+      break;
+    }
+    case OperandDataType::kFloat32: {
+      ASSIGN_OR_RETURN(beta_name, CreateScalarInitializer<float>(linear.beta));
+      break;
+    }
+    default:
+      NOTREACHED()
+          << "[WebNN] Linear only supports float32 and float16 data type.";
+  }
+  const std::string linear_add_label =
+      base::JoinString({linear.label, "add"}, kUnderscore);
+  const std::string add_node_name = GenerateNextOperationName(linear_add_label);
+  std::array<const char*, 2> add_input_names = {mul_output_name.c_str(),
+                                                beta_name.c_str()};
+  const std::string output_name = GetOperandNameById(linear.output_operand_id);
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+  model_builder_.AddNode(kOpTypeAdd, add_node_name, add_input_names,
+                         output_names);
+
+  return base::ok();
+}
+
 void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
   const std::string node_name = GenerateNextOperationName(matmul.label);
   const std::string input_a_name = GetOperandNameById(matmul.a_operand_id);
@@ -2286,6 +2349,10 @@ GraphBuilderOrt::BuildModel() {
             *operation->get_layer_normalization()));
         break;
       }
+      case mojom::Operation::Tag::kLinear: {
+        RETURN_IF_ERROR(AddLinearOperation(*operation->get_linear()));
+        break;
+      }
       case mojom::Operation::Tag::kMatmul: {
         AddMatMulOperation(*operation->get_matmul());
         break;
@@ -2377,7 +2444,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:
