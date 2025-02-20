@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
@@ -37,6 +38,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -118,6 +120,43 @@ public class MessageBannerRenderTest {
                     sActivity.setContentView(view, params);
                 });
         mRenderTestRule.render(view, "message_banner_basic");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    public void testBasicLowEndDevice() throws Exception {
+        Drawable drawable =
+                ApiCompatibilityUtils.getDrawable(
+                        sActivity.getResources(), android.R.drawable.ic_delete);
+        PropertyModel model =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
+                        .with(MessageBannerProperties.ICON, drawable)
+                        .with(MessageBannerProperties.TITLE, "Primary Title")
+                        .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                        .build();
+        MessageBannerView view =
+                (MessageBannerView)
+                        LayoutInflater.from(sActivity)
+                                .inflate(R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params =
+                new LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        sActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.message_banner_height));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivity.setContentView(view, params);
+                });
+        mRenderTestRule.render(view, "message_banner_basic_low_end");
     }
 
     @Test
