@@ -537,9 +537,7 @@
 // Presents the Download auto-deletion action sheet if the feature flag is
 // enabled and the user has the enabled in settings.
 - (void)maybePresentAutoDeletionActionSheet {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  if (!IsDownloadAutoDeletionFeatureEnabled() ||
-      !localState->GetBoolean(prefs::kDownloadAutoDeletionEnabled)) {
+  if (!IsDownloadAutoDeletionFeatureEnabled()) {
     return;
   }
 
