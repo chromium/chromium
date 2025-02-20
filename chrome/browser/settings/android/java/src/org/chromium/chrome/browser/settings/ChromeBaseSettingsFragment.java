@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.settings;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -19,12 +20,13 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
  * <p>Common dependencies needed by the vast majority of settings screens can be added here for
  * convenience.
  */
+@NullMarked
 public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage,
                 ProfileDependentSetting,
                 SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
-    private Profile mProfile;
-    private SettingsCustomTabLauncher mCustomTabLauncher;
+    private @Nullable Profile mProfile;
+    private @Nullable SettingsCustomTabLauncher mCustomTabLauncher;
 
     /**
      * @return The profile associated with the current Settings screen.
@@ -35,7 +37,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
     }
 
     @Override
-    public void setProfile(@NonNull Profile profile) {
+    public void setProfile(Profile profile) {
         mProfile = profile;
     }
 
@@ -54,7 +56,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
     /**
      * @return The launcher for CCT.
      */
-    public SettingsCustomTabLauncher getCustomTabLauncher() {
+    public @Nullable SettingsCustomTabLauncher getCustomTabLauncher() {
         return mCustomTabLauncher;
     }
 }

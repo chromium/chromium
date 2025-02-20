@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.commerce;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
+@NullMarked
 public class CommerceBottomSheetContentProperties {
     public static final ReadableIntPropertyKey TYPE = new ReadableIntPropertyKey();
     public static final ReadableBooleanPropertyKey HAS_TITLE = new ReadableBooleanPropertyKey();

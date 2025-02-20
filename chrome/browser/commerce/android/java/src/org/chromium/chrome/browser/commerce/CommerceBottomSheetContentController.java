@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public interface CommerceBottomSheetContentController {
     /** Request to show the commerce bottom sheet. */
     void requestShowContent();
