@@ -106,7 +106,7 @@
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
 <translation id="2513154137948333830">È richiesto il riavvio: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">Per continuare, devi accedere a Chromium con <ph name="EMAIL" />. In questo modo viene garantita la conformità ai criteri della tua organizzazione.</translation>
+<translation id="2522009821193247726">Per continuare, devi accedere a Chromium con <ph name="EMAIL" />. In questo modo viene garantita la conformità alle policy della tua organizzazione.</translation>
 <translation id="2542968102051442371">Seleziona testo con la ricerca immagini</translation>
 <translation id="2554739539410784893">Chromium sta cercando di sostituire le password esistenti. Digita la tua password di Windows per consentire l'operazione.</translation>
 <translation id="2560420686485554789">Chromium deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
@@ -551,7 +551,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8697124171261953979">Controlla anche la pagina visualizzata all'avvio di Chromium o quando esegui ricerche dalla Omnibox.</translation>
 <translation id="8704119203788522458">Questo è il tuo account Chromium</translation>
 <translation id="8719993436687031146">Accedere a Chromium?</translation>
-<translation id="878572486461146056">Errore di installazione: l'amministratore di rete ha applicato un criterio di gruppo che impedisce l'installazione: <ph name="INSTALL_ERROR" /></translation>
+<translation id="878572486461146056">Errore di installazione: l'amministratore di rete ha applicato una policy di gruppo che impedisce l'installazione: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
 <translation id="8818550178040858407">Accedere a Chromium?</translation>
 <translation id="8826492472752484139">Fai clic su "Gestore delle password"</translation>

@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">డెస్క్ 2</translation>
 <translation id="1546930421365146760">Google అడ్మిన్ కన్సోల్‌లో ఈ పరికరాన్ని సెటప్ చేయమని మీ అడ్మినిస్ట్రేటర్‌ను అడగండి</translation>
 <translation id="1549512626801247439">స్టోరేజ్ మేనేజ్‌మెంట్</translation>
+<translation id="1549721333775633305">క్విక్ షేర్ సెట్టింగ్‌లను చూపండి. క్విక్ షేర్ డిజేబుల్ చేయబడింది</translation>
 <translation id="1550406609415860283">పరికరాలు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1550523713251050646">మరిన్ని ఎంపికల కోసం క్లిక్ చేయండి</translation>
 <translation id="1555130319947370107">నీలం</translation>
@@ -1475,6 +1476,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> యాక్టివేట్ చేసి లేదు.</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
+<translation id="5864691701242730005">క్విక్ షేర్ సెట్టింగ్‌లను చూపండి. <ph name="VISIBILITY" /> విజిబిలిటీ ఎంచుకోబడింది</translation>
 <translation id="5864748620896638071">బ్యాటరీ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">నెట్‌వర్క్ సమాచారాన్ని సేకరిస్తోంది</translation>
 <translation id="5867606971598166637">మీ సిస్టమ్ అడ్మినిస్ట్రేటర్ మీ స్క్రీన్‌లను మానిటర్ చేస్తున్నారు</translation>
@@ -2263,6 +2265,7 @@
 <translation id="851660987304951246">త్వరగా కంటెంట్ సారాంశాన్ని పొందడానికి లేదా ప్రశ్నలను అడగడానికి 'చదవడంలో నాకు సహాయం చేయి' ఫీచర్‌ను ఉపయోగించండి</translation>
 <translation id="8517041960877371778">మీ <ph name="DEVICE_TYPE" /> ఆన్‌లో ఉన్నప్పుడు ఛార్జ్ కాకపోవచ్చు.</translation>
 <translation id="8535393432370007982">రంగు ఆధారంగా క్రమపద్ధతిలో అమర్చిన దానిని రద్దు చేశారు</translation>
+<translation id="8536886494750559755">క్విక్ షేర్ సెట్టింగ్‌లను చూపండి. <ph name="TIME_REMAINING" /> పాటు అందరికీ కనిపిస్తాయి</translation>
 <translation id="8539803091108018926">టెక్స్ట్ క్లిప్ బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="8541078764854166027">కామ్ ఫ్రేమింగ్</translation>
 <translation id="8542053257095774575">సేవ్ చేసిన డెస్క్‌లు లేదా టెంప్లేట్‌లు లేవు</translation>

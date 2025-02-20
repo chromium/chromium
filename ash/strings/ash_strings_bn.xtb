@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">ডেস্ক ২</translation>
 <translation id="1546930421365146760">আপনার প্রশাসককে Google অ্যাডমিন কনসোলে এই ডিভাইসটি সেট-আপ করতে বলুন</translation>
 <translation id="1549512626801247439">স্টোরেজ ম্যানেজমেন্ট</translation>
+<translation id="1549721333775633305">দ্রুত শেয়ার সেটিংস দেখুন। 'দ্রুত শেয়ার' বন্ধ করা আছে</translation>
 <translation id="1550406609415860283">ডিভাইস উপলভ্য</translation>
 <translation id="1550523713251050646">আরও বিকল্পের জন্য ক্লিক করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> অ্যাক্টিভেট করা হয়নি।</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
+<translation id="5864691701242730005">দ্রুত শেয়ার সেটিংস দেখুন। <ph name="VISIBILITY" /> কে কে দেখতে পাবে বেছে নেওয়া হয়েছে</translation>
 <translation id="5864748620896638071">ব্যাটারি <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">নেটওয়ার্ক সংক্রান্ত তথ্য সংগ্রহ করা হচ্ছে</translation>
 <translation id="5867606971598166637">আপনার সিস্টেম অ্যাডমিনিস্ট্রেটর আপনার স্ক্রিন মনিটর করছেন</translation>
@@ -2263,6 +2265,7 @@
 <translation id="851660987304951246">দ্রুত কন্টেন্টের সারাংশ তৈরি করতে বা প্রশ্ন করতে 'আমাকে পড়তে সাহায্য করো' ফিচার ব্যবহার করুন</translation>
 <translation id="8517041960877371778">আপনার <ph name="DEVICE_TYPE" /> চালু থাকা অবস্থায় চার্জ নাও হতে পারে।</translation>
 <translation id="8535393432370007982">রঙ অনুযায়ী বেছে নেওয়ার সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
+<translation id="8536886494750559755">দ্রুত শেয়ার সেটিংস দেখুন। <ph name="TIME_REMAINING" />-এর জন্য সকলেই দেখতে পাবে</translation>
 <translation id="8539803091108018926">ক্লিপবোর্ডে টেক্সট কপি করা হয়েছে</translation>
 <translation id="8541078764854166027">ক্যামেরা ফ্রেমিং</translation>
 <translation id="8542053257095774575">সেভ করা কোনও ডেস্ক বা টেমপ্লেট নেই</translation>
