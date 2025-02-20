@@ -688,7 +688,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowTabDeclutter(browser_);
       break;
     case IDC_SEND_SHARED_TAB_GROUP_FEEDBACK:
-      OpenFeedbackDialog(browser_, feedback::kFeedbackSourceDesktopTabGroups);
+      OpenFeedbackDialog(browser_, feedback::kFeedbackSourceDesktopTabGroups,
+                         /*description_template=*/std::string(),
+                         /*category_tag=*/"tab_group_share");
       break;
     case IDC_SHOW_TRANSLATE:
       ShowTranslateBubble(browser_);
