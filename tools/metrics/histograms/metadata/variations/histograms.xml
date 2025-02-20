@@ -195,8 +195,11 @@ chromium-metrics-reviews@google.com.
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The result of attempting to import an initial variations seed during Android
-    Chrome first run. Logged from VariationsSeedStore::LoadSeed when seed prefs
-    do not exist.
+    and iOS Chrome first run. Logged from VariationsSeedStore::LoadSeed when
+    seed prefs do not exist. For non-first run launches, this value is expected
+    to be &quot;failed - no first run seed.&quot;
+
+    Supported for iOS Chrome since M135.
   </summary>
 </histogram>
 
