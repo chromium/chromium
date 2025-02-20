@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ENTITIES_ENTITY_TABLE_TEST_API_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ENTITIES_ENTITY_TABLE_TEST_API_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_AI_ENTITY_TABLE_TEST_API_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_AI_ENTITY_TABLE_TEST_API_H_
 
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/webdata/entities/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "sql/database.h"
 
 namespace autofill {
@@ -28,4 +28,4 @@ inline EntityTableTestApi test_api(EntityTable& entity_table) {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ENTITIES_ENTITY_TABLE_TEST_API_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_AI_ENTITY_TABLE_TEST_API_H_

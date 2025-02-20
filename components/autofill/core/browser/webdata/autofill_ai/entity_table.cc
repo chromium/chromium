@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/entities/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 
 #include <map>
 #include <optional>

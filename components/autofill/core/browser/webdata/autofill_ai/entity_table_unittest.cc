@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/entities/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 
 #include <memory>
 
@@ -14,8 +14,8 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table_test_api.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
-#include "components/autofill/core/browser/webdata/entities/entity_table_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/webdata/common/web_database.h"
