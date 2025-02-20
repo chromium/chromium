@@ -112,7 +112,7 @@ void Mojo::bindInterface(ScriptState* script_state,
 
   // If MojoJS broker is enabled, it must be used to handle bindInterface
   // calls.
-  if (context->use_mojo_js_interface_broker()) {
+  if (context->ShouldUseMojoJSInterfaceBroker()) {
     if (scope == V8MojoScope::Enum::kContext) {
       context->GetMojoJSInterfaceBroker().GetInterface(name, std::move(handle));
     } else {

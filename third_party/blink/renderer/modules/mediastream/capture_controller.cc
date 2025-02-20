@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"

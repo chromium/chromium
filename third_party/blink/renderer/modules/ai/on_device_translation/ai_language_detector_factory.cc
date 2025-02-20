@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector_factory.h"
 
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"

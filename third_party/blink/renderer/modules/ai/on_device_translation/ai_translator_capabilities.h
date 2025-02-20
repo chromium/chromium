@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_AI_TRANSLATOR_CAPABILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_AI_TRANSLATOR_CAPABILITIES_H_
 
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"

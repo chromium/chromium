@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector_capabilities.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 

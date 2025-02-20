@@ -10,9 +10,12 @@
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
 
 #include "base/numerics/safe_math.h"
+#include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_create_shared_buffer_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_discard_data_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_duplicate_buffer_handle_options.h"

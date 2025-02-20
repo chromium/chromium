@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/extensions/chromeos/diagnostics/cros_diagnostics.h"
 
 #include "third_party/blink/public/mojom/chromeos/diagnostics/cros_diagnostics.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_cpu_info.h"
 #include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_logical_cpu_info.h"
