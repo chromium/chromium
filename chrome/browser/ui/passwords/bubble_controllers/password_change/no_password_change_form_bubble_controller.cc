@@ -35,7 +35,9 @@ void NoPasswordChangeFormBubbleController::Restart() {
 void NoPasswordChangeFormBubbleController::Cancel() {
   dismissal_reason_ = metrics_util::CLICKED_CANCEL;
   CHECK(password_change_delegate_);
-  password_change_delegate_->Stop();
+  if (password_change_delegate_) {
+    password_change_delegate_->Stop();
+  }
 }
 
 std::u16string NoPasswordChangeFormBubbleController::GetTitle() const {
