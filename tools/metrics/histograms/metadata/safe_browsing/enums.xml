@@ -123,6 +123,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Managed Pref"/>
 </enum>
 
+<enum name="BooleanRepeatVisit">
+  <int value="0" label="Never visited before"/>
+  <int value="1" label="Visited before"/>
+</enum>
+
 <enum name="BooleanSafeBrowsingApiUnknownException">
   <int value="0" label="Known exception"/>
   <int value="1" label="Unknown exception"/>
