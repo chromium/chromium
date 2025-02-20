@@ -19,7 +19,8 @@ namespace web_app {
 class WebApp;
 class WebAppRegistrar;
 
-constexpr SquareSizePx kIdentitySizes[] = {kInstallIconSize, kLauncherIconSize};
+inline constexpr SquareSizePx kIdentitySizes[] = {kInstallIconSize,
+                                                  kLauncherIconSize};
 
 // This enum is recorded by UMA, the numeric values must not change.
 enum class ManifestUpdateResult {

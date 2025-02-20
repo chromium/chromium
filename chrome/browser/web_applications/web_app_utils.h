@@ -152,7 +152,7 @@ bool IsInScope(const GURL& url, const GURL& scope);
 // Returns whether the `login_mode` should force a start at OS login.
 bool IsRunOnOsLoginModeEnabledForAutostart(RunOnOsLoginMode login_mode);
 
-constexpr char kAppSettingsPageEntryPointsHistogramName[] =
+inline constexpr char kAppSettingsPageEntryPointsHistogramName[] =
     "WebApp.AppSettingsPage.EntryPoints";
 
 // These are used in histograms, do not remove/renumber entries. If you're
