@@ -163,6 +163,8 @@ void MojoCdmHelper::RecordUkm(const CdmMetricsData& cdm_metrics_data) {
         cdm_metrics_data.decoder_bypass_block_count.value());
   }
 
+  ukm_builder.SetNumberOfVideoFrames(cdm_metrics_data.video_frames_processed);
+
   ukm_builder.Record(ukm_recorder_.get());
 }
 
