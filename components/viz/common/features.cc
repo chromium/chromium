@@ -365,10 +365,10 @@ BASE_FEATURE(kEnableADPFSetThreads,
 // If enabled, surface activation and draw do not block on dependencies.
 BASE_FEATURE(kDrawImmediatelyWhenInteractive,
              "DrawImmediatelyWhenInteractive",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
 
@@ -377,7 +377,12 @@ BASE_FEATURE(kDrawImmediatelyWhenInteractive,
 // work and contention, but should regularize the timing of client rendering.
 BASE_FEATURE(kAckOnSurfaceActivationWhenInteractive,
              "AckOnSurfaceActivationWhenInteractive",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 const base::FeatureParam<int>
     kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction{

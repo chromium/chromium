@@ -9047,15 +9047,12 @@
     "EnableImmediateDrawDuringScrollInteraction": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview",
+                "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "EnabledV4",
+                    "name": "Enabled",
                     "enable_features": [
                         "AckOnSurfaceActivationWhenInteractive",
                         "DrawImmediatelyWhenInteractive"
