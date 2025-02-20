@@ -2680,6 +2680,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.StreamAttemptSSLConfigWaitTime" units="ms"
+    expires_after="2025-07-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record the time that a StreamAttempt is waiting for SSLConfig. Recorded for
+    each StreamAttempt if it waited for SSLConfig.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.StreamAttemptTime.{Result}" units="ms"
     expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
