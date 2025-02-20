@@ -13,7 +13,7 @@ BASE_FEATURE(kPrefetchUseContentRefactor,
 
 BASE_FEATURE(kPrefetchReusable,
              "PrefetchReusable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
     &kPrefetchReusable, "prefetch_reusable_body_size_limit", 65536};
