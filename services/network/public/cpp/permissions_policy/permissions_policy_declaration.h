@@ -18,7 +18,7 @@ namespace network {
 // replicated between a RenderFrame and any of its associated
 // RenderFrameProxies. A list of these form a ParsedPermissionsPolicy. NOTE:
 // These types are used for replication frame state between processes.
-struct COMPONENT_EXPORT(NETWORK_CPP) ParsedPermissionsPolicyDeclaration {
+struct COMPONENT_EXPORT(NETWORK_CPP) ParsedPermissionsPolicyDeclaration final {
   ParsedPermissionsPolicyDeclaration();
   explicit ParsedPermissionsPolicyDeclaration(
       network::mojom::PermissionsPolicyFeature feature);
@@ -32,6 +32,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP) ParsedPermissionsPolicyDeclaration {
       const ParsedPermissionsPolicyDeclaration& rhs);
   ParsedPermissionsPolicyDeclaration& operator=(
       const ParsedPermissionsPolicyDeclaration& rhs);
+  ParsedPermissionsPolicyDeclaration(
+      ParsedPermissionsPolicyDeclaration&&) noexcept;
+  ParsedPermissionsPolicyDeclaration& operator=(
+      ParsedPermissionsPolicyDeclaration&&) noexcept;
   ~ParsedPermissionsPolicyDeclaration();
 
   // Prefer querying a PermissionsPolicy::Allowlist directly if possible. This
@@ -48,23 +52,22 @@ struct COMPONENT_EXPORT(NETWORK_CPP) ParsedPermissionsPolicyDeclaration {
   // An origin that matches self if 'self' is in the allowlist.
   std::optional<url::Origin> self_if_matches;
   // Fallback value is used when feature is enabled for all or disabled for all.
-  bool matches_all_origins{false};
+  bool matches_all_origins = false;
   // This flag is set true for a declared policy on an <iframe sandbox>
   // container, for a feature which is supposed to be allowed in the sandboxed
   // document. Usually, the 'src' keyword in a declaration will cause the origin
   // of the iframe to be present in |origins|, but for sandboxed iframes, this
   // flag is set instead.
-  bool matches_opaque_src{false};
+  bool matches_opaque_src = false;
 
   std::optional<std::string> reporting_endpoint;
+
+  friend bool operator==(const ParsedPermissionsPolicyDeclaration& lhs,
+                         const ParsedPermissionsPolicyDeclaration& rhs) =
+      default;
 };
 
 using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;
-
-bool COMPONENT_EXPORT(
-    NETWORK_CPP) operator==(const ParsedPermissionsPolicyDeclaration & lhs,
-                            const ParsedPermissionsPolicyDeclaration &
-                                rhs);
 
 }  // namespace network
 

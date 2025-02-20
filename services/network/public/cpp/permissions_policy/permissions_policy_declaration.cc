@@ -27,8 +27,8 @@ ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
     bool matches_all_origins,
     bool matches_opaque_src)
     : feature(feature),
-      allowed_origins(std::move(allowed_origins)),
-      self_if_matches(std::move(self_if_matches)),
+      allowed_origins(allowed_origins),
+      self_if_matches(self_if_matches),
       matches_all_origins(matches_all_origins),
       matches_opaque_src(matches_opaque_src) {}
 
@@ -39,6 +39,13 @@ ParsedPermissionsPolicyDeclaration&
 ParsedPermissionsPolicyDeclaration::operator=(
     const ParsedPermissionsPolicyDeclaration& rhs) = default;
 
+ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
+    ParsedPermissionsPolicyDeclaration&&) noexcept = default;
+
+ParsedPermissionsPolicyDeclaration&
+ParsedPermissionsPolicyDeclaration::operator=(
+    ParsedPermissionsPolicyDeclaration&&) noexcept = default;
+
 bool ParsedPermissionsPolicyDeclaration::Contains(
     const url::Origin& origin) const {
   if (matches_all_origins || (matches_opaque_src && origin.opaque())) {
@@ -47,23 +54,13 @@ bool ParsedPermissionsPolicyDeclaration::Contains(
   if (origin == self_if_matches) {
     return true;
   }
-  for (const auto& origin_with_possible_wildcards : allowed_origins) {
-    if (origin_with_possible_wildcards.DoesMatchOrigin(origin)) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      allowed_origins, [&origin](const auto& origin_with_possible_wildcards) {
+        return origin_with_possible_wildcards.DoesMatchOrigin(origin);
+      });
 }
 
 ParsedPermissionsPolicyDeclaration::~ParsedPermissionsPolicyDeclaration() =
     default;
-
-bool operator==(const ParsedPermissionsPolicyDeclaration& lhs,
-                const ParsedPermissionsPolicyDeclaration& rhs) {
-  return std::tie(lhs.feature, lhs.matches_all_origins, lhs.matches_opaque_src,
-                  lhs.allowed_origins) ==
-         std::tie(rhs.feature, rhs.matches_all_origins, rhs.matches_opaque_src,
-                  rhs.allowed_origins);
-}
 
 }  // namespace network
