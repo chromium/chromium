@@ -622,8 +622,10 @@ void ContentPasswordManagerDriver::FocusedInputChanged(
     autofill::FieldRendererId focused_field_id,
     FocusedFieldType focused_field_type) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
-          render_frame_host_))
+          render_frame_host_)) {
     return;
+  }
+  GetPasswordAutofillManager()->FocusedInputChanged();
   client_->FocusedInputChanged(this, focused_field_id, focused_field_type);
 }
 

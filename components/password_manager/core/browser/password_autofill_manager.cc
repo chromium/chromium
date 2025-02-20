@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
@@ -55,6 +56,7 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -69,6 +71,10 @@ namespace {
 using autofill::Suggestion;
 using autofill::password_generation::PasswordGenerationType;
 using IsLoading = autofill::Suggestion::IsLoading;
+
+// This covers the 95th percentile on desktop platforms. See
+// `PasswordManager.PasskeyRetrievalWaitDuration` metric.
+constexpr base::TimeDelta kWaitForPasskeysDelay = base::Milliseconds(4000);
 
 // If `suggestion` was made for an empty username, then return the empty
 // string, otherwise return `suggestion`.
@@ -341,6 +347,40 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
     manual_fallback_flow_->RunFlow(element_id, bounds, text_direction);
     return;
   }
+
+  if (trigger_source == autofill::AutofillSuggestionTriggerSource::
+                            kPasswordManagerProcessedFocusedField &&
+      base::FeatureList::IsEnabled(
+          features::kDelaySuggestionsOnAutofocusWaitingForPasskeys) &&
+      show_webauthn_credentials.value()) {
+    WebAuthnCredentialsDelegate* delegate =
+        password_client_->GetWebAuthnCredentialsDelegateForDriver(
+            password_manager_driver_);
+    if (delegate && !delegate->GetPasskeys().has_value()) {
+      if (!wait_for_passkeys_timer_.IsRunning()) {
+        base::OnceClosure continue_callback = base::BindOnce(
+            &PasswordAutofillManager::ContinueShowingPasswordSuggestions,
+            GetWeakPtr(), element_id, text_direction, typed_username,
+            show_webauthn_credentials, bounds);
+        wait_for_passkeys_timer_.Start(FROM_HERE, kWaitForPasskeysDelay,
+                                       std::move(continue_callback));
+      }
+      return;
+    }
+  }
+
+  wait_for_passkeys_timer_.Stop();
+
+  ContinueShowingPasswordSuggestions(element_id, text_direction, typed_username,
+                                     show_webauthn_credentials, bounds);
+}
+
+void PasswordAutofillManager::ContinueShowingPasswordSuggestions(
+    autofill::FieldRendererId element_id,
+    base::i18n::TextDirection text_direction,
+    const std::u16string& typed_username,
+    ShowWebAuthnCredentials show_webauthn_credentials,
+    const gfx::RectF& bounds) {
   bool autofill_available =
       ShowPopup(bounds, text_direction,
                 suggestion_generator_.GetSuggestionsForDomain(
@@ -394,6 +434,7 @@ void PasswordAutofillManager::DidNavigateMainFrame() {
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
   cross_domain_confirmation_controller_.reset();
 #endif
+  wait_for_passkeys_timer_.Stop();
 }
 
 bool PasswordAutofillManager::PreviewSuggestionForTest(
@@ -613,6 +654,10 @@ void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
 void PasswordAutofillManager::HidePopup() {
   autofill_client_->HideAutofillSuggestions(
       autofill::SuggestionHidingReason::kAcceptSuggestion);
+}
+
+void PasswordAutofillManager::FocusedInputChanged() {
+  wait_for_passkeys_timer_.Stop();
 }
 
 }  //  namespace password_manager

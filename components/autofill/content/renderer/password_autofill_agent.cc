@@ -627,6 +627,13 @@ PasswordAutofillAgent::FocusStateNotifier::~FocusStateNotifier() = default;
 
 void PasswordAutofillAgent::FocusStateNotifier::FocusedElementChanged(
     const WebElement& element) {
+  auto field_info = GetFocusedFieldInfo(element);
+  NotifyIfChanged(field_info.first, field_info.second);
+}
+
+std::pair<mojom::FocusedFieldType, FieldRendererId>
+PasswordAutofillAgent::FocusStateNotifier::GetFocusedFieldInfo(
+    const WebElement& element) {
   mojom::FocusedFieldType new_focused_field_type =
       mojom::FocusedFieldType::kUnknown;
   FieldRendererId new_focused_field_id = FieldRendererId();
@@ -634,7 +641,7 @@ void PasswordAutofillAgent::FocusStateNotifier::FocusedElementChanged(
     new_focused_field_type = GetFieldType(form_control_element);
     new_focused_field_id = form_util::GetFieldRendererId(form_control_element);
   }
-  NotifyIfChanged(new_focused_field_type, new_focused_field_id);
+  return {new_focused_field_type, new_focused_field_id};
 }
 
 mojom::FocusedFieldType PasswordAutofillAgent::FocusStateNotifier::GetFieldType(
@@ -2341,6 +2348,13 @@ void PasswordAutofillAgent::MaybeTriggerSuggestionsOnFocusedElement(
 #endif  // BUILDFLAG(IS_ANDROID)
       base::FeatureList::IsEnabled(
           password_manager::features::kShowSuggestionsOnAutofocus)) {
+    // Updating the focused field in the `FocusStateNotifier` to the currently
+    // focused field is typically a no-op, but this isn't set for an
+    // autofocused field. Setting it here allows a notification to proceed
+    // when the initially-focused field is blurred.
+    std::tie(focus_state_notifier_.focused_field_type_,
+             focus_state_notifier_.focused_field_id_) =
+        focus_state_notifier_.GetFocusedFieldInfo(focused_element);
     autofill_agent_->TriggerSuggestions(
         form_util::GetFieldRendererId(focused_element),
         AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField);

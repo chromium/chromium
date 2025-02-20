@@ -325,6 +325,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
         const blink::WebFormControlElement& node);
     void NotifyIfChanged(mojom::FocusedFieldType new_focused_field_type,
                          FieldRendererId new_focused_field_id);
+    std::pair<mojom::FocusedFieldType, FieldRendererId> GetFocusedFieldInfo(
+        const blink::WebElement& element);
 
     FieldRendererId focused_field_id_;
     mojom::FocusedFieldType focused_field_type_ =

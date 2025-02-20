@@ -125,6 +125,12 @@ constexpr char kDropdownSelectedHistogram[] =
 constexpr char kDropdownShownHistogram[] =
     "PasswordManager.PasswordDropdownShown";
 
+// Fields for PasskeyCredentials.
+const std::vector<uint8_t> kPasskeyId = {1, 2, 3, 4};
+const std::string kPasskeyIdBase64 = base::Base64Encode(kPasskeyId);
+constexpr char kPasskeyNameUtf8[] = "nadeshiko@example.com";
+const std::u16string kPasskeyName = u"nadeshiko@example.com";
+
 constexpr auto kDefaultTriggerSource =
     autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked;
 
@@ -347,6 +353,14 @@ class PasswordAutofillManagerTest : public testing::Test {
         password_autofill_manager_->manual_fallback_flow());
   }
 
+  PasskeyCredential MakeTestPasskeyCredential() {
+    return PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
+                             PasskeyCredential::RpId("example.com"),
+                             PasskeyCredential::CredentialId(kPasskeyId),
+                             PasskeyCredential::UserId(),
+                             PasskeyCredential::Username(kPasskeyNameUtf8));
+  }
+
  protected:
   void SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(bool enable) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -366,6 +380,10 @@ class PasswordAutofillManagerTest : public testing::Test {
 
   autofill::PasswordFormFillData& fill_data() { return fill_data_; }
 
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
   std::unique_ptr<PasswordAutofillManager> password_autofill_manager_;
 
   std::unique_ptr<MockWebAuthnCredentialsDelegate>
@@ -381,7 +399,8 @@ class PasswordAutofillManagerTest : public testing::Test {
 
   // The TestAutofillDriver uses a SequencedWorkerPool which expects the
   // existence of a MessageLoop.
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(PasswordAutofillManagerTest, SuccessfulFillSuggestion) {
@@ -1344,15 +1363,7 @@ TEST_F(PasswordAutofillManagerTest,
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // Return a WebAuthn credential.
-  const std::vector<uint8_t> kId = {1, 2, 3, 4};
-  const std::string kIdBase64 = base::Base64Encode(kId);
-  const std::string kNameUtf8 = "nadeshiko@example.com";
-  const std::u16string kName = u"nadeshiko@example.com";
-  PasskeyCredential passkey(PasskeyCredential::Source::kAndroidPhone,
-                            PasskeyCredential::RpId("example.com"),
-                            PasskeyCredential::CredentialId(kId),
-                            PasskeyCredential::UserId(),
-                            PasskeyCredential::Username(kNameUtf8));
+  auto passkey = MakeTestPasskeyCredential();
   std::optional<std::vector<PasskeyCredential>> passkey_list =
       std::vector<PasskeyCredential>{passkey};
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
@@ -1380,10 +1391,10 @@ TEST_F(PasswordAutofillManagerTest,
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::Guid>().value(),
-            kIdBase64);
+            kPasskeyIdBase64);
   EXPECT_EQ(open_args.suggestions[0].type,
             autofill::SuggestionType::kWebauthnCredential);
-  EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
+  EXPECT_EQ(open_args.suggestions[0].main_text.value, kPasskeyName);
   EXPECT_TRUE(absl::holds_alternative<gfx::Image>(
       open_args.suggestions[0].custom_icon));
   EXPECT_TRUE(AreImagesEqual(
@@ -1396,16 +1407,18 @@ TEST_F(PasswordAutofillManagerTest,
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that preview of the "username" (i.e. the credential name) works.
-  EXPECT_CALL(*client.mock_driver(),
-              PreviewSuggestion(kName, /*password=*/std::u16string(u"")));
+  EXPECT_CALL(
+      *client.mock_driver(),
+      PreviewSuggestion(kPasskeyName, /*password=*/std::u16string(u"")));
   const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
-      autofill::SuggestionType::kWebauthnCredential, kName,
-      autofill::Suggestion::Guid(kIdBase64));
+      autofill::SuggestionType::kWebauthnCredential, kPasskeyName,
+      autofill::Suggestion::Guid(kPasskeyIdBase64));
   password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that selecting the credential reports back to the client.
-  EXPECT_CALL(*webauthn_credentials_delegate_, SelectPasskey(kIdBase64, _));
+  EXPECT_CALL(*webauthn_credentials_delegate_,
+              SelectPasskey(kPasskeyIdBase64, _));
   EXPECT_CALL(*webauthn_credentials_delegate_, HasPendingPasskeySelection)
       .WillOnce(Return(true));
   EXPECT_CALL(autofill_client,
@@ -1438,15 +1451,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // Return a WebAuthn credential.
-  const std::vector<uint8_t> kId = {1, 2, 3, 4};
-  const std::string kIdBase64 = base::Base64Encode(kId);
-  const std::string kNameUtf8 = "nadeshiko@example.com";
-  const std::u16string kName = u"nadeshiko@example.com";
-  PasskeyCredential passkey(PasskeyCredential::Source::kAndroidPhone,
-                            PasskeyCredential::RpId("example.com"),
-                            PasskeyCredential::CredentialId(kId),
-                            PasskeyCredential::UserId(),
-                            PasskeyCredential::Username(kNameUtf8));
+  auto passkey = MakeTestPasskeyCredential();
   std::optional<std::vector<PasskeyCredential>> passkey_list =
       std::vector<PasskeyCredential>{passkey};
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
@@ -1474,10 +1479,10 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::Guid>().value(),
-            kIdBase64);
+            kPasskeyIdBase64);
   EXPECT_EQ(open_args.suggestions[0].type,
             autofill::SuggestionType::kWebauthnCredential);
-  EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
+  EXPECT_EQ(open_args.suggestions[0].main_text.value, kPasskeyName);
   EXPECT_TRUE(absl::holds_alternative<gfx::Image>(
       open_args.suggestions[0].custom_icon));
   EXPECT_TRUE(AreImagesEqual(
@@ -1490,16 +1495,18 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that preview of the "username" (i.e. the credential name) works.
-  EXPECT_CALL(*client.mock_driver(),
-              PreviewSuggestion(kName, /*password=*/std::u16string(u"")));
+  EXPECT_CALL(
+      *client.mock_driver(),
+      PreviewSuggestion(kPasskeyName, /*password=*/std::u16string(u"")));
   const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
-      autofill::SuggestionType::kWebauthnCredential, kName,
-      autofill::Suggestion::Guid(kIdBase64));
+      autofill::SuggestionType::kWebauthnCredential, kPasskeyName,
+      autofill::Suggestion::Guid(kPasskeyIdBase64));
   password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that selecting the credential reports back to the client.
-  EXPECT_CALL(*webauthn_credentials_delegate_, SelectPasskey(kIdBase64, _));
+  EXPECT_CALL(*webauthn_credentials_delegate_,
+              SelectPasskey(kPasskeyIdBase64, _));
   EXPECT_CALL(*webauthn_credentials_delegate_, HasPendingPasskeySelection)
       .WillOnce(Return(true));
   EXPECT_CALL(autofill_client,
@@ -1598,14 +1605,8 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Enable WebAuthn autofill to return a credential.
-  PasskeyCredential passkey(
-      PasskeyCredential::Source::kAndroidPhone,
-      PasskeyCredential::RpId("rpid.com"),
-      PasskeyCredential::CredentialId({1, 2, 3, 4}),
-      PasskeyCredential::UserId({1, 2, 3, 4}),
-      PasskeyCredential::Username("nadeshiko@example.com"));
   std::optional<std::vector<PasskeyCredential>> passkeys =
-      std::vector{std::move(passkey)};
+      std::vector{MakeTestPasskeyCredential()};
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
   EXPECT_CALL(*webauthn_credentials_delegate_,
@@ -1651,14 +1652,8 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Enable WebAuthn autofill to return a credential.
-  PasskeyCredential passkey(
-      PasskeyCredential::Source::kAndroidPhone,
-      PasskeyCredential::RpId("rpid.com"),
-      PasskeyCredential::CredentialId({1, 2, 3, 4}),
-      PasskeyCredential::UserId({1, 2, 3, 4}),
-      PasskeyCredential::Username("nadeshiko@example.com"));
   std::optional<std::vector<PasskeyCredential>> passkeys =
-      std::vector{std::move(passkey)};
+      std::vector{MakeTestPasskeyCredential()};
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
   EXPECT_CALL(*webauthn_credentials_delegate_,
@@ -1838,17 +1833,8 @@ TEST_F(PasswordAutofillManagerTest,
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
 
-  const std::vector<uint8_t> kId = {1, 2, 3, 4};
-  const std::string kIdBase64 = base::Base64Encode(kId);
-  const std::u16string kName = u"coolname@example.com";
-  PasskeyCredential passkey(
-      PasskeyCredential::Source::kAndroidPhone,
-      PasskeyCredential::RpId("example.com"),
-      PasskeyCredential::CredentialId(kId), PasskeyCredential::UserId(),
-      PasskeyCredential::Username(base::UTF16ToUTF8(kName)));
-
   std::optional<std::vector<PasskeyCredential>> passkey_list =
-      std::vector<PasskeyCredential>{passkey};
+      std::vector<PasskeyCredential>{MakeTestPasskeyCredential()};
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkey_list));
 
@@ -1970,6 +1956,109 @@ TEST_F(PasswordAutofillManagerTest, EmitUMAIfAtLeastOneGroupedCredential) {
       /*expected_bucket_count=*/1);
 }
 #endif
+
+TEST_F(PasswordAutofillManagerTest, WaitForPasskeysWithAutofocusTrigger) {
+  base::test::ScopedFeatureList wait_for_passkey_feature_list_(
+      features::kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+#if BUILDFLAG(IS_ANDROID)
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+#endif  // BUILDFLAG(IS_ANDROID)
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  EXPECT_CALL(*webauthn_credentials_delegate_,
+              IsSecurityKeyOrHybridFlowAvailable)
+      .WillRepeatedly(Return(false));
+
+  std::optional<std::vector<PasskeyCredential>> nullopt = std::nullopt;
+  EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
+      .WillRepeatedly(ReturnRef(nullopt));
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions).Times(0);
+
+  // This call will not attempt to show suggestions because passkeys are still
+  // pending.
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      kElementId,
+      autofill::AutofillSuggestionTriggerSource::
+          kPasswordManagerProcessedFocusedField,
+      base::i18n::RIGHT_TO_LEFT,
+      /*typed_username=*/std::u16string(), ShowWebAuthnCredentials(true),
+      element_bounds);
+
+  // Simulate a WebAuthn credential being provided by the platform via the
+  // WebAuthnCredentialsDelegate.
+  std::optional<std::vector<PasskeyCredential>> passkey_list =
+      std::vector<PasskeyCredential>{MakeTestPasskeyCredential()};
+  EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
+      .WillRepeatedly(ReturnRef(passkey_list));
+
+  // Show password suggestions including WebAuthn credentials.
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
+      .WillOnce(SavePopupOpenArgs(open_args));
+
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  ASSERT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(
+                  autofill::SuggestionType::kWebauthnCredential,
+                  autofill::SuggestionType::kPasswordEntry,
+                  autofill::SuggestionType::kSeparator,
+                  autofill::SuggestionType::kAllSavedPasswordsEntry));
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       WaitForPasskeysOverriddenByNonAutofocusTrigger) {
+  base::test::ScopedFeatureList wait_for_passkey_feature_list_(
+      features::kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+#if BUILDFLAG(IS_ANDROID)
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+#endif  // BUILDFLAG(IS_ANDROID)
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  EXPECT_CALL(*webauthn_credentials_delegate_,
+              IsSecurityKeyOrHybridFlowAvailable)
+      .WillRepeatedly(Return(false));
+
+  std::optional<std::vector<PasskeyCredential>> nullopt = std::nullopt;
+  EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
+      .WillRepeatedly(ReturnRef(nullopt));
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions).Times(0);
+
+  // This call will not attempt to show suggestions because passkeys are still
+  // pending.
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      kElementId,
+      autofill::AutofillSuggestionTriggerSource::
+          kPasswordManagerProcessedFocusedField,
+      base::i18n::RIGHT_TO_LEFT,
+      /*typed_username=*/std::u16string(), ShowWebAuthnCredentials(true),
+      element_bounds);
+
+  // Show password suggestions without any passkeys.
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
+      .WillOnce(SavePopupOpenArgs(open_args));
+
+  // Called again with different trigger.
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      /*typed_username=*/std::u16string(), ShowWebAuthnCredentials(true),
+      element_bounds);
+
+  ASSERT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(
+                  autofill::SuggestionType::kPasswordEntry,
+                  autofill::SuggestionType::kSeparator,
+                  autofill::SuggestionType::kAllSavedPasswordsEntry));
+}
 
 }  // namespace
 }  // namespace password_manager
