@@ -34,6 +34,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #endif
 
 namespace contextual_cueing {
@@ -181,6 +182,18 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
     recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownIPH);
     return true;
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+
+  if (glic_service->IsWindowShowing()) {
+    recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownWindowShowing);
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   return false;
 }
