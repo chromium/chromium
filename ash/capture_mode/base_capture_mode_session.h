@@ -188,7 +188,8 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
       ActionButtonRank rank,
       ActionButtonViewID id) = 0;
 
-  // Adds an action button that can be clicked to fetch smart actions.
+  // Adds an action button that can be clicked to fetch smart actions if the
+  // current behaviour allows showing it, and the device is online.
   virtual void AddSmartActionsButton() = 0;
 
   // Checks if the controller needs to show the scanner disclaimer and shows if
