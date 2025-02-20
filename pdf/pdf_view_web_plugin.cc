@@ -276,16 +276,19 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
   ~PdfInkModuleClientImpl() override = default;
 
   // PdfInkModuleClient:
+  void DiscardStroke(int page_index, InkStrokeId id) override {
+    plugin_->engine_->DiscardStroke(page_index, id);
+  }
+
   PageOrientation GetOrientation() const override {
     return plugin_->engine_->GetCurrentOrientation();
   }
 
-  gfx::Rect GetPageContentsRect(int index) override {
-    if (index < 0 || index >= plugin_->engine_->GetNumberOfPages()) {
+  gfx::Rect GetPageContentsRect(int page_index) override {
+    if (page_index < 0 || page_index >= plugin_->engine_->GetNumberOfPages()) {
       return gfx::Rect();
     }
-
-    return plugin_->engine_->GetPageContentsRect(index);
+    return plugin_->engine_->GetPageContentsRect(page_index);
   }
 
   gfx::Vector2dF GetViewportOriginOffset() override {
@@ -360,10 +363,6 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
                           InkStrokeId id,
                           bool active) override {
     plugin_->engine_->UpdateStrokeActive(page_index, id, active);
-  }
-
-  void DiscardStroke(int page_index, InkStrokeId id) override {
-    plugin_->engine_->DiscardStroke(page_index, id);
   }
 
   void UpdateThumbnail(int page_index) override {

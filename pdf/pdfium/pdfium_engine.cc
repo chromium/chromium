@@ -2659,8 +2659,8 @@ int PDFiumEngine::GetMostVisiblePage() {
   return most_visible_page_;
 }
 
-gfx::Rect PDFiumEngine::GetPageContentsRect(int index) {
-  return GetScreenRect(pages_[index]->rect());
+gfx::Rect PDFiumEngine::GetPageContentsRect(int page_index) {
+  return GetScreenRect(pages_[page_index]->rect());
 }
 
 void PDFiumEngine::SetGrayscale(bool grayscale) {
