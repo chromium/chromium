@@ -206,7 +206,8 @@ if (e2eProcess.stdout) {
   e2eProcess.stdout.pipe(addPrefix()).pipe(syncFileStreams);
 }
 
-e2eProcess.on('error', () => {
+e2eProcess.on('error', (error) => {
+  console.log('starting e2e tests failed', error);
   serverProcess.kill();
   process.exit(1);
 });
