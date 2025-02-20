@@ -187,6 +187,13 @@ inline constexpr base::FeatureParam<int>
         &kSyncEnablePasswordsSyncErrorMessageAlternative, "version", 1};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Test-only flag to simulate a ping-pong behavior for bookmarks: two clients
+// sync-ing to the same account, using a different value for this flag, will
+// produce an active ping-pong, where one of them will try to clear the
+// `unique_position` field in BookmarkSpecifics, whereas the other one will try
+// to ensure it is populated.
+BASE_DECLARE_FEATURE(kSyncSimulateBookmarksPingPongForTesting);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
