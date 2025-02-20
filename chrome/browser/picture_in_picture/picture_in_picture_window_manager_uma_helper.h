@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_UMA_HELPER_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_UMA_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
