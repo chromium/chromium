@@ -27,6 +27,7 @@ import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.url.GURL;
 
 import java.util.Map;
+import java.util.Optional;
 
 /** Unit tests for {@link AutofillImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -203,6 +204,29 @@ public class AutofillImageFetcherTest {
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
 
         expectedHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetPixAccountImageIfAvailable_imageInCache() {
+        GURL validUrl = new GURL("https://www.google.com/valid-image-url");
+        GURL cachedValidUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(validUrl);
+        mImageFetcher.addImageToCacheForTesting(cachedValidUrl, TEST_CARD_ART_IMAGE);
+
+        Optional<Bitmap> pixAccountImage = mImageFetcher.getPixAccountImageIfAvailable(validUrl);
+
+        assertTrue(pixAccountImage.isPresent());
+        assertTrue(TEST_CARD_ART_IMAGE.sameAs(pixAccountImage.get()));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetPixAccountImageIfAvailable_imageNotInCache() {
+        GURL validUrl = new GURL("https://www.google.com/valid-image-url");
+
+        Optional<Bitmap> pixAccountImage = mImageFetcher.getPixAccountImageIfAvailable(validUrl);
+
+        assertFalse(pixAccountImage.isPresent());
     }
 
     @Test

@@ -1174,6 +1174,16 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
+     * Requests the Pix account image for the given URL from image fetcher.
+     *
+     * @param url URL for the image.
+     * @return Bitmap image if found in the local cache, else return an empty object.
+     */
+    public Optional<Bitmap> getPixAccountImageIfAvailable(GURL url) {
+        return mImageFetcher.getPixAccountImageIfAvailable(url);
+    }
+
+    /**
      * Returns the {@link AutofillImageFetcher} that is used to download and cache icons for payment
      * methods.
      */

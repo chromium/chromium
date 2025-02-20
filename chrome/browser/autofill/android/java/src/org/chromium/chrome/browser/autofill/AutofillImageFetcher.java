@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
@@ -66,23 +67,33 @@ public class AutofillImageFetcher {
     @CalledByNative
     void prefetchPixAccountImages(@JniType("base::span<const GURL>") GURL[] urls) {
         for (GURL url : urls) {
-            if (!url.isValid()) {
+            if (url == null || !url.isValid()) {
                 continue;
             }
 
             GURL urlWithParams = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
-
-            if (mImagesCache.containsKey(urlWithParams.getSpec())) {
-                continue;
-            }
-
-            ImageFetcher.Params params =
-                    ImageFetcher.Params.create(
-                            urlWithParams.getSpec(),
-                            ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
-            mImageFetcher.fetchImage(
-                    params, bitmap -> treatAndCachePixAccountImage(bitmap, urlWithParams));
+            fetchImage(
+                    urlWithParams, bitmap -> treatAndCachePixAccountImage(bitmap, urlWithParams));
         }
+    }
+
+    /**
+     * Returns the Pix bank account image if it exists in the image cache. If not, fetches it from
+     * the server and caches it for the next time.
+     *
+     * @param url The URL for the image.
+     * @return Bitmap image for the passed in URL if it exists in cache, an empty object otherwise.
+     */
+    Optional<Bitmap> getPixAccountImageIfAvailable(GURL url) {
+        GURL cachedUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
+        // Check if the image is available in the cache.
+        if (mImagesCache.containsKey(cachedUrl.getSpec())) {
+            return Optional.of(mImagesCache.get(cachedUrl.getSpec()));
+        }
+
+        // If not, fetch the image from the server, and cache for next time. Return empty object.
+        fetchImage(cachedUrl, bitmap -> treatAndCachePixAccountImage(bitmap, cachedUrl));
+        return Optional.empty();
     }
 
     /**
@@ -152,6 +163,29 @@ public class AutofillImageFetcher {
                         bitmap, cardIconSpecs, true));
     }
 
+    /**
+     * Fetches image for the given URL and passes it to the callback.
+     *
+     * @param customUrl The final URL including any params to fetch the image.
+     * @param onImageFetched The callback to be called with the fetched image.
+     */
+    private void fetchImage(GURL customUrl, Callback<Bitmap> onImageFetched) {
+        if (mImagesCache.containsKey(customUrl.getSpec())) {
+            return;
+        }
+
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(
+                        customUrl.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
+        mImageFetcher.fetchImage(params, onImageFetched);
+    }
+
+    /**
+     * Adds enhancements to Pix account image, and caches it.
+     *
+     * @param bitmap The Bitmap fetched from server.
+     * @param urlToCache The key against which the treated Bitmap is cached.
+     */
     private void treatAndCachePixAccountImage(Bitmap bitmap, GURL urlToCache) {
         RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
 
