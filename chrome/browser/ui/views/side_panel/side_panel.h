@@ -38,6 +38,7 @@ class SidePanel : public views::AccessiblePaneView,
   ~SidePanel() override;
 
   void SetPanelWidth(int width);
+  bool ShouldRestrictMaxWidth() const;
   void UpdateWidthOnEntryChanged();
   void UpdateSidePanelWidthPref(const std::string& panel_id, int width);
   double GetAnimationValue() const;

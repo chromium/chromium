@@ -355,6 +355,21 @@ void SidePanel::SetPanelWidth(int width) {
   SetPreferredSize(gfx::Size(width, 1));
 }
 
+bool SidePanel::ShouldRestrictMaxWidth() const {
+  // TODO(crbug.com/394339052): Only restricting width for only non-read
+  // anything content is a temporary solution and UX will investigate a better
+  // long term solution.
+  SidePanelUI* coordinator =
+      browser_view_->browser()->GetFeatures().side_panel_ui();
+  if (!coordinator) {
+    return true;
+  }
+  std::optional<SidePanelEntry::Id> side_panel_entry_id =
+      coordinator->GetCurrentEntryId();
+  return !side_panel_entry_id.has_value() ||
+         side_panel_entry_id.value() != SidePanelEntryId::kReadAnything;
+}
+
 void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
   if (radii == background_radii_) {
     return;
