@@ -31,7 +31,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -118,8 +117,6 @@ public class StripLayoutHelperManager
                 TabStripTransitionDelegate,
                 TopResumedActivityChangedObserver,
                 AppHeaderObserver {
-    private static final String TAG = "StripLayoutHelperMgr";
-
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
      * fix experiment where we create a placeholder tab strip on startup to mitigate jank as tabs
@@ -870,15 +867,7 @@ public class StripLayoutHelperManager
 
     @Override
     public void onHeightChanged(int newHeightPx, boolean applyScrimOverlay) {
-        if (applyScrimOverlay
-                && mFadeTransitionAnimator != null
-                && mFadeTransitionAnimator.isRunning()) {
-            Log.w(
-                    TAG,
-                    "Scrim update may be conflicted due to simultaneous fade and height"
-                            + " transitions.");
-        }
-        if (applyScrimOverlay) {
+        if (applyScrimOverlay && !isFadeTransitionRunning()) {
             mIsHeightTransitioning = true;
             boolean hideStrip = newHeightPx == 0;
             mStripTransitionScrimOpacity = hideStrip ? 0f : 1f;
@@ -924,7 +913,7 @@ public class StripLayoutHelperManager
         mStatusBarColorController.setTabStripColorOverlay(
                 getStripTransitionScrimColor(), newOpacity);
 
-        if (mFadeTransitionAnimator != null && mFadeTransitionAnimator.isRunning()) {
+        if (isFadeTransitionRunning()) {
             mFadeTransitionAnimator.cancel();
         }
         mFadeTransitionAnimator =
@@ -957,11 +946,15 @@ public class StripLayoutHelperManager
                 StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION, /* clear= */ true);
     }
 
+    private boolean isFadeTransitionRunning() {
+        return mFadeTransitionAnimator != null && mFadeTransitionAnimator.isRunning();
+    }
+
     @Override
     public void onHeightTransitionFinished() {
         if (!mIsHeightTransitioning) return;
 
-        assert mFadeTransitionAnimator == null || !mFadeTransitionAnimator.isRunning()
+        assert !isFadeTransitionRunning()
                 : "Fade transition should not be running when a height transition to update the"
                         + " scrim is finishing.";
         mIsHeightTransitioning = false;
@@ -986,7 +979,7 @@ public class StripLayoutHelperManager
         }
 
         // Stop any running fade transition animation that is updating the scrim opacity.
-        if (mFadeTransitionAnimator != null && mFadeTransitionAnimator.isRunning()) {
+        if (isFadeTransitionRunning()) {
             mFadeTransitionAnimator.cancel();
         }
 
