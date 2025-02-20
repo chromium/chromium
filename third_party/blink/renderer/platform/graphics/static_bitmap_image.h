@@ -87,7 +87,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
 
   bool IsPremultiplied() const {
-    return GetSkImageInfo().alphaType() == SkAlphaType::kPremul_SkAlphaType;
+    return GetAlphaType() == SkAlphaType::kPremul_SkAlphaType;
   }
 
   // Methods have exactly the same implementation for all sub-classes
