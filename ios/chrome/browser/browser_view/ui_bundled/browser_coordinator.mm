@@ -33,6 +33,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
@@ -3016,7 +3017,10 @@ enum class ToolbarKind {
                            filteringBehaviorReason
                                 completion:
                                     (void (^)(
-                                        supervised_user::LocalApprovalResult))
+                                        supervised_user::LocalApprovalResult,
+                                        std::optional<
+                                            supervised_user::
+                                                LocalWebApprovalErrorType>))
                                         completion {
   if (!supervised_user::IsLocalWebApprovalsEnabled()) {
     return;

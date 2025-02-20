@@ -4,6 +4,8 @@
 
 #include "chrome/browser/supervised_user/android/supervised_user_web_content_handler_impl.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -78,5 +80,6 @@ void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     AndroidLocalWebApprovalFlowOutcome request_outcome) {
   WebContentHandler::OnLocalApprovalRequestCompleted(
       settings_service, url, start_time,
-      AndroidOutcomeToLocalApprovalResult(request_outcome));
+      AndroidOutcomeToLocalApprovalResult(request_outcome),
+      /*local_approval_error_type=*/std::nullopt);
 }

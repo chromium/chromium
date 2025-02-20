@@ -37,6 +37,8 @@ struct TestParam {
   // Expected local approval result, when a query parameter with a result is
   // provided in the PACP response url.
   std::optional<supervised_user::LocalApprovalResult> expected_approval_result;
+  // Expected error type in the case of an error result.
+  std::optional<supervised_user::LocalWebApprovalErrorType> expected_error_type;
   // An string to be appended in the test name.
   std::string test_name_suffix;
 };
@@ -77,9 +79,12 @@ class SupervisedUserParentAccessObserverTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
-  void MockCompletionCallback(supervised_user::LocalApprovalResult result) {
+  void MockCompletionCallback(
+      supervised_user::LocalApprovalResult result,
+      std::optional<supervised_user::LocalWebApprovalErrorType> error_type) {
     is_callback_executed_ = true;
     extracted_local_approval_result_ = result;
+    extracted_error_type_ = error_type;
   }
 
  protected:
@@ -90,6 +95,10 @@ class SupervisedUserParentAccessObserverTest
     return extracted_local_approval_result_;
   }
 
+  std::optional<supervised_user::LocalWebApprovalErrorType>
+  extracted_error_type() {
+    return extracted_error_type_;
+  }
   content::WebContents* contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -137,13 +146,18 @@ class SupervisedUserParentAccessObserverTest
   bool is_callback_executed_ = false;
   std::optional<supervised_user::LocalApprovalResult>
       extracted_local_approval_result_;
+  std::optional<supervised_user::LocalWebApprovalErrorType>
+      extracted_error_type_;
 };
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
                        CompletionCallbackExecution) {
   CHECK(contents());
+  base::HistogramTester histogram_tester;
 
-  base::OnceCallback<void(supervised_user::LocalApprovalResult result)>
+  base::OnceCallback<void(
+      supervised_user::LocalApprovalResult result,
+      std::optional<supervised_user::LocalWebApprovalErrorType>)>
       completion_callback = base::BindOnce(
           &SupervisedUserParentAccessObserverTest::MockCompletionCallback,
           base::Unretained(this));
@@ -186,6 +200,14 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
     EXPECT_EQ(GetParam().expected_approval_result.value(),
               extracted_local_approval_result().value());
   }
+
+  if (GetParam().expected_error_type.has_value()) {
+    ASSERT_TRUE(extracted_error_type().has_value());
+    EXPECT_EQ(GetParam().expected_error_type.value(),
+              extracted_error_type().value());
+  } else {
+    EXPECT_EQ(std::nullopt, extracted_error_type());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -218,13 +240,15 @@ INSTANTIATE_TEST_SUITE_P(
                    .test_name_suffix = "ApprovalFlowDoesNotReachEndUrl"}),
         TestParam({.redirect_to_target_url = true,
                    // A result is provided and navigation completes,
-                   // but the result should be ignored by the approval flow.
+                   // but the result does not apply to the approval flow.
                    .result_query_param = base::StringPrintf(
                        "result=%s",
                        supervised_user::CreatePacpResizeResult()),
                    .expected_approval_result =
                        supervised_user::LocalApprovalResult::kError,
-                   .test_name_suffix = "IgnoresResult"}),
+                   .expected_error_type = supervised_user::
+                       LocalWebApprovalErrorType::kUnexpectedPacpResponse,
+                   .test_name_suffix = "FailsWithUnexpectedResult"}),
         TestParam({.redirect_to_target_url = true,
                    // A result is provided and navigation completes,
                    // but the result is in invalid encoding (Malformed result).
@@ -233,22 +257,18 @@ INSTANTIATE_TEST_SUITE_P(
                                           CreateInvalidEncodingResult()),
                    .expected_approval_result =
                        supervised_user::LocalApprovalResult::kError,
-                   .test_name_suffix = "FailsWithUnexpectedResult"}),
-        TestParam({.redirect_to_target_url = true,
-                   // A result is provided and navigation completes,
-                   // but the result is an invalid encoding.
-                   .result_query_param =
-                       base::StringPrintf("result=%s",
-                                          CreateInvalidEncodingResult()),
-                   .expected_approval_result =
-                       supervised_user::LocalApprovalResult::kError,
+                   .expected_error_type = supervised_user::
+                       LocalWebApprovalErrorType::kFailureToDecodePacpResponse,
                    .test_name_suffix = "FailsWithInvalidEncoding"}),
-        TestParam({.redirect_to_target_url = true,
-                   // A result query param is provided but it's empty.
-                   .result_query_param = "result=",
-                   .expected_approval_result =
-                       supervised_user::LocalApprovalResult::kError,
-                   .test_name_suffix = "FailsWithEmptyResult"}),
+        TestParam(
+            {.redirect_to_target_url = true,
+             // A result query param is provided but it's empty.
+             .result_query_param = "result=",
+             .expected_approval_result =
+                 supervised_user::LocalApprovalResult::kError,
+             .expected_error_type =
+                 supervised_user::LocalWebApprovalErrorType::kPacpEmptyResponse,
+             .test_name_suffix = "FailsWithEmptyResult"}),
         TestParam({.redirect_to_target_url = true,
                    // A result query param is provided it's not parsed to a PACP
                    // response.
@@ -257,6 +277,8 @@ INSTANTIATE_TEST_SUITE_P(
                                           CreateInvalidPacpResponse()),
                    .expected_approval_result =
                        supervised_user::LocalApprovalResult::kError,
+                   .expected_error_type = supervised_user::
+                       LocalWebApprovalErrorType::kFailureToParsePacpResponse,
                    .test_name_suffix = "FailsWithNonParsableResponse"}),
         TestParam({.redirect_to_target_url = true,
                    // No query result provided.

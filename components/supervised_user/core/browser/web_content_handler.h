@@ -75,7 +75,9 @@ class WebContentHandler {
       supervised_user::SupervisedUserSettingsService& settings_service,
       const GURL& url,
       base::TimeTicks start_time,
-      LocalApprovalResult approval_result);
+      LocalApprovalResult approval_result,
+      std::optional<supervised_user::LocalWebApprovalErrorType>
+          local_approval_error_type);
 };
 
 }  // namespace supervised_user

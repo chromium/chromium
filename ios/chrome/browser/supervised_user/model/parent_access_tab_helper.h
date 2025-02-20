@@ -5,13 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_PARENT_ACCESS_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_PARENT_ACCESS_TAB_HELPER_H_
 
+#include <optional>
+
 #import "base/functional/callback.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper_delegate.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
-typedef base::OnceCallback<void(supervised_user::LocalApprovalResult result)>
+typedef base::OnceCallback<void(
+    supervised_user::LocalApprovalResult result,
+    std::optional<supervised_user::LocalWebApprovalErrorType>)>
     ParentAccessApprovalResultCallback;
 
 @protocol ParentAccessCommands;

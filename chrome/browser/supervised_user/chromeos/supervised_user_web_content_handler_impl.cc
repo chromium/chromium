@@ -127,7 +127,8 @@ void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     crosapi::mojom::ParentAccessResultPtr result) {
   WebContentHandler::OnLocalApprovalRequestCompleted(
       settings_service, url, start_time,
-      ChromeOSResultToLocalApprovalResult(result->which()));
+      ChromeOSResultToLocalApprovalResult(result->which()),
+      /*local_approval_error_type=*/std::nullopt);
 
   if (result->is_error()) {
     HandleChromeOSErrorResult(result->get_error()->type);

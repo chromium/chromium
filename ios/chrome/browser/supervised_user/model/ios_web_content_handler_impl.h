@@ -51,7 +51,8 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
   void OnLocalApprovalRequestCompleted(
       const GURL& url,
       base::TimeTicks start_time,
-      supervised_user::LocalApprovalResult approval_result);
+      supervised_user::LocalApprovalResult approval_result,
+      std::optional<supervised_user::LocalWebApprovalErrorType> error_type);
   // Closes the tab linked to the web_state_.
   void Close();
 

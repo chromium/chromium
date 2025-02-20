@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 
+#import <optional>
+
 #import "base/functional/bind.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -38,8 +40,12 @@
                      targetURL:(const GURL&)targetURL
        filteringBehaviorReason:
            (supervised_user::FilteringBehaviorReason)filteringBehaviorReason
-                    completion:(void (^)(supervised_user::LocalApprovalResult))
-                                   completion {
+                    completion:
+                        (void (^)(
+                            supervised_user::LocalApprovalResult,
+                            std::optional<
+                                supervised_user::LocalWebApprovalErrorType>))
+                            completion {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _targetURL = targetURL;
@@ -92,7 +98,9 @@
   id<ParentAccessCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ParentAccessCommands);
   if (_callback) {
-    std::move(_callback).Run(result);
+    // TODO(crbug.com/384891227): Communicate the potential error type.
+    std::move(_callback).Run(result,
+                             /*local_approval_error_type=*/std::nullopt);
   }
 
   // Dismiss the parent access bottom sheet, which will also stop this

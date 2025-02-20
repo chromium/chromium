@@ -15,8 +15,9 @@
 // approval result.
 class ParentAccessDialogResultObserver : public content::WebContentsObserver {
  public:
-  using LocalApprovalResultCallback =
-      base::OnceCallback<void(supervised_user::LocalApprovalResult)>;
+  using LocalApprovalResultCallback = base::OnceCallback<void(
+      supervised_user::LocalApprovalResult,
+      std::optional<supervised_user::LocalWebApprovalErrorType>)>;
 
   ParentAccessDialogResultObserver(
       content::WebContents* web_contents,
@@ -33,7 +34,7 @@ class ParentAccessDialogResultObserver : public content::WebContentsObserver {
 
   // Helper that sets the results to Error, in case we fail to load
   // and observe the content from the PACP widget.
-  void SetResultToError();
+  void SetResultToError(supervised_user::LocalWebApprovalErrorType error_type);
 
   content::WebContents* GetWebContentsForTesting() { return web_contents(); }
 
@@ -45,6 +46,7 @@ class ParentAccessDialogResultObserver : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
   std::optional<supervised_user::LocalApprovalResult> result_;
+  std::optional<supervised_user::LocalWebApprovalErrorType> error_type_;
   LocalApprovalResultCallback url_approval_result_callback_;
 };
 
