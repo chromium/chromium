@@ -150,6 +150,14 @@ public class TabGroupSyncRemoteObserverUnitTest {
     }
 
     @Test
+    public void testTabGroupAdded_PreviouslyClosedGroupOnSignIn() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        when(mTabGroupSyncService.wasTabGroupClosedLocally(savedTabGroup.syncId)).thenReturn(true);
+        mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any(), anyInt());
+    }
+
+    @Test
     public void testTabGroupVisualsUpdated() {
         addOneTab();
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();

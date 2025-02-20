@@ -384,6 +384,14 @@ bool TabGroupSyncServiceAndroid::IsRemoteDevice(
   return tab_group_sync_service_->IsRemoteDevice(sync_cache_guid);
 }
 
+bool TabGroupSyncServiceAndroid::WasTabGroupClosedLocally(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jstring>& j_sync_tab_group_id) {
+  auto sync_tab_group_id = JavaStringToUuid(env, j_sync_tab_group_id);
+  return tab_group_sync_service_->WasTabGroupClosedLocally(sync_tab_group_id);
+}
+
 void TabGroupSyncServiceAndroid::RecordTabGroupEvent(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,

@@ -294,6 +294,14 @@ public interface TabGroupSyncService {
     boolean isRemoteDevice(String syncCacheGuid);
 
     /**
+     * Returns whether a tab group with the given `sync_tab_group_id` was previously closed on this
+     * device. Reset to false whenever the user opens the group intentionally.
+     *
+     * @param syncTabGroupId The sync ID of the associated tab group.
+     */
+    boolean wasTabGroupClosedLocally(String syncTabGroupId);
+
+    /**
      * Called to explicitly record a tab group event. See native for full documentation.
      *
      * @param eventDetails The details about the event such as event type, source, and the
