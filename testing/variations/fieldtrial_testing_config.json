@@ -15842,12 +15842,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Default",
-                    "disable_features": [
-                        "OverrideDefaultOzonePlatformHintToAuto"
-                    ]
-                },
-                {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "AcceleratedVideoDecodeLinuxGL",
@@ -15858,6 +15852,12 @@
                         "WaylandPerSurfaceScale",
                         "WaylandTextInputV3",
                         "WaylandUiScale"
+                    ]
+                },
+                {
+                    "name": "Default",
+                    "disable_features": [
+                        "OverrideDefaultOzonePlatformHintToAuto"
                     ]
                 }
             ]
