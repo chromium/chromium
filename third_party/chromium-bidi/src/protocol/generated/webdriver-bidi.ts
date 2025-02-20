@@ -2250,8 +2250,8 @@ export namespace Input {
 export namespace Input {
   export type PointerMoveAction = {
     type: 'pointerMove';
-    x: JsInt;
-    y: JsInt;
+    x: number;
+    y: number;
     duration?: JsUint;
     origin?: Input.Origin;
   } & Input.PointerCommonProperties;

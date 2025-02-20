@@ -2881,8 +2881,8 @@ export namespace Input {
     z
       .object({
         type: z.literal('pointerMove'),
-        x: JsIntSchema,
-        y: JsIntSchema,
+        x: z.number(),
+        y: z.number(),
         duration: JsUintSchema.optional(),
         origin: Input.OriginSchema.optional(),
       })
