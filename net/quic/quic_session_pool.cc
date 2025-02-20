@@ -143,6 +143,27 @@ enum class QuicSessionKeyMismatchedField {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionKeyMismatchedField)
 
+// Represents which combination of field in `QuicSessionKey` was different
+// among two keys with the same `ServerId`. We only look at the commonly
+// mismatched fields to avoid combination explosion.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QuicSessionKeyMismatchedFieldCombination)
+enum class QuicSessionKeyMismatchedFieldCombination {
+  kUnknownCombination,
+  kPrivacyMode,
+  kNetworkAnonymizationKey,
+  kPrivacyModeNetworkAnonymizationKey,
+  kRequireDNSHttpsAlpn,
+  kRequireDNSHttpsAlpnPrivacyMode,
+  kRequireDNSHttpsNetworkAnonymizationKey,
+  kPrivacyModeAndNetworkAnonymizationKeyRequireDNSHttpsAlpn,
+  kMaxValue = kPrivacyModeAndNetworkAnonymizationKeyRequireDNSHttpsAlpn
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionKeyMismatchedFieldCombination)
+
 std::string QuicPlatformNotificationToString(
     QuicPlatformNotification notification) {
   switch (notification) {
@@ -295,6 +316,7 @@ void LogSessionKeyMismatch(QuicSessionKeyPartialMatchResult result,
   if (result != QuicSessionKeyPartialMatchResult::kNoMatch) {
     CHECK(active_key.has_value());
     int total_mismatch = 0;
+    int mismatched_combinations = 0;
     std::string mismatch_field_histogram =
         base::StrCat({kHistogramBase, ".MismatchedField", histogram_suffix});
 
@@ -305,28 +327,44 @@ void LogSessionKeyMismatch(QuicSessionKeyPartialMatchResult result,
           if ((session_key.*method)() != (active_key.value().*method)()) {
             total_mismatch++;
             base::UmaHistogramEnumeration(mismatch_field_histogram, field);
-            return;
+            return true;
           }
+          return false;
         };
-    checkAndRecordMismatch(&QuicSessionKey::privacy_mode,
-                           QuicSessionKeyMismatchedField::kPrivacyMode);
     checkAndRecordMismatch(&QuicSessionKey::socket_tag,
                            QuicSessionKeyMismatchedField::kSocketTag);
     checkAndRecordMismatch(&QuicSessionKey::proxy_chain,
                            QuicSessionKeyMismatchedField::kProxyChain);
     checkAndRecordMismatch(&QuicSessionKey::session_usage,
                            QuicSessionKeyMismatchedField::kSessionUsage);
-    checkAndRecordMismatch(
-        &QuicSessionKey::network_anonymization_key,
-        QuicSessionKeyMismatchedField::kNetworkAnonymizationKey);
     checkAndRecordMismatch(&QuicSessionKey::secure_dns_policy,
                            QuicSessionKeyMismatchedField::kSecureDnsPolicy);
-    checkAndRecordMismatch(&QuicSessionKey::require_dns_https_alpn,
-                           QuicSessionKeyMismatchedField::kRequireDNSHttpsAlpn);
+
+    if (checkAndRecordMismatch(&QuicSessionKey::privacy_mode,
+                               QuicSessionKeyMismatchedField::kPrivacyMode)) {
+      mismatched_combinations |= 1;
+    }
+    if (checkAndRecordMismatch(
+            &QuicSessionKey::network_anonymization_key,
+            QuicSessionKeyMismatchedField::kNetworkAnonymizationKey)) {
+      mismatched_combinations |= (1 << 1);
+    }
+    if (checkAndRecordMismatch(
+            &QuicSessionKey::require_dns_https_alpn,
+            QuicSessionKeyMismatchedField::kRequireDNSHttpsAlpn)) {
+      mismatched_combinations |= (1 << 2);
+    }
+
     base::UmaHistogramCounts1000(
         base::StrCat(
             {kHistogramBase, ".TotalMismatchedField", histogram_suffix}),
         total_mismatch);
+
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kHistogramBase, ".MismatchedFieldCombination", histogram_suffix}),
+        static_cast<QuicSessionKeyMismatchedFieldCombination>(
+            mismatched_combinations));
   }
 }
 
