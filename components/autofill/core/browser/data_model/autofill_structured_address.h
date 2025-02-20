@@ -171,7 +171,9 @@ class StreetAddressNode : public AddressComponent {
   std::vector<std::u16string> address_lines_;
 };
 
-// Stores the country code of an address profile.
+// Stores the country code of an address profile. This is not related to
+// `CountryInfo` but to `Address` (see CountryInfo documentation for the
+// differences).
 class CountryCodeNode : public AddressComponent {
  public:
   explicit CountryCodeNode(SubcomponentsList children);
