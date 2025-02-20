@@ -377,6 +377,8 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CPUMetricsProvider>());
 
@@ -389,6 +391,9 @@ void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<variations::FieldTrialsProvider>(
           synthetic_trial_registry_.get(), kUKMFieldTrialSuffix));
+
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::EntropyStateProvider>(local_state));
 }
 
 void IOSChromeMetricsServiceClient::CollectFinalHistograms() {

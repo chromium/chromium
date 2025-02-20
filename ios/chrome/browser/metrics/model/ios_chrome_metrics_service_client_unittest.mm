@@ -136,11 +136,9 @@ TEST_F(IOSChromeMetricsServiceClientTest,
   // Verify that the UKM service is instantiated when enabled.
   EXPECT_TRUE(ukmService);
 
-  // Number of providers registered by
-  // IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders(), namely
-  // CPUMetricsProvider, ScreenInfoMetricsProvider, FormFactorMetricsProvider,
-  // and FieldTrialsProvider.
-  const size_t expected_providers = 4;
+  // The number of providers registered in
+  // IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders().
+  const size_t expected_providers = 5;
 
   EXPECT_EQ(expected_providers,
             ukmService->metrics_providers_.GetProviders().size());
