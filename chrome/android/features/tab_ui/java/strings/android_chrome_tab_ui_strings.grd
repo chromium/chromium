@@ -987,7 +987,7 @@
 
       <!-- Tab Group Removed Message Strings -->
       <message name="IDS_TAB_GROUP_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Description text on the message card which is shown when user is no longer a part of the tab group. [CHAR_LIMIT=40]">
-        <ph name="TAB_GROUP_NAME">%1$s<ex>Vacation</ex></ph> tab group no longer available
+        The "<ph name="TAB_GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group is no longer available
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_REMOVED_DISMISS_BUTTON" desc="The accessibility text to read when the 'X' button on the tab removed message card is focused">
         Dismiss the card.
