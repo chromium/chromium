@@ -609,9 +609,9 @@ TEST_F(AutofillAiManagerTest,
                             autofill_callback.Get());
 }
 
-class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
+class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {
  public:
-  IsFormAndFieldEligibleAutofillAiTest() {
+  AutofillAiEligibilityTests() {
     autofill::test::FormDescription form_description = {
         .fields = {{.role = autofill::NAME_FIRST,
                     .heuristic_type = autofill::NAME_FIRST}}};
@@ -644,19 +644,20 @@ class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
   }
 };
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest,
-       IsNotEligibleIfBothFlagsAreDisabled) {
+TEST_F(AutofillAiEligibilityTests,
+       IsFormAndFieldNotEligibleIfBothFlagsAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disable_features*/ {
           kAutofillAi, autofill::features::kAutofillAiWithDataSchema});
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
 
-  EXPECT_FALSE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
+  EXPECT_FALSE(
+      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest,
-       IsNotEligibleIfServerPredictionHasNoAutofillAiType) {
+TEST_F(AutofillAiEligibilityTests,
+       FormAndFieldIsNotEligibleIfServerPredictionHasNoAutofillAiType) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       autofill::features::kAutofillAiWithDataSchema);
@@ -664,10 +665,11 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest,
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   SetPredictionTypesForField(*form->field(0), {autofill::NAME_FIRST});
 
-  EXPECT_FALSE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
+  EXPECT_FALSE(
+      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
+TEST_F(AutofillAiEligibilityTests, FormAndFieldIsNotEligibleIfPrefIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       autofill::features::kAutofillAiWithDataSchema);
@@ -675,27 +677,41 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
 
   EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
-  EXPECT_FALSE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
+  EXPECT_FALSE(
+      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, AutofillAiEligibility_Eligible) {
+TEST_F(AutofillAiEligibilityTests,
+       UserNotEligibleForImportingAndFillingIfPrefIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillAiWithDataSchema);
+
+  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
+  EXPECT_FALSE(manager().IsUserEligibleForFillingAndImporting());
+}
+
+TEST_F(AutofillAiEligibilityTests, AutofillAiEligibility_FormAndFieldEligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema},
       /*disable_features*/ {kAutofillAi});
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  EXPECT_TRUE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
+  EXPECT_TRUE(
+      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNonEligibleUser) {
+TEST_F(AutofillAiEligibilityTests,
+       FormAndFieldIsNotEligibleForNonEligibleUser) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       autofill::features::kAutofillAiWithDataSchema);
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   ON_CALL(client(), IsUserEligible).WillByDefault(Return(false));
-  EXPECT_FALSE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
+  EXPECT_FALSE(
+      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
 }
 
 }  // namespace

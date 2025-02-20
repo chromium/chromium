@@ -41,12 +41,19 @@ class AutofillAiDelegate {
 
   // Returns whether `form` and `field` are eligible for the Autofill AI
   // experience.
-  virtual bool IsEligibleForAutofillAi(const FormStructure& form,
-                                       const AutofillField& field) const = 0;
+  virtual bool IsFormAndFieldEligibleForAutofillAi(
+      const FormStructure& form,
+      const AutofillField& field) const = 0;
 
   // Returns whether the current user is eligible for the Autofill AI
-  // experience.
+  // experience. This is not dependent on whether the user has enabled the flag
+  // or not.
   virtual bool IsUserEligible() const = 0;
+
+  // Returns whether the current user can get a save/update dialog and fill a
+  // form using AutofillAi. This checks both that the user is eligible and that
+  // it has expected pref enabled.
+  virtual bool IsUserEligibleForFillingAndImporting() const = 0;
 
   // Displays an import bubble for `form` if Autofill AI is interested in the
   // form and then calls `autofill_callback`. It is guaranteed that `form` is
