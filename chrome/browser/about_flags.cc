@@ -10574,11 +10574,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-standard-device-bound-session-credentials",
      flag_descriptions::kEnableStandardBoundSessionCredentialsName,
      flag_descriptions::kEnableStandardBoundSessionCredentialsDescription,
-     kOsWin, FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessions)},
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessions)},
     {"enable-standard-device-bound-session-persistence",
      flag_descriptions::kEnableStandardBoundSessionPersistenceName,
      flag_descriptions::kEnableStandardBoundSessionPersistenceDescription,
-     kOsWin, FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-soul-gd", flag_descriptions::kCrosSoulGravediggerName,
