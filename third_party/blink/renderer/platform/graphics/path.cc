@@ -81,6 +81,25 @@ void AddCornerShape(SkPath& path,
   }
   if (curvature == FloatRoundedRect::CornerCurvature::kBevel) {
     path.lineTo(gfx::PointFToSkPoint(target_point));
+  } else if (curvature <= 0.001) {
+    // Notch or very close to it, draw two lines.
+    gfx::PointF control_point;
+    switch (corner) {
+      case Corner::kTopLeft:
+        control_point = corner_rect.bottom_right();
+        break;
+      case Corner::kTopRight:
+        control_point = corner_rect.bottom_left();
+        break;
+      case Corner::kBottomRight:
+        control_point = corner_rect.origin();
+        break;
+      case Corner::kBottomLeft:
+        control_point = corner_rect.top_right();
+        break;
+    }
+    path.lineTo(gfx::PointFToSkPoint(control_point));
+    path.lineTo(gfx::PointFToSkPoint(target_point));
   } else {
     gfx::PointF control_point;
     switch (corner) {
@@ -96,8 +115,8 @@ void AddCornerShape(SkPath& path,
       case Corner::kBottomLeft:
         control_point = corner_rect.bottom_left();
         break;
+        // TODO(crbug.com/394059604): render the other curvatures
     }
-    // TODO(crbug.com/394059604): render the other curvatures
     path.conicTo(gfx::PointFToSkPoint(control_point),
                  gfx::PointFToSkPoint(target_point), SK_ScalarRoot2Over2);
   }
