@@ -8018,7 +8018,7 @@
      },
      "the-button-element": {
       "command-and-commandfor": {
-       "generic-eventtarget-crash.tentative.html": [
+       "generic-eventtarget-crash.html": [
         "b2179640ddfb5a2d3a531327cf9419f54d771aba",
         [
          null,
@@ -72450,7 +72450,7 @@
        ]
       ],
       "mix-blend-mode-paragraph-background-image.html": [
-       "51744dc7838937e06a6b4cc8436108f52cd71bc5",
+       "9d229152e7057298eef299127764f51d3612bcb3",
        [
         null,
         [
@@ -72466,11 +72466,11 @@
            [
             [
              0,
-             1
+             8
             ],
             [
              0,
-             10
+             974
             ]
            ]
           ]
@@ -72479,7 +72479,7 @@
        ]
       ],
       "mix-blend-mode-paragraph.html": [
-       "e0f4e383a56fc110f0323d8d2a7a09fb6be5fed5",
+       "ad10a1e5b81d2844160b25e794399df4e70d0d3c",
        [
         null,
         [
@@ -72495,11 +72495,11 @@
            [
             [
              0,
-             1
+             8
             ],
             [
              0,
-             10
+             974
             ]
            ]
           ]
@@ -72634,7 +72634,7 @@
        ]
       ],
       "mix-blend-mode-parent-with-text.html": [
-       "274bebe539f054f041d9eeadfe53ecaf5cd81bce",
+       "9417c6badb1ab17c55382e4ee81303b6efe4d728",
        [
         null,
         [
@@ -72650,11 +72650,11 @@
            [
             [
              0,
-             1
+             8
             ],
             [
              0,
-             10
+             1284
             ]
            ]
           ]
@@ -72971,7 +72971,7 @@
       ]
      },
      "root-element-background-image-transparency-001.html": [
-      "1f07d60375ea3350b9f8f596b7fdafc6c390a6cc",
+      "2d05fb5edd8cae60fe79f0583205a0310c10d0b8",
       [
        null,
        [
@@ -72987,11 +72987,11 @@
           [
            [
             0,
-            1
+            2
            ],
            [
             0,
-            9600
+            240000
            ]
           ]
          ]
@@ -73029,7 +73029,7 @@
       ]
      ],
      "root-element-background-image-transparency-003.html": [
-      "0aded929d872c3d95c0ae50b4868d41b52d72d60",
+      "0dead302fd311deaf4c153f19a306f13c9685e90",
       [
        null,
        [
@@ -73049,7 +73049,7 @@
            ],
            [
             0,
-            237600
+            240000
            ]
           ]
          ]
@@ -76198,7 +76198,7 @@
        ]
       ],
       "clip-text-flex.html": [
-       "618c8c1dbc5bd1a017b50c850b54263cf0828b68",
+       "a6e725bb177affc01e9cd8dc0b1bc1a9b8f62f03",
        [
         null,
         [
@@ -76207,7 +76207,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             10
+            ],
+            [
+             0,
+             2289
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-text-multi-line.html": [
@@ -85162,6 +85178,64 @@
        ]
       },
       "corner-shape": {
+       "corner-shape-bevel-overflow-composite.html": [
+        "985b5efdc9b9c868465d658e5486cd1e7eae5fd5",
+        [
+         null,
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-bevel-overflow-composite-ref.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              100
+             ],
+             [
+              0,
+              255
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
+       "corner-shape-bevel-overflow.html": [
+        "df604db8d13888a2c59488e374ee27ebe6878001",
+        [
+         null,
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-bevel-overflow-ref.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              32
+             ],
+             [
+              0,
+              32
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
        "corner-shape-fill.html": [
         "6e5df8364c5fa57398644a72d40ca0e3dc8b2b65",
         [
@@ -179412,6 +179486,19 @@
        {}
       ]
      ],
+     "highlight-styling-005.html": [
+      "2e07eddb81e45f2f6c4e116ccbb63dec5d814c0c",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-styling-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "highlight-z-index-001.html": [
       "45b83ae81e89df855b6f104ae0beff7dc7a8d9f7",
       [
@@ -219631,7 +219718,7 @@
       ]
      },
      "backface-visibility-001.html": [
-      "cfba13db630a81469d332d250670e3d62b8c7cd8",
+      "9615db47825820196b87ffbb12a82c6d6a9b1e8c",
       [
        null,
        [
@@ -219651,7 +219738,7 @@
            ],
            [
             0,
-            1
+            2
            ]
           ]
          ]
@@ -248707,7 +248794,7 @@
       ]
      ],
      "fractional-translation-from-transform.html": [
-      "7027a9008640945f2781fe7a4d7b236f786053fb",
+      "40188875b93969a4903698eca8f502f422d37a56",
       [
        null,
        [
@@ -248723,11 +248810,11 @@
           [
            [
             0,
-            2
+            100
            ],
            [
             0,
-            100
+            10
            ]
           ]
          ]
@@ -254867,7 +254954,7 @@
       ]
      ],
      "will-change-transform-zero-size-child-overflow-visible.html": [
-      "38ddf5ec37fa9f750f17bca32c2986d2f675e00e",
+      "46298fda07bd02d1b25ac40603f13925cae6d465",
       [
        null,
        [
@@ -254876,7 +254963,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "will-change-will-change-1.html": [
@@ -275870,6 +275973,19 @@
      ]
     },
     "selectors": {
+     "caret-color-visited-inheritance.html": [
+      "4d13d59f206184a6e65dd8128f63e9ba5af7eb72",
+      [
+       null,
+       [
+        [
+         "/css/selectors/caret-color-visited-inheritance-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "case-insensitive-parent.html": [
       "a684bbb97c870b587b73e616ca1bfa4fa423f4ff",
       [
@@ -280093,6 +280209,45 @@
        [
         [
          "/css/selectors/sharing-in-svg-use-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-visited-inheritance.html": [
+      "37ee47012e7b2fd4081d73a54e20d369a2c14405",
+      [
+       null,
+       [
+        [
+         "/css/selectors/text-emphasis-visited-inheritance-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-fill-color-visited-inheritance.html": [
+      "45d02e1383280b424ae687e4cfd5e605d956471a",
+      [
+       null,
+       [
+        [
+         "/css/selectors/text-fill-color-visited-inheritance-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-stroke-color-visited-inheritance.html": [
+      "20c7cd61b5d1ec9a94fe4d4ce3e03887b9aa6dc9",
+      [
+       null,
+       [
+        [
+         "/css/selectors/text-stroke-color-visited-inheritance-ref.html",
          "=="
         ]
        ],
@@ -296973,7 +297128,7 @@
        ]
       ],
       "popover-open-overflow-display.tentative.html": [
-       "3d4d833063877ce1a9a3338d534709f94bdcdd77",
+       "89719599d79cff2a3e33b7bcbfe37bee1bf884be",
        [
         null,
         [
@@ -296982,7 +297137,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             2
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "popover-stacking-context.html": [
@@ -308179,6 +308350,19 @@
        ]
       ]
      },
+     "stroke-color-inherit-link-visited.svg": [
+      "274573d274e0889a43dfe796e9c5d4e684913c4f",
+      [
+       null,
+       [
+        [
+         "/svg/styling/stroke-color-inherit-link-visited-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "use-element-animations.html": [
       "b09606011818f9979fa222f89661f7ca04031b1f",
       [
@@ -328545,12 +328729,20 @@
      },
      "tentative": {
       "corner-shape": {
+       "corner-shape-bevel-overflow-composite-ref.html": [
+        "f67be0cc6388ee35801bc1eab83f857902ea2be8",
+        []
+       ],
+       "corner-shape-bevel-overflow-ref.html": [
+        "374302671907cfc89740026e76f671df6418f40a",
+        []
+       ],
        "corner-shape-fill-ref.html": [
         "4000833c31d1cad31076f52f33f0f4f95922bbd1",
         []
        ],
        "corner-shape-render-ref.html": [
-        "8bce3ecaff2d23eb4ece92272ab5289c88ce759b",
+        "8ae6ca5da61bf603224ccb89e81563a2c1880b43",
         []
        ]
       },
@@ -353203,6 +353395,10 @@
       "bd023b6128e460384e3e79daeec9ca8c924fdc47",
       []
      ],
+     "highlight-styling-005-ref.html": [
+      "19f6c86b54217de68925580fe71e62a743678f16",
+      []
+     ],
      "highlight-z-index-001-ref.html": [
       "0e9f9c252b2244f7ba0a33aaccf9cf0c12420e4c",
       []
@@ -366416,7 +366612,7 @@
       []
      ],
      "fractional-translation-from-transform-ref.html": [
-      "0721fca5787c73cd7f9f5e59a76bf1d311b08a12",
+      "ba35c34b2b62a007f8f53f48dc82231e5ae1df8a",
       []
      ],
      "fragmented-at-start-ignored-ref.html": [
@@ -371927,6 +372123,10 @@
        }
       }
      },
+     "caret-color-visited-inheritance-ref.html": [
+      "4d066db8b45d0f714c4659945880bb6386b18382",
+      []
+     ],
      "case-insensitive-parent-ref.html": [
       "0138b79972c3e1c2689df30ec72150e5993269f4",
       []
@@ -372573,6 +372773,18 @@
      ],
      "sharing-in-svg-use-ref.html": [
       "703cc99bb863b7a1bb79dd6a7a218308892c66ca",
+      []
+     ],
+     "text-emphasis-visited-inheritance-ref.html": [
+      "500e3a9d2657c2b42c2a06cf7bb5e9f20f64cdc6",
+      []
+     ],
+     "text-fill-color-visited-inheritance-ref.html": [
+      "e674df25959522d681b7ef927c4673f1e1099b9e",
+      []
+     ],
+     "text-stroke-color-visited-inheritance-ref.html": [
+      "5f8afde8628d99270244ddc379fbacf479c7a643",
       []
      ],
      "user-invalid-form-submission-invalidation-ref.html": [
@@ -373560,7 +373772,7 @@
       []
      ],
      "testdriver.md": [
-      "c2787b6be90db43becb3608c2bfae554132f4394",
+      "537b3c01976c3c798ea7afda47832aaea324830d",
       []
      ],
      "testharness-api.md": [
@@ -373815,10 +374027,6 @@
      []
     ],
     "lists": {
-     "DOMTokenList-coverage-for-attributes-expected.txt": [
-      "21256155467314b50e1e334427fa9ff4abce25a6",
-      []
-     ],
      "README.md": [
       "59c821a7daa465a852a1e9cba209af40de132d12",
       []
@@ -383123,7 +383331,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "73b4f5201fb55a7e8d2fd88e6f1d2d2d49f392f8",
+     "bb6af33dfe03a8facdb1fbf9e589c02c2e670c86",
      []
     ],
     "not-fully-active-expected.txt": [
@@ -388395,7 +388603,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "62b355f37432da95cf5c7885d8ea5de03b6dcb93",
+       "fc96e56c3738cb6f6b24e73a0a7f47851a7a60bc",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -388483,13 +388691,13 @@
       "yaml": {
        "element": {
         "meta.yaml": [
-         "9ebe42e6081c7cf9362c2ac0ca742a18fb798b7a",
+         "15e93e3902fe880ca748986421c4da319908c259",
          []
         ]
        },
        "offscreen": {
         "meta.yaml": [
-         "e9f42392fa83f622e73b81e14833e8e8d02ce086",
+         "635f663662e277ee38b72ad7f177ca24e705d1be",
          []
         ]
        }
@@ -388504,7 +388712,7 @@
         []
        ],
        "compositing.yaml": [
-        "838ad4b06cba88bc6ea080ca52a5f1ec3fb53cd5",
+        "9b57a02ca970c07b626d86cca68295257957c1ba",
         []
        ],
        "conformance_requirements.yaml": [
@@ -397110,7 +397318,7 @@
           []
          ],
          "fallback-helper.js": [
-          "d2b9343e8d3fc6d98168a32db4d24daf1541a04b",
+          "5b62c71e947454450ff983e4111094bdb3e6216e",
           []
          ],
          "selectedcontent-restore-iframe.html": [
@@ -397515,10 +397723,6 @@
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
         []
        ],
-       "dialog-closedby-start-open-expected.txt": [
-        "4b5bc476f1b36d1cdf1b9284a6c3041d27147dc6",
-        []
-       ],
        "dialog-open-expected.txt": [
         "309bf8c66d2f7a560fc346a251fc07bdec9bb0e6",
         []
@@ -397818,10 +398022,6 @@
        "c1175ff23c5d322f7dec1a7794ffafa5b95f6db6",
        []
       ],
-      "button-type-popovertarget-expected.txt": [
-       "4809845efec840ad38f35c5dbd973a22698388ba",
-       []
-      ],
       "input-type-popovertarget-expected.txt": [
        "1b2079bbbad14cd3d66b0b43f2ebb1aaeba507b8",
        []
@@ -397896,7 +398096,7 @@
         []
        ],
        "popover-utils.js": [
-        "10783e6fc39a65001c8cf00ceccbd33d5dcc60c9",
+        "544ec843152cedacc6c6ebb5ecfa14f33fd5b2ff",
         []
        ]
       }
@@ -399611,15 +399811,7 @@
      },
      "the-button-element": {
       "command-and-commandfor": {
-       "button-event-dispatch.tentative-expected.txt": [
-        "080c7367fc0ff067fb894ca6a2c222669c21e5f8",
-        []
-       ],
-       "button-type-behavior.tentative-expected.txt": [
-        "4809845efec840ad38f35c5dbd973a22698388ba",
-        []
-       ],
-       "button-type-reflection.tentative-expected.txt": [
+       "button-type-reflection-expected.txt": [
         "d8cc0d92a52ba500932e55d2e2422eeac4d589bd",
         []
        ],
@@ -402747,7 +402939,15 @@
        },
        "bidi": {
         "bluetooth": {
+         "handle_request_device_prompt.https.html.ini": [
+          "1a5ac47c67d942a0123f7d7caa91f7088f66a898",
+          []
+         ],
          "simulate_adapter.https.html.ini": [
+          "1a5ac47c67d942a0123f7d7caa91f7088f66a898",
+          []
+         ],
+         "simulate_preconnected_peripheral.https.html.ini": [
           "1a5ac47c67d942a0123f7d7caa91f7088f66a898",
           []
          ]
@@ -402924,6 +403124,16 @@
        "8424eedbe9f7e59ec8699af7576dcb059e8c9759",
        []
       ]
+     },
+     "bidi": {
+      "bluetooth": {
+       "resources": {
+        "bidi-bluetooth-helper.js": [
+         "7f6962d1c85496ca85867b6814b88bf6464275f1",
+         []
+        ]
+       }
+      }
      },
      "click_child.html": [
       "5899841c4c1bcc9181f71b4b8699ded57cfe93fd",
@@ -403324,7 +403534,7 @@
      "594484ced62676cdf50fd8b213e8b7c020941c3d",
      []
     ],
-    "command-and-commandfor.tentative.idl": [
+    "command-and-commandfor.idl": [
      "046a365939c4bf601eb1b8fa4221650c02435a37",
      []
     ],
@@ -403585,7 +403795,7 @@
      []
     ],
     "fedcm.idl": [
-     "07f7955ff648b882ae44c319ff5b8414b877d2fb",
+     "f7038a6fee1063734193f00341de6ceaf5f792b0",
      []
     ],
     "fenced-frame.idl": [
@@ -403621,11 +403831,11 @@
      []
     ],
     "gamepad-extensions.idl": [
-     "81776a46ec9a139cebaadb9eba15ba9ddbed7728",
+     "330267d93b8d70289217173ee0c8dc301db0a617",
      []
     ],
     "gamepad.idl": [
-     "d922d7b80b05dd490281b7e3be5530a05fdee076",
+     "200947968e3c48f1f210bf496e410f3bac9a51b9",
      []
     ],
     "generic-sensor.idl": [
@@ -403765,7 +403975,7 @@
      []
     ],
     "media-capabilities.idl": [
-     "7bd8aca90c32027af67001afa3d33059b0f0f87b",
+     "68ab0a8d0d1a2ea4765a3cdc72420c346b1cdcc3",
      []
     ],
     "media-playback-quality.idl": [
@@ -403797,7 +404007,7 @@
      []
     ],
     "mediacapture-surface-control.idl": [
-     "357b5c516f6ba507523e2b0195b311a6f3c0dc0d",
+     "3a0ccf5faaf9a182cd86c8146472054553139ce7",
      []
     ],
     "mediacapture-transform.idl": [
@@ -403918,6 +404128,10 @@
     ],
     "portals.idl": [
      "5d85cce667b67ce301a5242fd77ec8974ffbed61",
+     []
+    ],
+    "ppa.idl": [
+     "71b2fba69e7cacfb631d942faf0a04421927686c",
      []
     ],
     "prefer-current-tab.idl": [
@@ -404057,7 +404271,7 @@
      []
     ],
     "speech-api.idl": [
-     "025f9424f0120fec097ea7551b5b1ead2fd99144",
+     "bc0635fa3f2cc0afeca8db5e3f9ce6d74ad7798c",
      []
     ],
     "storage-access.idl": [
@@ -404261,7 +404475,7 @@
      []
     ],
     "webnn.idl": [
-     "3e1d9a9f440fd66f413ea628c6d2395fd7d2e8d2",
+     "63554edbffd491147db93653d1d4ae9cee3580e3",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -408105,6 +408319,10 @@
      ],
      "navigate-cross-document-event-order-expected.txt": [
       "b0cf970d08c52160b6da8b7261463f9d0729c2be",
+      []
+     ],
+     "reload-no-popstate-expected.txt": [
+      "8fca0031a13807f662f9c6331de7dbf474e036d4",
       []
      ],
      "resources": {
@@ -413013,7 +413231,7 @@
      []
     ],
     "testdriver.js": [
-     "aee319f57571d0ad31a4db1a36ad48cc9c694a4f",
+     "05301bf55895eef71dc7e949871388f8f9cd7a49",
      []
     ],
     "testdriver.js.headers": [
@@ -418281,7 +418499,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "8eedbd5914b6e2017d82f8932328b654ddd01397",
+     "ef907659b54c8e2f4729245acf9afa210584fe7e",
      []
     ],
     "webspeech.js": [
@@ -419177,7 +419395,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "45028a27e34a00450d20de406857284f45837019",
+     "f9015306efda2210144bc46ae69101dc76b3c691",
      []
     ],
     "interact": {
@@ -419308,10 +419526,6 @@
       ]
      },
      "scripted": {
-      "a.rel-getter-01-expected.txt": [
-       "9b6b22bb8c480125187ee0f152909e9b64a82247",
-       []
-      ],
       "href-animate-element-expected.txt": [
        "67f0c5ed9f5b5dedb54d172ae42549398a7b2a86",
        []
@@ -419320,13 +419534,17 @@
        "5196f43dd3c42ea6de35864149e339ad34f027bd",
        []
       ],
-      "rellist-feature-detection-expected.txt": [
-       "caae3838acec9a1c41b1234a9e4b6f3bef39f993",
-       []
-      ],
       "resources": {
        "a-download-click.svg": [
         "5d18c3088ad9a62b117f9cfb0aa013e72209699f",
+        []
+       ],
+       "a.rel-noopener-policy-target.html": [
+        "39aaa78450ac907c4680aa6df3fe68742ed99a51",
+        []
+       ],
+       "a.rel-noreferrer-policy-target.html": [
+        "76b15f5c8aaa598a4be859a6cda5de517782cb9c",
         []
        ]
       },
@@ -420035,6 +420253,10 @@
      },
      "required-properties-expected.txt": [
       "b63555ab7fd2b63e671aba28376da38e5e129e26",
+      []
+     ],
+     "stroke-color-inherit-link-visited-ref.svg": [
+      "c23a982e8b91de25cbf8cb8d4d773e6dd5f7c5d2",
       []
      ],
      "support": {
@@ -424929,6 +425151,12 @@
         "simulate_adapter": {
          "__init__.py": [
           "ea1a7e6f232d423100a16d1dbfd7fb2994706241",
+          []
+         ]
+        },
+        "simulate_preconnected_peripheral": {
+         "__init__.py": [
+          "a2de79a05bc954f082fc5d91cb16d557b6f8601c",
           []
          ]
         }
@@ -438052,18 +438280,162 @@
       {}
      ]
     ],
-    "idbfactory-deleteDatabase-request-success.html": [
-     "130c427a407e40aaca1adacdb4f78d1f50188ead",
+    "idbfactory-deleteDatabase-request-success.any.js": [
+     "0aa1543baa327febf02effd97e27339c04370f74",
      [
-      null,
-      {}
+      "IndexedDB/idbfactory-deleteDatabase-request-success.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory deleteDatabase()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-deleteDatabase-request-success.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory deleteDatabase()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-deleteDatabase-request-success.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory deleteDatabase()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-deleteDatabase-request-success.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory deleteDatabase()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbfactory-open-error-properties.html": [
-     "c4bc3ffaa5b13a6d642766fb9e4452fd2d9673e1",
+    "idbfactory-open-error-properties.any.js": [
+     "d216e2a7dfd3b483659212bdf23cd95bf2fae368",
      [
-      null,
-      {}
+      "IndexedDB/idbfactory-open-error-properties.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBFactory open() error event properties"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-error-properties.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBFactory open() error event properties"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-error-properties.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBFactory open() error event properties"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-error-properties.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBFactory open() error event properties"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbfactory-open-opaque-origin.html": [
@@ -438073,18 +438445,162 @@
       {}
      ]
     ],
-    "idbfactory-open-request-error.html": [
-     "cfd6862afa60406056a2e84fa905b21f4345e127",
+    "idbfactory-open-request-error.any.js": [
+     "d96c4717fe6121d700244d651b1531b17fbc6a20",
      [
-      null,
-      {}
+      "IndexedDB/idbfactory-open-request-error.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory open(): request properties on error"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-request-error.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory open(): request properties on error"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-request-error.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory open(): request properties on error"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-request-error.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory open(): request properties on error"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbfactory-open-request-success.html": [
-     "fb6ff9034de85c017e5b586e14f445da18b1b099",
+    "idbfactory-open-request-success.any.js": [
+     "4d0d7fd81b29f5615d875ee25efc528dd9c1e900",
      [
-      null,
-      {}
+      "IndexedDB/idbfactory-open-request-success.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory open(): request properties on success"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-request-success.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory open(): request properties on success"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-request-success.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory open(): request properties on success"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbfactory-open-request-success.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory open(): request properties on success"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbfactory-origin-isolation.html": [
@@ -438654,11 +439170,83 @@
       }
      ]
     ],
-    "idbindex-query-exception-order.html": [
-     "5b35a959920776e55ea0b592bb640014f8b5e30c",
+    "idbindex-query-exception-order.any.js": [
+     "343cc46b0d43a9588ba8c1228a5fc58a1315d927",
      [
-      null,
-      {}
+      "IndexedDB/idbindex-query-exception-order.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex query method Ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-query-exception-order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex query method Ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-query-exception-order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex query method Ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-query-exception-order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex query method Ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex-rename-abort.any.js": [
@@ -438918,11 +439506,83 @@
       }
      ]
     ],
-    "idbindex-request-source.html": [
-     "ac4e2847ec9d2528227eaa5d1dc295466555c80f",
+    "idbindex-request-source.any.js": [
+     "296b4d3fb40f2754d88d6f8d0c9f43dca8d22988",
      [
-      null,
-      {}
+      "IndexedDB/idbindex-request-source.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: The source of requests made against indexes"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-request-source.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: The source of requests made against indexes"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-request-source.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: The source of requests made against indexes"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-request-source.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: The source of requests made against indexes"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex_count.any.js": [
@@ -439603,11 +440263,83 @@
       }
      ]
     ],
-    "idbindex_indexNames.htm": [
-     "72c0cf4d946c62cf68b882d31d856413377e9adb",
+    "idbindex_indexNames.any.js": [
+     "743cfcc2a4c1b5ac35e65835085830ce721cea78",
      [
-      null,
-      {}
+      "IndexedDB/idbindex_indexNames.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.indexNames"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex_indexNames.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.indexNames"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex_indexNames.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.indexNames"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex_indexNames.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.indexNames"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex_keyPath.any.js": [
@@ -439867,25 +440599,241 @@
       }
      ]
     ],
-    "idbkeyrange-includes.htm": [
-     "96769ae0a909f1234893331e4d3c4c8ceb832873",
+    "idbkeyrange-includes.any.js": [
+     "19ba3cbee5217d2682a83ff45868f49d979c4662",
      [
-      null,
-      {}
+      "IndexedDB/idbkeyrange-includes.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBKeyRange.includes()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange-includes.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBKeyRange.includes()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange-includes.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBKeyRange.includes()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange-includes.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBKeyRange.includes()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbkeyrange.htm": [
-     "a387dc74e6e5422df6b631b8fcf498fe1f479f8b",
+    "idbkeyrange.any.js": [
+     "d22167a104be5895e9585b3b913b265edc9b24e7",
      [
-      null,
-      {}
+      "IndexedDB/idbkeyrange.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBKeyRange Tests"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBKeyRange Tests"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBKeyRange Tests"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBKeyRange Tests"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbkeyrange_incorrect.htm": [
-     "ec72a7e7aeb85673a1c9d3f522f914c4d97adbd2",
+    "idbkeyrange_incorrect.any.js": [
+     "79c7b27f32afaaa7e9b39d138b5a2b0388a21528",
      [
-      null,
-      {}
+      "IndexedDB/idbkeyrange_incorrect.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBKeyRange Tests - Incorrect"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange_incorrect.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBKeyRange Tests - Incorrect"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange_incorrect.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBKeyRange Tests - Incorrect"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbkeyrange_incorrect.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBKeyRange Tests - Incorrect"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbobjectstore-add-put-exception-order.any.js": [
@@ -487727,6 +488675,13 @@
        {}
       ]
      ],
+     "color-mix-missing-components.html": [
+      "3ce68eb2cae3720de1add821dc9d040284333ebe",
+      [
+       null,
+       {}
+      ]
+     ],
      "inheritance.html": [
       "2928bfa3bbf7686f17d28f4ef31ecb3674d0439c",
       [
@@ -487764,7 +488719,7 @@
        ]
       ],
       "color-computed-color-mix-function.html": [
-       "4cedc92cc9904b63a3176d0f52509ac47900aa70",
+       "ede3e3db86f94f3d18d2acc80608d742e89ecf0e",
        [
         null,
         {}
@@ -500245,7 +501200,7 @@
       ]
      ],
      "dashed-function-eval.html": [
-      "7726e832e0267b57852d099349c779d920aaa2e3",
+      "edb560cc544b2068c4070b259c4ccb4ff98fc58c",
       [
        null,
        {}
@@ -637170,8 +638125,18 @@
          {}
         ]
        ],
+       "dialog-closedby-corner-cases.html": [
+        "e25b9533b905f52decdcde07992ee587e41ca7c6",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
        "dialog-closedby-start-open.html": [
-        "52432ff1b2c48ad7e366572a1d545ce5413a941e",
+        "0606d9b04afd002d7319b8a9ad7b990ca67cf359",
         [
          null,
          {
@@ -637181,7 +638146,7 @@
         ]
        ],
        "dialog-closedby.html": [
-        "65902ed2d5ffc2ee45e367b188012f2da87e0c36",
+        "50d600219d202cb0e4df33fde899b287dc9a3edf",
         [
          null,
          {
@@ -637319,7 +638284,7 @@
         ]
        ],
        "dialog-popover-closedby-simple.html": [
-        "f1d78e1ebcda6aacf7a3e586635d793f25d3d1b9",
+        "afea395aa96839d45e049c3c5c6bf53f3714518c",
         [
          null,
          {
@@ -637329,7 +638294,7 @@
         ]
        ],
        "dialog-requestclose.html": [
-        "3790926dda42c13b191c258695bc41cefa8a8de8",
+        "f63bc91ab475e3d21bd6002ffae1c669e8a493c2",
         [
          null,
          {
@@ -642916,7 +643881,7 @@
      },
      "the-button-element": {
       "command-and-commandfor": {
-       "button-event-dispatch.tentative.html": [
+       "button-event-dispatch.html": [
         "be90823325b8cce51fafc1dac658c9591b07c476",
         [
          null,
@@ -642926,21 +643891,21 @@
          }
         ]
        ],
-       "button-type-behavior.tentative.html": [
+       "button-type-behavior.html": [
         "f179ceb653f5fa2ff349b770d49a70328baf0793",
         [
          null,
          {}
         ]
        ],
-       "button-type-reflection.tentative.html": [
+       "button-type-reflection.html": [
         "972861486e86bcf569c5ea9f348285a5d67520fa",
         [
          null,
          {}
         ]
        ],
-       "command-reflection.tentative.html": [
+       "command-reflection.html": [
         "cac07b732d71aba3fa3e9ab7db13f7edadada82e",
         [
          null,
@@ -642950,7 +643915,7 @@
          }
         ]
        ],
-       "event-dispatch-shadow.tentative.html": [
+       "event-dispatch-shadow.html": [
         "9d9b99259789a8cc81f401590ef0cd4b34368bd0",
         [
          null,
@@ -642959,7 +643924,7 @@
          }
         ]
        ],
-       "event-interface.tentative.html": [
+       "event-interface.html": [
         "cc2b5c94ea25d898708ee4c28f831e06a8f19487",
         [
          null,
@@ -642978,14 +643943,14 @@
          }
         ]
        ],
-       "idlharness.tentative.html": [
-        "68fc7c71cd0594daa706fff253317ba78ed3970a",
+       "idlharness.html": [
+        "e2a12b48c886e22076a79ccd600fdc43a561b8ce",
         [
          null,
          {}
         ]
        ],
-       "interface.tentative.html": [
+       "interface.html": [
         "58f0b110c8b7087fa329bf47a44fffbf6ab0583d",
         [
          null,
@@ -643042,7 +644007,7 @@
          }
         ]
        ],
-       "on-dialog-behavior.tentative.html": [
+       "on-dialog-behavior.html": [
         "b75746e493ac2912efa14503aa41332656cda2fc",
         [
          null,
@@ -643052,7 +644017,7 @@
          }
         ]
        ],
-       "on-dialog-invalid-behavior.tentative.html": [
+       "on-dialog-invalid-behavior.html": [
         "01ef53d1c07d60d6cfc820f6b1264bb899bd34df",
         [
          null,
@@ -643071,7 +644036,7 @@
          }
         ]
        ],
-       "on-popover-behavior.tentative.html": [
+       "on-popover-behavior.html": [
         "7462ce6159a8fead0c12a8e12a03368ad23b749e",
         [
          null,
@@ -643081,7 +644046,7 @@
          }
         ]
        ],
-       "on-popover-invalid-behavior.tentative.html": [
+       "on-popover-invalid-behavior.html": [
         "91efd92ba82aa3d81d5e9a530296c3ae93daee06",
         [
          null,
@@ -650697,8 +651662,32 @@
      },
      "bidi": {
       "bluetooth": {
+       "handle_request_device_prompt.https.html": [
+        "3d1b9176003388e40be27f8a7582ad1a3240a860",
+        [
+         null,
+         {
+          "testdriver": true,
+          "testdriver_features": [
+           "bidi"
+          ]
+         }
+        ]
+       ],
        "simulate_adapter.https.html": [
         "ed60285c41fabe6665ed81e720932428afab1d63",
+        [
+         null,
+         {
+          "testdriver": true,
+          "testdriver_features": [
+           "bidi"
+          ]
+         }
+        ]
+       ],
+       "simulate_preconnected_peripheral.https.html": [
+        "318bd29cf4ee77dd34bb0a2f5fc91e54d29fc189",
         [
          null,
          {
@@ -663380,6 +664369,13 @@
       ],
       [
        "navigation-api/ordering-and-transition/reload-intercept.html?no-currententrychange",
+       {}
+      ]
+     ],
+     "reload-no-popstate.html": [
+      "9c1186344dc7f1c988166b459e67b8b482ba9413",
+      [
+       null,
        {}
       ]
      ],
@@ -689781,6 +690777,13 @@
        {}
       ]
      ],
+     "view-timeline-subject-in-shadow-root-with-timeline-scope.html": [
+      "658d2fdb86f13ea3879f718f6faca38185502541",
+      [
+       null,
+       {}
+      ]
+     ],
      "view-timeline-used-values.html": [
       "1bd6f0468c3db67b2ec48d2727121f8a87ebd522",
       [
@@ -696197,7 +697200,7 @@
         }
        ]
       ],
-      "commandfor.tentative.html": [
+      "commandfor.html": [
        "0d61649e4cd295d68b247f13c1e172f1db5b199c",
        [
         null,
@@ -701115,6 +702118,20 @@
      [
       null,
       {}
+     ]
+    ],
+    "SpeechRecognition-detached-iframe.window.js": [
+     "3587be29acce4b322b51534dd2d6da6d9780befb",
+     [
+      "speech-api/SpeechRecognition-detached-iframe.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "SpeechRecognition in a detached iframe test"
+        ]
+       ]
+      }
      ]
     ],
     "SpeechRecognition-installOnDevice.https.html": [
@@ -716802,6 +717819,20 @@
       ],
       "a.rel-getter-01.svg": [
        "f4f1fdb4f3af9233b7121f828e47d2ccaae7a975",
+       [
+        null,
+        {}
+       ]
+      ],
+      "a.rel-noopener-policy.html": [
+       "1e2d6d427fbb58336600b363b15faff221a96376",
+       [
+        null,
+        {}
+       ]
+      ],
+      "a.rel-noreferrer-policy.html": [
+       "3e063e134a43535f83eba04054590e53e93e671f",
        [
         null,
         {}
@@ -823900,6 +824931,22 @@
          ],
          "state.py": [
           "ad21326081e077c6cff4484dd75ab65f2c4cb28c",
+          [
+           null,
+           {}
+          ]
+         ]
+        },
+        "simulate_preconnected_peripheral": {
+         "invalid.py": [
+          "14e4067dfd7599d9c37944975628a8f2bfcceccd",
+          [
+           null,
+           {}
+          ]
+         ],
+         "simulate_preconnected_peripheral.py": [
+          "b4b30913a61b9119ec41505141b789d7aa9f8a22",
           [
            null,
            {}

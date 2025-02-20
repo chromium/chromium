@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Gamepad interface: attribute touches
+  assert_true: The prototype object must have a property "touches" expected true got false
 [FAIL] GamepadHapticActuator interface: operation playEffect(GamepadHapticEffectType, optional GamepadEffectParameters)
   assert_equals: property has wrong .length expected 1 but got 2
 [FAIL] GamepadEvent interface object length
