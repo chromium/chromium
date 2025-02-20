@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
@@ -61,8 +62,10 @@ scoped_refptr<const Extension> LoadUnpacked(
 ShellExtensionLoader::ShellExtensionLoader(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
-      extension_registrar_(browser_context, this),
-      keep_alive_requester_(browser_context) {}
+      extension_registrar_(ExtensionRegistrar::Get(browser_context)),
+      keep_alive_requester_(browser_context) {
+  extension_registrar_->SetDelegate(this);
+}
 
 ShellExtensionLoader::~ShellExtensionLoader() = default;
 
@@ -70,7 +73,7 @@ const Extension* ShellExtensionLoader::LoadExtension(
     const base::FilePath& extension_dir) {
   scoped_refptr<const Extension> extension = LoadUnpacked(extension_dir);
   if (extension)
-    extension_registrar_.AddExtension(extension);
+    extension_registrar_->AddExtension(extension);
 
   return extension.get();
 }
@@ -90,7 +93,8 @@ void ShellExtensionLoader::ReloadExtension(ExtensionId extension_id) {
   // the reload so that the first step, disabling the extension, doesn't release
   // the last remaining keep-alive and shut down the application.
   keep_alive_requester_.StartTrackingReload(extension);
-  extension_registrar_.ReloadExtension(extension_id, LoadErrorBehavior::kQuiet);
+  extension_registrar_->ReloadExtension(extension_id,
+                                        LoadErrorBehavior::kQuiet);
   if (did_schedule_reload_)
     return;
 
@@ -103,7 +107,7 @@ void ShellExtensionLoader::FinishExtensionReload(
     const ExtensionId old_extension_id,
     scoped_refptr<const Extension> extension) {
   if (extension) {
-    extension_registrar_.AddExtension(extension);
+    extension_registrar_->AddExtension(extension);
     // If the extension is a platform app, adding it above caused
     // ShellKeepAliveRequester to create a new keep-alive to wait for the app to
     // open its first window.

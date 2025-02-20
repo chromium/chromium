@@ -337,6 +337,8 @@ source_set("browser_sources") {
     "extension_protocols.h",
     "extension_registrar.cc",
     "extension_registrar.h",
+    "extension_registrar_factory.cc",
+    "extension_registrar_factory.h",
     "extension_registry.cc",
     "extension_registry.h",
     "extension_registry_factory.cc",

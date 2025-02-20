@@ -205,14 +205,14 @@ void ExtensionService::AddProviderForTesting(
 
 void ExtensionService::BlocklistExtensionForTest(
     const std::string& extension_id) {
-  extension_registrar_.BlocklistExtensionForTest(extension_id);  // IN-TEST
+  extension_registrar_->BlocklistExtensionForTest(extension_id);  // IN-TEST
 }
 
 void ExtensionService::GreylistExtensionForTest(
     const std::string& extension_id,
     const BitMapBlocklistState& state) {
-  extension_registrar_.GreylistExtensionForTest(extension_id,
-                                                state);  // IN-TEST
+  extension_registrar_->GreylistExtensionForTest(extension_id,
+                                                 state);  // IN-TEST
 }
 
 bool ExtensionService::OnExternalExtensionUpdateUrlFound(
@@ -410,16 +410,16 @@ ExtensionService::ExtensionService(
                                                              extension_prefs_,
                                                              system_,
                                                              registry_)),
-      extension_registrar_(profile_, extension_registrar_delegate_.get()),
+      extension_registrar_(ExtensionRegistrar::Get(profile)),
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
       corrupted_extension_reinstaller_(profile_),
-      delayed_install_manager_(extension_prefs_, &extension_registrar_) {
+      delayed_install_manager_(extension_prefs_, extension_registrar_) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
-  extension_registrar_delegate_->Init(&extension_registrar_,
+  extension_registrar_delegate_->Init(extension_registrar_,
                                       &delayed_install_manager_);
-
+  extension_registrar_->SetDelegate(extension_registrar_delegate_.get());
   // Figure out if extension installation should be enabled.
   if (ExtensionsBrowserClient::Get()->AreExtensionsDisabled(*command_line,
                                                             profile)) {
@@ -512,7 +512,7 @@ void ExtensionService::Shutdown() {
       this);
   external_install_manager_->Shutdown();
   corrupted_extension_reinstaller_.Shutdown();
-  extension_registrar_.Shutdown();
+  extension_registrar_->Shutdown();
   extension_registrar_delegate_->Shutdown();
   pref_change_registrar_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -595,7 +595,7 @@ void ExtensionService::Init() {
 void ExtensionService::EnabledReloadableExtensions() {
   TRACE_EVENT0("browser,startup",
                "ExtensionService::EnabledReloadableExtensions");
-  extension_registrar_.EnabledReloadableExtensions();
+  extension_registrar_->EnabledReloadableExtensions();
 }
 
 scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
@@ -728,12 +728,14 @@ void ExtensionService::LoadSigninProfileTestExtension(const std::string& path) {
 #endif
 
 void ExtensionService::ReloadExtension(const std::string& extension_id) {
-  extension_registrar_.ReloadExtension(extension_id, LoadErrorBehavior::kNoisy);
+  extension_registrar_->ReloadExtension(extension_id,
+                                        LoadErrorBehavior::kNoisy);
 }
 
 void ExtensionService::ReloadExtensionWithQuietFailure(
     const std::string& extension_id) {
-  extension_registrar_.ReloadExtension(extension_id, LoadErrorBehavior::kQuiet);
+  extension_registrar_->ReloadExtension(extension_id,
+                                        LoadErrorBehavior::kQuiet);
 }
 
 bool ExtensionService::UninstallExtension(
@@ -743,13 +745,13 @@ bool ExtensionService::UninstallExtension(
     UninstallReason reason,
     std::u16string* error,
     base::OnceClosure done_callback) {
-  return extension_registrar_.UninstallExtension(
+  return extension_registrar_->UninstallExtension(
       transient_extension_id, reason, error, std::move(done_callback));
 }
 
 bool ExtensionService::IsExtensionEnabled(
     const std::string& extension_id) const {
-  return extension_registrar_.IsExtensionEnabled(extension_id);
+  return extension_registrar_->IsExtensionEnabled(extension_id);
 }
 
 void ExtensionService::PerformActionBasedOnOmahaAttributes(
@@ -773,33 +775,33 @@ void ExtensionService::PerformActionBasedOnExtensionTelemetryServiceVerdicts(
 }
 
 void ExtensionService::OnGreylistStateRemoved(const std::string& extension_id) {
-  extension_registrar_.OnGreylistStateRemoved(extension_id);
+  extension_registrar_->OnGreylistStateRemoved(extension_id);
 }
 
 void ExtensionService::OnGreylistStateAdded(const std::string& extension_id,
                                             BitMapBlocklistState new_state) {
-  extension_registrar_.OnGreylistStateAdded(extension_id, new_state);
+  extension_registrar_->OnGreylistStateAdded(extension_id, new_state);
 }
 
 void ExtensionService::OnBlocklistStateRemoved(
     const std::string& extension_id) {
-  extension_registrar_.OnBlocklistStateRemoved(extension_id);
+  extension_registrar_->OnBlocklistStateRemoved(extension_id);
 }
 
 void ExtensionService::OnBlocklistStateAdded(const std::string& extension_id) {
-  extension_registrar_.OnBlocklistStateAdded(extension_id);
+  extension_registrar_->OnBlocklistStateAdded(extension_id);
 }
 
 void ExtensionService::RemoveDisableReasonAndMaybeEnable(
     const std::string& extension_id,
     disable_reason::DisableReason reason_to_remove) {
-  extension_registrar_.RemoveDisableReasonAndMaybeEnable(extension_id,
-                                                         reason_to_remove);
+  extension_registrar_->RemoveDisableReasonAndMaybeEnable(extension_id,
+                                                          reason_to_remove);
 }
 
 void ExtensionService::EnableExtension(const std::string& extension_id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  extension_registrar_.EnableExtension(extension_id);
+  extension_registrar_->EnableExtension(extension_id);
 }
 
 void ExtensionService::DisableExtension(
@@ -811,7 +813,7 @@ void ExtensionService::DisableExtension(
 void ExtensionService::DisableExtension(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
-  extension_registrar_.DisableExtension(extension_id, disable_reasons);
+  extension_registrar_->DisableExtension(extension_id, disable_reasons);
 }
 
 void ExtensionService::DisableExtensionWithRawReasons(
@@ -820,7 +822,7 @@ void ExtensionService::DisableExtensionWithRawReasons(
     const base::flat_set<int>& disable_reasons) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-  extension_registrar_.DisableExtensionWithRawReasons(passkey, extension_id,
+  extension_registrar_->DisableExtensionWithRawReasons(passkey, extension_id,
                                                       disable_reasons);
 }
 
@@ -828,8 +830,8 @@ void ExtensionService::DisableExtensionWithSource(
     const Extension* source_extension,
     const ExtensionId& extension_id,
     disable_reason::DisableReason disable_reason) {
-  extension_registrar_.DisableExtensionWithSource(source_extension,
-                                                  extension_id, disable_reason);
+  extension_registrar_->DisableExtensionWithSource(
+      source_extension, extension_id, disable_reason);
 }
 
 void ExtensionService::DisableUserExtensionsExcept(
@@ -872,7 +874,7 @@ void ExtensionService::BlockAllExtensions() {
   }
   block_extensions_ = true;
 
-  extension_registrar_.BlockAllExtensions();
+  extension_registrar_->BlockAllExtensions();
 }
 
 // All locked extensions should revert to being either enabled or disabled
@@ -880,7 +882,7 @@ void ExtensionService::BlockAllExtensions() {
 void ExtensionService::UnblockAllExtensions() {
   block_extensions_ = false;
 
-  extension_registrar_.UnblockAllExtensions();
+  extension_registrar_->UnblockAllExtensions();
 
   // While extensions are blocked, we won't display any external install
   // warnings. Now that they are unblocked, we should update the error.
@@ -1214,12 +1216,12 @@ void ExtensionService::OnAllExternalProvidersReady() {
 
 void ExtensionService::UnloadExtension(const std::string& extension_id,
                                        UnloadedExtensionReason reason) {
-  extension_registrar_.RemoveExtension(extension_id, reason);
+  extension_registrar_->RemoveExtension(extension_id, reason);
 }
 
 void ExtensionService::RemoveComponentExtension(
     const std::string& extension_id) {
-  extension_registrar_.RemoveComponentExtension(extension_id);
+  extension_registrar_->RemoveComponentExtension(extension_id);
 }
 
 void ExtensionService::UnloadAllExtensionsForTest() {
@@ -1244,7 +1246,7 @@ void ExtensionService::SetReadyAndNotifyListeners() {
 }
 
 void ExtensionService::AddExtension(const Extension* extension) {
-  extension_registrar_.AddExtension(extension);
+  extension_registrar_->AddExtension(extension);
 }
 
 void ExtensionService::AddComponentExtension(const Extension* extension) {
@@ -1447,7 +1449,7 @@ void ExtensionService::OnExtensionManagementSettingsChanged() {
     if (!settings->IsPermissionSetAllowed(
             extension.get(),
             extension->permissions_data()->active_permissions()) &&
-        extension_registrar_.CanBlockExtension(extension.get())) {
+        extension_registrar_->CanBlockExtension(extension.get())) {
       PermissionsUpdater(profile()).RemovePermissionsUnsafe(
           extension.get(), *settings->GetBlockedPermissions(extension.get()));
     }
@@ -1483,7 +1485,7 @@ void ExtensionService::AddNewOrUpdatedExtension(
     InstallVerifier::Get(GetBrowserContext())->VerifyExtension(extension->id());
   }
 
-  extension_registrar_.FinishInstallation(extension);
+  extension_registrar_->FinishInstallation(extension);
 }
 
 bool ExtensionService::FinishDelayedInstallationIfReady(
@@ -1499,7 +1501,7 @@ const Extension* ExtensionService::GetPendingExtensionUpdate(
 }
 
 void ExtensionService::TerminateExtension(const std::string& extension_id) {
-  extension_registrar_.TerminateExtension(extension_id);
+  extension_registrar_->TerminateExtension(extension_id);
 }
 
 bool ExtensionService::OnExternalExtensionFileFound(
@@ -1609,7 +1611,7 @@ void ExtensionService::InstallationFromExternalFileFinished(
 
 void ExtensionService::DidCreateMainFrameForBackgroundPage(
     ExtensionHost* host) {
-  extension_registrar_.DidCreateMainFrameForBackgroundPage(host);
+  extension_registrar_->DidCreateMainFrameForBackgroundPage(host);
 }
 
 void ExtensionService::OnExtensionHostRenderProcessGone(
@@ -1855,7 +1857,7 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
 }
 
 void ExtensionService::UninstallMigratedExtensions() {
-  extension_registrar_.UninstallMigratedExtensions(
+  extension_registrar_->UninstallMigratedExtensions(
       kObsoleteComponentExtensionIds);
 }
 

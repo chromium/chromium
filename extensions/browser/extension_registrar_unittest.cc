@@ -105,7 +105,8 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     ExtensionsTest::SetUp();
     extensions_browser_client()->set_extension_system_factory(&factory_);
     extension_ = ExtensionBuilder("extension").Build();
-    registrar_.emplace(browser_context(), delegate());
+    registrar_ = std::make_unique<ExtensionRegistrar>(browser_context());
+    registrar_->SetDelegate(delegate());
 
     // Mock defaults.
     ON_CALL(delegate_, CanAddExtension(extension_.get()))
@@ -346,7 +347,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
         .Contains(extension_->id());
   }
 
-  ExtensionRegistrar* registrar() { return &registrar_.value(); }
+  ExtensionRegistrar* registrar() { return registrar_.get(); }
   TestExtensionRegistrarDelegate* delegate() { return &delegate_; }
 
   scoped_refptr<const Extension> extension() const { return extension_; }
@@ -360,7 +361,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
   scoped_refptr<const Extension> extension_;
 
   // Initialized in SetUp().
-  std::optional<ExtensionRegistrar> registrar_;
+  std::unique_ptr<ExtensionRegistrar> registrar_;
 };
 
 TEST_F(ExtensionRegistrarTest, Basic) {

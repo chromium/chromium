@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -44,7 +45,7 @@ class RendererStartupHelper;
 // extensions for a BrowserContext. It uses the ExtensionRegistry to track
 // extension states. Other classes may query the ExtensionRegistry directly,
 // but eventually only ExtensionRegistrar will be able to make changes to it.
-class ExtensionRegistrar : public ProcessManagerObserver {
+class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
  public:
   // How to surface an extension load error, e.g. showing an error dialog. The
   // actual behavior is up to the embedder.
@@ -122,17 +123,22 @@ class ExtensionRegistrar : public ProcessManagerObserver {
     virtual bool ShouldBlockExtension(const Extension* extension) = 0;
   };
 
-  // The provided Delegate should outlive this object.
-  ExtensionRegistrar(content::BrowserContext* browser_context,
-                     Delegate* delegate);
+  explicit ExtensionRegistrar(content::BrowserContext* browser_context);
 
   ExtensionRegistrar(const ExtensionRegistrar&) = delete;
   ExtensionRegistrar& operator=(const ExtensionRegistrar&) = delete;
 
   ~ExtensionRegistrar() override;
 
+  // Returns the instance for the given |browser_context|.
+  static ExtensionRegistrar* Get(content::BrowserContext* browser_context);
+
+  // The provided Delegate should outlive this object.
+  void SetDelegate(Delegate* delegate);
+
+  // KeyedService overrides:
   // Called when the associated Profile is going to be destroyed.
-  void Shutdown();
+  void Shutdown() override;
 
   // Adds the extension to the ExtensionRegistry. The extension will be added to
   // the enabled, disabled, blocklisted or blocked set. If the extension is
@@ -325,10 +331,12 @@ class ExtensionRegistrar : public ProcessManagerObserver {
 
   const raw_ptr<content::BrowserContext> browser_context_;
 
-  // Delegate provided in the constructor. Should outlive this object.
-  const raw_ptr<Delegate> delegate_;
+  // Delegate provided by SetDelegate. Should outlive this object.
+  raw_ptr<Delegate> delegate_;
 
   // Keyed services we depend on. Cached here for repeated access.
+  // TODO(crbug.com/398014892): Figure out a way to break the dependency
+  // between ExtensionRegistrar and ExtensionSystem.
   raw_ptr<ExtensionSystem> extension_system_;
   const raw_ptr<ExtensionPrefs> extension_prefs_;
   const raw_ptr<ExtensionRegistry> registry_;

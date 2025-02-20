@@ -134,7 +134,7 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   scoped_refptr<value_store::ValueStoreFactory> store_factory_;
 
   std::unique_ptr<ExtensionRegistrar::Delegate> registrar_delegate_;
-  std::unique_ptr<ExtensionRegistrar> registrar_;
+  raw_ptr<ExtensionRegistrar> registrar_;  // Not owned
 
   // Signaled when the extension system has completed its startup tasks.
   base::OneShotEvent ready_;

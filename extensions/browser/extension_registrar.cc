@@ -21,6 +21,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -50,10 +51,8 @@ BASE_FEATURE(kExtensionUpdatesImmediatelyUnregisterWorker,
 
 }  // namespace
 
-ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
-                                       Delegate* delegate)
+ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context)
     : browser_context_(browser_context),
-      delegate_(delegate),
       extension_system_(ExtensionSystem::Get(browser_context)),
       extension_prefs_(ExtensionPrefs::Get(browser_context)),
       registry_(ExtensionRegistry::Get(browser_context)),
@@ -69,10 +68,20 @@ ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
 
 ExtensionRegistrar::~ExtensionRegistrar() = default;
 
+// static
+ExtensionRegistrar* ExtensionRegistrar::Get(content::BrowserContext* context) {
+  return ExtensionRegistrarFactory::GetForBrowserContext(context);
+}
+
+void ExtensionRegistrar::SetDelegate(Delegate* delegate) {
+  delegate_ = delegate;
+}
+
 void ExtensionRegistrar::Shutdown() {
   // Setting to `nullptr`, because this raw pointer may become dangling once
   // the `ExtensionSystem` keyed service is destroyed.
   extension_system_ = nullptr;
+  delegate_ = nullptr;
 }
 
 void ExtensionRegistrar::AddExtension(
