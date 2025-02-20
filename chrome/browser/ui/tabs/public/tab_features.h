@@ -51,6 +51,10 @@ class GlicTabIndicatorHelper;
 }
 #endif
 
+namespace memory_saver {
+class MemorySaverChipController;
+}
+
 namespace permissions {
 class PermissionIndicatorsTabData;
 }  // namespace permissions
@@ -168,6 +172,10 @@ class TabFeatures {
     return collaboration_messaging_tab_data_.get();
   }
 
+  memory_saver::MemorySaverChipController* memory_saver_chip_controller() {
+    return memory_saver_chip_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   // Can be overridden in tests to initialize nothing.
   virtual void Init(TabInterface& tab, Profile* profile);
@@ -267,6 +275,9 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
 #endif
+
+  std::unique_ptr<memory_saver::MemorySaverChipController>
+      memory_saver_chip_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -1114,6 +1114,8 @@ static_library("ui") {
       "performance_controls/memory_saver_bubble_delegate.cc",
       "performance_controls/memory_saver_bubble_delegate.h",
       "performance_controls/memory_saver_bubble_observer.h",
+      "performance_controls/memory_saver_chip_controller.cc",
+      "performance_controls/memory_saver_chip_controller.h",
       "performance_controls/memory_saver_chip_tab_helper.cc",
       "performance_controls/memory_saver_chip_tab_helper.h",
       "performance_controls/memory_saver_opt_in_iph_controller.cc",
