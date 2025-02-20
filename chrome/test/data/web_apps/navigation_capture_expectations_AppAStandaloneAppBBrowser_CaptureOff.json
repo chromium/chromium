@@ -2,7 +2,8 @@
    "tests": {
       "AppWnd_ScopeA2A_ServerSideViaA_ViaLink_MiddleClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2A_ServerSideViaA_ViaLink_MiddleClick_WithoutOpener_TargetBlank",
-         "disabled": false,
+         "disabled": true,
+         "_disabled_bug": "https://crbug.com/397875684",
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
