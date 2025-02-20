@@ -4495,11 +4495,11 @@ message CertProvBackendError {
     // retry provisioning the certificate from the very beginning (same as for
     // INCONSISTENT_DATA and PROFILE_NOT_FOUND, all other errors make the client
     // retry after a restart.)
-    IMMEDIATE_RETRY_ERROR_0 = 16;
-    IMMEDIATE_RETRY_ERROR_1 = 17;
-    IMMEDIATE_RETRY_ERROR_2 = 18;
-    IMMEDIATE_RETRY_ERROR_3 = 19;
-    IMMEDIATE_RETRY_ERROR_4 = 20;
+    IMMEDIATE_RETRY_ERROR_ZERO = 16;
+    IMMEDIATE_RETRY_ERROR_ONE = 17;
+    IMMEDIATE_RETRY_ERROR_TWO = 18;
+    IMMEDIATE_RETRY_ERROR_THREE = 19;
+    IMMEDIATE_RETRY_ERROR_FOUR = 20;
     // Google's well-known borg service account used for sending out the initial
     // Pub/Sub notification to Certificate Provisioning Adapters was not granted
     // the necessary Pub/Sub Publisher permission in the Google Cloud project
