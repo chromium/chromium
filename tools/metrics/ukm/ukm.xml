@@ -11593,6 +11593,48 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="IOS.ExperienceKitCalendar.Present">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Logged when the user chooses one of the calendar types on the ExperienceKit
+    context menu.
+  </summary>
+  <metric name="CalendarType" enum="ExperienceKitCalendarTypes">
+    <summary>
+      The type of calendar provider the user chose.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ExperienceKitCalendar.Success">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Logged when the user successfully adds an event to one of the calendar
+    providers in ExperienceKit.
+  </summary>
+  <metric name="CalendarType" enum="ExperienceKitCalendarTypes">
+    <summary>
+      The type of calendar provider the user chose.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="IOS.FindInPageSearchMatches">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
