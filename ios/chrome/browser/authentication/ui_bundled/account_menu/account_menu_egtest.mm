@@ -499,10 +499,10 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity2];
 }
 
-// TODO(crbug.com/397651804): Re-enable once fixed.
 // Test the open Settings button.
-- (void)DISABLED_testOpenSettings {
+- (void)testOpenSettings {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
   [self selectIdentityDisc];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuOpenSettingsButtonId)]

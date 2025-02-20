@@ -92,7 +92,6 @@
   SyncEncryptionTableViewController* _syncEncryptionTableViewController;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
-  id<ApplicationCommands> _applicationHandler;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Callback to hide the activity overlay.
   base::ScopedClosureRunner _activityOverlayCallback;
@@ -123,8 +122,6 @@
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _identityManager = IdentityManagerFactory::GetForProfile(profile);
   _prefService = profile->GetPrefs();
-  _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                           ApplicationCommands);
 
   _viewController = [[AccountMenuViewController alloc] init];
 
@@ -184,7 +181,6 @@
   _authenticationService = nil;
   _identityManager = nil;
   _prefService = nil;
-  _applicationHandler = nil;
   _syncService = nullptr;
   _accountManagerService = nullptr;
   [super stop];
@@ -234,13 +230,10 @@
 
 - (void)didTapSettingsButton {
   // Close the account menu and open the Settings page.
-  __weak __typeof(self) weakSelf = self;
+  __weak id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
                  completion:^{
-                   id<ApplicationCommands> applicationHandler =
-                       HandlerForProtocol(
-                           weakSelf.browser->GetCommandDispatcher(),
-                           ApplicationCommands);
                    [applicationHandler showSettingsFromViewController:nil];
                  }];
 }
