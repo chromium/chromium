@@ -540,8 +540,6 @@ crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-
 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure ]
 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-004.html [ Failure ]
 
-crbug.com/916825 external/wpt/css/filter-effects/filter-subregion-01.html [ Failure ]
-
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-001.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-002.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-003.html [ Failure ]
