@@ -309,3 +309,25 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardURLMatch) {
   // Expect the clipboard content to be loaded.
   EXPECT_EQ(LastOpenedMatch().destination_url, pasteboard_url);
 }
+
+// Tests opening a clipboard Text match.
+TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardTextMatch) {
+  // Create an empty clipboard match in autocompleteController.
+  AutocompleteMatch clipboard_match = CreateAutocompleteMatch(
+      "Clipboard text match", AutocompleteMatchType::CLIPBOARD_TEXT, false,
+      false, 100, std::nullopt);
+  clipboard_match.destination_url = GURL();
+  autocomplete_controller_->SetAutocompleteMatches({clipboard_match});
+
+  // Set the clipboard content.
+  std::u16string pasteboard_text = u"search terms";
+  clipboard_->SetClipboardText(pasteboard_text, base::TimeDelta::Min());
+
+  // Open the clipboard match.
+  [controller_ selectMatchForOpening:clipboard_match
+                               inRow:0
+                              openIn:WindowOpenDisposition::CURRENT_TAB];
+
+  // Expect the clipboard content to be loaded.
+  EXPECT_EQ(LastOpenedMatch().fill_into_edit, pasteboard_text);
+}

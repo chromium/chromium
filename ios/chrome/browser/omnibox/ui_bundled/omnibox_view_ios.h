@@ -48,24 +48,6 @@ class OmniboxViewIOS : public OmniboxView,
     popup_provider_ = provider;
   }
 
-  void OnReceiveClipboardURLForOpenMatch(
-      const AutocompleteMatch& match,
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t selected_line,
-      base::TimeTicks match_selection_timestamp,
-      std::optional<GURL> optional_gurl);
-
-  void OnReceiveClipboardTextForOpenMatch(
-      const AutocompleteMatch& match,
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t selected_line,
-      base::TimeTicks match_selection_timestamp,
-      std::optional<std::u16string> optional_text);
-
   void OnReceiveClipboardImageForOpenMatch(
       const AutocompleteMatch& match,
       WindowOpenDisposition disposition,
