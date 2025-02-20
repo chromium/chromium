@@ -147,10 +147,6 @@ AcceleratedStaticBitmapImage::~AcceleratedStaticBitmapImage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-SkImageInfo AcceleratedStaticBitmapImage::GetSkImageInfo() const {
-  return sk_image_info_;
-}
-
 scoped_refptr<StaticBitmapImage>
 AcceleratedStaticBitmapImage::MakeUnaccelerated() {
   CreateImageFromMailboxIfNeeded();
