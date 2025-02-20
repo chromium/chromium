@@ -47,7 +47,7 @@ from .protocol import (BaseProtocolPart,
                        VirtualPressureSourceProtocolPart,
                        merge_dicts)
 
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 from webdriver.client import Session
 from webdriver import error as webdriver_error
 from webdriver.bidi import error as webdriver_bidi_error
@@ -125,6 +125,14 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
         super().__init__(parent)
         self.webdriver = None
 
+    async def handle_request_device_prompt(self,
+          context: str,
+          prompt: str,
+          accept: bool,
+          device: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.handle_request_device_prompt(
+            context=context, prompt=prompt, accept=accept, device=device)
+
     def setup(self):
         self.webdriver = self.parent.webdriver
 
@@ -133,6 +141,19 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
           state: str) -> None:
         await self.webdriver.bidi_session.bluetooth.simulate_adapter(
             context=context, state=state)
+
+    async def simulate_preconnected_peripheral(self,
+            context: str,
+            address: str,
+            name: str,
+            manufacturer_data: List[Any],
+            known_service_uuids: List[str]) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_preconnected_peripheral(
+            context=context,
+            address=address,
+            name=name,
+            manufacturer_data=manufacturer_data,
+            known_service_uuids=known_service_uuids)
 
 
 class WebDriverBidiBrowsingContextProtocolPart(BidiBrowsingContextProtocolPart):
@@ -795,6 +816,8 @@ class WebDriverBidiProtocol(WebDriverProtocol):
 
 class WebDriverRun(TimedRunner):
     def set_timeout(self):
+        if not self.timeout:
+            return
         try:
             self.protocol.base.set_timeout(self.timeout + self.extra_timeout)
         except webdriver_error.UnknownErrorException:
@@ -976,11 +999,14 @@ class WebDriverTestharnessExecutor(TestharnessExecutor, TestDriverExecutorMixin)
     def do_test(self, test):
         url = self.test_url(test)
 
+        timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
+                   else None)
+
         success, data = WebDriverRun(self.logger,
                                      self.do_testharness,
                                      self.protocol,
                                      url,
-                                     test.timeout * self.timeout_multiplier,
+                                     timeout,
                                      self.extra_timeout).run()
 
         if success:
@@ -1096,11 +1122,13 @@ class WebDriverRefTestExecutor(RefTestExecutor, TestDriverExecutorMixin):
         assert viewport_size is None
         assert dpi is None
 
+        timeout = self.timeout_multiplier * test.timeout if self.debug_info is None else None
+
         return WebDriverRun(self.logger,
                             self._screenshot,
                             self.protocol,
                             self.test_url(test),
-                            test.timeout,
+                            timeout,
                             self.extra_timeout).run()
 
     def _screenshot(self, protocol, url, timeout):

@@ -1,17 +1,15 @@
 This is a wdspec test.
 [FAIL] test_uninstall_missing_addon
-  AttributeError: module 'webdriver.bidi.error' has no attribute 'NoSuchWebExtensionException'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
 [FAIL] test_params_extension_invalid_type[None]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
 [FAIL] test_params_extension_invalid_type[False]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
 [FAIL] test_params_extension_invalid_type[42]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
 [FAIL] test_params_extension_invalid_type[value3]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
 [FAIL] test_params_extension_invalid_type[value4]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
-[FAIL] test_params_extension_invalid_value
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
 Harness: the test ran to completion.
 

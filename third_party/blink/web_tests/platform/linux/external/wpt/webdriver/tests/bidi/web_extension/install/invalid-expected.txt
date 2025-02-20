@@ -1,83 +1,73 @@
 This is a wdspec test.
 [FAIL] test_params_extension_data_invalid_type[None]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_invalid_type[False]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_invalid_type[42]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_invalid_type[value3]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_invalid_type[]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_invalid_value
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_type_invalid_type[None]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_type_invalid_type[False]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_type_invalid_type[42]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_type_invalid_type[value3]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_type_invalid_type[value4]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_type_invalid_value[]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_type_invalid_value[unknown-type]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_missing[path]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_missing[archivePath]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[path-None]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[path-False]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[path-42]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[path-value3]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[path-value4]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[archivePath-None]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[archivePath-False]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[archivePath-42]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[archivePath-value3]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[archivePath-value4]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
-[FAIL] test_params_extension_data_path_invalid_value[path-]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
-[FAIL] test_params_extension_data_path_invalid_value[path-invalid path]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
-[FAIL] test_params_extension_data_path_invalid_value[archivePath-]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
-[FAIL] test_params_extension_data_path_invalid_value[archivePath-invalid path]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [ERROR] test_params_extension_data_archive_path_invalid_webextension
   setup error: KeyError: 'chrome'
 [ERROR] test_params_extension_data_path_invalid_webextension
   setup error: KeyError: 'chrome'
 [FAIL] test_params_extension_data_value_missing
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_invalid_type[None]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_invalid_type[False]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_invalid_type[42]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_invalid_type[value3]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_invalid_type[value4]
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
-[FAIL] test_params_extension_data_value_invalid_value
-  AttributeError: 'BidiSession' object has no attribute 'web_extension'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_invalid_webextension[]
-  AttributeError: module 'webdriver.bidi.error' has no attribute 'InvalidWebExtensionException'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_invalid_webextension[dGVzdA==]
-  AttributeError: module 'webdriver.bidi.error' has no attribute 'InvalidWebExtensionException'
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 Harness: the test ran to completion.
 
