@@ -9,6 +9,7 @@
 
 @protocol ApplicationCommands;
 enum class ShareKitFlowOutcome;
+class TabGroup;
 
 // Configuration object for managing a shared group.
 @interface ShareKitManageConfiguration : NSObject
@@ -18,6 +19,9 @@ enum class ShareKitFlowOutcome;
 
 // The collaboration ID of the shared tab group.
 @property(nonatomic, copy) NSString* collabID;
+
+// Local tab group.
+@property(nonatomic, assign) const TabGroup* tabGroup;
 
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
