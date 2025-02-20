@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 
+#include <optional>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/base64url.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -39,6 +41,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/policy/external_storage/device_id.h"
+#include "chromeos/ash/components/policy/external_storage/external_storage_policy_controller.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -193,8 +197,11 @@ std::string GetMountPointNameForMediaStorage(
   return name;
 }
 
-ash::MountAccessMode GetExternalStorageAccessMode(const Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageReadOnly)
+ash::MountAccessMode GetExternalStorageAccessMode(
+    const Profile* profile,
+    std::optional<policy::DeviceId> device_id) {
+  return policy::ExternalStoragePolicyController::IsDeviceReadOnly(
+             CHECK_DEREF(profile->GetPrefs()), std::move(device_id))
              ? ash::MountAccessMode::kReadOnly
              : ash::MountAccessMode::kReadWrite;
 }
@@ -380,6 +387,10 @@ void VolumeManager::Initialize() {
   pref_change_registrar_.Add(
       disks::prefs::kExternalStorageReadOnly,
       base::BindRepeating(&VolumeManager::OnExternalStorageReadOnlyChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      disks::prefs::kExternalStorageAllowlist,
+      base::BindRepeating(&VolumeManager::OnExternalStorageAllowlistChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
   // Subscribe to storage monitor for MTP notifications.
@@ -698,16 +709,18 @@ void VolumeManager::OnAutoMountableDiskEvent(
       }
 
       bool mounting = false;
+      const auto device_id = policy::DeviceId::FromDisk(&disk);
       if (disk.mount_path().empty() && disk.has_media() &&
-          !profile_->GetPrefs()->GetBoolean(
-              disks::prefs::kExternalStorageDisabled)) {
+          !policy::ExternalStoragePolicyController::IsDeviceDisabled(
+              CHECK_DEREF(profile_->GetPrefs()), device_id)) {
         // If disk is not mounted yet and it has media and there is no policy
         // forbidding external storage, give it a try.
         // Initiate disk mount operation. MountPath auto-detects the filesystem
         // format if the second argument is empty.
         disk_mount_manager_->MountPath(
             disk.device_path(), {}, disk.device_label(), {},
-            ash::MountType::kDevice, GetExternalStorageAccessMode(profile_),
+            ash::MountType::kDevice,
+            GetExternalStorageAccessMode(profile_, device_id),
             base::DoNothing());
         mounting = true;
       }
@@ -816,7 +829,9 @@ void VolumeManager::OnFormatEvent(
       // operation.
       disk_mount_manager_->MountPath(
           device_path, {}, {}, {}, ash::MountType::kDevice,
-          GetExternalStorageAccessMode(profile_), base::DoNothing());
+          GetExternalStorageAccessMode(profile_,
+                                       GetDeviceIdFromDevicePath(device_path)),
+          base::DoNothing());
 
       for (auto& observer : observers_) {
         observer.OnFormatCompleted(device_path, device_label,
@@ -854,7 +869,9 @@ void VolumeManager::OnPartitionEvent(
       if (error != ash::PartitionError::kSuccess) {
         disk_mount_manager_->MountPath(
             device_path, {}, {}, {}, ash::MountType::kDevice,
-            GetExternalStorageAccessMode(profile_), base::DoNothing());
+            GetExternalStorageAccessMode(
+                profile_, GetDeviceIdFromDevicePath(device_path)),
+            base::DoNothing());
       }
 
       for (auto& observer : observers_) {
@@ -901,7 +918,9 @@ void VolumeManager::OnRenameEvent(
       // of the volume name).
       disk_mount_manager_->MountPath(
           device_path, {}, mount_label, {}, ash::MountType::kDevice,
-          GetExternalStorageAccessMode(profile_), base::DoNothing());
+          GetExternalStorageAccessMode(profile_,
+                                       GetDeviceIdFromDevicePath(device_path)),
+          base::DoNothing());
 
       bool successfully_renamed = error == ash::RenameError::kSuccess;
       for (auto& observer : observers_) {
@@ -1107,50 +1126,56 @@ void VolumeManager::OnShutdown() {
 }
 
 void VolumeManager::OnExternalStorageDisabledChanged() {
-  // If the policy just got disabled we have to unmount every device currently
-  // mounted. The opposite is fine - we can let the user re-plug their device to
-  // make it available.
-  if (profile_->GetPrefs()->GetBoolean(
-          disks::prefs::kExternalStorageDisabled)) {
-    // We do not iterate on mount_points directly, because mount_points can
-    // be changed by UnmountPath(). Also, a failing unmount shouldn't be retried
-    // indefinitely. So make a set of all the mount points that should be
-    // unmounted (all external media mounts), and iterate through them.
-    std::vector<std::string> remaining_mount_paths;
-    for (const auto& mount_point : disk_mount_manager_->mount_points()) {
-      if (mount_point.mount_type == ash::MountType::kDevice) {
-        remaining_mount_paths.push_back(mount_point.mount_path);
-      }
-    }
-    if (remaining_mount_paths.empty()) {
-      return;
-    }
+  // If the policy just got set to disabled we have to unmount every device
+  // currently mounted which is not allowlisted. The opposite is fine - we can
+  // let the user re-plug their device to make it available.
 
-    std::string mount_path = remaining_mount_paths.back();
-    remaining_mount_paths.pop_back();
-    disk_mount_manager_->UnmountPath(
-        mount_path,
-        base::BindOnce(
-            &VolumeManager::OnExternalStorageDisabledChangedUnmountCallback,
-            weak_ptr_factory_.GetWeakPtr(), std::move(remaining_mount_paths)));
+  const PrefService& pref_service = CHECK_DEREF(profile_->GetPrefs());
+
+  // We do not iterate on mount_points directly, because mount_points can be
+  // changed by UnmountPath(). Also, a failing unmount shouldn't be retried
+  // indefinitely. So make a set of all the mount points that should be
+  // unmounted (all external media mounts which aren't allowlisted), and iterate
+  // through them.
+  std::vector<std::string> remaining_mount_paths;
+  for (const auto& mount_point : disk_mount_manager_->mount_points()) {
+    if (mount_point.mount_type == ash::MountType::kDevice &&
+        policy::ExternalStoragePolicyController::IsDeviceDisabled(
+            pref_service, GetDeviceIdFromDevicePath(mount_point.source_path))) {
+      remaining_mount_paths.push_back(mount_point.mount_path);
+    }
   }
+  if (remaining_mount_paths.empty()) {
+    return;
+  }
+
+  std::string mount_path = remaining_mount_paths.back();
+  remaining_mount_paths.pop_back();
+  disk_mount_manager_->UnmountPath(
+      mount_path,
+      base::BindOnce(
+          &VolumeManager::OnExternalStorageDisabledChangedUnmountCallback,
+          weak_ptr_factory_.GetWeakPtr(), std::move(remaining_mount_paths)));
 }
 
 void VolumeManager::OnExternalStorageReadOnlyChanged() {
-  const ash::MountAccessMode access_mode =
-      GetExternalStorageAccessMode(profile_);
   for (const auto& disk : disk_mount_manager_->disks()) {
+    const ash::MountAccessMode access_mode = GetExternalStorageAccessMode(
+        profile_, policy::DeviceId::FromDisk(disk.get()));
     disk_mount_manager_->RemountRemovableDrive(*disk, access_mode);
   }
+}
+
+void VolumeManager::OnExternalStorageAllowlistChanged() {
+  // The Allowlist overrides both Disabled and ReadOnly policies, fire both of
+  // their listener events.
+  OnExternalStorageDisabledChanged();
+  OnExternalStorageReadOnlyChanged();
 }
 
 void VolumeManager::OnRemovableStorageAttached(
     const storage_monitor::StorageInfo& info) {
   if (!storage_monitor::StorageInfo::IsMTPDevice(info.device_id())) {
-    return;
-  }
-  if (profile_->GetPrefs()->GetBoolean(
-          disks::prefs::kExternalStorageDisabled)) {
     return;
   }
 
@@ -1182,13 +1207,25 @@ void VolumeManager::DoAttachMtpStorage(
     return;
   }
 
+  // `mtp_storage_info` is a protocol buffer and proto file syntax has a uint32
+  // type, but not a uint16 type.
+  const policy::DeviceId device_id =
+      policy::DeviceId(static_cast<uint16_t>(mtp_storage_info->vendor_id),
+                       static_cast<uint16_t>(mtp_storage_info->product_id));
+
+  if (policy::ExternalStoragePolicyController::IsDeviceDisabled(
+          CHECK_DEREF(profile_->GetPrefs()), device_id)) {
+    return;
+  }
+
   // Mtp write is enabled only when the device is writable, supports generic
   // hierarchical file system, and writing to external storage devices is not
   // prohibited by the preference.
   const bool read_only =
       mtp_storage_info->access_capability != kAccessCapabilityReadWrite ||
       mtp_storage_info->filesystem_type != kFilesystemTypeGenericHierarchical ||
-      GetExternalStorageAccessMode(profile_) == ash::MountAccessMode::kReadOnly;
+      policy::ExternalStoragePolicyController::IsDeviceReadOnly(
+          CHECK_DEREF(profile_->GetPrefs()), device_id);
 
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(info.location());
   const std::string fsid = GetMountPointNameForMediaStorage(info);
@@ -1550,8 +1587,9 @@ bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
 
   // Filter out removable disks if forbidden by policy for this profile.
   if (volume.type() == VOLUME_TYPE_REMOVABLE_DISK_PARTITION &&
-      profile_->GetPrefs()->GetBoolean(
-          disks::prefs::kExternalStorageDisabled)) {
+      policy::ExternalStoragePolicyController::IsDeviceDisabled(
+          CHECK_DEREF(profile_->GetPrefs()),
+          GetDeviceIdFromDevicePath(volume.source_path().value()))) {
     return false;
   }
 
@@ -1804,6 +1842,15 @@ void VolumeManager::OnMigrationReset() {
     read_only_local_folders_ = true;
     OnLocalUserFilesPolicyChanged();
   }
+}
+
+// TODO(isandrk, b/383308221): Convert to take an `std::string_view` (need to
+// convert `FindDiskBySourcePath` as well).
+std::optional<policy::DeviceId> VolumeManager::GetDeviceIdFromDevicePath(
+    const std::string& device_path) {
+  const ash::disks::Disk* disk =
+      disk_mount_manager_->FindDiskBySourcePath(device_path);
+  return policy::DeviceId::FromDisk(disk);
 }
 
 }  // namespace file_manager

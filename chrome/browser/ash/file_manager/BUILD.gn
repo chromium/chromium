@@ -171,6 +171,7 @@ static_library("file_manager") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/file_manager:constants",
+    "//chromeos/ash/components/policy",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc:arc_features",
     "//chromeos/ash/experiences/arc/mojom:notifications",
