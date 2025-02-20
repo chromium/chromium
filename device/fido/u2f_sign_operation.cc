@@ -4,6 +4,7 @@
 
 #include "device/fido/u2f_sign_operation.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -66,18 +67,27 @@ void U2fSignOperation::OnSignResponseReceived(
   }
 
   auto result = apdu::ApduResponse::Status::SW_WRONG_DATA;
-  const auto apdu_response =
-      device_response
-          ? apdu::ApduResponse::CreateFromMessage(std::move(*device_response))
-          : std::nullopt;
-  if (apdu_response) {
-    result = apdu_response->status();
+  std::optional<apdu::ApduResponse> apdu_response;
+  if (device_response) {
+    FIDO_LOG(DEBUG) << "U2F device responded with "
+                    << base::HexEncode(*device_response);
+    apdu_response =
+        apdu::ApduResponse::CreateFromMessage(std::move(*device_response));
+    if (apdu_response) {
+      result = apdu_response->status();
+      FIDO_LOG(DEBUG) << "U2F result code: " << static_cast<uint16_t>(result);
+    } else {
+      FIDO_LOG(ERROR) << "U2F response is invalid";
+    }
+  } else {
+    FIDO_LOG(ERROR) << "U2F device responded with empty response";
   }
 
   // Older U2F devices may respond with the length of the input as an error
   // response if the length is unexpected.
   if (result == static_cast<apdu::ApduResponse::Status>(key_handle().size())) {
     result = apdu::ApduResponse::Status::SW_WRONG_LENGTH;
+    FIDO_LOG(ERROR) << "U2F device responded with length of input";
   }
 
   switch (result) {
@@ -92,6 +102,7 @@ void U2fSignOperation::OnSignResponseReceived(
               std::move(application_parameter), apdu_response->data(),
               key_handle(), device()->DeviceTransport());
       if (!sign_response) {
+        FIDO_LOG(ERROR) << "Failed to generate valid U2F signature";
         std::move(callback())
             .Run(CtapDeviceResponseCode::kCtap2ErrOther, std::nullopt);
         return;
@@ -136,6 +147,7 @@ void U2fSignOperation::OnSignResponseReceived(
 
     default:
       // Some sort of failure occurred. Abandon this device and move on.
+      FIDO_LOG(ERROR) << "U2F device has unknown failure. Dropping device.";
       std::move(callback())
           .Run(CtapDeviceResponseCode::kCtap2ErrOther, std::nullopt);
       return;
