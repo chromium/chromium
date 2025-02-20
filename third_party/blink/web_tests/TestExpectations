@@ -8863,12 +8863,6 @@ crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar
 
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
-crbug.com/376491758 external/wpt/largest-contentful-paint/first-letter-background.html [ Failure Pass ]
-crbug.com/376491758 external/wpt/largest-contentful-paint/observe-css-generated-text.html [ Failure Pass ]
-crbug.com/376491758 external/wpt/largest-contentful-paint/text-with-display-style.html [ Failure Pass ]
-crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/first-letter-background.html [ Failure Pass ]
-crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/observe-css-generated-text.html [ Failure Pass ]
-crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/text-with-display-style.html [ Failure Pass ]
 
 # Flaky Test Disable 2024-10-31
 crbug.com/376675482 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-permissions-policy-default.tentative.https.sub.html [ Failure Pass ]
