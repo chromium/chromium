@@ -589,27 +589,17 @@ TEST_F(PreloadingDeciderTest, UmaRecallStats) {
 
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  PreloadingPredictor pointer_down_predictor{
-      preloading_predictor::kUrlPointerDownOnAnchor};
-  // PreloadingPredictor on_hover_predictor{
-  //     preloading_predictor::kUrlPointerHoverOnAnchor};
-  // Check recall UKM records.
-  auto uma_predictor_recall = [](const PreloadingPredictor& predictor) {
-    return base::StrCat({"Preloading.Predictor.", predictor.name(), ".Recall"});
-  };
+  NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://www.google.com"), &GetPrimaryMainFrame());
 
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(&GetPrimaryMainFrame());
-  web_contents->GetController().LoadURL(
-      GURL("https://www.google.com"), {},
-      ui::PageTransition::PAGE_TRANSITION_LINK, {});
-
+  // Check recall.
+  const std::string kUmaName = base::StrCat(
+      {"Preloading.Predictor.",
+       preloading_predictor::kUrlPointerDownOnAnchor.name(), ".Recall"});
   histogram_tester.ExpectBucketCount(
-      uma_predictor_recall(pointer_down_predictor),
-      PredictorConfusionMatrix::kTruePositive, 0);
+      kUmaName, PredictorConfusionMatrix::kTruePositive, 0);
   histogram_tester.ExpectBucketCount(
-      uma_predictor_recall(pointer_down_predictor),
-      PredictorConfusionMatrix::kFalseNegative, 0);
+      kUmaName, PredictorConfusionMatrix::kFalseNegative, 1);
 }
 
 class PreloadingDeciderWithParameterizedSpeculationActionTest
