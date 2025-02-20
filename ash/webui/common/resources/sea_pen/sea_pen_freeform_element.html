@@ -130,7 +130,10 @@
         <p>[[i18n('seaPenFreeformShuffle')]]</p>
       </cr-button>
     </div>
-    <sea-pen-samples samples="[[samples]]"></sea-pen-samples>
+    <sea-pen-samples
+        is-tab-hidden="[[isTabContainerHidden_(seaPenQuery_, thumbnailResponseStatusCode_, thumbnails_)]]"
+        samples="[[samples]]">
+    </sea-pen-samples>
     <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
   </div>
 </template>
