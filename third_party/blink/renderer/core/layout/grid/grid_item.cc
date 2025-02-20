@@ -138,14 +138,8 @@ GridItemData::GridItemData(
     bool parent_must_consider_grid_items_for_column_sizing,
     bool parent_must_consider_grid_items_for_row_sizing)
     : node(std::move(item_node)),
-      has_subgridded_columns(false),
-      has_subgridded_rows(false),
       is_considered_for_column_sizing(false),
       is_considered_for_row_sizing(false),
-      is_sizing_dependent_on_block_size(false),
-      is_subgridded_to_parent_grid(false),
-      must_consider_grid_items_for_column_sizing(false),
-      must_consider_grid_items_for_row_sizing(false),
       parent_grid_font_baseline(parent_grid_style.GetFontBaseline()) {
   const auto& style = node.Style();
 
