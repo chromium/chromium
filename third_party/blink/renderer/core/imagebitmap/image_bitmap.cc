@@ -387,9 +387,8 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
-  scoped_refptr<Image> image_input =
-      canvas->GetSourceImageForCanvas(FlushReason::kCreateImageBitmap, &status,
-                                      gfx::SizeF(), kPremultiplyAlpha);
+  scoped_refptr<Image> image_input = canvas->GetSourceImageForCanvas(
+      FlushReason::kCreateImageBitmap, &status, gfx::SizeF(), kDontChangeAlpha);
   if (status != kNormalSourceImageStatus)
     return;
   DCHECK(IsA<StaticBitmapImage>(image_input.get()));
@@ -414,7 +413,7 @@ ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
   SourceImageStatus status;
   scoped_refptr<Image> raw_input = offscreen_canvas->GetSourceImageForCanvas(
       FlushReason::kCreateImageBitmap, &status,
-      gfx::SizeF(offscreen_canvas->Size()));
+      gfx::SizeF(offscreen_canvas->Size()), kDontChangeAlpha);
   DCHECK(IsA<StaticBitmapImage>(raw_input.get()));
   scoped_refptr<StaticBitmapImage> input =
       static_cast<StaticBitmapImage*>(raw_input.get());
