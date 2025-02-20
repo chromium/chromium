@@ -55,7 +55,6 @@ B<--target> I<target-image>
 [B<--mkdir> I<directory>]
 [B<--copy> I<source>[:I<dest>]]
 [B<--symlink> I<source>[:I<dest>]]
-[B<--file-icon> I<source>:I<target>]
 [B<--license> I<file>]
 [B<--resource> I<file>]
 [B<--icon> I<icns-file>]
@@ -148,14 +147,6 @@ destinations are interpreted as "like the source path, but inside the dmg"
 
 This option is useful for adding symlinks to external resources,
 e.g. to /Applications.
-
-=item B<--file-icon> I<source>:I<target>
-
-Specifies an image for a file or directory in the disk image.  I<source> is a
-path to an image file in any format registered with NSImage.  The image path
-should include the file extension that identifies the type of the image data.
-I<target> is a path to the file or folder to change the icon of in the volume.
-B<--file-icon> may appear multiple times.
 
 =item B<--license> I<file>
 
@@ -297,7 +288,6 @@ sub commandOutput(@);
 sub commandOutputVerbosity($@);
 sub commandVerbosity($@);
 sub copyFiles($@);
-sub setFileIcons($@);
 sub diskImageMaker($$$$$$$$);
 sub giveExtension($$);
 sub hdidMountImage($@);
@@ -322,7 +312,6 @@ my(@gCleanup, %gConfig, $gDarwinMajor, $gDryRun, $gVerbosity);
             'cmd_hdiutil'        => 'hdiutil',
             'cmd_mkdir'          => 'mkdir',
             'cmd_mktemp'         => 'mktemp',
-            'cmd_osascript'      => 'osascript',
             'cmd_Rez'            => '/usr/bin/Rez',
             'cmd_rm'             => 'rm',
             'cmd_rsync'          => 'rsync',
@@ -434,9 +423,9 @@ else {
 }
 
 # Non-global variables used in Getopt
-my(@attributes, @copyFiles, @createSymlinks, @fileIcons, $volumeIconFile, $idme,
- $licenseFile, @makeDirs, $outputFormat, @resourceFiles, $sourceFile,
- $sourceFolder, $targetImage, $tempDir, $volumeName);
+my(@attributes, @copyFiles, @createSymlinks, $iconFile, $idme, $licenseFile,
+ @makeDirs, $outputFormat, @resourceFiles, $sourceFile, $sourceFolder,
+ $targetImage, $tempDir, $volumeName);
 
 # --format
 $outputFormat = 'UDZO';
@@ -464,10 +453,9 @@ GetOptions('source=s'    => \$sourceFolder,
            'mkdir=s'     => \@makeDirs,
            'copy=s'      => \@copyFiles,
            'symlink=s'   => \@createSymlinks,
-           'file-icon=s'  => \@fileIcons,
            'license=s'   => \$licenseFile,
            'resource=s'  => \@resourceFiles,
-           'icon=s'      => \$volumeIconFile,
+           'icon=s'      => \$iconFile,
            'attribute=s' => \@attributes,
            'idme'        => \$idme,
            'sourcefile'  => \$sourceFile,
@@ -608,19 +596,16 @@ if(@makeDirs) {
 copyFiles($tempRoot, 'copy', @copyFiles);
 copyFiles($tempRoot, 'symlink', @createSymlinks);
 
-# Set file icons
-setFileIcons($tempRoot, @fileIcons);
-
 if($gConfig{'create_directly'}) {
   # If create_directly is false, the contents will be rsynced into a
   # disk image and they would lose their attributes.
   setAttributes($tempRoot, @attributes);
 }
 
-if(defined($volumeIconFile)) {
+if(defined($iconFile)) {
   if(command($gConfig{'cmd_rsync'}, '--archive', '--copy-unsafe-links',
              '--cvs-exclude', '--include=*.so',
-             $volumeIconFile, $tempRoot.'/.VolumeIcon.icns') != 0) {
+             $iconFile, $tempRoot.'/.VolumeIcon.icns') != 0) {
     cleanupDie('rsync failed for volume icon');
   }
 
@@ -647,7 +632,7 @@ else {
 }
 
 diskImageMaker($tempRoot, $targetImage, $outputFormat, $volumeName,
- $tempSubdir, $tempMount, $targetImageFilename, defined($volumeIconFile));
+ $tempSubdir, $tempMount, $targetImageFilename, defined($iconFile));
 
 if(defined($licenseFile) && $licenseFile ne '') {
   my($licenseResource);
@@ -926,39 +911,6 @@ sub copyFiles($@) {
     }
     if(!$success) {
       cleanupDie('copyFiles failed for method '.$method);
-    }
-  }
-}
-
-# setFileIcons($tempRoot, @arguments)
-#
-# Sets icons for files or directories in the disk image. See --file-icon
-# description for details. @arguments are interpreted as source:target.
-sub setFileIcons($@) {
-  my($tempRoot, @arguments);
-  ($tempRoot, @arguments) = @_;
-  my ($fileIcon);
-  foreach $fileIcon (@arguments) {
-    my($source, $target);
-    ($source, $target) = split(/:/, $fileIcon);
-
-    if($target =~ /^\//) {
-      $target = $tempRoot.$target;
-    }
-    else {
-      $target = $tempRoot.'/'.$target;
-    }
-
-    my($success);
-    $success = !command($gConfig{'cmd_osascript'},
-      '-e', 'use framework "AppKit"',
-      '-e', 'set workspace to current application\'s NSWorkspace\'s sharedWorkspace()',
-      '-e', 'set image to current application\'s NSImage\'s alloc()',
-      '-e', 'set icon to image\'s initWithContentsOfFile:"'.$source.'"',
-      '-e', 'current application\'s NSWorkspace\'s sharedWorkspace()\'s setIcon:icon forFile:"'.$target.'" options:0',
-      );
-    if(!$success) {
-      cleanupDie('setFileIcons failed');
     }
   }
 }
@@ -1570,7 +1522,6 @@ sub usage() {
 "              [--mkdir <directory>]         (make directory in image)\n".
 "              [--copy <source>[:<dest>]]    (extra files to add)\n".
 "              [--symlink <source>[:<dest>]] (extra symlinks to add)\n".
-"              [--file-icon <source>:<dest>] (file or directory icons)\n".
 "              [--license <file>]            (plain text license agreement)\n".
 "              [--resource <file>]           (flat .r files to merge)\n".
 "              [--icon <icns-file>]          (volume icon)\n".
