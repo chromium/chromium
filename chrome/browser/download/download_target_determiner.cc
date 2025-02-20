@@ -1290,6 +1290,13 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
     PriorVisitsToReferrer visits) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // User-initiated extension downloads from pref-whitelisted sources are not
+  // considered dangerous.
+  if (download_->HasUserGesture() &&
+      download_crx_util::IsTrustedExtensionDownload(GetProfile(), *download_)) {
+    return DownloadFileType::NOT_DANGEROUS;
+  }
+
   DownloadFileType::DangerLevel danger_level =
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
           virtual_path_.BaseName(), download_->GetURL(),
@@ -1318,13 +1325,6 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
         danger_level != DownloadFileType::NOT_DANGEROUS) {
       return DownloadFileType::DANGEROUS;
     }
-    return DownloadFileType::NOT_DANGEROUS;
-  }
-
-  // User-initiated extension downloads from pref-whitelisted sources are not
-  // considered dangerous.
-  if (download_->HasUserGesture() &&
-      download_crx_util::IsTrustedExtensionDownload(GetProfile(), *download_)) {
     return DownloadFileType::NOT_DANGEROUS;
   }
 
