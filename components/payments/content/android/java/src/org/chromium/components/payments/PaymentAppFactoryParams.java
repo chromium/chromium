@@ -4,13 +4,14 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.Origin;
 
 /** Interface for providing information to a payment app factory. */
+@NullMarked
 public interface PaymentAppFactoryParams extends PaymentRequestParams {
     /** @return The web contents where the payment is being requested. */
     WebContents getWebContents();
@@ -19,7 +20,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
     RenderFrameHost getRenderFrameHost();
 
     /** @return The PaymentRequest object identifier. */
-    default String getId() {
+    default @Nullable String getId() {
         return null;
     }
 
@@ -27,7 +28,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * @return The scheme, host, and port of the last committed URL of the top-level context as
      * formatted by UrlFormatter.formatUrlForSecurityDisplay().
      */
-    default String getTopLevelOrigin() {
+    default @Nullable String getTopLevelOrigin() {
         return null;
     }
 
@@ -35,7 +36,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * @return The scheme, host, and port of the last committed URL of the iframe that invoked the
      * PaymentRequest API as formatted by UrlFormatter.formatUrlForSecurityDisplay().
      */
-    default String getPaymentRequestOrigin() {
+    default @Nullable String getPaymentRequestOrigin() {
         return null;
     }
 
@@ -44,7 +45,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * security features like 'Sec-Fetch-Site' and 'Cross-Origin-Resource-Policy'. Should not be
      * null.
      */
-    default Origin getPaymentRequestSecurityOrigin() {
+    default @Nullable Origin getPaymentRequestSecurityOrigin() {
         return null;
     }
 
@@ -54,8 +55,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for localhost or local file,
      * which are secure contexts without SSL. Each byte array cannot be null.
      */
-    @Nullable
-    default byte[][] getCertificateChain() {
+    default byte @Nullable [][] getCertificateChain() {
         return null;
     }
 
@@ -65,12 +65,12 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
     }
 
     /** @return The listener for payment method, shipping address, and shipping option change events. */
-    default PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
+    default @Nullable PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
         return null;
     }
 
     /** @return The Payment Request information received from the merchant. */
-    default PaymentRequestSpec getSpec() {
+    default @Nullable PaymentRequestSpec getSpec() {
         return null;
     }
 
@@ -78,8 +78,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * @return The Android package name of the Trusted Web Activity that invoked Chrome, if running
      * in TWA mode. Otherwise null or empty string.
      */
-    @Nullable
-    default String getTwaPackageName() {
+    default @Nullable String getTwaPackageName() {
         return null;
     }
 

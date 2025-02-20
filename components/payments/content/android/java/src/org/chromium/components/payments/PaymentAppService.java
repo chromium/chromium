@@ -4,7 +4,8 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,9 +15,10 @@ import java.util.Map;
 import java.util.Set;
 
 /** Creates payment apps. */
+@NullMarked
 public class PaymentAppService implements PaymentAppFactoryInterface {
     private static final String UNTRACKED_FACTORY_ID_PREFIX = "Untracked factory - ";
-    private static PaymentAppService sInstance;
+    private static @Nullable PaymentAppService sInstance;
     private final Map<String, PaymentAppFactoryInterface> mFactories = new HashMap<>();
     private int mIdMax;
 
@@ -152,12 +154,12 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         @Override
-        public DialogController getDialogController() {
+        public @Nullable DialogController getDialogController() {
             return mDelegate.getDialogController();
         }
 
         @Override
-        public AndroidIntentLauncher getAndroidIntentLauncher() {
+        public @Nullable AndroidIntentLauncher getAndroidIntentLauncher() {
             return mDelegate.getAndroidIntentLauncher();
         }
     }

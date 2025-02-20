@@ -5,8 +5,10 @@
 package org.chromium.components.payments;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /** The interface for displaying dialogs. */
+@NullMarked
 public interface DialogController {
     /**
      * Show a non-blocking, informational dialog about the contents of an IS_READY_TO_PAY intent.

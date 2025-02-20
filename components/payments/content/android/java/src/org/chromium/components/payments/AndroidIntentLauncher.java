@@ -7,9 +7,11 @@ package org.chromium.components.payments;
 import android.content.Intent;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The interface for launching Android intent-based payment apps. */
+@NullMarked
 public interface AndroidIntentLauncher {
     /**
      * Launch the payment app via an intent.
