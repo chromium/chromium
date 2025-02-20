@@ -4,6 +4,7 @@
 
 import("//build/util/process_version.gni")
 import("//chrome/enterprise_companion/branding.gni")
+import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/zip.gni")
 import("//testing/test.gni")
 
@@ -379,6 +380,29 @@ static_library("constants_test") {
   defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
 }
 
+if (is_win) {
+  # `process_version_rc_template` invokes `process_version` with the default
+  # template rc file which is at //chrome/app/chrome_version.rc.version.
+  process_version_rc_template("enterprise_companion_rc") {
+    _product_fullname = "$enterprise_companion_product_full_name"
+    _internal_name = _product_fullname + " ($current_cpu)"
+    if (is_debug) {
+      _internal_name += " (debug)"
+    }
+    extra_args = [
+      "-e",
+      "PRODUCT_FULLNAME=\"$_product_fullname\"",
+      "-e",
+      "INTERNAL_NAME=\"$_internal_name\"",
+      "-e",
+      "ORIGINAL_FILENAME=\"enterprise_companion.exe\"",
+      "-e",
+      "PRODUCT_SHORTNAME=\"$enterprise_companion_product_full_name\"",
+    ]
+    output = "$target_gen_dir/enterprise_companion.exe.rc"
+  }
+}
+
 executable("enterprise_companion") {
   sources = [ "main.cc" ]
   deps = [
@@ -389,6 +413,7 @@ executable("enterprise_companion") {
 
   if (is_win) {
     configs += [ "//build/config/win:windowed" ]
+    deps += [ ":enterprise_companion_rc" ]
   }
 }
 
