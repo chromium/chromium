@@ -18,6 +18,7 @@
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/ai/ai_utils.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -50,6 +51,7 @@ BASE_FEATURE(kAILanguageModelForceStreamingFullResponse,
 }  // namespace features
 namespace {
 
+using optimization_guide::MultimodalMessageReadView;
 using optimization_guide::proto::PromptApiMetadata;
 using optimization_guide::proto::PromptApiPrompt;
 using optimization_guide::proto::PromptApiRequest;
@@ -204,7 +206,7 @@ void AILanguageModel::SetInitialPrompts(
         MakePrompt(ConvertRole(prompt->role), prompt->content);
   }
   session_->GetContextSizeInTokens(
-      request,
+      MultimodalMessageReadView(request),
       base::BindOnce(&AILanguageModel::InitializeContextWithInitialPrompts,
                      weak_ptr_factory_.GetWeakPtr(), request,
                      std::move(callback)));
@@ -375,7 +377,7 @@ void AILanguageModel::Prompt(
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input_text);
 
   session_->GetExecutionInputSizeInTokens(
-      request,
+      MultimodalMessageReadView(request),
       base::BindOnce(&AILanguageModel::PromptGetInputSizeCompletion,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
 }
@@ -448,7 +450,7 @@ void AILanguageModel::CountPromptTokens(
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
 
   session_->GetExecutionInputSizeInTokens(
-      request,
+      MultimodalMessageReadView(request),
       base::BindOnce(
           [](mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>
                  client_remote,

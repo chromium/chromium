@@ -42,8 +42,9 @@ using Role = blink::mojom::AILanguageModelInitialPromptRole;
 
 namespace {
 
-using optimization_guide::proto::PromptApiRequest;
-using optimization_guide::proto::PromptApiRole;
+using ::optimization_guide::MultimodalMessageReadView;
+using ::optimization_guide::proto::PromptApiRequest;
+using ::optimization_guide::proto::PromptApiRole;
 
 constexpr uint32_t kTestMaxContextToken = 10u;
 constexpr uint32_t kTestInitialPromptsToken = 5u;
@@ -260,7 +261,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
             ON_CALL(*session, GetContextSizeInTokens(_, _))
                 .WillByDefault(
-                    [&](const google::protobuf::MessageLite& request_metadata,
+                    [&](MultimodalMessageReadView request_metadata,
                         optimization_guide::
                             OptimizationGuideModelSizeInTokenCallback
                                 callback) {
@@ -444,13 +445,12 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                                /*is_streaming_chunk_by_chunk=*/true);
               ON_CALL(*session, GetExecutionInputSizeInTokens(_, _))
                   .WillByDefault(
-                      [&](const google::protobuf::MessageLite& request_metadata,
+                      [&](MultimodalMessageReadView request_metadata,
                           optimization_guide::
                               OptimizationGuideModelSizeInTokenCallback
                                   callback) {
                         size_in_token_callback =
-                            base::BindOnce(std::move(callback),
-                                           ToString(request_metadata).size());
+                            base::BindOnce(std::move(callback), 1);
                       });
 
               // The model should not be executed.
@@ -520,7 +520,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
           ON_CALL(*session, GetContextSizeInTokens(_, _))
               .WillByDefault(
-                  [&](const google::protobuf::MessageLite& request_metadata,
+                  [&](MultimodalMessageReadView request_metadata,
                       optimization_guide::
                           OptimizationGuideModelSizeInTokenCallback callback) {
                     std::move(callback).Run(mock_size_in_tokens);
@@ -528,7 +528,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
           ON_CALL(*session, GetExecutionInputSizeInTokens(_, _))
               .WillByDefault(
-                  [&](const google::protobuf::MessageLite& request_metadata,
+                  [&](MultimodalMessageReadView request_metadata,
                       optimization_guide::
                           OptimizationGuideModelSizeInTokenCallback callback) {
                     std::move(callback).Run(mock_size_in_tokens);
@@ -638,21 +638,17 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
         .WillByDefault(
             [](const std::string& text,
                optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                   callback) { std::move(callback).Run(text.size()); });
+                   callback) { std::move(callback).Run(1); });
     ON_CALL(session, GetExecutionInputSizeInTokens(_, _))
         .WillByDefault(
-            [](const google::protobuf::MessageLite& request_metadata,
+            [](MultimodalMessageReadView request_metadata,
                optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                   callback) {
-              std::move(callback).Run(ToString(request_metadata).size());
-            });
+                   callback) { std::move(callback).Run(1); });
     ON_CALL(session, GetContextSizeInTokens(_, _))
         .WillByDefault(
-            [](const google::protobuf::MessageLite& request_metadata,
+            [](MultimodalMessageReadView request_metadata,
                optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                   callback) {
-              std::move(callback).Run(ToString(request_metadata).size());
-            });
+                   callback) { std::move(callback).Run(1); });
   }
 
   void StreamResponse(

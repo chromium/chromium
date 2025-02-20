@@ -234,14 +234,14 @@ void SessionImpl::GetSizeInTokens(
 }
 
 void SessionImpl::GetExecutionInputSizeInTokens(
-    const google::protobuf::MessageLite& request_metadata,
+    MultimodalMessageReadView request_metadata,
     OptimizationGuideModelSizeInTokenCallback callback) {
   GetSizeInTokensInternal(request_metadata, std::move(callback),
                           /*want_input_context=*/false);
 }
 
 void SessionImpl::GetContextSizeInTokens(
-    const google::protobuf::MessageLite& request_metadata,
+    MultimodalMessageReadView request_metadata,
     OptimizationGuideModelSizeInTokenCallback callback) {
   GetSizeInTokensInternal(request_metadata, std::move(callback),
                           /*want_input_context=*/true);
@@ -256,7 +256,7 @@ const SamplingParams SessionImpl::GetSamplingParams() const {
 }
 
 void SessionImpl::GetSizeInTokensInternal(
-    const google::protobuf::MessageLite& request,
+    MultimodalMessageReadView request,
     OptimizationGuideModelSizeInTokenCallback callback,
     bool want_input_context) {
   // TODO(crbug.com/377539962): Return nullopt on error instead.
@@ -265,7 +265,7 @@ void SessionImpl::GetSizeInTokensInternal(
     return;
   }
   auto input = on_device_context_->opts().adapter->ConstructInputString(
-      MultimodalMessageReadView(request), want_input_context);
+      request, want_input_context);
   if (!input) {
     std::move(callback).Run(0);
     return;

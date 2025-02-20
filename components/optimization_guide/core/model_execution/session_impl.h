@@ -72,10 +72,10 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
       const std::string& text,
       OptimizationGuideModelSizeInTokenCallback callback) override;
   void GetExecutionInputSizeInTokens(
-      const google::protobuf::MessageLite& request_metadata,
+      MultimodalMessageReadView request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
   void GetContextSizeInTokens(
-      const google::protobuf::MessageLite& request_metadata,
+      MultimodalMessageReadView request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
   const SamplingParams GetSamplingParams() const override;
 
@@ -93,7 +93,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
   // Helper function to get the size of request in tokens with boolean flag to
   // control if we are extracting the context or the execution text.
   void GetSizeInTokensInternal(
-      const google::protobuf::MessageLite& request,
+      MultimodalMessageReadView request,
       OptimizationGuideModelSizeInTokenCallback callback,
       bool want_input_context);
 
