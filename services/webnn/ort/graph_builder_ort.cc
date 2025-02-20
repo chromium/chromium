@@ -79,8 +79,10 @@ constexpr char kOpTypeGatherND[] = "GatherND";
 constexpr char kOpTypeGelu[] = "Gelu";
 constexpr char kOpTypeGemm[] = "Gemm";
 constexpr char kOpTypeHardSwish[] = "HardSwish";
+constexpr char kOpTypeHardSigmoid[] = "HardSigmoid";
 constexpr char kOpTypeInstanceNormalization[] = "InstanceNormalization";
 constexpr char kOpTypeLayerNormalization[] = "LayerNormalization";
+constexpr char kOpTypeLeakyRelu[] = "LeakyRelu";
 constexpr char kOpTypeMatMul[] = "MatMul";
 constexpr char kOpTypePad[] = "Pad";
 
@@ -88,6 +90,8 @@ constexpr char kOpTypePad[] = "Pad";
 constexpr char kOpTypeAveragePool2d[] = "AveragePool";
 constexpr char kOpTypeMaxPool2d[] = "MaxPool";
 constexpr char kOpTypeLpPool2d[] = "LpPool";
+
+constexpr char kOpTypePRelu[] = "PRelu";
 
 // Reduction operations
 constexpr char kOpTypeReduceL1[] = "ReduceL1";
@@ -1333,6 +1337,30 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
                          attributes);
 }
 
+void GraphBuilderOrt::AddHardSigmoidOperation(
+    const mojom::HardSigmoid& hard_sigmoid) {
+  const std::string node_name = GenerateNextOperationName(hard_sigmoid.label);
+  const std::string input_name =
+      GetOperandNameById(hard_sigmoid.input_operand_id);
+  const std::string output_name =
+      GetOperandNameById(hard_sigmoid.output_operand_id);
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  std::array<OrtOpAttr*, 2> attributes = {
+      model_builder_
+          .CreateAttribute(
+              /*name=*/"alpha", hard_sigmoid.alpha)
+          .Release(),
+      model_builder_
+          .CreateAttribute(
+              /*name=*/"beta", hard_sigmoid.beta)
+          .Release()};
+
+  model_builder_.AddNode(kOpTypeHardSigmoid, node_name, input_names,
+                         output_names, attributes);
+}
+
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddInstanceNormalizationOperation(
     const mojom::InstanceNormalization& instance_normalization) {
@@ -1570,6 +1598,24 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
   return base::ok();
 }
 
+void GraphBuilderOrt::AddLeakyReluOperation(
+    const mojom::LeakyRelu& leaky_relu) {
+  const std::string node_name = GenerateNextOperationName(leaky_relu.label);
+  const std::string input_name =
+      GetOperandNameById(leaky_relu.input_operand_id);
+  const std::string output_name =
+      GetOperandNameById(leaky_relu.output_operand_id);
+
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_.CreateAttribute(/*name=*/"alpha", leaky_relu.alpha)
+          .Release()};
+  model_builder_.AddNode(kOpTypeLeakyRelu, node_name, input_names, output_names,
+                         attributes);
+}
+
 void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
   const std::string node_name = GenerateNextOperationName(matmul.label);
   const std::string input_a_name = GetOperandNameById(matmul.a_operand_id);
@@ -1738,6 +1784,24 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
 
   model_builder_.AddNode(op_type, node_name, input_names, output_names,
                          attributes);
+}
+
+void GraphBuilderOrt::AddPreluOperation(const mojom::Prelu& prelu) {
+  const std::string node_name = GenerateNextOperationName(prelu.label);
+  const std::string input_name = GetOperandNameById(prelu.input_operand_id);
+  // ONNX Prelu requires slope's shape must be unidirectional broadcastable to
+  // input when the shape of slope is smaller than the input. While WebNN allows
+  // input and slope to be bidirectionally broadcastable.
+  // TODO(https://github.com/shiyi9801/chromium/issues/153): Consider to emulate
+  // if slope is not unidirectional broadcastable to input.
+  const std::string slope_name = GetOperandNameById(prelu.slope_operand_id);
+  const std::string output_name = GetOperandNameById(prelu.output_operand_id);
+
+  std::array<const char*, 2> input_names = {input_name.c_str(),
+                                            slope_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  model_builder_.AddNode(kOpTypePRelu, node_name, input_names, output_names);
 }
 
 // TODO(https://github.com/shiyi9801/chromium/issues/53): 'reduceSumSquare
@@ -2204,6 +2268,10 @@ GraphBuilderOrt::BuildModel() {
         AddGemmOperation(*operation->get_gemm());
         break;
       }
+      case mojom::Operation::Tag::kHardSigmoid: {
+        AddHardSigmoidOperation(*operation->get_hard_sigmoid());
+        break;
+      }
       case mojom::Operation::Tag::kHardSwish: {
         AddUnaryOperation(*operation->get_hard_swish(), kOpTypeHardSwish);
         break;
@@ -2222,12 +2290,20 @@ GraphBuilderOrt::BuildModel() {
         AddMatMulOperation(*operation->get_matmul());
         break;
       }
+      case mojom::Operation::Tag::kLeakyRelu: {
+        AddLeakyReluOperation(*operation->get_leaky_relu());
+        break;
+      }
       case mojom::Operation::Tag::kPad: {
         RETURN_IF_ERROR(AddPadOperation(*operation->get_pad()));
         break;
       }
       case mojom::Operation::Tag::kPool2d: {
         AddPool2dOperation(*operation->get_pool2d());
+        break;
+      }
+      case mojom::Operation::Tag::kPrelu: {
+        AddPreluOperation(*operation->get_prelu());
         break;
       }
       case mojom::Operation::Tag::kReduce: {
@@ -2301,12 +2377,9 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kHardSigmoid:
-      case mojom::Operation::Tag::kLeakyRelu:
       case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
-      case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kScatterElements:
         return NewNotSupportedError("op is not supported.");

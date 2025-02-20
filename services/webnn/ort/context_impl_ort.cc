@@ -143,11 +143,12 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*gemm_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
        /*gru_input=*/{},
        /*gru_cell_input=*/{},
-       /*hard_sigmoid_input=*/{},
+       /*hard_sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*hard_swish_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*leaky_relu_input=*/{},
+       /*leaky_relu_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*linear_input=*/{},
        /*lstm_input=*/{},
        /*lstm_cell_input=*/{},
@@ -162,7 +163,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
        /*max_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
-       /*prelu_input=*/{},
+       /*prelu_input=*/
+       DataTypeConstraint::kFloat16To32Ints32To64,
        /*quantize_linear_input=*/{},
        /*quantize_linear_zero_point=*/{},
        /*reduce_l1_input=*/
