@@ -3,16 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
-import("//build/config/sanitizers/sanitizers.gni")
 import("//services/on_device_model/on_device_model.gni")
 
 declare_args() {
   # TFLite is used as a fallback option on macOS and Windows.
   webnn_use_tflite = is_android || is_chromeos || is_linux || is_mac || is_win
 
-  # Function pointer calls between chrome and liboptimization_guide_internal.so
-  # trip up CFI's indirect function call checks.
-  webnn_use_chrome_ml_api = enable_ml_internal && !use_cfi_icall
+  # Enable the GPU delegate provided by the Optimization Guide library.
+  webnn_use_chrome_ml_api = enable_ml_internal
 
   # Enable logging of TFLite profiling information on MLGraph destruction.
   webnn_enable_tflite_profiler = false
