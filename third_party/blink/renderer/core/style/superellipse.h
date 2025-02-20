@@ -12,6 +12,8 @@ namespace blink {
 // https://drafts.csswg.org/css-borders-4/#funcdef-superellipse
 class Superellipse {
  public:
+  static constexpr float kHighCurvatureThreshold = 1000;
+
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-bevel
   static Superellipse Bevel() { return Superellipse(1.); }
 
@@ -31,6 +33,11 @@ class Superellipse {
   static Superellipse Straight() {
     return Superellipse(std::numeric_limits<double>::max());
   }
+
+  // Very high curvatures are counted as straight as there would be no visual
+  // effect. "Degenerate" means that the corner should be considered to have a
+  // zero-size rather than consider its size and curvature.
+  bool IsDegenerate() const { return exponent_ >= kHighCurvatureThreshold; }
 
   explicit Superellipse(double exponent) : exponent_(exponent) {}
 

@@ -19,16 +19,20 @@ FloatRoundedRect::Radii CalcRadiiFor(const ComputedStyle& style,
                                      gfx::SizeF size,
                                      PhysicalBoxSides sides_to_include) {
   return FloatRoundedRect::Radii(
-      sides_to_include.top && sides_to_include.left
+      sides_to_include.top && sides_to_include.left &&
+              !style.CornerTopLeftShape().IsDegenerate()
           ? SizeForLengthSize(style.BorderTopLeftRadius(), size)
           : gfx::SizeF(),
-      sides_to_include.top && sides_to_include.right
+      sides_to_include.top && sides_to_include.right &&
+              !style.CornerTopRightShape().IsDegenerate()
           ? SizeForLengthSize(style.BorderTopRightRadius(), size)
           : gfx::SizeF(),
-      sides_to_include.bottom && sides_to_include.left
+      sides_to_include.bottom && sides_to_include.left &&
+              !style.CornerBottomLeftShape().IsDegenerate()
           ? SizeForLengthSize(style.BorderBottomLeftRadius(), size)
           : gfx::SizeF(),
-      sides_to_include.bottom && sides_to_include.right
+      sides_to_include.bottom && sides_to_include.right &&
+              !style.CornerBottomRightShape().IsDegenerate()
           ? SizeForLengthSize(style.BorderBottomRightRadius(), size)
           : gfx::SizeF());
 }
