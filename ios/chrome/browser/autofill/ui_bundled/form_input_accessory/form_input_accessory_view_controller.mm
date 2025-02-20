@@ -565,6 +565,15 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
   if (IsBottomOmniboxAvailable()) {
     [self updateOmniboxTypingShieldVisibility];
   }
+
+  if (IsKeyboardAccessoryUpgradeEnabled() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self.formInputAccessoryView
+        setIsCompact:self.traitCollection.horizontalSizeClass ==
+                         UIUserInterfaceSizeClassCompact ||
+                     self.traitCollection.verticalSizeClass ==
+                         UIUserInterfaceSizeClassCompact];
+  }
 }
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate

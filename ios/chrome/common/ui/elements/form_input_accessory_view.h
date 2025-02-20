@@ -121,6 +121,10 @@ extern NSString* const
 // (crbug.com/1490601).
 - (void)setOmniboxTypingShieldHeight:(CGFloat)typingShieldHeight;
 
+// Sets whether the UI is in compact mode, so that the keyboard accessory can
+// adapt to the compact size class if necessary.
+- (void)setIsCompact:(BOOL)isCompact;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_ELEMENTS_FORM_INPUT_ACCESSORY_VIEW_H_

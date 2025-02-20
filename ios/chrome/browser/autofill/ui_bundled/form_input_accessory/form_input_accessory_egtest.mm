@@ -174,7 +174,9 @@ void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
   AppLaunchConfiguration config;
   config.features_disabled.push_back(
       autofill::features::test::kAutofillServerCommunication);
-  if ([self isRunningTest:@selector(testOpenExpandedManualFillView)]) {
+  if ([self isRunningTest:@selector(testOpenExpandedManualFillView)] ||
+      [self isRunningTest:@selector
+            (testManualFillButtonTitleIsHiddenInCompactMode)]) {
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
   if ([self isRunningTest:@selector(testFillXframeCreditCardForm)] ||
@@ -669,6 +671,50 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   [[EarlGrey selectElementWithMatcher:expanded_manual_fill_view]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the manual fill button title is hidden in compact mode (tablets
+// only).
+- (void)testManualFillButtonTitleIsHiddenInCompactMode {
+  if (![ChromeEarlGrey areMultipleWindowsSupported] ||
+      ![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPhone (the manual fill button has no title on iPhone) "
+        @"or when the Keyboard Accessory Upgrade feature is disabled.");
+  }
+
+  [self loadAddressPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormZip)];
+
+  id<GREYMatcher> manual_fill_button = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
+  id<GREYMatcher> manual_fill_button_title = grey_text(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_ALL_AUTOFILL_DATA));
+
+  // Verify that the manual fill button is visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:manual_fill_button];
+
+  // Verify that the manual fill button title is visible.
+  [[EarlGrey selectElementWithMatcher:manual_fill_button_title]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Make the window compact by using split screen.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Verify that the manual fill button is still visible.
+  [[EarlGrey selectElementWithMatcher:manual_fill_button]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the manual fill button has no title.
+  [[EarlGrey selectElementWithMatcher:manual_fill_button_title]
+      assertWithMatcher:grey_notVisible()];
+
+  // Exit split screen.
+  [ChromeEarlGrey closeWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
 }
 
 @end
