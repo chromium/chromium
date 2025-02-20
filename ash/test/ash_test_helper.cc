@@ -402,8 +402,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
   session_controller_client_ = std::make_unique<TestSessionControllerClient>(
       shell->session_controller(), prefs_provider_.get(),
       init_params.create_signin_pref_service);
-  session_controller_client_->set_provide_pref_service(
-      init_params.auto_create_prefs_services);
+  session_controller_client_->set_pref_service_must_exist(
+      !init_params.auto_create_prefs_services);
   session_controller_client_->InitializeAndSetClient();
 
   // Requires the AppListController the Shell creates.
