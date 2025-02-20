@@ -29,9 +29,8 @@ Widget* ViewAccessibilityUtils::GetFocusedChildWidgetForAccessibility(
     return nullptr;
   }
 
-  std::set<raw_ptr<Widget, SetExperimental>> child_widgets;
-  Widget::GetAllOwnedWidgets(view->GetWidget()->GetNativeView(),
-                             &child_widgets);
+  Widget::Widgets child_widgets =
+      Widget::GetAllOwnedWidgets(view->GetWidget()->GetNativeView());
   const auto i =
       std::ranges::find_if(child_widgets, [focused_view](Widget* child_widget) {
         return IsFocusedChildWidget(child_widget, focused_view);

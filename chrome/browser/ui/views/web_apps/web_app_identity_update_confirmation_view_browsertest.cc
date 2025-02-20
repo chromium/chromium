@@ -67,7 +67,7 @@ class WebAppIdentityUpdateConfirmationViewBrowserTest
     views::Widget::Widgets widgets;
 #if BUILDFLAG(IS_CHROMEOS)
     for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
-      views::Widget::GetAllChildWidgets(root_window, &widgets);
+      widgets.merge(views::Widget::GetAllChildWidgets(root_window));
     }
 #else
     widgets = views::test::WidgetTest::GetAllWidgets();

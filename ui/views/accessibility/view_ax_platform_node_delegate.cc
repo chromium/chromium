@@ -1066,8 +1066,8 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
     return ChildWidgetsResult();
   }
 
-  std::set<raw_ptr<Widget, SetExperimental>> owned_widgets;
-  Widget::GetAllOwnedWidgets(widget->GetNativeView(), &owned_widgets);
+  Widget::Widgets owned_widgets =
+      Widget::GetAllOwnedWidgets(widget->GetNativeView());
 
   std::vector<raw_ptr<Widget, VectorExperimental>> visible_widgets;
   std::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),

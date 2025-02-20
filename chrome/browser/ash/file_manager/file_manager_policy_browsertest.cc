@@ -953,8 +953,8 @@ class FileTransferConnectorFilesAppBrowserTest
     CHECK_NE(web_contents, nullptr);
     gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
 
-    std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets;
-    views::Widget::GetAllOwnedWidgets(native_window, &owned_widgets);
+    views::Widget::Widgets owned_widgets =
+        views::Widget::GetAllOwnedWidgets(native_window);
 
     // Verify that the FilesPolicyErrorDialog widget is displayed.
     ASSERT_EQ(owned_widgets.size(), 1ul);
@@ -995,8 +995,8 @@ class FileTransferConnectorFilesAppBrowserTest
     CHECK_NE(web_contents, nullptr);
     gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
 
-    std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets;
-    views::Widget::GetAllOwnedWidgets(native_window, &owned_widgets);
+    views::Widget::Widgets owned_widgets =
+        views::Widget::GetAllOwnedWidgets(native_window);
 
     // Verify that the FilesPolicyWarnDialog widget is displayed.
     ASSERT_EQ(owned_widgets.size(), 1ul);

@@ -844,8 +844,8 @@ Widget* AttachPopupToNativeParent(NSWindow* native_parent) {
 TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
 
-  Widget::Widgets children;
-  Widget::GetAllChildWidgets([native_parent contentView], &children);
+  Widget::Widgets children =
+      Widget::GetAllChildWidgets([native_parent contentView]);
   EXPECT_EQ(1u, children.size());
 
   Widget* child = AttachPopupToNativeParent(native_parent);
@@ -881,7 +881,7 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   EXPECT_EQ(native_parent,
             [child->GetNativeWindow().GetNativeNSWindow() parentWindow]);
 
-  Widget::GetAllChildWidgets([native_parent contentView], &children);
+  children.merge(Widget::GetAllChildWidgets([native_parent contentView]));
   ASSERT_EQ(2u, children.size());
   EXPECT_EQ(1u, children.count(child));
 
@@ -1533,8 +1533,8 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
                 *did_observe_ptr = true;
               }];
 
-  Widget::Widgets children;
-  Widget::GetAllChildWidgets([native_parent contentView], &children);
+  Widget::Widgets children =
+      Widget::GetAllChildWidgets([native_parent contentView]);
   ASSERT_EQ(2u, children.size());
 
   sheet_widget->Show();  // Should run the above block, then animate the sheet.
@@ -1542,7 +1542,7 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   [[NSNotificationCenter defaultCenter] removeObserver:observer];
 
   // Ensure sheets are included as a child.
-  Widget::GetAllChildWidgets([native_parent contentView], &children);
+  children.merge(Widget::GetAllChildWidgets([native_parent contentView]));
   ASSERT_EQ(2u, children.size());
   EXPECT_TRUE(children.count(sheet_widget));
 

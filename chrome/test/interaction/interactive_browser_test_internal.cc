@@ -70,7 +70,7 @@ class BrowserWidgetFocusSupplier
     // addition to other widgets - see documentation in widget_test_aura.cc.
     views::Widget::Widgets result;
     for (const auto& window : ash::Shell::GetAllRootWindows()) {
-      views::Widget::GetAllChildWidgets(window->GetRootWindow(), &result);
+      result.merge(views::Widget::GetAllChildWidgets(window->GetRootWindow()));
     }
     return result;
 #else

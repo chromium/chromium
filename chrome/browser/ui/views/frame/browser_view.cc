@@ -429,8 +429,8 @@ bool GetGestureCommand(ui::GestureEvent* event, int* command) {
 }
 
 bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
-  views::Widget::Widgets widgets;
-  views::Widget::GetAllChildWidgets(parent_widget->GetNativeView(), &widgets);
+  views::Widget::Widgets widgets =
+      views::Widget::GetAllChildWidgets(parent_widget->GetNativeView());
   for (views::Widget* widget : widgets) {
     if (widget == parent_widget) {
       continue;
@@ -2713,8 +2713,8 @@ bool BrowserView::WidgetOwnedByAnchorContainsPoint(
 
   auto* anchor_widget = GetWidgetForAnchoring();
 
-  views::Widget::Widgets widgets;
-  views::Widget::GetAllOwnedWidgets(anchor_widget->GetNativeView(), &widgets);
+  views::Widget::Widgets widgets =
+      views::Widget::GetAllOwnedWidgets(anchor_widget->GetNativeView());
   return std::ranges::any_of(widgets, [point_in_screen_coords,
                                        anchor_widget](views::Widget* widget) {
     return widget != anchor_widget && widget->IsVisible() &&

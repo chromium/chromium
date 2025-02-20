@@ -1477,13 +1477,13 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, GetAccelerator) {
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, GetAllChildWidgets) {
-  Widget::Widgets widgets;
-  Widget::GetAllChildWidgets(widget()->GetNativeView(), &widgets);
+  Widget::Widgets widgets =
+      Widget::GetAllChildWidgets(widget()->GetNativeView());
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, GetAllOwnedWidgets) {
-  Widget::Widgets widgets;
-  Widget::GetAllOwnedWidgets(widget()->GetNativeView(), &widgets);
+  Widget::Widgets widgets =
+      Widget::GetAllOwnedWidgets(widget()->GetNativeView());
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, GetAndSetZOrderLevel) {
@@ -4825,8 +4825,8 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   expected.insert(w21);
   expected.insert(w22);
 
-  std::set<raw_ptr<Widget, SetExperimental>> child_widgets;
-  Widget::GetAllChildWidgets(toplevel->GetNativeView(), &child_widgets);
+  Widget::Widgets child_widgets =
+      Widget::GetAllChildWidgets(toplevel->GetNativeView());
 
   EXPECT_TRUE(std::ranges::equal(expected, child_widgets));
 
@@ -4835,8 +4835,8 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   // except the root Widget is not included.
   EXPECT_EQ(1u, expected.erase(toplevel.get()));
 
-  std::set<raw_ptr<Widget, SetExperimental>> owned_widgets;
-  Widget::GetAllOwnedWidgets(toplevel->GetNativeView(), &owned_widgets);
+  Widget::Widgets owned_widgets =
+      Widget::GetAllOwnedWidgets(toplevel->GetNativeView());
 
   EXPECT_TRUE(std::ranges::equal(expected, owned_widgets));
 }

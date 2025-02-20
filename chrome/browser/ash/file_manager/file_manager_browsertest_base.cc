@@ -990,8 +990,8 @@ struct GetLocalPathMessage {
 
 views::Widget* FindSharesheetWidget() {
   for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
-    views::Widget::Widgets widgets;
-    views::Widget::GetAllChildWidgets(root_window, &widgets);
+    views::Widget::Widgets widgets =
+        views::Widget::GetAllChildWidgets(root_window);
     for (views::Widget* widget : widgets) {
       if (widget->GetName() == "SharesheetBubbleView") {
         return widget;

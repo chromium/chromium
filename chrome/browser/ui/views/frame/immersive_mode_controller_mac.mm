@@ -384,8 +384,8 @@ void ImmersiveModeControllerMac::MoveChildren(views::Widget* from_widget,
     return;
   }
 
-  views::Widget::Widgets widgets;
-  views::Widget::GetAllChildWidgets(from_widget->GetNativeView(), &widgets);
+  views::Widget::Widgets widgets =
+      views::Widget::GetAllChildWidgets(from_widget->GetNativeView());
   for (views::Widget* widget : widgets) {
     if (ShouldMoveChild(widget)) {
       views::Widget::ReparentNativeView(widget->GetNativeView(),

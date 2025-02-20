@@ -212,9 +212,8 @@ void TabStripScrollContainer::OnViewPreferredSizeChanged(views::View* view) {
 
 void TabStripScrollContainer::OnContentsScrolledCallback() {
   views::Widget* root_widget = tab_strip()->GetWidget();
-  std::set<raw_ptr<views::Widget, SetExperimental>> children_widgets;
-  views::Widget::GetAllOwnedWidgets(root_widget->GetNativeView(),
-                                    &children_widgets);
+  views::Widget::Widgets children_widgets =
+      views::Widget::GetAllOwnedWidgets(root_widget->GetNativeView());
 
   for (views::Widget* child_widget : children_widgets) {
     views::BubbleDialogDelegate* bdd =

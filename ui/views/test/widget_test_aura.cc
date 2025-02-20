@@ -171,7 +171,7 @@ bool WidgetTest::WidgetHasInProcessShadow(Widget* widget) {
 Widget::Widgets WidgetTest::GetAllWidgets() {
   Widget::Widgets all_widgets;
   for (aura::Window* window : GetAllTopLevelWindows()) {
-    Widget::GetAllChildWidgets(window->GetRootWindow(), &all_widgets);
+    all_widgets.merge(Widget::GetAllChildWidgets(window->GetRootWindow()));
   }
   return all_widgets;
 }

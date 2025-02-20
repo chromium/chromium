@@ -25,8 +25,7 @@ void EnsureNativeViewHasNoChildWidgets(NSView* native_view) {
   // whether those child Widgets need to be distinguished from Widgets that code
   // might want to associate with the hosted NSView instead.
   {
-    Widget::Widgets child_widgets;
-    Widget::GetAllChildWidgets(native_view, &child_widgets);
+    Widget::Widgets child_widgets = Widget::GetAllChildWidgets(native_view);
     CHECK_GE(1u, child_widgets.size());  // 1 (itself) or 0 if detached.
   }
 }
