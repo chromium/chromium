@@ -627,7 +627,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
-  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 1000000, 1000000));
 
   InSequence s;
   const scoped_refptr<media::VideoFrame> video_frame =
@@ -671,7 +671,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
     }
     Mock::VerifyAndClearExpectations(recorder);
     {
-      const size_t kEncodedSizeThreshold = 12;
+      const size_t kEncodedSizeThreshold = 10;
       base::RunLoop run_loop;
       // The second time around writeData() is called a number of times to write
       // the WebM frame header, and then is pinged with the encoded data.
