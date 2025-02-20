@@ -111,11 +111,9 @@ public class TabListGroupMenuCoordinatorUnitTest {
     @Test
     public void testBuildMenuItems_WithDelete() {
         ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ false);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         List<Integer> menuIds =
                 List.of(
@@ -129,44 +127,34 @@ public class TabListGroupMenuCoordinatorUnitTest {
     @Test
     public void testBuildMenuItems_NoDelete() {
         ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ true);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         List<Integer> menuIds = List.of(R.id.close_tab_group, R.id.edit_group_name);
         assertListMenuItemsAre(modelList, menuIds);
 
         modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ false,
-                /* hasCollaborationData= */ false);
+        mMenuCoordinator.setTabGroupSyncServiceForTesting(null);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         menuIds = List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.ungroup_tab);
         assertListMenuItemsAre(modelList, menuIds);
 
         modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ true,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ false);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        mMenuCoordinator.setTabGroupSyncServiceForTesting(mTabGroupSyncService);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         assertListMenuItemsAre(modelList, menuIds);
     }
 
     @Test
     public void testBuildMenuItems_Share() {
-        when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
         ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ false);
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         // Eligible for all menu items except share.
         List<Integer> menuIds =
@@ -177,13 +165,10 @@ public class TabListGroupMenuCoordinatorUnitTest {
                         R.id.delete_tab_group);
         assertListMenuItemsAre(modelList, menuIds);
 
-        when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
         modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ false);
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         // Eligible for all menu items.
         menuIds =
@@ -196,22 +181,17 @@ public class TabListGroupMenuCoordinatorUnitTest {
         assertListMenuItemsAre(modelList, menuIds);
 
         modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ true,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ false);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         // Incognito so is not synced so not deletable or shareable.
         menuIds = List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.ungroup_tab);
         assertListMenuItemsAre(modelList, menuIds);
 
         modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ true);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         // Already shared and delete depends on collaboration service readback.
         menuIds = List.of(R.id.close_tab_group, R.id.edit_group_name);
@@ -233,7 +213,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
 
         mMenuCoordinator.getTabActionListener().run(mView, TAB_ID);
 
-        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(false), eq(true), eq(true));
+        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(TAB_GROUP_TOKEN));
         verify(mMenuCoordinator)
                 .buildCollaborationMenuItems(mModelListCaptor.capture(), eq(MemberRole.MEMBER));
 
@@ -251,7 +231,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
 
         mMenuCoordinator.getTabActionListener().run(mView, TAB_ID);
 
-        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(false), eq(true), eq(true));
+        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(TAB_GROUP_TOKEN));
         verify(mMenuCoordinator)
                 .buildCollaborationMenuItems(mModelListCaptor.capture(), eq(MemberRole.OWNER));
 

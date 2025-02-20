@@ -203,11 +203,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
     }
 
     protected final @NonNull CollaborationService mCollaborationService;
+    protected final Supplier<TabModel> mTabModelSupplier;
+    protected @Nullable TabGroupSyncService mTabGroupSyncService;
 
     private final @LayoutRes int mMenuLayout;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
-    private final Supplier<TabModel> mTabModelSupplier;
-    protected final @Nullable TabGroupSyncService mTabGroupSyncService;
     private @Nullable OverflowMenuHolder<T> mMenuHolder;
 
     /**
@@ -245,15 +245,9 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * Concrete class required to define what the ModelList for the menu contains.
      *
      * @param itemList The {@link ModelList} to populate.
-     * @param isIncognito Whether the current tab model is incognito or not.
-     * @param isTabGroupSyncEnabled Whether to tab group sync is enabled.
-     * @param hasCollaborationData Whether the menu will call buildCollaborationMenuItems after.
+     * @param id The ID of the tab or tab group originator.
      */
-    protected abstract void buildMenuActionItems(
-            ModelList itemList,
-            boolean isIncognito,
-            boolean isTabGroupSyncEnabled,
-            boolean hasCollaborationData);
+    protected abstract void buildMenuActionItems(ModelList itemList, T id);
 
     /**
      * Concrete class required to define what to add for collaborations.
@@ -333,7 +327,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         this::onDismiss,
                         activity);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
-        configureMenuItems(mMenuHolder.getModelList(), isIncognito, collaborationId);
+        configureMenuItems(mMenuHolder.getModelList(), id);
         mMenuHolder.show();
     }
 
@@ -369,13 +363,12 @@ public abstract class TabOverflowMenuCoordinator<T> {
         onMenuDismissed();
     }
 
-    private void configureMenuItems(
-            ModelList modelList, boolean isIncognito, @Nullable String collaborationId) {
+    private void configureMenuItems(ModelList modelList, T id) {
+        @Nullable String collaborationId = getCollaborationIdOrNull(id);
         boolean hasCollaborationData =
                 TabShareUtils.isCollaborationIdValid(collaborationId)
                         && mCollaborationService.getServiceStatus().isAllowedToJoin();
-        buildMenuActionItems(
-                modelList, isIncognito, mTabGroupSyncService != null, hasCollaborationData);
+        buildMenuActionItems(modelList, id);
         if (hasCollaborationData) {
             buildCollaborationMenuItems(
                     modelList, mCollaborationService.getCurrentUserRoleForGroup(collaborationId));

@@ -64,11 +64,12 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
 
     @VisibleForTesting
     @Override
-    public void buildMenuActionItems(
-            ModelList itemList,
-            boolean isIncognito,
-            boolean isTabGroupSyncEnabled,
-            boolean hasCollaborationData) {
+    public void buildMenuActionItems(ModelList itemList, Token tabGroupId) {
+        boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
+        @Nullable String collaborationId = getCollaborationIdOrNull(tabGroupId);
+        boolean hasCollaborationData =
+                TabShareUtils.isCollaborationIdValid(collaborationId)
+                        && mCollaborationService.getServiceStatus().isAllowedToJoin();
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.menu_select_tabs,
@@ -105,7 +106,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         /* enabled= */ true));
-        if (isTabGroupSyncEnabled && !isIncognito && !hasCollaborationData) {
+        if (mTabGroupSyncService != null && !isIncognito && !hasCollaborationData) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.tab_grid_dialog_toolbar_delete_group,
