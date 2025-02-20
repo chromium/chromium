@@ -7,28 +7,16 @@
 #include <cmath>
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "url/gurl.h"
 
 namespace contextual_cueing {
 
-ContextualCueingService::ContextualCueingService(
-    page_content_annotations::PageContentExtractionService*
-        page_content_extraction_service)
+ContextualCueingService::ContextualCueingService()
     : recent_nudge_tracker_(kNudgeCapCount.Get(), kNudgeCapTime.Get()),
-      recent_visited_origins_(kVisitedDomainsLimit.Get()),
-      page_content_extraction_service_(page_content_extraction_service) {
-  if (kEnablePageContentExtraction.Get()) {
-    page_content_extraction_service_->AddObserver(this);
-  }
-}
+      recent_visited_origins_(kVisitedDomainsLimit.Get()) {}
 
-ContextualCueingService::~ContextualCueingService() {
-  if (kEnablePageContentExtraction.Get()) {
-    page_content_extraction_service_->RemoveObserver(this);
-  }
-}
+ContextualCueingService::~ContextualCueingService() = default;
 
 void ContextualCueingService::ReportPageLoad() {
   if (remaining_quiet_loads_) {
@@ -101,16 +89,6 @@ void ContextualCueingService::OnNudgeActivity(
       CueingNudgeDismissed();
       break;
   }
-}
-
-void ContextualCueingService::OnPageContentExtracted(
-    content::Page& page,
-    const optimization_guide::proto::AnnotatedPageContent& page_content) {
-  auto* cueing_page_data = ContextualCueingPageData::GetForPage(page);
-  if (!cueing_page_data) {
-    return;
-  }
-  cueing_page_data->OnPageContentExtracted(page_content);
 }
 
 }  // namespace contextual_cueing
