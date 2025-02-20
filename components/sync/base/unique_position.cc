@@ -24,6 +24,9 @@ namespace syncer {
 
 namespace {
 
+// The maximum size of the uncompressed unique position.
+constexpr size_t kMaxUncompressedSize = 10 * 1024 * 1024;  // 10 MB.
+
 UniquePosition::Suffix StringToSuffix(std::string_view str) {
   CHECK_EQ(str.length(), UniquePosition::kSuffixLength);
   UniquePosition::Suffix suffix;
@@ -582,8 +585,12 @@ std::string UniquePosition::CompressImpl(const std::string& str) {
 }
 
 // static
-// Uncompresses strings that were compresed with UniquePosition::Compress.
+// Uncompresses strings that were compressed with UniquePosition::Compress.
 std::string UniquePosition::Uncompress(const std::string& str) {
+  if (str.size() > kMaxUncompressedSize) {
+    return std::string();
+  }
+
   std::string output;
   size_t i = 0;
   // Iterate through the compressed string one block at a time.
@@ -592,6 +599,10 @@ std::string UniquePosition::Uncompress(const std::string& str) {
       // Found a repeated character block.  Expand it.
       const char rep_digit = str[i];
       uint32_t length = ReadEncodedRunLength(str, i + 4);
+      if (output.size() + length > kMaxUncompressedSize) {
+        // Early return to avoid allocating too much memory.
+        return std::string();
+      }
       output.append(length, rep_digit);
     } else {
       // Found a regular block.  Copy it.
@@ -600,6 +611,9 @@ std::string UniquePosition::Uncompress(const std::string& str) {
   }
   // Copy the remaining bytes that were too small to form a block.
   output.append(str, i, std::string::npos);
+  if (output.size() > kMaxUncompressedSize) {
+    return std::string();
+  }
   return output;
 }
 

@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -174,6 +175,20 @@ TEST_F(UniquePositionTest, DeserializeObsoleteGzippedPosition) {
 
   UniquePosition pos = UniquePosition::FromProto(proto);
   EXPECT_PRED_FORMAT2(Equals, kHugePosition, pos);
+}
+
+TEST_F(UniquePositionTest, UncompressTooLongRepeatingDigit) {
+  // First 4 bytes represent the digit to expand, and the next 4 bytes is the
+  // number of bytes.
+  constexpr char kSerializedCstr[] = {'\x12', '\x12', '\x12', '\x12',
+                                      '\x88', '\x88', '\x88', '\x88'};
+
+  sync_pb::UniquePosition proto;
+  proto.set_custom_compressed_v1(kSerializedCstr);
+  proto.mutable_custom_compressed_v1()->append(
+      base::RandBytesAsString(UniquePosition::kSuffixLength));
+  UniquePosition unique_position = UniquePosition::FromProto(proto);
+  EXPECT_FALSE(unique_position.IsValid());
 }
 
 class RelativePositioningTest : public UniquePositionTest {};
