@@ -37,8 +37,7 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
     // The QR code should be a square.
     ASSERT_EQ(response->width(), response->height());
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     // Verify image contents through go/chrome-engprod-skia-gold.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kVerifyPixels)) {

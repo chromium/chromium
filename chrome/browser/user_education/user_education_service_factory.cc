@@ -124,11 +124,6 @@ bool UserEducationServiceFactory::ProfileAllowsUserEducation(Profile* profile) {
     return false;
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (profiles::IsWebKioskSession()) {
-    return false;
-  }
-#endif
   if (headless::IsHeadlessMode()) {
     return false;
   }

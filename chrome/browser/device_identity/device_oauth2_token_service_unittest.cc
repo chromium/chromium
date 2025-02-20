@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -60,7 +60,7 @@ class MockDeviceOAuth2TokenStore : public DeviceOAuth2TokenStore {
     TriggerTrustedAccountIdCallback(true);
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void SetAccountEmail(const std::string& account_email) override {
     account_id_ = CoreAccountId::FromRobotEmail(account_email);
   }

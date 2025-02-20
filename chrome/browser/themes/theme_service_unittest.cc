@@ -22,7 +22,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -689,8 +688,8 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
   for (const ui::ColorId* ids : contrasting_ids) {
     check_sufficient_contrast(ids[0], ids[1]);
   }
-#if !BUILDFLAG(USE_GTK) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40847971): GTK and LaCrOS do not have a sufficiently
+#if !BUILDFLAG(USE_GTK)
+  // TODO(crbug.com/40847971): GTK does not have a sufficiently
   // high-contrast selected row color to pass this test.
   if (std::get<ContrastMode>(GetParam()) == ContrastMode::kHighContrast) {
     check_sufficient_contrast(kColorOmniboxResultsBackgroundSelected,

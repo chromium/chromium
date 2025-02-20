@@ -31,7 +31,6 @@ source_set("themes") {
     "theme_syncable_service.cc",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/new_tab_page/chrome_colors",
     "//chrome/browser/search/background:constants",

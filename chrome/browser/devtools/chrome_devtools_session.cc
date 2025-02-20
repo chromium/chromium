@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
@@ -32,7 +32,7 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/devtools/protocol/window_manager_handler.h"
 #endif
 
@@ -121,7 +121,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
           std::make_unique<PWAHandler>(&dispatcher_, agent_host->GetId());
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   window_manager_handler_ =
       std::make_unique<WindowManagerHandler>(&dispatcher_);
 #endif

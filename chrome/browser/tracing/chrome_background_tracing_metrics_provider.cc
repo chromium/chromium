@@ -23,11 +23,11 @@
 #include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/barrier_closure.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace tracing {
 
@@ -50,7 +50,7 @@ void ChromeBackgroundTracingMetricsProvider::DoInit() {
   system_profile_providers_.emplace_back(
       std::make_unique<AntiVirusMetricsProvider>());
   av_metrics_provider_ = system_profile_providers_.back().get();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   // Collect system profile such as hardware class for ChromeOS. Note that
   // ChromeOSMetricsProvider is initialized asynchronously. It might not be
   // initialized when reporting metrics, in which case it'll just not add any
@@ -59,7 +59,7 @@ void ChromeBackgroundTracingMetricsProvider::DoInit() {
       std::make_unique<ChromeOSMetricsProvider>(
           metrics::MetricsLogUploader::UMA, cros_system_profile_provider_));
   chromeos_metrics_provider_ = system_profile_providers_.back().get();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   system_profile_providers_.emplace_back(
       std::make_unique<AccessibilityStateProvider>());

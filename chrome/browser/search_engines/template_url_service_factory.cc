@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,7 +30,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "rlz/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
@@ -78,12 +77,7 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
           new ChromeTemplateURLServiceClient(
               HistoryServiceFactory::GetForProfile(
                   profile, ServiceAccessType::EXPLICIT_ACCESS))),
-      dsp_change_callback
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      ,
-      profile->IsMainProfile()
-#endif  // BUIDFLAG(IS_CHROMEOS_LACROS)
-  );
+      dsp_change_callback);
 }
 
 TemplateURLServiceFactory::TemplateURLServiceFactory()
@@ -111,7 +105,7 @@ std::unique_ptr<KeyedService>
 TemplateURLServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS creates various unusual profiles (login, lock screen...) that do
   // not need a template URL service and cannot search.  The only non-regular
   // profile that needs a template URL is the signin profile.  The
