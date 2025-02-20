@@ -283,35 +283,39 @@ Suggestion CreateUndoSuggestion() {
   return suggestion;
 }
 
-// Returns suggestions and their metadata whose set of fields and values
-// to be filled are not subsets of another.
+// Returns suggestions whose set of fields and values to be filled are not
+// subsets of another.
+//
+// `suggestions` must only contain AutofillAiPayload suggestions and
+// `values_to_fill_by_entity` must contain an entry for each of them.
 SuggestionsWithFillingMetadata DedupeFillingSuggestions(
-    SuggestionsWithFillingMetadata suggestions_with_filling_metadata) {
+    SuggestionsWithFillingMetadata suggestions_with_filling_metadata,
+    const std::map<base::Uuid, base::flat_map<FieldGlobalId, std::u16string>>&
+        values_to_fill_by_entity) {
   // Returns -1 if the filling payload of `suggestion_a` is a proper subset of
   // the one from `suggestion_b`. Returns 0 if the filling payload of
   // `suggestion_a` is identical to the one from `suggestion_b`. Returns 1
   // otherwise.
   auto check_suggestions_filling_payload_subset_status =
-      [](const Suggestion& suggestion_a, const Suggestion& suggestion_b) {
-        const Suggestion::AutofillAiPayload* payload_a =
-            absl::get_if<Suggestion::AutofillAiPayload>(&suggestion_a.payload);
-        CHECK(payload_a);
-        const Suggestion::AutofillAiPayload* payload_b =
-            absl::get_if<Suggestion::AutofillAiPayload>(&suggestion_b.payload);
-        CHECK(payload_b);
+      [&](const Suggestion& suggestion_a, const Suggestion& suggestion_b) {
+        const base::Uuid& uuid_a =
+            absl::get<Suggestion::AutofillAiPayload>(suggestion_a.payload).guid;
+        const base::Uuid& uuid_b =
+            absl::get<Suggestion::AutofillAiPayload>(suggestion_b.payload).guid;
 
-        for (auto& [field_global_id, value_to_fill] :
-             payload_a->values_to_fill) {
-          if (!payload_b->values_to_fill.contains(field_global_id) ||
-              value_to_fill != payload_b->values_to_fill.at(field_global_id)) {
+        const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill_a =
+            values_to_fill_by_entity.find(uuid_a)->second;
+        const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill_b =
+            values_to_fill_by_entity.find(uuid_b)->second;
+
+        for (auto& [field_global_id, value_to_fill] : values_to_fill_a) {
+          if (auto it = values_to_fill_b.find(field_global_id);
+              it == values_to_fill_b.end() || value_to_fill != it->second) {
             return 1;
           }
         }
 
-        return payload_b->values_to_fill.size() >
-                       payload_a->values_to_fill.size()
-                   ? -1
-                   : 0;
+        return values_to_fill_b.size() > values_to_fill_a.size() ? -1 : 0;
       };
 
   // Remove those that are subsets of some other suggestion.
@@ -390,6 +394,8 @@ std::vector<Suggestion> CreateFillingSuggestions(
 
   // Suggestion and their fields to be filled metadata.
   SuggestionsWithFillingMetadata suggestions_with_filling_metadata;
+  std::map<base::Uuid, base::flat_map<FieldGlobalId, std::u16string>>
+      values_to_fill_by_entity;
   for (const autofill::EntityInstance& entity : entities) {
     //  Only entities that match the triggering field entity should be used to
     //  generate suggestions.
@@ -448,22 +454,22 @@ std::vector<Suggestion> CreateFillingSuggestions(
       values_to_fill.emplace_back(field->global_id(), attribute->value());
       filling_suggestion_metadata[*field_attribute_type] = attribute->value();
     }
-    auto payload = Suggestion::AutofillAiPayload(values_to_fill);
-    suggestion.payload = payload;
+    suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
     suggestion.icon =
         GetSuggestionIcon(triggering_field_attribute_type->entity_type());
     suggestions_with_filling_metadata.emplace_back(
         std::move(suggestion), std::move(filling_suggestion_metadata));
+    values_to_fill_by_entity.emplace(entity.guid(), std::move(values_to_fill));
   }
 
   if (suggestions_with_filling_metadata.empty()) {
     return {};
   }
 
-  std::vector<Suggestion> suggestions;
-  suggestions = GenerateFillingSuggestionLabels(
+  std::vector<Suggestion> suggestions = GenerateFillingSuggestionLabels(
       *triggering_field_attribute_type,
-      DedupeFillingSuggestions(std::move(suggestions_with_filling_metadata)));
+      DedupeFillingSuggestions(std::move(suggestions_with_filling_metadata),
+                               values_to_fill_by_entity));
 
   // Footer suggestions.
   suggestions.emplace_back(SuggestionType::kSeparator);

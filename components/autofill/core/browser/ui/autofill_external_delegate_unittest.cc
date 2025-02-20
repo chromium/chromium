@@ -58,6 +58,8 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -310,6 +312,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 class AutofillExternalDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
+    client().set_entity_data_manager(std::make_unique<EntityDataManager>(
+        webdata_helper_.autofill_webdata_service()));
     autofill_driver_ =
         std::make_unique<NiceMock<MockAutofillDriver>>(&client());
     auto mock_browser_autofill_manager =
@@ -440,10 +444,14 @@ class AutofillExternalDelegateTest : public testing::Test {
                                               context);
   }
 
+  AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
+
  private:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 
+  AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<EntityTable>()};
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
 
@@ -1176,12 +1184,19 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
 // `Suggestion::AutofillAiPayload` payload previews and fills the form,
 // respectively.
 TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
-  IssueOnQuery(
-      {.fields = {{.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_FIRST},
-                  {.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_LAST},
-                  {.role = PASSPORT_NUMBER},
-                  {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
-                  {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}});
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAiWithDataSchema};
+
+  EntityInstance passport = test::GetPassportEntityInstance({.number = u"123"});
+  client().GetEntityDataManager()->AddOrUpdateEntityInstance(passport);
+  webdata_helper().WaitUntilIdle();
+
+  IssueOnQuery({.fields = {{.role = NAME_FIRST},
+                           {.role = NAME_LAST},
+                           {.role = PASSPORT_NUMBER},
+                           {.role = IBAN_VALUE},
+                           {.role = UNKNOWN_TYPE}}});
+
   const std::u16string value_to_fill = u"123";
   const FieldGlobalId& field_to_fill = queried_form().fields()[2].global_id();
 
@@ -1204,8 +1219,7 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
 
   Suggestion fill_suggestion =
       Suggestion(u"123", SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload =
-      Suggestion::AutofillAiPayload({{field_to_fill, value_to_fill}});
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
   external_delegate().DidSelectSuggestion(fill_suggestion);
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }

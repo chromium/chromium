@@ -659,10 +659,16 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillAutofillAi:
-      manager_->FillOrPreviewFormWithAutofillAiData(
-          mojom::ActionPersistence::kPreview, query_form_, query_field_,
-          suggestion.GetPayload<Suggestion::AutofillAiPayload>()
-              .values_to_fill);
+      if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
+        if (base::optional_ref<const EntityInstance> entity =
+                edm->GetEntityInstance(
+                    suggestion.GetPayload<Suggestion::AutofillAiPayload>()
+                        .guid)) {
+          manager_->FillOrPreviewFormWithAutofillAiData(
+              mojom::ActionPersistence::kPreview, query_form_, query_field_,
+              *entity);
+        }
+      }
       break;
     case SuggestionType::kAddressEntryOnTyping:
       CHECK(suggestion.field_by_field_filling_type_used);
@@ -844,10 +850,16 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kFillAutofillAi:
-      manager_->FillOrPreviewFormWithAutofillAiData(
-          mojom::ActionPersistence::kFill, query_form_, query_field_,
-          suggestion.GetPayload<Suggestion::AutofillAiPayload>()
-              .values_to_fill);
+      if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
+        if (base::optional_ref<const EntityInstance> entity =
+                edm->GetEntityInstance(
+                    suggestion.GetPayload<Suggestion::AutofillAiPayload>()
+                        .guid)) {
+          manager_->FillOrPreviewFormWithAutofillAiData(
+              mojom::ActionPersistence::kFill, query_form_, query_field_,
+              *entity);
+        }
+      }
       break;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:

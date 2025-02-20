@@ -80,9 +80,7 @@ FillingProduct GetFillingProductFromFillingPayload(
       base::Overloaded{
           [](const AutofillProfile*) { return FillingProduct::kAddress; },
           [](const CreditCard*) { return FillingProduct::kCreditCard; },
-          [](const AutofillAiFillingPayload&) {
-            return FillingProduct::kAutofillAi;
-          }},
+          [](const EntityInstance*) { return FillingProduct::kAutofillAi; }},
       filling_payload);
 }
 
@@ -357,7 +355,7 @@ FormFiller::RefillContext::RefillContext(const AutofillField& field,
   profile_or_credit_card = absl::visit(
       base::Overloaded{
           // Autofill with AI doesn't support refills.
-          [](const AutofillAiFillingPayload&)
+          [](const EntityInstance*)
               -> absl::variant<CreditCard, AutofillProfile> { NOTREACHED(); },
           [](const auto* x) {
             return absl::variant<CreditCard, AutofillProfile>(*x);
@@ -974,11 +972,25 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
                     autofill_field, failure_to_fill),
                 autofill_field.Type().GetStorableType());
           },
-          [&](const AutofillAiFillingPayload& values_to_fill)
+          [&](const EntityInstance* entity)
               -> std::pair<std::u16string, std::optional<FieldType>> {
-            auto it = values_to_fill.find(autofill_field.global_id());
-            return std::make_pair(it != values_to_fill.end() ? it->second : u"",
-                                  std::nullopt);
+            std::optional<FieldType> field_type =
+                autofill_field.GetAutofillAiServerTypePredictions();
+            if (!field_type) {
+              return {u"", std::nullopt};
+            }
+            std::optional<AttributeType> attribute_type =
+                AttributeType::FromFieldType(*field_type);
+            if (!attribute_type) {
+              return {u"", std::nullopt};
+            }
+            base::optional_ref<const AttributeInstance> attribute_instance =
+                entity->attribute(*attribute_type);
+            if (!attribute_instance) {
+              return {u"", std::nullopt};
+            }
+            // TODO(crbug.com/397620383): Which type should we return here?
+            return {attribute_instance->value(), std::nullopt};
           }},
       filling_payload);
   return {value_to_fill, filling_type, /*value_is_an_override=*/false};
