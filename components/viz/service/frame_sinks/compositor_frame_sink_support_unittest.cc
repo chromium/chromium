@@ -2224,7 +2224,7 @@ TEST_P(CompositorFrameSinkSupportTest, ViewTransitionBlitRequestTextureQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   blink::ViewTransitionToken transition_token;
-  ViewTransitionElementResourceId resource_id(transition_token, 1);
+  ViewTransitionElementResourceId resource_id(transition_token, 1, false);
 
   auto* vt_quad =
       root_render_pass->CreateAndAppendDrawQuad<SharedElementDrawQuad>();

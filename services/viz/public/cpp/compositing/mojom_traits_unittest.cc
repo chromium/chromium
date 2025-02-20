@@ -607,7 +607,7 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
   CompositorFrameTransitionDirective::SharedElement element;
   element.render_pass_id = frame.render_pass_list.front()->id;
   element.view_transition_element_resource_id =
-      ViewTransitionElementResourceId(transition_token, 1);
+      ViewTransitionElementResourceId(transition_token, 1, false);
   uint32_t sequence_id = 1u;
   frame.metadata.transition_directives.push_back(
       CompositorFrameTransitionDirective::CreateSave(
@@ -648,7 +648,8 @@ TEST_F(StructTraitsTest, ViewTransitionElementResourceId) {
           mojom::ViewTransitionElementResourceId>(empty_id, empty_output_id));
   ASSERT_FALSE(empty_output_id.IsValid());
 
-  ViewTransitionElementResourceId valid_id(blink::ViewTransitionToken(), 2u);
+  ViewTransitionElementResourceId valid_id(blink::ViewTransitionToken(), 2u,
+                                           false);
   ASSERT_TRUE(valid_id.IsValid());
   ViewTransitionElementResourceId valid_output_id;
   ASSERT_TRUE(

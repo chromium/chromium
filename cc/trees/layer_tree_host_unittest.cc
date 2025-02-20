@@ -10766,7 +10766,8 @@ class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
     root->AddChild(layer_with_view_transition_content_);
 
     blink::ViewTransitionToken transition_token;
-    resource_id_ = viz::ViewTransitionElementResourceId(transition_token, 1);
+    resource_id_ =
+        viz::ViewTransitionElementResourceId(transition_token, 1, false);
     view_transition_layer_ = ViewTransitionContentLayer::Create(
         resource_id_, /*is_live_content_layer=*/true);
     CopyProperties(root, view_transition_layer_.get());

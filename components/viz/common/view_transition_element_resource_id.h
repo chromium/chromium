@@ -29,7 +29,8 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
 
   ViewTransitionElementResourceId(
       const blink::ViewTransitionToken& transition_token,
-      uint32_t local_id);
+      uint32_t local_id,
+      bool for_subframe_snapshot);
 
   // Creates an invalid id.
   ViewTransitionElementResourceId();
@@ -60,6 +61,8 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
   bool MatchesToken(
       const base::flat_set<blink::ViewTransitionToken>& tokens) const;
 
+  bool for_subframe_snapshot() const { return for_subframe_snapshot_; }
+
  private:
   // Refers to a specific view transition - globally unique.
   std::optional<blink::ViewTransitionToken> transition_token_;
@@ -67,6 +70,10 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
   // Refers to a specific snapshot resource within a specific transition
   // Unique only with respect to a given `transition_token_`.
   uint32_t local_id_ = kInvalidLocalId;
+
+  // If true, this resource id is generated for a subframe snapshot instead of
+  // other view transition elements.
+  bool for_subframe_snapshot_ = false;
 };
 
 using ViewTransitionElementResourceRects =
