@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.device_reauth.BiometricErrorDialogProp
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Maps {@link BiometricErrorDialogProperties changes in a {@link PropertyModel} to
  * {@link BiometricErrorDialogController}'s modal dialog custom view.
  */
+@NullMarked
 class BiometricErrorDialogViewBinder {
     private BiometricErrorDialogViewBinder() {}
     ;

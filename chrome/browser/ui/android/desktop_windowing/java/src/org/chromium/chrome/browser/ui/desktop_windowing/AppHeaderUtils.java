@@ -7,16 +7,18 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 import android.app.Activity;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 
 /** Utility class for the desktop windowing feature implementation. */
 // TODO (crbug/328055199): Rename this to DesktopWindowUtils.
+@NullMarked
 public class AppHeaderUtils {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -75,7 +77,7 @@ public class AppHeaderUtils {
         int NUM_ENTRIES = 5;
     }
 
-    private static Boolean sIsAppInDesktopWindowForTesting;
+    private static @Nullable Boolean sIsAppInDesktopWindowForTesting;
 
     /**
      * Determines whether the currently starting activity is focused, based on the {@link

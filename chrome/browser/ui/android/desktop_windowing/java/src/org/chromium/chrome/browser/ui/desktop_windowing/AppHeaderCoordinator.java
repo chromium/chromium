@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_CAPTION_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import static java.lang.Boolean.FALSE;
 
 import android.app.Activity;
@@ -16,8 +19,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowInsetsController;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
@@ -26,6 +27,8 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
@@ -46,6 +49,7 @@ import org.chromium.ui.util.TokenHolder;
  * from listening the window insets updates, and pushing updates to the tab strip.
  */
 @RequiresApi(VERSION_CODES.R)
+@NullMarked
 public class AppHeaderCoordinator
         implements DesktopWindowStateManager,
                 TopResumedActivityChangedObserver,
@@ -59,7 +63,7 @@ public class AppHeaderCoordinator
 
     private static @Nullable InsetsRectProvider sInsetsRectProviderForTesting;
 
-    private Activity mActivity;
+    private @Nullable Activity mActivity;
     private final View mRootView;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final InsetObserver mInsetObserver;
@@ -102,17 +106,17 @@ public class AppHeaderCoordinator
             Activity activity,
             View rootView,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
-            @NonNull InsetObserver insetObserver,
+            InsetObserver insetObserver,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Bundle savedInstanceState,
-            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
+            EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
         mActivity = activity;
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mInsetObserver = insetObserver;
         mInsetObserver.addInsetsConsumer(this, InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM);
-        mInsetsController = mRootView.getWindowInsetsController();
+        mInsetsController = assertNonNull(mRootView.getWindowInsetsController());
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         // Whether the app started in an unfocused desktop window, so that relevant UI state can be
@@ -151,7 +155,7 @@ public class AppHeaderCoordinator
     }
 
     @Override
-    public AppHeaderState getAppHeaderState() {
+    public @Nullable AppHeaderState getAppHeaderState() {
         return mAppHeaderState;
     }
 
@@ -193,7 +197,7 @@ public class AppHeaderCoordinator
         outState.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
     }
 
-    private void onInsetsRectsUpdated(@NonNull Rect widestUnoccludedRect) {
+    private void onInsetsRectsUpdated(Rect widestUnoccludedRect) {
         mHeuristicResult = checkIsInDesktopWindow(mCaptionBarRectProvider, mHeuristicResult);
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
 
@@ -203,8 +207,10 @@ public class AppHeaderCoordinator
         assert mInsetObserver.getLastRawWindowInsets() != null
                 : "Attempt to read the insets too early.";
         if (mInsetObserver.getLastRawWindowInsets().hasInsets()) {
+            // mActivity is only set to null in destroy().
             mWindowingMode =
-                    AppHeaderUtils.getWindowingMode(mActivity, isInDesktopWindow, mWindowingMode);
+                    AppHeaderUtils.getWindowingMode(
+                            assumeNonNull(mActivity), isInDesktopWindow, mWindowingMode);
         }
 
         var appHeaderState =
@@ -357,10 +363,10 @@ public class AppHeaderCoordinator
     }
 
     // WindowInsetsConsumer implementation.
-    @NonNull
+
     @Override
     public WindowInsetsCompat onApplyWindowInsets(
-            @NonNull View view, @NonNull WindowInsetsCompat windowInsetsCompat) {
+            View view, WindowInsetsCompat windowInsetsCompat) {
         mKeyboardInset = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
         mNavBarInset =
                 windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
