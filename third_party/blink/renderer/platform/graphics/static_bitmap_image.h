@@ -113,17 +113,11 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   Vector<uint8_t> CopyImageData(const SkImageInfo& info,
                                 bool apply_orientation);
 
-  gfx::Size GetSize() const {
-    return gfx::Size(GetSkImageInfo().width(), GetSkImageInfo().height());
-  }
-  SkAlphaType GetAlphaType() const { return GetSkImageInfo().alphaType(); }
-  SkColorType GetSkColorType() const { return GetSkImageInfo().colorType(); }
-  sk_sp<SkColorSpace> GetSkColorSpace() const {
-    return GetSkImageInfo().refColorSpace();
-  }
-  viz::SharedImageFormat GetSharedImageFormat() const {
-    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
-  }
+  virtual gfx::Size GetSize() const = 0;
+  virtual SkAlphaType GetAlphaType() const = 0;
+  virtual SkColorType GetSkColorType() const = 0;
+  virtual sk_sp<SkColorSpace> GetSkColorSpace() const = 0;
+  virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
 
  protected:
   // Helper for sub-classes
@@ -145,10 +139,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // AcceleratedStaticBitmapImage. To change this property, the call site would
   // have to call SetOriginClean().
   bool is_origin_clean_ = true;
-
- private:
-  // Return the SkImageInfo of the internal representation of this image.
-  virtual SkImageInfo GetSkImageInfo() const = 0;
 };
 
 template <>

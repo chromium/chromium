@@ -127,7 +127,22 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   PaintImage PaintImageForCurrentFrame() override;
 
-  SkImageInfo GetSkImageInfo() const override;
+  SkImageInfo GetSkImageInfo() const;
+  gfx::Size GetSize() const override {
+    return gfx::Size(GetSkImageInfo().width(), GetSkImageInfo().height());
+  }
+  SkAlphaType GetAlphaType() const override {
+    return GetSkImageInfo().alphaType();
+  }
+  SkColorType GetSkColorType() const override {
+    return GetSkImageInfo().colorType();
+  }
+  sk_sp<SkColorSpace> GetSkColorSpace() const override {
+    return GetSkImageInfo().refColorSpace();
+  }
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+  }
 
  private:
   struct ReleaseContext {
