@@ -19,14 +19,12 @@ import type {SignoutConfirmationData} from './signout_confirmation.mojom-webui.j
 import {getCss} from './signout_confirmation_app.css.js';
 import {getHtml} from './signout_confirmation_app.html.js';
 
-function createDummySignoutConfirmationData(): SignoutConfirmationData {
-  return {
-    dialogTitle: '',
-    dialogSubtitle: '',
-    acceptButtonLabel: '',
-    cancelButtonLabel: '',
-  };
-}
+const SAMPLE_DATA: SignoutConfirmationData = {
+  dialogTitle: '',
+  dialogSubtitle: '',
+  acceptButtonLabel: '',
+  cancelButtonLabel: '',
+};
 
 export interface SignoutConfirmationAppElement {
   $: {
@@ -55,8 +53,7 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     };
   }
 
-  protected data_: SignoutConfirmationData =
-      createDummySignoutConfirmationData();
+  protected data_: SignoutConfirmationData = SAMPLE_DATA;
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -88,7 +85,17 @@ export class SignoutConfirmationAppElement extends CrLitElement {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    this.updateViewHeight_();
+
+    // Cast necessary since the properties are protected.
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    // Avoid requesting a view update if we are still using the sample data that
+    // was set at construction. Since the first view update will trigger showing
+    // the view, we should make sure to have valid data to show.
+    if (changedPrivateProperties.has('data_') && this.data_ !== SAMPLE_DATA) {
+      this.updateViewHeight_();
+    }
   }
 
   protected onAcceptButtonClick_() {
