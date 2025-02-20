@@ -4,7 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Generates the following trees of certificates:
+# Generates the following tree of certificates:
 #
 #     client_root (self-signed root)
 #     \   \   \
@@ -13,12 +13,6 @@
 #        \   \---> client_2_ca --> client_2 (end-entity)
 #         \
 #          \-----> client_3_ca --> client_3 (end-entity)
-#
-#     root (self-signed root)
-#     \   \
-#      \   \--> l1_leaf (end-entity)
-#       \
-#        \----> l1_interm --> l2_leaf (end-entity)
 
 SRC_DIR="../../../../../.."
 export CA_CERT_UTIL_DIR="${SRC_DIR}/chrome/test/data/policy/ca_util"
@@ -182,19 +176,5 @@ try openssl req \
   -keyform der \
   -out ec_cert.der \
   -outform der
-
-# Create root, l1_interm, l{1,2}_leaf
-
-CN=root \
-  try root_cert root
-
-CA_ID=root CN=l1_leaf SAN="DNS:${CN}"\
-  try issue_cert l1_leaf leaf_cert_san as_der
-
-CA_ID=root CN=l1_interm \
-  try issue_cert l1_interm ca_cert as_der
-
-CA_ID=l1_interm CN=l2_leaf SAN="DNS:${CN}"\
-  try issue_cert l2_leaf leaf_cert_san as_der
 
 try rm -rf out

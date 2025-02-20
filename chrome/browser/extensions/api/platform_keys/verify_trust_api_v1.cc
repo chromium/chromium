@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
+#include "chrome/browser/extensions/api/platform_keys/verify_trust_api_v1.h"
 
 #include <algorithm>
 #include <memory>
@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/extension_registry_factory.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
@@ -30,31 +29,28 @@ namespace extensions {
 
 namespace {
 
-base::LazyInstance<BrowserContextKeyedAPIFactory<VerifyTrustAPI>>::Leaky
-    g_verify_trust_api_factory = LAZY_INSTANCE_INITIALIZER;
-
 const char kErrorEmptyCertificateChain[] =
     "Server certificate chain must not be empty.";
 
 }  // namespace
 
-// This class bundles IO data and functions of the VerifyTrustAPI that are to be
+// This class bundles IO data and functions of the VerifyTrustApi that are to be
 // used on the IO thread only.
 // It is created on the UI thread and afterwards lives on the IO thread.
-class VerifyTrustAPI::IOPart {
+class VerifyTrustApiV1::IOPart {
  public:
   ~IOPart();
 
-  // Verifies the certificate as stated by |params| and calls back |callback|
+  // Verifies the certificate as stated by `params` and calls back `callback`
   // with the result (see the declaration of VerifyCallback).
   // Will not call back after this object is destructed or the verifier for this
   // extension is deleted (see OnExtensionUnloaded).
-  void Verify(std::optional<Params> params,
+  void Verify(Params params,
               const std::string& extension_id,
               VerifyCallback callback);
 
-  // Must be called when the extension with id |extension_id| is unloaded.
-  // Deletes the verifier for |extension_id| and cancels all pending
+  // Must be called when the extension with id `extension_id` is unloaded.
+  // Deletes the verifier for `extension_id` and cancels all pending
   // verifications of this verifier.
   void OnExtensionUnloaded(const std::string& extension_id);
 
@@ -69,8 +65,8 @@ class VerifyTrustAPI::IOPart {
     net::NetLogWithSource net_log;
   };
 
-  // Keeps |request_state| alive until the |verify_result| is received, then
-  // calls back the |callback| with the result and no error.
+  // Keeps `request_state` alive until the `verify_result` is received, then
+  // calls back the `callback` with the result and no error.
   void CallBackWithResult(VerifyCallback callback,
                           std::unique_ptr<net::CertVerifyResult> verify_result,
                           std::unique_ptr<RequestState> request_state,
@@ -83,40 +79,27 @@ class VerifyTrustAPI::IOPart {
       extension_to_verifier_;
 };
 
-// static
-BrowserContextKeyedAPIFactory<VerifyTrustAPI>*
-VerifyTrustAPI::GetFactoryInstance() {
-  return g_verify_trust_api_factory.Pointer();
-}
-
-template <>
-void BrowserContextKeyedAPIFactory<
-    VerifyTrustAPI>::DeclareFactoryDependencies() {
-  DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
-  DependsOn(ExtensionRegistryFactory::GetInstance());
-}
-
-VerifyTrustAPI::VerifyTrustAPI(content::BrowserContext* context)
+VerifyTrustApiV1::VerifyTrustApiV1(content::BrowserContext* context)
     : io_part_(new IOPart) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   registry_observation_.Observe(ExtensionRegistry::Get(context));
 }
 
-VerifyTrustAPI::~VerifyTrustAPI() {
+VerifyTrustApiV1::~VerifyTrustApiV1() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void VerifyTrustAPI::Verify(std::optional<Params> params,
-                            const std::string& extension_id,
-                            VerifyCallback ui_callback) {
+void VerifyTrustApiV1::Verify(Params params,
+                              const std::string& extension_id,
+                              VerifyCallback ui_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Call back through the VerifyTrustAPI object on the UIThread. Because of the
-  // WeakPtr usage, this will ensure that |ui_callback| is not called after the
+  // Call back through the VerifyTrustApi object on the UIThread. Because of the
+  // WeakPtr usage, this will ensure that `ui_callback` is not called after the
   // API is destroyed.
   VerifyCallback finish_callback(base::BindOnce(
       &CallBackOnUI,
-      base::BindOnce(&VerifyTrustAPI::FinishedVerificationOnUI,
+      base::BindOnce(&VerifyTrustApiV1::FinishedVerificationOnUI,
                      weak_factory_.GetWeakPtr(), std::move(ui_callback))));
 
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -126,7 +109,7 @@ void VerifyTrustAPI::Verify(std::optional<Params> params,
                      std::move(finish_callback)));
 }
 
-void VerifyTrustAPI::OnExtensionUnloaded(
+void VerifyTrustApiV1::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
@@ -136,35 +119,34 @@ void VerifyTrustAPI::OnExtensionUnloaded(
                      base::Unretained(io_part_.get()), extension->id()));
 }
 
-void VerifyTrustAPI::FinishedVerificationOnUI(VerifyCallback ui_callback,
-                                              const std::string& error,
-                                              int return_value,
-                                              int cert_status) {
+void VerifyTrustApiV1::FinishedVerificationOnUI(VerifyCallback ui_callback,
+                                                const std::string& error,
+                                                int return_value,
+                                                int cert_status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   std::move(ui_callback).Run(error, return_value, cert_status);
 }
 
 // static
-void VerifyTrustAPI::CallBackOnUI(VerifyCallback ui_callback,
-                                  const std::string& error,
-                                  int return_value,
-                                  int cert_status) {
+void VerifyTrustApiV1::CallBackOnUI(VerifyCallback ui_callback,
+                                    const std::string& error,
+                                    int return_value,
+                                    int cert_status) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(ui_callback), error, return_value, cert_status));
 }
 
-VerifyTrustAPI::IOPart::~IOPart() {
+VerifyTrustApiV1::IOPart::~IOPart() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
-void VerifyTrustAPI::IOPart::Verify(std::optional<Params> params,
-                                    const std::string& extension_id,
-                                    VerifyCallback callback) {
+void VerifyTrustApiV1::IOPart::Verify(Params params,
+                                      const std::string& extension_id,
+                                      VerifyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  const api::platform_keys::VerificationDetails& details = params->details;
+  const api::platform_keys::VerificationDetails& details = params.details;
 
   if (details.server_certificate_chain.empty()) {
     std::move(callback).Run(kErrorEmptyCertificateChain, 0, 0);
@@ -218,12 +200,12 @@ void VerifyTrustAPI::IOPart::Verify(std::optional<Params> params,
   }
 }
 
-void VerifyTrustAPI::IOPart::OnExtensionUnloaded(
+void VerifyTrustApiV1::IOPart::OnExtensionUnloaded(
     const std::string& extension_id) {
   extension_to_verifier_.erase(extension_id);
 }
 
-void VerifyTrustAPI::IOPart::CallBackWithResult(
+void VerifyTrustApiV1::IOPart::CallBackWithResult(
     VerifyCallback callback,
     std::unique_ptr<net::CertVerifyResult> verify_result,
     std::unique_ptr<RequestState> request_state,

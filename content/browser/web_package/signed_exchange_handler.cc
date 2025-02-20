@@ -42,6 +42,7 @@
 #include "content/public/common/content_features.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -115,8 +116,9 @@ void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
                           ->GetNetworkContext();
   }
 
-  network_context->VerifyCertForSignedExchange(
-      certificate, url, ocsp_result, sct_list, std::move(wrapped_callback));
+  network_context->VerifyCert(certificate, net::HostPortPair::FromURL(url),
+                              ocsp_result, sct_list,
+                              std::move(wrapped_callback));
 }
 
 std::string OCSPErrorToString(const bssl::OCSPVerifyResult& ocsp_result) {

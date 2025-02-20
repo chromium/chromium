@@ -56,7 +56,7 @@
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
-#include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
+#include "chrome/browser/extensions/api/platform_keys/verify_trust_api_service.h"
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 #endif
 
@@ -126,7 +126,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::TabsWindowsAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::TerminalPrivateAPI::GetFactoryInstance();
-  extensions::VerifyTrustAPI::GetFactoryInstance();
+  extensions::VerifyTrustApiService::GetFactoryInstance();
 #endif
   extensions::WebAuthenticationProxyAPI::GetFactoryInstance();
   extensions::WebAuthenticationProxyRegistrarFactory::GetInstance();
