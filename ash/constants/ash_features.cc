@@ -1807,9 +1807,34 @@ BASE_FEATURE(kMediaAppImageMantis,
              "MediaAppImageMantis",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Erase feature of Mantis
+BASE_FEATURE(kMediaAppImageMantisErase,
+             "MediaAppImageMantisErase",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the Expand Background feature of Mantis
+BASE_FEATURE(kMediaAppImageMantisExpandBackground,
+             "MediaAppImageMantisExpandBackground",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the Make A Sticker feature of Mantis
+BASE_FEATURE(kMediaAppImageMantisMakeASticker,
+             "MediaAppImageMantisMakeASticker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the specified model will be used with the Mantis feature
 BASE_FEATURE(kMediaAppImageMantisModel,
              "MediaAppImageMantisModel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the Reimagine feature of Mantis
+BASE_FEATURE(kMediaAppImageMantisReimagine,
+             "MediaAppImageMantisReimagine",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the Remove Background feature of Mantis
+BASE_FEATURE(kMediaAppImageMantisRemoveBackground,
+             "MediaAppImageMantisRemoveBackground",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<MantisModel>::Option mantis_model_options[] = {

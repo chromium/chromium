@@ -8704,6 +8704,7 @@ from previous Chrome versions.
   <int value="-2132591642" label="enable-input-view"/>
   <int value="-2132161378" label="SendTabToSelfHistory:disabled"/>
   <int value="-2131860332" label="WebRtcPipeWireCamera:enabled"/>
+  <int value="-2130901095" label="MediaAppImageMantisErase:disabled"/>
   <int value="-2130526300"
       label="BlinkSchedulerDiscreteInputMatchesResponsivenessMetrics:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
@@ -9022,6 +9023,8 @@ from previous Chrome versions.
   <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
   <int value="-2022243258" label="SiteDataImprovements:enabled"/>
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
+  <int value="-2020886334"
+      label="MediaAppImageMantisExpandBackground:disabled"/>
   <int value="-2020721975" label="smart-virtual-keyboard"/>
   <int value="-2020024440" label="scroll-end-effect"/>
   <int value="-2019050827" label="AIPromptAPIMultimodalInput:enabled"/>
@@ -9427,6 +9430,7 @@ from previous Chrome versions.
   <int value="-1863066403" label="MoveThemePrefsToSpecifics:disabled"/>
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
+  <int value="-1861712507" label="MediaAppImageMantisMakeASticker:disabled"/>
   <int value="-1861278695" label="BulkTabRestore:enabled"/>
   <int value="-1860959988" label="Picker:disabled"/>
   <int value="-1860481724" label="ChromeHomeExpandButton:enabled"/>
@@ -9493,6 +9497,7 @@ from previous Chrome versions.
   <int value="-1837401779" label="EnableFileManagerFormatDialog:enabled"/>
   <int value="-1837359971" label="kEnterOverviewFromWallpaper:enabled"/>
   <int value="-1837329460" label="NewEncodeCpuLoadEstimator:enabled"/>
+  <int value="-1837137559" label="MediaAppImageMantisErase:enabled"/>
   <int value="-1836854634" label="CloseTabSuggestions:enabled"/>
   <int value="-1836511093"
       label="QueryTilesRemoveTrendingAfterInactivity:enabled"/>
@@ -11128,6 +11133,7 @@ from previous Chrome versions.
   <int value="-1190174011" label="enable-hdr"/>
   <int value="-1190171773" label="NtpHistoryClustersModuleTextOnly:enabled"/>
   <int value="-1188066168" label="Mahi:disabled"/>
+  <int value="-1188052495" label="MediaAppImageMantisExpandBackground:enabled"/>
   <int value="-1188042082" label="ZeroSuggestPrefetchingOnSRP:enabled"/>
   <int value="-1187546444" label="MuteNotificationSnoozeAction:enabled"/>
   <int value="-1187251500" label="OmniboxPedalsBatch2NonEnglish:disabled"/>
@@ -13513,6 +13519,7 @@ from previous Chrome versions.
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>
+  <int value="-250357169" label="MediaAppImageMantisReimagine:enabled"/>
   <int value="-249636068" label="ChromeRootStoreUsed:enabled"/>
   <int value="-249443346" label="PhoneHubCallNotification:disabled"/>
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
@@ -14570,6 +14577,7 @@ from previous Chrome versions.
   <int value="174917935" label="ReengagementNotification:disabled"/>
   <int value="175254474" label="SpectreVariant2Mitigation:enabled"/>
   <int value="176284157" label="HistoryOptInEntryPoints:enabled"/>
+  <int value="176329316" label="MediaAppImageMantisReimagine:disabled"/>
   <int value="176401620" label="TabGroupParityAndroid:enabled"/>
   <int value="176421334"
       label="OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts:enabled"/>
@@ -15765,6 +15773,7 @@ from previous Chrome versions.
   <int value="649508040" label="AutofillEnableCompanyName:enabled"/>
   <int value="650013099" label="PrivacySandboxSettings2:disabled"/>
   <int value="650168383" label="PulseaudioLoopbackForScreenShare:enabled"/>
+  <int value="650334758" label="MediaAppImageMantisRemoveBackground:disabled"/>
   <int value="651421878" label="VideoRotateToFullscreen:enabled"/>
   <int value="651471603" label="MediaFoundationD3D11VideoCapture:enabled"/>
   <int value="651562604" label="RawClipboard:enabled"/>
@@ -15793,6 +15802,7 @@ from previous Chrome versions.
       label="Prerender2EarlyDocumentLifecycleUpdate:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>
   <int value="661537613" label="WebNotesPublish:enabled"/>
+  <int value="661566521" label="MediaAppImageMantisRemoveBackground:enabled"/>
   <int value="662001716" label="ToolbarIphAndroid:disabled"/>
   <int value="662331859" label="ConversionMeasurement:enabled"/>
   <int value="662707634" label="DynamicColorAndroid:enabled"/>
@@ -19599,6 +19609,7 @@ from previous Chrome versions.
   <int value="2125732298" label="RetailCoupons:disabled"/>
   <int value="2126030721" label="VCBackgroundBlur:disabled"/>
   <int value="2126203058" label="force-show-update-menu-badge"/>
+  <int value="2126699423" label="MediaAppImageMantisMakeASticker:enabled"/>
   <int value="2126724836" label="TpcdHeuristicsGrants:disabled"/>
   <int value="2127648677" label="OmniboxExperimentalSuggestScoring:disabled"/>
   <int value="2127700228" label="NtpHistoryClustersModule:enabled"/>

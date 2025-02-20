@@ -5879,7 +5879,42 @@
     "expiry_milestone": 120
   },
   {
+    "name": "media-app-image-mantis-erase",
+    "owners": [
+      "cros-mantis@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "media-app-image-mantis-expand-background",
+    "owners": [
+      "cros-mantis@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "media-app-image-mantis-make-a-sticker",
+    "owners": [
+      "cros-mantis@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "media-app-image-mantis-model",
+    "owners": [
+      "cros-mantis@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "media-app-image-mantis-reimagine",
+    "owners": [
+      "cros-mantis@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "media-app-image-mantis-remove-background",
     "owners": [
       "cros-mantis@google.com"
     ],
