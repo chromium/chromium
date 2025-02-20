@@ -15800,9 +15800,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_THIS_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the current tab.">
           This Tab
         </message>
-        <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_OTHER_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the any tab. ('Any' is inaccurate, but preferred by our writer.)" >
-          Other Tab
-        </message>
       </if>
       <message name="IDS_DESKTOP_MEDIA_PICKER_EMPTY_PREVIEW" desc="Text shown instead of a preview image of a tab when the user hasn't yet selected a tab to screenshare." >
         Select a tab to share

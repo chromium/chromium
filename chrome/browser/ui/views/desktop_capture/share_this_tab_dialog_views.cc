@@ -56,6 +56,32 @@ constexpr int kTitleTopMargin = 16;
 constexpr gfx::Insets kAudioToggleInsets = gfx::Insets::VH(8, 16);
 constexpr int kAudioToggleChildSpacing = 8;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GDMPreferCurrentTabResult {
+  kDialogDismissed = 0,                  // Tab/window closed, navigation, etc.
+  kUserCancelled = 1,                    // User explicitly cancelled.
+  kUserSelectedScreen = 2,               // Screen selected.
+  kUserSelectedWindow = 3,               // Window selected.
+  kUserSelectedOtherTab = 4,             // Other tab selected from tab-list.
+  kUserSelectedThisTabAsGenericTab = 5,  // Current tab selected from tab-list.
+  kUserSelectedThisTab = 6,  // Current tab selected from current-tab menu.
+  kMaxValue = kUserSelectedThisTab
+};
+
+void RecordUma(GDMPreferCurrentTabResult result,
+               base::TimeTicks dialog_open_time) {
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction", result);
+
+  const base::TimeDelta elapsed = base::TimeTicks::Now() - dialog_open_time;
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryTimeGet(
+      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.DialogDuration",
+      /*minimum=*/base::Milliseconds(500), /*maximum=*/base::Seconds(45),
+      /*bucket_count=*/91, base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddTime(elapsed);
+}
+
 void RecordUmaCancellation(base::TimeTicks dialog_open_time) {
   RecordUma(GDMPreferCurrentTabResult::kUserCancelled, dialog_open_time);
 }

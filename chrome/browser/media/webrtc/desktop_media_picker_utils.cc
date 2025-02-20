@@ -16,19 +16,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
-void RecordUma(GDMPreferCurrentTabResult result,
-               base::TimeTicks dialog_open_time) {
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction", result);
-
-  const base::TimeDelta elapsed = base::TimeTicks::Now() - dialog_open_time;
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryTimeGet(
-      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.DialogDuration",
-      /*minimum=*/base::Milliseconds(500), /*maximum=*/base::Seconds(45),
-      /*bucket_count=*/91, base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->AddTime(elapsed);
-}
-
 gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   const gfx::Rect scaled_rect = media::ComputeLetterboxRegion(
       gfx::Rect(0, 0, size.width(), size.height()),

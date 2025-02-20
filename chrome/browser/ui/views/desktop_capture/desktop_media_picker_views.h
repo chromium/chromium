@@ -36,8 +36,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   METADATA_HEADER(DesktopMediaPickerDialogView, views::DialogDelegateView)
 
  public:
-  // Used for UMA. Visible to this class's .cc file, but opaque beyond.
-  enum class DialogType : int;
   DesktopMediaPickerDialogView(
       const DesktopMediaPicker::Params& params,
       DesktopMediaPickerImpl* parent,
@@ -191,14 +189,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
   std::vector<DisplaySurfaceCategory> categories_;
   int previously_selected_category_ = 0;
-
-  // Notes whether `this` dialog is in its "standard" state or in the
-  // prefer-current-tab variant. This is a historical relic, as these days,
-  // `ShareThisTabSourceView` is the state-of-the-art for showing the
-  // prefer-current-tab variant.
-  //
-  // TODO(crbug.com/397459620): Remove.
-  DialogType dialog_type_;
 
   std::optional<content::DesktopMediaID> accepted_source_;
 

@@ -73,15 +73,8 @@ class TestDialogObserver : public DesktopMediaPickerManager::DialogObserver {
   bool closed_ = false;
 };
 
-std::vector<DesktopMediaList::Type> GetSourceTypes(bool prefer_current_tab,
-                                                   bool new_order) {
-  DCHECK(!prefer_current_tab || !new_order);
-
-  if (prefer_current_tab) {
-    return {DesktopMediaList::Type::kCurrentTab,
-            DesktopMediaList::Type::kWebContents,
-            DesktopMediaList::Type::kWindow, DesktopMediaList::Type::kScreen};
-  } else if (new_order) {
+std::vector<DesktopMediaList::Type> GetSourceTypes(bool new_order) {
+  if (new_order) {
     return {DesktopMediaList::Type::kWebContents,
             DesktopMediaList::Type::kWindow, DesktopMediaList::Type::kScreen};
   } else {
@@ -90,7 +83,7 @@ std::vector<DesktopMediaList::Type> GetSourceTypes(bool prefer_current_tab,
   }
 }
 
-std::string GetTypeAsTestNameString(const DesktopMediaList::Type& type) {
+std::string GetTypeAsTestNameString(const DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
       return "Screen";
@@ -99,47 +92,12 @@ std::string GetTypeAsTestNameString(const DesktopMediaList::Type& type) {
     case DesktopMediaList::Type::kWebContents:
       return "Tab";
     case DesktopMediaList::Type::kCurrentTab:
-      return "CurrentTab";
+      NOTREACHED();
     case DesktopMediaList::Type::kNone:
       return "None";
   }
   NOTREACHED();
 }
-
-struct PickerConfiguration {
-  const bool prefer_current_tab;
-  const bool new_order;
-
-  // Overload the << operator so that gtest can pretty-print this struct.
-  friend std::ostream& operator<<(std::ostream& os,
-                                  const PickerConfiguration& config) {
-    return os << config.DebugString();
-  }
-
-  std::string DebugString() const {
-    return base::StrCat({"Prefer Current Tab: ",
-                         // Intentionally put an extra space after true so that
-                         // the strings are the same length.
-                         prefer_current_tab ? "True,  " : "False, ",
-                         "New Order: ", new_order ? "True" : "False"});
-  }
-
-  std::string TestNameString() const {
-    return base::StrCat({new_order ? "NewOrder_" : "OldOrder_",
-                         prefer_current_tab ? "PreferCurrentTab" : "Standard"});
-  }
-
-  std::vector<DesktopMediaList::Type> GetSourceTypes() const {
-    return ::views::GetSourceTypes(prefer_current_tab, new_order);
-  }
-};
-
-namespace {
-constexpr std::array<PickerConfiguration, 3> kDefaultProductSourceConfigs = {
-    PickerConfiguration{.prefer_current_tab = false, .new_order = false},
-    PickerConfiguration{.prefer_current_tab = true, .new_order = false},
-    PickerConfiguration{.prefer_current_tab = false, .new_order = true}};
-}  // namespace
 
 class DesktopMediaPickerViewsTestBase : public testing::Test {
  public:
@@ -261,23 +219,19 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   base::WeakPtrFactory<DesktopMediaPickerViewsTestBase> weak_factory_{this};
 };
 
-class DesktopMediaPickerViewsTest
-    : public DesktopMediaPickerViewsTestBase,
-      public testing::WithParamInterface<PickerConfiguration> {
+class DesktopMediaPickerViewsTest : public DesktopMediaPickerViewsTestBase,
+                                    public testing::WithParamInterface<bool> {
  public:
   DesktopMediaPickerViewsTest()
-      : DesktopMediaPickerViewsTestBase(config().GetSourceTypes()) {}
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(NewOrder())) {}
   ~DesktopMediaPickerViewsTest() override = default;
 
-  PickerConfiguration config() const { return GetParam(); }
-
-  bool PreferCurrentTab() const { return config().prefer_current_tab; }
-  bool NewOrder() const { return config().new_order; }
+  bool NewOrder() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          DesktopMediaPickerViewsTest,
-                         testing::ValuesIn(kDefaultProductSourceConfigs));
+                         /*NewOrder=*/testing::Bool());
 
 TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledWhenWindowClosed) {
   GetPickerDialogView()->GetWidget()->Close();
@@ -338,12 +292,6 @@ TEST_P(DesktopMediaPickerViewsTest, AudioCheckboxDefaultStates) {
     test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
     EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
   }
-
-  if (PreferCurrentTab() &&
-      test_api_.AudioSupported(DesktopMediaList::Type::kCurrentTab)) {
-    test_api_.SelectTabForSourceType(DesktopMediaList::Type::kCurrentTab);
-    EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
-  }
 }
 
 TEST_P(DesktopMediaPickerViewsTest, DistinctAudioCheckboxesHaveDistinctState) {
@@ -369,37 +317,6 @@ TEST_P(DesktopMediaPickerViewsTest, DistinctAudioCheckboxesHaveDistinctState) {
   // The audio state of source_1 should remain unaffected.
   test_api_.SelectTabForSourceType(source_1);
   ASSERT_EQ(test_api_.IsAudioSharingApprovedByUser(), init_source_1_state);
-}
-
-TEST_P(DesktopMediaPickerViewsTest, CurrentTabAndAnyTabShareAudioState) {
-  DesktopMediaList::Type source_1 = DesktopMediaList::Type::kWebContents;
-  DesktopMediaList::Type source_2 = DesktopMediaList::Type::kCurrentTab;
-
-  if (!PreferCurrentTab()) {
-    return;  // Irrelevant test.
-  }
-
-  DCHECK(test_api_.AudioSupported(source_1));
-  if (!test_api_.AudioSupported(source_2)) {
-    return;  // Cannot run this particular variant of the test on this platform.
-  }
-
-  // Record source_1's audio state.
-  test_api_.SelectTabForSourceType(source_1);
-  const bool init_state = test_api_.IsAudioSharingApprovedByUser();
-
-  // source_2 should have the same audio state.
-  test_api_.SelectTabForSourceType(source_2);
-  ASSERT_EQ(test_api_.IsAudioSharingApprovedByUser(), init_state);
-
-  // Toggle source_2's audio state.
-  const bool new_state = !init_state;
-  test_api_.SetAudioSharingApprovedByUser(new_state);
-  ASSERT_EQ(test_api_.IsAudioSharingApprovedByUser(), new_state);
-
-  // source_1's audio state should be affected.
-  test_api_.SelectTabForSourceType(source_1);
-  ASSERT_EQ(test_api_.IsAudioSharingApprovedByUser(), new_state);
 }
 
 // Verifies the visible status of audio checkbox.
@@ -452,16 +369,14 @@ TEST_P(DesktopMediaPickerViewsTest, DoneWithAudioShare) {
 }
 
 TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
-  // The first pane is tabs in the new order or when PreferCurrentTab is set,
-  // otherwise the first pane is the entire screen.
-  DesktopMediaID::Type type = PreferCurrentTab() || NewOrder()
-                                  ? DesktopMediaID::TYPE_WEB_CONTENTS
-                                  : DesktopMediaID::TYPE_SCREEN;
+  // The first pane is |tabs| in the new order and |screens| otherwise.
+  DesktopMediaID::Type type = NewOrder() ? DesktopMediaID::TYPE_WEB_CONTENTS
+                                         : DesktopMediaID::TYPE_SCREEN;
   DesktopMediaID fake_id(type, 222);
 
   media_lists_[DesktopMediaList::Type::kWindow]->AddSourceByFullMediaID(
       fake_id);
-  if (PreferCurrentTab() || NewOrder()) {
+  if (NewOrder()) {
     // Audio-sharing supported for tabs, but not for windows.
     fake_id.web_contents_id.disable_local_echo = true;
     fake_id.audio_share = true;
@@ -521,10 +436,10 @@ TEST_P(DesktopMediaPickerViewsTest, OnPermissionUpdateWithoutPermissions) {
 class DesktopMediaPickerViewsPerTypeTest
     : public DesktopMediaPickerViewsTestBase,
       public testing::WithParamInterface<
-          std::tuple<PickerConfiguration, DesktopMediaList::Type>> {
+          std::tuple<bool, DesktopMediaList::Type>> {
  public:
   DesktopMediaPickerViewsPerTypeTest()
-      : DesktopMediaPickerViewsTestBase(config().GetSourceTypes()),
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(NewOrder())),
         source_id_type_(AsDesktopMediaIdType(type())) {}
   ~DesktopMediaPickerViewsPerTypeTest() override = default;
 
@@ -540,19 +455,18 @@ class DesktopMediaPickerViewsPerTypeTest
     test_api_.SelectTabForSourceType(type());
   }
 
-  PickerConfiguration config() const { return std::get<0>(GetParam()); }
+  bool NewOrder() const { return std::get<0>(GetParam()); }
   DesktopMediaList::Type type() const { return std::get<1>(GetParam()); }
   DesktopMediaID::Type source_id_type() const { return source_id_type_; }
 
   static std::string GetDescription(
       const testing::TestParamInfo<
           DesktopMediaPickerViewsPerTypeTest::ParamType>& info) {
-    const PickerConfiguration& config = std::get<0>(info.param);
-    const DesktopMediaList::Type& type = std::get<1>(info.param);
+    const bool new_order = std::get<0>(info.param);
+    const DesktopMediaList::Type type = std::get<1>(info.param);
 
-    return base::StrCat({config.TestNameString(),
-                         "_",  // Ensure config and type strings are separated.
-                         GetTypeAsTestNameString(type)});
+    return base::StrCat(
+        {new_order ? "New" : "Old", "Order", GetTypeAsTestNameString(type)});
   }
 
  private:
@@ -562,9 +476,8 @@ class DesktopMediaPickerViewsPerTypeTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     DesktopMediaPickerViewsPerTypeTest,
-    testing::Combine(testing::ValuesIn(kDefaultProductSourceConfigs),
-                     testing::Values(DesktopMediaList::Type::kCurrentTab,
-                                     DesktopMediaList::Type::kWebContents,
+    testing::Combine(/*NewOrder=*/testing::Bool(),
+                     testing::Values(DesktopMediaList::Type::kWebContents,
                                      DesktopMediaList::Type::kWindow,
                                      DesktopMediaList::Type::kScreen)),
     &DesktopMediaPickerViewsPerTypeTest::GetDescription);
@@ -672,8 +585,7 @@ class DesktopMediaPickerViewsPerTypeAndAudioTest
           std::tuple<DesktopMediaList::Type, bool, bool>> {
  public:
   DesktopMediaPickerViewsPerTypeAndAudioTest()
-      : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(/*prefer_current_tab=*/false, /*new_order=*/true)) {}
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(/*new_order=*/true)) {}
   ~DesktopMediaPickerViewsPerTypeAndAudioTest() override = default;
 
   void MaybeCreatePickerViews() override {
@@ -712,9 +624,7 @@ class DesktopMediaPickerViewsSystemAudioTest
     : public DesktopMediaPickerViewsTestBase {
  public:
   DesktopMediaPickerViewsSystemAudioTest()
-      : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(/*prefer_current_tab=*/false, /*new_order=*/false)) {
-  }
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(/*new_order=*/false)) {}
   ~DesktopMediaPickerViewsSystemAudioTest() override = default;
 
   void MaybeCreatePickerViews() override {
@@ -782,7 +692,7 @@ class DesktopMediaPickerViewsSingleTabPaneTest
   }
 };
 
-// Validates that the tab list's preferred size is not zero
+// Validates that the tab list's preferred size is not zero.
 // (https://crbug.com/965408).
 TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, TabListPreferredSizeNotZero) {
   EXPECT_GT(test_api_.GetSelectedListView()->height(), 0);
@@ -910,21 +820,17 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, AccessibleProperties) {
 class DesktopMediaPickerPreferredDisplaySurfaceTest
     : public DesktopMediaPickerViewsTestBase,
       public testing::WithParamInterface<
-          std::tuple<std::tuple<bool, bool>,
-                     blink::mojom::PreferredDisplaySurface>> {
+          std::tuple<bool, blink::mojom::PreferredDisplaySurface>> {
  public:
   DesktopMediaPickerPreferredDisplaySurfaceTest()
-      : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(PreferCurrentTab(), NewOrder())) {}
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(NewOrder())) {}
 
   void MaybeCreatePickerViews() override {
     CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/false,
                       PreferredDisplaySurface());
   }
 
-  bool PreferCurrentTab() const { return std::get<0>(std::get<0>(GetParam())); }
-
-  bool NewOrder() const { return std::get<1>(std::get<0>(GetParam())); }
+  bool NewOrder() const { return std::get<0>(GetParam()); }
 
   blink::mojom::PreferredDisplaySurface PreferredDisplaySurface() const {
     return std::get<1>(GetParam());
@@ -935,10 +841,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     DesktopMediaPickerPreferredDisplaySurfaceTest,
     testing::Combine(
-        testing::Values(
-            std::make_tuple(/*PreferCurrentTab=*/false, /*NewOrder=*/false),
-            std::make_tuple(/*PreferCurrentTab=*/true, /*NewOrder=*/false),
-            std::make_tuple(/*PreferCurrentTab=*/false, /*NewOrder=*/true)),
+        /*NewOrder=*/testing::Bool(),
         testing::Values(blink::mojom::PreferredDisplaySurface::NO_PREFERENCE,
                         blink::mojom::PreferredDisplaySurface::MONITOR,
                         blink::mojom::PreferredDisplaySurface::WINDOW,
@@ -949,9 +852,8 @@ TEST_P(DesktopMediaPickerPreferredDisplaySurfaceTest,
   switch (PreferredDisplaySurface()) {
     case blink::mojom::PreferredDisplaySurface::NO_PREFERENCE:
       EXPECT_EQ(test_api_.GetSelectedSourceListType(),
-                PreferCurrentTab() ? DesktopMediaList::Type::kCurrentTab
-                : NewOrder()       ? DesktopMediaList::Type::kWebContents
-                                   : DesktopMediaList::Type::kScreen);
+                NewOrder() ? DesktopMediaList::Type::kWebContents
+                           : DesktopMediaList::Type::kScreen);
       break;
     case blink::mojom::PreferredDisplaySurface::MONITOR:
       EXPECT_EQ(test_api_.GetSelectedSourceListType(),
@@ -963,8 +865,7 @@ TEST_P(DesktopMediaPickerPreferredDisplaySurfaceTest,
       break;
     case blink::mojom::PreferredDisplaySurface::BROWSER:
       EXPECT_EQ(test_api_.GetSelectedSourceListType(),
-                PreferCurrentTab() ? DesktopMediaList::Type::kCurrentTab
-                                   : DesktopMediaList::Type::kWebContents);
+                DesktopMediaList::Type::kWebContents);
       break;
   }
 }
@@ -975,8 +876,7 @@ class DesktopMediaPickerDoubleClickTest
           std::pair<DesktopMediaList::Type, DesktopMediaID::Type>> {
  public:
   DesktopMediaPickerDoubleClickTest()
-      : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(/*prefer_current_tab=*/false, /*new_order=*/true)) {}
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(/*new_order=*/true)) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
