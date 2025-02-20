@@ -243,7 +243,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
   private handleUpdateInkThumbnail_(e: CustomEvent<Ink2ThumbnailData>) {
     const data = e.detail;
     const thumbnail = this.getThumbnailForPage(data.pageNumber);
-    if (thumbnail) {
+    if (thumbnail && thumbnail.isPainted()) {
       const array = new Uint8ClampedArray(data.imageData);
       thumbnail.ink2Image = new ImageData(array, data.width);
     }
