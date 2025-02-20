@@ -234,7 +234,7 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
     canvas = ' ' + test['canvas'] if 'canvas' in test else ''
     width, height = _get_canvas_size(test)
 
-    notes = '<p class="notes">%s' % test['notes'] if 'notes' in test else ''
+    notes = '<p class="notes">%s' % test['notes'] if test.get('notes') else ''
 
     timeout = ('\n<meta name="timeout" content="%s">' %
                test['timeout'] if 'timeout' in test else '')
