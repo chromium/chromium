@@ -27,14 +27,12 @@ public class SafetyHubLocalPasswordsDataSource
     }
 
     // Represents the type of local password module.
-    @IntDef({ModuleType.UNAVAILABLE_PASSWORDS, ModuleType.NO_SAVED_PASSWORDS})
+    @IntDef({ModuleType.UNAVAILABLE_PASSWORDS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleType {
         int UNAVAILABLE_PASSWORDS = 0;
-        int NO_SAVED_PASSWORDS = 1;
     };
 
-    @NonNull private final SafetyHubModuleDelegate mModuleDelegate;
     @NonNull private final PrefService mPrefService;
     @NonNull private final SafetyHubFetchService mSafetyHubFetchService;
     @Nullable private final PasswordStoreBridge mPasswordStoreBridge;
@@ -42,11 +40,9 @@ public class SafetyHubLocalPasswordsDataSource
     private Observer mObserver;
 
     SafetyHubLocalPasswordsDataSource(
-            @NonNull SafetyHubModuleDelegate moduleDelegate,
             @NonNull PrefService prefService,
             @NonNull SafetyHubFetchService safetyHubFetchService,
             @Nullable PasswordStoreBridge passwordStoreBridge) {
-        mModuleDelegate = moduleDelegate;
         mPrefService = prefService;
         mSafetyHubFetchService = safetyHubFetchService;
         mPasswordStoreBridge = passwordStoreBridge;
@@ -60,7 +56,7 @@ public class SafetyHubLocalPasswordsDataSource
     }
 
     public boolean maybeTriggerPasswordCheckup() {
-        // TODO(crbug.com/388788969): Only trigger the checkup if it can be ran.
+        // TODO(crbug.com/388788969): Only trigger the checkup if there are local passwords.
         // After triggering the checkup, this data source will be notified of
         // changes to the count values via @{link localPasswordCountsChanged}.
         mSafetyHubFetchService.runLocalPasswordCheckup();
@@ -81,16 +77,7 @@ public class SafetyHubLocalPasswordsDataSource
     // Returns the password module type according to the application state.
     private @ModuleType int getModuleType() {
         // TODO(crbug.com/388788969): Add more module types.
-        if (getTotalPasswordCount() == 0) {
-            return ModuleType.NO_SAVED_PASSWORDS;
-        }
         return ModuleType.UNAVAILABLE_PASSWORDS;
-    }
-
-    private int getTotalPasswordCount() {
-        assert mModuleDelegate != null
-                : "A null ModuleDelegate was detected in" + " SafetyHubAccountPasswordsDataSource";
-        return mModuleDelegate.getLocalPasswordsCount(mPasswordStoreBridge);
     }
 
     public void destroy() {
