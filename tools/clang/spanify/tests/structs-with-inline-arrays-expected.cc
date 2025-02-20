@@ -5,24 +5,29 @@
 #include <array>
 #include <tuple>
 
-// No expected rewrite:
-// We don't handle global C arrays.
-// TODO(364338808): Handle this case.
-struct {
+// Expected rewrite:
+// struct GlobalBuffer {
+//   int val;
+// };
+// std::array<GlobalBuffer, 4> globalBuffer;
+struct GlobalBuffer {
   int val;
-} globalBuffer[4];
+};
+std::array<GlobalBuffer, 4> globalBuffer;
 
-// No expected rewrite:
-// We don't handle global C arrays.
-// TODO(364338808): Handle this case.
+// Expected rewrite:
+// struct GlobalHasName {
+//   int val;
+// };
+// std::array<GlobalHasName, 4> globalNamedBuffer;
 struct GlobalHasName {
   int val;
-} globalNamedBuffer[4];
+};
+std::array<GlobalHasName, 4> globalNamedBuffer;
 
-// No expected rewrite:
-// We don't handle global C arrays.
-// TODO(364338808): Handle this case.
-GlobalHasName globalNamedBufferButNotInline[4];
+// Expected rewrite:
+// std::array<GlobalHasName, 4> globalNamedBufferButNotInline;
+std::array<GlobalHasName, 4> globalNamedBufferButNotInline;
 
 int UnsafeIndex();  // This function might return an out-of-bound index.
 
