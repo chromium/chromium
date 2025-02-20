@@ -144,7 +144,20 @@ void AudioWorkletGlobalScope::registerProcessor(
         return;
       }
 
-      // TODO(crbug.com/1078546): The steps 7.3.3 ~ 7.3.6 are missing.
+      // 7.3.3 - 7.3.6. Inspect default value range within [minValue, maxValue].
+      float default_value = given_descriptor->defaultValue();
+      float min_value = given_descriptor->minValue();
+      float max_value = given_descriptor->maxValue();
+      if ((default_value < min_value) || (default_value > max_value)) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "The default value, " + String::Number(default_value) + ", in \"" +
+                new_param_name +
+                "\" parameterDescriptors() from the AudioWorkletProcessor " +
+                "is out of the range [" + String::Number(min_value) + ", " +
+                String::Number(max_value) + "].");
+        return;
+      }
 
       sanitized_param_descriptors.push_back(given_descriptor);
     }
