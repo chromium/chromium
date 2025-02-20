@@ -7,7 +7,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -27,13 +26,10 @@ class FullscreenWebViewResizerTest : public PlatformTest {
  public:
   FullscreenWebViewResizerTest() {
     // FullscreenModel setup.
-
-    ToolbarUIState* toolbarUIState = [[ToolbarUIState alloc] init];
-    toolbarUIState.collapsedTopToolbarHeight = kCollapsedTopToolbarHeight;
-    toolbarUIState.expandedTopToolbarHeight = kExpandedTopToolbarHeight;
-    toolbarUIState.collapsedBottomToolbarHeight = kCollapsedBottomToolbarHeight;
-    toolbarUIState.expandedBottomToolbarHeight = kExpandedBottomToolbarHeight;
-    _model.SetToolbarUIState(toolbarUIState);
+    _model.SetExpandedTopToolbarHeight(kExpandedTopToolbarHeight);
+    _model.SetCollapsedTopToolbarHeight(kCollapsedTopToolbarHeight);
+    _model.SetExpandedBottomToolbarHeight(kExpandedBottomToolbarHeight);
+    _model.SetCollapsedBottomToolbarHeight(kCollapsedBottomToolbarHeight);
     _model.SetContentHeight(1000);
     _model.SetScrollViewHeight(700);
     _model.SetScrollViewIsScrolling(true);

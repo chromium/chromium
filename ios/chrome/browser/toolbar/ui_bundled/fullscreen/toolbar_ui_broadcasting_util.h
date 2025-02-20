@@ -6,10 +6,10 @@
 #define IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_FULLSCREEN_TOOLBAR_UI_BROADCASTING_UTIL_H_
 
 @class ChromeBroadcaster;
-@class ToolbarUIState;
+@protocol ToolbarUI;
 
 // Starts broadcasting `toolbar`'s UI state using `broadcaster`.
-void StartBroadcastingToolbarUI(ToolbarUIState* toolbar,
+void StartBroadcastingToolbarUI(id<ToolbarUI> toolbar,
                                 ChromeBroadcaster* broadcaster);
 
 // Stops broadcasting MainContentUI properties using `broadcaster`.

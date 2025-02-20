@@ -6,10 +6,6 @@ source_set("fullscreen") {
   sources = [
     "toolbar_ui.h",
     "toolbar_ui.mm",
-    "toolbar_ui_observer.h",
-    "toolbar_ui_observer.mm",
-    "toolbar_ui_observer_bridge.h",
-    "toolbar_ui_observer_bridge.mm",
   ]
   deps = [
     "//base",
