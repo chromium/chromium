@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 
@@ -31,6 +32,7 @@ void CompressNavigationScreenshotOnWorkerThread(
     SkBitmap bitmap,
     bool supports_etc_non_power_of_two,
     CompressionDoneCallback done_callback) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Navigation.GestureTransition.CompressionTime");
   TRACE_EVENT0("navigation", "CompressNavigationScreenshotOnWorkerThread");
 
   sk_sp<SkPixelRef> compressed_bitmap = nullptr;
