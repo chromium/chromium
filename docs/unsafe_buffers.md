@@ -69,6 +69,12 @@ Empty lines are ignored.
 
 The `#` character introduces a comment until the end of the line.
 
+Lines starting with `.` declare which checks are to be enforced, as
+a comma-separated list of values. Currently allowed values are `buffers`
+and `libc`.
+
+All other lines specify which paths are to be included/excluded.
+
 Lines that begin with `-` are immediately followed by path prefixes that
 will *not* be checked for unsafe-buffer-usage. They are known to do unsafe
 things and should be changed to use constructs like base::span or containers
