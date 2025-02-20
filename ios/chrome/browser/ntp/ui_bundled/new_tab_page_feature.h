@@ -84,6 +84,9 @@ extern const char kDeprecateFeedHeaderParameterTopPadding[];
 // A parameter to indicate whether we should enlarge the Doodle and the fakebox.
 extern const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[];
 
+// Parameter to remove the three-dot menu from the account menu.
+extern const char kDisableAccountMenuEllipsisParam[];
+
 #pragma mark - Helpers
 
 // Whether the NTP view hierarchy repair is enabled.
@@ -111,5 +114,8 @@ bool ShouldEnlargeLogoAndFakebox();
 // Top padding that should be added to the top of the NTP. Returns 0 if the NTP
 // should not be padded.
 double TopPaddingToNTP();
+
+// YES if the account menu is enabled without the three-dot menu.
+bool IdentityDiscAccountMenuEnabledWithoutEllipsis();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

@@ -74,6 +74,10 @@ const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[] =
 const char kFeedSettingDiscoverReferrerParameter[] =
     "DiscoverReferrerParameter";
 
+// Feature parameter for `kIdentityDiscAccountMenu`.
+const char kDisableAccountMenuEllipsisParam[] =
+    "identity-disc-account-menu-without-ellipsis";
+
 #pragma mark - Helpers
 
 bool IsNTPViewHierarchyRepairEnabled() {
@@ -126,4 +130,12 @@ double TopPaddingToNTP() {
                    kDeprecateFeedHeader,
                    kDeprecateFeedHeaderParameterTopPadding, 0)
              : 0;
+}
+
+bool IdentityDiscAccountMenuEnabledWithoutEllipsis() {
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kIdentityDiscAccountMenu, kDisableAccountMenuEllipsisParam, false);
+  }
+  return false;
 }
