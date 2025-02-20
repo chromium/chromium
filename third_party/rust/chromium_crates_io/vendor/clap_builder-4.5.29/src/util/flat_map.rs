@@ -118,6 +118,10 @@ impl<K: PartialEq + Eq, V> FlatMap<K, V> {
         self.keys.iter()
     }
 
+    pub(crate) fn values(&self) -> std::slice::Iter<'_, V> {
+        self.values.iter()
+    }
+
     pub(crate) fn iter(&self) -> Iter<'_, K, V> {
         Iter {
             keys: self.keys.iter(),

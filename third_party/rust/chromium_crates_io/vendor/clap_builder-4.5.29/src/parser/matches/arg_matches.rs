@@ -554,7 +554,10 @@ impl ArgMatches {
         }
     }
 
-    /// Check if any args were present on the command line
+    /// Check if any [`Arg`][crate::Arg]s were present on the command line
+    ///
+    /// See [`ArgMatches::subcommand_name()`] or [`ArgMatches::subcommand()`] to check if a
+    /// subcommand was present on the command line.
     ///
     /// # Examples
     ///
@@ -575,7 +578,9 @@ impl ArgMatches {
     ///     .unwrap();
     /// assert!(! m.args_present());
     pub fn args_present(&self) -> bool {
-        !self.args.is_empty()
+        self.args
+            .values()
+            .any(|v| v.source().map(|s| s.is_explicit()).unwrap_or(false))
     }
 
     /// Report where argument value came from

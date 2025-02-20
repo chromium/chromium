@@ -11,7 +11,7 @@
 //! - [Cookbook][_cookbook]
 //! - [FAQ][_faq]
 //! - [Discussions](https://github.com/clap-rs/clap/discussions)
-//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.28/CHANGELOG.md) (includes major version migration
+//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.29/CHANGELOG.md) (includes major version migration
 //!   guides)
 //!
 //! ## Aspirations
@@ -67,7 +67,7 @@
 //! - [clio](https://crates.io/crates/clio) for reading/writing to files specified as arguments
 //! - [clap-verbosity-flag](https://crates.io/crates/clap-verbosity-flag)
 //! - [clap-cargo](https://crates.io/crates/clap-cargo)
-//! - [concolor-clap](https://crates.io/crates/concolor-clap)
+//! - [colorchoice-clap](https://crates.io/crates/colorchoice-clap)
 //!
 //! Testing
 //! - [`trycmd`](https://crates.io/crates/trycmd):  Bulk snapshot testing
