@@ -366,6 +366,11 @@ def add_results_options_group(parser: argparse.ArgumentParser,
                 'virtual tests, reset the virtual baselines. If '
                 '--flag-specific is specified, reset the flag-specific '
                 'baselines.'))
+        results_group.add_argument(
+            '--no-expectations',
+            action='store_true',
+            help=('Do not use TestExpectations. All the results will be '
+                  'reported as expected.'))
 
 
 def add_testing_options_group(parser: argparse.ArgumentParser,

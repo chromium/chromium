@@ -35,6 +35,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         port.set_option_default('manifest_update', False)
         port.set_option_default('product', 'chrome')
         port.set_option_default('test_types', typing.get_args(TestType))
+        port.set_option_default('no_expectations', False)
 
         # Create a testing manifest containing any test files that we
         # might interact with.

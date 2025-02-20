@@ -158,7 +158,7 @@ class WPTAdapter:
                   port_name: Optional[str] = None):
         options, tests = parse_arguments(args)
         cls._ensure_value(options, 'wpt_only', True)
-        # only run virtual tests for headless shell
+        # Do not run virtual tests for mobile embedders
         cls._ensure_value(options, 'no_virtual_tests', options.product
                           not in ['headless_shell', 'chrome'])
 
@@ -168,7 +168,9 @@ class WPTAdapter:
         env_total_shards = host.environ.get('GTEST_TOTAL_SHARDS')
         if env_total_shards is not None:
             cls._ensure_value(options, 'total_shards', int(env_total_shards))
-
+        if options.use_upstream_wpt:
+            # do not use expectations when run with upstream WPT
+            options.no_expectations = True
         if options.product in cls.PORT_NAME_BY_PRODUCT:
             port_name = cls.PORT_NAME_BY_PRODUCT[options.product]
         port = host.port_factory.get(port_name, options)
@@ -730,10 +732,6 @@ def parse_arguments(argv):
     params = vars(parser.parse_args(argv))
     args = params.pop('tests')
     options = optparse.Values(params)
-    # Parameter needed by `WebTestFinder`. TODO(crbug.com/1426296): Port
-    # `--no-expectations` to `run_wpt_tests.py`, and skip reporting results when
-    # the flag is passed.
-    options.no_expectations = False
     return options, args
 
 

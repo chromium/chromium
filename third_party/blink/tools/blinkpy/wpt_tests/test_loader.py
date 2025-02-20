@@ -135,7 +135,6 @@ class TestLoader(testloader.TestLoader):
                 test_name = f'virtual/{virtual_suite}/{test_name}'
             assert not test_type or test_type == item.item_type, item
             test_type = item.item_type
-            exp_line = self._expectations.get_expectations(test_name)
             expected_text = self._port.expected_text(test_name)
             if expected_text:
                 testharness_lines = parse_testharness_baseline(
@@ -143,7 +142,11 @@ class TestLoader(testloader.TestLoader):
             else:
                 testharness_lines = []
 
-            if exp_line.results == {ResultType.Pass} and not testharness_lines:
+            exp_line = self._expectations.get_expectations(test_name)
+            # Do not create test metadata when there is no baseline and test is
+            # expected to pass or run with no test expectations.
+            if (self._port.get_option('no_expectations') or exp_line.results
+                    == {ResultType.Pass}) and not testharness_lines:
                 continue
             test_file_ast.append(
                 self._build_test_ast(item.item_type, exp_line,
@@ -165,8 +168,12 @@ class TestLoader(testloader.TestLoader):
         exp_line: ExpectationType,
         testharness_lines: List[TestharnessLine],
     ) -> wptnode.DataNode:
+        # Use the default result 'Pass' when run with --no-expectations
+        exp_results = ({
+            ResultType.Pass
+        } if self._port.get_option('no_expectations') else exp_line.results)
         test_statuses = chromium_to_wptrunner_statuses(
-            exp_line.results - {ResultType.Skip}, test_type)
+            exp_results - {ResultType.Skip}, test_type)
         harness_errors = {
             line
             for line in testharness_lines
@@ -176,7 +183,7 @@ class TestLoader(testloader.TestLoader):
             # Temporarily expect PASS so that unexpected passes don't contribute
             # to retries or build failures.
             test_statuses.add(Status.PASS.name)
-        elif ResultType.Failure in exp_line.results or not harness_errors:
+        elif ResultType.Failure in exp_results or not harness_errors:
             # Add `OK` for `[ Failure ]` lines or no explicit harness error in
             # the baseline.
             test_statuses.update(
@@ -197,7 +204,7 @@ class TestLoader(testloader.TestLoader):
         # If `[ Failure ]` is expected, the baseline is allowed to be anything.
         # To mimic this, skip creating any explicit subtests, and rely on
         # implicit subtest creation.
-        if ResultType.Failure in exp_line.results:
+        if ResultType.Failure in exp_results:
             expect_any = wptnode.KeyValueNode('expect_any_subtests')
             expect_any.append(wptnode.AtomNode(True))
             test_ast.append(expect_any)

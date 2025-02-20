@@ -157,6 +157,7 @@ class WPTResult(Result):
                  test_type: Optional[str] = None,
                  exp_line: Optional[ExpectationType] = None,
                  baseline: Optional[List[TestharnessLine]] = None,
+                 no_expectations: bool = False,
                  **kwargs):
         kwargs.setdefault('expected', exp_line.results)
         super().__init__(*args, **kwargs)
@@ -165,6 +166,7 @@ class WPTResult(Result):
         self._exp_line = exp_line or Expectation()
         self._baseline = baseline or []
         self.image_diff_stats = None
+        self.no_expectations = no_expectations
         # TODO(crbug.com/41494889): Populate `self.failure_reason` like
         # `run_web_tests.py` does to help LUCI cluster failures.
 
@@ -213,6 +215,9 @@ class WPTResult(Result):
                 self.actual = ResultType.Pass
             else:
                 self.actual = ResultType.Failure
+        # When run with --no-expectations, all results are expected
+        if self.no_expectations:
+            self.expected = self.actual
         self.unexpected = self.actual not in self.expected
         self.is_regression = self.actual != ResultType.Pass and self.unexpected
 
@@ -636,7 +641,8 @@ class WPTResultsProcessor:
             file_path=self._file_path_for_test(test),
             test_type=self.get_test_type(test),
             exp_line=self._expectations.get_expectations(test),
-            baseline=baseline)
+            baseline=baseline,
+            no_expectations=self.port.get_option('no_expectations'))
 
     def get_path_from_test_root(self, test: str) -> str:
         wpt_dir, url_from_wpt_dir = self.port.split_wpt_dir(test)
