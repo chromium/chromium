@@ -41,6 +41,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
         "Sec-Session-Registration",
         "(RS256 "
         "ES256);challenge=\"challenge_value\";path=\"dbsc_register_session\"");
+    response->set_content_type("text/html");
     return response;
   } else if (request.relative_url == "/dbsc_register_session") {
     response->AddCustomHeader("Set-Cookie", "auth_cookie=abcdef0123;");

@@ -136,6 +136,7 @@
     {name: "sec-ch-viewport-width", Symbol: "kViewportWidth"},
     {name: "sec-ch-width", Symbol: "kResourceWidth"},
     {name: "set-cookie", Symbol: "kLowerSetCookie"},
+    {name: "sec-session-registration", Symbol: "kSecSessionRegistration"},
     {name: "signature", Symbol: "kSignature"},
     {name: "signature-input", Symbol: "kSignatureInput"},
     {name: "unencoded-digest", Symbol: "kUnencodedDigest"},

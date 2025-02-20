@@ -19,6 +19,7 @@
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 using net::device_bound_sessions::SessionAccess;
 using net::device_bound_sessions::SessionKey;
@@ -103,6 +104,43 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                               ->GetBrowserContext(),
                           embedded_test_server()->GetURL("/dbsc_required")),
       testing::Contains(net::MatchesCookieWithName("auth_cookie")));
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnNavigation) {
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/dbsc_required")));
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kDeviceBoundSessionRegistered, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnResource) {
+  base::HistogramTester histograms;
+
+  base::test::TestFuture<SessionAccess> future;
+  DeviceBoundSessionAccessObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      future.GetRepeatingCallback<const SessionAccess&>());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/resource_triggered_dbsc_registration")));
+
+  ASSERT_TRUE(future.Wait());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kDeviceBoundSessionRegistered, 1);
 }
 
 }  // namespace

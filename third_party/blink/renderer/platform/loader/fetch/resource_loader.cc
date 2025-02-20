@@ -890,6 +890,11 @@ void ResourceLoader::DidReceiveResponseInternal(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
+  if (response.HttpHeaderField(http_names::kSecSessionRegistration)) {
+    fetcher_->GetUseCounter().CountUse(
+        WebFeature::kDeviceBoundSessionRegistered);
+  }
+
   CountPrivateNetworkAccessPreflightResult(
       response.PrivateNetworkAccessPreflightResult());
 
