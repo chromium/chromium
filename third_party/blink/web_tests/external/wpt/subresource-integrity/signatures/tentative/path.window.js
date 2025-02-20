@@ -61,13 +61,13 @@ const kRequestsWithValidSignature = [
 // load when integrity checks match, and fail when integrity checks mismatch.
 for (const request of kRequestsWithValidSignature) {
     // fetch():
-    generate_fetch_test(request, "", EXPECT_LOADED,
+    generate_fetch_test(request, {}, EXPECT_LOADED,
                         `Valid signature (${request.signature}), no integrity check: loads.`);
 
-    generate_fetch_test(request, `ed25519-${kValidKeys['rfc']}`, EXPECT_LOADED,
+    generate_fetch_test(request, {integrity:`ed25519-${kValidKeys['rfc']}`}, EXPECT_LOADED,
                         `Valid signature (${request.signature}), matching integrity check: loads.`);
 
-    generate_fetch_test(request, `ed25519-${kInvalidKey}`, EXPECT_BLOCKED,
+    generate_fetch_test(request, {integrity:`ed25519-${kInvalidKey}`}, EXPECT_BLOCKED,
                         `Valid signature (${request.signature}), mismatched integrity check: blocked.`);
 
     // <script>:
