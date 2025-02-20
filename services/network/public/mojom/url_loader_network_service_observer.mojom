@@ -206,4 +206,12 @@ interface URLLoaderNetworkServiceObserver {
   // Called when a WebSocket is connected to a private or local IP address
   // space.
   OnWebSocketConnectedToPrivateNetwork(IPAddressSpace ip_address_space);
+
+  // Called when a URLLoader is connected to a private or local IP address
+  // space.
+  OnUrlLoaderConnectedToPrivateNetwork(
+      url.mojom.Url request_url,
+      IPAddressSpace response_address_space,
+      IPAddressSpace client_address_space,
+      IPAddressSpace target_address_space);
 };
