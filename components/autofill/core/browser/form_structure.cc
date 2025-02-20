@@ -676,6 +676,10 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
   // copy over the |form_signature_field_names_| corresponding to the query
   // request.
   form_signature_ = cached_form.form_signature_;
+
+  // Whether the AutofillAI model may be run is set at the same time as the
+  // server predictions - it also needs to be retrieved from the cache.
+  may_run_autofill_ai_model_ = cached_form.may_run_autofill_ai_model_;
 }
 
 void FormStructure::LogDetermineHeuristicTypesMetrics() {

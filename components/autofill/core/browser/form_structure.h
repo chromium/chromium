@@ -334,6 +334,12 @@ class FormStructure {
 
   bool all_fields_are_passwords() const { return all_fields_are_passwords_; }
 
+  bool may_run_autofill_ai_model() const { return may_run_autofill_ai_model_; }
+
+  void set_may_run_autofill_ai_model(bool may_run_autofill_ai_model) {
+    may_run_autofill_ai_model_ = may_run_autofill_ai_model;
+  }
+
   FormSignature form_signature() const { return form_signature_; }
 
   void set_form_signature(FormSignature signature) {
@@ -523,6 +529,9 @@ class FormStructure {
 
   // True if all form fields are password fields.
   bool all_fields_are_passwords_ = false;
+
+  // Indicates whether the client may run the AutofillAI model for this form.
+  bool may_run_autofill_ai_model_ = false;
 
   // The unique signature for this form, composed of the target url domain,
   // the form name, and the form field names in a 64-bit hash.
