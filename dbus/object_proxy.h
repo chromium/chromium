@@ -62,13 +62,16 @@ class CHROME_DBUS_EXPORT ObjectProxy
   };
 
   // Special timeout constants.
-  //
-  // The constants correspond to DBUS_TIMEOUT_USE_DEFAULT and
-  // DBUS_TIMEOUT_INFINITE. Here we use literal numbers instead of these
-  // macros as these aren't defined with D-Bus earlier than 1.4.12.
   enum {
+    // The constant corresponds to DBUS_TIMEOUT_USE_DEFAULT. Here we use literal
+    // numbers instead of these macros as these aren't defined with D-Bus
+    // earlier than 1.4.12.
     TIMEOUT_USE_DEFAULT = -1,
-    TIMEOUT_INFINITE = 0x7fffffff,
+
+    // Max timeout for methods calls. Long method calls add to `pending_replies"
+    // in dbus_daemon and it has a limit. Once that limit is exceeded, no more
+    // calls could be made on the relevant DBusConnection.
+    TIMEOUT_MAX = base::Hours(1).InMilliseconds(),
   };
 
   // Called when an error response is returned or no response is returned.
