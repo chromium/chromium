@@ -2255,45 +2255,6 @@ enum class ToolbarKind {
   _enhancedSafeBrowsingPromoCoordinator = nil;
 }
 
-- (BOOL)navigateBackWithAnimationIfNeeded {
-  if (!IsLensOverlaySameTabNavigationEnabled() ||
-      IsCompactHeight(self.viewController)) {
-    return NO;
-  }
-
-  LensOverlayTabHelper* lensOverlayTabHelper =
-      LensOverlayTabHelper::FromWebState(self.activeWebState);
-
-  if (lensOverlayTabHelper &&
-      lensOverlayTabHelper->IsLensOverlayInvokedOnMostRecentBackItem()) {
-    [_sideSwipeCoordinator animatePageSideSwipeInDirection:
-                               UseRTLLayout()
-                                   ? UISwipeGestureRecognizerDirectionLeft
-                                   : UISwipeGestureRecognizerDirectionRight];
-    return YES;
-  }
-
-  return NO;
-}
-
-- (void)animateLensOverlayNavigationToURL:(GURL)URL {
-  [_sideSwipeCoordinator
-      prepareForSlideInDirection:UseRTLLayout()
-                                     ? UISwipeGestureRecognizerDirectionRight
-                                     : UISwipeGestureRecognizerDirectionLeft];
-
-  __weak SideSwipeCoordinator* weakSideSwipeCoordinator = _sideSwipeCoordinator;
-
-  [HandlerForProtocol(_dispatcher, LensOverlayCommands)
-      hideLensUI:NO
-      completion:^{
-        [weakSideSwipeCoordinator slideToCenterAnimated];
-      }];
-
-  [_loadQueryCommandsHandler loadQuery:base::SysUTF8ToNSString(URL.spec())
-                           immediately:YES];
-}
-
 #pragma mark - BrowserViewVisibilityConsumer
 
 - (void)browserViewDidChangeVisibility {

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_overflow_menu_factory.h"
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_overflow_menu_delegate.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -24,18 +24,18 @@ const CGFloat kMenuSymbolSize = 18;
 
 @implementation LensOverlayOverflowMenuFactory {
   BrowserActionFactory* _actionFactory;
-  __weak id<BrowserCoordinatorCommands> _browserCoordinatorCommandsHandler;
+  __weak id<LensOverlayOverflowMenuDelegate> _overflowMenuDelegate;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
-    browserCoordinatorCommandsHandler:
-        (id<BrowserCoordinatorCommands>)browserCoordinatorCommandsHandler {
+           overflowMenuDelegate:
+               (id<LensOverlayOverflowMenuDelegate>)overflowMenuDelegate {
   self = [super init];
   if (self) {
     _actionFactory = [[BrowserActionFactory alloc]
         initWithBrowser:browser
                scenario:kMenuScenarioHistogramHistoryEntry];
-    _browserCoordinatorCommandsHandler = browserCoordinatorCommandsHandler;
+    _overflowMenuDelegate = overflowMenuDelegate;
   }
 
   return self;
@@ -94,14 +94,13 @@ const CGFloat kMenuSymbolSize = 18;
 - (UIAction*)openURLInTheSameTabAction:(GURL)URL
                                  title:(NSString*)title
                                  image:(UIImage*)image {
-  __weak id<BrowserCoordinatorCommands> weakBrowserCoordinatorCommandsHandler =
-      _browserCoordinatorCommandsHandler;
+  __weak id<LensOverlayOverflowMenuDelegate> weakOverflowMenuDelegate =
+      _overflowMenuDelegate;
   return [UIAction actionWithTitle:title
                              image:image
                         identifier:nil
                            handler:^(UIAction* action) {
-                             [weakBrowserCoordinatorCommandsHandler
-                                 animateLensOverlayNavigationToURL:URL];
+                             [weakOverflowMenuDelegate openActionURL:URL];
                            }];
 }
 

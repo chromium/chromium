@@ -8,11 +8,21 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
+
+@interface SideSwipeCoordinator () <PageSideSwipeCommands>
+
+@end
 
 @implementation SideSwipeCoordinator {
   SideSwipeMediator* _sideSwipeMediator;
@@ -34,9 +44,15 @@
   _sideSwipeMediator.engagementTracker = engagementTracker;
   _sideSwipeMediator.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(PageSideSwipeCommands)];
 }
 
 - (void)stop {
+  [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+
   _fullscreenController = nullptr;
   [_sideSwipeMediator disconnect];
   _sideSwipeMediator = nil;
@@ -73,6 +89,20 @@
                        inDirection:direction];
 }
 
+#pragma mark - PageSideSwipeCommands
+
+- (BOOL)navigateBackWithSideSwipeAnimationIfNeeded {
+  if (![self shouldNavigateBackWithSideSwipeAnimation]) {
+    return NO;
+  }
+
+  [self animatePageSideSwipeInDirection:
+            UseRTLLayout() ? UISwipeGestureRecognizerDirectionLeft
+                           : UISwipeGestureRecognizerDirectionRight];
+
+  return YES;
+}
+
 - (void)prepareForSlideInDirection:
     (UISwipeGestureRecognizerDirection)direction {
   [_sideSwipeMediator prepareForSlideInDirection:direction];
@@ -80,6 +110,38 @@
 
 - (void)slideToCenterAnimated {
   [_sideSwipeMediator slideToCenterAnimated];
+}
+
+#pragma mark - Private
+
+// Determines if a navigation back should use a side swipe animation, typically
+// for features like Lens Overlay.
+- (BOOL)shouldNavigateBackWithSideSwipeAnimation {
+  return [self navigatingBackToLensOverlay];
+}
+
+// Checks if the user is navigating back to the Lens Overlay.
+- (BOOL)navigatingBackToLensOverlay {
+  if (!IsLensOverlaySameTabNavigationEnabled() ||
+      IsCompactHeight(self.baseViewController)) {
+    return NO;
+  }
+
+  if (!self.browser || !self.browser->GetWebStateList()) {
+    return NO;
+  }
+
+  WebStateList* webStateList = self.browser->GetWebStateList();
+
+  if (!webStateList->GetActiveWebState()) {
+    return NO;
+  }
+
+  LensOverlayTabHelper* lensOverlayTabHelper =
+      LensOverlayTabHelper::FromWebState(webStateList->GetActiveWebState());
+
+  return lensOverlayTabHelper &&
+         lensOverlayTabHelper->IsLensOverlayInvokedOnMostRecentBackItem();
 }
 
 @end

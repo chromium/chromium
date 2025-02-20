@@ -9,14 +9,14 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 
-@protocol BrowserCoordinatorCommands;
+@protocol LensOverlayOverflowMenuDelegate;
 
 @interface LensOverlayOverflowMenuFactory : NSObject
 
 // Creates a new factory given a browser instance.
 - (instancetype)initWithBrowser:(Browser*)browser
-    browserCoordinatorCommandsHandler:
-        (id<BrowserCoordinatorCommands>)browserCoordinatorCommandsHandler;
+           overflowMenuDelegate:
+               (id<LensOverlayOverflowMenuDelegate>)overflowMenuDelegate;
 
 // The "My Activity" action.
 - (UIAction*)openUserActivityAction;

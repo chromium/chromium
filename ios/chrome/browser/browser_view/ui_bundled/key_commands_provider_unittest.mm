@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -84,6 +85,11 @@ class KeyCommandsProviderTest : public PlatformTest {
     [dispatcher
         startDispatchingToTarget:mock_browser_coordinator_commands_handler_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+    mock_page_side_swipe_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(PageSideSwipeCommands));
+    [dispatcher startDispatchingToTarget:mock_page_side_swipe_commands_handler_
+                             forProtocol:@protocol(PageSideSwipeCommands)];
   }
   ~KeyCommandsProviderTest() override {}
 
@@ -171,6 +177,7 @@ class KeyCommandsProviderTest : public PlatformTest {
   KeyCommandsProvider* provider_;
   OCMockObject<BrowserCoordinatorCommands>*
       mock_browser_coordinator_commands_handler_;
+  OCMockObject<PageSideSwipeCommands>* mock_page_side_swipe_commands_handler_;
 };
 
 // Checks that KeyCommandsProvider returns key commands.
@@ -915,16 +922,16 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
   int initial_index = navigation_manager->GetLastCommittedItemIndex();
 
   if (IsLensOverlayAvailable()) {
-    OCMExpect([mock_browser_coordinator_commands_handler_
-        navigateBackWithAnimationIfNeeded]);
+    OCMExpect([mock_page_side_swipe_commands_handler_
+        navigateBackWithSideSwipeAnimationIfNeeded]);
   }
 
   [provider_ keyCommand_back];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 1);
 
   if (IsLensOverlayAvailable()) {
-    OCMExpect([mock_browser_coordinator_commands_handler_
-        navigateBackWithAnimationIfNeeded]);
+    OCMExpect([mock_page_side_swipe_commands_handler_
+        navigateBackWithSideSwipeAnimationIfNeeded]);
   }
 
   [provider_ keyCommand_back];
@@ -937,7 +944,7 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index);
 
   if (IsLensOverlayAvailable()) {
-    EXPECT_OCMOCK_VERIFY(mock_browser_coordinator_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_page_side_swipe_commands_handler_);
   }
 }
 

@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/web/model/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/web/common/user_agent.h"
@@ -78,8 +78,8 @@ void WebNavigationBrowserAgent::GoBack() {
 
   if (IsLensOverlaySameTabNavigationEnabled()) {
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    if ([HandlerForProtocol(dispatcher, BrowserCoordinatorCommands)
-            navigateBackWithAnimationIfNeeded]) {
+    if ([HandlerForProtocol(dispatcher, PageSideSwipeCommands)
+            navigateBackWithSideSwipeAnimationIfNeeded]) {
       return;
     }
   }

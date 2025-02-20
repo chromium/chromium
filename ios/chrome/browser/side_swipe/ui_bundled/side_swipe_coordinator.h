@@ -42,27 +42,6 @@
 // Animates page side swipe in a given direction.
 - (void)animatePageSideSwipeInDirection:
     (UISwipeGestureRecognizerDirection)direction;
-
-// Prepares the view for a slide-in overlay navigation transition in the
-// specified direction.
-//
-// This method sets up for an overlay navigation transition where the entire
-// screen is initially positioned offscreen. A snapshot of the screen is taken
-// and used to replace the current fullscreen view, creating a seamless slide-in
-// effect when `slideToCenterAnimated` is called.
-//
-// Important: After calling this method, you must call `slideToCenterAnimated`
-// to restore the fullscreen view to its original position and complete the
-// transition.
-- (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction;
-
-// Restores the fullscreen view to its original position with an animation.
-//
-// This method animates the fullscreen view back to its original onscreen
-// position after it has been moved offscreen using
-// `prepareForSlideInDirection:`.
-- (void)slideToCenterAnimated;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_SIDE_SWIPE_COORDINATOR_H_
