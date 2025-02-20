@@ -1,14 +1,13 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>IndexedDB: Test IDBFactory open() error event properties</title>
-<meta name=help href="https://w3c.github.io/IndexedDB/#dom-idbfactory-open">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/support.js"></script>
-<script>
+// META: title=IndexedDB: Test IDBFactory open() error event properties
+// META: global=window,worker
+// META: script=resources/support.js
+
+// Spec: https://w3c.github.io/IndexedDB/#dom-idbfactory-open
+
+'use strict';
 
 async_test(t => {
-  const dbname = document.location + '-' + t.name;
+  const dbname = self.location + '-' + t.name;
   indexedDB.deleteDatabase(dbname);
   const open = indexedDB.open(dbname);
   open.onsuccess = t.unreached_func('open should not succeed');
@@ -24,5 +23,3 @@ async_test(t => {
     t.done();
   });
 }, 'Properties of error event from failed open()');
-
-</script>
