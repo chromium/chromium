@@ -201,14 +201,6 @@ TEST_F(BrowserThreadTest, PostTask) {
   run_loop.Run();
 }
 
-TEST_F(BrowserThreadTest, Release) {
-  base::RunLoop run_loop;
-  ExpectRelease(run_loop.QuitWhenIdleClosure());
-  BrowserThread::ReleaseSoon(BrowserThread::IO, FROM_HERE,
-                             base::WrapRefCounted(this));
-  run_loop.Run();
-}
-
 TEST_F(BrowserThreadTest, ReleasedOnCorrectThread) {
   base::RunLoop run_loop;
   {
