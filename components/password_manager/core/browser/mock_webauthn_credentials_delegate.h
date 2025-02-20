@@ -38,7 +38,10 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
               (const override));
   MOCK_METHOD(void, NotifyForPasskeysDisplay, (), (override));
   MOCK_METHOD(bool, IsSecurityKeyOrHybridFlowAvailable, (), (const override));
-  MOCK_METHOD(void, RetrievePasskeys, (base::OnceClosure), (override));
+  MOCK_METHOD(void,
+              RequestNotificationWhenPasskeysReady,
+              (base::OnceClosure),
+              (override));
   MOCK_METHOD(bool, HasPendingPasskeySelection, (), (override));
   base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
 

@@ -280,7 +280,8 @@ PasswordFormManager::PasswordFormManager(
     WebAuthnCredentialsDelegate* delegate =
         client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
     if (delegate) {
-      delegate->RetrievePasskeys(async_predictions_waiter_.CreateClosure());
+      delegate->RequestNotificationWhenPasskeysReady(
+          async_predictions_waiter_.CreateClosure());
     }
   }
   if (votes_uploader_.has_value()) {

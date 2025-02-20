@@ -364,6 +364,31 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
             show_webauthn_credentials, bounds);
         wait_for_passkeys_timer_.Start(FROM_HERE, kWaitForPasskeysDelay,
                                        std::move(continue_callback));
+
+        // If passkeys become available before the timer expires, this closure
+        // runs. It is similar to `continue_callback` but it has to check that
+        // the timer is still running, and cancel it if so.
+        base::OnceClosure passkeys_available_callback = base::BindOnce(
+            [](base::WeakPtr<PasswordAutofillManager> manager,
+               autofill::FieldRendererId element_id,
+               base::i18n::TextDirection text_direction,
+               std::u16string typed_username,
+               ShowWebAuthnCredentials show_webauthn_credentials,
+               gfx::RectF bounds) {
+              if (!manager) {
+                return;
+              }
+              if (manager->wait_for_passkeys_timer_.IsRunning()) {
+                manager->wait_for_passkeys_timer_.Stop();
+                manager->ContinueShowingPasswordSuggestions(
+                    element_id, text_direction, typed_username,
+                    show_webauthn_credentials, bounds);
+              }
+            },
+            GetWeakPtr(), element_id, text_direction, typed_username,
+            show_webauthn_credentials, bounds);
+        delegate->RequestNotificationWhenPasskeysReady(
+            std::move(passkeys_available_callback));
       }
       return;
     }
