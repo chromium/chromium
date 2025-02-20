@@ -40,7 +40,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.ConnectionPool;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder.DelegatedNotificationSmallIconFallback;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionStatus;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
@@ -474,21 +473,13 @@ public class TrustedWebActivityClient {
     private void fallbackToIconFromServiceIfNecessary(
             NotificationBuilderBase builder, Connection service) throws RemoteException {
         if (builder.hasSmallIconForContent() && builder.hasStatusBarIconBitmap()) {
-            recordFallback(DelegatedNotificationSmallIconFallback.NO_FALLBACK);
             return;
         }
 
         int id = service.getSmallIconId();
         if (id == TrustedWebActivityService.SMALL_ICON_NOT_SET) {
-            recordFallback(DelegatedNotificationSmallIconFallback.FALLBACK_ICON_NOT_PROVIDED);
             return;
         }
-
-        recordFallback(
-                builder.hasSmallIconForContent()
-                        ? DelegatedNotificationSmallIconFallback.FALLBACK_FOR_STATUS_BAR
-                        : DelegatedNotificationSmallIconFallback
-                                .FALLBACK_FOR_STATUS_BAR_AND_CONTENT);
 
         Bitmap bitmap = service.getSmallIconBitmap();
         if (!builder.hasStatusBarIconBitmap()) {
@@ -497,10 +488,6 @@ public class TrustedWebActivityClient {
         if (!builder.hasSmallIconForContent()) {
             builder.setContentSmallIconForRemoteApp(bitmap);
         }
-    }
-
-    private void recordFallback(@DelegatedNotificationSmallIconFallback int fallback) {
-        TrustedWebActivityUmaRecorder.recordDelegatedNotificationSmallIconFallback(fallback);
     }
 
     /**
