@@ -53,7 +53,7 @@ class ContextualCueingHelper
 
   void OnCueingDecision(
       std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
-      const std::string& cue_label);
+      std::string cue_label);
 
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =

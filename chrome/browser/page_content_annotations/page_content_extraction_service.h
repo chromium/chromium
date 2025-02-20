@@ -19,7 +19,7 @@ class PageContentExtractionService : public KeyedService {
     // Invoked when `page_content` is extracted for `page`. The extraction is
     // triggered for every page once the page has sufficiently loaded.
     virtual void OnPageContentExtracted(
-        const content::Page& page,
+        content::Page& page,
         const optimization_guide::proto::AnnotatedPageContent& page_content) {}
   };
 
@@ -40,7 +40,7 @@ class PageContentExtractionService : public KeyedService {
   // Invoked when `page_content` is extracted for `page`, to notify the
   // observers.
   void OnPageContentExtracted(
-      const content::Page& page,
+      content::Page& page,
       const optimization_guide::proto::AnnotatedPageContent& page_content);
 
   base::ObserverList<Observer> observers_;
