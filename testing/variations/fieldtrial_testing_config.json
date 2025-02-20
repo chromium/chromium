@@ -7172,13 +7172,17 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CustomizableSelect"
+                        "CustomizableSelect",
+                        "InputClosesSelect",
+                        "SelectParserRelaxation"
                     ]
                 },
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "CustomizableSelect"
+                        "CustomizableSelect",
+                        "InputClosesSelect",
+                        "SelectParserRelaxation"
                     ]
                 }
             ]
@@ -12784,31 +12788,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InlineFullscreenPerfExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InputClosesSelect": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InputClosesSelect"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "InputClosesSelect"
                     ]
                 }
             ]
@@ -21728,31 +21707,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SelectFileOpenDocument"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SelectParserRelaxation": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SelectParserRelaxation"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "SelectParserRelaxation"
                     ]
                 }
             ]
