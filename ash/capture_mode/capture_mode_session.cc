@@ -522,6 +522,7 @@ gfx::Rect CalculateRegionEdgeBounds(
     const gfx::Size& preferred_size,
     const gfx::Rect& capture_bar_root_bounds,
     const gfx::Rect& capture_region_root_bounds,
+    const gfx::Rect& action_container_widget_root_bounds,
     aura::Window* root,
     CaptureRegionWidgetAlignment preferred_alignment) {
   // The capture button may be placed along the edge of a capture region if it
@@ -575,10 +576,14 @@ gfx::Rect CalculateRegionEdgeBounds(
         break;
     }
 
-    // If |widget_bounds| does not overlap with |capture_bar_root_bounds| and is
-    // fully contained in root, we're good.
+    // If `widget_bounds` does not overlap with `capture_bar_root_bounds` or
+    // `action_container_widget_root_bounds` and is fully contained in root,
+    // we're good.
+    bool intersects_action_buttons =
+        !action_container_widget_root_bounds.IsEmpty() &&
+        widget_bounds.Intersects(action_container_widget_root_bounds);
     if (!widget_bounds.Intersects(capture_bar_root_bounds) &&
-        root->bounds().Contains(widget_bounds)) {
+        !intersects_action_buttons && root->bounds().Contains(widget_bounds)) {
       return widget_bounds;
     }
   }
@@ -591,6 +596,17 @@ gfx::Rect CalculateRegionEdgeBounds(
   widget_bounds.set_y(capture_bar_root_bounds.y() -
                       CaptureModeSession::kCaptureButtonDistanceFromRegionDp -
                       preferred_size.height());
+
+  // TODO: crbug.com/383198941 - Align the action buttons and capture button
+  // above the capture bar if they both would like to be placed there.
+  // If both the action buttons and the capture button want to be above the
+  // capture bar, move the capture button even higher.
+  if (!action_container_widget_root_bounds.IsEmpty() &&
+      widget_bounds.Intersects(action_container_widget_root_bounds)) {
+    widget_bounds.set_y(widget_bounds.y() -
+                        CaptureModeSession::kCaptureButtonDistanceFromRegionDp -
+                        preferred_size.height());
+  }
 
   return widget_bounds;
 }
@@ -3218,10 +3234,15 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
   const gfx::Size preferred_size = capture_label_view_->GetPreferredSize();
   const gfx::Rect capture_bar_bounds =
       capture_mode_bar_widget_->GetNativeWindow()->bounds();
+  const gfx::Rect action_container_widget_bounds =
+      action_container_widget_
+          ? action_container_widget_->GetNativeWindow()->bounds()
+          : gfx::Rect();
 
   // Calculates the bounds for when the capture label is not placed in the
   // middle of the screen.
-  auto calculate_bounds = [&preferred_size, &capture_bar_bounds](
+  auto calculate_bounds = [&preferred_size, &capture_bar_bounds,
+                           &action_container_widget_bounds](
                               const gfx::Rect& capture_bounds,
                               aura::Window* root) {
     // The capture_bounds must be at least the size of |preferred_size| plus
@@ -3240,7 +3261,8 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
     }
 
     return CalculateRegionEdgeBounds(preferred_size, capture_bar_bounds,
-                                     capture_bounds, root,
+                                     capture_bounds,
+                                     action_container_widget_bounds, root,
                                      CaptureRegionWidgetAlignment::kCenter);
   };
 
@@ -3579,8 +3601,8 @@ gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
 
   const gfx::Rect capture_region = controller_->user_capture_region();
   gfx::Rect bounds = CalculateRegionEdgeBounds(
-      preferred_size, capture_bar_bounds, capture_region, current_root_,
-      CaptureRegionWidgetAlignment::kRight);
+      preferred_size, capture_bar_bounds, capture_region, gfx::Rect(),
+      current_root_, CaptureRegionWidgetAlignment::kRight);
 
   // User capture bounds are in root window coordinates so convert them here.
   wm::ConvertRectToScreen(current_root_, &bounds);
@@ -3822,11 +3844,13 @@ void CaptureModeSession::InitInternal() {
     focus_cycler_->AdvanceFocus(/*reverse=*/false);
   }
 
-  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
   if (ShowDefaultActionButtonsOrPerformSearch()) {
     return;
   }
+  // Update the capture label widget after the action buttons, as the action
+  // buttons get priority around the edges of the capture region.
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateFeedbackButtonWidget();
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
