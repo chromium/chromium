@@ -889,10 +889,15 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<PageSideSwipeCommands> pageSideSwipeHandler =
       HandlerForProtocol(dispatcher, PageSideSwipeCommands);
+
+  UIImage* viewportSnapshot =
+      _associatedTabHelper ? _associatedTabHelper->GetViewportSnapshot() : nil;
+
   [pageSideSwipeHandler
       prepareForSlideInDirection:UseRTLLayout()
                                      ? UISwipeGestureRecognizerDirectionRight
-                                     : UISwipeGestureRecognizerDirectionLeft];
+                                     : UISwipeGestureRecognizerDirectionLeft
+                   snapshotImage:viewportSnapshot];
 
   __weak id<PageSideSwipeCommands> weakPageSideSwipeHandler =
       pageSideSwipeHandler;
