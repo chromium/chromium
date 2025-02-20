@@ -244,17 +244,17 @@ constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
     "enable-early-start-query-flow-optimization", true};
 
 constexpr base::FeatureParam<bool> kUsePdfsAsContext{
-    &kLensOverlayContextualSearchbox, "use-pdfs-as-context", false};
+    &kLensOverlayContextualSearchbox, "use-pdfs-as-context", true};
 
 constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-text-as-context", false};
 
 constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
-    &kLensOverlayContextualSearchbox, "use-inner-html-as-context", false};
+    &kLensOverlayContextualSearchbox, "use-inner-html-as-context", true};
 
 constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
     &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
-    false};
+    true};
 
 constexpr base::FeatureParam<int> kLensOverlayPageContentRequestTimeoutMs{
     &kLensOverlayContextualSearchbox, "page-content-request-timeout-ms", 60000};
@@ -314,16 +314,16 @@ const base::FeatureParam<base::TimeDelta> kLensOverlaySurveyResultsTime{
     &kLensOverlaySurvey, "results-time", base::Seconds(1)};
 
 constexpr base::FeatureParam<bool> kUsePdfVitParam{
-    &kLensOverlayContextualSearchbox, "use-pdf-vit-param", false};
+    &kLensOverlayContextualSearchbox, "use-pdf-vit-param", true};
 
 constexpr base::FeatureParam<bool> kUseWebpageVitParam{
-    &kLensOverlayContextualSearchbox, "use-webpage-vit-param", false};
+    &kLensOverlayContextualSearchbox, "use-webpage-vit-param", true};
 
 constexpr base::FeatureParam<bool> kUsePdfInteractionType{
-    &kLensOverlayContextualSearchbox, "use-pdf-interaction-type", false};
+    &kLensOverlayContextualSearchbox, "use-pdf-interaction-type", true};
 
 constexpr base::FeatureParam<bool> kUseWebpageInteractionType{
-    &kLensOverlayContextualSearchbox, "use-webpage-interaction-type", false};
+    &kLensOverlayContextualSearchbox, "use-webpage-interaction-type", true};
 
 constexpr base::FeatureParam<int> kScannedPdfCharacterPerPageHeuristic{
     &kLensOverlayContextualSearchbox, "characters-per-page-heuristic", 200};

@@ -3034,23 +3034,6 @@ const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kContextualSearchboxWithPageContent[] = {
-    {"use-pdfs-as-context", "true"},
-    {"use-inner-text-as-context", "true"},
-};
-const FeatureEntry::FeatureParam kContextualSearchboxWithPdfPageContent[] = {
-    {"use-pdfs-as-context", "true"},
-};
-
-const FeatureEntry::FeatureVariation kContextualSearchboxVariations[] = {
-    {"with page content", kContextualSearchboxWithPageContent,
-     std::size(kContextualSearchboxWithPageContent), nullptr},
-    {"with pdf page content", kContextualSearchboxWithPdfPageContent,
-     std::size(kContextualSearchboxWithPdfPageContent), nullptr},
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLensOverlayImageContextMenuActionsCopy[] = {
     {"enable-copy-as-image", "true"},
     {"enable-save-as-image", "false"},
@@ -11094,16 +11077,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayTranslateButtonName,
      flag_descriptions::kLensOverlayTranslateButtonDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateButton)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-lens-overlay-contextual-search-box",
-     flag_descriptions::kLensOverlayContextualSearchboxName,
-     flag_descriptions::kLensOverlayContextualSearchboxDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         lens::features::kLensOverlayContextualSearchbox,
-         kContextualSearchboxVariations,
-         "LensOverlayContextualSearchbox")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -1369,9 +1369,6 @@ extern const char kLegacyTechReportTopLevelUrlDescription[];
 extern const char kLensOverlayName[];
 extern const char kLensOverlayDescription[];
 
-extern const char kLensOverlayContextualSearchboxName[];
-extern const char kLensOverlayContextualSearchboxDescription[];
-
 extern const char kLensOverlayImageContextMenuActionsName[];
 extern const char kLensOverlayImageContextMenuActionsDescription[];
 
