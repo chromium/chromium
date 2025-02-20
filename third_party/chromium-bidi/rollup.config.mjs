@@ -17,6 +17,7 @@
 import path from 'path';
 
 import {nodeResolve} from '@rollup/plugin-node-resolve';
+import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
 
 // Generate Mapper Tab from ESM as we can run that in the browser
@@ -29,6 +30,12 @@ const mapperTabConfig = {
     format: 'iife',
   },
   plugins: [
+    cleanup({
+      // Keep license comments. Other comments are removed due to
+      // http://b/390559299 and
+      // https://github.com/microsoft/TypeScript/issues/60811.
+      comments: [/Copyright/i],
+    }),
     license({
       thirdParty: {
         allow: {
