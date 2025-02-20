@@ -739,16 +739,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY" desc="The text of the identity section for iOS.">
         Chrome verified that <ph name="ISSUER">$1<ex>VeriSign</ex></ph> issued this website's certificate.
       </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_ASK_TO_TRACK_SUBTITLE" desc="Text for the subtitle string of the Parcel Tracking 'Ask to Track' infobar.">
-        {COUNT, plural,
-        =1 {Chrome can help you track this package on the New Tab Page.}
-        other {Chrome can help you track these packages on the New Tab Page.}}
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_NEW_PACKAGE_TRACKED_SUBTITLE" desc="Text for the subtitle string of the Parcel Tracking 'Ask to Track' infobar.">
-        {COUNT, plural,
-        =1 {Chrome will help track this package on the New Tab Page.}
-        other {Chrome will help track these packages on the New Tab Page.}}
-      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_ALREADY_TRACKED_SUBTITLE" desc="Text for the subtitle string of the Parcel Tracking 'Package Already Tracked' infobar.">
         This package has already been tracked on Chrome.
       </message>
