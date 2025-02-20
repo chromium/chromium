@@ -357,11 +357,9 @@ TEST_F(DeviceOAuth2TokenServiceTest,
   AssertConsumerTokensAndErrors(0, 1);
   EXPECT_EQ(consumer_.last_error_.state(),
             GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
-  EXPECT_EQ(
-      consumer_.last_error_.error_message(),
-      "{ \"error\": \"invalid_scope\", \"error_description\": \"Some requested "
-      "scopes were invalid. {invalid\\u003d[test_scope}\", \"error_uri\": "
-      "\"https://developers.google.com/identity/protocols/oauth2\"}");
+  EXPECT_EQ(consumer_.last_error_.GetScopeLimitedUnrecoverableErrorReason(),
+            GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+                kInvalidScope);
 }
 
 TEST_F(DeviceOAuth2TokenServiceTest,

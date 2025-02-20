@@ -167,7 +167,14 @@ TEST(SigninErrorControllerTest, AuthStatusEnumerateAllErrors) {
       "table array does not match the number of auth error types");
 
   for (GoogleServiceAuthError::State state : table) {
-    GoogleServiceAuthError error(state);
+    GoogleServiceAuthError error;
+    if (state == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
+    } else {
+      error = GoogleServiceAuthError(state);
+    }
 
     if (error.IsTransientError() || error.IsScopePersistentError()) {
       continue;  // Only non scope persistent errors or non-errors are reported.

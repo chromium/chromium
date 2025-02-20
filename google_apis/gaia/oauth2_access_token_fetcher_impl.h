@@ -60,7 +60,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
     kRestrictedClient = 10,
     kRateLimitExceeded = 11,
     kInternalFailure = 12,
-    kMaxValue = kInternalFailure,
+    kAdminPolicyEnforced = 13,
+    kMaxValue = kAdminPolicyEnforced,
   };
 
   OAuth2AccessTokenFetcherImpl(

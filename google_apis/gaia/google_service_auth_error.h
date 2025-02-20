@@ -110,6 +110,19 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
     NUM_REASONS
   };
 
+  // Error reason for scope limited unrecoverable errors. Only used when the
+  // error is SCOPE_LIMITED_UNRECOVERABLE_ERROR.
+  enum class ScopeLimitedUnrecoverableErrorReason {
+    // The authorization grant is invalid.
+    kInvalidGrantRaptError = 0,
+    // The requested scope is invalid.
+    kInvalidScope,
+    // The client is restricted.
+    kRestrictedClient,
+    // Scope restricted by admin policy.
+    kAdminPolicyEnforced
+  };
+
   bool operator==(const GoogleServiceAuthError &b) const;
   bool operator!=(const GoogleServiceAuthError &b) const;
 
@@ -133,8 +146,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   static GoogleServiceAuthError FromServiceUnavailable(
       const std::string& error_message);
 
-  static GoogleServiceAuthError FromScopeLimitedUnrecoverableError(
-      const std::string& error_message);
+  static GoogleServiceAuthError FromScopeLimitedUnrecoverableErrorReason(
+      ScopeLimitedUnrecoverableErrorReason reason);
 
   // Construct a SERVICE_ERROR error, e.g. invalid client ID, with an
   // |error_message| which provides more information about the service error.
@@ -169,6 +182,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   // Should only be used when the error state is INVALID_GAIA_CREDENTIALS.
   InvalidGaiaCredentialsReason GetInvalidGaiaCredentialsReason() const;
 
+  // Should only be used when the error state is
+  // SCOPE_LIMITED_UNRECOVERABLE_ERROR.
+  ScopeLimitedUnrecoverableErrorReason GetScopeLimitedUnrecoverableErrorReason()
+      const;
+
   // Returns a message describing the error.
   std::string ToString() const;
 
@@ -196,11 +214,20 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   // Construct a GoogleServiceAuthError from |state| and |error_message|.
   GoogleServiceAuthError(State state, const std::string& error_message);
 
+  GoogleServiceAuthError(
+      State s,
+      int error,
+      std::optional<ScopeLimitedUnrecoverableErrorReason> reason,
+      const std::string& error_message);
+
   State state_;
   int network_error_;
   std::string error_message_;
   std::string token_binding_challenge_;
-  InvalidGaiaCredentialsReason invalid_gaia_credentials_reason_;
+  InvalidGaiaCredentialsReason invalid_gaia_credentials_reason_ =
+      InvalidGaiaCredentialsReason::UNKNOWN;
+  std::optional<ScopeLimitedUnrecoverableErrorReason>
+      scope_limited_unrecoverable_error_reason_;
 };
 
 #endif  // GOOGLE_APIS_GAIA_GOOGLE_SERVICE_AUTH_ERROR_H_

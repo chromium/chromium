@@ -20914,6 +20914,7 @@ Called by update_net_error_codes.py.-->
   <int value="10" label="Restricted client"/>
   <int value="11" label="Rate Limit Exceeded"/>
   <int value="12" label="Internal Failure"/>
+  <int value="13" label="Admin Policy Enforced"/>
 </enum>
 
 <enum name="OCRClientType">

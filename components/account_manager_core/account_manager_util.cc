@@ -70,6 +70,53 @@ ToMojoInvalidGaiaCredentialsReason(
   }
 }
 
+GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
+FromMojoScopeLimitedUnrecoverableErrorReason(
+    crosapi::mojom::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
+        mojo_reason) {
+  switch (mojo_reason) {
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kInvalidGrantRaptError:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidGrantRaptError;
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kInvalidScope:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidScope;
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kRestrictedClient:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kRestrictedClient;
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kAdminPolicyEnforced:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kAdminPolicyEnforced;
+  }
+}
+
+crosapi::mojom::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
+ToMojoScopeLimitedUnrecoverableErrorReason(
+    GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason reason) {
+  switch (reason) {
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kInvalidGrantRaptError:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidGrantRaptError;
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kInvalidScope:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidScope;
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kRestrictedClient:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kRestrictedClient;
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kAdminPolicyEnforced:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kAdminPolicyEnforced;
+  }
+}
+
 crosapi::mojom::GoogleServiceAuthError::State ToMojoGoogleServiceAuthErrorState(
     GoogleServiceAuthError::State state) {
   switch (state) {
@@ -261,8 +308,9 @@ std::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
       return GoogleServiceAuthError(
           GoogleServiceAuthError::State::REQUEST_CANCELED);
     case cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError:
-      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-          mojo_error->error_message);
+      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          FromMojoScopeLimitedUnrecoverableErrorReason(
+              mojo_error->scope_limited_unrecoverable_error_reason));
     case cm::GoogleServiceAuthError::State::kChallengeResponseRequired:
       return GoogleServiceAuthError::FromTokenBindingChallenge(
           mojo_error->token_binding_challenge.value_or(
@@ -287,6 +335,12 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
     mojo_result->invalid_gaia_credentials_reason =
         ToMojoInvalidGaiaCredentialsReason(
             error.GetInvalidGaiaCredentialsReason());
+  }
+  if (error.state() ==
+      GoogleServiceAuthError::State::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+    mojo_result->scope_limited_unrecoverable_error_reason =
+        ToMojoScopeLimitedUnrecoverableErrorReason(
+            error.GetScopeLimitedUnrecoverableErrorReason());
   }
   if (error.state() ==
       GoogleServiceAuthError::State::CHALLENGE_RESPONSE_REQUIRED) {
