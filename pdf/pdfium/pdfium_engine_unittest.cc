@@ -22,6 +22,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
@@ -71,6 +72,7 @@ namespace chrome_pdf {
 namespace {
 
 using ::testing::_;
+using ::testing::Contains;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
@@ -2412,6 +2414,71 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             1);
+}
+
+TEST_P(PDFiumEngineInkDrawTest, ThumbnailsDoNotContainStrokes) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+
+  static constexpr int kPageIndex = 0;
+  static constexpr float kDevicePixelRatio = 1;
+  // Note that this is not the same size as pdf/test/data/blank.png.
+  static constexpr gfx::Size kExpectedImageSize(140, 140);
+  // Since blank.pdf renders at all white pixels, check by just counting the
+  // pixels. The raw image data has 4 components per pixel.
+  const size_t kExpectedWhiteComponentCount = kExpectedImageSize.GetArea() * 4;
+  {
+    base::test::TestFuture<Thumbnail> future;
+    engine->RequestThumbnail(kPageIndex, kDevicePixelRatio,
+                             future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+
+    Thumbnail thumbnail = future.Take();
+    ASSERT_EQ(kExpectedImageSize, thumbnail.image_size());
+    EXPECT_THAT(thumbnail.GetImageData(),
+                Contains(0xFF).Times(kExpectedWhiteComponentCount));
+  }
+
+  // Draw 2 strokes.
+  auto pen_brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
+                                                 SK_ColorRED, /*size=*/4.0f);
+  static constexpr auto kPenInputs = std::to_array<PdfInkInputData>({
+      {{5.0f, 5.0f}, base::Seconds(0.0f)},
+      {{50.0f, 5.0f}, base::Seconds(0.1f)},
+  });
+  auto highlighter_brush = std::make_unique<PdfInkBrush>(
+      PdfInkBrush::Type::kHighlighter, SK_ColorCYAN, /*size=*/6.0f);
+  static constexpr auto kHighlighterInputs = std::to_array<PdfInkInputData>({
+      {{75.0f, 5.0f}, base::Seconds(0.0f)},
+      {{75.0f, 60.0f}, base::Seconds(0.1f)},
+  });
+  std::optional<ink::StrokeInputBatch> pen_inputs =
+      CreateInkInputBatch(kPenInputs);
+  ASSERT_TRUE(pen_inputs.has_value());
+  std::optional<ink::StrokeInputBatch> highlighter_inputs =
+      CreateInkInputBatch(kHighlighterInputs);
+  ASSERT_TRUE(highlighter_inputs.has_value());
+  ink::Stroke pen_stroke(pen_brush->ink_brush(), pen_inputs.value());
+  ink::Stroke highligter_stroke(highlighter_brush->ink_brush(),
+                                highlighter_inputs.value());
+  static constexpr InkStrokeId kPenStrokeId(1);
+  static constexpr InkStrokeId kHighlighterStrokeId(2);
+  engine->ApplyStroke(kPageIndex, kPenStrokeId, pen_stroke);
+  engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highligter_stroke);
+
+  {
+    base::test::TestFuture<Thumbnail> future;
+    engine->RequestThumbnail(kPageIndex, kDevicePixelRatio,
+                             future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+
+    Thumbnail thumbnail = future.Take();
+    ASSERT_EQ(kExpectedImageSize, thumbnail.image_size());
+    EXPECT_THAT(thumbnail.GetImageData(),
+                Contains(0xFF).Times(kExpectedWhiteComponentCount));
+  }
 }
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,
