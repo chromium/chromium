@@ -1287,7 +1287,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> on ainoa lähde, josta tämä voidaan lisätä.</translation>
 <translation id="1877377290348678128">Tunniste (valinnainen)</translation>
 <translation id="1877377730633446520">Tämä edellyttää, että tilaa on noin <ph name="REQUIRED_SPACE" />. Tällä hetkellä vapaana on <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">Todennustunnisteen hakeminen epäonnistui. Kirjaudu ulos ja uudelleen sisään, niin voit yrittää uudelleen.</translation>
 <translation id="1877860345998737529">Kytkintoiminnon määritys</translation>
 <translation id="1878155070920054810">Näyttää siltä, että Chromebookisi virta loppuu ennen kuin päivitys on valmis. Varmista latautuminen, jotta päivitys ei keskeydy.</translation>
 <translation id="1878477879455105085">Avattu</translation>
@@ -7010,7 +7009,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5952020381407136867">kosketuslevy</translation>
 <translation id="5953211687820750364"><ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           ja <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> vaikuttavat tähän luetteloon.</translation>
-<translation id="5955282598396714173">Salasana on vanhentunut. Kirjaudu ulos ja uudelleen sisään, niin voit vaihtaa sen.</translation>
 <translation id="5955304353782037793">sov.</translation>
 <translation id="5955721306465922729">Sivusto haluaa avata tämän sovelluksen.</translation>
 <translation id="5955809630138889698">Laite ei välttämättä ole yhteensopiva offline-esittelytilan kanssa. Pyydä lisätietoja tukihenkilöltäsi.</translation>
@@ -9714,7 +9712,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7910725946105920830">Käytä henkilökohtaista Google-tiliä</translation>
 <translation id="7910768399700579500">&amp;Uusi kansio</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Salasana vaihdettiin palvelimella. Kirjaudu ulos ja sitten uudelleen sisään.</translation>
 <translation id="791247712619243506">Peru käyttöönotto</translation>
 <translation id="7912974581251770345">Käännös</translation>
 <translation id="7914399737746719723">Sovellus asennettu</translation>

@@ -580,7 +580,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return;
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.SearchResultTypeSelected', settingsSearchResult.type,
         SearchResultType.MAX_VALUE);
@@ -612,8 +612,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
           }
         };
 
-    const args =
-        metricArgs(settingsSearchResult.type, settingsSearchResult.id)!;
+    const args = metricArgs(settingsSearchResult.type, settingsSearchResult.id);
     if (args.value) {
       chrome.metricsPrivate.recordSparseValue(args.metricName, args.value);
     }
@@ -632,7 +631,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return;
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     assert(settingsSearchResult.urlPathWithParameters, 'Url path is empty.');
     this.recordSearchResultMetrics_();
 
@@ -669,7 +668,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return 'os-settings:personalization';
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
         return 'os-settings:accessibility';

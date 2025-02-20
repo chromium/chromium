@@ -14,6 +14,8 @@ namespace events {
 //  the end of the list, just prior to ENUM_BOUNDARY.
 //
 // Long version: See extension_function_histogram_value.h
+//
+// LINT.IfChange(HistogramValue)
 enum HistogramValue {
   UNKNOWN = 0,
 
@@ -588,6 +590,7 @@ enum HistogramValue {
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionEvents)
 
 }  // namespace events
 }  // namespace extensions

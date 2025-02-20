@@ -173,6 +173,8 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
     SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
 
+const char* kD3DImageBackingLabel = "D3DImageBacking";
+
 }  // anonymous namespace
 
 D3DImageBackingFactory::D3DImageBackingFactory(
@@ -322,6 +324,8 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                << hr;
     return {nullptr, nullptr};
   }
+
+  gl::LabelSwapChainAndBuffers(swap_chain.Get(), kD3DImageBackingLabel);
 
   if (gl::DXGIWaitableSwapChainEnabled()) {
     Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;

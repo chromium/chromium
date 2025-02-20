@@ -252,24 +252,20 @@ suite('<history-synced-device-manager>', function() {
     assertTrue(cards[0]!.opened);
   });
 
-  test('click synced tab', function() {
+  test('click synced tab', async () => {
     setForeignSessions(
         [createSession('Chromebook', [createWindow(['https://example.com'])])]);
-    return flushTasks()
-        .then(function() {
-          const cards = getCards(element);
-          const anchor = cards[0]!.shadowRoot!.querySelector('a')!;
-          anchor.click();
-          return testService.whenCalled('openForeignSessionTab');
-        })
-        .then(args => {
-          assertEquals('Chromebook', args.sessionTag, 'sessionTag is correct');
-          assertEquals(456, args.tabId, 'tabId is correct');
-          assertFalse(args.e.altKey, 'altKey is defined');
-          assertFalse(args.e.ctrlKey, 'ctrlKey is defined');
-          assertFalse(args.e.metaKey, 'metaKey is defined');
-          assertFalse(args.e.shiftKey, 'shiftKey is defined');
-        });
+    await microtasksFinished();
+    const cards = getCards(element);
+    const anchor = cards[0]!.shadowRoot!.querySelector('a')!;
+    anchor.click();
+    const args = await testService.whenCalled('openForeignSessionTab');
+    assertEquals('Chromebook', args.sessionTag, 'sessionTag is correct');
+    assertEquals(456, args.tabId, 'tabId is correct');
+    assertFalse(args.e.altKey, 'altKey is defined');
+    assertFalse(args.e.ctrlKey, 'ctrlKey is defined');
+    assertFalse(args.e.metaKey, 'metaKey is defined');
+    assertFalse(args.e.shiftKey, 'shiftKey is defined');
   });
 
   test('show actions menu', function() {

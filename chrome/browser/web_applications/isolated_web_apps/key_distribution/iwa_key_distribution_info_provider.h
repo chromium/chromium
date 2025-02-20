@@ -29,7 +29,6 @@ class FilePath;
 
 namespace web_app {
 
-class IsolatedWebAppPolicyManager;
 class IwaInternalsHandler;
 
 // Enables the key distribution dev mode UI on chrome://web-app-internals.

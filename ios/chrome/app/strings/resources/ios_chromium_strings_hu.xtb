@@ -30,7 +30,6 @@
 <translation id="159029779861043703">A Chromium biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>
 <translation id="1591119736686995611">Megnyitja a Chromium laprácsát.</translation>
 <translation id="16001233025397167">A biztonsági ellenőrzés megvédi Önt az adatvédelmi incidensektől, a nem biztonságos webhelyektől és még sok minden mástól. Értesítéseket kaphat a Chromium által észlelt adatvédelmi és biztonsági problémákról.</translation>
-<translation id="1611584326765829247">A Chromium segíthet a csomagok nyomon követésében</translation>
 <translation id="1617663976202781617">A Chromium szinkronizálásából származó adatok</translation>
 <translation id="164952285225495380">Ezt a csomagot már nyomon követi a Chromium.</translation>
 <translation id="1707458603865303524">Bármikor használhatja a Chromiumot, amikor üzenetekben vagy más alkalmazásokban linkekre kattint.</translation>
@@ -306,7 +305,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8826789549860004832">Folytassa a böngésző beállítását, hogy a legtöbbet tudja kihozni a Chromiumból.</translation>
 <translation id="88376265765385899">Megnyitja a Chromium-könyvjelzőket.</translation>
 <translation id="8860548555286245440">URL-ek megnyitása a Chromiumban inkognitó módban</translation>
-<translation id="8866191443434488382">A Chromium észleli a nyomonkövetési számokat az Ön által felkeresett webhelyeken, és a csomagokkal kapcsolatos friss információkat megjeleníti az Új lap oldalon. A csomagkövetési számot és a webhely nevét elküldi a rendszer a Chromiumnak a funkció biztosítása, valamint a vásárlási funkciók minden felhasználó számára való továbbfejlesztése érdekében. Ezt bármikor módosíthatja a <ph name="BEGIN_LINK" />csomagkövetési beállítások<ph name="END_LINK" /> között.</translation>
 <translation id="8880024619507699923">Szervezete megköveteli a bejelentkezést a Chromium használatához. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8900052431807804054">A Chromium legerősebb védelmét használhatja</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban.}other{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban.}}</translation>

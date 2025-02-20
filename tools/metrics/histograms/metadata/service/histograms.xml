@@ -2037,7 +2037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Worker.TopLevelScript.FetchClassicScriptTime" units="ms"
-    expires_after="2025-04-01">
+    expires_after="2025-10-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2048,7 +2048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Worker.TopLevelScript.Initialization2GlobalScopeCreation"
-    units="ms" expires_after="2025-04-01">
+    units="ms" expires_after="2025-10-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2073,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Worker.TopLevelScript.StartToWorkerScriptFetchFinishedTime"
-    units="ms" expires_after="2025-04-01">
+    units="ms" expires_after="2025-10-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

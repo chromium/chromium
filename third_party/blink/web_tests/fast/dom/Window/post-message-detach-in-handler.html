@@ -14,7 +14,9 @@ if (window.testRunner) {
 }
 
 function postMessageToSelf() {
-    setInterval(function() { iframe.contentWindow.postMessage("msg", "*"); }, 0);
+    setInterval(function() {
+        if (iframe.contentWindow)
+            iframe.contentWindow.postMessage("msg", "*"); }, 0);
 }
 
 function receiveMessage(event) {

@@ -103,6 +103,10 @@ class RecorderAppUI
 
   void UpdateModelState(const base::Uuid& model_id, ModelState state);
 
+  void LoadModelResultCallback(const base::Uuid& model_id,
+                               LoadModelCallback callback,
+                               on_device_model::mojom::LoadModelResult result);
+
   void GetMicrophoneInfoWithDeviceId(
       GetMicrophoneInfoCallback callback,
       const std::optional<std::string>& device_id);

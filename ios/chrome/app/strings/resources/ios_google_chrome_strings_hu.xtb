@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
-<translation id="1066101356081285416">A Chrome észleli a nyomon követési számokat az Ön által felkeresett webhelyeken, és csomagokkal kapcsolatos friss információkat jelenít meg az Új lap oldalon. A csomagkövetési számot és a webhely nevét elküldi a rendszer a Google-nak a funkció biztosítása, valamint a Google vásárlási funkcióinak minden felhasználó számára való továbbfejlesztése érdekében. Ezt bármikor módosíthatja a <ph name="BEGIN_LINK" />csomagkövetési beállítások<ph name="END_LINK" /> között.</translation>
 <translation id="1076643793026027628">A Chrome automatikusan inkognitó módban nyitja meg a YouTube inkognitó linkjeit.</translation>
 <translation id="1086486568852410168">Keresés a Google Lens segítségével</translation>
 <translation id="1143896152279775643">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
@@ -68,7 +67,6 @@ Megjegyzések:
 <translation id="2574249610672786438">Jelentkezzen be minden eszközén, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="2576431527583832481">A Chrome most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="257708665678654955">Szeretné, hogy a Google Chrome a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
-<translation id="2650286135394207535">A Chrome segíthet a csomagok nyomon követésében</translation>
 <translation id="2668242166988961773">Hangalapú keresés a Chrome-ban.</translation>
 <translation id="2671426118752779020">A Google Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPhone eszközén.</translation>
 <translation id="2689064829982324496">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>

@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium beskytter de sensitive dataene dine med Face ID.</translation>
 <translation id="1591119736686995611">Åpner Chromium-fanerutenettet.</translation>
 <translation id="16001233025397167">Sikkerhetssjekken beskytter deg mot databrudd, utrygge nettsteder med mer. Motta varsler om eventuelle personvern- eller sikkerhetsproblemer som Chromium oppdager for deg.</translation>
-<translation id="1611584326765829247">La Chromium hjelpe deg med å spore pakkene dine</translation>
 <translation id="1617663976202781617">Data fra Chromium-synkronisering</translation>
 <translation id="164952285225495380">Denne pakken blir allerede sporet i Chromium.</translation>
 <translation id="1707458603865303524">Bruk Chromium hver gang du trykker på linker i meldinger og andre apper.</translation>
@@ -306,7 +305,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8826789549860004832">Få mest mulig ut av Chromium ved å fortsette å konfigurere nettleseren din.</translation>
 <translation id="88376265765385899">Åpner Chromium-bokmerkene.</translation>
 <translation id="8860548555286245440">Åpne nettadresser i Chromium i Inkognito</translation>
-<translation id="8866191443434488382">Chromium registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Chromium, slik at Chromium kan levere denne funksjonen og gjøre Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Organisasjonen din krever at du logger på for å bruke Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Få den sterkeste sikkerheten i Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutt}other{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutter}}</translation>

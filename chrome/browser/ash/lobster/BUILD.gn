@@ -8,6 +8,12 @@ assert(is_chromeos)
 
 static_library("lobster") {
   sources = [
+    "announcement_label.cc",
+    "announcement_label.h",
+    "announcement_view.cc",
+    "announcement_view.h",
+    "lobster_announcer.cc",
+    "lobster_announcer.h",
     "lobster_bubble_coordinator.cc",
     "lobster_bubble_coordinator.h",
     "lobster_candidate_id_generator.cc",

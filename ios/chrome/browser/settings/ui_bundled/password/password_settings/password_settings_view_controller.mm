@@ -705,30 +705,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // The `setCanExportPasswords` method required for the PasswordSettingsConsumer
 // protocol is provided by property synthesis.
 
-- (void)setManagedByPolicy:(BOOL)managedByPolicy {
-  if (_managedByPolicy == managedByPolicy) {
-    return;
-  }
-
-  _managedByPolicy = managedByPolicy;
-
-  if (self.modelLoadStatus == ModelNotLoaded) {
-    return;
-  }
-
-  [self.tableViewModel deleteAllItemsFromSectionWithIdentifier:
-                           SectionIdentifierSavePasswordsSwitch];
-  [self addSavePasswordsSwitchOrManagedInfo];
-
-  NSIndexSet* indexSet = [[NSIndexSet alloc]
-      initWithIndex:[self.tableViewModel
-                        sectionForSectionIdentifier:
-                            SectionIdentifierSavePasswordsSwitch]];
-
-  [self.tableView reloadSections:indexSet
-                withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
 - (void)setAutomaticPasskeyUpgradesManagedByPolicy:(BOOL)managed {
   if (_automaticPasskeyUpgradesManagedByPolicy == managed) {
     return;
@@ -743,18 +719,35 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   [self updateAutomaticPasskeyUpgradesSwitch];
 }
 
-- (void)setSavePasswordsEnabled:(BOOL)enabled {
-  if (_savePasswordsEnabled == enabled) {
+- (void)setSavePasswordsEnabled:(BOOL)enabled
+                managedByPolicy:(BOOL)managedByPolicy {
+  BOOL enabledChanged = _savePasswordsEnabled != enabled;
+  BOOL managedChanged = _managedByPolicy != managedByPolicy;
+  if (!enabledChanged && !managedChanged) {
     return;
   }
 
   _savePasswordsEnabled = enabled;
+  _managedByPolicy = managedByPolicy;
 
   if (self.modelLoadStatus == ModelNotLoaded) {
     return;
   }
 
-  if (self.isManagedByPolicy) {
+  // If `_managedByPolicy` changed, the section needs to be redrawn.
+  if (managedChanged) {
+    TableViewModel* model = self.tableViewModel;
+    [model deleteAllItemsFromSectionWithIdentifier:
+               SectionIdentifierSavePasswordsSwitch];
+    [self addSavePasswordsSwitchOrManagedInfo];
+    NSIndexSet* indexSet = [[NSIndexSet alloc]
+        initWithIndex:[model sectionForSectionIdentifier:
+                                 SectionIdentifierSavePasswordsSwitch]];
+    [self.tableView reloadSections:indexSet
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+  }
+
+  if (_managedByPolicy) {
     [self updateManagedSavePasswordsItem];
   } else {
     [self updateSavePasswordsSwitch];

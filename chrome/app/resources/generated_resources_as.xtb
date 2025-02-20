@@ -1286,7 +1286,6 @@
 <translation id="1875387611427697908">ইয়াক কেৱল <ph name="CHROME_WEB_STORE" />ৰ পৰাহে যোগ কৰিব পাৰি</translation>
 <translation id="1877377290348678128">লেবেল (ঐচ্ছিক)</translation>
 <translation id="1877377730633446520">এইটোৱে প্ৰায় <ph name="REQUIRED_SPACE" /> ব্যৱহাৰ কৰিব। বৰ্তমান আপোনাৰ <ph name="FREE_SPACE" /> উপলব্ধ আছে।</translation>
-<translation id="1877520246462554164">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ টকেন পাব পৰা নগ’ল। আকৌ চেষ্টা কৰিবলৈ এবাৰ ছাইন আউট কৰি পুনৰ ছাইন ইন কৰক।</translation>
 <translation id="1877860345998737529">আবণ্টন কৰা কার্য সলনি কৰক</translation>
 <translation id="1878155070920054810">আপডে'টটো সম্পূৰ্ণ হোৱাৰ পূৰ্বে আপোনাৰ Chromebookৰ বেটাৰীৰ চাৰ্জ শেষ হ'ব যেন লাগিছে। ব্যাঘাত জন্মাবলৈ নিদিবৰ বাবে এইটো শুদ্ধকৈ চাৰ্জ হৈ থকাটো নিশ্চিত কৰক।</translation>
 <translation id="1878477879455105085">খোলা আছে</translation>
@@ -7011,7 +7010,6 @@
 <translation id="5952020381407136867">টাচ্চপেড</translation>
 <translation id="5953211687820750364">এই সূচীখনত <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           আৰু <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> প্ৰভাৱ পেলায়</translation>
-<translation id="5955282598396714173">আপোনাৰ পাছৱৰ্ডটোৰ ম্যাদ উকলিছে। এইটো সলনি কৰিবলৈ অনুগ্ৰহ কৰি ছাইন আউট কৰি আকৌ ছাইন ইন কৰক।</translation>
 <translation id="5955304353782037793">এপ্</translation>
 <translation id="5955721306465922729">এটা ৱেবছাইটে এই এপ্লিকেশ্বনটো খুলিবলৈ বিচাৰে।</translation>
 <translation id="5955809630138889698">এই ডিভাইচটো কেৱল অনলাইন ডেম' ম'ডৰ বাবে যোগ্য হ'ব পাৰে। অধিক সবিশেষৰ বাবে অনুগ্ৰহ কৰি আপোনাৰ সহায়তা প্ৰতিনিধিৰ সৈতে যোগাযোগ কৰক।</translation>
@@ -9717,7 +9715,6 @@
 <translation id="7910725946105920830">আপোনাৰ ব্যক্তিগত Google একাউণ্টটো ব্যৱহাৰ কৰক</translation>
 <translation id="7910768399700579500">&amp;নতুন ফ’ল্ডাৰ</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">আপোনাৰ পাছৱৰ্ডটো ছাৰ্ভাৰত সলনি কৰা হৈছে। অনুগ্ৰহ কৰি ছাইন আউট কৰি পুনৰ ছাইন ইন কৰক।</translation>
 <translation id="791247712619243506">ছেটআপ বাতিল কৰক</translation>
 <translation id="7912974581251770345">অনুবাদ</translation>
 <translation id="7914399737746719723">এপ্‌ ইনষ্টল কৰা হৈছে</translation>

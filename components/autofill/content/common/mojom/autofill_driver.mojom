@@ -129,14 +129,9 @@ interface AutofillDriver {
   //
   // `field_id` must identify a field of `form`. This is enforced by
   // ContentAutofillDriver.
-  //
-  // `formatting_only` is true if JavaScript only modified whitespaces, symbols
-  // and capitalization, and in that case, the field is still considered
-  // autofilled.
   JavaScriptChangedAutofilledValue(FormData form,
                                    FieldRendererId field_id,
-                                   mojo_base.mojom.String16 old_value,
-                                   bool formatting_only);
+                                   mojo_base.mojom.String16 old_value);
 };
 
 // There is one instance of this interface per web contents in the browser

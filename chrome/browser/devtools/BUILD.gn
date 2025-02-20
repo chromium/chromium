@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -42,7 +41,7 @@ if (!is_android) {
     "protocol/target.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     _protocol_generated += [
       "protocol/window_manager.cc",
       "protocol/window_manager.h",
@@ -63,7 +62,7 @@ if (!is_android) {
     outputs = [ output_file ]
 
     args = [ rebase_path(_blink_protocol_path, root_build_dir) ]
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       inputs += [ "cros_protocol.pdl" ]
       args += [ rebase_path("cros_protocol.pdl", root_build_dir) ]
     }
@@ -144,7 +143,6 @@ static_library("devtools") {
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
     ]
     deps += [
-      "//build:chromeos_buildflags",
       "//chrome:extra_resources",
       "//chrome:resources",
       "//chrome:strings",
@@ -193,10 +191,10 @@ static_library("devtools") {
       "//ui/views/controls/webview",
     ]
     if (is_chromeos) {
-      deps += [ "//chromeos/constants" ]
-    }
-    if (is_chromeos_ash) {
-      deps += [ "//ash/constants" ]
+      deps += [
+        "//ash/constants",
+        "//chromeos/constants",
+      ]
     }
     sources += [
       "aida_client.cc",
@@ -328,7 +326,7 @@ static_library("devtools") {
       "protocol/target_handler.cc",
       "protocol/target_handler.h",
     ]
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//ash" ]
       sources += [
         "protocol/window_manager_handler.cc",

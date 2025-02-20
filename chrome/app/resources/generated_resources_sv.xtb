@@ -1288,7 +1288,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1875387611427697908">Kan endast installeras från <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etikett (valfritt)</translation>
 <translation id="1877377730633446520">Detta använder cirka <ph name="REQUIRED_SPACE" />. Du har för närvarande <ph name="FREE_SPACE" /> tillgängligt.</translation>
-<translation id="1877520246462554164">Det gick inte att hämta autentiseringstoken. Försök igen genom att logga ut och sedan logga in igen.</translation>
 <translation id="1877860345998737529">Åtgärdstilldelning för brytare</translation>
 <translation id="1878155070920054810">Det verkar som om batteriet i Chromebook kommer att ta slut innan uppdateringen är klar. Kontrollera att det laddas som det ska så att du slipper avbrott.</translation>
 <translation id="1878477879455105085">Öppnad</translation>
@@ -7014,7 +7013,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5952020381407136867">styrplatta</translation>
 <translation id="5953211687820750364">Den här listan påverkas av <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           och <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Lösenordet har upphört att gälla. Logga ut och logga sedan in igen innan du ändrar det.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">En webbplats vill öppna den här appen.</translation>
 <translation id="5955809630138889698">Demoläget kanske bara kan användas online på den här enheten. Kontakta supporten om du vill veta mer.</translation>
@@ -9719,7 +9717,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7910725946105920830">Använd ditt personliga Google-konto</translation>
 <translation id="7910768399700579500">&amp;Ny mapp</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Lösenordet har ändrats på servern. Logga ut och logga sedan in igen.</translation>
 <translation id="791247712619243506">Avbryt konfigureringen</translation>
 <translation id="7912974581251770345">Översättning</translation>
 <translation id="7914399737746719723">Appen har installerats</translation>

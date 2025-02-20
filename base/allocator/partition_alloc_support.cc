@@ -1043,13 +1043,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   const bool fewer_memory_regions = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocFewerMemoryRegions);
 
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-  const bool use_pool_offset_freelists =
-      base::FeatureList::IsEnabled(base::features::kUsePoolOffsetFreelists);
-#else
-  const bool use_pool_offset_freelists = false;
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-
   bool enable_memory_tagging = false;
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
       partition_alloc::TagViolationReportingMode::kUndefined;
@@ -1152,7 +1145,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::ZappingByFreeFlags(zapping_by_free_flags),
       allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory),
       allocator_shim::FewerMemoryRegions(fewer_memory_regions),
-      allocator_shim::UsePoolOffsetFreelists(use_pool_offset_freelists),
       use_small_single_slot_spans);
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();

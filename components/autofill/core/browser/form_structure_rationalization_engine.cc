@@ -344,7 +344,6 @@ void ApplyRationalizationEngineRules(
             .SetEnvironmentCondition(
                 EnvironmentConditionBuilder()
                     .SetCountryList({GeoIpCountryCode("DE")})
-                    .SetFeature(&features::kAutofillUseDEAddressModel)
                     .Build())
             .SetTriggerField(FieldCondition{
                 .possible_overall_types = FieldTypeSet{ADDRESS_HOME_OVERFLOW}})
@@ -374,7 +373,6 @@ void ApplyRationalizationEngineRules(
             .SetEnvironmentCondition(
                 EnvironmentConditionBuilder()
                     .SetCountryList({GeoIpCountryCode("DE")})
-                    .SetFeature(&features::kAutofillUseDEAddressModel)
                     .Build())
             .SetTriggerField(FieldCondition{
                 .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})

@@ -68,3 +68,7 @@ void LobsterClientImpl::QueueInsertion(const std::string& image_bytes,
 const AccountId& LobsterClientImpl::GetAccountId() {
   return service_->GetAccountId();
 }
+
+void LobsterClientImpl::AnnounceLater(const std::u16string& message) {
+  service_->AnnounceLater(message);
+}

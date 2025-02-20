@@ -586,7 +586,9 @@ void BrowserActions::InitializeBrowserActions() {
                                   actions::ActionInvocationContext context) {
                                  chrome::OpenFeedbackDialog(
                                      browser,
-                                     feedback::kFeedbackSourceDesktopTabGroups);
+                                     feedback::kFeedbackSourceDesktopTabGroups,
+                                     /*description_template=*/std::string(),
+                                     /*category_tag=*/"tab_group_share");
                                },
                                base::Unretained(browser)),
                            kActionSendSharedTabGroupFeedback,

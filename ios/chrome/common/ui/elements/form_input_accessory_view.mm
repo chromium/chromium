@@ -111,6 +111,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   BOOL _largeAccessoryViewEnabled;
   // Whether the current form factor is a tablet.
   BOOL _isTabletFormFactor;
+  // Whether the size of the accessory is compact.
+  BOOL _isCompact;
 }
 
 #pragma mark - Public
@@ -170,6 +172,15 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   if (self.window) {
     [self layoutIfNeeded];
   }
+}
+
+- (void)setIsCompact:(BOOL)isCompact {
+  if (_isCompact == isCompact) {
+    return;
+  }
+
+  _isCompact = isCompact;
+  [self adjustManualFillButtonTitle:self.manualFillButton];
 }
 
 #pragma mark - UIInputViewAudioFeedback
@@ -428,6 +439,36 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   return imageButton;
 }
 
+// Sets or removes the title for the manual fill button based on whether the UI
+// is currently in compact mode (tablets only).
+- (void)adjustManualFillButtonTitle:(UIButton*)manualFillButton {
+  // The manual fill button can only have a title when using the large accessory
+  // view on a tablet.
+  if (!_isTabletFormFactor || !_largeAccessoryViewEnabled) {
+    return;
+  }
+
+  if (_isCompact) {
+    // Remove the title and padding, if any.
+    [manualFillButton setTitle:nil forState:UIControlStateNormal];
+    manualFillButton.configuration =
+        [UIButtonConfiguration plainButtonConfiguration];
+  } else {
+    FormInputAccessoryViewTextData* textData =
+        [self.delegate textDataforFormInputAccessoryView:self];
+    [manualFillButton setTitle:textData.manualFillButtonTitle
+                      forState:UIControlStateNormal];
+    // If the button has both a title and an image, add padding around the
+    // title so that it's not directly next to the image.
+    if (self.manualFillSymbol) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.imagePadding = kManualFillTitlePadding;
+      manualFillButton.configuration = buttonConfiguration;
+    }
+  }
+}
+
 // Create the manual fill button.
 - (UIButton*)createManualFillButtonWithText:
     (FormInputAccessoryViewTextData*)textData {
@@ -436,20 +477,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
                        action:@selector(manualFillButtonTapped)
            accessibilityLabel:textData.manualFillButtonAccessibilityLabel];
 
-  // TODO(crbug.com/385172448): The title should not be added when the window is
-  // not in full screen mode.
-  if (_isTabletFormFactor && _largeAccessoryViewEnabled) {
-    [manualFillButton setTitle:textData.manualFillButtonTitle
-                      forState:UIControlStateNormal];
-    // If the button has both a title and an image, add padding around the title
-    // so that it's not directly next to the image.
-    if (self.manualFillSymbol) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.imagePadding = kManualFillTitlePadding;
-      manualFillButton.configuration = buttonConfiguration;
-    }
-  }
+  [self adjustManualFillButtonTitle:manualFillButton];
 
   return manualFillButton;
 }

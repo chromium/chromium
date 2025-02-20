@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1001534784610492198">Diegimo programos archyvas sugadintas arba negalioja. Atsisiųskite „Google Chrome“ dar kartą.</translation>
+<translation id="1018937009655463387">Jei norite bendrinti langą, sistemos nustatymuose leiskite įrašyti „Chrome“ ekrano vaizdą.</translation>
 <translation id="1026101648481255140">Tęsti diegimą</translation>
 <translation id="102763973188675173">Tinkinkite ir valdykite „Google Chrome“. Pasiekiamas naujinys.</translation>
 <translation id="1028061813283459617">Norėdami ištrinti naršymo duomenis tik iš šio įrenginio ir palikti juos „Google“ paskyroje, <ph name="BEGIN_LINK" />atsijunkite nuo „Chrome“<ph name="END_LINK" />.</translation>
@@ -239,6 +240,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3968962723676998462">Įveskite slaptafrazę, kad galėtumėte naudoti ir išsaugoti „Chrome“ duomenis paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">„Google Chrome“ nori ištrinti jūsų „Google“ slaptažodžių tvarkyklės duomenis. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="398236277091248993">„Chrome“ išlieka sparti naudojant našumą didinančias funkcijas</translation>
+<translation id="400161754580828648">Jei norite bendrinti ekraną, sistemos nustatymuose leiskite įrašyti „Chrome“ ekrano vaizdą</translation>
 <translation id="4022972681110646219">Išversti ekrano turinį</translation>
 <translation id="4023601594785368013">Originali kalba: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Kad būtų galima pritaikyti naujinį, „Chrome“ OS reikia paleisti iš naujo.</translation>
@@ -302,6 +304,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4828579605166583682">„Google Chrome“ bando pakeisti esamus slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="4842397268809523050">„ChromeOS Flex“ negalėjo sinchronizuoti duomenų, nes jūsų domene sinchronizavimas negalimas.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> jau prisijungė.  Jei norite atskirti naršymą, prisijunkite prie „Chrome“ savo profilyje kaip <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">Jei norite bendrinti ekraną, sistemos nustatymuose leiskite įrašyti „Chrome“ ekrano vaizdą</translation>
 <translation id="4873692836499071887">Jei norite gauti būsimus „Google Chrome“ naujinius, jums reikės 11 ar naujesnės „macOS“ versijos. Šiame kompiuteryje naudojama 10.15 versijos „macOS“.</translation>
 <translation id="4873783916118289636">Peržiūrėkite pagrindinius privatumo ir saugos valdiklius naršyklėje „Chrome“</translation>
 <translation id="4885446229353981848">Visada rodyti „Google Lens“ spartųjį klavišą</translation>
@@ -356,6 +359,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5602351063754773347">„Chrome“ rekomenduoja jį pašalinti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie palaikomus plėtinius<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">„Chrome“ daro daugiau, kad užtikrintų jūsų saugą prisijungus</translation>
+<translation id="5649156266046089790">Naudodami „Chrome“ profilius galite atskirti visus savo „Chrome“ duomenis. Sukurkite profilius draugams ir šeimos nariams arba atskirkite darbą ir pramogas.</translation>
 <translation id="5649680279845190972">Jei norite gauti plėtinius ir kt. visuose kompiuteriuose, prisijunkite prie „Chrome“</translation>
 <translation id="565744775970812598">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas, todėl „Chrome“ jį užblokavo.</translation>
 <translation id="566568153320186256">„Chrome“ taupo akumuliatoriaus energiją, apribodama veiklą fone ir vaizdo efektus, pvz., tolygų slinkimą ir vaizdo įrašų kadrų dažnį. <ph name="BEGIN_LINK" />Sužinokite daugiau apie Energijos taupymo priemonę<ph name="END_LINK" /></translation>
@@ -605,6 +609,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8614913330719544658">„Google Chrome“ neatsako. Paleisti iš naujo dabar?</translation>
 <translation id="861702415419836452">„Chrome“ reikia leidimo naudoti fotoaparatą jūsų aplinkos 3D žemėlapiui kurti</translation>
 <translation id="8625237574518804553">{0,plural, =1{„Chrome“ bus paleista iš naujo po 1 minutės}one{„Chrome“ bus paleista iš naujo po # minutės}few{„Chrome“ bus paleista iš naujo po # minučių}many{„Chrome“ bus paleista iš naujo po # minutės}other{„Chrome“ bus paleista iš naujo po # minučių}}</translation>
+<translation id="8637932705841171563">Jei norite bendrinti langą, sistemos nustatymuose leiskite įrašyti „Chrome“ ekrano vaizdą</translation>
 <translation id="8641606876632989680">„Chrome“ praneš jums, kai prisijungsite naudodami pažeistą slaptažodį</translation>
 <translation id="8649026945479135076">Įprasta, kad svetainės, kuriose lankotės, įsimena, kuo domitės, kad galėtų suasmeninti jūsų patirtį. Svetainėse taip pat gali būti renkama su „Chrome“ susijusi informacija apie jūsų pomėgius.</translation>
 <translation id="8669527147644353129">„Google Chrome“ pagalbos priemonė</translation>

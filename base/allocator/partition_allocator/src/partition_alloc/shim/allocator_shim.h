@@ -153,9 +153,6 @@ using EventuallyZeroFreedMemory = partition_alloc::internal::base::
 using FewerMemoryRegions =
     partition_alloc::internal::base::StrongAlias<class FewerMemoryRegionsTag,
                                                  bool>;
-using UsePoolOffsetFreelists = partition_alloc::internal::base::
-    StrongAlias<class UsePoolOffsetFreelistsTag, bool>;
-
 using UseSmallSingleSlotSpans = partition_alloc::internal::base::
     StrongAlias<class UseSmallSingleSlotSpansTag, bool>;
 
@@ -174,7 +171,6 @@ void ConfigurePartitions(
     ZappingByFreeFlags zapping_by_free_flags,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
     FewerMemoryRegions fewer_memory_regions,
-    UsePoolOffsetFreelists use_pool_offset_freelists,
     UseSmallSingleSlotSpans use_small_single_slot_spans);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();

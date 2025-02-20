@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -84,14 +85,28 @@ void WebFont::DrawText(cc::PaintCanvas* canvas,
   cc::PaintFlags flags;
   flags.setColor(color);
   flags.setAntiAlias(true);
+  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+    PlainTextPainter::Shared().Draw(text_run, *private_->GetFont(), *canvas,
+                                    left_baseline, flags);
+    return;
+  }
   private_->GetFont()->DrawText(canvas, text_run, left_baseline, flags);
 }
 
 int WebFont::CalculateWidth(const WebTextRun& run) const {
+  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+    return PlainTextPainter::Shared().ComputeInlineSize(
+        run, *private_->GetFont(), nullptr);
+  }
   return private_->GetFont()->Width(run, nullptr);
 }
 
 int WebFont::OffsetForPosition(const WebTextRun& run, float position) const {
+  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+    return PlainTextPainter::Shared().OffsetForPosition(
+        run, *private_->GetFont(), position, kIncludePartialGlyphs,
+        BreakGlyphsOption(false));
+  }
   return private_->GetFont()->OffsetForPosition(
       run, position, kIncludePartialGlyphs, BreakGlyphsOption(false));
 }
@@ -101,6 +116,10 @@ gfx::RectF WebFont::SelectionRectForText(const WebTextRun& run,
                                          int height,
                                          int from,
                                          int to) const {
+  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+    return PlainTextPainter::Shared().SelectionRectForText(
+        run, from, to, *private_->GetFont(), left_baseline, height);
+  }
   return private_->GetFont()->SelectionRectForText(run, left_baseline, height,
                                                    from, to);
 }

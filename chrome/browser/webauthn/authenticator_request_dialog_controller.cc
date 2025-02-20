@@ -74,6 +74,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -1735,6 +1736,17 @@ void AuthenticatorRequestDialogController::ProvideChallengeUrl(
   }
 }
 
+void AuthenticatorRequestDialogController::InitializeEnclaveRequestCallback(
+    device::FidoDiscoveryFactory* discovery_factory) {
+  CHECK(!enclave_request_callback_);
+
+  using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
+      std::unique_ptr<device::enclave::CredentialRequest>>;
+  std::unique_ptr<EnclaveEventStream> event_stream;
+  std::tie(enclave_request_callback_, event_stream) = EnclaveEventStream::New();
+  discovery_factory->set_enclave_ui_request_stream(std::move(event_stream));
+}
+
 void AuthenticatorRequestDialogController::MaybeStartChallengeFetch() {
   if (!challenge_callback_) {
     return;
@@ -2560,14 +2572,15 @@ AuthenticatorRequestDialogController::GetRenderFrameHost() const {
 }
 
 void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
-  auto* controller =
-      PasskeyUpgradeRequestController::GetOrCreateForCurrentDocument(
-          GetRenderFrameHost());
+  CHECK(enclave_request_callback_);
   if (!model_->user_entity.name) {
     FIDO_LOG(ERROR) << "Ignoring passkey upgrade request: empty username";
     return;
   }
-  controller->TryUpgradePasswordToPasskey(
+  passkey_upgrade_request_controller_ =
+      std::make_unique<PasskeyUpgradeRequestController>(
+          GetRenderFrameHost(), std::move(enclave_request_callback_));
+  passkey_upgrade_request_controller_->TryUpgradePasswordToPasskey(
       model_->relying_party_id, *model_->user_entity.name,
       base::BindOnce(
           [](base::WeakPtr<AuthenticatorRequestDialogController> controller,

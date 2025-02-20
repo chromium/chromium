@@ -532,7 +532,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     const gaiaDialog =
         this.shadowRoot?.querySelector<GaiaDialog>('#signin-frame-dialog');
     assert(!!gaiaDialog);
-    return gaiaDialog.getFrame() as chrome.webviewTag.WebView;
+    return gaiaDialog.getFrame();
   }
 
   /**

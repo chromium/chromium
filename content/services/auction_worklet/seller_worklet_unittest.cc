@@ -303,7 +303,6 @@ class SellerWorkletTest : public testing::Test,
     browser_signal_bidding_duration_msecs_ = 0;
     browser_signal_render_size_ = std::nullopt;
     browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
-    browser_signal_for_debugging_only_sampling_ = false;
     browser_signal_desireability_ = 1;
     seller_timeout_ = std::nullopt;
     bidder_joining_origin_ = url::Origin::Create(GURL("https://joining.test/"));
@@ -463,7 +462,7 @@ class SellerWorkletTest : public testing::Test,
         browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-        browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindOnce(
             [](double expected_score,
@@ -564,7 +563,7 @@ class SellerWorkletTest : public testing::Test,
         browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-        browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(
             TestScoreAdClient::ScoreAdNeverInvokedCallback()));
@@ -959,7 +958,6 @@ class SellerWorkletTest : public testing::Test,
   uint32_t browser_signal_bidding_duration_msecs_;
   std::optional<blink::AdSize> browser_signal_render_size_;
   bool browser_signal_for_debugging_only_in_cooldown_or_lockout_;
-  bool browser_signal_for_debugging_only_sampling_;
   double browser_signal_desireability_;
   double browser_signal_highest_scoring_other_bid_;
   std::optional<blink::AdCurrency>
@@ -2538,7 +2536,7 @@ TEST_F(SellerWorkletTest, ScoreAdJsFetchLatency) {
       browser_signal_buyer_and_seller_reporting_id_,
       browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-      browser_signal_for_debugging_only_sampling_, seller_timeout_,
+      seller_timeout_,
       /*trace_id=*/1, bidder_joining_origin_,
       TestScoreAdClient::Create(base::BindLambdaForTesting(
           [&run_loop](double score, mojom::RejectReason reject_reason,
@@ -4498,7 +4496,7 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
           browser_signal_buyer_and_seller_reporting_id_,
           browser_signal_bidding_duration_msecs_,
           browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-          browser_signal_for_debugging_only_sampling_, seller_timeout_,
+          seller_timeout_,
           /*trace_id=*/1, bidder_joining_origin_,
           TestScoreAdClient::Create(base::BindLambdaForTesting(
               [&run_loop](
@@ -4600,7 +4598,7 @@ TEST_F(SellerWorkletTest,
         browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-        browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
@@ -4705,7 +4703,7 @@ TEST_F(
         browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-        browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
@@ -4818,7 +4816,7 @@ TEST_F(
             browser_signal_buyer_and_seller_reporting_id_,
             browser_signal_bidding_duration_msecs_,
             browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-            browser_signal_for_debugging_only_sampling_, seller_timeout_,
+            seller_timeout_,
             /*trace_id=*/1, bidder_joining_origin_,
             TestScoreAdClient::Create(base::BindLambdaForTesting(
                 [&run_loop, &expected_score](
@@ -4935,7 +4933,7 @@ TEST_F(SellerWorkletTwoThreadsTest,
         browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-        browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
@@ -4997,7 +4995,7 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
         browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-        browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
@@ -5043,7 +5041,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       browser_signal_buyer_and_seller_reporting_id_,
       browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-      browser_signal_for_debugging_only_sampling_, seller_timeout_,
+      seller_timeout_,
       /*trace_id=*/1, bidder_joining_origin_,
       TestScoreAdClient::Create(
           // Callback should not be invoked since worklet deleted
@@ -6064,7 +6062,7 @@ TEST_F(SellerWorkletTest, Cancelation) {
       browser_signal_buyer_and_seller_reporting_id_,
       browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-      browser_signal_for_debugging_only_sampling_, seller_timeout_,
+      seller_timeout_,
       /*trace_id=*/1, bidder_joining_origin_,
       client_receiver.BindNewPipeAndPassRemote());
 
@@ -6130,7 +6128,7 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
       browser_signal_buyer_and_seller_reporting_id_,
       browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-      browser_signal_for_debugging_only_sampling_, seller_timeout_,
+      seller_timeout_,
       /*trace_id=*/1, bidder_joining_origin_,
       client_receiver.BindNewPipeAndPassRemote());
   task_environment_.RunUntilIdle();
@@ -6247,13 +6245,6 @@ TEST_F(SellerWorkletTest,
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.forDebuggingOnlyInCooldownOrLockout === true ? 3 : 0)",
       3);
-}
-
-TEST_F(SellerWorkletTest, ScoreAdBrowserSignalForDebuggingOnlySampling) {
-  RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.hasOwnProperty('forDebuggingOnlySampling') ?
-            3 : 0)",
-      0);
 }
 
 class ScoreAdBrowserSignalRenderSizeTest
@@ -7649,7 +7640,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
         browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
-        browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop](double score, mojom::RejectReason reject_reason,
@@ -7699,31 +7690,6 @@ TEST_F(SellerWorkletSampleDebugReportsDisabledTest,
       R"(browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout') ?
             3 : 0)",
       0);
-}
-
-class SellerWorkletEnableSampleDebugReportOnCookieSettingTest
-    : public SellerWorkletTest {
- public:
-  SellerWorkletEnableSampleDebugReportOnCookieSettingTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kBiddingAndScoringDebugReportingAPI,
-         blink::features::kFledgeEnableSampleDebugReportOnCookieSetting},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(SellerWorkletEnableSampleDebugReportOnCookieSettingTest,
-       ScoreAdBrowserSignalForDebuggingOnlySampling) {
-  RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.forDebuggingOnlySampling === false ? 3 : 0)", 3);
-
-  browser_signal_for_debugging_only_sampling_ = true;
-  RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.forDebuggingOnlySampling === true ? 3 : 0)", 3);
 }
 
 class SellerWorkletPrivateAggregationEnabledTest : public SellerWorkletTest {

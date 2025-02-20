@@ -583,7 +583,8 @@ ContextProperties GetContextPropertiesForTesting() {
        {SupportedDataTypes::All(), kMaxRank},
        /*arg_min_max_output=*/
        {OperandDataType::kInt32, OperandDataType::kInt64},
-       /*batch_normalization_input=*/SupportedDataTypes::All(),
+       /*batch_normalization_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*batch_normalization_mean=*/{SupportedDataTypes::All(), kMaxRank},
        /*cast_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*clamp_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*concat_inputs=*/SupportedDataTypes::All(),

@@ -7,6 +7,8 @@
 
 #import <WebKit/WebKit.h>
 
+#include <optional>
+
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -28,8 +30,12 @@ enum class FilteringBehaviorReason;
                      targetURL:(const GURL&)targetURL
        filteringBehaviorReason:
            (supervised_user::FilteringBehaviorReason)filteringBehaviorReason
-                    completion:(void (^)(supervised_user::LocalApprovalResult))
-                                   completion NS_DESIGNATED_INITIALIZER;
+                    completion:
+                        (void (^)(
+                            supervised_user::LocalApprovalResult,
+                            std::optional<
+                                supervised_user::LocalWebApprovalErrorType>))
+                            completion NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 @end

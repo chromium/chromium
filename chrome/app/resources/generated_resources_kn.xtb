@@ -1281,7 +1281,6 @@
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> ಮೂಲಕ ಮಾತ್ರ ಇದನ್ನು ಸೇರಿಸಬಹುದಾಗಿದೆ</translation>
 <translation id="1877377290348678128">ಲೇಬಲ್ (ಐಚ್ಛಿಕ)</translation>
 <translation id="1877377730633446520">ಇದು ಸುಮಾರು <ph name="REQUIRED_SPACE" /> ಯಷ್ಟು ಸ್ಥಳಾವಕಾಶ ಬಳಸುತ್ತದೆ. ನೀವು ಪ್ರಸ್ತುತ <ph name="FREE_SPACE" /> ಯಷ್ಟು ಸ್ಥಳಾವಕಾಶ ಹೊಂದಿದ್ದೀರಿ.</translation>
-<translation id="1877520246462554164">ದೃಢೀಕರಣ ಟೋಕನ್ ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ. ಸೈನ್ ಔಟ್ ಆಗಿ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಆಗಿ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1877860345998737529">ಕ್ರಿಯೆಯ ನಿಯೋಜನೆಯನ್ನು ಬದಲಿಸಿ</translation>
 <translation id="1878155070920054810">ಅಪ್‌ಡೇಟ್ ಪೂರ್ಣವಾಗುವ ಮೊದಲೇ ನಿಮ್ಮ Chromebook ನ ಪವರ್ ಖಾಲಿಯಾಗುವಂತೆ ಕಾಣುತ್ತಿದೆ. ಅಡಚಣೆಯನ್ನು ತಪ್ಪಿಸಲು, ಅದು ಸರಿಯಾಗಿ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="1878477879455105085">ತೆರೆಯಲಾಗಿದೆ</translation>
@@ -7006,7 +7005,6 @@
 <translation id="5952020381407136867">ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="5953211687820750364">ಈ ಪಟ್ಟಿಯು <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           ಮತ್ತು <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> ನಿಂದ ಪರಿಣಾಮ ಬೀರಿದೆ</translation>
-<translation id="5955282598396714173">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅವಧಿ ಮುಗಿದಿದೆ. ಅದನ್ನು ಬದಲಾಯಿಸಲು ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಆಗಿರಿ.</translation>
 <translation id="5955304353782037793">ಅಪ್ಲಿಕೇಶನ್‌</translation>
 <translation id="5955721306465922729">ಒಂದು ವೆಬ್‌ಸೈಟ್ ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ತೆರೆಯಲು ಬಯಸುತ್ತಿದೆ.</translation>
 <translation id="5955809630138889698">ಈ ಸಾಧನವು ಆನ್‌ಲೈನ್ ಡೆಮೊ ಮೋಡ್‌ಗೆ ಮಾತ್ರ ಅರ್ಹವಾಗಿರಬಹುದು. ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ಬೆಂಬಲ ಪ್ರತಿನಿಧಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -9712,7 +9710,6 @@
 <translation id="7910725946105920830">ನಿಮ್ಮ ವೈಯಕ್ತಿಕ Google ಖಾತೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="7910768399700579500">&amp;ಹೊಸ ಫೋಲ್ಡರ್</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">ಸರ್ವರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ. ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಆಗಿರಿ.</translation>
 <translation id="791247712619243506">ಸೆಟಪ್ ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="7912974581251770345">ಅನುವಾದ</translation>
 <translation id="7914399737746719723">ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>

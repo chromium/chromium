@@ -149,8 +149,10 @@ class GlicBorderViewUiTest : public InteractiveBrowserTest {
   void StartBorderAnimation(Browser* browser) {
     // Mimicking the user journey by clicking the button and having the WebApp
     // set the context access indicator status.
-    RunTestSequence(PressButton(kGlicButtonElementId),
-                    InAnyContext(WaitForShow(kGlicViewElementId)));
+    RunTestSequence(
+        PressButton(kGlicButtonElementId),
+        InAnyContext(
+            WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)));
     // TODO(crbug.com/390233842): We should call this in the testing web app.
     GetGlicService(browser)->SetContextAccessIndicator(true);
   }

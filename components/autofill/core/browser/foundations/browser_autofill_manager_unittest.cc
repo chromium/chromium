@@ -7230,8 +7230,7 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
     std::u16string old_value = fill_data_.fields()[field_index].value();
     test_api(fill_data_).field(field_index).set_value(new_value);
     manager().OnJavaScriptChangedAutofilledValue(
-        fill_data_, fill_data_.fields()[field_index].global_id(), old_value,
-        /*formatting_only=*/false);
+        fill_data_, fill_data_.fields()[field_index].global_id(), old_value);
   }
 
   // Content of the form.

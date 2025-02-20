@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
-<translation id="1066101356081285416">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Paketets spårningsnummer och webbplatsens namn skickas till Google för att tillhandahålla den här funktionen och förbättra shoppingfunktioner för alla. Du kan uppdatera detta när du vill i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="1076643793026027628">Chrome öppnar automatiskt inkognitolänkar till YouTube i inkognitoläget.</translation>
 <translation id="1086486568852410168">Sök med Google Lens</translation>
 <translation id="1143896152279775643">Lösenordet sparas med Google Lösenordshantering för <ph name="EMAIL" />.</translation>
@@ -68,7 +67,6 @@ Tänk på detta:
 <translation id="2574249610672786438">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="2576431527583832481">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="257708665678654955">Vill du att Google Chrome ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
-<translation id="2650286135394207535">Du kan spåra paket med hjälp av Chrome</translation>
 <translation id="2668242166988961773">Sök med rösten i Chrome.</translation>
 <translation id="2671426118752779020">Du kan använda lösenorden som sparats med Google Lösenordshantering i andra iPhone-appar.</translation>
 <translation id="2689064829982324496"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>

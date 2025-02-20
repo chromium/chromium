@@ -2428,6 +2428,8 @@ extern const char kAccessibilityDeprecateTypeAnnounceName[];
 extern const char kAccessibilityDeprecateTypeAnnounceDescription[];
 extern const char kAccessibilityIncludeLongClickActionName[];
 extern const char kAccessibilityIncludeLongClickActionDescription[];
+extern const char kAccessibilityTextFormattingName[];
+extern const char kAccessibilityTextFormattingDescription[];
 extern const char kAccessibilityUnifiedSnapshotsName[];
 extern const char kAccessibilityUnifiedSnapshotsDescription[];
 extern const char kAccessibilityManageBroadcastReceiverOnBackgroundName[];
@@ -3291,6 +3293,9 @@ extern const char kUseAngleDescriptionAndroid[];
 extern const char kUseAngleGLES[];
 extern const char kUseAngleVulkan[];
 
+extern const char kAndroidMinimalUiLargeScreenName[];
+extern const char kAndroidMinimalUiLargeScreenDescription[];
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------
@@ -4031,8 +4036,23 @@ extern const char kMediaAppPdfMahiDescription[];
 extern const char kMediaAppImageMantisModelName[];
 extern const char kMediaAppImageMantisModelDescription[];
 
+extern const char kMediaAppImageMantisEraseName[];
+extern const char kMediaAppImageMantisEraseDescription[];
+
+extern const char kMediaAppImageMantisExpandBackgroundName[];
+extern const char kMediaAppImageMantisExpandBackgroundDescription[];
+
+extern const char kMediaAppImageMantisMakeAStickerName[];
+extern const char kMediaAppImageMantisMakeAStickerDescription[];
+
 extern const char kMicrophoneMuteSwitchDeviceName[];
 extern const char kMicrophoneMuteSwitchDeviceDescription[];
+
+extern const char kMediaAppImageMantisReimagineName[];
+extern const char kMediaAppImageMantisReimagineDescription[];
+
+extern const char kMediaAppImageMantisRemoveBackgroundName[];
+extern const char kMediaAppImageMantisRemoveBackgroundDescription[];
 
 extern const char kMultiCalendarSupportName[];
 extern const char kMultiCalendarSupportDescription[];
@@ -4618,9 +4638,7 @@ extern const char kElementCaptureName[];
 extern const char kElementCaptureDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) ||                                      \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 extern const char kUIDebugToolsName[];
 extern const char kUIDebugToolsDescription[];
 #endif

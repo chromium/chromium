@@ -953,9 +953,6 @@ class AutofillProfileSyncUtilTest
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     features_.InitWithFeatures(
         {
-            features::kAutofillUseAUAddressModel,
-            features::kAutofillUseCAAddressModel,
-            features::kAutofillUseDEAddressModel,
             features::kAutofillUseFRAddressModel,
             features::kAutofillUseINAddressModel,
             features::kAutofillUseITAddressModel,

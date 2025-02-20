@@ -2,7 +2,8 @@
    "tests": {
       "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": false,
+         "disabled": true,
+         "_disabled_bug": "https://crbug.com/397875684",
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",

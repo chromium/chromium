@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium Face ID bilan maxfiy maʼlumotlarni xavfsiz saqlaydi.</translation>
 <translation id="1591119736686995611">Chromium varaqlar jadvalini ochadi.</translation>
 <translation id="16001233025397167">Xavfsizlik tekshiruvi maʼlumotlaringizni shubhali saytlar, axborotlar sizib chiqishi va xavfsizlikka oid muammolardan himoya qiladi. Maxfiylik va xavfsizlikka oid muammolar aniqlanganda Chromium bu haqida xabar qiladi.</translation>
-<translation id="1611584326765829247">Chromium yordamida paketlarni kuzatib boring</translation>
 <translation id="1617663976202781617">Chromium sinxronizatsiya maʼlumotlari</translation>
 <translation id="164952285225495380">Bu joʻnatma Chromium brauzerida allaqachon kuzatilgan.</translation>
 <translation id="1707458603865303524">Xabarlar yoki boshqa ilovalardagi havolalar bosilganda Chromium ochilsin.</translation>
@@ -305,7 +304,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8826789549860004832">Brauzerni sozlashda davom etish orqali Chromiumdan unumli foydalaning.</translation>
 <translation id="88376265765385899">Chromium bukmarklarini ochadi.</translation>
 <translation id="8860548555286245440">URL manzillarni Chromium brauzerida Inkognito rejimda ochish</translation>
-<translation id="8866191443434488382">Chromium siz ochgan saytlardagi treking raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani taqdim qilish va hamma uchun xaridni yaxshilash uchun joʻnatmani kuzatish raqami va veb-sayt nomi Chromium brauzeriga yuboriladi. Buni istalgan vaqtda <ph name="BEGIN_LINK" />Joʻnatmani kuzatish raqamlari<ph name="END_LINK" /> orqali yangilash mumkin.</translation>
 <translation id="8880024619507699923">Chromium brauzeridan foydalanishingiz uchun tashkilotingiz hisobingizga kirishni talab qiladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Chromium brauzerining kuchli xavfsizligidan foydalaning</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi}other{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi}}</translation>

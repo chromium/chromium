@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
-<translation id="1066101356081285416">Chrome registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Pakkesporingsnummeret og websitets navn sendes til Google for at levere denne funktion og forbedre Googles shoppingfunktioner for alle. Du kan til enhver tid opdatere dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="1076643793026027628">Chrome åbner automatisk YouTube-inkognitolinks i inkognitotilstand.</translation>
 <translation id="1086486568852410168">Søg med Google Lens</translation>
 <translation id="1143896152279775643">Din adgangskode gemmes i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
@@ -68,7 +67,6 @@ Vær opmærksom på følgende:
 <translation id="2574249610672786438">Log ind på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
 <translation id="2576431527583832481">Chrome er lige blevet bedre! Der er en ny tilgængelig version.</translation>
 <translation id="257708665678654955">Skal Google Chrome tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
-<translation id="2650286135394207535">Få hjælp af Chrome til at spore dine pakker</translation>
 <translation id="2668242166988961773">Søg med stemmen i Chrome.</translation>
 <translation id="2671426118752779020">Du kan bruge de adgangskoder, du har gemt i Google Adgangs­kode­admin­istrator, i andre apps på din iPhone.</translation>
 <translation id="2689064829982324496">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" />.</translation>

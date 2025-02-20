@@ -28,7 +28,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {getTemplate} from './add_items_dialog.html.js';
 
-const ITEMS_ADDED_EVENT_NAME = 'items-added' as const;
+const ITEMS_ADDED_EVENT_NAME = 'items-added';
 
 /**
  * `id` must unique.

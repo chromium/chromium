@@ -114,7 +114,8 @@ basic_test_harness_script = r"""
 _GET_STATISTICS_EVENT_NAME = 'GetFrameStatisticsMedia'
 _SWAP_CHAIN_PRESENT_EVENT_NAME = 'SwapChain::Present'
 _BEGIN_OVERLAY_ACCESS_EVENT_NAME = 'SkiaOutputDeviceDComp::BeginOverlayAccess'
-_PRESENT_SWAP_CHAIN_EVENT_NAME = 'IDXGISwapChain1::Present1'
+_PRESENT_SWAP_CHAIN_EVENT_NAME =\
+    'DXGISwapChainImageBacking::Present'
 
 _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME =\
     'HTMLCanvasElement::NotifyListenersCanvasChanged'

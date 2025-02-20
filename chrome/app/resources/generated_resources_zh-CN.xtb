@@ -1271,7 +1271,6 @@
 <translation id="1875387611427697908">只能通过<ph name="CHROME_WEB_STORE" />添加此项内容</translation>
 <translation id="1877377290348678128">标签（可选）</translation>
 <translation id="1877377730633446520">这将占用大约 <ph name="REQUIRED_SPACE" /> 的存储空间。您目前有 <ph name="FREE_SPACE" /> 的可用空间。</translation>
-<translation id="1877520246462554164">未能获取身份验证令牌。请退出并重新登录，然后重试。</translation>
 <translation id="1877860345998737529">指定开关操作</translation>
 <translation id="1878155070920054810">您的 Chromebook 似乎会在完成更新前耗尽电量。请确保它已在正确充电，以免更新中断。</translation>
 <translation id="1878477879455105085">已打开</translation>
@@ -6985,7 +6984,6 @@
 <translation id="5951624318208955736">显示器</translation>
 <translation id="5952020381407136867">触控板</translation>
 <translation id="5953211687820750364">此列表受 <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> 和 <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> 影响</translation>
-<translation id="5955282598396714173">您的密码已过期。请退出并重新登录以更改密码。</translation>
 <translation id="5955304353782037793">应用</translation>
 <translation id="5955721306465922729">有个网站想打开此应用。</translation>
 <translation id="5955809630138889698">此设备可能只能使用在线演示模式。要了解更多信息，请与您的支持代表联系。</translation>
@@ -9690,7 +9688,6 @@
 <translation id="7910725946105920830">使用您的个人 Google 账号</translation>
 <translation id="7910768399700579500">新建文件夹(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">您已在服务器上更改密码。请先退出，然后重新登录。</translation>
 <translation id="791247712619243506">取消设置</translation>
 <translation id="7912974581251770345">翻译</translation>
 <translation id="7914399737746719723">已安装应用</translation>

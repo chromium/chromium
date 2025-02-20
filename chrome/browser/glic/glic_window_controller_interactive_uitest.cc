@@ -222,21 +222,22 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
       ActivateSurface(kBrowserViewElementId), SimulateGlicHotkey(),
-      InAnyContext(WaitForShow(kGlicViewElementId)),
+      InAnyContext(WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)),
       CheckControllerHasWidget(true),
       CheckControllerWidgetMode(GlicWindowMode::kAttached));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyDetachedWithNotNormalBrowser) {
-  RunTestSequence(Do([&]() {
-                    Browser* const pwa =
-                        CreateBrowserForApp("app name", browser()->profile());
-                    pwa->window()->Activate();
-                  }),
-                  SimulateGlicHotkey(),
-                  InAnyContext(WaitForShow(kGlicViewElementId)),
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
+  RunTestSequence(
+      Do([&]() {
+        Browser* const pwa =
+            CreateBrowserForApp("app name", browser()->profile());
+        pwa->window()->Activate();
+      }),
+      SimulateGlicHotkey(),
+      InAnyContext(WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)),
+      CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
@@ -248,10 +249,11 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       ActivateSurface(kBrowserViewElementId));
   browser()->window()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
-  RunTestSequence(SimulateGlicHotkey(),
-                  InAnyContext(WaitForShow(kGlicViewElementId)),
-                  CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
+  RunTestSequence(
+      SimulateGlicHotkey(),
+      InAnyContext(WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)),
+      CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -277,10 +279,11 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       ->SetNativeWindowOcclusionState(aura::Window::OcclusionState::OCCLUDED,
                                       {});
 
-  RunTestSequence(SimulateGlicHotkey(),
-                  InAnyContext(WaitForShow(kGlicViewElementId)),
-                  CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
+  RunTestSequence(
+      SimulateGlicHotkey(),
+      InAnyContext(WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)),
+      CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -392,8 +395,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureUiTest, Preload) {
   ResetMemoryPressure();
   glic_service()->TryPreload();
   EXPECT_TRUE(window_controller().IsWarmed());
-  RunTestSequence(PressButton(kGlicButtonElementId),
-                  InAnyContext(WaitForShow(kGlicViewElementId)));
+  RunTestSequence(
+      PressButton(kGlicButtonElementId),
+      InAnyContext(
+          WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)));
 }
 
 // These tests for dragging across multiple displays is for mac-only.

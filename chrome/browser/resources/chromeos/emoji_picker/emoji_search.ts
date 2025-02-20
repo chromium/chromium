@@ -391,8 +391,8 @@ export class EmojiSearch extends PolymerElement {
 
     // Append more GIFs to show if user is near the bottom of the currently
     // rendered GIFs (300px is around the average height of 2 GIFs).
-    if (searchResultRect!.getBoundingClientRect().bottom -
-            thisRect!.getBoundingClientRect().bottom <=
+    if (searchResultRect.getBoundingClientRect().bottom -
+            thisRect.getBoundingClientRect().bottom <=
         300) {
       const gifIndex = this.searchResults.findIndex(
           group => group.category === CategoryEnum.GIF);

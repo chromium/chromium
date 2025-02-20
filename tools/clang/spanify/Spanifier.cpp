@@ -80,8 +80,8 @@ AST_MATCHER_P(clang::FunctionDecl,
   return is_matching;
 }
 
-AST_MATCHER(clang::ParmVarDecl, isArrayParm) {
-  return Node.getOriginalType()->isArrayType();
+AST_MATCHER(clang::VarDecl, hasExternalStorage) {
+  return Node.hasExternalStorage();
 }
 
 // Returns the size of the array/string literal. It is stored in the
@@ -524,17 +524,6 @@ static std::string getNodeFromPointerTypeLoc(
   return key;
 }
 
-// Return node key representing the array variable. Multiple replacements are
-// applied to this node:
-// - `RewriteUnsafeArray` - Rewrite type of array.
-// - `RewriteArraySizeof` - Rewrite sizeof(array).
-// - `AppendDataCall`     - Append .data() when passed to an external function.
-static std::string ArrayVariableNode(const MatchFinder::MatchResult& result) {
-  const clang::VarDecl* array_variable =
-      result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
-  return NodeKey(array_variable, *result.SourceManager);
-}
-
 static std::string getNodeFromRawPtrTypeLoc(
     const clang::TemplateSpecializationTypeLoc* raw_ptr_type_loc,
     const MatchFinder::MatchResult& result) {
@@ -551,18 +540,67 @@ static std::string getNodeFromRawPtrTypeLoc(
   return key;
 }
 
+// This represents a c-style array function parameter.
+// Since we don't always have the size of the array parameter, we rewrite the
+// parameter to a base::span to preserve the size information for bound
+// checking.
+// Example:
+//    void fct(int arr[])  => void fct(base::span<int> arr)
+//    void fct(int arr[3]) => void fct(base::span<int, 3> arr)
+static std::string getNodeFromFunctionArrayParameter(
+    const clang::TypeLoc* type_loc,
+    const clang::ParmVarDecl* param_decl,
+    const MatchFinder::MatchResult& result) {
+  clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
+
+  // Preserve qualifiers.
+  const clang::QualType& qual_type = param_decl->getType();
+  std::ostringstream qualifiers;
+  qualifiers << (qual_type.isConstQualified() ? "const " : "")
+             << (qual_type.isVolatileQualified() ? "volatile " : "");
+
+  std::string type = GetTypeAsString(qual_type->getPointeeType(), ast_context);
+
+  const clang::ArrayTypeLoc& array_type_loc =
+      type_loc->getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>();
+  assert(!array_type_loc.isNull());
+  const std::string& array_size_as_string =
+      GetArraySize(array_type_loc, source_manager, ast_context);
+  std::string span_type;
+  if (array_size_as_string.empty()) {
+    span_type = llvm::formatv("base::span<{0}> ", type).str();
+  } else {
+    span_type =
+        llvm::formatv("base::span<{0}, {1}> ", type, array_size_as_string)
+            .str();
+  }
+  // In case of array types, replacement_range is expanded to include the
+  // brackets, and replacement_text includes the identifier accordingly.
+  // E.g. "const int arr[3]" and "const base::span<int, 3> arr".
+  clang::SourceRange replacement_range{
+      param_decl->getBeginLoc(),
+      array_type_loc.getRBracketLoc().getLocWithOffset(1)};
+  std::string replacement_text =
+      qualifiers.str() + span_type + param_decl->getNameAsString();
+
+  const std::string key =
+      NodeKeyFromRange(replacement_range, source_manager, type);
+  EmitReplacement(key,
+                  GetReplacementDirective(replacement_range, replacement_text,
+                                          source_manager));
+  EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager));
+
+  return key;
+}
+
 static std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
                                    const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
-  // By default, the replacement_range includes type only and doesn't include
-  // the identifier. E.g. "const int*" of "const int* ptr".
-  // However, in case of array types, it'll be expanded to include the
-  // identifier and brackets. E.g. "const int arr[3]" as the entire thing.
   clang::SourceRange replacement_range{decl->getBeginLoc(),
                                        decl->getLocation()};
-  std::string replacement_text;
 
   // Preserve qualifiers.
   const clang::QualType& qual_type = decl->getType();
@@ -579,41 +617,8 @@ static std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
   // we will get:`unsigned short` instead of `uint16_t`.
   std::string type = GetTypeAsString(qual_type->getPointeeType(), ast_context);
 
-  // Assume the original type is a pointer type. When this is not the case, it
-  // is mutated below.
-  replacement_text =
+  std::string replacement_text =
       qualifiers.str() + llvm::formatv("base::span<{0}>", type).str();
-
-  // If the declaration is a function parameter of an array type, try to extract
-  // the exact span size.
-  if (auto* parm_var_decl = clang::dyn_cast_or_null<clang::ParmVarDecl>(decl)) {
-    const auto* type_loc =
-        result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
-    if (const clang::QualType& array_type = parm_var_decl->getOriginalType();
-        array_type->isArrayType() && type_loc) {
-      if (const clang::ArrayTypeLoc& array_type_loc =
-              type_loc->getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>();
-          !array_type_loc.isNull()) {
-        const std::string& array_size_as_string =
-            GetArraySize(array_type_loc, source_manager, ast_context);
-        std::string span_type;
-        if (array_size_as_string.empty()) {
-          span_type = llvm::formatv("base::span<{0}> ", type).str();
-        } else {
-          span_type =
-              llvm::formatv("base::span<{0}, {1}> ", type, array_size_as_string)
-                  .str();
-        }
-        // In case of array types, replacement_range is expanded to include the
-        // brackets, and replacement_text includes the identifier accordingly.
-        // E.g. "const int arr[3]" and "const base::span<int, 3> arr".
-        replacement_range.setEnd(
-            array_type_loc.getRBracketLoc().getLocWithOffset(1));
-        replacement_text =
-            qualifiers.str() + span_type + decl->getNameAsString();
-      }
-    }
-  }
 
   // Since the `type` might be clang deduced type, this node is keyed by the
   // type because it could be different depending on the context. This
@@ -738,8 +743,9 @@ void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
   const auto* sizeof_expr =
       result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>("sizeof_expr");
 
-  const auto* array = result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
-  const std::string& array_variable_as_string = array->getNameAsString();
+  const std::string& array_decl_as_string =
+      result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin")
+          ->getNameAsString();
 
   // sizeof_expr matches with "sizeof(c_array)" in case of
   // `sizeof(c_array)`, and "sizeof " in case of `sizeof c_array`. In the
@@ -761,13 +767,12 @@ void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
 
   // The outer-most parentheses are redundant for most cases. But it's
   // necessary in cases like "x / sizeof(c_array)", which is unlikely though.
-  std::string replacement_text =
-      llvm::formatv("({0}.size() * sizeof(decltype({0})::value_type))",
-                    array_variable_as_string);
+  std::string replacement_text = llvm::formatv(
+      "({0}.size() * sizeof(decltype({0})::value_type))", array_decl_as_string);
   std::string replacement_directive = GetReplacementDirective(
       replacement_range, std::move(replacement_text), source_manager);
 
-  EmitReplacement(ArrayVariableNode(result), replacement_directive);
+  EmitReplacement(GetRHS(result), replacement_directive);
 }
 
 // Add `.data()` at the frontier of a span change. This is applied if the node
@@ -1175,29 +1180,59 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
       closing_brackets_replacement_directive);
 }
 
-// Creates a replacement node for c-style arrays on which we invoke operator[].
-// These arrays are rewritten to std::array<Type, Size>.
-void RewriteUnsafeArray(const MatchFinder::MatchResult& result) {
-  const std::string key = ArrayVariableNode(result);
-
-  // The array is accessed unsafely. So, it's a source.
-  EmitSource(key);
-  // From its type declaration, the array size is know, it can be rewritten. So
-  // it's a sink.
-  EmitSink(key);
-
+// This function handles local c-style array variables.
+// It creates a proxy_node (marked as a sink) that all other nodes are linked
+// to.
+// In the case of an unsafe buffer access on the array variable, it emits the
+// necessary replacements to rewrite the array type to a std::array.
+std::string getNodeFromArrayVariable(const clang::TypeLoc* type_loc,
+                                     const clang::VarDecl* array_variable,
+                                     const clang::ArrayType* array_type,
+                                     const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
-  const auto* type_loc =
-      result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
+  // C-style arrays only need to be rewritten when there's an unsafe buffer
+  // access on the array variable itself.
+  // Example1:
+  //  int a[10]; // => a is never directly used with an unsafe access
+  //             // => no need to rewrite a to std::array.
+  //  int* b = a;
+  //  b[UnsafeIndex()]; // => b is used as an usafe buffer
+  //                    // => rewrite b's type to base::span.
+  // Example 2:
+  //  int a[10];        // => a is directly used with an unsafe access
+  //  a[UnsafeIndex()]; // => rewrite a's type to std::array.
+  //  int* b = a;
+  //  b[UnsafeIndex()]; // => b is used as an usafe buffer
+  //                    // => rewrite b's type to base::span.
+  //
+  // To handle this:
+  //   - We create a proxy_node for array variables.
+  //   - All other nodes are linked to the proxy node.
+  //   - The proxy_node is marked as a sink.
+  // In the case of unsafe_buffer_access on the array variable:
+  //   - We create an edge from the node n to the proxy_node(n -> proxy_node).
+  //   - Emit n as a source node.
+  //   - This leads n to be rewritten since the proxy_node is a sink.
+  auto proxy_node =
+      NodeKeyFromRange(clang::SourceRange(array_variable->getBeginLoc(),
+                                          array_variable->getBeginLoc()),
+                       *result.SourceManager);
+  EmitSink(proxy_node);
+  if (!result.Nodes.getNodeAs<clang::Expr>("unsafe_buffer_access")) {
+    // Early return to avoid uselessly determining the array replacement.
+    return proxy_node;
+  }
+
+  // Unsafe Buffer Access => Need to rewrite the array's type.
+  std::string key = NodeKey(array_variable, *result.SourceManager);
+  EmitEdge(key, proxy_node);
+  EmitSource(key);
+
   const clang::ArrayTypeLoc& array_type_loc =
       type_loc->getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>();
   assert(!array_type_loc.isNull());
-  const auto* array_type =
-      result.Nodes.getNodeAs<clang::ArrayType>("array_type");
-  const auto* array_variable =
-      result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
   const std::string& array_variable_as_string =
       array_variable->getNameAsString();
   const std::string& array_size_as_string =
@@ -1357,11 +1392,29 @@ void RewriteUnsafeArray(const MatchFinder::MatchResult& result) {
   EmitReplacement(
       key, GetIncludeDirective(replacement_range, source_manager, include_path,
                                /*is_system_include_header=*/true));
+
+  // All the other replacements are tied to the proxy_node.
+  return proxy_node;
+}
+
+std::string getArrayNode(bool is_lhs, const MatchFinder::MatchResult& result) {
+  std::string array_type_loc_id =
+      (is_lhs) ? "lhs_array_type_loc" : "rhs_array_type_loc";
+  std::string begin_id = (is_lhs) ? "lhs_begin" : "rhs_begin";
+  std::string array_type_id = (is_lhs) ? "lhs_array_type" : "rhs_array_type";
+
+  auto* type_loc = result.Nodes.getNodeAs<clang::TypeLoc>(array_type_loc_id);
+  if (auto* array_param =
+          result.Nodes.getNodeAs<clang::ParmVarDecl>(begin_id)) {
+    return getNodeFromFunctionArrayParameter(type_loc, array_param, result);
+  }
+
+  auto* array_var = result.Nodes.getNodeAs<clang::VarDecl>(begin_id);
+  auto* array_type = result.Nodes.getNodeAs<clang::ArrayType>(array_type_id);
+  return getNodeFromArrayVariable(type_loc, array_var, array_type, result);
 }
 
 // Extracts the lhs node from the match result.
-//
-// This is only used for spanification, not for rewriting std::array.
 std::string GetLHS(const MatchFinder::MatchResult& result) {
   if (auto* type_loc =
           result.Nodes.getNodeAs<clang::PointerTypeLoc>("lhs_type_loc")) {
@@ -1372,6 +1425,10 @@ std::string GetLHS(const MatchFinder::MatchResult& result) {
           result.Nodes.getNodeAs<clang::TemplateSpecializationTypeLoc>(
               "lhs_raw_ptr_type_loc")) {
     return getNodeFromRawPtrTypeLoc(raw_ptr_type_loc, result);
+  }
+
+  if (result.Nodes.getNodeAs<clang::TypeLoc>("lhs_array_type_loc")) {
+    return getArrayNode(/*is_lhs=*/true, result);
   }
 
   if (auto* lhs_begin =
@@ -1385,6 +1442,7 @@ std::string GetLHS(const MatchFinder::MatchResult& result) {
                   "Expected one of : \n"
                   "  - lhs_type_loc\n"
                   "  - lhs_raw_ptr_type_loc\n"
+                  "  - lhs_array_type_loc\n"
                   "  - lhs_begin\n"
                   "\n";
   DumpMatchResult(result);
@@ -1392,8 +1450,6 @@ std::string GetLHS(const MatchFinder::MatchResult& result) {
 }
 
 // Extracts the rhs node from the match result.
-//
-// This is only used for spanification, not for rewriting std::array.
 std::string GetRHS(const MatchFinder::MatchResult& result) {
   if (auto* type_loc =
           result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
@@ -1404,6 +1460,10 @@ std::string GetRHS(const MatchFinder::MatchResult& result) {
           result.Nodes.getNodeAs<clang::TemplateSpecializationTypeLoc>(
               "rhs_raw_ptr_type_loc")) {
     return getNodeFromRawPtrTypeLoc(raw_ptr_type_loc, result);
+  }
+
+  if (result.Nodes.getNodeAs<clang::TypeLoc>("rhs_array_type_loc")) {
+    return getArrayNode(/*is_lhs=*/false, result);
   }
 
   if (auto* rhs_begin =
@@ -1435,6 +1495,7 @@ std::string GetRHS(const MatchFinder::MatchResult& result) {
                   "Expected one of : \n"
                   "  - rhs_type_loc\n"
                   "  - rhs_raw_ptr_type_loc\n"
+                  "  - rhs_array_type_loc\n"
                   "  - rhs_begin\n"
                   "  - member_data_call\n"
                   "  - size_node\n"
@@ -1622,11 +1683,16 @@ class Spanifier {
     auto lhs_type_loc = anyOf(
         hasType(pointer_type),
         allOf(hasType(raw_ptr_type),
-              hasDescendant(raw_ptr_type_loc.bind("lhs_raw_ptr_type_loc"))));
+              hasDescendant(raw_ptr_type_loc.bind("lhs_raw_ptr_type_loc"))),
+        hasTypeLoc(loc(qualType(arrayType().bind("lhs_array_type")))
+                       .bind("lhs_array_type_loc")));
+
     auto rhs_type_loc = anyOf(
         hasType(pointer_type),
         allOf(hasType(raw_ptr_type),
-              hasDescendant(raw_ptr_type_loc.bind("rhs_raw_ptr_type_loc"))));
+              hasDescendant(raw_ptr_type_loc.bind("rhs_raw_ptr_type_loc"))),
+        hasTypeLoc(loc(qualType(arrayType().bind("rhs_array_type")))
+                       .bind("rhs_array_type_loc")));
 
     auto lhs_field =
         fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(lhs_type_loc),
@@ -1639,30 +1705,19 @@ class Spanifier {
                   unless(hasParent(cxxRecordDecl(hasName("raw_ptr")))))
             .bind("rhs_begin");
 
-    auto lhs_var = varDecl(lhs_type_loc, unless(exclusions)).bind("lhs_begin");
-    auto rhs_var = varDecl(rhs_type_loc, unless(exclusions)).bind("rhs_begin");
-
-    auto lhs_param =
-        parmVarDecl(
-            anyOf(lhs_type_loc,
-                  // In addition to pointer type params, we'd like to rewrite
-                  // array type params with base::span<T, size>.
-                  allOf(isArrayParm(),
-                        hasTypeLoc(
-                            loc(qualType(anything())).bind("array_type_loc")))),
-            unless(exclusions))
+    auto lhs_var =
+        varDecl(lhs_type_loc, unless(anyOf(exclusions, hasExternalStorage())))
             .bind("lhs_begin");
 
-    auto rhs_param =
-        parmVarDecl(
-            anyOf(rhs_type_loc,
-                  // In addition to pointer type params, we'd like to rewrite
-                  // array type params with base::span<T, size>.
-                  allOf(isArrayParm(),
-                        hasTypeLoc(
-                            loc(qualType(anything())).bind("array_type_loc")))),
-            unless(exclusions))
+    auto rhs_var =
+        varDecl(rhs_type_loc, unless(anyOf(exclusions, hasExternalStorage())))
             .bind("rhs_begin");
+
+    auto lhs_param =
+        parmVarDecl(lhs_type_loc, unless(exclusions)).bind("lhs_begin");
+
+    auto rhs_param =
+        parmVarDecl(rhs_type_loc, unless(exclusions)).bind("rhs_begin");
 
     // Exclude functions returning literal strings as these need to become
     // string_view.
@@ -1682,11 +1737,6 @@ class Spanifier {
 
     auto lhs_expr = expr(anyOf(declRefExpr(to(anyOf(lhs_var, lhs_param))),
                                memberExpr(member(lhs_field)), lhs_call_expr));
-
-    auto constant_array_exprs =
-        declRefExpr(to(anyOf(varDecl(hasType(constantArrayType())),
-                             parmVarDecl(hasType(constantArrayType())),
-                             fieldDecl(hasType(constantArrayType())))));
 
     // Matches statements of the form: &buf[n] where buf is a container type
     // (span, vector, array,...).
@@ -1708,7 +1758,6 @@ class Spanifier {
     // Defines nodes that contain size information, these include:
     //  - nullptr => size is zero
     //  - calls to new/new[n] => size is 1/n
-    //  - constant arrays buf[1024] => size is 1024
     //  - calls to third_party functions that we can't rewrite (they should
     //    provide a size for the pointer returned)
     // TODO(353710304): Consider handling functions taking in/out args ex:
@@ -1717,16 +1766,16 @@ class Spanifier {
     //                  exclusive. We rely here on the ordering of expressions
     //                  in the anyOf matcher to first match member_data_call
     //                  which is a subset of size_node.
-    auto size_node_matcher = expr(anyOf(
-        member_data_call,
-        expr(anyOf(callExpr(callee(functionDecl(
-                       hasReturnTypeLoc(pointerTypeLoc()),
-                       anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
-                             isExpansionInSystemHeader(),
-                             raw_ptr_plugin::isInExternCContext())))),
-                   cxxNullPtrLiteralExpr().bind("nullptr_expr"), cxxNewExpr(),
-                   constant_array_exprs, buff_address_from_container))
-            .bind("size_node")));
+    auto size_node_matcher = expr(
+        anyOf(member_data_call,
+              expr(anyOf(callExpr(callee(functionDecl(
+                             hasReturnTypeLoc(pointerTypeLoc()),
+                             anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
+                                   isExpansionInSystemHeader(),
+                                   raw_ptr_plugin::isInExternCContext())))),
+                         cxxNullPtrLiteralExpr().bind("nullptr_expr"),
+                         cxxNewExpr(), buff_address_from_container))
+                  .bind("size_node")));
 
     auto rhs_expr =
         expr(ignoringParenCasts(anyOf(
@@ -1763,46 +1812,35 @@ class Spanifier {
 
     auto lhs_expr_variations = expr(ignoringParenCasts(lhs_expr));
 
-    // Expressions used to decide the pointer is used as a buffer include:
-    // expr[n], expr++, ++expr, expr + n, expr += n
-    auto unsafe_buffer_access_from_ptr = traverse(
+    // Expressions used to decide the pointer/array is unsafely used as a
+    // buffer including:
+    //  expr[n], expr++, ++expr, expr + n, expr += n
+    auto unsafe_buffer_access = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(ignoringParenCasts(anyOf(
-            // Unsafe pointer subscript:
-            arraySubscriptExpr(hasLHS(lhs_expr_variations),
-                               unless(isSafeArraySubscript())),
-            // Unsafe pointer arithmetic:
-            binaryOperation(anyOf(hasOperatorName("+="), hasOperatorName("+")),
-                            hasLHS(lhs_expr_variations)),
-            unaryOperator(hasOperatorName("++"),
-                          hasUnaryOperand(lhs_expr_variations)),
-            // Unsafe base::raw_ptr arithmetic:
-            cxxOperatorCallExpr(
-                anyOf(hasOverloadedOperatorName("[]"), hasOperatorName("++")),
-                hasArgument(0, lhs_expr_variations))))));
-    Match(unsafe_buffer_access_from_ptr, [](const auto& result) {
+                 // Unsafe pointer subscript:
+                 arraySubscriptExpr(hasLHS(lhs_expr_variations),
+                                    unless(isSafeArraySubscript())),
+                 // Unsafe pointer arithmetic:
+                 binaryOperation(
+                     anyOf(hasOperatorName("+="), hasOperatorName("+")),
+                     hasLHS(lhs_expr_variations)),
+                 unaryOperator(hasOperatorName("++"),
+                               hasUnaryOperand(lhs_expr_variations)),
+                 // Unsafe base::raw_ptr arithmetic:
+                 cxxOperatorCallExpr(anyOf(hasOverloadedOperatorName("[]"),
+                                           hasOperatorName("++")),
+                                     hasArgument(0, lhs_expr_variations)))))
+            .bind("unsafe_buffer_access"));
+    Match(unsafe_buffer_access, [](const auto& result) {
       EmitSource(GetLHS(result));  // Declare unsafe buffer access.
     });
-
-    auto array_variable =
-        varDecl(hasType(arrayType().bind("array_type")),
-                hasTypeLoc(loc(qualType(anything())).bind("array_type_loc")),
-                unless(exclusions), unless(hasExternalFormalLinkage()))
-            .bind("array_variable");
-
-    auto unsafe_array_access =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 expr(ignoringParenCasts(arraySubscriptExpr(
-                     unless(isSafeArraySubscript()),
-                     hasLHS(declRefExpr(to(array_variable)))))));
-
-    Match(unsafe_array_access, RewriteUnsafeArray);
 
     // `sizeof(c_array)` is rewritten to
     // `std_array.size() * sizeof(element_size)`.
     auto sizeof_array_expr = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        sizeOfExpr(has(declRefExpr(to(array_variable)))).bind("sizeof_expr"));
+        sizeOfExpr(has(rhs_exprs_without_size_nodes)).bind("sizeof_expr"));
     Match(sizeof_array_expr, RewriteArraySizeof);
 
     auto deref_expression = traverse(
@@ -1871,39 +1909,14 @@ class Spanifier {
         callExpr(callee(functionDecl(
                      anyOf(isExpansionInSystemHeader(),
                            raw_ptr_plugin::isInExternCContext(),
-                           raw_ptr_plugin::isInThirdPartyLocation()))),
-                 forEachArgumentWithParam(
-                     expr(rhs_expr_variations,
-                          unless(anyOf(
-                              castExpr(hasSourceExpression(size_node_matcher)),
-                              size_node_matcher))),
-                     parmVarDecl())));
-    Match(buffer_to_external_func, [](const MatchFinder::MatchResult& result) {
-      EmitReplacement(GetRHS(result), AppendDataCall(result));
-    });
-
-    // When passing c-style arrays to third_party functions as parameters, we
-    // need to add `.data()` to extract the pointer and keep things compiling.
-    //
-    // Functions that are annotated with UNSAFE_BUFFER_USAGE also get this
-    // treatment because the annotation means it was left there intentionally.
-    // And since they emit warnings we can easily find and spanify them later.
-    // Functions that are known to accept both c-style arrays and std::array,
-    // like std::size() are excluded.
-    auto passing_a_c_array_to_external_functions_etc = traverse(
-        clang::TK_IgnoreUnlessSpelledInSource,
-        callExpr(callee(functionDecl(
-                     anyOf(isExpansionInSystemHeader(),
-                           raw_ptr_plugin::isInExternCContext(),
                            raw_ptr_plugin::isInThirdPartyLocation(),
                            hasAttr(clang::attr::UnsafeBufferUsage)),
                      unless(matchesName(
-                         "^::std::(size|begin|end|empty|swap|ranges::)")))),
-                 forEachArgumentWithParam(
-                     expr(declRefExpr(to(array_variable)).bind("rhs_expr")),
-                     parmVarDecl())));
-    Match(passing_a_c_array_to_external_functions_etc, [](const auto& result) {
-      EmitReplacement(ArrayVariableNode(result), AppendDataCall(result));
+                         "std::(size|begin|end|empty|swap|ranges::)")))),
+                 forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
+                                          parmVarDecl())));
+    Match(buffer_to_external_func, [](const MatchFinder::MatchResult& result) {
+      EmitReplacement(GetRHS(result), AppendDataCall(result));
     });
 
     // Handles assignment:

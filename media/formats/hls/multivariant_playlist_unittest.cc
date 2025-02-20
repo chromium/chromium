@@ -8,6 +8,7 @@
 
 #include "media/formats/hls/multivariant_playlist_test_builder.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,7 +130,12 @@ TEST(HlsMultivariantPlaylistTest, MediaPlaylistTag) {
     auto tag_line = "#" + std::string{TagNameToString(name)};
     auto fork = builder;
     fork.AppendLine(tag_line);
-    fork.ExpectOk();
+    if (HLSQuirks::AllowMediaTagsInMultivariantPlaylists()) {
+      fork.ExpectOk();
+    } else {
+      fork.ExpectError(
+          ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag);
+    }
   }
 }
 
@@ -350,9 +356,6 @@ TEST(HlsMultivariantPlaylistTest, XMediaTag) {
   fork.ExpectAudioRenditionGroup("foo", HasDefaultRendition, std::nullopt);
   fork.ExpectOk();
 
-  // TODO(crbug.com/395949828): Two EXT-X-MEDIA tags in the same group may not
-  // have the same name, but this is super common on the web and safari allows
-  // it.
   fork = builder;
   fork.AppendLine(
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
@@ -360,7 +363,12 @@ TEST(HlsMultivariantPlaylistTest, XMediaTag) {
   fork.AppendLine(
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI="
       "\"english2.m3u8\"");
-  fork.ExpectOk();
+  if (HLSQuirks::DeduplicateRenditionNamesInGroup()) {
+    fork.ExpectOk();
+  } else {
+    fork.ExpectError(
+        ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames);
+  }
 
   // .. Unless they are in different groups
   fork = builder;

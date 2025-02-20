@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_configuration_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_metrics_recorder.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_overflow_menu_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_overflow_menu_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
@@ -57,12 +58,15 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
@@ -83,11 +87,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }  // namespace
 
 @interface LensOverlayCoordinator () <LensOverlayConsentPresenterDelegate,
-                                      LensOverlayCommands,
-                                      LensOverlayMediatorDelegate,
-                                      LensOverlayResultConsumer,
                                       LensOverlayConsentViewControllerDelegate,
+                                      LensOverlayCommands,
                                       LensOverlayNetworkIssueDelegate,
+                                      LensOverlayMediatorDelegate,
+                                      LensOverlayOverflowMenuDelegate,
+                                      LensOverlayResultConsumer,
                                       LensOverlayResultsPagePresenterDelegate>
 
 // Whether the `_containerViewController` is currently presented.
@@ -201,12 +206,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                          profile:self.browser->GetProfile()];
 
   LensOverlayOverflowMenuFactory* overflowMenuFactory =
-      [[LensOverlayOverflowMenuFactory alloc]
-                            initWithBrowser:self.browser
-          browserCoordinatorCommandsHandler:HandlerForProtocol(
-                                                self.browser
-                                                    ->GetCommandDispatcher(),
-                                                BrowserCoordinatorCommands)];
+      [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser
+                                         overflowMenuDelegate:self];
 
   BOOL escapeHatchEnabled = IsLVFEscapeHatchEnabled();
   config.useTrailingDismissButton = !escapeHatchEnabled;
@@ -699,9 +700,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
         _resultsPagePresenter.sheetDimension);
   }
   if (IsLensOverlaySameTabNavigationEnabled()) {
-    CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-    [HandlerForProtocol(dispatcher, BrowserCoordinatorCommands)
-        animateLensOverlayNavigationToURL:URL];
+    [self openURLInSameTab:URL];
   } else {
     [self openURLInNewTab:URL];
     [self showRestorationWindowIfNeeded];
@@ -839,6 +838,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                reason:lens::LensOverlayDismissalSource::kBottomSheetDismissed];
 }
 
+#pragma mark - LensOverlayOverflowMenuDelegate
+
+- (void)openActionURL:(GURL)URL {
+  [self openURLInSameTab:URL];
+}
+
 #pragma mark - private
 
 // Prepares the lens overlay for display from the given entrypoint.
@@ -877,6 +882,30 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];
+}
+
+// Navigates to a URL in the same tab with an animation.
+- (void)openURLInSameTab:(GURL)URL {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<PageSideSwipeCommands> pageSideSwipeHandler =
+      HandlerForProtocol(dispatcher, PageSideSwipeCommands);
+  [pageSideSwipeHandler
+      prepareForSlideInDirection:UseRTLLayout()
+                                     ? UISwipeGestureRecognizerDirectionRight
+                                     : UISwipeGestureRecognizerDirectionLeft];
+
+  __weak id<PageSideSwipeCommands> weakPageSideSwipeHandler =
+      pageSideSwipeHandler;
+
+  [self hideLensUI:NO
+        completion:^{
+          [weakPageSideSwipeHandler slideToCenterAnimated];
+        }];
+
+  id<LoadQueryCommands> loadQueryHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), LoadQueryCommands);
+  [loadQueryHandler loadQuery:base::SysUTF8ToNSString(URL.spec())
+                  immediately:YES];
 }
 
 // Returns whether or not the consent dialog should be shown.

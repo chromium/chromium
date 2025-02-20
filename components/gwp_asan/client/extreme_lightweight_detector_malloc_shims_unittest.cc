@@ -48,7 +48,6 @@ class ExtremeLightweightDetectorMallocShimsTest
         allocator_shim::ZappingByFreeFlags(false),
         allocator_shim::EventuallyZeroFreedMemory(false),
         allocator_shim::FewerMemoryRegions(false),
-        allocator_shim::UsePoolOffsetFreelists(true),
         allocator_shim::UseSmallSingleSlotSpans(true));
     InstallExtremeLightweightDetectorHooks(
         {.sampling_frequency = kSamplingFrequency,

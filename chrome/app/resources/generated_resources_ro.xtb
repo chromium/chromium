@@ -1279,7 +1279,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1875387611427697908">Aceasta poate fi adăugată numai din <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etichetă (opțional)</translation>
 <translation id="1877377730633446520">Aceasta va folosi aproximativ <ph name="REQUIRED_SPACE" />. Momentan ai <ph name="FREE_SPACE" /> la dispoziție.</translation>
-<translation id="1877520246462554164">Nu s-a putut obține indicativul de autentificare. Pentru a reîncerca, deconectează-te și conectează-te din nou.</translation>
 <translation id="1877860345998737529">Atribuirea acțiunii de comutare</translation>
 <translation id="1878155070920054810">Se pare că Chromebookul tău se va descărca înainte să se încheie actualizarea. Verifică dacă încărcarea e corectă, ca să eviți întreruperile.</translation>
 <translation id="1878477879455105085">Deschis</translation>
@@ -6999,7 +6998,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5952020381407136867">touchpad</translation>
 <translation id="5953211687820750364">Lista este afectată de <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           și <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Parola a expirat. Pentru a o schimba, deconectează-te, apoi conectează-te din nou.</translation>
 <translation id="5955304353782037793">aplicație</translation>
 <translation id="5955721306465922729">Un site intenționează să deschidă această aplicație.</translation>
 <translation id="5955809630138889698">Acest dispozitiv ar putea fi eligibil numai pentru modul demo online. Contactează reprezentantul de asistență pentru mai multe detalii.</translation>
@@ -9706,7 +9704,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7910725946105920830">Folosește Contul Google personal</translation>
 <translation id="7910768399700579500">Dosar &amp;nou</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Parola a fost modificată pe server. Deconectează-te, apoi conectează-te din nou.</translation>
 <translation id="791247712619243506">Anulează configurarea</translation>
 <translation id="7912974581251770345">Traducere</translation>
 <translation id="7914399737746719723">Aplicație instalată</translation>

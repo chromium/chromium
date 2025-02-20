@@ -1284,7 +1284,6 @@
 <translation id="1875387611427697908">Үүнийг зөвхөн <ph name="CHROME_WEB_STORE" />-с нэмэх боломжтой</translation>
 <translation id="1877377290348678128">Шошго (заавал биш)</translation>
 <translation id="1877377730633446520">Энэ нь ойролцоогоор <ph name="REQUIRED_SPACE" />-г ашиглана. Танд одоогоор <ph name="FREE_SPACE" /> боломжтой байна.</translation>
-<translation id="1877520246462554164">Нотолгооны тэмдгийг авч чадсангүй. Дахин оролдохын тулд бүртгэлээсээ гараад буцаж нэвтэрнэ үү.</translation>
 <translation id="1877860345998737529">Үйлдлийн тохируулгыг шилжүүлэх</translation>
 <translation id="1878155070920054810">Шинэчилж дуусахаас өмнө таны Chromebook-н тэжээл тань дуусах бололтой. Ажиллагаа тасалдахаас зайлсхийхийн тулд зөв цэнэглэгдэж байгаа эсэхийг нь шалгана уу.</translation>
 <translation id="1878477879455105085">Нээлттэй</translation>
@@ -7009,7 +7008,6 @@
 <translation id="5952020381407136867">мэдрэгч самбар</translation>
 <translation id="5953211687820750364">Энэ жагсаалтад <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           болон <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> нөлөөлсөн</translation>
-<translation id="5955282598396714173">Таны нууц үг хүчингүй боллоо. Нууц үгээ өөрчлөхийн тулд бүртгэлээсээ гараад буцаж нэвтэрнэ үү.</translation>
 <translation id="5955304353782037793">аппликейшн</translation>
 <translation id="5955721306465922729">Вебсайт энэ хэрэглээний программыг нээх хүсэлтэй байна.</translation>
 <translation id="5955809630138889698">Энэ төхөөрөмж зөвхөн онлайн демо горимд боломжтой байж болзошгүй. Дэлгэрэнгүй мэдээлэл авахын тулд дэмжлэгийн төлөөлөгчтэйгээ холбогдоно уу.</translation>
@@ -9712,7 +9710,6 @@
 <translation id="7910725946105920830">Хувийн Google Бүртгэлээ ашиглах</translation>
 <translation id="7910768399700579500">Шинэ хавтас</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Таны нууц үгийг серверт өөрчилсөн байна. Бүртгэлээсээ гараад буцаж нэвтэрнэ үү.</translation>
 <translation id="791247712619243506">Тохируулгыг цуцлах</translation>
 <translation id="7912974581251770345">Орчуулга</translation>
 <translation id="7914399737746719723">Аппыг суулгасан</translation>

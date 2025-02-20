@@ -257,13 +257,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="High-end and Pip"/>
 </enum>
 
-<enum name="TrustedWebActivityDelegatedNotificationSmallIconFallback">
-  <int value="0" label="No fallback"/>
-  <int value="1" label="Fallback icon mot provided"/>
-  <int value="2" label="Fallback for Status Bar"/>
-  <int value="3" label="Fallback for Status Bar and content"/>
-</enum>
-
 <enum name="VisibleTab">
   <int value="0" label="Custom Tab"/>
   <int value="1" label="Chrome Tab"/>
@@ -283,11 +276,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Prerendered WebContents"/>
   <int value="2" label="Spare WebContents"/>
   <int value="3" label="Transferred WebContents"/>
-</enum>
-
-<enum name="WebShareTargetMethod">
-  <int value="0" label="GET"/>
-  <int value="1" label="POST"/>
 </enum>
 
 </enums>

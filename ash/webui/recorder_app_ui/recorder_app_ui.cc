@@ -337,6 +337,24 @@ void RecorderAppUI::GetModelInfo(on_device_model::mojom::FormatFeature feature,
   std::move(callback).Run(std::move(model_info));
 }
 
+void RecorderAppUI::LoadModelResultCallback(
+    const base::Uuid& model_id,
+    LoadModelCallback callback,
+    on_device_model::mojom::LoadModelResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO: b/366335321 - Propagate need-reboot error from on-device model
+  // service to UI side.
+  if (result != on_device_model::mojom::LoadModelResult::kSuccess) {
+    UpdateModelState(
+        model_id, {recorder_app::mojom::ModelStateType::kError, std::nullopt});
+  } else {
+    UpdateModelState(model_id, {recorder_app::mojom::ModelStateType::kInstalled,
+                                std::nullopt});
+  }
+  std::move(callback).Run(result);
+}
+
 void RecorderAppUI::LoadModel(
     const base::Uuid& model_id,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
@@ -362,7 +380,10 @@ void RecorderAppUI::LoadModel(
 
   on_device_model_service_->LoadPlatformModel(
       model_id, std::move(model),
-      progress_receiver.InitWithNewPipeAndPassRemote(), std::move(callback));
+      progress_receiver.InitWithNewPipeAndPassRemote(),
+      base::BindOnce(&RecorderAppUI::LoadModelResultCallback,
+                     weak_ptr_factory_.GetWeakPtr(), model_id,
+                     std::move(callback)));
 
   model_progress_receivers_.Add(this, std::move(progress_receiver), model_id);
 

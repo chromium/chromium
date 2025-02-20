@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium beveiligt je gevoelige gegevens met Face ID.</translation>
 <translation id="1591119736686995611">Opent het Chromium-tabbladraster.</translation>
 <translation id="16001233025397167">Veiligheidscheck beschermt je onder andere tegen gegevenslekken en onveilige websites. Krijg meldingen over privacy- of beveiligingsproblemen die Chromium voor je opspoort.</translation>
-<translation id="1611584326765829247">Laat Chromium je helpen je pakketten te volgen</translation>
 <translation id="1617663976202781617">Gegevens van Chromium-synchronisatie</translation>
 <translation id="164952285225495380">Dit pakket wordt al gevolgd in Chromium.</translation>
 <translation id="1707458603865303524">Gebruik Chromium als je op links in berichten of andere apps tikt.</translation>
@@ -306,7 +305,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8826789549860004832">Haal het maximale uit Chromium door verder te gaan met het instellen van je browser.</translation>
 <translation id="88376265765385899">Opent de Chromium-bookmarks.</translation>
 <translation id="8860548555286245440">URL's in Chromium openen in de incognitomodus</translation>
-<translation id="8866191443434488382">Chromium herkent trackingcodes op sites die je bezoekt en toont pakketupdates op de pagina Nieuw tabblad. Het nummer voor pakkettracking en de naam van de website worden naar Chromium gestuurd om deze functie te bieden en de Shopping-functies voor iedereen te verbeteren. Je kunt dit altijd updaten in de <ph name="BEGIN_LINK" />instellingen voor Verzendstatus bijhouden<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Je organisatie vereist dat je inlogt om Chromium te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Krijg het hoogste beveiligingsniveau van Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dit gebeurt als Chromium {THRESHOLD} minuut niet wordt gebruikt}other{Dit gebeurt als Chromium {THRESHOLD} minuten niet wordt gebruikt}}</translation>

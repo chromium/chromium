@@ -193,6 +193,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
             "AndroidTabSkipSaveTabsTaskKillswitch";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
+    public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
@@ -625,6 +626,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
+    public static final CachedFlag sAndroidMinimalUiLargeScreen =
+            newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, false);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
     public static final CachedFlag sAsyncNotificationManager =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
@@ -866,6 +869,7 @@ public abstract class ChromeFeatureList {
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAppSpecificHistory,
                     sAsyncNotificationManager,
+                    sAndroidMinimalUiLargeScreen,
                     sBlockIntentsWhileLocked,
                     sBookmarkPaneAndroid,
                     sCctAdaptiveButton,

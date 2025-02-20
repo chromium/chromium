@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_otr_state.h"
@@ -42,13 +41,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/crosapi_pref_observer.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -69,39 +64,6 @@ bool IsBackgroundTracingCommandLine() {
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Helper for reading the value of device policy from ash-chrome.
-class DevicePolicyObserver {
- public:
-  DevicePolicyObserver()
-      : pref_observer_(
-            crosapi::mojom::PrefPath::kDeviceSystemWideTracingEnabled,
-            base::BindRepeating(&DevicePolicyObserver::OnPrefChanged,
-                                base::Unretained(this))) {}
-
-  bool system_wide_tracing_enabled() const {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    return system_wide_tracing_enabled_;
-  }
-
-  static const DevicePolicyObserver& GetInstance() {
-    static base::NoDestructor<DevicePolicyObserver> instance;
-    return *instance;
-  }
-
- private:
-  void OnPrefChanged(base::Value value) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    system_wide_tracing_enabled_ = value.GetBool();
-  }
-
-  ~DevicePolicyObserver() = default;
-
-  CrosapiPrefObserver pref_observer_;
-  bool system_wide_tracing_enabled_ = false;
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 ChromeTracingDelegate::ChromeTracingDelegate()
@@ -116,11 +78,6 @@ ChromeTracingDelegate::ChromeTracingDelegate()
   BrowserList::AddObserver(this);
 #else
   TabModelList::AddObserver(this);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This sets up the pref observer.
-  DevicePolicyObserver::GetInstance();
 #endif
 }
 
@@ -212,7 +169,7 @@ void ChromeTracingDelegate::DisableSystemTracing(
 #endif  // BUILDFLAG(IS_WIN)
 
 bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Always allow system tracing in dev mode images.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kSystemDevMode)) {
@@ -222,13 +179,6 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   return local_state->GetBoolean(ash::prefs::kDeviceSystemWideTracingEnabled);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This is a temporary solution that observes the ash pref
-  // ash::prefs::kDeviceSystemWideTracingEnabled via mojo IPC provided by
-  // CrosapiPrefObserver.
-  // crbug.com/1201582 is a long term solution for this which assumes that
-  // device flags will be available to Lacros.
-  return DevicePolicyObserver::GetInstance().system_wide_tracing_enabled();
 #else
   return false;
 #endif

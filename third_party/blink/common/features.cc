@@ -947,10 +947,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "fledge_max_group_lifetime_for_metadata",
                    base::Days(30));
 
-BASE_FEATURE(kFledgeEnableSampleDebugReportOnCookieSetting,
-             "FledgeEnableSampleDebugReportOnCookieSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFledgeSampleDebugReports,
              "FledgeSampleDebugReports",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1250,6 +1246,15 @@ BASE_FEATURE(kKeepAliveInBrowserMigration,
 BASE_FEATURE(kAttributionReportingInBrowserMigration,
              "AttributionReportingInBrowserMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLimitLayerMergeDistance,
+             "LimitLayerMergeDistance",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kLayerMergeDistanceLimit,
+                   &kLimitLayerMergeDistance,
+                   "limit",
+                   0x10000000);
 
 BASE_FEATURE(kLCPCriticalPathPredictor,
              "LCPCriticalPathPredictor",
@@ -2334,7 +2339,7 @@ BASE_FEATURE(kSetLowPriorityForBeacon,
 // Tracking bug: https://crbug.com/402694.
 BASE_FEATURE(kSetIntervalWithoutClamp,
              "SetIntervalWithoutClamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be

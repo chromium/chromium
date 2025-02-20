@@ -32,7 +32,12 @@ InterceptNavigationThrottle::InterceptNavigationThrottle(
         request_finish_async_work_callback_.has_value());
 }
 
-InterceptNavigationThrottle::~InterceptNavigationThrottle() = default;
+InterceptNavigationThrottle::~InterceptNavigationThrottle() {
+  // Clients should not synchronously cause the navigation to be deleted.
+  // Putting the check here allows us to get a stack for what's causing the
+  // deletion.
+  CHECK(!in_sync_check_);
+}
 
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::WillStartRequest() {
@@ -83,12 +88,14 @@ content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation() {
   bool async = ShouldCheckAsynchronously();
   pending_check_ = true;
+  in_sync_check_ = true;
   auto weak_this = weak_factory_.GetWeakPtr();
   should_ignore_callback_.Run(
       navigation_handle(), async,
       base::BindOnce(&InterceptNavigationThrottle::OnCheckComplete, weak_this));
   // Clients should not synchronously cause the navigation to be deleted.
   CHECK(weak_this);
+  in_sync_check_ = false;
   if (pending_check_) {
     if (async) {
       return content::NavigationThrottle::PROCEED;

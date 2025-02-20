@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_UMA_HELPER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_UMA_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"

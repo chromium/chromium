@@ -91,6 +91,10 @@ OAuth2ResponseErrorToOAuth2Response(const std::string& error) {
   if (error == "internal_failure")
     return OAuth2AccessTokenFetcherImpl::kInternalFailure;
 
+  if (error == "admin_policy_enforced") {
+    return OAuth2AccessTokenFetcherImpl::kAdminPolicyEnforced;
+  }
+
   return OAuth2AccessTokenFetcherImpl::kUnknownError;
 }
 
@@ -139,8 +143,9 @@ GoogleServiceAuthError CreateErrorForInvalidGrant(
   std::string error_subtype_lowercase = base::ToLowerASCII(error_subtype);
   if (error_subtype_lowercase == kRaptRequiredError ||
       error_subtype_lowercase == kInvalidRaptError) {
-    return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-        error_description);
+    return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+        GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+            kInvalidGrantRaptError);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -258,11 +263,23 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       error = CreateErrorForInvalidGrant(error_subtype, error_description);
       break;
 
+    // Scope persistent errors that can't be fixed by user action.
     case kInvalidScope:
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
+      break;
+
     case kRestrictedClient:
-      // Scope persistent error that can't be fixed by user action.
-      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-          response_str);
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kRestrictedClient);
+      break;
+
+    case kAdminPolicyEnforced:
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kAdminPolicyEnforced);
       break;
 
     case kInvalidRequest:
@@ -295,11 +312,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       // persistent errors.
       // HTTP_BAD_REQUEST errors usually contains errors as per
       // http://tools.ietf.org/html/rfc6749#section-5.2.
-      if (response == kInvalidGrant) {
-        error = CreateErrorForInvalidGrant(error_subtype, error_description);
-      } else {
-        error = GoogleServiceAuthError::FromServiceError(response_str);
-      }
+      error = GoogleServiceAuthError::FromServiceError(response_str);
     }
   }
 

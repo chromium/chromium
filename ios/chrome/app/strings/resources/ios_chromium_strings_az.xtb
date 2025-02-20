@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium Üz ID-si ilə həssas datanı güvənli saxlayır.</translation>
 <translation id="1591119736686995611">Chromium tab toru açılır.</translation>
 <translation id="16001233025397167">Təhlükəsizlik yoxlanışı sizi verilənlərin pozulmasından, güvənsiz veb-saytlardan və s. qoruyur. Chromium-un aşkar etdiyi hər hansı məxfilik və ya güvənlik məsələləri ilə bağlı xəbərdarlıqlar alın.</translation>
-<translation id="1611584326765829247">Chromium-a bağlamaları izləmək imkanı verin</translation>
 <translation id="1617663976202781617">Chromium sinxronizasiyası datası</translation>
 <translation id="164952285225495380">Bu bağlama Chromium-da izlənib.</translation>
 <translation id="1707458603865303524">Mesaj və ya digər tətbiqlərdə keçidləri Chromium ilə açın.</translation>
@@ -306,7 +305,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="8826789549860004832">Brauzeri ayarlayaraq Chromium-dan maksimum yararlanın.</translation>
 <translation id="88376265765385899">Chromium əlfəcinlərini açır.</translation>
 <translation id="8860548555286245440">URL-ləri Chromium-da Anonim rejimdə açın</translation>
-<translation id="8866191443434488382">Chromium daxil olduğunuz saytlarda izləmə nömrələrini aşkar edəcək və Yeni tab səhifəsində bağlama yeniləmələrini göstərəcək. Bu funksiyanı təmin etmək və alış-veriş funksiyalarını təkmilləşdirmək üçün bağlamanın izlənilməsi nömrəsi və veb-sayt adı Chromium-a göndəriləcək. Bunu <ph name="BEGIN_LINK" />Bağlamanın izlənilməsi ayarlarında<ph name="END_LINK" /> güncəlləyə bilərsiniz.</translation>
 <translation id="8880024619507699923">Təşkilatınız Chromium-dan istifadə etmək üçün daxil olmağınızı tələb edir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Chromium-un ən güclü güvənlik sistemini əldə edin</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur}other{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur}}</translation>

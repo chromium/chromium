@@ -530,11 +530,11 @@ export class SettingsChromeVoxSubpageElement extends
     }
     if (table.grade && !table.variant) {
       return this.i18n(
-          'chromeVoxBrailleTableNameWithGrade', baseName, table.grade!);
+          'chromeVoxBrailleTableNameWithGrade', baseName, table.grade);
     }
     if (!table.grade && table.variant) {
       return this.i18n(
-          'chromeVoxBrailleTableNameWithVariant', baseName, table.variant!);
+          'chromeVoxBrailleTableNameWithVariant', baseName, table.variant);
     }
 
     return this.i18n(

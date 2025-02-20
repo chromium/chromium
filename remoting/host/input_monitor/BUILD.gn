@@ -23,10 +23,7 @@ source_set("input_monitor") {
       "local_keyboard_input_monitor_linux.cc",
       "local_mouse_input_monitor_linux.cc",
     ]
-    deps += [
-      "//base",
-      "//remoting/host/linux:wayland",
-    ]
+    deps += [ "//base" ]
   }
 
   deps += [

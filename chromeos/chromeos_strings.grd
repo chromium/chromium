@@ -7011,6 +7011,11 @@
         Your teacher has removed content in School Tools
       </message>
 
+      <!-- Strings for the OnTask pod -->
+      <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
+        Reload tab
+      </message>
+
       <!-- Strings for School Tools -->
       <message name="IDS_SCHOOL_TOOLS_TITLE" desc="Title of the School Tools App">
         School Tools

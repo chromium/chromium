@@ -27,8 +27,7 @@ LobsterBubbleCoordinator::~LobsterBubbleCoordinator() {
 void LobsterBubbleCoordinator::LoadUI(Profile* profile,
                                       std::optional<std::string_view> query,
                                       LobsterMode mode,
-                                      const gfx::Rect& caret_bounds,
-                                      bool should_show_feedback_ui) {
+                                      const gfx::Rect& caret_bounds) {
   if (IsShowingUI()) {
     contents_wrapper_->CloseUI();
   }
@@ -47,7 +46,8 @@ void LobsterBubbleCoordinator::LoadUI(Profile* profile,
 
   url = net::AppendOrReplaceQueryParameter(
       url, kLobsterFeedbackEnabledParamKey,
-      should_show_feedback_ui ? "true" : "false");
+      base::FeatureList::IsEnabled(ash::features::kLobsterFeedback) ? "true"
+                                                                    : "false");
 
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
       url, profile, IDS_ACCNAME_ORCA,

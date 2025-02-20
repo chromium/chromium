@@ -73,9 +73,8 @@ export interface CrostiniPortActiveSetting {
 
 export const PortState = {
   VALID: '',
-  INVALID: loadTimeData.getString('crostiniPortForwardingAddError') as string,
-  DUPLICATE: loadTimeData.getString('crostiniPortForwardingAddExisting') as
-      string,
+  INVALID: loadTimeData.getString('crostiniPortForwardingAddError'),
+  DUPLICATE: loadTimeData.getString('crostiniPortForwardingAddExisting'),
 };
 
 export const MIN_VALID_PORT_NUMBER = 1024;   // Minimum 16-bit integer value.

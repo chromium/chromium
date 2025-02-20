@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium chráni vaše citlivé údaje pomocou funkcie Face ID.</translation>
 <translation id="1591119736686995611">Otvorí mriežku kariet v prehliadači Chromium.</translation>
 <translation id="16001233025397167">Kontrola bezpečnosti vás chráni pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami. Dostávajte upozornenia na všetky problémy s ochranou súkromia alebo zabezpečením, ktoré pre vás Chromium zistí.</translation>
-<translation id="1611584326765829247">Umožnite prehliadaču Chromium pomáhať vám sledovať zásielky</translation>
 <translation id="1617663976202781617">Údaje zo synchronizácie prehliadača Chromium</translation>
 <translation id="164952285225495380">Táto zásielka už bola v prehliadači Chromium sledovaná.</translation>
 <translation id="1707458603865303524">Chromium môžete kedykoľvek použiť klepnutím na odkazy v správach a ďalších aplikáciách.</translation>
@@ -306,7 +305,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="8826789549860004832">Pokračujte v nastavovaní prehliadača Chromium, aby ste ho mohli využívať naplno</translation>
 <translation id="88376265765385899">Otvorí záložky v prehliadači Chromium.</translation>
 <translation id="8860548555286245440">Otvárať webové adresy v režime inkognito prehliadača Chromium</translation>
-<translation id="8866191443434488382">Chromium zistí čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuality o zásielke na stránke na novej karte. Sledovacie číslo zásielky a názov webu sa odošlú prehliadaču Chromium na účely poskytovania tejto funkcie a zlepšovania funkcií nákupov pre každého. Kedykoľvek to môžete zmeniť v <ph name="BEGIN_LINK" />nastaveniach sledovania zásielok<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Vaša organizácia vyžaduje, aby ste sa na používanie prehliadača Chromium prihlásili. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Získajte najúčinnejšie zabezpečenie prehliadača Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minútu}few{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty}many{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty}other{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minút}}</translation>

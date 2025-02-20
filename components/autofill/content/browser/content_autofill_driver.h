@@ -275,10 +275,10 @@ class ContentAutofillDriver : public AutofillDriver,
                  const std::vector<FormRendererId>& removed_forms) override;
   void FormSubmitted(const FormData& form,
                      mojom::SubmissionSource submission_source) override;
-  void JavaScriptChangedAutofilledValue(const FormData& form,
-                                        FieldRendererId field_id,
-                                        const std::u16string& old_value,
-                                        bool formatting_only) override;
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      FieldRendererId field_id,
+      const std::u16string& old_value) override;
   void SelectControlSelectionChanged(const FormData& form,
                                      FieldRendererId field_id) override;
   void SelectFieldOptionsDidChange(const FormData& form) override;

@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#include <optional>
+
+#include "components/supervised_user/core/common/supervised_user_constants.h"
+
 class GURL;
 
 namespace supervised_user {
@@ -30,7 +34,10 @@ class WebState;
                            filteringBehaviorReason
                                 completion:
                                     (void (^)(
-                                        supervised_user::LocalApprovalResult))
+                                        supervised_user::LocalApprovalResult,
+                                        std::optional<
+                                            supervised_user::
+                                                LocalWebApprovalErrorType>))
                                         completion;
 
 // Hides the parent access bottom sheet for local web approvals.

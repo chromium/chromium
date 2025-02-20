@@ -43,8 +43,7 @@ export interface FaceGazeActionsCardElement {
 }
 
 export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
-  static readonly FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME =
-      'commandPairs_' as const;
+  static readonly FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME = 'commandPairs_';
   disabled: boolean;
 
   private showAddActionDialog_: boolean;
@@ -243,7 +242,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
              assignedGestures)) {
       if (assignedMacro === removedCommandPair.action &&
           currentGesture === removedCommandPair.gesture) {
-        delete assignedGestures[currentGesture as FacialGesture];
+        delete assignedGestures[currentGesture];
         break;
       }
     }
@@ -395,7 +394,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
              assignedKeyCombos)) {
       if (currentGesture === gesture &&
           keyCombo === removedKeyCombo.prefString) {
-        delete assignedKeyCombos[currentGesture as FacialGesture];
+        delete assignedKeyCombos[currentGesture];
         break;
       }
     }

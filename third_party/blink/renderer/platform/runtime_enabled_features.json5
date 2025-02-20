@@ -361,15 +361,6 @@
       name: "AllowCopyingEmptyLastTableCell",
       status: "stable",
     },
-    // If enabled, blink will not set the autofill state of a field after JS
-    // modifies its value, and will instead leave it to the WebAutofillClient to
-    // take care of the state setting.
-    // This feature should be enabled with
-    // autofill::features::kAutofillFixCachingOnJavaScriptChanges.
-    {
-      name: "AllowJavaScriptToResetAutofillState",
-      status: "experimental",
-    },
     {
       name: "AllowPreloadingWithCSPMetaTag",
       status: "experimental",
@@ -2803,7 +2794,12 @@
     },
     {
       name: "MediaStreamTrackWebSpeech",
-      status: "experimental",
+      status: {
+        "Linux": "stable",
+        "Mac": "stable",
+        "Win": "stable",
+        "default": "experimental",
+      },
     },
     {
       name: "MessagePortCloseEvent",
@@ -4192,6 +4188,10 @@
     {
       name: "StylusHandwriting",
       base_feature: "none",
+    },
+    {
+      name: "SvgAnchorElementRelAttributes",
+      status: "experimental",
     },
     {
       name: "SvgContextPaint",

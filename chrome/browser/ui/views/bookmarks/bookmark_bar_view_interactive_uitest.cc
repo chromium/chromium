@@ -236,18 +236,19 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_DISABLED(test_name) test_name
 #endif
 
-void SkipIfMac11() {
+// TODO(crbug.com/391735476) Deflake on Mac11.
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() == 11) {
-    // TODO(crbug.com/391735476) Deflake on Mac11.
-    GTEST_SKIP() << "Test is flaky on Mac11 (crbug.com/391735476)";
+#define SKIP_IF_MAC11()                                             \
+  if (base::mac::MacOSMajorVersion() == 11) {                       \
+    GTEST_SKIP() << "Test is flaky on Mac11 (crbug.com/391735476)"; \
   }
+#else
+#define SKIP_IF_MAC11()
 #endif
-}
 
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDrop)) {
-  SkipIfMac11();
+  SKIP_IF_MAC11();
 
   // Add two bookmarks nodes to the bookmarks bar.
   bookmarks::BookmarkModel* const model =
@@ -281,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDropToNestedFolder)) {
-  SkipIfMac11();
+  SKIP_IF_MAC11();
 
   // Add two bookmarks nodes to the bookmarks bar.
   bookmarks::BookmarkModel* const model =
@@ -315,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDropFromNestedFolder)) {
-  SkipIfMac11();
+  SKIP_IF_MAC11();
 
   // Add two bookmarks nodes to the bookmarks bar.
   bookmarks::BookmarkModel* const model =

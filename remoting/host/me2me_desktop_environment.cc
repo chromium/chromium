@@ -42,7 +42,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if defined(REMOTING_USE_X11)
-#include "remoting/host/linux/wayland_utils.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/gfx/x/connection.h"
 #endif  // defined(REMOTING_USE_X11)
@@ -114,15 +113,13 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   }
 
 #if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
-  if (!IsRunningWayland()) {
-    capabilities += " ";
-    capabilities += protocol::kMultiStreamCapability;
+  capabilities += " ";
+  capabilities += protocol::kMultiStreamCapability;
 
-    // Client-controlled layout is only supported with Xorg+video-dummy.
-    if (UsingVideoDummyDriver()) {
-      capabilities += " ";
-      capabilities += protocol::kClientControlledLayoutCapability;
-    }
+  // Client-controlled layout is only supported with Xorg+video-dummy.
+  if (UsingVideoDummyDriver()) {
+    capabilities += " ";
+    capabilities += protocol::kClientControlledLayoutCapability;
   }
 #elif BUILDFLAG(IS_MAC)
   capabilities += " ";
@@ -160,12 +157,6 @@ Me2MeDesktopEnvironment::Me2MeDesktopEnvironment(
   // XDAMAGE to identify the changed regions rather than checking each pixel
   // ourselves.
   mutable_desktop_capture_options()->set_detect_updated_region(false);
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    mutable_desktop_capture_options()->set_prefer_cursor_embedded(false);
-  }
 #endif
 }
 

@@ -77,7 +77,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
    public:
     RasterBufferImpl(GpuRasterBufferProvider* client,
                      const ResourcePool::InUsePoolResource& in_use_resource,
-                     ResourcePool::Backing* backing,
                      bool resource_has_previous_content,
                      bool depends_on_at_raster_decodes,
                      bool depends_on_hardware_accelerated_jpeg_candidates,

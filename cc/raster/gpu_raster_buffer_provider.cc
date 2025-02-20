@@ -46,13 +46,11 @@ namespace cc {
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     GpuRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    ResourcePool::Backing* backing,
     bool resource_has_previous_content,
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates)
     : client_(client),
-      backing_(backing),
       resource_size_(in_use_resource.size()),
       shared_image_format_(in_use_resource.format()),
       color_space_(in_use_resource.color_space()),
@@ -62,6 +60,15 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
           depends_on_hardware_accelerated_jpeg_candidates),
       depends_on_hardware_accelerated_webp_candidates_(
           depends_on_hardware_accelerated_webp_candidates) {
+  if (!in_use_resource.backing()) {
+    auto backing = std::make_unique<ResourcePool::Backing>();
+    backing->overlay_candidate = client_->tile_overlay_candidate_;
+    backing->is_using_raw_draw =
+        !backing->overlay_candidate && client_->is_using_raw_draw_;
+    in_use_resource.set_backing(std::move(backing));
+  }
+  backing_ = in_use_resource.backing();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only do this in Chrome OS because:
   //   1) We will use this timestamp to measure raster scheduling delay and we
@@ -148,18 +155,10 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (!resource.backing()) {
-    auto backing = std::make_unique<ResourcePool::Backing>();
-    backing->overlay_candidate = tile_overlay_candidate_;
-    backing->is_using_raw_draw =
-        !backing->overlay_candidate && is_using_raw_draw_;
-    resource.set_backing(std::move(backing));
-  }
-  ResourcePool::Backing* backing = resource.backing();
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
   return std::make_unique<RasterBufferImpl>(
-      this, resource, backing, resource_has_previous_content,
+      this, resource, resource_has_previous_content,
       depends_on_at_raster_decodes,
       depends_on_hardware_accelerated_jpeg_candidates,
       depends_on_hardware_accelerated_webp_candidates);

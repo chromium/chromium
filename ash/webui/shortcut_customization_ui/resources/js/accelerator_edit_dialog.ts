@@ -237,7 +237,7 @@ export class AcceleratorEditDialogElement extends
     const container =
         accelItem.shadowRoot!.querySelector<HTMLElement>('#container');
     assert(container);
-    container!.focus();
+    container.focus();
   }
 
   private focusAddOrDone(): void {

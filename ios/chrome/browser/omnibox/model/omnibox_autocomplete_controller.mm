@@ -193,6 +193,17 @@ using base::UserMetricsAction;
           },
           weakSelf, disposition, matchSelectionTimestamp));
       return;
+    } else if (match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
+      clipboardRecentContent->GetRecentTextFromClipboard(base::BindOnce(
+          [](OmniboxAutocompleteController* controller,
+             WindowOpenDisposition disposition, base::TimeTicks timestamp,
+             std::optional<std::u16string> optionalText) {
+            [controller openClipboardText:optionalText
+                              disposition:disposition
+                                timestamp:timestamp];
+          },
+          weakSelf, disposition, matchSelectionTimestamp));
+      return;
     }
   }
 
@@ -238,14 +249,14 @@ using base::UserMetricsAction;
 #pragma mark - Private
 
 /// Opens a match created outside of autocomplete controller.
-- (void)openCustomMatch:(AutocompleteMatch)match
+- (void)openCustomMatch:(std::optional<AutocompleteMatch>)match
             disposition:(WindowOpenDisposition)disposition
      selectionTimestamp:(base::TimeTicks)timestamp {
-  if (!_autocompleteController || !_omniboxEditModel) {
+  if (!_autocompleteController || !_omniboxEditModel || !match) {
     return;
   }
   OmniboxPopupSelection selection(
-      _autocompleteController->InjectAdHocMatch(match));
+      _autocompleteController->InjectAdHocMatch(match.value()));
   _omniboxEditModel->OpenSelection(selection, timestamp, disposition);
 }
 
@@ -258,6 +269,20 @@ using base::UserMetricsAction;
   GURL URL = std::move(optionalURL).value();
   [self openCustomMatch:_autocompleteController->clipboard_provider()
                             ->NewClipboardURLMatch(URL)
+             disposition:disposition
+      selectionTimestamp:timestamp];
+}
+
+/// Creates a match with the clipboard text and open it.
+- (void)openClipboardText:(std::optional<std::u16string>)optionalText
+              disposition:(WindowOpenDisposition)disposition
+                timestamp:(base::TimeTicks)timestamp {
+  if (!optionalText || !_autocompleteController) {
+    return;
+  }
+
+  [self openCustomMatch:_autocompleteController->clipboard_provider()
+                            ->NewClipboardTextMatch(optionalText.value())
              disposition:disposition
       selectionTimestamp:timestamp];
 }

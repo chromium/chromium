@@ -369,10 +369,10 @@ export class FeedbackFlowElement extends PolymerElement {
       //   }
       // ].
       assert('EXTRA_DIAGNOSTICS' === feedbackInfo.systemInformation[0].key);
-      this.feedbackContext!.extraDiagnostics =
+      this.feedbackContext.extraDiagnostics =
           feedbackInfo.systemInformation[0].value;
     }
-    this.isUserLoggedIn = this.feedbackContext!.categoryTag !== 'Login';
+    this.isUserLoggedIn = this.feedbackContext.categoryTag !== 'Login';
     this.onFeedbackContextReceived();
   }
 

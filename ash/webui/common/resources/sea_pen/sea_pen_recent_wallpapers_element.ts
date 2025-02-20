@@ -308,11 +308,11 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       const index = parseInt(id, 10);
       const menuElement =
           this.shadowRoot!.querySelectorAll('cr-action-menu')[index];
-      menuElement!.showAtPosition(config);
+      menuElement.showAtPosition(config);
       // focus on the top menu item first.
-      const menuItems = menuElement!.querySelectorAll<HTMLElement>(
+      const menuItems = menuElement.querySelectorAll<HTMLElement>(
           '.dropdown-item:not([hidden]):not(.more-like-this-option)');
-      menuItems![0].focus();
+      menuItems[0].focus();
     }
   }
 
@@ -378,12 +378,12 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
           this.shadowRoot!.querySelectorAll<HTMLElement>(
               '.recent-image-container:not([hidden])');
       const recentImage =
-          recentImageContainers![index].querySelector<HTMLElement>(
+          recentImageContainers[index].querySelector<HTMLElement>(
               '.sea-pen-image');
       recentImage!.setAttribute('tabindex', '0');
       recentImage!.focus();
       const menuIconButton =
-          recentImageContainers![index].querySelector<HTMLElement>(
+          recentImageContainers[index].querySelector<HTMLElement>(
               '.menu-icon-button');
       menuIconButton!.setAttribute('tabindex', '0');
     });
@@ -448,7 +448,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       const menuButtons =
           this.shadowRoot!.querySelectorAll<HTMLElement>('.menu-icon-button');
       if (menuId !== null && menuButtons.length > menuId + 1) {
-        menuButtons[menuId]!.focus();
+        menuButtons[menuId].focus();
       }
     });
   }

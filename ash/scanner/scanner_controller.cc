@@ -594,12 +594,12 @@ ScannerSession* ScannerController::StartNewSession() {
   return scanner_session_.get();
 }
 
-void ScannerController::FetchActionsForImage(
+bool ScannerController::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     ScannerSession::FetchActionsCallback callback) {
   if (!scanner_session_) {
     std::move(callback).Run({});
-    return;
+    return false;
   }
 
   if (!mock_scanner_responses_for_testing_.empty()) {
@@ -609,6 +609,7 @@ void ScannerController::FetchActionsForImage(
   }
 
   scanner_session_->FetchActionsForImage(jpeg_bytes, std::move(callback));
+  return true;
 }
 
 void ScannerController::OnSessionUIClosed() {

@@ -1404,13 +1404,24 @@ TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
   controller->SetColorTemperature(temperature);
   EXPECT_EQ(temperature, controller->GetColorTemperature());
 
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
   // The first display supports CRTC matrix, so its compositor has identity
   // matrix.
   TestDisplayCompositorTemperature(kId1, 0.0f);
+  const display::Display& display_1 = display_manager()->GetDisplayForId(kId1);
+  generator->MoveMouseTo(display_1.bounds().CenterPoint());
+  // Cursor moves to display that supports CRTC matrix, thus it should be
+  // using hardware compositing.
+  EXPECT_FALSE(IsCursorCompositingEnabled());
+
   // However, the second display doesn't support CRTC matrix, Night Light is
   // using the compositor matrix on this display.
   TestDisplayCompositorTemperature(kId2, temperature);
-  // With mixed CRTC support, software cursor must be on.
+  const display::Display& display_2 = display_manager()->GetDisplayForId(kId2);
+  generator->MoveMouseTo(display_2.bounds().CenterPoint());
+  // Cursor moves to a display that doesn't support CRTC matrix, thus it should
+  // be using software compositing.
   EXPECT_TRUE(IsCursorCompositingEnabled());
 }
 

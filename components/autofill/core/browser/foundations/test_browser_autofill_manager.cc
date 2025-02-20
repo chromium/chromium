@@ -102,10 +102,9 @@ void TestBrowserAutofillManager::OnDidFillAutofillFormData(
 void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
     const FormData& form,
     const FieldGlobalId& field_id,
-    const std::u16string& old_value,
-    bool formatting_only) {
-  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field_id, old_value,
-                                                      formatting_only);
+    const std::u16string& old_value) {
+  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field_id,
+                                                      old_value);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

@@ -79,7 +79,7 @@ TEST_F(PasswordSettingsViewControllerTest,
        DisplaysOfferToSavePasswordsManagedByPolicy) {
   id<PasswordSettingsConsumer> consumer =
       base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setManagedByPolicy:YES];
+  [consumer setSavePasswordsEnabled:NO managedByPolicy:YES];
   TableViewInfoButtonItem* managedSavePasswordsItem =
       static_cast<TableViewInfoButtonItem*>(GetTableViewItem(/*section=*/0, 0));
   EXPECT_NSEQ(managedSavePasswordsItem.text,

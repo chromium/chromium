@@ -92,6 +92,13 @@ class MockMojoMantisProcessor : public mantis::mojom::MantisProcessor {
               (const std::vector<uint8_t>& image,
                ClassifyImageSafetyCallback callback),
               (override));
+  MOCK_METHOD(void,
+              Outpainting,
+              (const std::vector<uint8_t>& image,
+               const std::vector<uint8_t>& mask,
+               uint32_t seed,
+               InpaintingCallback callback),
+              (override));
 
  private:
   mojo::Receiver<mantis::mojom::MantisProcessor> receiver_;
@@ -173,6 +180,18 @@ TEST_P(ImageInferenceTest, InpaintImage) {
   base::test::TestFuture<mantis::mojom::MantisResultPtr> result_future;
   service_.InpaintImage(GetFakeImage(), GetFakeMask(), GetFakeSeed(),
                         result_future.GetCallback());
+  EXPECT_EQ(result_future.Take(), result);
+}
+
+TEST_P(ImageInferenceTest, OutpaintImage) {
+  MantisResultPtr result = GetMantisResult(GetParam());
+
+  EXPECT_CALL(mojo_mantis_processor_, Outpainting)
+      .WillOnce(RunOnceCallback<3>(result.Clone()));
+
+  base::test::TestFuture<mantis::mojom::MantisResultPtr> result_future;
+  service_.OutpaintImage(GetFakeImage(), GetFakeMask(), GetFakeSeed(),
+                         result_future.GetCallback());
   EXPECT_EQ(result_future.Take(), result);
 }
 

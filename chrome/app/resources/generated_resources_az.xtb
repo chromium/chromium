@@ -1274,7 +1274,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1875387611427697908">Bu, yalnız <ph name="CHROME_WEB_STORE" /> ünvanından əlavə edilə bilər</translation>
 <translation id="1877377290348678128">Etiket (istəyə görə)</translation>
 <translation id="1877377730633446520">Bunun üçün təxminən <ph name="REQUIRED_SPACE" /> istifadə ediləcək. Hazırda <ph name="FREE_SPACE" /> əlçatandır.</translation>
-<translation id="1877520246462554164">Doğrulama açarı əldə etmək alınmadı. Yenidən cəhd etmək üçün hesabdan çıxın və təkar daxil olun.</translation>
 <translation id="1877860345998737529">Əməliyyat təyinatını dəyişin</translation>
 <translation id="1878155070920054810">Görünür, güncəlləmə tamamlanana kimi Chromebook'un enerjisi bitəcək. Fasilə olmaması üçün onun düzgün şarj edildiyinə əmin olun.</translation>
 <translation id="1878477879455105085">Açılıb</translation>
@@ -6996,7 +6995,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5952020381407136867">taçped</translation>
 <translation id="5953211687820750364">Bu siyahıya təsir edən siyasətlər: <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           və <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Parolun müddəti bitib. Dəyişmək üçün hesabdan çıxın və təkrar daxil olun.</translation>
 <translation id="5955304353782037793">tətbiq</translation>
 <translation id="5955721306465922729">Veb sayt bu tətbiqi açmaq istəyir.</translation>
 <translation id="5955809630138889698">Bu cihaz yalnız onlayn demo rejimi üçün uyğundur. Ətraflı məlumat üçün dəstək nüməyəndəsi ilə əlaqə saxlayın.</translation>
@@ -9700,7 +9698,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7910725946105920830">Şəxsi Google Hesabından istifadə edin</translation>
 <translation id="7910768399700579500">&amp;Yeni qovluq</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Parolunuz serverdə dəyişdirilib. Hesabdan çıxın və təkrar daxil olun.</translation>
 <translation id="791247712619243506">Ayarlamanı ləğv edin</translation>
 <translation id="7912974581251770345">Tərcümə</translation>
 <translation id="7914399737746719723">Tətbiq quraşdırılıb</translation>

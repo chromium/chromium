@@ -115,7 +115,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       case 'login':
         this.lastWidth = 400;
         this.lastHeight = 800;
+        this.cancelTimeout();
         $.guestPanel.classList.toggle('show-header', true);
+        this.showPanel('guestPanel');
         break;
       case 'regular':
         $.guestPanel.classList.toggle('show-header', false);

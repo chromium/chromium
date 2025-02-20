@@ -209,12 +209,7 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   int WaitForSSLConfigReady(CompletionOnceCallback callback) override {
     int rv = manager_->WaitForSSLConfigReady();
     if (rv == ERR_IO_PENDING) {
-      // TODO(crbug.com/383220402): Remove the timer when the cause of the bug
-      // is fixed.
-      ssl_config_waiting_timeout_timer_.Start(
-          FROM_HERE, base::Seconds(6),
-          base::BindOnce(&InFlightAttempt::OnWaitingSSLConfigTimedout,
-                         base::Unretained(this)));
+      ssl_config_wait_start_time_ = base::TimeTicks::Now();
       ssl_config_waiting_callback_ = std::move(callback);
     }
     return rv;
@@ -230,7 +225,11 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   }
 
   CompletionOnceCallback TakeSSLConfigWaitingCallback() {
-    ssl_config_waiting_timeout_timer_.Stop();
+    CHECK(!ssl_config_wait_start_time_.is_null());
+    base::UmaHistogramTimes(
+        "Net.HttpStreamPool.StreamAttemptSSLConfigWaitTime",
+        base::TimeTicks::Now() - ssl_config_wait_start_time_);
+
     return std::move(ssl_config_waiting_callback_);
   }
 
@@ -261,12 +260,6 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   }
 
  private:
-  void OnWaitingSSLConfigTimedout() {
-    std::string manager_info = manager_->GetInfoAsValue().DebugString();
-    DEBUG_ALIAS_FOR_CSTR(aliased_info, manager_info.c_str(), 512);
-    CHECK(false) << manager_info;
-  }
-
   void OnInFlightAttemptComplete(int rv) {
     manager_->OnInFlightAttemptComplete(this, rv);
   }
@@ -284,10 +277,8 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   // Set to true when `this` and `attempt_` should abort. Currently used to
   // handle ECH failure.
   bool is_aborted_ = false;
+  base::TimeTicks ssl_config_wait_start_time_;
   CompletionOnceCallback ssl_config_waiting_callback_;
-
-  // TODO(crbug.com/383220402): Remove this when the cause of the bug is fixed.
-  base::OneShotTimer ssl_config_waiting_timeout_timer_;
 
   base::WeakPtrFactory<InFlightAttempt> weak_ptr_factory_{this};
 };

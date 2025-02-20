@@ -34,7 +34,6 @@
 #if defined(REMOTING_USE_X11)
 #include <gtk/gtk.h>
 #include "base/linux_util.h"
-#include "remoting/host/linux/wayland_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/xlib_support.h"
 #endif  // defined(REMOTING_USE_X11)
@@ -78,11 +77,9 @@ bool CurrentProcessHasUiAccess() {
 // runs the task executor until It2MeNativeMessagingHost signals shutdown.
 int It2MeNativeMessagingHostMain(int argc, char** argv) {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
-  if (!IsRunningWayland()) {
-    // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
-    // use X11 safely (such as the WebRTC capturer, GTK ...)
-    x11::InitXlib();
-  }
+  // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
+  // use X11 safely (such as the WebRTC capturer, GTK ...)
+  x11::InitXlib();
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(REMOTING_USE_X11)
 
@@ -253,17 +250,14 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
   scoped_refptr<AutoThreadTaskRunner> input_task_runner;
-  if (!IsRunningWayland()) {
-    // Create an X11EventSource on all UI threads, so the global X11 connection
-    // (x11::Connection::Get()) can dispatch X events.
-    auto event_source =
-        std::make_unique<ui::X11EventSource>(x11::Connection::Get());
-    input_task_runner = context->input_task_runner();
-    input_task_runner->PostTask(
-        FROM_HERE, base::BindOnce([]() {
-          new ui::X11EventSource(x11::Connection::Get());
-        }));
-  }
+  // Create an X11EventSource on all UI threads, so the global X11 connection
+  // (x11::Connection::Get()) can dispatch X events.
+  auto event_source =
+      std::make_unique<ui::X11EventSource>(x11::Connection::Get());
+  input_task_runner = context->input_task_runner();
+  input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
+                                new ui::X11EventSource(x11::Connection::Get());
+                              }));
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(REMOTING_USE_X11)
 
@@ -279,11 +273,9 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   run_loop.Run();
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
-  if (!IsRunningWayland()) {
-    input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
-                                  delete ui::X11EventSource::GetInstance();
-                                }));
-  }
+  input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
+                                delete ui::X11EventSource::GetInstance();
+                              }));
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(REMOTING_USE_X11)
 

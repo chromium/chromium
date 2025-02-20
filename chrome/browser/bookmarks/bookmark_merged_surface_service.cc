@@ -384,6 +384,14 @@ void BookmarkMergedSurfaceService::AddNodesAsCopiesOfNodeData(
                                /*reset_node_times=*/true);
 }
 
+bool BookmarkMergedSurfaceService::IsNonDefaultOrderingTracked(
+    const BookmarkParentFolder& folder) const {
+  return !folder.HoldsNonPermanentFolder() &&
+         !IsPermanentManagedFolder(folder) &&
+         GetPermanentFolderOrderingTracker(*folder.as_permanent_folder())
+             .IsNonDefaultOrderingTracked();
+}
+
 void BookmarkMergedSurfaceService::NotifyBookmarkNodeAddedForAllDescendants(
     const BookmarkNode* node) {
   if (node->children().empty()) {

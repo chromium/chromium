@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium keeps your sensitive data secure with Face ID.</translation>
 <translation id="1591119736686995611">Opens the Chromium Tab Grid.</translation>
 <translation id="16001233025397167">Safety Check keeps you safe from data breaches, unsafe websites and more. Receive alerts on any privacy or security issues that Chromium detects for you.</translation>
-<translation id="1611584326765829247">Let Chromium help you track your packages</translation>
 <translation id="1617663976202781617">Data from Chromium sync</translation>
 <translation id="164952285225495380">This package has already been tracked on Chromium.</translation>
 <translation id="1707458603865303524">Use Chrome any time that you tap links in messages and other apps.</translation>
@@ -306,7 +305,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8826789549860004832">Get the most out of Chromium by continuing setting up your browser.</translation>
 <translation id="88376265765385899">Opens the Chromium bookmarks.</translation>
 <translation id="8860548555286245440">Open URLs in Chromium in Incognito</translation>
-<translation id="8866191443434488382">Chromium will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Chromium to provide this feature and to improve shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />package tracking settings<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Your organisation requires you to sign in to use Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Get Chromium's strongest security</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute}other{This happens when Chromium isn't used for {THRESHOLD} minutes}}</translation>

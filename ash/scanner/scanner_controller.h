@@ -74,10 +74,10 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   ScannerSession* StartNewSession();
 
   // Fetches Scanner actions that are available based on the current
-  // `scanner_session_` and the contents of `jpeg_bytes`. The actions are
-  // returned via `callback`. If no session is active, then `callback` will be
-  // run with an empty list of actions.
-  void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+  // `scanner_session_` and the contents of `jpeg_bytes`, and returns whether a
+  // session was active. The actions are returned via `callback`. If no session
+  // is active, then `callback` will be run with an empty list of actions.
+  bool FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
                             ScannerSession::FetchActionsCallback callback);
 
   // Should be called when the user has finished interacting with a Scanner

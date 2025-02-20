@@ -151,6 +151,8 @@ chromium-metrics-reviews@google.com.
   <int value="33554432" label="DISABLE_UNKNOWN"/>
 </enum>
 
+<!-- LINT.IfChange(ExtensionEvents) -->
+
 <enum name="ExtensionEvents">
 <!-- Generated from extensions/browser/extension_event_histogram_value.h.
 Called by update_extension_histograms.py.-->
@@ -768,6 +770,8 @@ Called by update_extension_histograms.py.-->
   <int value="564" label="OMNIBOX_ON_ACTION_EXECUTED"/>
 </enum>
 
+<!-- LINT.ThenChange(//extensions/browser/extension_event_histogram_value.h:HistogramValue) -->
+
 <enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">
   <int value="0" label="Gmail"/>
   <int value="1" label="Docs"/>
@@ -781,6 +785,8 @@ Called by update_extension_histograms.py.-->
   <int value="0" label="Non-webstore update URL"/>
   <int value="1" label="External install location"/>
 </enum>
+
+<!-- LINT.IfChange(ExtensionFunctions) -->
 
 <enum name="ExtensionFunctions">
 <!-- Generated from extensions/browser/extension_function_histogram_value.h.
@@ -2797,6 +2803,8 @@ Called by update_extension_histograms.py.-->
   <int value="1923" label="AUTOTESTPRIVATE_OVERRIDESCANNERRESPONSESFORTESTING"/>
 </enum>
 
+<!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
+
 <enum name="ExtensionInstallationCrxInstallError">
   <int value="0" label="NONE"/>
   <int value="1" label="CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED"/>
@@ -3525,6 +3533,17 @@ Called by update_extension_permission.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/extensions/browser/api/web_request/web_request_api.h:ProxyDecision) -->
+
+<!-- LINT.IfChange(WebRequestProxyDecisionDetailsForExtension) -->
+
+<enum name="WebRequest.ProxyDecisionDetailsForExtension">
+  <int value="0" label="kOnlyForWebRequest"/>
+  <int value="1" label="kOnlyForDeclarativeRequest"/>
+  <int value="2" label="kOnlyForWebView"/>
+  <int value="3" label="kForMixedReasons"/>
+</enum>
+
+<!-- LINT.ThenChange(/extensions/browser/api/web_request/web_request_api.cc:ProxyDecisionDetailsForExtension) -->
 
 <enum name="WebRequest.RequestHeader">
   <int value="0" label="kNone"/>

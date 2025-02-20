@@ -28,10 +28,10 @@ export class SetupCancelDialogElement extends HTMLElement {
 
     this.attachShadow({mode: 'open'}).innerHTML = getTemplate();
     this.dialog = this.$('cr-dialog');
-    this.$('.action-button')!.addEventListener(
-        'click', () => this.onResumeButtonClick());
-    this.$('.cancel-button')!.addEventListener(
-        'click', () => this.onCancelButtonClick());
+    this.$('.action-button')
+        .addEventListener('click', () => this.onResumeButtonClick());
+    this.$('.cancel-button')
+        .addEventListener('click', () => this.onCancelButtonClick());
     this.boundKeyDownListener_ = this.onKeyDown.bind(this);
   }
 

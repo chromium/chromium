@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view_delegate.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
@@ -19,13 +20,13 @@ SharesheetServiceDelegator::SharesheetServiceDelegator(
     gfx::NativeWindow native_window,
     SharesheetService* sharesheet_service)
     : native_window_(native_window), sharesheet_service_(sharesheet_service) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   sharesheet_controller_ =
       std::make_unique<ash::sharesheet::SharesheetBubbleViewDelegate>(
           native_window_, this);
 #else
   NOTIMPLEMENTED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 SharesheetServiceDelegator::~SharesheetServiceDelegator() = default;
@@ -63,7 +64,7 @@ void SharesheetServiceDelegator::ShowBubble(
   NOTREACHED();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Skips the generic Sharesheet bubble and directly displays the
 // NearbyShare bubble dialog.
 void SharesheetServiceDelegator::ShowNearbyShareBubbleForArc(
@@ -75,7 +76,7 @@ void SharesheetServiceDelegator::ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
       std::move(close_callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Invoked immediately after an action has launched in the event that UI
 // changes need to occur at this point.

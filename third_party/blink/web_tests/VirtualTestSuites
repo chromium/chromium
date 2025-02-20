@@ -1757,7 +1757,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=Prerender2NoVarySearch,Prerender2InNewTab,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2",
+      "--enable-features=SharedStorageAPI,PrivacySandboxAdsAPIsOverride,Prerender2NoVarySearch,Prerender2InNewTab,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2",
       "--disable-features=KeepAliveInBrowserMigration,Prerender2FallbackPrefetchSpecRules"
     ],
     "owners": ["nhiroki@chromium.org", "yoichio@chromium.org"],
@@ -2132,7 +2132,7 @@
     "bases": ["external/wpt/html/semantics/permission-element"],
     "args": ["--enable-blink-features=PermissionElement"],
     "owners": ["permissions-core@google.com"],
-    "expires": "Feb 1, 2025"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "permission-element-disabled",
@@ -2140,7 +2140,7 @@
     "bases": [],
     "args": ["--disable-blink-features=PermissionElement"],
     "owners": ["permissions-core@google.com"],
-    "expires": "Feb 1, 2025"
+    "expires": "Jul 1, 2025"
   },
   "The GenericSensorExtraClasses feature is controlled by a flag, which has ",
   "an expiration date. |expires| below is set to 'never' to avoid having to ",
@@ -4632,9 +4632,7 @@
     "prefix": "sri-message-signatures",
     "platforms": ["Linux"],
     "bases": [
-      "external/wpt/subresource-integrity/signatures/tentative/fetch.any.html",
-      "external/wpt/subresource-integrity/signatures/tentative/fetch.any.worker.html",
-      "external/wpt/subresource-integrity/signatures/tentative/fetch.any.sharedworker.html",
+      "external/wpt/subresource-integrity/signatures/tentative/server-initiated.window.html",
       "http/tests/inspector-protocol/issues/sri-message-signatures/"
     ],
     "exclusive_tests": "ALL",

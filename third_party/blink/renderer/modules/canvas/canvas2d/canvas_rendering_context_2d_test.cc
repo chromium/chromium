@@ -231,10 +231,7 @@ scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
     FlushReason,
     SourceImageStatus* status,
     const gfx::SizeF&,
-    const AlphaDisposition alpha_disposition = kPremultiplyAlpha) {
-  // Only cover premultiply alpha cases.
-  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
-
+    const AlphaDisposition) {
   if (status)
     *status = kNormalSourceImageStatus;
   return image_;
@@ -487,15 +484,8 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
   ~FakeCanvasResourceProvider() override = default;
   bool IsAccelerated() const override { return is_accelerated_; }
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
-    const SkImageInfo& info = GetSkImageInfo();
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
-        gfx::Size(info.width(), info.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(
-            info.colorInfo().colorType()),
-        info.colorInfo().alphaType(),
-        // NOTE: The SkImageInfo here is hardcoded to have a null colorspace,
-        // which corresponds to SRGB.
-        gfx::ColorSpace::CreateSRGB(),
+        Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
         IsAccelerated(),
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |

@@ -1284,7 +1284,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1875387611427697908">Hii inaweza tu kuongezwa kutoka <ph name="CHROME_WEB_STORE" />.</translation>
 <translation id="1877377290348678128">Lebo (si lazima)</translation>
 <translation id="1877377730633446520">Faili hii itatumia takribani <ph name="REQUIRED_SPACE" />. Kwa sasa una <ph name="FREE_SPACE" /> za nafasi ya hifadhi.</translation>
-<translation id="1877520246462554164">Imeshindwa kupata tokeni ya uthibitishaji. Tafadhali ondoka na uingie katika akaunti ili ujaribu tena.</translation>
 <translation id="1877860345998737529">Badili ukabidhi wa shughuli</translation>
 <translation id="1878155070920054810">Inaonekana kuwa chaji ya Chromebook yako itaisha kabla ya sasisho kukamilika. Hakikisha kuwa inachaji ipasavyo ili kuepuka kukatizwa kwa sasisho.</translation>
 <translation id="1878477879455105085">Kimefunguliwa</translation>
@@ -7009,7 +7008,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5952020381407136867">padi ya kugusa</translation>
 <translation id="5953211687820750364">Orodha hii inaathiriwa na <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           na <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Nenosiri lako limekwisha muda. Tafadhali ondoka kisha uingie katika akaunti tena ili ulibadilishe.</translation>
 <translation id="5955304353782037793">programu</translation>
 <translation id="5955721306465922729">Tovuti inataka kufungua programu hii.</translation>
 <translation id="5955809630138889698">Kifaa hiki kinaweza kutumika kwa hali ya onyesho la mtandaoni pekee. Tafadhali wasiliana na mwakilishi wako wa usaidizi kwa maelezo zaidi.</translation>
@@ -9715,7 +9713,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7910725946105920830">Tumia Akaunti yako binafsi ya Google</translation>
 <translation id="7910768399700579500">&amp;Folda jipya</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Nenosiri lako limebadilishwa kwenye seva. Tafadhali ondoka na uingie katika akaunti tena.</translation>
 <translation id="791247712619243506">Ghairi kuweka mipangilio</translation>
 <translation id="7912974581251770345">Tafsiri</translation>
 <translation id="7914399737746719723">Programu imesakinishwa</translation>

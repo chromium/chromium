@@ -56,6 +56,7 @@ namespace extensions::functions {
 //         above. This will effectively deprecate the old histogram stream and
 //         creates a new one for the new function name.
 //
+// LINT.IfChange(HistogramValue)
 enum HistogramValue {
   UNKNOWN = 0,
   WEBNAVIGATION_GETALLFRAMES = 1,
@@ -1987,6 +1988,7 @@ enum HistogramValue {
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionFunctions)
 
 }  // namespace extensions::functions
 

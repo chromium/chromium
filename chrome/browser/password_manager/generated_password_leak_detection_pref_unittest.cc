@@ -6,7 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -107,7 +107,7 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
   EXPECT_EQ(test_observer.GetUpdatedPrefName(),
             kGeneratedPasswordLeakDetectionPref);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Clearing the primary account does not make sense on ChromeOS.
   test_observer.Reset();
   identity_test_env()->ClearPrimaryAccount();

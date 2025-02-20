@@ -526,7 +526,6 @@ if (is_android) {
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.browserservices") {
     sources = [
-      "src/org/chromium/chrome/browser/browserservices/ClearDataDialogResultRecorderTest.java",
       "src/org/chromium/chrome/browser/browserservices/InstalledWebappBroadcastReceiverTest.java",
       "src/org/chromium/chrome/browser/browserservices/InstalledWebappDataRegisterTest.java",
       "src/org/chromium/chrome/browser/browserservices/InstalledWebappRegistrarTest.java",

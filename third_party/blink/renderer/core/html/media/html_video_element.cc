@@ -623,10 +623,7 @@ scoped_refptr<Image> HTMLVideoElement::GetSourceImageForCanvas(
     FlushReason,
     SourceImageStatus* status,
     const gfx::SizeF&,
-    const AlphaDisposition alpha_disposition) {
-  // UnpremultiplyAlpha is not implemented yet.
-  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
-
+    const AlphaDisposition) {
   scoped_refptr<Image> snapshot = CreateStaticBitmapImage();
   if (!snapshot) {
     *status = kInvalidSourceImageStatus;

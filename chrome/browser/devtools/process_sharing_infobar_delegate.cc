@@ -94,7 +94,7 @@ bool ProcessSharingInfobarDelegate::Accept() {
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   delegate->SetAcceptCallback(base::BindOnce(
       [](base::WeakPtr<content::WebContents> inspected_web_contents) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         PrefService* prefs = Profile::FromBrowserContext(
                                  inspected_web_contents->GetBrowserContext())
                                  ->GetPrefs();

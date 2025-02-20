@@ -738,8 +738,8 @@ TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
               FetchActionsForImage)
       .WillOnce(RunOnceCallback<1>(std::move(output), manta::MantaStatus()));
 
-  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
-                                           actions_future.GetCallback());
+  EXPECT_TRUE(scanner_controller->FetchActionsForImage(
+      /*jpeg_bytes=*/nullptr, actions_future.GetCallback()));
 
   EXPECT_THAT(actions_future.Take(), ValueIs(SizeIs(1)));
 }
@@ -749,8 +749,8 @@ TEST_F(ScannerControllerTest, NoActionsFetchedWhenNoActiveSession) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
 
-  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
-                                           actions_future.GetCallback());
+  EXPECT_FALSE(scanner_controller->FetchActionsForImage(
+      /*jpeg_bytes=*/nullptr, actions_future.GetCallback()));
 
   EXPECT_THAT(actions_future.Take(), ValueIs(IsEmpty()));
 }

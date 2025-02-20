@@ -532,10 +532,11 @@ bool ShouldPerformTextDetection(PerformCaptureType capture_type) {
 
 // Returns true if Scanner actions should be fetched for a captured image with
 // the given `capture_type`.
+// This will return true even if Scanner is disabled so the appropriate metrics
+// can be emitted.
 bool ShouldFetchScannerActions(PerformCaptureType capture_type) {
-  return Shell::Get()->scanner_controller() &&
-         (capture_type == PerformCaptureType::kSunfish ||
-          capture_type == PerformCaptureType::kScanner);
+  return capture_type == PerformCaptureType::kSunfish ||
+         capture_type == PerformCaptureType::kScanner;
 }
 
 // Returns true if region search should be performed on a captured image with
@@ -1998,21 +1999,37 @@ void CaptureModeController::OnImageCapturedForSearch(
   }
 
   if (ShouldFetchScannerActions(capture_type)) {
+    bool actions_fetched = false;
+    if (ScannerController* scanner_controller =
+            Shell::Get()->scanner_controller()) {
+      // Note that `OnScannerActionsFetched` is always called, even if
+      // `actions_fetched` is false. This is intentional, as
+      // `OnScannerActionsFetched` stops the glow started by
+      // `ShouldShowGlowWhileProcessingCaptureType` in `DefaultBehavior`
+      // (guarded on whether `scanner_controller()` is non-null on `Shell`), and
+      // in `SunfishBehavior` (always true).
+      actions_fetched = scanner_controller->FetchActionsForImage(
+          jpeg_bytes,
+          base::BindOnce(&CaptureModeController::OnScannerActionsFetched,
+                         weak_ptr_factory_.GetWeakPtr(), image_search_token));
+    }
+
     if (capture_type == PerformCaptureType::kSunfish) {
       RecordScannerFeatureUserState(
-          ScannerFeatureUserState::
-              kSunfishScreenInitialScreenCaptureSentToScannerServer);
+          actions_fetched
+              ? ScannerFeatureUserState::
+                    kSunfishSessionImageCapturedAndActionsFetchStarted
+              : ScannerFeatureUserState::
+                    kSunfishSessionImageCapturedAndActionsNotFetched);
     }
     if (capture_type == PerformCaptureType::kScanner) {
       RecordScannerFeatureUserState(
-          ScannerFeatureUserState::
-              kScreenCaptureModeInitialScreenCaptureSentToScannerServer);
+          actions_fetched
+              ? ScannerFeatureUserState::
+                    kSmartActionsButtonImageCapturedAndActionsFetchStarted
+              : ScannerFeatureUserState::
+                    kSmartActionsButtonImageCapturedAndActionsNotFetched);
     }
-
-    Shell::Get()->scanner_controller()->FetchActionsForImage(
-        jpeg_bytes,
-        base::BindOnce(&CaptureModeController::OnScannerActionsFetched,
-                       weak_ptr_factory_.GetWeakPtr(), image_search_token));
   }
 
   if (ShouldSendRegionSearch(capture_type)) {

@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -99,7 +100,7 @@ SharesheetController* SharesheetService::GetSharesheetController(
   return delegator->GetSharesheetController();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void SharesheetService::ShowNearbyShareBubbleForArc(
     gfx::NativeWindow native_window,
     apps::IntentPtr intent,
@@ -129,7 +130,7 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
       std::move(close_callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Cleanup delegator when bubble closes.
 void SharesheetService::OnBubbleClosed(

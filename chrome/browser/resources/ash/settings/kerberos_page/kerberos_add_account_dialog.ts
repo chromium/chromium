@@ -241,7 +241,7 @@ export class KerberosAddAccountDialogElement extends
         this.useStoredPassword_ = true;
       }
 
-      this.config_ = this.presetAccount!.config;
+      this.config_ = this.presetAccount.config;
     } else {
       // Add a new Kerberos account.
       this.title_ = this.i18n('addKerberosAccount');

@@ -63,13 +63,14 @@ class SupervisedUserWebContentHandlerImpl
   void CompleteUrlApprovalAndCloseDialog(
       const GURL& target_url,
       base::TimeTicks start_time,
-      supervised_user::LocalApprovalResult result);
+      supervised_user::LocalApprovalResult result,
+      std::optional<supervised_user::LocalWebApprovalErrorType> error_type);
 
   void CloseDialog();
 
   // Aborts the local web approval flow with an Error result and closes any open
   // parent approval dialog.
-  void AbortUrlApprovalDialog();
+  void AbortUrlApprovalDialogOnTimeout();
 
   // Stops WebContents observation by the `dialog_web_contents_observer_`
   // and resets the unique pointer.

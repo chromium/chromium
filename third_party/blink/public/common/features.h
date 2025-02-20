@@ -555,16 +555,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kFledgeMaxGroupLifetimeForMetadata);
 
-// Decide whether to enable forDebuggingOnly report sampling based on user's
-// third party cookie setting.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFledgeEnableSampleDebugReportOnCookieSetting);
-
-// Run sampling of forDebuggingOnly reports and let generateBid() and scoreAd()
-// know fDO's lockout/cooldown status through their browser signals, to allow
-// ad techs experimenting with and adapting to the algorithm.
-// But whether sending all or only sampled forDebuggingOnly reports depends on
-// flag kFledgeEnableFilteringDebugReportStartingFrom.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
@@ -754,6 +744,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanHeuristics);
 // Enables discarding the prediction if the predicted direction is opposite from
 // the current direction.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanDirectionCutOff);
+
+// When enabled, PaintArtifactCompositor::Layerizer will limit the distance
+// (in number of non-mergeable intermediate PendingLayers) between merged
+// layers to kLayerMergeDistanceLimit, to reduce the cost of layerization.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLimitLayerMergeDistance);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                               kLayerMergeDistanceLimit);
 
 // When enabled, LCP critical path predictor will optimize the subsequent visits
 // to websites using performance hints collected in the past page loads.

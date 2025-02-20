@@ -212,16 +212,6 @@ BASE_FEATURE(kAutofillOptimizeFormExtraction,
              "AutofillOptimizeFormExtraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Resets the autofill state of a field when JavaScript modifies its value.
-// Also resets the AutofillState of the blink element to kAutofilled if the
-// change was only a reformatting (inserting whitespaces and special
-// characters).
-// This feature should be enabled with
-// blink::features::AllowJavaScriptToResetAutofillState.
-BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
-             "AutofillFixCachingOnJavaScriptChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Fixes the overloaded meaning of FormFieldData::value (current value of a
 // field and initial value of a field): if enabled, AutofillField::value() takes
 // into accounts its ValueSemantics parameter.
@@ -383,22 +373,6 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
              "AutofillReplaceCachedWebElementsByRendererIds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using the a custom address model for Australia, overriding the legacy
-// one.
-BASE_FEATURE(kAutofillUseAUAddressModel,
-             "AutofillUseAUAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables using a custom address model for Canada, overriding the legacy one.
-BASE_FEATURE(kAutofillUseCAAddressModel,
-             "AutofillUseCAAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables using a custom address model for Germany, overriding the legacy one.
-BASE_FEATURE(kAutofillUseDEAddressModel,
-             "AutofillUseDEAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using a custom address model for France, overriding the legacy one.
 BASE_FEATURE(kAutofillUseFRAddressModel,
              "AutofillUseFRAddressModel",
@@ -412,7 +386,7 @@ BASE_FEATURE(kAutofillUseINAddressModel,
 // Enables using a custom address model for Italy, overriding the legacy one.
 BASE_FEATURE(kAutofillUseITAddressModel,
              "AutofillUseITAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a custom address model for Japan, overriding the legacy one.
 BASE_FEATURE(kAutofillSupportPhoneticNameForJP,
@@ -433,7 +407,7 @@ BASE_FEATURE(kAutofillUseNLAddressModel,
 // Enables using a custom address model for Poland, overriding the legacy one.
 BASE_FEATURE(kAutofillUsePLAddressModel,
              "AutofillUsePLAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the form field parser won't try to match other attributes if
 // any of the negative patterns matched.

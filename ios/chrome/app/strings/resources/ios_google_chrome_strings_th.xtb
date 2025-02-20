@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
-<translation id="1066101356081285416">Chrome จะตรวจหาหมายเลขติดตามพัสดุในเว็บไซต์ที่คุณเข้าชมและแสดงข้อมูลอัปเดตเกี่ยวกับพัสดุในหน้า "แท็บใหม่" ระบบจะส่งหมายเลขติดตามพัสดุและชื่อเว็บไซต์ไปยัง Google เพื่อให้บริการฟีเจอร์นี้และเพื่อปรับปรุงฟีเจอร์ต่างๆ ที่เกี่ยวกับการช็อปปิ้งของ Google สําหรับทุกคน คุณอัปเดตข้อมูลนี้ได้ทุกเมื่อใน<ph name="BEGIN_LINK" />การตั้งค่าการติดตามพัสดุภัณฑ์<ph name="END_LINK" /></translation>
 <translation id="1076643793026027628">Chrome จะเปิดลิงก์ที่ไม่ระบุตัวตนของ YouTube ในโหมดไม่ระบุตัวตนโดยอัตโนมัติ</translation>
 <translation id="1086486568852410168">ค้นหาด้วย Google Lens</translation>
 <translation id="1143896152279775643">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
@@ -68,7 +67,6 @@
 <translation id="2574249610672786438">ลงชื่อเข้าใช้ในอุปกรณ์ทุกเครื่องเพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
 <translation id="2576431527583832481">Chrome พัฒนาใหม่! มีรุ่นใหม่ให้ใช้งานแล้ว</translation>
 <translation id="257708665678654955">คุณต้องการให้ Google Chrome เสนอการแปลหน้าภาษา<ph name="LANGUAGE_NAME" />จากเว็บไซต์นี้ในครั้งถัดไปไหม</translation>
-<translation id="2650286135394207535">ให้ Chrome ช่วยคุณติดตามพัสดุ</translation>
 <translation id="2668242166988961773">ค้นหาด้วยเสียงใน Chrome</translation>
 <translation id="2671426118752779020">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="2689064829982324496">หากต้องการออกจากระบบบัญชี Google ในเว็บไซต์ทั้งหมด ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chrome<ph name="END_LINK" /></translation>

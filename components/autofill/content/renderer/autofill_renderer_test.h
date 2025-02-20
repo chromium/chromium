@@ -74,8 +74,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               JavaScriptChangedAutofilledValue,
               (const FormData& form,
                FieldRendererId field_id,
-               const std::u16string& old_value,
-               bool formatting_ony),
+               const std::u16string& old_value),
               (override));
   MOCK_METHOD(void,
               AskForValuesToFill,

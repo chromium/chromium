@@ -407,3 +407,256 @@
         img_ctx.fillRect(0, 0, {{ size[0] }}, {{ size[1] }});
         ctx.fillStyle = ctx.createPattern(img_canvas, 'repeat');
         ctx.fillRect(5, 5, 50, 30);
+
+# Composite operation tests
+# <http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2007-March/010608.html>
+- name: 2d.composite
+  macros: |
+    {% macro calc_output(A, B, FA, FB) %}
+      {% set RA, GA, BA, aA = A -%}
+      {% set RB, GB, BB, aB = B -%}
+      {% set rA, gA, bA = RA * aA, GA * aA, BA * aA -%}
+      {% set rB, gB, bB = RB * aB, GB * aB, BB * aB -%}
+
+      {% set FA = FA[0] + FA[1] * aA + FA[2] * aB -%}
+      {% set FB = FB[0] + FB[1] * aA + FB[2] * aB -%}
+
+      {% set rO = rA * FA + rB * FB -%}
+      {% set gO = gA * FA + gB * FB -%}
+      {% set bO = bA * FA + bB * FB -%}
+      {% set aO = aA * FA + aB * FB -%}
+
+      {% set rO = (255, rO) | min -%}
+      {% set gO = (255, gO) | min -%}
+      {% set bO = (255, bO) | min -%}
+      {% set aO = (1, aO) | min -%}
+
+      {% set RO = rO / aO if aO else 0 -%}
+      {% set GO = gO / aO if aO else 0 -%}
+      {% set BO = bO / aO if aO else 0 -%}
+
+      {{- '%f,%f,%f,%f' | format(RO, GO, BO, aO) -}}
+    {% endmacro %}
+
+    {% macro rgba_format(color) %}
+      {% set r, g, b, a = color -%}
+      rgba{{ (r, g, b, a) -}}
+    {% endmacro %}
+
+    {% macro js_format(color) %}
+      {% set r, g, b, a = color.split(',') | map('float') %}
+      {{- '%d,%d,%d,%d' |
+          format(r | round, g | round, b | round, (a * 255) | round) -}}
+    {% endmacro %}
+
+    {% macro cairo_format(color) %}
+      {% set r, g, b, a = color.split(',') | map('float') %}
+      {{- '%f,%f,%f,%f' | format(r / 255.0, g / 255.0, b / 255.0, a) -}}
+    {% endmacro %}
+  code: |
+    {% import 'macros' as m -%}
+    ctx.fillStyle = '{{ m.rgba_format(dest_color) }}';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.globalCompositeOperation = '{{ variant_names[1] }}';
+    {{ draw_code }}
+    {{ assertion }}
+  assertion: |-
+    {% import 'macros' as m -%}
+    @assert pixel 50,25 ==~ {{ m.js_format(expected_color) }} +/- 5;
+  expected: |
+    {% import 'macros' as m %}
+    size 100 50
+    cr.set_source_rgba({{ m.cairo_format(expected_color) }})
+    cr.rectangle(0, 0, 100, 50)
+    cr.fill()
+  new_auxiliary_canvas: |-
+    {%- if canvas_type == 'HtmlCanvas' -%}
+    document.createElement('canvas');
+    canvas2.width = canvas.width;
+    canvas2.height = canvas.height;
+    {%- else -%}
+    new OffscreenCanvas(canvas.width, canvas.height);
+    {%- endif -%}
+  variants:
+  - solid:
+      src_color: [255, 255, 0, 1.0]
+      dest_color: [0, 255, 255, 1.0]
+      draw_code: |-
+        {% import 'macros' as m %}
+        ctx.fillStyle = '{{ m.rgba_format(src_color) }}';
+        ctx.fillRect(0, 0, 100, 50);
+      expected_color: |
+        {% import 'macros' as m %}
+        {{ m.calc_output(src_color, dest_color, fa, fb) }}
+    transparent:
+      src_color: [0, 0, 255, 0.75]
+      dest_color: [0, 255, 0, 0.5]
+      draw_code: |-
+        {% import 'macros' as m %}
+        ctx.fillStyle = '{{ m.rgba_format(src_color) }}';
+        ctx.fillRect(0, 0, 100, 50);
+      expected_color: |
+        {% import 'macros' as m %}
+        {{ m.calc_output(src_color, dest_color, fa, fb) }}
+    image:
+      src_color: [255, 255, 0, 0.75]
+      dest_color: [0, 255, 255, 0.5]
+      test_type: 'promise'
+      draw_code: |-
+        const response = await fetch('/images/yellow75.png')
+        const blob = await response.blob();
+        const bitmap = await createImageBitmap(blob);
+        ctx.drawImage(bitmap, 0, 0);
+      expected_color: |
+        {% import 'macros' as m %}
+        {{ m.calc_output(src_color, dest_color, fa, fb) }}
+    canvas:
+      src_color: [255, 255, 0, 0.75]
+      dest_color: [0, 255, 255, 0.5]
+      test_type: 'promise'
+      draw_code: |-
+        const canvas2 = {{ new_auxiliary_canvas }}
+        const ctx2 = canvas2.getContext('2d');
+        const response = await fetch('/images/yellow75.png')
+        const blob = await response.blob();
+        const bitmap = await createImageBitmap(blob);
+        ctx2.drawImage(bitmap, 0, 0);
+        ctx.drawImage(canvas2, 0, 0);
+      expected_color: |
+        {% import 'macros' as m %}
+        {{ m.calc_output(src_color, dest_color, fa, fb) }}
+    uncovered.fill:
+      desc: >-
+          fill() draws pixels not covered by the source object as (0,0,0,0), and
+          does not leave the pixels unchanged.
+      src_color: [0, 0, 255, 0.75]
+      dest_color: [0, 255, 0, 0.5]
+      draw_code: |-
+        {% import 'macros' as m %}
+        ctx.fillStyle = '{{ m.rgba_format(src_color) }}';
+        ctx.translate(0, 25);
+        ctx.fillRect(0, 50, 100, 50);
+      expected_color: |
+        {% import 'macros' as m %}
+        {{ m.calc_output([0, 0, 0, 0], dest_color, fa, fb) }}
+      enabled: |-
+        {{ variant_names[1] in ['source-in',
+                                'destination-in',
+                                'source-out',
+                                'destination-atop',
+                                'copy'] }}
+      timeout: |-
+        {%- if variant_names[1] == 'destination-in' and
+               canvas_type != 'HtmlCanvas' -%}
+          long
+        {%- endif -%}
+    uncovered.image:
+      desc: >-
+        drawImage() draws pixels not covered by the source object as (0,0,0,0),
+        and does not leave the pixels unchanged.
+      src_color: [255, 255, 0, 1.0]
+      dest_color: [0, 255, 255, 0.5]
+      test_type: 'promise'
+      draw_code: |-
+        const response = await fetch('/images/yellow.png')
+        const blob = await response.blob();
+        const bitmap = await createImageBitmap(blob);
+        ctx.drawImage(bitmap, 40, 40, 10, 10, 40, 50, 10, 10);
+      expected_color: |
+        {% import 'macros' as m %}
+        {{ m.calc_output([0, 0, 0, 0], dest_color, fa, fb) }}
+      enabled: |-
+        {{ variant_names[1] in ['source-in',
+                                'destination-in',
+                                'source-out',
+                                'destination-atop',
+                                'copy'] }}
+    uncovered.nocontext:
+      desc: >-
+        drawImage() of a canvas with no context draws pixels as (0,0,0,0), and
+        does not leave the pixels unchanged.
+      src_color: [255, 255, 0, 1.0]
+      dest_color: [0, 255, 255, 0.5]
+      draw_code: |-
+        const canvas2 = {{ new_auxiliary_canvas }}
+        ctx.drawImage(canvas2, 0, 0);
+      expected_color: |
+        {% import 'macros' as m %}
+        {{ m.calc_output([0, 0, 0, 0], dest_color, fa, fb) }}
+      enabled: |-
+        {{ variant_names[1] in ['source-in',
+                                'destination-in',
+                                'source-out',
+                                'destination-atop',
+                                'copy'] }}
+    uncovered.pattern:
+      desc: >-
+        Pattern fill() draws pixels not covered by the source object as
+        (0,0,0,0), and does not leave the pixels unchanged.
+      src_color: [255, 255, 0, 1.0]
+      dest_color: [0, 255, 255, 0.5]
+      test_type: 'promise'
+      draw_code: |-
+        const response = await fetch('/images/yellow.png')
+        const blob = await response.blob();
+        const bitmap = await createImageBitmap(blob);
+        ctx.fillStyle = ctx.createPattern(bitmap, 'no-repeat');
+        ctx.fillRect(0, 50, 100, 50);
+      expected_color: |
+        {% import 'macros' as m %}
+        {{ m.calc_output([0, 0, 0, 0], dest_color, fa, fb) }}
+      enabled: |-
+        {{ variant_names[1] in ['source-in',
+                                'destination-in',
+                                'source-out',
+                                'destination-atop',
+                                'copy'] }}
+    clip:
+      desc: fill() does not affect pixels outside the clip region.
+      src_color: [255, 0, 0, 1]
+      dest_color: [0, 255, 0, 1]
+      draw_code: |-
+        {% import 'macros' as m %}
+        ctx.rect(-20, -20, 10, 10);
+        ctx.clip();
+        ctx.fillStyle = '{{ m.rgba_format(src_color) }}';
+        ctx.fillRect(0, 0, 50, 50);
+      assertion: |-
+        @assert pixel 50,25 == 0,255,0,255;
+      expected: green
+  - source-over:
+      fa: [1, 0, 0]   # 1
+      fb: [1, -1, 0]  # 1-aA
+    destination-over:
+      fa: [1, 0, -1]  # 1-aB
+      fb: [1, 0, 0]   # 1
+    source-in:
+      fa: [0, 0, 1]   # aB
+      fb: [0, 0, 0]   # 0
+    destination-in:
+      fa: [0, 0, 0]   # 0
+      fb: [0, 1, 0]   # aA
+    source-out:
+      fa: [1, 0, -1]  # 1-aB
+      fb: [0, 0, 0]   # 0
+    destination-out:
+      fa: [0, 0, 0]   # 0
+      fb: [1, -1, 0]  # 1-aA
+    source-atop:
+      fa: [0, 0, 1]   # aB
+      fb: [1, -1, 0]  # 1-aA
+    destination-atop:
+      fa: [1, 0, -1]  # 1-aB
+      fb: [0, 1, 0]   # aA
+    xor:
+      fa: [1, 0, -1]  # 1-aB
+      fb: [1, -1, 0]  # 1-aA
+    copy:
+      fa: [1, 0, 0]  # 1
+      fb: [0, 0, 0]  # 0
+    lighter:
+      fa: [1, 0, 0]  # 1
+      fb: [1, 0, 0]  # 1
+    clear:
+      fa: [0, 0, 0]  # 0
+      fb: [0, 0, 0]  # 0

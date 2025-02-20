@@ -1288,7 +1288,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1875387611427697908">Chỉ có thể thêm ứng dụng/tiện ích này từ <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Nhãn (không bắt buộc)</translation>
 <translation id="1877377730633446520">Tính năng này sẽ sử dụng khoảng <ph name="REQUIRED_SPACE" />. Bạn hiện có <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">Không nhận được mã thông báo xác thực. Vui lòng đăng xuất rồi đăng nhập lại để thử lại.</translation>
 <translation id="1877860345998737529">Gán công tắc cho hành động</translation>
 <translation id="1878155070920054810">Có vẻ như Chromebook sẽ hết pin trước khi quá trình cập nhật hoàn tất. Hãy đảm bảo Chromebook đang sạc đúng cách để tránh bị gián đoạn.</translation>
 <translation id="1878477879455105085">Ðã mở</translation>
@@ -7014,7 +7013,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5952020381407136867">bàn di chuột</translation>
 <translation id="5953211687820750364">Danh sách này chịu ảnh hưởng của <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           và <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Mật khẩu của bạn đã hết hạn. Vui lòng đăng xuất rồi đăng nhập lại để thay đổi mật khẩu.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Một trang web muốn mở ứng dụng này.</translation>
 <translation id="5955809630138889698">Có thể thiết bị này chỉ đủ điều kiện đối với chế độ minh họa trực tuyến. Vui lòng liên hệ với người đại diện hỗ trợ của bạn để biết thêm chi tiết.</translation>
@@ -9721,7 +9719,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7910725946105920830">Dùng Tài khoản Google cá nhân của bạn</translation>
 <translation id="7910768399700579500">&amp;Thư mục mới</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Đã thay đổi mật khẩu của bạn trên máy chủ. Vui lòng đăng xuất rồi đăng nhập lại.</translation>
 <translation id="791247712619243506">Huỷ thiết lập</translation>
 <translation id="7912974581251770345">Bản dịch</translation>
 <translation id="7914399737746719723">Đã cài đặt ứng dụng</translation>

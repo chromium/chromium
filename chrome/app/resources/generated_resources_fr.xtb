@@ -1279,7 +1279,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1875387611427697908">Cet élément doit être installé depuis le <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Libellé (facultatif)</translation>
 <translation id="1877377730633446520">Cela utilisera environ <ph name="REQUIRED_SPACE" />. Vous disposez actuellement de <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">Échec de l'obtention du jeton d'authentification. Veuillez vous déconnecter, puis vous reconnecter, ou bien réessayez.</translation>
 <translation id="1877860345998737529">Attribuer des actions à des commutateurs</translation>
 <translation id="1878155070920054810">La batterie de votre Chromebook risque d'être déchargée avant la fin de la mise à jour. Assurez-vous qu'elle se charge correctement afin d'éviter toute interruption.</translation>
 <translation id="1878477879455105085">Ouvert</translation>
@@ -6999,7 +6998,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5952020381407136867">pavé tactile</translation>
 <translation id="5953211687820750364">Cette liste est affectée par <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           et <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Votre mot de passe est arrivé à expiration. Veuillez vous déconnecter, puis vous reconnecter pour le modifier.</translation>
 <translation id="5955304353782037793">application</translation>
 <translation id="5955721306465922729">Un site Web souhaite ouvrir cette application.</translation>
 <translation id="5955809630138889698">Il se peut que cet appareil soit seulement compatible avec le mode de démonstration en ligne. Pour en savoir plus, veuillez contacter le service d'assistance.</translation>
@@ -9706,7 +9704,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7910725946105920830">Utiliser votre compte Google personnel</translation>
 <translation id="7910768399700579500">&amp;Nouveau dossier</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Votre mot de passe a été modifié sur le serveur. Veuillez vous déconnecter, puis vous reconnecter.</translation>
 <translation id="791247712619243506">Annuler la configuration</translation>
 <translation id="7912974581251770345">Traduction</translation>
 <translation id="7914399737746719723">Appli installée</translation>

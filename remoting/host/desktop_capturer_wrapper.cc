@@ -13,11 +13,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "remoting/host/linux/wayland_desktop_capturer.h"
-#include "remoting/host/linux/wayland_utils.h"
-#endif
-
 namespace remoting {
 
 DesktopCapturerWrapper::DesktopCapturerWrapper() {
@@ -33,15 +28,7 @@ void DesktopCapturerWrapper::CreateCapturer(
     SourceId id) {
   DCHECK(!capturer_);
 
-#if BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    capturer_ = std::make_unique<WaylandDesktopCapturer>(options);
-  } else {
-    capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
-  }
-#else
   capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
-#endif
 
   if (capturer_) {
     capturer_->SelectSource(id);
@@ -107,16 +94,6 @@ void DesktopCapturerWrapper::OnCaptureResult(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   callback_->OnCaptureResult(result, std::move(frame));
-}
-
-bool DesktopCapturerWrapper::SupportsFrameCallbacks() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-#if BUILDFLAG(IS_LINUX)
-  return capturer_ && IsRunningWayland();
-#else
-  return false;
-#endif
 }
 
 void DesktopCapturerWrapper::SetMaxFrameRate(uint32_t max_frame_rate) {

@@ -5791,6 +5791,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityIncludeLongClickActionDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAccessibilityIncludeLongClickAction)},
+    {"enable-accessibility-text-formatting",
+     flag_descriptions::kAccessibilityTextFormattingName,
+     flag_descriptions::kAccessibilityTextFormattingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilityTextFormatting)},
     {"enable-accessibility-unified-snapshots",
      flag_descriptions::kAccessibilityUnifiedSnapshotsName,
      flag_descriptions::kAccessibilityUnifiedSnapshotsDescription, kOsAndroid,
@@ -8203,12 +8207,34 @@ const FeatureEntry kFeatureEntries[] = {
     {"media-app-pdf-mahi", flag_descriptions::kMediaAppPdfMahiName,
      flag_descriptions::kMediaAppPdfMahiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMediaAppPdfMahi)},
+    {"media-app-image-mantis-erase",
+     flag_descriptions::kMediaAppImageMantisEraseName,
+     flag_descriptions::kMediaAppImageMantisEraseDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMediaAppImageMantisErase)},
+    {"media-app-image-mantis-expand-background",
+     flag_descriptions::kMediaAppImageMantisExpandBackgroundName,
+     flag_descriptions::kMediaAppImageMantisExpandBackgroundDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMediaAppImageMantisExpandBackground)},
+    {"media-app-image-mantis-make-a-sticker",
+     flag_descriptions::kMediaAppImageMantisMakeAStickerName,
+     flag_descriptions::kMediaAppImageMantisMakeAStickerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMediaAppImageMantisMakeASticker)},
     {"media-app-image-mantis-model",
      flag_descriptions::kMediaAppImageMantisModelName,
      flag_descriptions::kMediaAppImageMantisModelDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kMediaAppImageMantisModel,
                                     kMediaAppImageMantisModelVariations,
                                     "MediaAppImageMantisModel")},
+    {"media-app-image-mantis-reimagine",
+     flag_descriptions::kMediaAppImageMantisReimagineName,
+     flag_descriptions::kMediaAppImageMantisReimagineDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMediaAppImageMantisReimagine)},
+    {"media-app-image-mantis-remove-background",
+     flag_descriptions::kMediaAppImageMantisRemoveBackgroundName,
+     flag_descriptions::kMediaAppImageMantisRemoveBackgroundDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMediaAppImageMantisRemoveBackground)},
     {"on-device-app-controls", flag_descriptions::kOnDeviceAppControlsName,
      flag_descriptions::kOnDeviceAppControlsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kForceOnDeviceAppControlsForAllRegions)},
@@ -8711,9 +8737,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlobalVaapiLockDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(media::kGlobalVaapiLock)},
 
-#if BUILDFLAG(IS_WIN) ||                                      \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     {
         "ui-debug-tools",
         flag_descriptions::kUIDebugToolsName,
@@ -9167,7 +9191,7 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(switches::kDemoModeTestTag, "")},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
     {"enable-delegated-compositing",
      flag_descriptions::kEnableDelegatedCompositingName,
      flag_descriptions::kEnableDelegatedCompositingDescription, kOsAll,
@@ -11715,6 +11739,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardExpiredTextName,
      flag_descriptions::kAutofillEnableCardExpiredTextDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardExpiredText)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-android-mininal-ui-large-screen",
+     flag_descriptions::kAndroidMinimalUiLargeScreenName,
+     flag_descriptions::kAndroidMinimalUiLargeScreenDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(webapps::features::kAndroidMinimalUiLargeScreen)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -61,7 +61,7 @@ export class ToggleRowElement extends WithPersonalizationStore {
 
   private onAmbientModeToggled_(event: Event) {
     const toggleButton = event.currentTarget as CrToggleElement;
-    const ambientModeEnabled = toggleButton!.checked;
+    const ambientModeEnabled = toggleButton.checked;
     setAmbientModeEnabled(
         ambientModeEnabled, getAmbientProvider(), this.getStore());
   }

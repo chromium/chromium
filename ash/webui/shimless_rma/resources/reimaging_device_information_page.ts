@@ -324,7 +324,7 @@ export class ReimagingDeviceInformationPage extends
             const customLabelSelect: HTMLSelectElement|null =
                 this.shadowRoot!.querySelector('#customLabelSelect');
             assert(customLabelSelect);
-            customLabelSelect!.selectedIndex = this.customLabelIndex;
+            customLabelSelect.selectedIndex = this.customLabelIndex;
           });
         });
   }

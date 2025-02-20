@@ -16,7 +16,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -321,7 +320,7 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardCrashed) {
   ExpectCanDiscardFalseTrivialAllReasons(&tab_lifecycle_unit);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(TabLifecycleUnitTest, CannotDiscardActive) {
   TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
                                       web_contents_, tab_strip_model_.get());
@@ -375,7 +374,7 @@ TEST_F(TabLifecycleUnitTest, UrgentDiscardProtections) {
   GetTabLifecycleUnitSource()->SetMemoryLimitEnterprisePolicyFlag(true);
   ExpectCanDiscardTrue(&tab_lifecycle_unit, LifecycleUnitDiscardReason::URGENT);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(TabLifecycleUnitTest, CannotDiscardInvalidURL) {
   content::WebContents* web_contents = AddNewHiddenWebContentsToTabStrip();

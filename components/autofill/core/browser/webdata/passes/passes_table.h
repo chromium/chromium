@@ -8,7 +8,7 @@
 #include <string_view>
 #include <vector>
 
-#include "components/autofill/core/browser/data_model/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;

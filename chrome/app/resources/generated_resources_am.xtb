@@ -1286,7 +1286,6 @@
 <translation id="1875387611427697908">ይሄ ከ<ph name="CHROME_WEB_STORE" /> ብቻ ነው ሊታከል የሚችለው</translation>
 <translation id="1877377290348678128">መለያ ስም (ከተፈለገ)</translation>
 <translation id="1877377730633446520">ይህ እስከ <ph name="REQUIRED_SPACE" /> ድረስ ይጠቀማል። እርስዎ በአሁኑ ጊዜ <ph name="FREE_SPACE" /> ያገኛሉ።</translation>
-<translation id="1877520246462554164">የማረጋገጫ ማስመሰያውን ማግኘት አልተሳካም። እንደገና ለመሞከር እባክዎ ዘግተው ይውጡና እንደገና ይግቡ።</translation>
 <translation id="1877860345998737529">የእርምጃ ምደባን ቀያይር</translation>
 <translation id="1878155070920054810">ዝማኔው ከመጠናቀቁ በፊት የእርስዎ Chromebook ኃይሉ ያልቅበታል። መቋረጥን ለመከላከል በትክክል ኃይል እየሞሉ መሆኑን ያረጋግጡ።</translation>
 <translation id="1878477879455105085">ተከፍቷል</translation>
@@ -7008,7 +7007,6 @@
 <translation id="5952020381407136867">የመዳሰሻ ሰሌዳ</translation>
 <translation id="5953211687820750364">ይህ በ<ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           እና በ<ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> ተጽዕኖ ያድርበታል</translation>
-<translation id="5955282598396714173">የእርስዎ የይለፍ ቃል ጊዜው አልፎበታል። ለመቀየር እባክዎ ዘግተው ይውጡና እንደገና ይግቡ።</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">አንድ ድር ጣቢያ ይህን መተግበሪያ መክፈት ይፈልጋል።</translation>
 <translation id="5955809630138889698">ይህ መሣሪያ ምናልባት ለመስመር ላይ የቅንጭብ ማሳያ ሁነታ ብቻ ብቁ ሊሆን ይችላል። ለተጨማሪ ዝርዝሮች እባክዎ የእርስዎን የድጋፍ ተወካይ ያነጋግሩ።</translation>
@@ -9715,7 +9713,6 @@
 <translation id="7910725946105920830">የእርስዎ የግል Google መለያ ይጠቀሙ</translation>
 <translation id="7910768399700579500">&amp;አዲስ አቃፊ</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">የእርስዎ የይለፍ ቃል በአገልጋዩ ላይ ተቀይሯል። እባክዎ ዘግተው ይውጡና እንደገና ይግቡ።</translation>
 <translation id="791247712619243506">ማዋቀር ይቅር</translation>
 <translation id="7912974581251770345">ትርጉም</translation>
 <translation id="7914399737746719723">መተግበሪያ ተጭኗል</translation>

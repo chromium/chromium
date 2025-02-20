@@ -313,6 +313,7 @@ mojom("mojom_platform") {
     "//services/network/public/mojom:mojom_proxy_config",
     "//services/network/public/mojom:url_loader_base",
     "//services/network/public/mojom:websocket_mojom",
+    "//services/on_device_model/public/mojom",
     "//services/service_manager/public/mojom",
     "//services/viz/public/mojom",
     "//skia/public/mojom",

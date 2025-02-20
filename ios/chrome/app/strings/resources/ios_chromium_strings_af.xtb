@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium hou jou sensitiewe data met Gesig-ID veilig.</translation>
 <translation id="1591119736686995611">Maak die Chromium-oortjierooster oop.</translation>
 <translation id="16001233025397167">Veiligheidskontrole hou jou veilig teen dataskendings, onveilige webwerwe en meer. Ontvang waarskuwings oor enige privaatheid- of sekuriteitkwessies wat Chromium vir jou bespeur.</translation>
-<translation id="1611584326765829247">Laat Chromium jou help om jou pakkette na te spoor</translation>
 <translation id="1617663976202781617">Data van Chromium-sinkronisering af</translation>
 <translation id="164952285225495380">Hierdie pakkie is reeds op Chromium nagespoor.</translation>
 <translation id="1707458603865303524">Gebruik Chromium enige tyd wanneer jy op skakels in boodskappe of ander apps tik.</translation>
@@ -306,7 +305,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8826789549860004832">Gaan voort met die opstel van jou blaaier om Chromium ten beste te benut.</translation>
 <translation id="88376265765385899">Maak die Chromium-boekmerke oop.</translation>
 <translation id="8860548555286245440">Maak URL’e in Chromium in Incognitomodus oop</translation>
-<translation id="8866191443434488382">Chromium sal naspoornommers op werwe bespeur wat jy besoek en vir jou pakkie-opdaterings op die Nuwe Oortjie-bladsy wys. Die pakkienaspoornommer en webwerfnaam sal na Chromium gestuur word om hierdie kenmerk beskikbaar te maak en om inkopiekenmerke vir almal te verbeter. Jy kan dit enige tyd in <ph name="BEGIN_LINK" />Pakkienasporinginstellings<ph name="END_LINK" /> opdateer.</translation>
 <translation id="8880024619507699923">Jou organisasie vereis dat jy aanmeld om Chromium te gebruik. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Kry Chromium se sterkste sekuriteit</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie}}</translation>

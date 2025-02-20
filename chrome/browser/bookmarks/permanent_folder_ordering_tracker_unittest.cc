@@ -49,18 +49,21 @@ TEST_F(PermanentFolderOrderingTrackerTest,
                                            BookmarkNode::BOOKMARK_BAR);
     EXPECT_THAT(tracker.GetUnderlyingPermanentNodes(),
                 UnorderedElementsAre(model().bookmark_bar_node()));
+    EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
   }
 
   {
     PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::OTHER_NODE);
     EXPECT_THAT(tracker.GetUnderlyingPermanentNodes(),
                 UnorderedElementsAre(model().other_node()));
+    EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
   }
 
   {
     PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::MOBILE);
     EXPECT_THAT(tracker.GetUnderlyingPermanentNodes(),
                 UnorderedElementsAre(model().mobile_node()));
+    EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
   }
 }
 
@@ -71,6 +74,7 @@ TEST_F(PermanentFolderOrderingTrackerTest,
   ASSERT_FALSE(model().account_bookmark_bar_node());
   EXPECT_THAT(tracker.GetUnderlyingPermanentNodes(),
               UnorderedElementsAre(model().bookmark_bar_node()));
+  EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest,
@@ -85,6 +89,7 @@ TEST_F(PermanentFolderOrderingTrackerTest,
     EXPECT_THAT(tracker.GetUnderlyingPermanentNodes(),
                 UnorderedElementsAre(model().account_bookmark_bar_node(),
                                      model().bookmark_bar_node()));
+    EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
   }
 
   {
@@ -92,6 +97,7 @@ TEST_F(PermanentFolderOrderingTrackerTest,
     EXPECT_THAT(tracker.GetUnderlyingPermanentNodes(),
                 UnorderedElementsAre(model().account_other_node(),
                                      model().other_node()));
+    EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
   }
 
   {
@@ -99,6 +105,7 @@ TEST_F(PermanentFolderOrderingTrackerTest,
     EXPECT_THAT(tracker.GetUnderlyingPermanentNodes(),
                 UnorderedElementsAre(model().account_mobile_node(),
                                      model().mobile_node()));
+    EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
   }
 }
 
@@ -217,6 +224,8 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingDefault) {
     EXPECT_EQ(tracker.GetIndexOf(node), i + 4);
     EXPECT_EQ(tracker.GetNodeAtIndex(i + 4), node);
   }
+
+  EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest, OrderingCustomOrder) {
@@ -275,6 +284,8 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingCustomOrder) {
   // {L0, L01, A00, A0, A1, A2, A21, L1, L11, L2, L3, A3}.
   EXPECT_EQ(tracker.GetIndexOf(node), 6u);
   EXPECT_EQ(tracker.GetNodeAtIndex(6), node);
+
+  EXPECT_TRUE(tracker.IsNonDefaultOrderingTracked());
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest, OrderingLocalOnly) {
@@ -307,6 +318,7 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingLocalOnly) {
     EXPECT_EQ(tracker.GetIndexOf(node), i);
     EXPECT_EQ(tracker.GetNodeAtIndex(i), node);
   }
+  EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest, OrderingAccountOnly) {
@@ -345,6 +357,7 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingAccountOnly) {
     EXPECT_EQ(tracker.GetIndexOf(node), i);
     EXPECT_EQ(tracker.GetNodeAtIndex(i), node);
   }
+  EXPECT_FALSE(tracker.IsNonDefaultOrderingTracked());
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest, OrderingExistingLocal) {

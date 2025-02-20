@@ -319,7 +319,7 @@ export class EmojiPickerApp extends PolymerElement {
     // Update UI and relevant features based on the initial data.
     this.updateCategoryData(
         // If we don't have 1 data URL, a crash probably isn't a bad idea
-        initialData, dataUrls[0]!.category, dataUrls[0]!.categoryLastPartition,
+        initialData, dataUrls[0].category, dataUrls[0].categoryLastPartition,
         false);
 
     // Show the UI after the initial data is rendered.

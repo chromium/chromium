@@ -21,7 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"

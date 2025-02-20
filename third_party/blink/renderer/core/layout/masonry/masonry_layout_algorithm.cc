@@ -19,7 +19,7 @@ MasonryLayoutAlgorithm::MasonryLayoutAlgorithm(
 const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   for (auto child = Node().FirstChild(); child; child = child.NextSibling()) {
     To<BlockNode>(child).Layout(CreateConstraintSpaceForMeasure(
-        GridItemData(To<BlockNode>(child), Style(), Style())));
+        GridItemData(To<BlockNode>(child), Style())));
   }
 
   // TODO(ethavar): Compute the actual block size.
@@ -30,6 +30,44 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
 MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   return {MinMaxSizes(), /*depends_on_block_constraints=*/false};
+}
+
+GridItems MasonryLayoutAlgorithm::VirtualMasonryItems(
+    const GridLineResolver& line_resolver,
+    wtf_size_t* start_offset) const {
+  DCHECK(start_offset);
+
+  const auto item_groups =
+      Node().CollectItemGroups(line_resolver, start_offset);
+  DCHECK_GE(*start_offset, 0u);
+
+  GridItems virtual_items;
+  const auto& style = Style();
+  const auto grid_axis_direction = style.MasonryTrackSizingDirection();
+
+  for (const auto& [group_properties, group_items] : item_groups) {
+    auto virtual_item = std::make_unique<GridItemData>();
+    auto span = group_properties.Span();
+
+    for (const auto& item_node : group_items) {
+      const auto space =
+          CreateConstraintSpaceForMeasure(GridItemData(item_node, style));
+      virtual_item->EncompassContributionSizes(
+          ComputeMinAndMaxContentContributionForSelf(item_node, space).sizes);
+    }
+
+    if (span.IsUntranslatedDefinite()) {
+      // For groups of items that are explicitly placed, we only need to add a
+      // single virtual masonry item within the specified span.
+      span.Translate(*start_offset);
+      virtual_item->resolved_position.SetSpan(span, grid_axis_direction);
+      virtual_items.Append(std::move(virtual_item));
+      continue;
+    }
+
+    DCHECK(span.IsIndefinite());
+  }
+  return virtual_items;
 }
 
 GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks() const {

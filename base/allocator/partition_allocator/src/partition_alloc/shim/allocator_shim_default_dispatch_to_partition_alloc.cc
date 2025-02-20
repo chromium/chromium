@@ -620,7 +620,6 @@ void ConfigurePartitions(
     ZappingByFreeFlags zapping_by_free_flags,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
     FewerMemoryRegions fewer_memory_regions,
-    UsePoolOffsetFreelists use_pool_offset_freelists,
     UseSmallSingleSlotSpans use_small_single_slot_spans) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
@@ -668,9 +667,7 @@ void ConfigurePartitions(
                            : partition_alloc::PartitionOptions::kDisabled,
             .reporting_mode = memory_tagging_reporting_mode};
         opts.use_pool_offset_freelists =
-            use_pool_offset_freelists
-                ? partition_alloc::PartitionOptions::kEnabled
-                : partition_alloc::PartitionOptions::kDisabled;
+            partition_alloc::PartitionOptions::kEnabled;
         opts.use_small_single_slot_spans =
             use_small_single_slot_spans
                 ? partition_alloc::PartitionOptions::kEnabled

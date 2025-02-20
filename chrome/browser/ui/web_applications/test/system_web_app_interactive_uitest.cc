@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   // Incognito WebContents don't have app IDs.
-  // TODO(crbug.com/1135863): Decide what should happen with SWA URLs and
+  // TODO(crbug.com/40723875): Decide what should happen with SWA URLs and
   // incognito windows.
   if (!browser()->profile()->IsOffTheRecord()) {
     // Verifies the tab has an associated tab helper for System App's

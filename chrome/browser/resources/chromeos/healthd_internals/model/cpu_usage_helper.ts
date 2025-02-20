@@ -54,7 +54,7 @@ export class CpuUsageHelper {
         assert(lastExecTime !== undefined);
 
         output[physicalCpuId].push(
-            this.getLogicalCpuUsage(logicalCpu.executionTime, lastExecTime!));
+            this.getLogicalCpuUsage(logicalCpu.executionTime, lastExecTime));
         this.lastExecutionTime[physicalCpuId][logicalCpuId] =
             logicalCpu.executionTime;
       }

@@ -125,6 +125,7 @@ interface AITranslatorCapabilities
     method languagePairAvailable
 interface AITranslatorFactory
     attribute @@toStringTag
+    method availability
     method capabilities
     method constructor
     method create

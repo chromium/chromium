@@ -73,11 +73,6 @@
 #include "remoting/host/chromeos/features.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-#include "remoting/host/linux/wayland_manager.h"
-#include "remoting/host/linux/wayland_utils.h"
-#endif  // BUILDFLAG(IS_LINUX)
-
 namespace remoting {
 
 using protocol::ErrorCode;
@@ -234,12 +229,6 @@ void It2MeHost::Connect(
 
   OnPolicyUpdate(std::move(policies));
 
-#if BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    WaylandManager::Get()->Init(host_context_->ui_task_runner());
-  }
-#endif  // BUILDFLAG(IS_LINUX)
-
   desktop_environment_factory_ =
       std::make_unique<It2MeDesktopEnvironmentFactory>(
           host_context_->network_task_runner(), host_context_->ui_task_runner(),
@@ -390,11 +379,6 @@ void It2MeHost::ConnectOnNetworkThread(
 
   // Set up the desktop environment options.
   DesktopEnvironmentOptions options(DesktopEnvironmentOptions::CreateDefault());
-#if BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    options.desktop_capture_options()->set_prefer_cursor_embedded(true);
-  }
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   if (is_enterprise_session()) {

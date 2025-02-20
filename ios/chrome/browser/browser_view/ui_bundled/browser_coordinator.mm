@@ -33,6 +33,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
@@ -2255,45 +2256,6 @@ enum class ToolbarKind {
   _enhancedSafeBrowsingPromoCoordinator = nil;
 }
 
-- (BOOL)navigateBackWithAnimationIfNeeded {
-  if (!IsLensOverlaySameTabNavigationEnabled() ||
-      IsCompactHeight(self.viewController)) {
-    return NO;
-  }
-
-  LensOverlayTabHelper* lensOverlayTabHelper =
-      LensOverlayTabHelper::FromWebState(self.activeWebState);
-
-  if (lensOverlayTabHelper &&
-      lensOverlayTabHelper->IsLensOverlayInvokedOnMostRecentBackItem()) {
-    [_sideSwipeCoordinator animatePageSideSwipeInDirection:
-                               UseRTLLayout()
-                                   ? UISwipeGestureRecognizerDirectionLeft
-                                   : UISwipeGestureRecognizerDirectionRight];
-    return YES;
-  }
-
-  return NO;
-}
-
-- (void)animateLensOverlayNavigationToURL:(GURL)URL {
-  [_sideSwipeCoordinator
-      prepareForSlideInDirection:UseRTLLayout()
-                                     ? UISwipeGestureRecognizerDirectionRight
-                                     : UISwipeGestureRecognizerDirectionLeft];
-
-  __weak SideSwipeCoordinator* weakSideSwipeCoordinator = _sideSwipeCoordinator;
-
-  [HandlerForProtocol(_dispatcher, LensOverlayCommands)
-      hideLensUI:NO
-      completion:^{
-        [weakSideSwipeCoordinator slideToCenterAnimated];
-      }];
-
-  [_loadQueryCommandsHandler loadQuery:base::SysUTF8ToNSString(URL.spec())
-                           immediately:YES];
-}
-
 #pragma mark - BrowserViewVisibilityConsumer
 
 - (void)browserViewDidChangeVisibility {
@@ -3055,7 +3017,10 @@ enum class ToolbarKind {
                            filteringBehaviorReason
                                 completion:
                                     (void (^)(
-                                        supervised_user::LocalApprovalResult))
+                                        supervised_user::LocalApprovalResult,
+                                        std::optional<
+                                            supervised_user::
+                                                LocalWebApprovalErrorType>))
                                         completion {
   if (!supervised_user::IsLocalWebApprovalsEnabled()) {
     return;

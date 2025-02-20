@@ -192,9 +192,7 @@ void AutofillHandler::SetAddresses(
       // available addresses.
       // TODO(b/40270486): Offer a test address version for when the new model
       // is enabled.
-      if (test_address_country == u"Germany" &&
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillUseDEAddressModel)) {
+      if (test_address_country == u"Germany") {
         continue;
       }
 

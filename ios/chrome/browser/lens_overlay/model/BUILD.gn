@@ -47,6 +47,7 @@ source_set("model") {
 
 source_set("overflow_menu_factory") {
   sources = [
+    "lens_overlay_overflow_menu_delegate.h",
     "lens_overlay_overflow_menu_factory.h",
     "lens_overlay_overflow_menu_factory.mm",
   ]

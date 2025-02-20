@@ -501,14 +501,14 @@ ValidateBatchNormalizationAndInferOutput(
     const OperandDescriptor& mean,
     const OperandDescriptor& variance,
     const BatchNormalizationAttributes& attributes) {
-  // Validate input type.
+  // Validate input operand.
   const std::string& label = attributes.label;
-  if (!context_properties.data_type_limits.batch_normalization_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.batch_normalization_input.Supports(
+          input)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            input.data_type(),
+        NotSupportedInputArgumentError(
+            input,
             context_properties.data_type_limits.batch_normalization_input)));
   }
 

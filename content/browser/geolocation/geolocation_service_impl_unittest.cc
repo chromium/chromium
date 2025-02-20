@@ -163,20 +163,20 @@ TEST_F(GeolocationServiceTest, PermissionGrantedPolicyViolation) {
       base::BindOnce([](blink::mojom::PermissionStatus status) {
         EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
       }));
-
-  base::RunLoop loop;
-  geolocation.set_disconnect_handler(loop.QuitClosure());
+  TestFuture<void> disconnect_future;
+  geolocation.set_disconnect_handler(disconnect_future.GetCallback());
 
   geolocation->QueryNextPosition(
       base::BindOnce([](GeopositionResultPtr result) {
         ADD_FAILURE() << "Position updated unexpectedly";
       }));
-  loop.Run();
+  EXPECT_TRUE(disconnect_future.Wait());
 }
 
 TEST_F(GeolocationServiceTest, PermissionGrantedSync) {
   CreateEmbeddedFrameAndGeolocationService(
       /*allow_via_permissions_policy=*/true);
+  TestFuture<PermissionCallback> permission_request_future;
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback callback) {
         std::move(callback).Run(std::vector{PermissionStatus::GRANTED});
@@ -213,14 +213,14 @@ TEST_F(GeolocationServiceTest, PermissionDeniedSync) {
         EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
       }));
 
-  base::RunLoop loop;
-  geolocation.set_disconnect_handler(loop.QuitClosure());
+  TestFuture<void> disconnect_future;
+  geolocation.set_disconnect_handler(disconnect_future.GetCallback());
 
   geolocation->QueryNextPosition(
       base::BindOnce([](GeopositionResultPtr result) {
         ADD_FAILURE() << "Position updated unexpectedly";
       }));
-  loop.Run();
+  EXPECT_TRUE(disconnect_future.Wait());
 }
 
 TEST_F(GeolocationServiceTest, PermissionGrantedAsync) {
@@ -266,14 +266,14 @@ TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
         EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
       }));
 
-  base::RunLoop loop;
-  geolocation.set_disconnect_handler(loop.QuitClosure());
+  TestFuture<void> disconnect_future;
+  geolocation.set_disconnect_handler(disconnect_future.GetCallback());
 
   geolocation->QueryNextPosition(
       base::BindOnce([](GeopositionResultPtr result) {
         ADD_FAILURE() << "Position updated unexpectedly";
       }));
-  loop.Run();
+  EXPECT_TRUE(disconnect_future.Wait());
 }
 
 TEST_F(GeolocationServiceTest, ServiceClosedBeforePermissionResponse) {

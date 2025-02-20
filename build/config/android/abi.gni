@@ -92,18 +92,20 @@ android_64bit_current_cpu =
 # target_cpu's that are 32-bit-only or 64-bit-only, as they are not used. The
 # presence of this variable may be used in conjunction with android_64bit_target_cpu
 # to identify target_cpu's that are 32-bit-only or 64-bit-only.
-if (target_cpu == "arm64") {
-  android_secondary_abi_cpu = "arm"
-  android_app_secondary_abi = "armeabi-v7a"
-} else if (target_cpu == "x64") {
-  android_secondary_abi_cpu = "x86"
-  android_app_secondary_abi = "x86"
-} else if (target_cpu == "mips64el") {
-  android_secondary_abi_cpu = "mipsel"
-  android_app_secondary_abi = "mips"
-}
+if (!skip_secondary_abi_for_cq) {
+  if (target_cpu == "arm64") {
+    android_secondary_abi_cpu = "arm"
+    android_app_secondary_abi = "armeabi-v7a"
+  } else if (target_cpu == "x64") {
+    android_secondary_abi_cpu = "x86"
+    android_app_secondary_abi = "x86"
+  } else if (target_cpu == "mips64el") {
+    android_secondary_abi_cpu = "mipsel"
+    android_app_secondary_abi = "mips"
+  }
 
-if (defined(android_secondary_abi_cpu)) {
-  android_secondary_abi_toolchain =
-      "//build/toolchain/android:android_clang_${android_secondary_abi_cpu}"
+  if (defined(android_secondary_abi_cpu)) {
+    android_secondary_abi_toolchain =
+        "//build/toolchain/android:android_clang_${android_secondary_abi_cpu}"
+  }
 }

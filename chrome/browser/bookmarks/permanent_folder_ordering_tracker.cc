@@ -226,6 +226,11 @@ size_t PermanentFolderOrderingTracker::GetIndexAcrossStorage(
   return GetIndexOf(node);
 }
 
+bool PermanentFolderOrderingTracker::IsNonDefaultOrderingTracked() const {
+  CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
+  return ordering_ != GetDefaultOrderIfTracked();
+}
+
 void PermanentFolderOrderingTracker::SetTrackedPermanentNodes() {
   switch (tracked_type_) {
     case bookmarks::BookmarkNode::URL:
@@ -256,17 +261,7 @@ bool PermanentFolderOrderingTracker::IsTrackedPermanentNode(
 }
 
 void PermanentFolderOrderingTracker::ResetOrderingToDefault() {
-  ordering_.clear();
-  if (!ShouldTrackOrdering()) {
-    return;
-  }
-  for (const auto& node : account_node_->children()) {
-    ordering_.push_back(node.get());
-  }
-
-  for (const auto& node : local_or_syncable_node_->children()) {
-    ordering_.push_back(node.get());
-  }
+  ordering_ = GetDefaultOrderIfTracked();
   CHECK_EQ(GetExpectedOrderingSize(), ordering_.size());
 }
 
@@ -339,6 +334,23 @@ bool PermanentFolderOrderingTracker::ShouldTrackOrdering() const {
 
 size_t PermanentFolderOrderingTracker::GetExpectedOrderingSize() const {
   return ShouldTrackOrdering() ? GetChildrenCount() : 0u;
+}
+
+std::vector<raw_ptr<const bookmarks::BookmarkNode>>
+PermanentFolderOrderingTracker::GetDefaultOrderIfTracked() const {
+  if (!ShouldTrackOrdering()) {
+    return {};
+  }
+
+  std::vector<raw_ptr<const bookmarks::BookmarkNode>> default_order;
+  for (const auto& node : account_node_->children()) {
+    default_order.push_back(node.get());
+  }
+
+  for (const auto& node : local_or_syncable_node_->children()) {
+    default_order.push_back(node.get());
+  }
+  return default_order;
 }
 
 void PermanentFolderOrderingTracker::RemoveBookmarkNodeIfTracked(

@@ -494,8 +494,8 @@ export class SettingsGoogleDriveSubpageElement extends
     const {requiredSpace, freeSpace} = this.bulkPinningStatus_;
     return this.i18n(
         'googleDriveFileSyncSubtitleWithStorage',
-        requiredSpace!,
-        freeSpace!,
+        requiredSpace,
+        freeSpace,
     );
   }
 
@@ -594,7 +594,7 @@ export class SettingsGoogleDriveSubpageElement extends
     return this.i18nAdvanced('googleDriveOfflineCleanStorageDialogBody', {
       tags: ['a'],
       substitutions: [
-        this.contentCacheSize_!,
+        this.contentCacheSize_,
         this.i18n('googleDriveCleanUpStorageLearnMoreLink'),
       ],
     });

@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium kaitseb teie delikaatseid isikuandmeid näotuvastuse abil.</translation>
 <translation id="1591119736686995611">Avab Chromiumi vahelehtede ruudustiku.</translation>
 <translation id="16001233025397167">Ohutuskontroll kaitseb teid andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest. Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chromium teie eest tuvastab.</translation>
-<translation id="1611584326765829247">Lubage Chromiumil aidata teil pakke jälgida</translation>
 <translation id="1617663976202781617">Chromiumi andmete sünkroonimine</translation>
 <translation id="164952285225495380">Seda saadetist on Chromiumis juba jälgitud.</translation>
 <translation id="1707458603865303524">Saate Chromiumi kasutada igal ajal, kui puudutate sõnumites või muudes rakendustes linke.</translation>
@@ -306,7 +305,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8826789549860004832">Kasutage Chromiumi parimal moel, jätkates brauseri seadistamist.</translation>
 <translation id="88376265765385899">Avab Chromiumi järjehoidjad.</translation>
 <translation id="8860548555286245440">Ava URL-id Chromiumis inkognito režiimis</translation>
-<translation id="8866191443434488382">Chromium tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Chromiumile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Teie organisatsioon nõuab, et logiksite Chromiumi kasutamiseks sisse. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Hankige Chromiumi parimad turvafunktsioonid</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul}other{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul}}</translation>

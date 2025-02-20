@@ -59,7 +59,7 @@ void EchoAILanguageModel::DoMockExecution(
 }
 
 void EchoAILanguageModel::Prompt(
-    const std::string& input,
+    on_device_model::mojom::InputPtr input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (is_destroyed_) {
@@ -70,13 +70,17 @@ void EchoAILanguageModel::Prompt(
     return;
   }
 
+  CHECK_EQ(input->pieces.size(), 1u);
+  CHECK(std::holds_alternative<std::string>(input->pieces[0]));
+  const std::string& response = std::get<std::string>(input->pieces[0]);
+
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   // Simulate the time taken by model execution.
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&EchoAILanguageModel::DoMockExecution,
-                     weak_ptr_factory_.GetWeakPtr(), input, responder_id),
+                     weak_ptr_factory_.GetWeakPtr(), response, responder_id),
       base::Seconds(1));
 }
 

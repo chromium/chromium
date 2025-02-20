@@ -1288,7 +1288,6 @@
 <translation id="1875387611427697908">이 프로그램은 <ph name="CHROME_WEB_STORE" />에서만 추가할 수 있습니다</translation>
 <translation id="1877377290348678128">라벨(선택사항)</translation>
 <translation id="1877377730633446520">약 <ph name="REQUIRED_SPACE" />가 사용됩니다. 현재 <ph name="FREE_SPACE" /> 사용 가능합니다.</translation>
-<translation id="1877520246462554164">인증 토큰을 가져오지 못했습니다. 로그아웃한 다음 다시 로그인하여 다시 시도해 주세요.</translation>
 <translation id="1877860345998737529">스위치 작업 할당</translation>
 <translation id="1878155070920054810">업데이트가 완료되기 전에 Chromebook의 전원이 부족해질 것 같습니다. 업데이트 중단을 방지하려면 올바르게 충전되고 있는지 확인하세요.</translation>
 <translation id="1878477879455105085">열림</translation>
@@ -7015,7 +7014,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5952020381407136867">터치패드</translation>
 <translation id="5953211687820750364">이 목록은 <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           및 <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" />의 영향을 받습니다.</translation>
-<translation id="5955282598396714173">비밀번호가 만료되었습니다. 로그아웃한 다음 다시 로그인하여 비밀번호를 변경해 주세요.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">웹사이트에서 이 애플리케이션을 열려고 합니다.</translation>
 <translation id="5955809630138889698">이 기기는 온라인 데모 모드에서만 사용 가능할 수 있습니다. 자세한 내용은 지원 담당자에게 문의하세요.</translation>
@@ -9720,7 +9718,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7910725946105920830">개인 Google 계정 사용</translation>
 <translation id="7910768399700579500">새 폴더(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">서버에서 비밀번호가 변경되었습니다. 로그아웃한 다음 다시 로그인해 주세요.</translation>
 <translation id="791247712619243506">설정 취소</translation>
 <translation id="7912974581251770345">번역</translation>
 <translation id="7914399737746719723">앱이 설치됨</translation>

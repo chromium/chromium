@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
-#include "content/public/browser/document_user_data.h"
 
 namespace content {
 class RenderFrameHost;
@@ -30,20 +29,19 @@ class Profile;
 
 // PasskeyUpgradeRequestController is responsible for handling a request to
 // silently create a passkey in GPM, effectively upgrading an existing password.
-// This is also known also "conditionalCreate" in WebAuthn spec terms.
+// This is also known as conditionalCreate in WebAuthn.
 class PasskeyUpgradeRequestController
-    : public content::DocumentUserData<PasskeyUpgradeRequestController>,
-      public password_manager::PasswordStoreConsumer,
+    : public password_manager::PasswordStoreConsumer,
       public GPMEnclaveTransaction::Delegate {
  public:
   using Callback = base::OnceCallback<void(bool success)>;
   using EnclaveRequestCallback = base::RepeatingCallback<void(
       std::unique_ptr<device::enclave::CredentialRequest>)>;
 
+  explicit PasskeyUpgradeRequestController(
+      content::RenderFrameHost* rfh,
+      EnclaveRequestCallback enclave_request_callback);
   ~PasskeyUpgradeRequestController() override;
-
-  void InitializeEnclaveRequestCallback(
-      device::FidoDiscoveryFactory* discovery_factory);
 
   // Attempts to create a passkey for the given WebAuthn RP ID and user name, if
   // a matching password exists.
@@ -58,11 +56,6 @@ class PasskeyUpgradeRequestController
     kReady,
   };
 
-  explicit PasskeyUpgradeRequestController(content::RenderFrameHost* rfh);
-
-  friend DocumentUserData;
-  DOCUMENT_USER_DATA_KEY_DECL();
-
   // password_manager::PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
@@ -76,10 +69,13 @@ class PasskeyUpgradeRequestController
   void OnPasskeyCreated(
       const sync_pb::WebauthnCredentialSpecifics& passkey) override;
 
+  content::RenderFrameHost& render_frame_host() const;
   Profile* profile() const;
 
   void OnEnclaveLoaded();
   void ContinuePendingUpgradeRequest();
+
+  const content::GlobalRenderFrameHostId frame_host_id_;
 
   raw_ptr<EnclaveManager> enclave_manager_;
   EnclaveState enclave_state_ = EnclaveState::kUnknown;

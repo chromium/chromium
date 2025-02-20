@@ -4,6 +4,8 @@
 
 #include "chrome/browser/supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,7 +47,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
       &SupervisedUserWebContentHandlerImpl::CreateObserverFromContents,
       weak_ptr_factory_.GetWeakPtr(), start_time, target_url);
   auto abort_dialog_callback = base::BindOnce(
-      &SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialog,
+      &SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialogOnTimeout,
       weak_ptr_factory_.GetWeakPtr());
 
   auto dialog_result_observer_reset_callback = base::BindOnce(
@@ -90,7 +92,8 @@ void SupervisedUserWebContentHandlerImpl::CreateObserverFromContents(
 void SupervisedUserWebContentHandlerImpl::CompleteUrlApprovalAndCloseDialog(
     const GURL& target_url,
     base::TimeTicks start_time,
-    supervised_user::LocalApprovalResult result) {
+    supervised_user::LocalApprovalResult result,
+    std::optional<supervised_user::LocalWebApprovalErrorType> error_type) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   supervised_user::SupervisedUserSettingsService* settings_service =
@@ -98,7 +101,7 @@ void SupervisedUserWebContentHandlerImpl::CompleteUrlApprovalAndCloseDialog(
   CHECK(settings_service);
 
   supervised_user::WebContentHandler::OnLocalApprovalRequestCompleted(
-      *settings_service, target_url, start_time, result);
+      *settings_service, target_url, start_time, result, error_type);
 
   CloseDialog();
 }
@@ -111,13 +114,14 @@ void SupervisedUserWebContentHandlerImpl::CloseDialog() {
   }
 }
 
-void SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialog() {
+void SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialogOnTimeout() {
   if (!dialog_web_contents_observer_) {
     return;
   }
   // Sets the approval result to error and destructs the result observer.
   // The destructor records the metrics of the approval outcome (Error).
-  dialog_web_contents_observer_->SetResultToError();
+  dialog_web_contents_observer_->SetResultToError(
+      supervised_user::LocalWebApprovalErrorType::kPacpTimeoutExceeded);
   ResetDialogResultContentObserver();
 }
 

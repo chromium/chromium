@@ -31,7 +31,7 @@ struct CORE_EXPORT GridItemData {
   USING_FAST_MALLOC(GridItemData);
 
  public:
-  GridItemData() = delete;
+  GridItemData() = default;
   GridItemData(const GridItemData&) = default;
   GridItemData& operator=(const GridItemData&) = default;
 
@@ -41,8 +41,8 @@ struct CORE_EXPORT GridItemData {
                bool parent_must_consider_grid_items_for_column_sizing = false,
                bool parent_must_consider_grid_items_for_row_sizing = false);
 
-  GridItemData(BlockNode item_node, const ComputedStyle& grid_style)
-      : GridItemData(std::move(item_node), grid_style, grid_style) {}
+  GridItemData(BlockNode item_node, const ComputedStyle& parent_style)
+      : GridItemData(std::move(item_node), parent_style, parent_style) {}
 
   void SetAlignmentFallback(GridTrackSizingDirection track_direction,
                             bool has_synthesized_baseline);
@@ -78,14 +78,14 @@ struct CORE_EXPORT GridItemData {
                : row_alignment == AxisEdge::kLastBaseline;
   }
 
-  // For this item and track direction, computes the pair of indices |begin| and
-  // |end| such that the item spans every set from the respective collection's
-  // |sets_| with an index in the range [begin, end).
+  // For this item and track direction, computes the pair of indices `begin` and
+  // `end` such that the item spans every set from the respective collection's
+  // `sets_` with an index in the range [begin, end).
   void ComputeSetIndices(const GridLayoutTrackCollection& track_collection);
 
   // For this out of flow item and track collection, computes and stores its
   // first and last spanned ranges, as well as the start and end track offset.
-  // |grid_placement| is used to resolve the grid lines.
+  // `grid_placement` is used to resolve the grid lines.
   void ComputeOutOfFlowItemPlacement(
       const GridLayoutTrackCollection& track_collection,
       const GridPlacementData& placement_data,
@@ -213,24 +213,32 @@ struct CORE_EXPORT GridItemData {
         .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
   }
 
+  void EncompassContributionSizes(MinMaxSizes&& sizes) {
+    if (contribution_sizes) {
+      contribution_sizes->Encompass(sizes);
+    } else {
+      contribution_sizes = std::move(sizes);
+    }
+  }
+
   void Trace(Visitor* visitor) const { visitor->Trace(node); }
 
-  BlockNode node;
+  BlockNode node{nullptr};
   GridArea resolved_position;
 
-  bool has_subgridded_columns : 1;
-  bool has_subgridded_rows : 1;
-  bool is_considered_for_column_sizing : 1;
-  bool is_considered_for_row_sizing : 1;
-  bool is_opposite_direction_in_root_grid_columns : 1;
-  bool is_opposite_direction_in_root_grid_rows : 1;
-  bool is_overflow_safe_for_columns : 1;
-  bool is_overflow_safe_for_rows : 1;
-  bool is_parallel_with_root_grid : 1;
-  bool is_sizing_dependent_on_block_size : 1;
-  bool is_subgridded_to_parent_grid : 1;
-  bool must_consider_grid_items_for_column_sizing : 1;
-  bool must_consider_grid_items_for_row_sizing : 1;
+  bool has_subgridded_columns : 1 {false};
+  bool has_subgridded_rows : 1 {false};
+  bool is_considered_for_column_sizing : 1 {true};
+  bool is_considered_for_row_sizing : 1 {true};
+  bool is_opposite_direction_in_root_grid_columns : 1 {false};
+  bool is_opposite_direction_in_root_grid_rows : 1 {false};
+  bool is_overflow_safe_for_columns : 1 {false};
+  bool is_overflow_safe_for_rows : 1 {false};
+  bool is_parallel_with_root_grid : 1 {false};
+  bool is_sizing_dependent_on_block_size : 1 {false};
+  bool is_subgridded_to_parent_grid : 1 {false};
+  bool must_consider_grid_items_for_column_sizing : 1 {false};
+  bool must_consider_grid_items_for_row_sizing : 1 {false};
 
   FontBaseline parent_grid_font_baseline;
 
@@ -260,9 +268,13 @@ struct CORE_EXPORT GridItemData {
 
   // These fields are only for out of flow items. They are used to store their
   // start/end range indices, and offsets in range in the respective track
-  // collection; see |OutOfFlowItemPlacement|.
+  // collection; see `OutOfFlowItemPlacement`.
   OutOfFlowItemPlacement column_placement;
   OutOfFlowItemPlacement row_placement;
+
+  // Virtual masonry items don't have a node, so we cache the maximum of every
+  // intrinsic contribution among the items that make up its respective group.
+  std::optional<MinMaxSizes> contribution_sizes;
 };
 
 class CORE_EXPORT GridItems {

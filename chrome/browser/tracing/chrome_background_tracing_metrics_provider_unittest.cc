@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -21,7 +22,7 @@
 #include "third_party/metrics_proto/trace_log.pb.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // "nogncheck" because of crbug.com/1125897.
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
@@ -29,7 +30,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace tracing {
 namespace {
@@ -131,7 +132,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, HandleMissingTrace) {
   EXPECT_FALSE(provider.HasIndependentMetrics());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromeBackgroundTracingMetricsProviderChromeOSTest
     : public ChromeBackgroundTracingMetricsProviderTest {
  public:

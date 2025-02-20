@@ -20,10 +20,6 @@
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
 #endif
 
-#if defined(REMOTING_USE_X11)
-#include "remoting/host/linux/wayland_utils.h"
-#endif
-
 namespace remoting {
 
 class MouseCursorMonitorProxy::Core
@@ -73,13 +69,6 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
 
 #if BUILDFLAG(IS_CHROMEOS)
   mouse_cursor_monitor_ = std::make_unique<MouseCursorMonitorAura>();
-#elif BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    mouse_cursor_monitor_ = webrtc::MouseCursorMonitor::Create(options);
-  } else {
-    mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
-        options, webrtc::kFullDesktopScreenId));
-  }
 #else   // BUILDFLAG(IS_CHROMEOS)
   mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
       options, webrtc::kFullDesktopScreenId));

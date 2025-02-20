@@ -176,6 +176,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1546492247443594934">Meja 2</translation>
 <translation id="1546930421365146760">Minta pentadbir anda menyediakan peranti ini dalam konsol Pentadbir Google</translation>
 <translation id="1549512626801247439">pengurusan storan</translation>
+<translation id="1549721333775633305">Paparkan tetapan Quick Share. Quick Share dilumpuhkan</translation>
 <translation id="1550406609415860283">Peranti tersedia</translation>
 <translation id="1550523713251050646">Klik untuk mendapatkan lagi pilihan</translation>
 <translation id="1555130319947370107">Biru</translation>
@@ -1474,6 +1475,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> tidak diaktifkan.</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5860491529813859533">Hidupkan</translation>
+<translation id="5864691701242730005">Paparkan tetapan Quick Share. Keterlihatan <ph name="VISIBILITY" /> dipilih</translation>
 <translation id="5864748620896638071">Bateri <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Mengumpulkan maklumat rangkaian</translation>
 <translation id="5867606971598166637">Pentadbir sistem anda sedang memantau skrin anda</translation>
@@ -2262,6 +2264,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="851660987304951246">Gunakan Bantu saya baca untuk meringkaskan kandungan dengan pantas atau bertanya soalan</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> anda mungkin tidak akan dicas semasa dihidupkan.</translation>
 <translation id="8535393432370007982">Buat asal tertib isihan mengikut warna</translation>
+<translation id="8536886494750559755">Paparkan tetapan Quick Share. Boleh dilihat oleh semua orang selama <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teks disalin kepada Papan Klip</translation>
 <translation id="8541078764854166027">Bingkai kamera</translation>
 <translation id="8542053257095774575">Tiada meja atau templat yang disimpan</translation>

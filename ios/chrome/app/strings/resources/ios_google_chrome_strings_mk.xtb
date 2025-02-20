@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
-<translation id="1066101356081285416">Chrome ќе ги открива броевите за следење на сајтовите што ги отворате и ќе ви прикажува новости за пакетите на страницата во нова картичка. Бројот за следење пакети и името на веб-сајтот ќе се испратат до Google за да се обезбеди функцијава и да се подобрат функциите за купување за сите. Ова може да го ажурирате кога сакате во <ph name="BEGIN_LINK" />Поставките за следење пакети<ph name="END_LINK" />.</translation>
 <translation id="1076643793026027628">Chrome автоматски ги отвора линковите на YouTube „Инкогнито“ во режим „Инкогнито“.</translation>
 <translation id="1086486568852410168">Пребарувајте со Google Lens</translation>
 <translation id="1143896152279775643">Лозинката ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" />.</translation>
@@ -68,7 +67,6 @@
 <translation id="2574249610672786438">За да ги гледате картичките секаде каде што користите Chrome, најавете се на сите ваши уреди</translation>
 <translation id="2576431527583832481">Chrome тукушто се подобри! Достапна е нова верзија.</translation>
 <translation id="257708665678654955">Дали сакате Google Chrome следниот пат да ви понуди да преведува страници од <ph name="LANGUAGE_NAME" /> од овој сајт?</translation>
-<translation id="2650286135394207535">Дозволете Chrome да ви помага да ги следите вашите пакети</translation>
 <translation id="2668242166988961773">Пребарувајте со глас во Chrome.</translation>
 <translation id="2671426118752779020">Може да ги користите лозинките што сте ги зачувале во „Управникот со лозинки на Google“ во други апликации на вашиот iPhone.</translation>
 <translation id="2689064829982324496">За да се одјавите од вашата сметка на Google на сите веб-сајтови, <ph name="BEGIN_LINK" />одјавете се од Chrome<ph name="END_LINK" />.</translation>

@@ -15,15 +15,15 @@
 
 namespace webauthn::authenticator {
 
-// RegistrationState is a singleton object that loads an install-wide secret at
-// startup and holds two FCM registrations. One registration, the "linking"
-// registration, is used when the user links with another device by scanning a
-// QR code. The second is advertised via Sync for other devices signed into the
-// same account. The reason for having two registrations is that the linking
-// registration can be rotated if the user wishes to unlink all QR-linked
-// devices. But we don't want to break synced peers when that happens. Instead,
-// for synced peers we require that they have received a recent sync status from
-// this device, i.e. we rotate them automatically.
+// RegistrationState is a singleton object that holds two FCM registrations when
+// required. One registration, the "linking" registration, is used when the user
+// links with another device by scanning a QR code. The second is advertised via
+// Sync for other devices signed into the same account. The reason for having
+// two registrations is that the linking registration can be rotated if the user
+// wishes to unlink all QR-linked devices. But we don't want to break synced
+// peers when that happens. Instead, for synced peers we require that they have
+// received a recent sync status from this device, i.e. we rotate them
+// automatically.
 class RegistrationState {
  public:
   // SystemInterface abstracts the rest of the system. This is mocked out for
@@ -41,13 +41,6 @@ class RegistrationState {
             void(std::unique_ptr<
                  device::cablev2::authenticator::Registration::Event>)>
             event_callback) = 0;
-
-    // Returns the previous value passed to `SetRootSecret`.
-    virtual std::string GetRootSecret() = 0;
-
-    // Persist a short opaque string on disk, such that other applications
-    // cannot access it.
-    virtual void SetRootSecret(std::string secret) = 0;
 
     // Test whether the current device is suitable for prelinking.
     virtual void CanDeviceSupportCable(
@@ -70,6 +63,8 @@ class RegistrationState {
 
   void Register();
 
+  void StartPrelinkEligibilityChecks();
+
   bool is_registered_for_linking() const {
     return linking_registration_ != nullptr;
   }
@@ -80,7 +75,6 @@ class RegistrationState {
   device::cablev2::authenticator::Registration* sync_registration() const {
     return sync_registration_.get();
   }
-  const std::array<uint8_t, 32>& secret() const { return secret_; }
   bool device_supports_cable() const { return *device_supports_cable_; }
   bool am_in_work_profile() const { return *am_in_work_profile_; }
   const std::optional<std::vector<uint8_t>>& link_data_from_play_services()
@@ -129,7 +123,6 @@ class RegistrationState {
       linking_registration_;
   std::unique_ptr<device::cablev2::authenticator::Registration>
       sync_registration_;
-  std::array<uint8_t, 32> secret_;
   std::unique_ptr<device::cablev2::authenticator::Registration::Event>
       pending_event_;
   // device_supports_cable_ caches the result of a Java function that checks

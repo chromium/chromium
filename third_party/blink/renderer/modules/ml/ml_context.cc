@@ -245,18 +245,18 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLBatchNormalizationSupportLimits* batch_normalization =
       MLBatchNormalizationSupportLimits::Create();
-  batch_normalization->setInput(SupportedDataTypesToDataTypeLimits(
+  batch_normalization->setInput(SupportedTensorLimitsToTensorLimits(
       data_type_limits.batch_normalization_input));
-  batch_normalization->setMean(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.batch_normalization_input));
-  batch_normalization->setVariance(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.batch_normalization_input));
-  batch_normalization->setScale(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.batch_normalization_input));
-  batch_normalization->setBias(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.batch_normalization_input));
+  batch_normalization->setMean(SupportedTensorLimitsToTensorLimits(
+      data_type_limits.batch_normalization_mean));
+  batch_normalization->setVariance(SupportedTensorLimitsToTensorLimits(
+      data_type_limits.batch_normalization_mean));
+  batch_normalization->setScale(SupportedTensorLimitsToTensorLimits(
+      data_type_limits.batch_normalization_mean));
+  batch_normalization->setBias(SupportedTensorLimitsToTensorLimits(
+      data_type_limits.batch_normalization_mean));
   batch_normalization->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.batch_normalization_input));
+      data_type_limits.batch_normalization_input.data_types));
   op_support_limits->setBatchNormalization(batch_normalization);
 
   MLSingleInputSupportLimits* cast = MLSingleInputSupportLimits::Create();

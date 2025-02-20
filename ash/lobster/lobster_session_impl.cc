@@ -108,6 +108,24 @@ std::u16string GetCopyToClipboardButtonLabel() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+std::u16string GetAnnouncementForInsertionSuccess() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_SUCCESS);
+#else
+  return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+std::u16string GetAnnouncementForInsertionFailure() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_FAILURE);
+#else
+  return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 std::string BuildFeedbackDescription(std::string_view query,
                                      std::string_view model_version,
                                      std::string_view user_description) {
@@ -199,6 +217,11 @@ void DisplayFailedImageDownloadNotification(const base::FilePath& image_path) {
   message_center->RemoveNotification(notification->id(),
                                      /*by_user=*/false);
   message_center->AddNotification(std::move(notification));
+}
+
+void AnnounceInsertionResultLater(LobsterClient* client, bool success) {
+  client->AnnounceLater(success ? GetAnnouncementForInsertionSuccess()
+                                : GetAnnouncementForInsertionFailure());
 }
 
 }  // namespace
@@ -309,6 +332,7 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
   if (!candidate.has_value()) {
     LOG(ERROR) << "No candidate found.";
     std::move(status_callback).Run(false);
+    AnnounceInsertionResultLater(client_.get(), false);
     RecordLobsterState(LobsterMetricState::kCommitAsInsertError);
     return;
   }
@@ -321,6 +345,7 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
             if (!result.has_value() || result->size() == 0) {
               LOG(ERROR) << "No image candidate";
               std::move(status_callback).Run(false);
+              AnnounceInsertionResultLater(lobster_client, false);
               RecordLobsterState(LobsterMetricState::kCommitAsInsertError);
               return;
             }
@@ -337,6 +362,7 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
             // webui is closed. Therefore, as long as the inflation request is
             // successful, we return true back to WebUI and close WebUI.
             std::move(status_callback).Run(true);
+            AnnounceInsertionResultLater(lobster_client, true);
 
             // Close the WebUI.
             lobster_client->CloseUI();

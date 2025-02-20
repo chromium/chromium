@@ -1277,7 +1277,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1875387611427697908">Buni faqat <ph name="CHROME_WEB_STORE" /> sahifasidan qo‘shish mumkin</translation>
 <translation id="1877377290348678128">Yorliq (ixtiyoriy)</translation>
 <translation id="1877377730633446520">Bu taxminan <ph name="REQUIRED_SPACE" /> joy oladi. Sizda hozir <ph name="FREE_SPACE" /> boʻsh.</translation>
-<translation id="1877520246462554164">Hisob tekshiruvi tokeni olinmadi. Qayta urinish uchun hisobingizdan chiqing va qaytadan kiring.</translation>
 <translation id="1877860345998737529">Switch harakatini tayinlash</translation>
 <translation id="1878155070920054810">Chromebook oxirigacha yangilanmasdan turib uning quvvati tugab qolishi mumkin. Uzilishlarning oldini olish uchun uning xatosiz quvvatlanayotganini tekshiring.</translation>
 <translation id="1878477879455105085">Ochilgan</translation>
@@ -7000,7 +6999,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5952020381407136867">sensorli panel</translation>
 <translation id="5953211687820750364">Bu roʻyxatga <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           va <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> taʼsir qilgan</translation>
-<translation id="5955282598396714173">Parolingiz eskirdi. Yangilash uchun hisobingizdan chiqing va qayta kiring.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Sayt bu ilovani ochmoqchi.</translation>
 <translation id="5955809630138889698">Bu qurilma faqatgina onlayn demo rejimda ishlaydi. Batafsil axborotni mijozlar xizmatidan oling.</translation>
@@ -9703,7 +9701,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7910725946105920830">Shaxsiy Google hisobingizdan foydalaning</translation>
 <translation id="7910768399700579500">&amp;Yangi jild</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Serverdagi parolingiz yangilandi. Hisobingizdan chiqing va qaytadan kiring.</translation>
 <translation id="791247712619243506">Bekor qilish</translation>
 <translation id="7912974581251770345">Tarjima</translation>
 <translation id="7914399737746719723">Ilova oʻrnatildi</translation>

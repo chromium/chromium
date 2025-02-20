@@ -270,7 +270,7 @@ class NetworkStateUiElement extends PolymerElement {
     } else {
       btn.textContent = '-';
       const expandedRow = this.createExpandedRow_(state, row);
-      row.parentNode!.insertBefore(expandedRow, row.nextSibling!);
+      row.parentNode!.insertBefore(expandedRow, row.nextSibling);
     }
   }
 
@@ -311,7 +311,7 @@ class NetworkStateUiElement extends PolymerElement {
         this.getShillNetworkPropertiesResult_(response);
       });
     } else if (selectedId === 'state') {
-      this.networkConfig_!.getNetworkState(guid)
+      this.networkConfig_.getNetworkState(guid)
           .then((responseParams) => {
             if (responseParams && responseParams.result) {
               this.showDetail_(detailCell, responseParams.result);
@@ -324,7 +324,7 @@ class NetworkStateUiElement extends PolymerElement {
             this.showDetailError_(detailCell, 'Mojo service failure: ' + error);
           });
     } else if (selectedId === 'managed') {
-      this.networkConfig_!.getManagedProperties(guid)
+      this.networkConfig_.getManagedProperties(guid)
           .then((responseParams) => {
             if (responseParams && responseParams.result) {
               this.showDetail_(detailCell, responseParams.result);
@@ -467,7 +467,7 @@ class NetworkStateUiElement extends PolymerElement {
           this.onVisibleNetworksReceived_(responseParams.result);
         });
 
-    this.networkConfig_!
+    this.networkConfig_
         .getNetworkStateList({
           filter: FilterType.kConfigured,
           networkType: NetworkType.kAll,
@@ -477,7 +477,7 @@ class NetworkStateUiElement extends PolymerElement {
           this.onFavoriteNetworksReceived_(responseParams.result);
         });
 
-    this.networkConfig_!.getDeviceStateList().then((responseParams) => {
+    this.networkConfig_.getDeviceStateList().then((responseParams) => {
       this.onDeviceStatesReceived_(responseParams.result);
     });
 

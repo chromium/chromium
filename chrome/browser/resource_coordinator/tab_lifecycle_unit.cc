@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process_metrics.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -258,7 +258,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
 // Fix for urgent discarding woes in crbug.com/883071. These protections only
 // apply on non-ChromeOS desktop platforms (Linux, Mac, Win).
 // NOTE: These do not currently provide DecisionDetails!
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (reason == LifecycleUnitDiscardReason::URGENT) {
     // Limit urgent discarding to once only, unless discarding for the
     // enterprise memory limit feature.
@@ -280,14 +280,14 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
   // whether the tab can be discarded. Additional reasons can be added for
   // reporting purposes, but do not affect whether the tab can be discarded.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
     decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
 #else
   // Do not discard the tab if it is currently active in its window.
   if (tab_strip_model_->GetActiveWebContents() == web_contents())
     decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Do not discard tabs in which the user has entered text in a form.
 

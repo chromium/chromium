@@ -425,7 +425,7 @@ class NetworkUiElement extends NetworkUiElementBase {
 
   private onCustomItemSelected_(event:
                                     CustomEvent<NetworkList.CustomItemState>) {
-    this.browserProxy_.addNetwork(event.detail!.customData as string);
+    this.browserProxy_.addNetwork(event.detail.customData as string);
   }
 }
 

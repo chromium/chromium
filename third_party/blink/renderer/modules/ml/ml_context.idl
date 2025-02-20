@@ -36,11 +36,11 @@ dictionary MLBinarySupportLimits {
 };
 
 dictionary MLBatchNormalizationSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits mean;
-  MLDataTypeLimits variance;
-  MLDataTypeLimits scale;
-  MLDataTypeLimits bias;
+  MLTensorLimits input;
+  MLTensorLimits mean;
+  MLTensorLimits variance;
+  MLTensorLimits scale;
+  MLTensorLimits bias;
   MLDataTypeLimits output;
 };
 

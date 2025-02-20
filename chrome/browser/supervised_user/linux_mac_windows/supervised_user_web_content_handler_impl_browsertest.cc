@@ -31,6 +31,7 @@
 #include "components/supervised_user/test_support/parent_access_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -81,6 +82,37 @@ class SupervisedUserWebContentHandlerImplTest
 
   void OverrideResponseBehaviour(ResponseBehaviour behaviour) {
     http_behaviour_ = behaviour;
+  }
+
+  content::WebContents* MockParentApprovalDialogNavigationToUrlWithResult(
+      SupervisedUserWebContentHandlerImpl* handler,
+      std::string url_base64_encoded_result) {
+    // Constructs the url containing the PACP result as a query param
+    // (`result`).
+    supervision_mixin()
+        .api_mock_setup_mixin()
+        .api_mock()
+        .AllowSubsequentClassifyUrl();
+    GURL::Replacements result_query_param;
+    std::string param_value = "result=" + url_base64_encoded_result;
+    result_query_param.SetQueryStr(param_value);
+    OverrideResponseBehaviour(ResponseBehaviour::kHttpRedirection);
+    GURL pacp_origin_url_with_result =
+        embedded_test_server()
+            ->GetURL(kPacpHost, "/")
+            .ReplaceComponents(result_query_param);
+
+    // Makes the parent access dialog navigate to the url that contains the PACP
+    // result. This causes the dialog to close and destruct.
+    auto* dialog_contents = handler->GetObserverContentsForTesting();
+    content::NavigationController& controller =
+        dialog_contents->GetController();
+    content::NavigationController::LoadURLParams params(
+        pacp_origin_url_with_result);
+    params.transition_type = ui::PAGE_TRANSITION_LINK;
+    controller.LoadURLWithParams(params);
+
+    return dialog_contents;
   }
 
  private:
@@ -154,29 +186,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
   GURL pacp_end_url = GURL(supervised_user::kFamilyManagementUrl);
   content::TestNavigationObserver observer(pacp_end_url);
 
-  // Constructs the url containing the PACP result as a query param (`result`).
-  supervision_mixin()
-      .api_mock_setup_mixin()
-      .api_mock()
-      .AllowSubsequentClassifyUrl();
-  GURL::Replacements result_query_param;
-  std::string param_value =
-      "result=" + supervised_user::CreatePacpApprovalResult();
-  result_query_param.SetQueryStr(param_value);
-  OverrideResponseBehaviour(ResponseBehaviour::kHttpRedirection);
-  GURL pacp_origin_url_with_result = embedded_test_server()
-                                         ->GetURL(kPacpHost, "/")
-                                         .ReplaceComponents(result_query_param);
-
-  // Makes the parent access dialog navigate to the url that contains the PACP
-  // result. This causes the dialog to close and destruct.
-  auto* dialog_contents = handler->GetObserverContentsForTesting();
-  CHECK(dialog_contents);
-  content::NavigationController& controller = dialog_contents->GetController();
-  content::NavigationController::LoadURLParams params(
-      pacp_origin_url_with_result);
-  params.transition_type = ui::PAGE_TRANSITION_LINK;
-  controller.LoadURLWithParams(params);
+  content::WebContents* dialog_contents =
+      MockParentApprovalDialogNavigationToUrlWithResult(
+          handler.get(), supervised_user::CreatePacpApprovalResult());
 
   // Ensure the parent access dialog reached the `pacp_end_url`, before checking
   // the local approval metrics.
@@ -188,6 +200,67 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       static_cast<int>(supervised_user::LocalApprovalResult::kApproved), 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 0);
+  // Duration metrics are recorded for the approval case.
+  histogram_tester.ExpectTotalCount(
+      "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration", 1);
+
+  // Check that the dialog has been destructed (after it was closed).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return handler->GetWeakParentAccessViewForTesting() == nullptr;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
+                       ObservePacpNavigationAndRecordInvalidResult) {
+  base::HistogramTester histogram_tester;
+
+  CHECK(contents());
+  auto handler = std::make_unique<SupervisedUserWebContentHandlerImpl>(
+      contents(), content::FrameTreeNodeId(), 0);
+
+  supervised_user::UrlFormatter url_formatter(
+      *GetUrlFilter(), supervised_user::FilteringBehaviorReason::DEFAULT);
+  GURL blocked_url("https://www.example.com/");
+  // Makes a local approval request and checks that the PACP dialog is created.
+  handler->RequestLocalApproval(
+      blocked_url, u"child_display_name", url_formatter,
+      supervised_user::FilteringBehaviorReason::MANUAL,
+      /*callback*/ base::DoNothing());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return handler->GetWeakParentAccessViewForTesting() != nullptr;
+  }));
+
+  // Mocks the web contents dialog observer obtaining a PACP response:
+  // We get the PACP dialog contents and use them to navigate to a url
+  // that contains the PACP response.
+  // The request handler `HandleRedirection` mocks the re-direction to the
+  // `pacp_end_url` reached by PACP, in order to complete the approval flow.
+  GURL pacp_end_url = GURL(supervised_user::kFamilyManagementUrl);
+  content::TestNavigationObserver observer(pacp_end_url);
+
+  content::WebContents* dialog_contents =
+      MockParentApprovalDialogNavigationToUrlWithResult(
+          handler.get(), base::Base64Encode("invalid_response"));
+
+  // Ensure the parent access dialog reached the `pacp_end_url`, before checking
+  // the local approval metrics.
+  observer.WatchWebContents(dialog_contents);
+  observer.WaitForNavigationFinished();
+
+  histogram_tester.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalResultHistogramName,
+      static_cast<int>(supervised_user::LocalApprovalResult::kError), 1);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      static_cast<int>(supervised_user::LocalWebApprovalErrorType::
+                           kFailureToParsePacpResponse),
+      1);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
 
   // Check that the dialog has been destructed (after it was closed).
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -231,6 +304,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       static_cast<int>(supervised_user::LocalApprovalResult::kCanceled), 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
@@ -266,6 +341,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       static_cast<int>(supervised_user::LocalApprovalResult::kCanceled), 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 0);
 }
 
 class SupervisedUserParentAccessViewWithTimeoutTest
@@ -315,5 +392,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       static_cast<int>(supervised_user::LocalApprovalResult::kError), 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      static_cast<int>(
+          supervised_user::LocalWebApprovalErrorType::kPacpTimeoutExceeded),
+      1);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
 }
 }  // namespace

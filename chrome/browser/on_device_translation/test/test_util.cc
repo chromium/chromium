@@ -258,4 +258,28 @@ void TestLanguagePairAvailable(Browser* browser,
             result);
 }
 
+// Tests that the capabilities availability() method returns the expected
+// result for the given languages.
+void TestTranslationAvailable(Browser* browser,
+                              const std::string_view sourceLang,
+                              const std::string_view targetLang,
+                              const std::string_view result) {
+  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                   base::StringPrintf(R"(
+  (async () => {
+    try {
+      return await ai.translator.availability({
+          sourceLanguage: '%s',
+          targetLanguage: '%s',
+        });
+    } catch (e) {
+      return e.toString();
+    }
+    })();
+  )",
+                                      sourceLang, targetLang))
+                .ExtractString(),
+            result);
+}
+
 }  // namespace on_device_translation

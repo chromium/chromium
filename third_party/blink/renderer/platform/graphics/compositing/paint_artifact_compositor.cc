@@ -23,6 +23,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/view_transition/view_transition_request.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/adjust_mask_layer_geometry.h"
@@ -530,7 +531,9 @@ class PaintArtifactCompositor::Layerizer {
   Layerizer(PaintArtifactCompositor& compositor,
             const PaintArtifact& artifact,
             wtf_size_t reserve_capacity)
-      : compositor_(compositor),
+      : layer_merge_distance_limit_(base::saturated_cast<wtf_size_t>(
+            features::kLayerMergeDistanceLimit.Get())),
+        compositor_(compositor),
         artifact_(artifact),
         chunk_cursor_(artifact.GetPaintChunks().begin()) {
     pending_layers_.reserve(reserve_capacity);
@@ -565,6 +568,7 @@ class PaintArtifactCompositor::Layerizer {
                          const EffectPaintPropertyNode& effect,
                          wtf_size_t layer_index);
 
+  const wtf_size_t layer_merge_distance_limit_;
   PaintArtifactCompositor& compositor_;
   const PaintArtifact& artifact_;
   PaintChunks::const_iterator chunk_cursor_;
@@ -756,8 +760,11 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
     auto is_composited_scroll = [this](const TransformPaintPropertyNode& t) {
       return compositor_.NeedsCompositedScrolling(t);
     };
-    for (wtf_size_t candidate_index = pending_layers_.size() - 1;
-         candidate_index-- > first_layer_in_current_group;) {
+    wtf_size_t candidate_index = pending_layers_.size() - 1;
+    while (candidate_index > first_layer_in_current_group &&
+           pending_layers_.size() - candidate_index <=
+               layer_merge_distance_limit_) {
+      --candidate_index;
       PendingLayer& candidate_layer = pending_layers_[candidate_index];
       if (candidate_layer.Merge(new_layer, compositor_.lcd_text_preference_,
                                 is_composited_scroll)) {

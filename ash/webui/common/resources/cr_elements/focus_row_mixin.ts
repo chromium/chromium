@@ -29,7 +29,7 @@ class FocusRowMixinDelegate implements FocusRowDelegate {
    * the focus event.
    */
   onFocus(_row: FocusRow, e: Event) {
-    const element = e.composedPath()[0]! as HTMLElement;
+    const element = e.composedPath()[0] as HTMLElement;
     const focusableElement = FocusRow.getFocusableElement(element);
     if (element !== focusableElement) {
       focusableElement.focus();
@@ -261,7 +261,7 @@ export const FocusRowMixin = dedupingMixin(
 
         private createObserver_(): MutationObserver {
           return new MutationObserver(mutations => {
-            const mutation = mutations[0]!;
+            const mutation = mutations[0];
             if (mutation.attributeName === 'style' && mutation.oldValue) {
               const newStyle =
                   window.getComputedStyle(mutation.target as Element);
@@ -271,9 +271,9 @@ export const FocusRowMixin = dedupingMixin(
                   mutation.oldValue.match(/^visibility:(.*)(?=;)/);
               // Return early if display and visibility have not changed.
               if (oldDisplayValue &&
-                  newStyle.display === oldDisplayValue[1]!.trim() &&
+                  newStyle.display === oldDisplayValue[1].trim() &&
                   oldVisibilityValue &&
-                  newStyle.visibility === oldVisibilityValue[1]!.trim()) {
+                  newStyle.visibility === oldVisibilityValue[1].trim()) {
                 return;
               }
             }

@@ -234,7 +234,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         this.metaKey_ = metaKey;
       });
 
-      this.acceleratorFetcher!.observeAcceleratorChanges(
+      this.acceleratorFetcher.observeAcceleratorChanges(
           [
             AcceleratorAction.kSwitchToLastUsedIme,
             AcceleratorAction.kSwitchToNextIme,
@@ -325,7 +325,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
     // Disable if all allowed input methods are already enabled.
     if (this.languages &&
-        !this.languages!.inputMethods!.supported
+        !this.languages.inputMethods!.supported
              .filter(
                  inputMethod =>
                      !this.languageHelper.isInputMethodEnabled(inputMethod.id))

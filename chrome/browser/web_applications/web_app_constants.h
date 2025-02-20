@@ -111,10 +111,10 @@ enum class ExternalInstallSource {
 
 // Icon size in pixels.
 // Small icons are used in confirmation dialogs and app windows.
-constexpr int kWebAppIconSmall = 32;
+inline constexpr int kWebAppIconSmall = 32;
 
 // Limit on the number of jump list entries per web app.
-constexpr size_t kMaxApplicationDockMenuItems = 10;
+inline constexpr size_t kMaxApplicationDockMenuItems = 10;
 
 using DisplayMode = blink::mojom::DisplayMode;
 
@@ -151,7 +151,7 @@ enum class RunOnOsLoginPolicy {
 
 // Default threshold for site engagement score if it's not set by field trial
 // param.
-constexpr int kIphFieldTrialParamDefaultSiteEngagementThreshold = 10;
+inline constexpr int kIphFieldTrialParamDefaultSiteEngagementThreshold = 10;
 
 // Expected file handler update actions to be taken by OsIntegrationManager
 // during UpdateOsHooks.

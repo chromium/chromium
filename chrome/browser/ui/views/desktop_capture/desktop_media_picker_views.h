@@ -36,8 +36,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   METADATA_HEADER(DesktopMediaPickerDialogView, views::DialogDelegateView)
 
  public:
-  // Used for UMA. Visible to this class's .cc file, but opaque beyond.
-  enum class DialogType : int;
   DesktopMediaPickerDialogView(
       const DesktopMediaPicker::Params& params,
       DesktopMediaPickerImpl* parent,
@@ -92,6 +90,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
     DesktopMediaList::Type type;
     std::unique_ptr<DesktopMediaListController> controller;
+    // TODO(crbug.com/397167331): Fix `audio_offered`, which is misleading.
     bool audio_offered;  // Whether the audio-checkbox should be visible.
     bool audio_checked;  // Whether the audio-checkbox is checked.
     // Whether to show a button to allow re-selecting a choice within this
@@ -101,7 +100,17 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
     raw_ptr<DesktopMediaPaneView> pane = nullptr;
   };
 
-  bool AudioSupported(DesktopMediaList::Type type);
+  // Whether audio-capture is supported for display surfaces of type `type`.
+  bool AudioSupported(DesktopMediaList::Type type) const;
+
+  // Whether audio-capture is requested for display surfaces of type `type`.
+  //
+  // While getDisplayMedia({audio: true}) would normally ask for audio for
+  // all display surfaces of types where audio-capture is supported,
+  // there are options that Web apps can use in order to specify that the
+  // user should only be prompted for audio if a specific type is used.
+  // (For example, excluding system-audio or window-audio.)
+  bool AudioRequestedForType(DesktopMediaList::Type type) const;
 
   void ConfigureUIForNewPane(int index);
   void StoreAudioCheckboxState();
@@ -141,6 +150,11 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   // not to capture anything.
   void RecordSourceCountsUma();
 
+  // Records the state of the audio toggle at the time when the user approved
+  // the capture. If the audio toggle is not present, the histogram
+  // distinguishes the reason for its absence.
+  void RecordAudioToggleUma(const content::DesktopMediaID& source);
+
   // Helper for UMA-tracking of how often a user shares a discarded tab.
   void RecordTabDiscardedStatusUma(const content::DesktopMediaID& source);
 
@@ -161,8 +175,9 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   const DesktopMediaPicker::Params::RequestSource request_source_;
   const std::u16string app_name_;
   const bool audio_requested_;
-  const bool suppress_local_audio_playback_;  // Effective only if audio shared.
+  const bool exclude_system_audio_requested_;  // JS-exposed as systemAudio.
   const bool is_system_audio_offered_;
+  const bool suppress_local_audio_playback_;  // Effective only if audio shared.
   const content::GlobalRenderFrameHostId capturer_global_id_;
 
   raw_ptr<DesktopMediaPickerImpl> parent_;
@@ -174,8 +189,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
   std::vector<DisplaySurfaceCategory> categories_;
   int previously_selected_category_ = 0;
-
-  DialogType dialog_type_;
 
   std::optional<content::DesktopMediaID> accepted_source_;
 

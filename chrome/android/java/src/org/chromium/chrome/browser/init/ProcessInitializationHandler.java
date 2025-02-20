@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.backup.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
-import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
 import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
 import org.chromium.chrome.browser.content_capture.ContentCaptureHistoryDeletionObserver;
 import org.chromium.chrome.browser.crash.CrashUploadCountStore;
@@ -676,7 +675,6 @@ public class ProcessInitializationHandler {
 
         tasks.add(MediaViewerUtils::updateMediaLauncherActivityEnabled);
 
-        tasks.add(ClearDataDialogResultRecorder::makeDeferredRecordings);
         tasks.add(WebApkUninstallTracker::runDeferredTasks);
 
         tasks.add(OfflineContentAvailabilityStatusProvider::getInstance);

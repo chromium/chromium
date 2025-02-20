@@ -1192,6 +1192,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ला <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरत राहता येणार नाही</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> कास्ट करत आहे</translation>
 <translation id="1813278315230285598">सेवा</translation>
+<translation id="1813828404076816564">शेअर केलेल्या टॅब गटांच्या वैशिष्ट्याच्या संदर्भातील फीडबॅक पाठवण्यासाठी फीडबॅक बटण निवडा</translation>
 <translation id="18139523105317219">EDI पार्टी नाव</translation>
 <translation id="1815083418640426271">साधा मजकूर म्हणून पेस्ट करा</translation>
 <translation id="1815097521077272760">तुम्हाला या गेमसाठी कीबोर्ड नियंत्रण वापरून पाहण्याकरिता आमंत्रित केले आहे.</translation>
@@ -1286,7 +1287,6 @@
 <translation id="1875387611427697908">हे केवळ <ph name="CHROME_WEB_STORE" /> वरून जोडले जाऊ शकते</translation>
 <translation id="1877377290348678128">लेबल (पर्यायी)</translation>
 <translation id="1877377730633446520">हे सुमारे <ph name="REQUIRED_SPACE" /> वापरेल. तुमच्याकडे सध्या <ph name="FREE_SPACE" /> उपलब्ध आहे.</translation>
-<translation id="1877520246462554164">ऑथेंटिकेशन टोकन मिळवण्यात अयशस्वी. कृपया साइन आउट करा आणि नंतर पुन्हा प्रयत्न करण्यासाठी साइन इन करा.</translation>
 <translation id="1877860345998737529">स्विच ॲक्शन असाइनमेंट</translation>
 <translation id="1878155070920054810">अपडेट पूर्ण होण्याआधीच तुमच्या Chromebook ची पॉवर संपेल असे दिसते. व्यत्यय टाळण्यासाठी, ते योग्य प्रकारे चार्ज होत आहे याची खात्री करा.</translation>
 <translation id="1878477879455105085">उघडला</translation>
@@ -4121,6 +4121,7 @@
 <translation id="3857807444929313943">उचला, नंतर पुन्हा स्पर्श करा</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="385939467708172187">क्लिष्ट पासवर्ड वापरा</translation>
+<translation id="3859869403161297890">शेअर केलेल्या टॅब गटांविषयीचा तुमचा फीडबॅक इथे पाठवा</translation>
 <translation id="3859987779882450877">तुमच्या उघड्या टॅबमधून आपोआप गट सुचवतो आणि तयार करतो</translation>
 <translation id="386009056910366930">“<ph name="GROUP_NAME" />” हा टॅब गट व्यवस्थापित करा</translation>
 <translation id="3861638017150647085">वापरकर्ता नाव "<ph name="USERNAME" />" उपलब्ध नाही</translation>
@@ -7010,7 +7011,6 @@
 <translation id="5952020381407136867">टचपॅड</translation>
 <translation id="5953211687820750364">या सूचीवर <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           आणि <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> मुळे परिणाम होतो</translation>
-<translation id="5955282598396714173">तुमचा पासवर्ड एक्सपायर झाला आहे. तो बदलण्यासाठी कृपया साइन आऊट करा आणि पुन्हा साइन इन करा.</translation>
 <translation id="5955304353782037793">अ‍ॅप</translation>
 <translation id="5955721306465922729">वेबसाइटला हे ॲप्लिकेशन उघडायचे आहे.</translation>
 <translation id="5955809630138889698">हे डिव्हाइस फक्त ऑनलाइन डेमो मोडसाठी पात्र असू शकते. अधिक तपशिलांसाठी कृपया तुमच्या साहाय्य प्रतिनिधीशी संपर्क साधा.</translation>
@@ -8174,6 +8174,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6805478749741295868">हे AI चे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही.</translation>
 <translation id="6805647936811177813">कृपया <ph name="HOST_NAME" /> वरून क्लायंट प्रमाणपत्र इंपोर्ट करण्यासाठी <ph name="TOKEN_NAME" /> वर साइन इन करा.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> वरील RLZ ट्रॅकिंग सुरू करा.</translation>
+<translation id="6805817411033102703">शेअर केलेल्या टॅब गटांविषयीचा फीडबॅक</translation>
 <translation id="6806089545527108739">अनुमती देऊ नका, पण नंतर विचारा</translation>
 <translation id="680644983456221885">Google ला पाठवल्या जाणाऱ्या तुमच्या ब्राउझिंग डेटावर आधारित धोकादायक साइट, डाउनलोड आणि एक्स्टेंशनपासून रीअल-टाइम, प्रोअ‍ॅक्टिव्ह संरक्षण</translation>
 <translation id="6806781719264274042">फक्त Google खाते असलेले तुमचे संपर्क. <ph name="LINK_BEGIN" />संपर्क पहा<ph name="LINK_END" /></translation>
@@ -9714,7 +9715,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7910725946105920830">तुमचे वैयक्तिक Google खाते वापरा</translation>
 <translation id="7910768399700579500">&amp;नवीन फोल्‍डर</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">तुमचा पासवर्ड सर्व्हरवर बदलला आहे. कृपया साइन आऊट करा आणि पुन्हा साइन इन करा.</translation>
 <translation id="791247712619243506">सेटअप रद्द करा</translation>
 <translation id="7912974581251770345">भाषांतर</translation>
 <translation id="7914399737746719723">अ‍ॅप इंस्टॉल केले</translation>

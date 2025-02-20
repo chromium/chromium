@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/string_truncator.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -167,9 +168,15 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
     draw_url_string = false;
     label = url_string;
   }
+  PlainTextPainter* text_painter =
+      RuntimeEnabledFeatures::PlainTextPainterEnabled()
+          ? &PlainTextPainter::Shared()
+          : nullptr;
 
   // First step is drawing the link drag image width.
-  gfx::Size label_size(label_font->Width(TextRun(label)),
+  gfx::Size label_size(text_painter ? text_painter->ComputeInlineSize(
+                                          TextRun(label), *label_font)
+                                    : label_font->Width(TextRun(label)),
                        label_font_data->GetFontMetrics().Ascent() +
                            label_font_data->GetFontMetrics().Descent());
 
@@ -183,7 +190,10 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
                        label_size.height() + kDragLabelBorderY * 2);
 
   if (draw_url_string) {
-    url_string_size.set_width(url_font->Width(TextRun(url_string)));
+    url_string_size.set_width(
+        text_painter
+            ? text_painter->ComputeInlineSize(TextRun(url_string), *url_font)
+            : url_font->Width(TextRun(url_string)));
     url_string_size.set_height(url_font_data->GetFontMetrics().Ascent() +
                                url_font_data->GetFontMetrics().Descent());
     image_size.set_height(image_size.height() + url_string_size.height());
@@ -237,8 +247,13 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
     TextRun text_run(url_string);
     if (RuntimeEnabledFeatures::DragImageNoNodeIdEnabled()) {
-      url_font->DrawText(&resource_provider->Canvas(), text_run, text_pos,
-                         text_paint);
+      if (text_painter) {
+        text_painter->Draw(text_run, *url_font, resource_provider->Canvas(),
+                           text_pos, text_paint);
+      } else {
+        url_font->DrawText(&resource_provider->Canvas(), text_run, text_pos,
+                           text_paint);
+      }
     } else {
       url_font->DrawText(&resource_provider->Canvas(), text_run, text_pos,
                          device_scale_factor, text_paint);
@@ -255,13 +270,22 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
       kDragLabelBorderX,
       kDragLabelBorderY + label_font->GetFontDescription().ComputedPixelSize());
   if (text_run.Direction() == TextDirection::kRtl) {
-    float text_width = label_font->Width(text_run);
+    float text_width =
+        text_painter ? text_painter->ComputeInlineSize(text_run, *label_font)
+                     : label_font->Width(text_run);
     int available_width = image_size.width() - kDragLabelBorderX * 2;
     text_pos.set_x(available_width - ceilf(text_width));
   }
-  label_font->DrawBidiText(&resource_provider->Canvas(),
-                           TextRunPaintInfo(text_run), gfx::PointF(text_pos),
-                           Font::kDoNotPaintIfFontNotReady, text_paint);
+  if (text_painter) {
+    text_painter->DrawWithBidiReorder(
+        text_run, 0, text_run.length(), *label_font,
+        Font::kDoNotPaintIfFontNotReady, resource_provider->Canvas(),
+        gfx::PointF(text_pos), text_paint);
+  } else {
+    label_font->DrawBidiText(&resource_provider->Canvas(),
+                             TextRunPaintInfo(text_run), gfx::PointF(text_pos),
+                             Font::kDoNotPaintIfFontNotReady, text_paint);
+  }
 
   scoped_refptr<StaticBitmapImage> image =
       resource_provider->Snapshot(FlushReason::kNon2DCanvas);

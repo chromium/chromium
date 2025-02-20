@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
-<translation id="1066101356081285416">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Numărul de urmărire a coletului și numele site-ului se vor trimite la Google pentru a oferi această funcție și a îmbunătăți funcțiile Cumpărături Google pentru toată lumea. Poți actualiza oricând opțiunea în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
 <translation id="1076643793026027628">Chrome deschide automat linkurile YouTube incognito în modul incognito.</translation>
 <translation id="1086486568852410168">Caută cu Google Lens</translation>
 <translation id="1143896152279775643">Parola se va salva în Managerul de parole Google pentru <ph name="EMAIL" />.</translation>
@@ -68,7 +67,6 @@ De reținut:
 <translation id="2574249610672786438">Conectează-te pe toate dispozitivele ca să vezi toate filele tale deschise în Chrome</translation>
 <translation id="2576431527583832481">Chrome a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="257708665678654955">Dorești ca data viitoare Google Chrome să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
-<translation id="2650286135394207535">Permite ca Chrome să te ajute să urmărești colete</translation>
 <translation id="2668242166988961773">Folosește Căutarea vocală în Chrome.</translation>
 <translation id="2671426118752779020">Poți folosi parolele salvate în Managerul de parole Google în alte aplicații de pe iPhone.</translation>
 <translation id="2689064829982324496">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>

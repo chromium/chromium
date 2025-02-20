@@ -241,7 +241,14 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
           .account_id;
 
   for (size_t i = 0; i < std::size(table); ++i) {
-    GoogleServiceAuthError error(table[i]);
+    GoogleServiceAuthError error;
+    if (table[i] == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidGrantRaptError);
+    } else {
+      error = GoogleServiceAuthError(table[i]);
+    }
     SetAuthError(account_id, error);
     std::optional<message_center::Notification> notification =
         display_service_->GetNotification(kPrimaryAccountErrorNotificationId);

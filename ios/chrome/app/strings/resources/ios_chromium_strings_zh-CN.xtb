@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium 可利用面容 ID 确保您的敏感数据安全。</translation>
 <translation id="1591119736686995611">打开 Chromium 标签页网格。</translation>
 <translation id="16001233025397167">安全检查可保护您免受数据泄露、不安全网站等问题的影响。接收有关 Chromium 为您检测到的任何隐私或安全问题的提醒。</translation>
-<translation id="1611584326765829247">让 Chromium 帮助您跟踪包裹</translation>
 <translation id="1617663976202781617">Chromium 同步功能中的数据</translation>
 <translation id="164952285225495380">已在 Chromium 上跟踪此包裹。</translation>
 <translation id="1707458603865303524">每次点按消息或其他应用中的链接时，都使用 Chromium 打开。</translation>
@@ -306,7 +305,6 @@
 <translation id="8826789549860004832">继续设置浏览器，即可充分利用 Chromium 的各项功能。</translation>
 <translation id="88376265765385899">打开 Chromium 书签。</translation>
 <translation id="8860548555286245440">在 Chromium 中以无痕模式打开网址</translation>
-<translation id="8866191443434488382">Chromium 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。为实现此功能，系统会将包裹跟踪编号和网站名称发送给 Chromium。这些信息还将用于完善购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
 <translation id="8880024619507699923">根据贵组织的要求，您必须登录才能使用 Chromium。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">获享 Chromium 的超强安全保护</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况}}</translation>

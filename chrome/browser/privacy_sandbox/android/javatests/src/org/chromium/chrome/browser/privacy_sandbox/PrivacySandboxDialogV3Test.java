@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -149,6 +150,7 @@ public final class PrivacySandboxDialogV3Test {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/397790001")
     public void testRenderEeaConsentDropdownContent() throws IOException {
         launchDialog();
         onView(withId(R.id.ad_measurement_dropdown_element))
@@ -278,6 +280,7 @@ public final class PrivacySandboxDialogV3Test {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/397790001")
     public void testEEAConsentDropdown() {
         launchDialog();
         onView(withId(R.id.ad_measurement_dropdown_element)).inRoot(isDialog()).perform(scrollTo());

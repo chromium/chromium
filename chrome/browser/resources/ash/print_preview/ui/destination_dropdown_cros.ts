@@ -295,7 +295,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
       return [];
     }
 
-    const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
+    const dropdown = this.shadowRoot.querySelector('iron-dropdown')!;
     return Array
         .from(dropdown.querySelectorAll<HTMLButtonElement>('.list-item'))
         .filter(item => !item.hidden);

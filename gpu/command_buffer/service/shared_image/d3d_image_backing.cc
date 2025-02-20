@@ -1208,15 +1208,15 @@ void* D3DImageBacking::GetEGLImage() const {
 
 bool D3DImageBacking::PresentSwapChain() {
   AutoLock auto_lock(this);
-  TRACE_EVENT0("gpu", "D3DImageBacking::PresentSwapChain");
   if (!swap_chain_ || !is_back_buffer_) {
     LOG(ERROR) << "Backing does not correspond to back buffer of swap chain";
     return false;
   }
 
+  TRACE_EVENT1("gpu", "D3DImageBacking::PresentSwapChain", "has_alpha",
+               !SkAlphaTypeIsOpaque(alpha_type()));
   constexpr UINT kFlags = DXGI_PRESENT_ALLOW_TEARING;
   constexpr DXGI_PRESENT_PARAMETERS kParams = {};
-
   HRESULT hr = swap_chain_->Present1(/*interval=*/0, kFlags, &kParams);
   if (FAILED(hr)) {
     LOG(ERROR) << "Present1 failed with error " << std::hex << hr;

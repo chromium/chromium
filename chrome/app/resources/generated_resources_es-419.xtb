@@ -1181,6 +1181,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Transmitiendo <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Servicios</translation>
+<translation id="1813828404076816564">Selecciona el botón de comentarios para enviar comentarios sobre la función de grupos de pestañas compartidos</translation>
 <translation id="18139523105317219">Nombre de parte EDI</translation>
 <translation id="1815083418640426271">Pegar como texto sin formato</translation>
 <translation id="1815097521077272760">Te invitamos a probar el control de teclado en este juego.</translation>
@@ -1274,7 +1275,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1875387611427697908">Este elemento se puede agregar solamente desde <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877377730633446520">Espacio aproximado que se usará: <ph name="REQUIRED_SPACE" />. Espacio disponible actual: <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">No se pudo obtener el token de autenticación. Para volver a intentarlo, sal de la cuenta y vuelve a acceder.</translation>
 <translation id="1877860345998737529">Asignación de interruptores a acciones</translation>
 <translation id="1878155070920054810">Al parecer, tu Chromebook se quedará sin energía antes de que se complete la actualización. Para evitar interrupciones, asegúrate de que se cargue correctamente.</translation>
 <translation id="1878477879455105085">Abierto</translation>
@@ -4106,6 +4106,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3857807444929313943">Levanta el dedo y vuelve a tocar</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="385939467708172187">Usa una contraseña segura</translation>
+<translation id="3859869403161297890">Envía tus comentarios sobre los grupos de pestañas compartidos aquí</translation>
 <translation id="3859987779882450877">Sugiere y crea grupos automáticamente a partir de las pestañas abiertas.</translation>
 <translation id="386009056910366930">Administrar el grupo de pestañas “<ph name="GROUP_NAME" />”</translation>
 <translation id="3861638017150647085">El nombre de usuario "<ph name="USERNAME" />" no está disponible</translation>
@@ -6996,7 +6997,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5952020381407136867">panel táctil</translation>
 <translation id="5953211687820750364">Esta lista se ve afectada por <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           y <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Tu contraseña caducó. Para cambiarla, sal de la cuenta y vuelve a acceder.</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5955721306465922729">Un sitio web quiere abrir esta app.</translation>
 <translation id="5955809630138889698">Es posible que este dispositivo solo esté habilitado para el modo de demostración en línea. Para obtener más información, comunícate con tu representante de asistencia.</translation>
@@ -8158,6 +8158,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6805478749741295868">Esta es una función experimental basada en IA y puede tener errores.</translation>
 <translation id="6805647936811177813">Accede a <ph name="TOKEN_NAME" /> para importar el certificado de cliente desde <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Habilitar el seguimiento de RLZ en <ph name="SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="6805817411033102703">Comentarios sobre los grupos de pestañas compartidos</translation>
 <translation id="6806089545527108739">No permitir, pero preguntar más tarde</translation>
 <translation id="680644983456221885">Protección proactiva y en tiempo real contra descargas, extensiones y sitios peligrosos que se basa en el envío de tus datos de navegación a Google</translation>
 <translation id="6806781719264274042">Solo tus contactos con Cuentas de Google. <ph name="LINK_BEGIN" />Ver contactos<ph name="LINK_END" /></translation>
@@ -9700,7 +9701,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7910725946105920830">Usa tu Cuenta de Google personal</translation>
 <translation id="7910768399700579500">&amp;Nueva carpeta</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Se cambió la contraseña en el servidor. Sal de la cuenta y vuelve a acceder.</translation>
 <translation id="791247712619243506">Cancelar configuración</translation>
 <translation id="7912974581251770345">Traducción</translation>
 <translation id="7914399737746719723">Se instaló la app</translation>

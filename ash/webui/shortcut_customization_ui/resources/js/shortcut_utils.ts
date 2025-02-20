@@ -446,7 +446,7 @@ export const getAriaLabelForStandardAccelerators =
  */
 export const getAriaLabelForTextAccelerators =
     (acceleratorInfos: TextAcceleratorInfo[]): string => {
-      return getTextAcceleratorParts(acceleratorInfos as TextAcceleratorInfo[])
+      return getTextAcceleratorParts(acceleratorInfos)
           .map(part => getKeyDisplay(mojoString16ToString(part.text)))
           .join('');
     };

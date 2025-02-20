@@ -61,6 +61,21 @@ VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
   return VideoTransformation(matrix2x2);
 }
 
+std::array<int32_t, 4> VideoTransformation::GetMatrix() {
+  int32_t m = mirrored ? -1 : 1;
+  int32_t fp1 = 1 << 16;
+  switch (rotation) {
+    case VIDEO_ROTATION_0:
+      return {fp1 * m, 0, 0, fp1};
+    case VIDEO_ROTATION_90:
+      return {0, fp1, -fp1 * m, 0};
+    case VIDEO_ROTATION_180:
+      return {-fp1 * m, 0, 0, -fp1};
+    case VIDEO_ROTATION_270:
+      return {0, -fp1, m * fp1, 0};
+  }
+}
+
 VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
   // Promote to int64_t to avoid abs(int32_min) being undefined.
   const std::array<int64_t, 4> matrix64 = {
@@ -106,6 +121,13 @@ VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
 
   if (matrix64[1] == matrix64[3] && matrix64[1] != 0) {
     mirrored = !mirrored;
+  }
+  // Same but different signs of cosines implies mirrored.
+  if (matrix64[0] == -1 * matrix64[3] && matrix[1] == 0) {
+    mirrored = true;
+  }
+  if (matrix64[1] == matrix64[2] && matrix[0] == 0) {
+    mirrored = true;
   }
 
   // Normalize the angle

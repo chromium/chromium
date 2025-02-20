@@ -4165,6 +4165,11 @@ const char kAccessibilityIncludeLongClickActionDescription[] =
     "When enabled, the accessibility tree for the web contents will include "
     "the ACTION_LONG_CLICK action on all relevant nodes.";
 
+const char kAccessibilityTextFormattingName[] = "Accessibility Text Formatting";
+const char kAccessibilityTextFormattingDescription[] =
+    "When enabled, text formatting information will be included in the "
+    "AccessibilityNodeInfo tree on Android";
+
 const char kAccessibilityUnifiedSnapshotsName[] =
     "Accessibility Unified Snapshots";
 const char kAccessibilityUnifiedSnapshotsDescription[] =
@@ -5628,6 +5633,11 @@ const char kUseAngleDescriptionAndroid[] =
 const char kUseAngleGLES[] = "OpenGL ES";
 const char kUseAngleVulkan[] = "Vulkan";
 
+const char kAndroidMinimalUiLargeScreenName[] =
+    "Enable new minimal ui in desktop windowing";
+const char kAndroidMinimalUiLargeScreenDescription[] =
+    "Display new minimal ui for PWAs on devices that support "
+    "desktop windowing.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------
@@ -6863,10 +6873,33 @@ const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";
 
+const char kMediaAppImageMantisEraseName[] = "Erase feature of Mantis";
+const char kMediaAppImageMantisEraseDescription[] =
+    "Enable the Erase feature of Mantis";
+
+const char kMediaAppImageMantisExpandBackgroundName[] =
+    "Expand Background feature of Mantis";
+const char kMediaAppImageMantisExpandBackgroundDescription[] =
+    "Enable the Expand background feature of Mantis";
+
+const char kMediaAppImageMantisMakeAStickerName[] =
+    "Make a sticker feature of Mantis";
+const char kMediaAppImageMantisMakeAStickerDescription[] =
+    "Enable the Make a sticker feature of Mantis";
+
 const char kMediaAppImageMantisModelName[] =
     "The model to use with the Mantis feature";
 const char kMediaAppImageMantisModelDescription[] =
     "This flag controls the model to use with the Mantis feature.";
+
+const char kMediaAppImageMantisReimagineName[] = "Reimagine feature of Mantis";
+const char kMediaAppImageMantisReimagineDescription[] =
+    "Enable the Reimagine feature of Mantis";
+
+const char kMediaAppImageMantisRemoveBackgroundName[] =
+    "Remove Background feature of Mantis";
+const char kMediaAppImageMantisRemoveBackgroundDescription[] =
+    "Enable the Remove Background feature of Mantis";
 
 const char kMicrophoneMuteSwitchDeviceName[] = "Microphone Mute Switch Device";
 const char kMicrophoneMuteSwitchDeviceDescription[] =
@@ -7846,9 +7879,7 @@ const char kElementCaptureDescription[] =
     "media track into a track capturing just a specific DOM element.";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) ||                                      \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 const char kUIDebugToolsName[] = "Debugging tools for UI";
 const char kUIDebugToolsDescription[] =
     "Enables additional keyboard shortcuts to help debugging.";

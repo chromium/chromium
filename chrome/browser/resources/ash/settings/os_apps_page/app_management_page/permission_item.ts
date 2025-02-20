@@ -241,7 +241,7 @@ export class AppManagementPermissionItemElement extends
     }
 
     BrowserProxy.getInstance().handler.setPermission(
-        this.app.id, newPermission!);
+        this.app.id, newPermission);
 
     recordAppManagementUserAction(
         this.app.type,

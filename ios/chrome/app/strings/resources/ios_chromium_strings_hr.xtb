@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium štiti sigurnost vaših osjetljivih podataka uz Face ID.</translation>
 <translation id="1591119736686995611">Otvara rešetku kartica u Chromiumu.</translation>
 <translation id="16001233025397167">Sigurnosna provjera štiti vas od neovlaštenog pristupa podacima, nesigurnih web-lokacija i još mnogo toga. Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chromium otkrije za vas.</translation>
-<translation id="1611584326765829247">Neka vam Chromium pomogne pratiti pakete</translation>
 <translation id="1617663976202781617">Podaci sinkronizacije Chromiuma</translation>
 <translation id="164952285225495380">Ovaj se paket već prati na Chromiumu.</translation>
 <translation id="1707458603865303524">Upotrebljavajte Chromium svaki put kad dodirnete veze u porukama ili drugim aplikacijama.</translation>
@@ -306,7 +305,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="8826789549860004832">Nastavite s postavljanjem preglednika da biste iskoristili sve prednosti Chromiuma.</translation>
 <translation id="88376265765385899">Otvara Chromiumove oznake.</translation>
 <translation id="8860548555286245440">Otvorite URL-ove u Chromiumu u anonimnom načinu</translation>
-<translation id="8866191443434488382">Chromium će otkriti evidencijske brojeve na web-lokacijama koje posjećujete i prikazati vam novosti o paketima na novoj kartici preglednika. Broj za praćenje pošiljke i naziv web-lokacije poslat će se Chromiumu radi pružanja te značajke i poboljšanja značajki kupnje za sve korisnike. To uvijek možete ažurirati u <ph name="BEGIN_LINK" />postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Vaša organizacija zahtijeva da se prijavite da biste koristili Chromium. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Odaberite najsnažniju Chromiumovu zaštitu sigurnosti</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{To se događa kada se Chromium ne koristi {THRESHOLD} minutu}one{To se događa kada se Chromium ne koristi {THRESHOLD} minutu}few{To se događa kada se Chromium ne koristi {THRESHOLD} minute}other{To se događa kada se Chromium ne koristi {THRESHOLD} minuta}}</translation>

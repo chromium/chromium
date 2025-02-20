@@ -13,12 +13,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -40,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TrustedWebActivityOpenTimeRecorderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock CurrentPageVerifier mCurrentPageVerifier;
     @Mock ActivityTabProvider mTabProvider;
@@ -52,7 +56,6 @@ public class TrustedWebActivityOpenTimeRecorderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         doNothing()
@@ -121,128 +124,6 @@ public class TrustedWebActivityOpenTimeRecorderTest {
                         .expectIntRecord("BrowserServices.TwaOpenTime.V2", 4000)
                         .build();
         mRecorder.onPauseWithNative();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void recordsTimeInVerified_WhenLeftVerified() {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("TrustedWebActivity.TimeInVerifiedOrigin.V2", 2000)
-                        .build();
-        launchTwa();
-        advanceTime(2000);
-
-        leaveVerifiedOrigin();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void recordsTimeOutOfVerified_WhenReturnedToVerified() {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("TrustedWebActivity.TimeOutOfVerifiedOrigin.V2", 3000)
-                        .build();
-        launchTwa();
-        advanceTime(2000);
-        leaveVerifiedOrigin();
-        advanceTime(3000);
-
-        returnToVerifiedOrigin();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void recordsTimeInVerified_WhenLeftVerifiedAgain() {
-        launchTwa();
-        advanceTime(2000);
-        leaveVerifiedOrigin();
-        advanceTime(3000);
-        returnToVerifiedOrigin();
-        advanceTime(4000);
-
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("TrustedWebActivity.TimeInVerifiedOrigin.V2", 4000)
-                        .build();
-        leaveVerifiedOrigin();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void recordsTimeOutOfVerified_WhenReturnedToVerifiedAgain() {
-        launchTwa();
-        advanceTime(2000);
-        leaveVerifiedOrigin();
-        advanceTime(3000);
-        returnToVerifiedOrigin();
-        advanceTime(4000);
-        leaveVerifiedOrigin();
-        advanceTime(5000);
-
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("TrustedWebActivity.TimeOutOfVerifiedOrigin.V2", 5000)
-                        .build();
-        returnToVerifiedOrigin();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void recordsTimeInVerified_WhenPausedWhileInVerified() {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("TrustedWebActivity.TimeInVerifiedOrigin.V2", 2000)
-                        .build();
-        launchTwa();
-        advanceTime(2000);
-
-        mRecorder.onPauseWithNative();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void recordsTimeInVerified_AfterResumedInVerified_AndLeftVerified() {
-
-        launchTwa();
-        advanceTime(2000);
-        mRecorder.onPauseWithNative();
-        advanceTime(3000);
-        mRecorder.onResumeWithNative();
-        advanceTime(4000);
-
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("TrustedWebActivity.TimeInVerifiedOrigin.V2", 4000)
-                        .build();
-        leaveVerifiedOrigin();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void recordsTimeOutOfVerified_WhenPausedWhileOutOfVerified() {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("TrustedWebActivity.TimeOutOfVerifiedOrigin.V2", 3000)
-                        .build();
-        launchTwa();
-        advanceTime(2000);
-        leaveVerifiedOrigin();
-        advanceTime(3000);
-
-        mRecorder.onPauseWithNative();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void doesntRecordAnyTime_WhenVerifiedForFirstTime() {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("TrustedWebActivity.TimeOutOfVerifiedOrigin.V2")
-                        .expectNoRecords("TrustedWebActivity.TimeInVerifiedOrigin.V2")
-                        .expectNoRecords("BrowserServices.TwaOpenTime.V2")
-                        .build();
-        launchTwa();
         histogramWatcher.assertExpected();
     }
 

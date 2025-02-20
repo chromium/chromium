@@ -35,6 +35,7 @@
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
@@ -561,6 +562,16 @@ void GraphicsContext::DrawBidiText(const Font& font,
                                    const gfx::PointF& point,
                                    const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses([&](const cc::PaintFlags& flags) {
+    if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+      if (PlainTextPainter::Shared().DrawWithBidiReorder(
+              run, 0, run.length(), font, Font::kDoNotPaintIfFontNotReady,
+              *canvas_, point, DarkModeFlags(this, auto_dark_mode, flags),
+              printing_ ? Font::DrawType::kGlyphsAndClusters
+                        : Font::DrawType::kGlyphsOnly)) {
+        paint_controller_.SetTextPainted();
+      }
+      return;
+    }
     if (font.DrawBidiText(canvas_, TextRunPaintInfo(run), point,
                           Font::kDoNotPaintIfFontNotReady,
                           DarkModeFlags(this, auto_dark_mode, flags),

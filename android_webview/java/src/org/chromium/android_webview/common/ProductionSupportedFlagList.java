@@ -257,9 +257,6 @@ public final class ProductionSupportedFlagList {
                 "Splits Autofill labels among consecutive fields for better heuristic"
                         + " predictions."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_FIX_CACHING_ON_JAVA_SCRIPT_CHANGES,
-                "When enabled, Autofill will reset the autofill state of fields modified by JS"),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_FORM_TRACKING,
                 "Improves form submission tracking and duplicate submission handling"),
         Flag.baseFeature(
@@ -309,14 +306,8 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_IN_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for India."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_USE_IT_ADDRESS_MODEL,
-                "When enabled, Autofill uses a custom address model for Italy."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_NL_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for the Netherlands."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_USE_PL_ADDRESS_MODEL,
-                "When enabled, Autofill uses a custom address model for Poland."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_SUPPORT_LAST_NAME_PREFIX,
                 "When enabled, Autofill uses a custom name hierarchy for parsing last names."),
@@ -661,9 +652,6 @@ public final class ProductionSupportedFlagList {
                 "Straightens free lists for larger slot spans in PartitionRoot::PurgeMemory() -> "
                         + "... -> PartitionPurgeSlotSpan()."),
         Flag.baseFeature(
-                "PartitionAllocUsePoolOffsetFreelists",
-                "Activates an alternative freelist implementation in PartitionAlloc."),
-        Flag.baseFeature(
                 "PartitionAllocUseSmallSingleSlotSpans",
                 "Uses a more nuanced heuristic to classify small single-slot spans."),
         Flag.baseFeature(
@@ -833,9 +821,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP,
                 "Use initial network state at startup"),
-        Flag.baseFeature(
-                BlinkFeatures.ALLOW_JAVA_SCRIPT_TO_RESET_AUTOFILL_STATE,
-                "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature("StandardCompliantNonSpecialSchemeURLParsing"),
         Flag.baseFeature(
                 BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE,

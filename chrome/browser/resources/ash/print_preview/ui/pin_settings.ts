@@ -173,7 +173,7 @@ export class PrintPreviewPinSettingsElement extends
     // It's done because we don't permit multiple simultaneous validation errors
     // in Print Preview and we also don't want to set the value when sticky
     // settings may not yet have been set.
-    if (this.state !== State.READY && this.settings.pinValue!.valid) {
+    if (this.state !== State.READY && this.settings.pinValue.valid) {
       return;
     }
     this.isPinValid = this.computeValid_();

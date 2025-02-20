@@ -203,8 +203,7 @@ export class ClientDelegateFactory {
         return {
           sessionConfig: getSessionConfigMojomToUI(result.session.config) as
               SessionConfig,
-          activity: getStudentActivityMojomToUI(result.session.activities) as
-              IdentifiedActivity[],
+          activity: getStudentActivityMojomToUI(result.session.activities),
         };
       },
       endSession: async () => {

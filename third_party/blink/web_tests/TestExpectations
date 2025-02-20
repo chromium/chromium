@@ -7060,9 +7060,6 @@ crbug.com/1395552 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure P
 # Sheriff 2022-12-07
 crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
 
-# Should pass when SetIntervalWithoutClamp is turned on.
-crbug.com/6240888 external/wpt/html/webappapis/timers/setinterval-settimeout-clamping.html [ Failure ]
-
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 
@@ -8863,15 +8860,14 @@ crbug.com/339041663 external/wpt/mediacapture-insertable-streams/legacy/MediaStr
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/tentative/VideoTrackGenerator.https.html [ Crash Failure Timeout ]
 # failure from enabling swiftshader on headless shell, combined with a preexisting flaky Crash/Timeout
 crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Pass Timeout ]
+# More tests that exhibit antialiasing differences only on headless shell, not on content_shell, when run under Fontations
+crbug.com/397880053 external/wpt/css/css-multicol/multicol-height-002-print.xht [ Failure ]
+crbug.com/397880053 external/wpt/css/css-page/margin-boxes/auto-margins-001-print.html [ Failure ]
+crbug.com/397880053 external/wpt/css/css-page/margin-boxes/auto-margins-002-print.html [ Failure ]
+crbug.com/397880053 external/wpt/css/css-page/page-box-009-print.html [ Failure ]
 
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
-crbug.com/376491758 external/wpt/largest-contentful-paint/first-letter-background.html [ Failure Pass ]
-crbug.com/376491758 external/wpt/largest-contentful-paint/observe-css-generated-text.html [ Failure Pass ]
-crbug.com/376491758 external/wpt/largest-contentful-paint/text-with-display-style.html [ Failure Pass ]
-crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/first-letter-background.html [ Failure Pass ]
-crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/observe-css-generated-text.html [ Failure Pass ]
-crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/text-with-display-style.html [ Failure Pass ]
 
 # Flaky Test Disable 2024-10-31
 crbug.com/376675482 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-permissions-policy-default.tentative.https.sub.html [ Failure Pass ]
@@ -8951,8 +8947,8 @@ crbug.com/379335371 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.an
 
 # Gardener 2024-11-21
 crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Failure Pass Timeout ]
-crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Failure Pass ]
-crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
+crbug.com/380327348 media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Failure Pass ]
+crbug.com/380327348 media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
 
 # This test will [PRECONDITION_FAILED] on some bots and not others based on its HW capabilities, skip the test on such bots.
 # TODO(crbug.com/381407888): See if we can replace Pass/Failure with platform-specific -expected.txt files and remove this.

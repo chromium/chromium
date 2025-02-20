@@ -51,7 +51,8 @@ class IsolatedWebAppURLLoaderFactory;
 class WebAppProvider;
 
 namespace {
-constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency = base::Hours(5);
+inline constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency =
+    base::Hours(5);
 }
 
 // This enum lists the error types that can occur during the update of an

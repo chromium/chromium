@@ -28,6 +28,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="OnDeviceTranslationAction">
+  <variant name="Availability"/>
   <variant name="CanTranslate"/>
   <variant name="Create"/>
   <variant name="Translate"/>

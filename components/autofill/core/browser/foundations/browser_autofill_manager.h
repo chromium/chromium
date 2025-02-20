@@ -258,10 +258,10 @@ class BrowserAutofillManager : public AutofillManager {
   void OnDidEndTextFieldEditingImpl() override;
   void OnHidePopupImpl() override;
   void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override;
-  void OnJavaScriptChangedAutofilledValueImpl(const FormData& form,
-                                              const FieldGlobalId& field_id,
-                                              const std::u16string& old_value,
-                                              bool formatting_only) override;
+  void OnJavaScriptChangedAutofilledValueImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const std::u16string& old_value) override;
   void Reset() override;
 
   // Retrieves the four digit combinations from the DOM of the current web page
@@ -448,15 +448,12 @@ class BrowserAutofillManager : public AutofillManager {
   // kLimitBeforeRefill after the filling and records metrics for this. This
   // method should be called after we learned that JavaScript modified an
   // autofilled field. It's responsible for assessing the nature of the
-  // modification. `cleared_value` is true if JS wiped the previous value, and
-  // `formatting_only` is true if JS only modified whitespaces, symbols and
-  // capitalization.
+  // modification. `cleared_value` is true if JS wiped the previous value.
   // TODO(crbug.com/40227496): Remove `cleared_value` when `field` starts
   // containing the actual current value of the field.
   void AnalyzeJavaScriptChangedAutofilledValue(const FormStructure& form,
                                                AutofillField& field,
-                                               bool cleared_value,
-                                               bool formatting_only);
+                                               bool cleared_value);
 
   // Populates all the fields (except for ablation study related fields) in
   // `SuggestionsContext` based on the given params.

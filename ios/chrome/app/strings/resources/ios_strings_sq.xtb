@@ -975,6 +975,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> mund të përdorë tani emrin e përdoruesit dhe fjalëkalimin tënd kur përdor "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar në <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5242899254250321823">Ndrysho fjalëkalimin në uebsajt</translation>
 <translation id="5248640482715684545">Ky sajt po përpiqet të hapë një aplikacion tjetër.</translation>
+<translation id="5250371859659394278">Nga një burim i panjohur</translation>
 <translation id="5271265092610673171">{count,plural, =1{Një fushë e detyrueshme është bosh. Plotësoje para se ta ruash.}other{Disa fusha të detyrueshme janë bosh. Plotësoji para se t'i ruash.}}</translation>
 <translation id="5271549068863921519">Ruaj fjalëkalimin</translation>
 <translation id="5279214046729249716">Po, mbaji veçmas</translation>
@@ -1404,7 +1405,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7015418667643980944">Pamja e ndarë</translation>
 <translation id="7016070607649558507">Ke 1 fjalëkalim të dobët. Rregulloje tani për të qëndruar i sigurt.</translation>
 <translation id="7016958933495968912">Opsionet për "Zbulo"</translation>
-<translation id="7026724612456523899">Gjurmo gjithmonë pakot</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7035825883570480307">Të aktivizohen njoftimet?</translation>
 <translation id="7039345315346323556">Të fundit</translation>

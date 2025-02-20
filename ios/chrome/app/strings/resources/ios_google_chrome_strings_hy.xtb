@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
-<translation id="1066101356081285416">Chrome-ը կճանաչի հետագծման համարները ձեր այցելած կայքերում և կցուցադրի առաքանու մասին թարմ տեղեկություններ նոր ներդիրի էջում։ Առաքանու հետագծման համարը և կայքի անվանումը կուղարկվեն Google-ին՝ այս գործառույթը տրամադրելու և Google-ում գնումների գործառույթները բոլորի համար բարելավելու նպատակով։ Ցանկացած ժամանակ <ph name="BEGIN_LINK" />Առաքանու հետագծման կարգավորումներում<ph name="END_LINK" /> կարող եք սա փոխել։</translation>
 <translation id="1076643793026027628">Chrome-ը ինկոգնիտո ռեժիմում YouTube տեսանյութերի հղումները ավտոմատ բացում է ինկոգնիտո ռեժիմում։</translation>
 <translation id="1086486568852410168">Որոնել Google Տեսապակու միջոցով</translation>
 <translation id="1143896152279775643">Գաղտնաբառը կպահվի <ph name="EMAIL" /> հաշվի Google Գաղտնաբառերի կառավարիչում։</translation>
@@ -68,7 +67,6 @@
 <translation id="2574249610672786438">Chrome-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար մտեք հաշիվ բոլոր սարքերում։</translation>
 <translation id="2576431527583832481">Chrome-ը բարելավվել է: Մատչելի է նոր տարբերակ:</translation>
 <translation id="257708665678654955">Ուզո՞ւմ եք, որ Google Chrome-ն այսուհետ առաջարկի թարգմանել այս կայքի <ph name="LANGUAGE_NAME" /> էջերը:</translation>
-<translation id="2650286135394207535">Թույլատրեք Chrome-ին օգնել ձեզ հետագծել ձեր առաքանիները</translation>
 <translation id="2668242166988961773">Որոնել ձայնի միջոցով Chrome-ում։</translation>
 <translation id="2671426118752779020">Դուք կարող եք Google Գաղտնաբառերի կառավարիչում պահված գաղտնաբառերն օգտագործել ձեր iPhone-ի այլ հավելվածներում։</translation>
 <translation id="2689064829982324496">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chrome-ից<ph name="END_LINK" />։</translation>

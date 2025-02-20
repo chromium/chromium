@@ -19,6 +19,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);
 
 // If enabled, PrefetchContainer can be used for more than one navigation.
 // https://crbug.com/1449360
+//
+// TODO(crbug.com/397882995): Remove this.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchReusable);
 
 // The size limit of body size in bytes that can be reused in

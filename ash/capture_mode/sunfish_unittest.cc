@@ -44,6 +44,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/home_button.h"
@@ -296,6 +297,94 @@ TEST_F(SunfishDisabledTest, NoTextDetectionInDefaultMode) {
   // No text detection request should have been made, so there should not be a
   // pending DLP check.
   EXPECT_FALSE(CaptureModeTestApi().IsPendingDlpCheck());
+}
+
+class SunfishEnabledScannerDisabledTest : public SunfishTestBase {
+ public:
+  SunfishEnabledScannerDisabledTest() {
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
+                                          {features::kSunfishFeature},
+                                          /*disabled_features=*/{{
+                                              features::kScannerDogfood,
+                                              features::kScannerUpdate,
+                                          }});
+  }
+  SunfishEnabledScannerDisabledTest(const SunfishEnabledScannerDisabledTest&) =
+      delete;
+  SunfishEnabledScannerDisabledTest& operator=(
+      const SunfishEnabledScannerDisabledTest&) = delete;
+  ~SunfishEnabledScannerDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SunfishEnabledScannerDisabledTest,
+       SunfishSessionImageCapturedAndActionsNotFetchedRecorded) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionImageCapturedAndActionsNotFetched,
+      0);
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionImageCapturedAndActionsNotFetched,
+      1);
+}
+
+class SunfishEnabledScannerEnabledTest : public SunfishTestBase {
+ public:
+  SunfishEnabledScannerEnabledTest() {
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
+                                          {
+                                              features::kSunfishFeature,
+                                              features::kScannerDogfood,
+                                              features::kScannerUpdate,
+                                          },
+                                          /*disabled_features=*/{});
+  }
+  SunfishEnabledScannerEnabledTest(const SunfishEnabledScannerEnabledTest&) =
+      delete;
+  SunfishEnabledScannerEnabledTest& operator=(
+      const SunfishEnabledScannerEnabledTest&) = delete;
+  ~SunfishEnabledScannerEnabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SunfishEnabledScannerEnabledTest,
+       SunfishSessionImageCapturedAndActionsNotFetchedRecorded) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  auto* capture_mode_controller = CaptureModeController::Get();
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  capture_mode_controller->StartSunfishSession();
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionImageCapturedAndActionsNotFetched,
+      0);
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionImageCapturedAndActionsNotFetched,
+      1);
 }
 
 class SunfishTest : public SunfishTestBase {
@@ -2663,8 +2752,7 @@ TEST_F(ScannerTest, CreatesScannerActionButtons) {
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
 }
 
-TEST_F(ScannerTest,
-       SunfishScreenInitialScreenCaptureSentToScannerServerMetricRecorded) {
+TEST_F(ScannerTest, SunfishSessionImageCapturedAndActionsFetchedRecorded) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
       fetch_actions_future;
@@ -2678,7 +2766,7 @@ TEST_F(ScannerTest,
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::
-          kSunfishScreenInitialScreenCaptureSentToScannerServer,
+          kSunfishSessionImageCapturedAndActionsFetchStarted,
       0);
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
@@ -2688,9 +2776,10 @@ TEST_F(ScannerTest,
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::
-          kSunfishScreenInitialScreenCaptureSentToScannerServer,
+          kSunfishSessionImageCapturedAndActionsFetchStarted,
       1);
 }
+
 // Tests that action buttons are created when the Scanner response returns as
 // fast as possible.
 TEST_F(ScannerTest, FetchActionsImmediately) {
@@ -3562,9 +3651,7 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedTextRecordsHistogram) {
       ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown, 1);
 }
 
-TEST_F(
-    ScannerTest,
-    SmartActionsButtonShouldRecordMetricWhenImageSentToServerToFetchActions) {
+TEST_F(ScannerTest, SmartActionsButtonShouldRecordMetricWhenActionsFetched) {
   base::HistogramTester histogram_tester;
   auto* controller = CaptureModeController::Get();
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
@@ -3589,7 +3676,7 @@ TEST_F(
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::
-          kScreenCaptureModeInitialScreenCaptureSentToScannerServer,
+          kSmartActionsButtonImageCapturedAndActionsFetchStarted,
       0);
 
   // Click the smart actions button.
@@ -3612,7 +3699,57 @@ TEST_F(
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::
-          kScreenCaptureModeInitialScreenCaptureSentToScannerServer,
+          kSmartActionsButtonImageCapturedAndActionsFetchStarted,
+      1);
+}
+
+TEST_F(ScannerTest, SmartActionsButtonShouldRecordMetricWhenActionsNotFetched) {
+  base::HistogramTester histogram_tester;
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  // Smart actions button should have been created.
+  const ActionButtonView* smart_actions_button =
+      session_test_api.GetActionButtonByViewId(
+          ActionButtonViewID::kSmartActionsButton);
+  ASSERT_TRUE(smart_actions_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kSmartActionsButtonImageCapturedAndActionsNotFetched,
+      0);
+
+  // Click the smart actions button when it is now disabled by enterprise.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .Times(0);
+
+  LeftClickOn(smart_actions_button);
+  WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kSmartActionsButtonImageCapturedAndActionsNotFetched,
       1);
 }
 

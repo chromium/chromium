@@ -30,7 +30,6 @@
 <translation id="159029779861043703">O Chromium protege seus dados sensíveis com o Face ID.</translation>
 <translation id="1591119736686995611">Abre a grade de guias do Chromium.</translation>
 <translation id="16001233025397167">A Confirmação de segurança protege você contra violações de dados, sites perigosos e muito mais. Receba alertas sobre problemas de privacidade ou segurança que o Chromium detectar.</translation>
-<translation id="1611584326765829247">Permita que o Chromium ajude você a rastrear seus pacotes</translation>
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
 <translation id="164952285225495380">Esse pacote já foi rastreado no Chromium.</translation>
 <translation id="1707458603865303524">Use o Chromium sempre que abrir links em mensagens e outros apps.</translation>
@@ -306,7 +305,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8826789549860004832">Continue a configuração do navegador para aproveitar o Chromium ao máximo.</translation>
 <translation id="88376265765385899">Abre os favoritos do Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs na navegação anônima do Chromium</translation>
-<translation id="8866191443434488382">O Chromium vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Chromium para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Sua organização exige que você faça login para usar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Use o nível mais alto de segurança do Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos}}</translation>

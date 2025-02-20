@@ -323,6 +323,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
           observed_request_headers_.emplace_back(request.relative_url,
                                                  request.headers);
         }));
+    net::test_server::InstallDefaultWebSocketHandlers(&https_server_);
     ASSERT_TRUE(https_server_.Start());
 
     // All the sites used during these tests should have a cookie.
@@ -573,12 +574,11 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
         browser_ptr->tab_strip_model()->GetActiveWebContents(), ""));
   }
 
-  void OpenConnectToPage(content::RenderFrameHost* frame,
-                         const net::EmbeddedTestServer& wss_server) {
-    std::string query =
-        base::StrCat({"url=", net::test_server::GetWebSocketURL(
-                                  wss_server, kHostB, "/echo-request-headers")
-                                  .spec()});
+  void OpenConnectToPage(content::RenderFrameHost* frame) {
+    std::string query = base::StrCat(
+        {"url=", net::test_server::GetWebSocketURL(https_server_, kHostB,
+                                                   "/echo-request-headers")
+                     .spec()});
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
 
@@ -1808,12 +1808,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        WebsocketRequestsUseStorageAccessGrants) {
-  net::EmbeddedTestServer wss_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  wss_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::InstallDefaultWebSocketHandlers(&wss_server);
-
-  ASSERT_TRUE(wss_server.Start());
-
   SetBlockThirdPartyCookies(true);
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1824,7 +1818,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Before the document opts into Storage Access, the WebSocket should not send
   // unpartitioned cookies during the connection.
   {
-    OpenConnectToPage(GetFrame(), wss_server);
+    OpenConnectToPage(GetFrame());
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
@@ -1840,7 +1834,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // After the document opts into Storage Access, the WebSocket *should* send
   // unpartitioned cookies during the connection.
   {
-    OpenConnectToPage(GetFrame(), wss_server);
+    OpenConnectToPage(GetFrame());
     ASSERT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
     std::string message;
@@ -2989,119 +2983,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
             kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
-}
-
-class StorageAccessAPIAutograntsWithFedCMOriginTrialBrowserTest
-    : public StorageAccessAPIAutograntsWithFedCMBrowserTest {
- public:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    // We intentionally do not enable the kFedCmWithStorageAccessAPI feature,
-    // since overriding its state means we'd ignore the origin trial token.
-    return {};
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // See
-    // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/origin_trials_integration.md#manual-testing.
-    command_line->AppendSwitchASCII(
-        "origin-trial-public-key",
-        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
-  }
-
- protected:
-  bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
-    if (params->url_request.url.path() != kPageWithOriginTrialHeader) {
-      return false;
-    }
-
-    CHECK_EQ(params->url_request.url.host_piece(), kHostB);
-    // Origin Trials key generated with:
-    //
-    // tools/origin_trials/generate_token.py --expire-timestamp 2000000000
-    // https://b.test FedCmWithStorageAccessAPI
-    content::URLLoaderInterceptor::WriteResponse(
-        "HTTP/1.1 200 OK\n"
-        "Content-type: text/html\n\n",
-
-        /*body=*/
-        "<meta http-equiv='origin-trial' "
-        "content='A4qD0M27fNpFkAe8cZ74fkY2Vfo6a+h9ZUbyG1E/nTooswOEp0LE/"
-        "uhVUCx6nH68NoK7GoYsmgw+"
-        "yigPZmay2ggAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly9iLnRlc3Q6NDQzIiwgImZlYXR1"
-        "cmUiOiAiRmVkQ21XaXRoU3RvcmFnZUFjY2Vzc0FQSSIsICJleHBpcnkiOiAyMDAwMDAw"
-        "MDAwfQ=='>",
-        params->client.get());
-    return true;
-  }
-
-  GURL OriginTrialPage() const {
-    return GURL(base::StrCat({"https://", kHostB, kPageWithOriginTrialHeader}));
-  }
-
- private:
-  static constexpr char kPageWithOriginTrialHeader[] = "/page_with_token.html";
-};
-
-IN_PROC_BROWSER_TEST_F(
-    StorageAccessAPIAutograntsWithFedCMOriginTrialBrowserTest,
-    FedCMGrantsAllowCookieAccessViaSAA) {
-  SetBlockThirdPartyCookies(true);
-  GrantFedCMPermission();
-
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [this](content::URLLoaderInterceptor::RequestParams* params) {
-        return OnRequest(params);
-      }));
-
-  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
-  NavigateFrameTo(OriginTrialPage(), browser(),
-                  /*iframe_id=*/"child-0");
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-
-  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
-  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(prompt_factory()->TotalRequestCount(), 0);
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
-
-  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
-  NavigateFrameTo(OriginTrialPage(), browser(),
-                  /*iframe_id=*/"child-0");
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-}
-
-class StorageAccessAPIAutograntsWithFedCMOriginTrialKillswitchBrowserTest
-    : public StorageAccessAPIAutograntsWithFedCMOriginTrialBrowserTest {
- public:
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {blink::features::kFedCmWithStorageAccessAPI};
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    StorageAccessAPIAutograntsWithFedCMOriginTrialKillswitchBrowserTest,
-    KillswitchTakesPrecedenceOverOriginTrialToken) {
-  SetBlockThirdPartyCookies(true);
-  GrantFedCMPermission();
-  prompt_factory()->set_response_type(
-      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
-
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [this](content::URLLoaderInterceptor::RequestParams* params) {
-        return OnRequest(params);
-      }));
-
-  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
-  NavigateFrameTo(OriginTrialPage(), browser(),
-                  /*iframe_id=*/"child-0");
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-
-  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(prompt_factory()->TotalRequestCount(), 1);
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 }
 
 class StorageAccessHeadersDisabledBrowserTest

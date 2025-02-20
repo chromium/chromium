@@ -48,8 +48,8 @@ export class WelcomePageAppElement extends PolymerElement {
         .forEach(link => {
           const handleClick = () =>
               this.dispatchEvent(new CustomEvent('opened-new-window'));
-          link!.addEventListener('click', handleClick as EventListener);
-          link!.addEventListener(
+          link.addEventListener('click', handleClick as EventListener);
+          link.addEventListener(
               'auxclick',
               // For middle-click, do the same things as Ctrl+click
               ((event: MouseEvent) => {

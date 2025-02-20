@@ -1278,7 +1278,6 @@
 <translation id="1875387611427697908">ต้องเพิ่มจาก <ph name="CHROME_WEB_STORE" /> เท่านั้น</translation>
 <translation id="1877377290348678128">ป้ายกำกับ (ไม่บังคับ)</translation>
 <translation id="1877377730633446520">การดำเนินการนี้จะใช้พื้นที่ประมาณ <ph name="REQUIRED_SPACE" /> ขณะนี้คุณมีพื้นที่เหลืออยู่ <ph name="FREE_SPACE" /></translation>
-<translation id="1877520246462554164">ไม่ได้รับโทเค็นการตรวจสอบสิทธิ์ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้งเพื่อลองอีกครั้ง</translation>
 <translation id="1877860345998737529">การกำหนดการดำเนินการด้วยสวิตช์</translation>
 <translation id="1878155070920054810">ดูเหมือนว่าพลังงานของ Chromebook จะหมดก่อนการอัปเดตเสร็จสิ้น ตรวจสอบว่าได้ชาร์จอุปกรณ์ดังกล่าวอย่างถูกต้อง เพื่อไม่ให้การอัปเดตหยุดชะงัก</translation>
 <translation id="1878477879455105085">เปิดอยู่</translation>
@@ -6994,7 +6993,6 @@
 <translation id="5951624318208955736">จอภาพ</translation>
 <translation id="5952020381407136867">ทัชแพด</translation>
 <translation id="5953211687820750364">รายการนี้ได้รับผลกระทบจาก <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> และ <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">รหัสผ่านหมดอายุ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้งเพื่อเปลี่ยนรหัสผ่าน</translation>
 <translation id="5955304353782037793">แอป</translation>
 <translation id="5955721306465922729">เว็บไซต์หนึ่งต้องการเปิดแอปพลิเคชันนี้</translation>
 <translation id="5955809630138889698">อุปกรณ์นี้อาจมีสิทธิ์ใช้งานในโหมดสาธิตออนไลน์เท่านั้น โปรดติดต่อตัวแทนฝ่ายสนับสนุนเพื่อขอรายละเอียดเพิ่มเติม</translation>
@@ -9698,7 +9696,6 @@
 <translation id="7910725946105920830">ใช้บัญชี Google ส่วนบุคคล</translation>
 <translation id="7910768399700579500">โ&amp;ฟลเดอร์ใหม่</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">มีการเปลี่ยนรหัสผ่านของคุณในเซิร์ฟเวอร์ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="791247712619243506">ยกเลิกการตั้งค่า</translation>
 <translation id="7912974581251770345">คำแปล</translation>
 <translation id="7914399737746719723">ติดตั้งแอปแล้ว</translation>

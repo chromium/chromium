@@ -17,7 +17,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -490,7 +489,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, ProtectPDFPages) {
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Makes sure that recently opened or used tabs are protected.
 // These protections only apply on non-Ash desktop platforms. Check
 // TabLifecycleUnit::CanDiscard for more details.
@@ -541,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
   // WebContentsData::WebContentsDestroyed.
   tsm->CloseAllTabs();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Makes sure that tabs using media devices are protected.
 IN_PROC_BROWSER_TEST_P(TabManagerTest, ProtectVideoTabs) {
@@ -630,13 +629,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL));
 }
 
-// TODO(crbug.com/336450782): Flaky on Lacros ASAN.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_AutoDiscardable DISABLED_AutoDiscardable
-#else
-#define MAYBE_AutoDiscardable AutoDiscardable
-#endif
-IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_AutoDiscardable) {
+IN_PROC_BROWSER_TEST_P(TabManagerTest, AutoDiscardable) {
   // Get two tabs open.
   NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
                                WindowOpenDisposition::CURRENT_TAB,
@@ -1026,7 +1019,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
 
 // On ChromeOS, active tabs are discarded if their window is non-visible. On
 // other platforms, they are never discarded.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
 #else

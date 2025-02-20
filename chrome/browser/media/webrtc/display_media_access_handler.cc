@@ -450,11 +450,6 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   if (!pending_request.request.exclude_monitor_type_surfaces) {
     media_types.push_back(DesktopMediaList::Type::kScreen);
   }
-  if (pending_request.request.video_type ==
-      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    media_types.insert(media_types.begin(),
-                       DesktopMediaList::Type::kCurrentTab);
-  }
 
   capture_policy::FilterMediaList(media_types, capture_level);
 

@@ -1288,7 +1288,6 @@
 <translation id="1875387611427697908">只能從 <ph name="CHROME_WEB_STORE" /> 新增</translation>
 <translation id="1877377290348678128">標籤 (選填)</translation>
 <translation id="1877377730633446520">這會使用大約 <ph name="REQUIRED_SPACE" /> 的空間。您目前的可用空間為 <ph name="FREE_SPACE" />。</translation>
-<translation id="1877520246462554164">無法獲取驗證憑證。請先登出並重新登入，然後再試一次。</translation>
 <translation id="1877860345998737529">開關動作指派</translation>
 <translation id="1878155070920054810">Chromebook 似乎會在更新完成前沒電。請確認 Chromebook 已正確充電，避免更新中斷。</translation>
 <translation id="1878477879455105085">開咗</translation>
@@ -6999,7 +6998,6 @@
 <translation id="5951624318208955736">顯示器</translation>
 <translation id="5952020381407136867">觸控板</translation>
 <translation id="5953211687820750364">此清單會受 <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> 和 <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> 影響</translation>
-<translation id="5955282598396714173">您的密碼已過期。如要變更密碼，請先登出然後重新登入。</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5955721306465922729">有網站想開啟此應用程式。</translation>
 <translation id="5955809630138889698">此裝置可能只可使用網上示範模式。詳情請與您的支援代表聯絡。</translation>
@@ -9703,7 +9701,6 @@
 <translation id="7910725946105920830">使用個人 Google 帳戶</translation>
 <translation id="7910768399700579500">新增資料夾(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">您已在伺服器上變更密碼。請先登出，然後重新登入。</translation>
 <translation id="791247712619243506">取消設定</translation>
 <translation id="7912974581251770345">翻譯</translation>
 <translation id="7914399737746719723">已安裝應用程式</translation>

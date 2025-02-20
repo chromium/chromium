@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromiumএ মুখাৱয়ব আইডিৰ জৰিয়তে আপোনাৰ সংবেদনশীল ডেটা সুৰক্ষিত কৰি ৰাখে।</translation>
 <translation id="1591119736686995611">Chromiumৰ টেব গ্ৰিড খোলে।</translation>
 <translation id="16001233025397167">সুৰক্ষা পৰীক্ষাই আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত হৈ থকাত সহায় কৰিব পাৰে। Chromiumএ আপোনাৰ বাবে চিনাক্ত কৰা যিকোনো গোপনীয়তা বা সুৰক্ষা সম্পৰ্কীয় সমস্যাৰ ওপৰত সতৰ্কবার্তা পাওক।</translation>
-<translation id="1611584326765829247">Chromiumক আপোনাৰ পেকেজসমূহ ট্ৰেক কৰাত আপোনাক সহায় কৰিবলৈ দিয়ক</translation>
 <translation id="1617663976202781617">Chromium ছিংকৰ ডেটা</translation>
 <translation id="164952285225495380">এই পেকেজটো ইতিমধ্যে Chromiumত ট্ৰেক কৰা হৈছে।</translation>
 <translation id="1707458603865303524">আপুনি যিকোনো সময়তে বাৰ্তা বা অন্য এপত থকা কোনো লিংকত টিপিলে সেইবোৰ খুলিবলৈ Chromium ব্যৱহাৰ কৰক।</translation>
@@ -306,7 +305,6 @@
 <translation id="8826789549860004832">আপোনাৰ ব্ৰাউজাৰটো ছেট আপ কৰি Chromiumৰ পৰা পাৰ্যমানে উপকৃত হওক।</translation>
 <translation id="88376265765385899">Chromiumৰ বুকমাৰ্কসমূহ খোলে।</translation>
 <translation id="8860548555286245440">ইনক’গনিট’ত Chromiumত URL খোলক</translation>
-<translation id="8866191443434488382">Chromiumএ আপুনি চোৱা ছাইটসমূহত ট্ৰেকিং নম্বৰ চিনাক্ত কৰিব আৰু আপোনাক নতুন টেবৰ পৃষ্ঠাখনত পেকেজৰ আপডে’ট দেখুৱাব। এই সুবিধাটো প্ৰদান কৰিবলৈ আৰু সকলোৰে বাবে বজাৰ কৰাৰ সুবিধা উন্নত কৰিবলৈ পেকেজ ট্ৰেকিং নম্বৰ আৰু ৱেবছাইটৰ নাম Chromiumলৈ পঠিওৱা হ’ব। আপুনি <ph name="BEGIN_LINK" />পেকেজ ট্ৰেকিঙৰ ছেটিঙ<ph name="END_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="8880024619507699923">Chromium ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Chromiumৰ আটাইতকৈ শক্তিশালী সুৰক্ষা পাওক</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}one{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}other{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}}</translation>

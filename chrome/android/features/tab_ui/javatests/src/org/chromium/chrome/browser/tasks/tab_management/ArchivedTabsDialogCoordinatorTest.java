@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
@@ -47,6 +46,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -82,6 +82,7 @@ import org.chromium.url.GURL;
 @DoNotBatch(reason = "TODO(crbug.com/348068134): Batch this test suite.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER})
+@DisabledTest(message = "crbug.com/397759336")
 public class ArchivedTabsDialogCoordinatorTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -98,7 +99,6 @@ public class ArchivedTabsDialogCoordinatorTest {
     private Profile mProfile;
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private TabModel mArchivedTabModel;
-    private ViewGroup mParentView;
     private TabCreator mRegularTabCreator;
     private TabModel mRegularTabModel;
     private UserActionTester mUserActionTester;
@@ -755,16 +755,15 @@ public class ArchivedTabsDialogCoordinatorTest {
     }
 
     private void showDialog(int numOfArchivedTabs) {
-        onViewWaiting(
-                        withText(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getResources()
-                                        .getQuantityString(
-                                                R.plurals.archived_tab_card_title,
-                                                numOfArchivedTabs,
-                                                numOfArchivedTabs)))
-                .perform(click());
+        String tabsText =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.archived_tab_card_title,
+                                numOfArchivedTabs,
+                                numOfArchivedTabs);
+        onViewWaiting(withText(tabsText)).perform(click());
         mRobot.resultRobot.verifyTabListEditorIsVisible();
         mTimesShown++;
         assertEquals(mTimesShown, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogShown"));

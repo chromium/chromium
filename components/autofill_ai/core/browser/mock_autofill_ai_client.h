@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_MOCK_AUTOFILL_AI_CLIENT_H_
 #define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_MOCK_AUTOFILL_AI_CLIENT_H_
 
-#include "components/autofill/core/browser/data_model/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

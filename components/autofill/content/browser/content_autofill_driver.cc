@@ -621,12 +621,11 @@ void ContentAutofillDriver::SelectFieldOptionsDidChange(const FormData& form) {
 void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
     const FormData& form,
     FieldRendererId field_id,
-    const std::u16string& old_value,
-    bool formatting_only) {
+    const std::u16string& old_value) {
   RouteToManager(*this, router(),
                  &AutofillDriverRouter::JavaScriptChangedAutofilledValue,
                  &AutofillManager::OnJavaScriptChangedAutofilledValue, form,
-                 field_id, old_value, formatting_only);
+                 field_id, old_value);
 }
 
 const mojo::AssociatedRemote<mojom::AutofillAgent>&

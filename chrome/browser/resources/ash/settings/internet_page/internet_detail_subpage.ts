@@ -709,9 +709,9 @@ export class SettingsInternetDetailPageElement extends
     this.updateHiddenPref_();
 
     if (this.isCellular_(this.managedProperties_) &&
-        this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
+        this.managedProperties_.typeProperties.cellular!.allowTextMessages) {
       this.suppressTextMessagesOverride_ = !!OncMojo.getActiveValue(
-          this.managedProperties_!.typeProperties.cellular!.allowTextMessages);
+          this.managedProperties_.typeProperties.cellular!.allowTextMessages);
     }
 
     const metered = this.managedProperties_.metered;

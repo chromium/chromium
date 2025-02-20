@@ -1081,6 +1081,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.GestureTransition.CompressionTime" units="ms"
+    expires_after="M140">
+  <owner>lizeb@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    The time it takes to compress the navigation screenshot, on a background
+    thread. Recorded on Android, each time a navigation screenshot is
+    compressed.
+  </summary>
+</histogram>
+
 <histogram
     name="Navigation.GestureTransition.IgnoredInputCount.{Reason}.{Position}"
     units="count" expires_after="M140">

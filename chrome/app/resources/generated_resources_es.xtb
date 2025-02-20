@@ -1278,7 +1278,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1875387611427697908">Este elemento solo se puede añadir desde <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877377730633446520">Se requiere un espacio disponible de <ph name="REQUIRED_SPACE" />. Actualmente tienes <ph name="FREE_SPACE" /> de espacio disponible.</translation>
-<translation id="1877520246462554164">No se ha podido obtener el token de autenticación. Cierra la sesión y vuelve a iniciarla para intentarlo de nuevo.</translation>
 <translation id="1877860345998737529">Asignación de interruptores a acciones</translation>
 <translation id="1878155070920054810">Parece que tu Chromebook se quedará sin batería antes de que finalice la actualización. Para evitar interrupciones, comprueba que se esté cargando correctamente.</translation>
 <translation id="1878477879455105085">Abierto</translation>
@@ -6999,7 +6998,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5952020381407136867">panel táctil</translation>
 <translation id="5953211687820750364">Esta lista se ve afectada por <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           y <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Tu contraseña ha caducado. Cierra la sesión y vuelve a iniciarla para cambiarla.</translation>
 <translation id="5955304353782037793">aplic</translation>
 <translation id="5955721306465922729">Un sitio web quiere abrir esta aplicación.</translation>
 <translation id="5955809630138889698">Es posible que este dispositivo solo sea apto para el modo Demo online. Para obtener más información, ponte en contacto con tu representante de soporte.</translation>
@@ -9704,7 +9702,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7910725946105920830">Usa tu cuenta de Google personal</translation>
 <translation id="7910768399700579500">&amp;Nueva carpeta</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Tu contraseña se ha cambiado en el servidor. Cierra la sesión y vuelve a iniciarla.</translation>
 <translation id="791247712619243506">Cancelar configuración</translation>
 <translation id="7912974581251770345">Traducción</translation>
 <translation id="7914399737746719723">Aplicación instalada</translation>

@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium protegeix les teves dades sensibles amb Face ID.</translation>
 <translation id="1591119736686995611">Obre la quadrícula de pestanyes de Chromium.</translation>
 <translation id="16001233025397167">Comprovació de seguretat et protegeix de violacions de les dades, de llocs web no segurs i més. Rep alertes sobre qualsevol problema de privadesa o de seguretat que Chromium detecti.</translation>
-<translation id="1611584326765829247">Permet que Chromium t'ajudi a fer un seguiment dels teus paquets</translation>
 <translation id="1617663976202781617">Dades de la sincronització de Chromium</translation>
 <translation id="164952285225495380">Ja s'ha fet el seguiment d'aquest paquet a Chromium.</translation>
 <translation id="1707458603865303524">Utilitza Chromium cada vegada que toquis enllaços en missatges o en altres aplicacions.</translation>
@@ -306,7 +305,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8826789549860004832">Continua configurant el navegador per treure el màxim partit de Chromium.</translation>
 <translation id="88376265765385899">Obre les adreces d'interès de Chromium.</translation>
 <translation id="8860548555286245440">Obre els URL en mode d'incògnit a Chromium</translation>
-<translation id="8866191443434488382">Chromium detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Chromium per oferir aquesta funció i millorar les funcions de compra per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">La teva organització requereix que iniciïs la sessió per utilitzar Chromium. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Obtén la seguretat més efectiva de Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts}}</translation>

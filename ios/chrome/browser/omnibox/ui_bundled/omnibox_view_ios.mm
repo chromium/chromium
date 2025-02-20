@@ -71,35 +71,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
 
 OmniboxViewIOS::~OmniboxViewIOS() = default;
 
-void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
-    const AutocompleteMatch& match,
-    WindowOpenDisposition disposition,
-    const GURL& alternate_nav_url,
-    const std::u16string& pasted_text,
-    size_t selected_line,
-    base::TimeTicks match_selection_timestamp,
-    std::optional<std::u16string> optional_text) {
-  if (!optional_text) {
-    return;
-  }
-
-  std::u16string text = std::move(optional_text).value();
-
-  ClipboardProvider* clipboard_provider =
-      controller()->autocomplete_controller()->clipboard_provider();
-  std::optional<AutocompleteMatch> new_match =
-      clipboard_provider->NewClipboardTextMatch(text);
-
-  if (!new_match) {
-    return;
-  }
-
-  OmniboxPopupSelection selection(
-      controller()->autocomplete_controller()->InjectAdHocMatch(
-          new_match.value()));
-  model()->OpenSelection(selection, match_selection_timestamp, disposition);
-}
-
 void OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch(
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition,
@@ -707,15 +678,7 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
 
   // Fill in clipboard matches if they don't have a destination URL.
   if (match.destination_url.is_empty()) {
-    if (match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
-      ClipboardRecentContent* clipboard_recent_content =
-          ClipboardRecentContent::GetInstance();
-      clipboard_recent_content->GetRecentTextFromClipboard(base::BindOnce(
-          &OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch,
-          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
-          pasted_text, index, match_selection_timestamp));
-      return;
-    } else if (match.type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
+    if (match.type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
       ClipboardRecentContent* clipboard_recent_content =
           ClipboardRecentContent::GetInstance();
       clipboard_recent_content->GetRecentImageFromClipboard(base::BindOnce(

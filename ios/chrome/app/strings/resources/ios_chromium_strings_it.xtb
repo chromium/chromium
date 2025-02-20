@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium protegge i tuoi dati sensibili con Face ID.</translation>
 <translation id="1591119736686995611">Apre la griglia delle schede di Chromium.</translation>
 <translation id="16001233025397167">Il controllo di sicurezza ti protegge da violazioni dei dati, siti web non sicuri e altro ancora. Ricevi avvisi su eventuali problemi di privacy o di sicurezza rilevati da Chromium.</translation>
-<translation id="1611584326765829247">Consenti a Chromium di aiutarti a monitorare i tuoi pacchi</translation>
 <translation id="1617663976202781617">Dati dalla Sincronizzazione Chromium</translation>
 <translation id="164952285225495380">Questo pacchetto è già stato monitorato su Chromium.</translation>
 <translation id="1707458603865303524">Usa Chromium ogni volta che tocchi i link nei messaggi o in altre app.</translation>
@@ -306,7 +305,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8826789549860004832">Continua a configurare il browser per usare al meglio Chromium.</translation>
 <translation id="88376265765385899">Consente di aprire i preferiti di Chromium.</translation>
 <translation id="8860548555286245440">Apri gli URL in Chromium in incognito</translation>
-<translation id="8866191443434488382">Chromium rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. Il numero di tracciamento della spedizione e il nome del sito web verranno inviati a Chromium per fornire questa funzionalità e migliorare le funzionalità di acquisto per tutti. Puoi aggiornarli in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni di tracciamento della spedizione<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">La tua organizzazione richiede l'accesso per usare Chromium. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Usa la funzionalità di sicurezza più efficace di Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti}}</translation>

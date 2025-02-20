@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
-<translation id="1066101356081285416">Pārlūkā Chrome jūsu apmeklētajās vietnēs tiks noteikti izsekošanas numuri un jaunas cilnes lapā tiks parādīti jaunumi par sūtījumiem. Pakas izsekošanas numurs un vietnes nosaukums tiks nosūtīts uzņēmumam Google, lai nodrošinātu šo funkciju un uzlabotu Google iepirkšanās funkcijas visiem lietotājiem. Šo informāciju varat jebkurā laikā atjaunināt <ph name="BEGIN_LINK" />pakas izsekošanas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1076643793026027628">Pārlūkā Chrome YouTube inkognito saites tiek automātiski atvērtas inkognito režīmā.</translation>
 <translation id="1086486568852410168">Meklēt, izmantojot Google Lens</translation>
 <translation id="1143896152279775643">Jūsu parole tiks saglabāta Google paroļu pārvaldniekā kontā <ph name="EMAIL" />.</translation>
@@ -68,7 +67,6 @@ Svarīga informācija
 <translation id="2574249610672786438">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chrome, pierakstieties visās savās ierīcēs.</translation>
 <translation id="2576431527583832481">Pārlūkprogramma Chrome ir uzlabota! Ir pieejama jauna versija.</translation>
 <translation id="257708665678654955">Vai vēlaties, lai Google Chrome nākamreiz piedāvātu tulkot šīs vietnes lapas, kuru saturs ir šādā valodā: <ph name="LANGUAGE_NAME" />?</translation>
-<translation id="2650286135394207535">Izmantojiet pārlūku Chrome sūtījumu izsekošanai</translation>
 <translation id="2668242166988961773">Meklējiet ar balsi pārlūkā Chrome.</translation>
 <translation id="2671426118752779020">Google paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPhone tālruņa lietotnēs.</translation>
 <translation id="2689064829982324496">Lai izrakstītos no sava Google konta visās vietnēs, <ph name="BEGIN_LINK" />izrakstieties no pārlūka Chrome<ph name="END_LINK" />.</translation>

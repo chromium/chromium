@@ -527,12 +527,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     if (dialog_controller_->ui_presentation() ==
             UIPresentation::kPasskeyUpgrade &&
         enclave_create_enabled) {
-      // Set up the upgrade request controller. This handles enclave
-      // transactions in place of the "regular" GPMEnclaveController.
+      // PasskeyUpgradeRequestController will handle enclave transactions in
+      // place of the "regular" GPMEnclaveController.
       CHECK(!enclave_controller_);
-      PasskeyUpgradeRequestController::GetOrCreateForCurrentDocument(
-          GetRenderFrameHost())
-          ->InitializeEnclaveRequestCallback(discovery_factory);
+      dialog_controller_->InitializeEnclaveRequestCallback(discovery_factory);
       discovery_factory->set_network_context_factory(base::BindRepeating([]() {
         return SystemNetworkContextManager::GetInstance()->GetContext();
       }));

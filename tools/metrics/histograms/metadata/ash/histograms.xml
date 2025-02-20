@@ -6024,18 +6024,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.NightLight.DisplayCrtcCtmSupport"
-    enum="AshNightLightDisplayCrtcCtmSupportType" expires_after="2022-02-01">
-  <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
-  <summary>
-    The type of CRTC color transorm matrix support for the currently connected
-    displays. Emitted when cursor compositing status is refreshed, but only when
-    Night Light is on. The cursor compositing status is refreshed whenever there
-    is a change in Night Light status or color temperature.
-  </summary>
-</histogram>
-
 <histogram name="Ash.NightLight.ScheduleType" enum="AshNightLightScheduleType"
     expires_after="2024-05-19">
   <owner>afakhry@chromium.org</owner>

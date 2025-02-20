@@ -75,10 +75,30 @@ using ::ash::disks::Disk;
 using ::ash::disks::DiskMountManager;
 using ::ash::disks::FakeDiskMountManager;
 using base::FilePath;
+using ::testing::UnorderedElementsAre;
 
 std::vector<std::string> arc_volume_ids = {
     arc::kImagesRootId, arc::kVideosRootId, arc::kAudioRootId,
     arc::kDocumentsRootId, "android_files:0"};
+
+const char kAllowlistedVendorId[] = "A123";
+const char kAllowlistedProductId[] = "456B";
+const policy::DeviceId kAllowlistedDeviceId{0xA123, 0x456B};
+
+// Adds `kAllowlistedDeviceId` to ExternalStorageAllowlist.
+void SetExternalStorageAllowlist(PrefService* pref_service) {
+  pref_service->SetList(
+      disks::prefs::kExternalStorageAllowlist,
+      base::Value::List().Append(kAllowlistedDeviceId.ToDict()));
+}
+
+std::unique_ptr<Disk> CreateAllowlistedDisk(const std::string& disk_path) {
+  return Disk::Builder()
+      .SetDevicePath(disk_path)
+      .SetVendorId(kAllowlistedVendorId)
+      .SetProductId(kAllowlistedProductId)
+      .Build();
+}
 
 class LoggingObserver : public VolumeManagerObserver {
  public:
@@ -476,10 +496,6 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Hidden) {
 }
 
 TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Added) {
-  // Enable external storage.
-  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
-                                    false);
-
   LoggingObserver observer;
   volume_manager()->AddObserver(&observer);
 
@@ -510,10 +526,6 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Added) {
 }
 
 TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_AddedNonMounting) {
-  // Enable external storage.
-  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
-                                    false);
-
   // Device which is already mounted.
   {
     LoggingObserver observer;
@@ -966,7 +978,14 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_CompletedFailed) {
 }
 
 TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
-  // Here create four mount points.
+  // Set up ExternalStorageAllowlist.
+  disk_mount_manager_->AddDiskForTest(CreateAllowlistedDisk("mount1"));
+  SetExternalStorageAllowlist(profile()->GetPrefs());
+
+  // Subscribe to pref changes.
+  volume_manager()->Initialize();
+
+  // Create four mount points (first one is allowlisted).
   disk_mount_manager_->MountPath("mount1", "", "", {}, ash::MountType::kDevice,
                                  ash::MountAccessMode::kReadWrite,
                                  base::DoNothing());
@@ -986,38 +1005,26 @@ TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
   ASSERT_EQ(4U, disk_mount_manager_->mount_points().size());
   ASSERT_EQ(0U, disk_mount_manager_->unmount_requests().size());
 
-  // Emulate to set kExternalStorageDisabled to false.
+  // Set kExternalStorageDisabled to false and expect no effects.
   profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
                                     false);
-  volume_manager()->OnExternalStorageDisabledChanged();
-
-  // Expect no effects.
   EXPECT_EQ(4U, disk_mount_manager_->mount_points().size());
   EXPECT_EQ(0U, disk_mount_manager_->unmount_requests().size());
 
-  // Emulate to set kExternalStorageDisabled to true.
+  // Set kExternalStorageDisabled to true.
   profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
                                     true);
-  volume_manager()->OnExternalStorageDisabledChanged();
 
   // Wait until all unmount request finishes, so that callback chain to unmount
   // all the mount points will be invoked.
   disk_mount_manager_->FinishAllUnmountPathRequests();
 
-  // The external media mount points should be unmounted. Other mount point
-  // types should remain. The failing unmount should also remain.
-  EXPECT_EQ(2U, disk_mount_manager_->mount_points().size());
-
-  std::set<std::string> expected_unmount_requests = {
-      "mount1",
-      "mount2",
-      "failed_unmount",
-  };
-  for (const auto& request : disk_mount_manager_->unmount_requests()) {
-    EXPECT_TRUE(base::Contains(expected_unmount_requests, request));
-    expected_unmount_requests.erase(request);
-  }
-  EXPECT_TRUE(expected_unmount_requests.empty());
+  // External media mount points which are not allowlisted should be unmounted.
+  // Other mount point types should remain. The failing unmount should also
+  // remain.
+  EXPECT_EQ(3U, disk_mount_manager_->mount_points().size());
+  EXPECT_THAT(disk_mount_manager_->unmount_requests(),
+              UnorderedElementsAre("mount2", "failed_unmount"));
 }
 
 TEST_F(VolumeManagerTest, ExternalStorageDisabledPolicyMultiProfile) {
@@ -1074,23 +1081,28 @@ TEST_F(VolumeManagerTest, OnExternalStorageReadOnlyChanged) {
   // This subscribes to pref changes.
   volume_manager()->Initialize();
 
-  // Set up some disks.
-  disk_mount_manager_->AddDiskForTest(
-      Disk::Builder().SetDevicePath("device1").Build());
+  // Set up some disks (first one is allowlisted).
+  disk_mount_manager_->AddDiskForTest(CreateAllowlistedDisk("device1"));
   disk_mount_manager_->AddDiskForTest(
       Disk::Builder().SetDevicePath("device2").Build());
 
   // Trigger pref updates.
   profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageReadOnly,
                                     true);
+  SetExternalStorageAllowlist(profile()->GetPrefs());
   profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageReadOnly,
                                     false);
 
   // Verify that removable disk remounts are triggered.
   using ash::MountAccessMode;
   std::vector<FakeDiskMountManager::RemountRequest> expected = {
+      // ExternalStorageReadOnly set to true.
       {"device1", MountAccessMode::kReadOnly},
       {"device2", MountAccessMode::kReadOnly},
+      // ExternalStorageAllowlist set to device1.
+      {"device1", MountAccessMode::kReadWrite},
+      {"device2", MountAccessMode::kReadOnly},
+      // ExternalStorageReadOnly set to false.
       {"device1", MountAccessMode::kReadWrite},
       {"device2", MountAccessMode::kReadWrite},
   };

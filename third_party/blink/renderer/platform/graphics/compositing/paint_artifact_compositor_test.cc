@@ -10,6 +10,7 @@
 #include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -267,6 +268,76 @@ TEST_P(PaintArtifactCompositorTest, OneChunkWithAnOffset) {
   EXPECT_EQ(Translation(50, -50), child->ScreenSpaceTransform());
   EXPECT_EQ(gfx::Size(100, 100), child->bounds());
   EXPECT_FALSE(GetTransformNode(child).transform_changed);
+}
+
+TEST_P(PaintArtifactCompositorTest, MergeDistanceLimit0) {
+  gfx::Rect bounds(100, 100);
+  TestPaintArtifact ta;
+  ta.Chunk().Bounds(bounds).Chunk().Bounds(bounds).Chunk().Bounds(bounds);
+  const auto& artifact = ta.Build();
+  Update(artifact);
+  ASSERT_EQ(1u, LayerCount());
+
+  // No merge with merge distance limit 0.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(features::kLimitLayerMergeDistance,
+                                             {{"limit", "0"}});
+  Update(artifact);
+  EXPECT_EQ(3u, LayerCount());
+}
+
+TEST_P(PaintArtifactCompositorTest, MergeDistanceLimit1) {
+  gfx::Rect bounds(100, 100);
+  // The foreign layer doesn't overlap with other chunks.
+  gfx::Point foreign_layer_origin(200, 200);
+  TestPaintArtifact ta;
+  ta.Chunk().Bounds(bounds).Chunk().Bounds(bounds).Chunk().Bounds(bounds);
+  ta.ForeignLayerChunk(cc::Layer::Create(), foreign_layer_origin);
+  ta.Chunk().Bounds(bounds).Chunk().Bounds(bounds).Chunk().Bounds(bounds);
+  const auto& artifact = ta.Build();
+  Update(artifact);
+  ASSERT_EQ(2u, LayerCount());
+
+  // Only merge mergeable adjacent layers.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(features::kLimitLayerMergeDistance,
+                                             {{"limit", "1"}});
+  Update(artifact);
+  EXPECT_EQ(3u, LayerCount());
+}
+
+TEST_P(PaintArtifactCompositorTest, MergeDistanceLimit2) {
+  gfx::Rect bounds(100, 100);
+  // The foreign layers don't overlap with the non-foreign-layer chunks.
+  gfx::Point foreign_layer_origin(200, 200);
+
+  // One foreign layer between other mergeable layers.
+  TestPaintArtifact ta1;
+  ta1.Chunk().Bounds(bounds).Chunk().Bounds(bounds).Chunk().Bounds(bounds);
+  ta1.ForeignLayerChunk(cc::Layer::Create(), foreign_layer_origin);
+  ta1.Chunk().Bounds(bounds).Chunk().Bounds(bounds).Chunk().Bounds(bounds);
+
+  // Three foreign layers between other mergeable layers.
+  TestPaintArtifact ta2;
+  ta2.Chunk().Bounds(bounds).Chunk().Bounds(bounds).Chunk().Bounds(bounds);
+  ta2.ForeignLayerChunk(cc::Layer::Create(), foreign_layer_origin);
+  ta2.ForeignLayerChunk(cc::Layer::Create(), foreign_layer_origin);
+  ta2.Chunk().Bounds(bounds).Chunk().Bounds(bounds).Chunk().Bounds(bounds);
+
+  const auto& artifact1 = ta1.Build();
+  const auto& artifact2 = ta2.Build();
+  Update(artifact1);
+  ASSERT_EQ(2u, LayerCount());
+  Update(artifact2);
+  ASSERT_EQ(3u, LayerCount());
+
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(features::kLimitLayerMergeDistance,
+                                             {{"limit", "2"}});
+  Update(artifact1);
+  EXPECT_EQ(2u, LayerCount());
+  Update(artifact2);
+  EXPECT_EQ(4u, LayerCount());
 }
 
 TEST_P(PaintArtifactCompositorTest, OneTransform) {
@@ -935,7 +1006,7 @@ TEST_P(PaintArtifactCompositorTest, ForeignLayerPassesThrough) {
 
   TestPaintArtifact test_artifact;
   test_artifact.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite);
-  test_artifact.Chunk().ForeignLayer(layer, gfx::Point(50, 60));
+  test_artifact.ForeignLayerChunk(layer, gfx::Point(50, 60));
   test_artifact.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kGray);
 
   auto& artifact = test_artifact.Build();

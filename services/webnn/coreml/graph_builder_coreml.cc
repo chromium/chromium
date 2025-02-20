@@ -1142,7 +1142,11 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {arg_min_max_input_supported_data_types, kNonScalarMaxRank},
        /*arg_min_max_output=*/
        kArgMinMaxOutputSupportedDataTypes,
-       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       // TODO(crbug.com/338529225): Support ND input.
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.normalization.batch_norm
+       /*batch_normalization_input=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
+       /*batch_normalization_mean=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        // Note that BOOL, INT16, and UINT16 is also supported by CoreML, but
        // WebNN does not have corresponding types.
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.elementwise_unary.cast
@@ -1980,17 +1984,8 @@ base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForBatchNormalization(
     const mojom::BatchNormalization& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  const OperandInfo& input_operand_info =
-      GetOperandInfo(operation.input_operand_id);
-  CHECK(context_properties_.data_type_limits.batch_normalization_input.Has(
-      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-
-  // TODO(crbug.com/338529225): Support ND inputs.
-  if (input_operand_info.dimensions.size() < 3 ||
-      input_operand_info.dimensions.size() > 5) {
-    return NewNotSupportedError(
-        "Unsupported rank for batchNormalization. It must be between 3 and 5.");
-  }
+  CHECK(context_properties_.data_type_limits.batch_normalization_input.Supports(
+      GetOperand(operation.input_operand_id).descriptor));
 
   // TODO(crbug.com/338398666): Consider supporting more values for
   // `operation.axis` by transposing the input. CoreML only supports
@@ -2007,6 +2002,7 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
   }
 
   uint64_t input_operand_id = operation.input_operand_id;
+  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   // Rank of 5 causes crashes when not targeting `MLComputeUnitsCPUOnly`, see
   // crbug.com/391566721, so reshape to 4 to perform batch norm, then reshape
   // back.

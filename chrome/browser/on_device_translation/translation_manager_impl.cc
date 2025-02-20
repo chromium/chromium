@@ -404,4 +404,51 @@ TranslationManagerImpl::GetServiceController() {
   return *service_controller_;
 }
 
+void TranslationManagerImpl::TranslationAvailable(
+    const std::string& source_language,
+    const std::string& target_language,
+    TranslationAvailableCallback callback) {
+  CHECK(browser_context_);
+  RecordTranslationAPICallForLanguagePair("Availability", source_language,
+                                          target_language);
+
+  PrefService* profile_pref =
+      Profile::FromBrowserContext(browser_context_.get())->GetPrefs();
+
+  if (!profile_pref->GetBoolean(prefs::kTranslatorAPIAllowed)) {
+    std::move(callback).Run(
+        blink::mojom::CanCreateTranslatorResult::kNoDisallowedByPolicy);
+    return;
+  }
+
+  const std::vector<std::string_view> accept_languages = base::SplitStringPiece(
+      profile_pref->GetString(language::prefs::kAcceptLanguages), ",",
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  bool mask_readily_result =
+      (source_language != "en" &&
+       !IsInAcceptLanguage(accept_languages, source_language)) ||
+      (target_language != "en" &&
+       !IsInAcceptLanguage(accept_languages, target_language));
+
+  GetServiceController().CanTranslate(
+      source_language, target_language,
+      base::BindOnce(
+          [](bool mask_readily_result, TranslationAvailableCallback callback,
+             blink::mojom::CanCreateTranslatorResult result) {
+            if (result == blink::mojom::CanCreateTranslatorResult::kReadily &&
+                mask_readily_result) {
+              // TODO(crbug.com/392073246): For translations containing a
+              // language outside of English + the user's preferred (accept)
+              // languages, check if a translator exists for the given origin
+              // before returning the "readily" availability value for the
+              // translation, instead of always returning an "after-download"
+              // result.
+              std::move(callback).Run(blink::mojom::CanCreateTranslatorResult::
+                                          kAfterDownloadLanguagePackNotReady);
+              return;
+            }
+            std::move(callback).Run(result);
+          },
+          mask_readily_result, std::move(callback)));
+}
 }  // namespace on_device_translation

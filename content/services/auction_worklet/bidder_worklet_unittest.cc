@@ -809,10 +809,8 @@ class BidderWorkletTest : public testing::Test {
             ? std::nullopt
             : direct_from_seller_auction_signals_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
-        browser_signal_recency_generate_bid_,
-        browser_signal_for_debugging_only_sampling_,
-        CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1, std::move(generate_bid_client), std::move(finalizer));
     bidder_worklet->SendPendingSignalsRequests();
   }
@@ -852,10 +850,8 @@ class BidderWorkletTest : public testing::Test {
         direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
-        browser_signal_recency_generate_bid_,
-        browser_signal_for_debugging_only_sampling_,
-        CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1, GenerateBidClientWithCallbacks::CreateNeverCompletes(),
         bid_finalizer.BindNewEndpointAndPassReceiver());
     bidder_worklet->SendPendingSignalsRequests();
@@ -1037,9 +1033,9 @@ class BidderWorkletTest : public testing::Test {
   int browser_signal_bid_count_;
   bool browser_signal_for_debugging_only_in_cooldown_or_lockout_;
   base::TimeDelta browser_signal_recency_generate_bid_;
-  bool browser_signal_for_debugging_only_sampling_;
   std::vector<mojo::StructPtr<blink::mojom::PreviousWin>>
       browser_signal_prev_wins_;
+
   std::optional<std::string> auction_signals_;
   std::optional<std::string> per_buyer_signals_;
   std::optional<GURL> direct_from_seller_per_buyer_signals_;
@@ -4711,10 +4707,8 @@ TEST_P(BidderWorkletMultiThreadingTest, GenerateBidParallel) {
           direct_from_seller_per_buyer_signals_,
           direct_from_seller_auction_signals_, browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_,
-          browser_signal_recency_generate_bid_,
-          browser_signal_for_debugging_only_sampling_,
-          CreateBiddingBrowserSignals(), auction_start_time_,
-          requested_ad_size_, multi_bid_limit_,
+          browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
+          auction_start_time_, requested_ad_size_, multi_bid_limit_,
           /*trace_id=*/1,
           GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
@@ -4835,10 +4829,8 @@ TEST_P(BidderWorkletMultiThreadingTest,
         kanon_mode_, join_origin_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
-        browser_signal_recency_generate_bid_,
-        browser_signal_for_debugging_only_sampling_,
-        CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -4967,10 +4959,8 @@ TEST_P(BidderWorkletMultiThreadingTest,
         kanon_mode_, join_origin_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
-        browser_signal_recency_generate_bid_,
-        browser_signal_for_debugging_only_sampling_,
-        CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -5105,10 +5095,8 @@ TEST_P(BidderWorkletMultiThreadingTest,
         kanon_mode_, join_origin_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
-        browser_signal_recency_generate_bid_,
-        browser_signal_for_debugging_only_sampling_,
-        CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -5222,10 +5210,8 @@ TEST_P(BidderWorkletMultiThreadingTest,
         kanon_mode_, join_origin_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
-        browser_signal_recency_generate_bid_,
-        browser_signal_for_debugging_only_sampling_,
-        CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -5659,12 +5645,6 @@ TEST_F(BidderWorkletTest,
   browser_signal_for_debugging_only_in_cooldown_or_lockout_ = true;
   RunGenerateBidExpectingExpressionIsTrue(R"(
     browserSignals.forDebuggingOnlyInCooldownOrLockout === true;
-  )");
-}
-
-TEST_F(BidderWorkletTest, GenerateBidBrowserSignalForDebuggingOnlySampling) {
-  RunGenerateBidExpectingExpressionIsTrue(R"(
-    !browserSignals.hasOwnProperty('forDebuggingOnlySampling');
   )");
 }
 
@@ -14087,34 +14067,6 @@ TEST_F(BidderWorkletSampleDebugReportsDisabledTest,
        GenerateBidBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
   RunGenerateBidExpectingExpressionIsTrue(R"(
     !browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout');
-  )");
-}
-
-class BidderWorkletEnableSampleDebugReportOnCookieSettingTest
-    : public BidderWorkletTest {
- public:
-  BidderWorkletEnableSampleDebugReportOnCookieSettingTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kBiddingAndScoringDebugReportingAPI,
-         blink::features::kFledgeEnableSampleDebugReportOnCookieSetting},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(BidderWorkletEnableSampleDebugReportOnCookieSettingTest,
-       GenerateBidBrowserSignalForDebuggingOnlySampling) {
-  browser_signal_for_debugging_only_sampling_ = false;
-  RunGenerateBidExpectingExpressionIsTrue(R"(
-    browserSignals.forDebuggingOnlySampling === false;
-  )");
-
-  browser_signal_for_debugging_only_sampling_ = true;
-  RunGenerateBidExpectingExpressionIsTrue(R"(
-    browserSignals.forDebuggingOnlySampling === true;
   )");
 }
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
-<translation id="1066101356081285416">Chrome በሚጎበኟቸው ጣቢያዎች ላይ ያሉ የመከታተያ ቁጥሮች ለይቶ ያውቃል እና በአዲሱ የትር ገፅ ላይ የጥቅል ዝማኔዎች ያሳይዎታል። ይህንን ባህሪ ለማቅረብ እና ለሁሉም ሰው የGoogle ግዢ ባህሪያትን ለማሻሻል የጥቅል መከታተያ ቁጥሩ እና የድር ጣቢያው ስም ወደ Google ይላካል። ይህንን በማንኛውም ጊዜ <ph name="BEGIN_LINK" />በጥቅል መከታተያ ቅንብሮች<ph name="END_LINK" /> ውስጥ ማዘመን ይችላሉ።</translation>
 <translation id="1076643793026027628">Chrome የYouTube ማንነት የማያሳውቁ አገናኞችን በራስ-ሰር በማንነት የማያሳውቅ ይከፍታል።</translation>
 <translation id="1086486568852410168">በGoogle ሌንስ ይፈልጉ</translation>
 <translation id="1143896152279775643">የይለፍ ቃልዎ ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
@@ -68,7 +67,6 @@
 <translation id="2574249610672786438">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት በሁሉም መሣሪያዎችዎ ላይ ይግቡ</translation>
 <translation id="2576431527583832481">Chrome አሁን ተሻሽሏል! አዲስ ስሪት አለ።</translation>
 <translation id="257708665678654955">Google Chrome በሚቀጥለው ጊዜ ከዚህ ጣቢያ የመጡ የ<ph name="LANGUAGE_NAME" /> ገጾች እንዲተረጎምልዎ ይፈልጋሉ?</translation>
-<translation id="2650286135394207535">ጥቅሎችዎን እንዲከታተሉ Chrome እንዲረዳዎት ይፍቀዱ</translation>
 <translation id="2668242166988961773">በChrome ውስጥ በድምፅ ይፈልጉ</translation>
 <translation id="2671426118752779020">በእርስዎ iPhone ላይ ባሉ ሌሎች መተግበሪያዎች ውስጥ ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ያስቀመጧቸውን የይለፍ ቃላት መጠቀም ይችላሉ።</translation>
 <translation id="2689064829982324496">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK" />ከChrome ዘግተው ይውጡ<ph name="END_LINK" />።</translation>

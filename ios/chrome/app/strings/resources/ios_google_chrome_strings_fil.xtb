@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
-<translation id="1066101356081285416">Made-detect ng Chrome ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ipapadala sa Google ang tracking number ng package at pangalan ng website para maibigay ang feature na ito at para mapahusay ang mga feature ng Google para sa shopping para sa lahat. Puwede mo itong i-update anumang oras sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="1076643793026027628">Awtomatikong binubuksan ng Chrome sa Incognito ang mga Incognito na link ng YouTube.</translation>
 <translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
 <translation id="1143896152279775643">Ise-save ang iyong password sa Google Password Manager para sa <ph name="EMAIL" />.</translation>
@@ -68,7 +67,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2574249610672786438">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, mag-sign in sa lahat ng device mo</translation>
 <translation id="2576431527583832481">Naging mas mahusay na ang Chrome! Available na ang bagong bersyon.</translation>
 <translation id="257708665678654955">Gusto mo bang mag-alok ang Google Chrome na isalin ang mga <ph name="LANGUAGE_NAME" /> page mula sa site na ito sa susunod na pagkakataon?</translation>
-<translation id="2650286135394207535">Payagan ang Chrome na tulungan kang i-track ang iyong mga package</translation>
 <translation id="2668242166988961773">Maghanap gamit ang boses sa Chrome.</translation>
 <translation id="2671426118752779020">Puwede mong gamitin ang mga password na na-save mo sa Google Password Manager sa iba pang app sa iyong iPhone.</translation>
 <translation id="2689064829982324496">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chrome<ph name="END_LINK" />.</translation>

@@ -432,11 +432,8 @@ TEST(FormStructureRationalizationEngine,
 
 // Test that the actions are applied if all conditions are met.
 TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseDEAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Name", u"n", NAME_FIRST},

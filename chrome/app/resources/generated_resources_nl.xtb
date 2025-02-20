@@ -1278,7 +1278,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1875387611427697908">Dit pakket kan alleen worden toegevoegd via de <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Label (optioneel)</translation>
 <translation id="1877377730633446520">Hiervoor wordt ongeveer <ph name="REQUIRED_SPACE" /> gebruikt. Je hebt op dit moment <ph name="FREE_SPACE" /> beschikbaar.</translation>
-<translation id="1877520246462554164">Ophalen van verificatietoken is mislukt. Log uit en weer in om het opnieuw te proberen.</translation>
 <translation id="1877860345998737529">Toewijzing van acties voor schakelaar</translation>
 <translation id="1878155070920054810">Zo te zien komt je Chromebook zonder stroom te zitten voordat de update is voltooid. Check of je Chromebook correct wordt opgeladen om onderbrekingen te voorkomen.</translation>
 <translation id="1878477879455105085">Geopend</translation>
@@ -6993,7 +6992,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">touchpad</translation>
 <translation id="5953211687820750364">Deze lijst wordt beïnvloed door <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Je wachtwoord is verlopen. Log uit en weer in om het te wijzigen.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Een website wil deze app openen.</translation>
 <translation id="5955809630138889698">Dit apparaat is mogelijk alleen geschikt voor de online demomodus. Neem contact op met een medewerker van support voor meer informatie.</translation>
@@ -9696,7 +9694,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7910725946105920830">Je persoonlijke Google-account gebruiken</translation>
 <translation id="7910768399700579500">&amp;Nieuwe map</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Je wachtwoord is gewijzigd op de server. Log uit en weer in.</translation>
 <translation id="791247712619243506">Instellen annuleren</translation>
 <translation id="7912974581251770345">Vertaling</translation>
 <translation id="7914399737746719723">App geïnstalleerd</translation>

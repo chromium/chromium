@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"

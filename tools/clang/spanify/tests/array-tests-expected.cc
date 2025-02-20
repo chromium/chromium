@@ -90,8 +90,9 @@ void sizeof_array_expr() {
   // Expected rewrite:
   // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
   std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
-  // The following won't be rewritten.
-  std::ignore = sizeof *buf;
+  // Expected rewrite:
+  // std::ignore = sizeof buf[0];
+  std::ignore = sizeof buf[0];
   std::ignore = sizeof buf[0];
 }
 

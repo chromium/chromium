@@ -739,7 +739,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
     // This block safe guards against misuse of APIs (that can cause
     // GetCapturingSystemAppForURL returning the wrong value).
     //
-    // TODO(http://crbug.com/1408946): Remove this block when we find a better
+    // TODO(crbug.com/40253765): Remove this block when we find a better
     // way to prevent API misuse (e.g. by ensuring test coverage for new
     // features that could trigger this code) or this code path is no longer
     // possible.

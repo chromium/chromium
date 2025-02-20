@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -60,7 +60,7 @@ class MockDeviceOAuth2TokenStore : public DeviceOAuth2TokenStore {
     TriggerTrustedAccountIdCallback(true);
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void SetAccountEmail(const std::string& account_email) override {
     account_id_ = CoreAccountId::FromRobotEmail(account_email);
   }
@@ -357,11 +357,9 @@ TEST_F(DeviceOAuth2TokenServiceTest,
   AssertConsumerTokensAndErrors(0, 1);
   EXPECT_EQ(consumer_.last_error_.state(),
             GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
-  EXPECT_EQ(
-      consumer_.last_error_.error_message(),
-      "{ \"error\": \"invalid_scope\", \"error_description\": \"Some requested "
-      "scopes were invalid. {invalid\\u003d[test_scope}\", \"error_uri\": "
-      "\"https://developers.google.com/identity/protocols/oauth2\"}");
+  EXPECT_EQ(consumer_.last_error_.GetScopeLimitedUnrecoverableErrorReason(),
+            GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+                kInvalidScope);
 }
 
 TEST_F(DeviceOAuth2TokenServiceTest,

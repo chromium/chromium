@@ -111,10 +111,6 @@ if (is_android) {
   assert(android_static_analysis == "on" || android_static_analysis == "off" ||
          android_static_analysis == "build_server")
 
-  # This configuration has not bot coverage and has broken multiple times.
-  # Warn against it.
-  assert(!(enable_chrome_android_internal && skip_secondary_abi_for_cq))
-
   if (enable_chrome_android_internal) {
     import("//clank/config.gni")
   } else {
@@ -286,12 +282,10 @@ if (is_android) {
     enable_startup_profiles = false
 
     # The target to use as the system WebView implementation.
-    if (android_64bit_target_cpu) {
-      if (skip_secondary_abi_for_cq) {
-        system_webview_apk_target = "//android_webview:system_webview_64_apk"
-      } else {
-        system_webview_apk_target = "//android_webview:system_webview_32_64_apk"
-      }
+    if (defined(android_app_secondary_abi)) {
+      system_webview_apk_target = "//android_webview:system_webview_32_64_apk"
+    } else if (android_64bit_target_cpu) {
+      system_webview_apk_target = "//android_webview:system_webview_64_apk"
     } else {
       system_webview_apk_target = "//android_webview:system_webview_apk"
     }

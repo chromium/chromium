@@ -127,6 +127,9 @@ HttpStreamPool::JobController::JobController(
           dict.Set("alternative_destination",
                    alternative_->stream_key.destination().Serialize());
         }
+        dict.Set("enable_ip_based_pooling", enable_ip_based_pooling_);
+        dict.Set("enable_alternative_services", enable_alternative_services_);
+        dict.Set("respect_limits", respect_limits_ == RespectLimits::kRespect);
         return dict;
       });
 

@@ -168,8 +168,8 @@ void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
   }
 }
 
-// Same as LabelSwapChainAndBuffers, but only does the buffers. Used for resize
-// operations
+// Labels swapchain with the name_prefix and its buffers with the string
+// name_prefix + _Buffer_ + <buffer_number>.
 void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
                               const char* name_prefix) {
   SetDebugName(swap_chain, name_prefix);

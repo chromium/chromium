@@ -54,7 +54,8 @@
     (supervised_user::LocalApprovalResult)result {
   _isBottomSheetHidden = true;
   CHECK(_completion);
-  std::move(_completion).Run(result);
+  // TODO(crbug.com/384891227): Consider testing with the potential error type.
+  std::move(_completion).Run(result, std::nullopt);
 }
 
 @end

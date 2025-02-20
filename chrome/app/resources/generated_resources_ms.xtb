@@ -1010,6 +1010,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1682696837763999627">Kursor tetikus besar</translation>
 <translation id="1682867089915960590">Hidupkan Semak Imbas Karet?</translation>
 <translation id="1686550358074589746">Dayakan taipan luncur</translation>
+<translation id="1686785653877010442">Biasanya laman menghantar pemberitahuan untuk memberitahu anda tentang berita mutakhir atau mesej sembang.</translation>
 <translation id="168715261339224929">Hidupkan penyegerakan untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
 <translation id="1688935057616748272">Taip huruf</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
@@ -1288,13 +1289,13 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1875387611427697908">Item ini hanya boleh ditambahkan daripada <ph name="CHROME_WEB_STORE" />.</translation>
 <translation id="1877377290348678128">Label (pilihan)</translation>
 <translation id="1877377730633446520">Tindakan ini akan menggunakan anggaran <ph name="REQUIRED_SPACE" />. Pada masa ini anda mempunyai <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">Gagal mendapatkan token pengesahan. Sila log keluar, kemudian log masuk semula untuk mencuba lagi.</translation>
 <translation id="1877860345998737529">Penugasan tindakan suis</translation>
 <translation id="1878155070920054810">Nampaknya Chromebook anda akan kehabisan kuasa sebelum kemaskinian selesai. Pastikan Chromebook dicas dengan betul untuk mengelakkan gangguan.</translation>
 <translation id="1878477879455105085">Dibuka</translation>
 <translation id="1878885068166344708">Item diserlahkan apabila anda mengalihkan fokus. Tekan tab atau pilih item untuk menukar fokus.</translation>
 <translation id="1879000426787380528">Log masuk sebagai</translation>
 <translation id="18802377548000045">Tab mengecil kepada lebar besar</translation>
+<translation id="1880618477732738742">Tukar dan berikan akses kepada ciri seperti geolokasi, mikrofon, kamera, kuki dsb. untuk semua laman web dan sambungan, termasuk sambungan ini.</translation>
 <translation id="1880905663253319515">Padamkan sijil "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Reka letak papan kekunci</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# item}}</translation>
@@ -3482,6 +3483,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3435738964857648380">Keselamatan</translation>
 <translation id="343578350365773421">Kehabisan kertas</translation>
 <translation id="3435896845095436175">Dayakan</translation>
+<translation id="3437397693214267762">Lihat Kalendar Outlook serta fail SharePoint dan OneDrive anda</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Sentiasa benarkan <ph name="HOST" /> mengakses mikrofon anda</translation>
 <translation id="3439970425423980614">Membuka PDF dalam Pratonton</translation>
@@ -7014,7 +7016,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5952020381407136867">pad sentuh</translation>
 <translation id="5953211687820750364">Senarai ini terkesan oleh <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           dan <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Kata laluan anda telah tamat tempoh. Sila log keluar, kemudian log masuk semula untuk menukarnya.</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5955721306465922729">Satu laman web ingin membuka aplikasi ini.</translation>
 <translation id="5955809630138889698">Peranti ini mungkin layak untuk mod tunjuk cara dalam talian sahaja. Sila hubungi wakil sokongan anda untuk mendapatkan butiran lanjut.</translation>
@@ -7143,6 +7144,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
     Gunakan akaun anda untuk mengakses semua penanda halaman, fail anda dan banyak lagi. Jika anda tiada akaun, anda boleh membuat akaun pada skrin seterusnya.</translation>
 <translation id="6054138466019582920">Cari Halaman Ini dengan Google...</translation>
 <translation id="6054284857788651331">Kumpulan Tab yang Ditutup Baru-baru Ini</translation>
+<translation id="6054819000749443354">Buka Tetapan Sistem</translation>
 <translation id="6054961935262556546">Tukar keterlihatan</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 Dengan Penyulitan RSA</translation>
 <translation id="6055544610007596637">Pasang apl anda untuk <ph name="DEVICE_TYPE" /> daripada Google Play Store</translation>
@@ -8967,6 +8969,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7380459290951585794">Pastikan telefon anda berada berdekatan, dibuka kunci dan Bluetooth serta Wi-Fi dihidupkan</translation>
 <translation id="7380622428988553498">Nama peranti mengandungi aksara tidak sah</translation>
 <translation id="7380768571499464492">Dikemas kini <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Jika kad ini dilumpuhkan, kad Microsoft anda seperti fail SharePoint dan OneDrive serta Kalendar Outlook akan dilumpuhkan juga.</translation>
 <translation id="7382085868019811559">Sokongan Penyemak Imbas Lama (LBS) membolehkan pola URL tertentu dibuka dalam penyemak imbas alternatif yang menyokong ciri lama yang diperlukan untuk menjalankan laman tersebut dengan betul.</translation>
 <translation id="7382980704744807223">Mencurigakan</translation>
 <translation id="738322632977123193">Tidak dapat dimuat naik. Gunakan imej dalam salah satu format ini: .jpg, .gif, .png, .bmp, .tif atau .webp</translation>
@@ -9719,7 +9722,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7910725946105920830">Gunakan Google Account peribadi anda</translation>
 <translation id="7910768399700579500">&amp;Folder baharu</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Kata laluan anda telah ditukar pada pelayan. Sila log keluar, kemudian log masuk semula.</translation>
 <translation id="791247712619243506">Batalkan persediaan</translation>
 <translation id="7912974581251770345">Terjemahan</translation>
 <translation id="7914399737746719723">Apl dipasang</translation>
@@ -10639,6 +10641,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> diurus oleh <ph name="MANAGER" />. Anda tidak boleh menambahkan e-mel ini sebagai akaun tambahan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Untuk menggunakan <ph name="USER_EMAIL" />, log keluar daripada <ph name="DEVICE_TYPE" /> anda terlebih dahulu. Kemudian, di bahagian bawah skrin log masuk, pilih Tambah Orang.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Tahan kekunci Cari untuk menukar gelagat kekunci di baris atas</translation>
+<translation id="8549127125482561383">Cara memaparkan permintaan</translation>
 <translation id="8549316893834449916">Anda akan menggunakan Google Account anda untuk mendaftar masuk ke Chromebook anda – akaun sama yang anda gunakan untuk Gmail, Drive, YouTube dan banyak lagi.</translation>
 <translation id="8550239873869577759">Fail mencurigakan dimuat turun</translation>
 <translation id="8551388862522347954">Lesen</translation>

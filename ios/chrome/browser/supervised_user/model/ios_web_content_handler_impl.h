@@ -46,12 +46,14 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
 
  private:
   friend class ParentAccessTabHelperTest;
+  friend class ParentAccessMediatorTest;
 
   // Processes the outcome of the local approval request.
   void OnLocalApprovalRequestCompleted(
       const GURL& url,
       base::TimeTicks start_time,
-      supervised_user::LocalApprovalResult approval_result);
+      supervised_user::LocalApprovalResult approval_result,
+      std::optional<supervised_user::LocalWebApprovalErrorType> error_type);
   // Closes the tab linked to the web_state_.
   void Close();
 

@@ -29,7 +29,11 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*arg_min_max_output=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*batch_normalization_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
+       /*batch_normalization_mean=*/
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*cast_input=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
         kMaxRank},
@@ -242,7 +246,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

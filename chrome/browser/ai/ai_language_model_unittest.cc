@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_language_model.h"
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -25,6 +26,7 @@
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
@@ -40,8 +42,9 @@ using Role = blink::mojom::AILanguageModelInitialPromptRole;
 
 namespace {
 
-using optimization_guide::proto::PromptApiRequest;
-using optimization_guide::proto::PromptApiRole;
+using ::optimization_guide::MultimodalMessageReadView;
+using ::optimization_guide::proto::PromptApiRequest;
+using ::optimization_guide::proto::PromptApiRole;
 
 constexpr uint32_t kTestMaxContextToken = 10u;
 constexpr uint32_t kTestInitialPromptsToken = 5u;
@@ -71,6 +74,12 @@ const char kExpectedFormattedSystemPromptAndInitialPrompts[] =
      "U: How are you?\n"
      "M: I'm fine, thank you, and you?\n"
      "U: I'm fine too.\n");
+
+on_device_model::mojom::InputPtr MakeInput(const std::string& text) {
+  auto input = on_device_model::mojom::Input::New();
+  input->pieces.push_back(text);
+  return input;
+}
 
 std::vector<blink::mojom::AILanguageModelInitialPromptPtr>
 GetTestInitialPrompts() {
@@ -132,33 +141,23 @@ std::string ToString(const google::protobuf::MessageLite& request_metadata) {
       "optimization_guide.proto.PromptApiRequest") {
     return ToString(*static_cast<const PromptApiRequest*>(&request_metadata));
   }
-  if (request_metadata.GetTypeName() ==
-      "optimization_guide.proto.StringValue") {
-    return static_cast<const optimization_guide::proto::StringValue*>(
-               &request_metadata)
-        ->value();
-  }
   return "unexpected type";
 }
 
 std::string GetContextString(AILanguageModel::Context& ctx) {
-  return ToString(*ctx.MakeRequest());
+  return ToString(ctx.MakeRequest());
 }
 
 const optimization_guide::proto::Any& GetPromptApiMetadata(
-    bool use_prompt_api_proto,
     bool is_streaming_chunk_by_chunk) {
-  static base::NoDestructor<
-      std::map<std::pair<bool, bool>, optimization_guide::proto::Any>>
+  static base::NoDestructor<std::map<bool, optimization_guide::proto::Any>>
       metadata_map;
-  auto key = std::make_pair(use_prompt_api_proto, is_streaming_chunk_by_chunk);
+  auto key = is_streaming_chunk_by_chunk;
 
   if (metadata_map->find(key) == metadata_map->end()) {
-    metadata_map->emplace(key, [use_prompt_api_proto,
-                                is_streaming_chunk_by_chunk]() {
+    metadata_map->emplace(key, [is_streaming_chunk_by_chunk]() {
       optimization_guide::proto::PromptApiMetadata metadata;
-      metadata.set_version(
-          use_prompt_api_proto ? AILanguageModel::kMinVersionUsingProto : 0);
+      metadata.set_version(AILanguageModel::kMinVersionUsingProto);
       metadata.set_is_streaming_chunk_by_chunk(is_streaming_chunk_by_chunk);
       return optimization_guide::AnyWrapProto(metadata);
     }());
@@ -183,7 +182,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     std::string expected_cloned_context =
         base::StrCat({kExpectedFormattedTestPrompt, kTestResponse, "\n"});
     std::string expected_prompt = kExpectedFormattedTestPrompt;
-    bool use_prompt_api_proto = false;
     bool should_overflow_context = false;
     bool should_use_supported_language = true;
   };
@@ -259,12 +257,11 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                                  sampling_params_copy->temperature));
             }
 
-            SetUpMockSession(*session, options.use_prompt_api_proto,
-                             IsModelStreamingChunkByChunk());
+            SetUpMockSession(*session, IsModelStreamingChunkByChunk());
 
             ON_CALL(*session, GetContextSizeInTokens(_, _))
                 .WillByDefault(
-                    [&](const google::protobuf::MessageLite& request_metadata,
+                    [&](MultimodalMessageReadView request_metadata,
                         optimization_guide::
                             OptimizationGuideModelSizeInTokenCallback
                                 callback) {
@@ -301,8 +298,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
             auto session = std::make_unique<
                 testing::NiceMock<optimization_guide::MockSession>>();
 
-            SetUpMockSession(*session, options.use_prompt_api_proto,
-                             IsModelStreamingChunkByChunk());
+            SetUpMockSession(*session, IsModelStreamingChunkByChunk());
 
             ON_CALL(*session, AddContext(_))
                 .WillByDefault(
@@ -445,17 +441,16 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
               auto session = std::make_unique<
                   testing::NiceMock<optimization_guide::MockSession>>();
 
-              SetUpMockSession(*session, /*use_prompt_api_proto=*/true,
+              SetUpMockSession(*session,
                                /*is_streaming_chunk_by_chunk=*/true);
               ON_CALL(*session, GetExecutionInputSizeInTokens(_, _))
                   .WillByDefault(
-                      [&](const google::protobuf::MessageLite& request_metadata,
+                      [&](MultimodalMessageReadView request_metadata,
                           optimization_guide::
                               OptimizationGuideModelSizeInTokenCallback
                                   callback) {
                         size_in_token_callback =
-                            base::BindOnce(std::move(callback),
-                                           ToString(request_metadata).size());
+                            base::BindOnce(std::move(callback), 1);
                       });
 
               // The model should not be executed.
@@ -521,12 +516,11 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
           auto session = std::make_unique<
               testing::NiceMock<optimization_guide::MockSession>>();
 
-          SetUpMockSession(*session, /*use_prompt_api_proto=*/false,
-                           IsModelStreamingChunkByChunk());
+          SetUpMockSession(*session, IsModelStreamingChunkByChunk());
 
           ON_CALL(*session, GetContextSizeInTokens(_, _))
               .WillByDefault(
-                  [&](const google::protobuf::MessageLite& request_metadata,
+                  [&](MultimodalMessageReadView request_metadata,
                       optimization_guide::
                           OptimizationGuideModelSizeInTokenCallback callback) {
                     std::move(callback).Run(mock_size_in_tokens);
@@ -534,7 +528,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
           ON_CALL(*session, GetExecutionInputSizeInTokens(_, _))
               .WillByDefault(
-                  [&](const google::protobuf::MessageLite& request_metadata,
+                  [&](MultimodalMessageReadView request_metadata,
                       optimization_guide::
                           OptimizationGuideModelSizeInTokenCallback callback) {
                     std::move(callback).Run(mock_size_in_tokens);
@@ -616,23 +610,24 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
               responder_run_loop_2.Quit();
             }));
 
-    mock_session->Prompt("A", mock_responder_1.BindNewPipeAndPassRemote());
+    mock_session->Prompt(MakeInput("A"),
+                         mock_responder_1.BindNewPipeAndPassRemote());
     responder_run_loop_1.Run();
-    mock_session->Prompt("B", mock_responder_2.BindNewPipeAndPassRemote());
+    mock_session->Prompt(MakeInput("B"),
+                         mock_responder_2.BindNewPipeAndPassRemote());
     responder_run_loop_2.Run();
   }
 
  private:
   void SetUpMockSession(
       testing::NiceMock<optimization_guide::MockSession>& session,
-      bool use_prompt_api_proto,
       bool is_streaming_chunk_by_chunk) {
     ON_CALL(session, GetTokenLimits())
         .WillByDefault(AITestUtils::GetFakeTokenLimits);
 
     ON_CALL(session, GetOnDeviceFeatureMetadata())
-        .WillByDefault(ReturnRef(GetPromptApiMetadata(
-            use_prompt_api_proto, is_streaming_chunk_by_chunk)));
+        .WillByDefault(
+            ReturnRef(GetPromptApiMetadata(is_streaming_chunk_by_chunk)));
     ON_CALL(session, GetSamplingParams()).WillByDefault([]() {
       // We don't need to use these value, so just mock it with defaults.
       return optimization_guide::SamplingParams{
@@ -643,21 +638,17 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
         .WillByDefault(
             [](const std::string& text,
                optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                   callback) { std::move(callback).Run(text.size()); });
+                   callback) { std::move(callback).Run(1); });
     ON_CALL(session, GetExecutionInputSizeInTokens(_, _))
         .WillByDefault(
-            [](const google::protobuf::MessageLite& request_metadata,
+            [](MultimodalMessageReadView request_metadata,
                optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                   callback) {
-              std::move(callback).Run(ToString(request_metadata).size());
-            });
+                   callback) { std::move(callback).Run(1); });
     ON_CALL(session, GetContextSizeInTokens(_, _))
         .WillByDefault(
-            [](const google::protobuf::MessageLite& request_metadata,
+            [](MultimodalMessageReadView request_metadata,
                optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                   callback) {
-              std::move(callback).Run(ToString(request_metadata).size());
-            });
+                   callback) { std::move(callback).Run(1); });
   }
 
   void StreamResponse(
@@ -737,7 +728,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
               responder_run_loop.Quit();
             }));
 
-    mock_session->Prompt(prompt, mock_responder.BindNewPipeAndPassRemote());
+    mock_session->Prompt(MakeInput(prompt),
+                         mock_responder.BindNewPipeAndPassRemote());
     responder_run_loop.Run();
   }
 
@@ -876,7 +868,6 @@ TEST_P(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
                                   "U: Test prompt\n"
                                   "M: Test response\n"),
       .expected_prompt = "U: Test prompt\nM: ",
-      .use_prompt_api_proto = true,
   });
 }
 
@@ -897,7 +888,7 @@ TEST_P(AILanguageModelTest, PromptAfterDestroy) {
       [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
          AITestUtils::MockModelStreamingResponder& mock_responder) {
         mock_session->Destroy();
-        mock_session->Prompt(kTestPrompt,
+        mock_session->Prompt(MakeInput(kTestPrompt),
                              mock_responder.BindNewPipeAndPassRemote());
       }));
 }
@@ -908,7 +899,7 @@ TEST_P(AILanguageModelTest, PromptBeforeDestroy) {
   TestSessionDestroy(base::BindOnce(
       [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
          AITestUtils::MockModelStreamingResponder& mock_responder) {
-        mock_session->Prompt(kTestPrompt,
+        mock_session->Prompt(MakeInput(kTestPrompt),
                              mock_responder.BindNewPipeAndPassRemote());
         mock_session->Destroy();
       }));

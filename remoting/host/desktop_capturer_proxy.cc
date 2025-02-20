@@ -28,8 +28,6 @@
 #if BUILDFLAG(IS_LINUX)
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
-#include "remoting/host/linux/wayland_desktop_capturer.h"
-#include "remoting/host/linux/wayland_utils.h"
 #endif
 
 namespace remoting {
@@ -97,12 +95,7 @@ void DesktopCapturerProxy::Core::CreateCapturer(
     session_type = base::nix::GetSessionType(*env);
   }
 
-  if (options.allow_pipewire() &&
-      session_type == base::nix::SessionType::kWayland) {
-    capturer_ = std::make_unique<WaylandDesktopCapturer>(options);
-  } else {
     capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
-  }
 #else   // !BUILDFLAG(IS_CHROMEOS)
   capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -293,16 +286,6 @@ void DesktopCapturerProxy::OnMetadata(webrtc::DesktopCaptureMetadata metadata) {
   std::move(metadata_callback_).Run(std::move(metadata));
 }
 #endif
-
-bool DesktopCapturerProxy::SupportsFrameCallbacks() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-#if BUILDFLAG(IS_LINUX)
-  return IsRunningWayland();
-#else
-  return false;
-#endif
-}
 
 void DesktopCapturerProxy::SetMaxFrameRate(uint32_t max_frame_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

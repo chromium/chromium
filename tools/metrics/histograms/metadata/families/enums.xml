@@ -295,6 +295,31 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Attempted cryptohome deletion"/>
 </enum>
 
+<!-- LINT.IfChange(LocalWebApprovalErrorType) -->
+
+<enum name="LocalWebApprovalErrorType">
+  <summary>Error type that occurs during the local web approval flow.</summary>
+  <int value="0" label="Failure to decode PACP response">
+    The response provided by the PACP widget does not have valid url base 64
+    encoding
+  </int>
+  <int value="1" label="Failure to parse PACP response">
+    The response provided by the PACP widget could not be parsed in the expected
+    format provided by the PACP contract
+  </int>
+  <int value="2" label="Unexpected PACP response">
+    The response provided by the PACP does not apply to the parent approval flow
+  </int>
+  <int value="3" label="PACP timeout exceeded">
+    Failed to connect to the PACP widget within the provided timeout
+  </int>
+  <int value="4" label="Empty PACP response">
+    The response provided by the PACP was empty
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalWebApprovalErrorType) -->
+
 <enum name="ManagedModeBlockingCommand">
   <int value="0" label="Preview"/>
   <int value="1" label="Back"/>

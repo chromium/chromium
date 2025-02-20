@@ -98,12 +98,12 @@ export class PrintPreviewProvisionalDestinationResolverElement extends
     const icon = this.shadowRoot!.querySelector<HTMLElement>('.extension-icon');
     assert(icon);
     icon.style.backgroundImage = 'image-set(' +
-        'url(chrome://extension-icon/' + this.destination_!.extensionId +
+        'url(chrome://extension-icon/' + this.destination_.extensionId +
         '/24/1) 1x,' +
-        'url(chrome://extension-icon/' + this.destination_!.extensionId +
+        'url(chrome://extension-icon/' + this.destination_.extensionId +
         '/48/1) 2x)';
     this.promiseResolver_ = new PromiseResolver();
-    return this.promiseResolver_!.promise;
+    return this.promiseResolver_.promise;
   }
 
   /**
@@ -130,7 +130,7 @@ export class PrintPreviewProvisionalDestinationResolverElement extends
 
           if (resolvedDestination) {
             this.state_ = ResolverState.DONE;
-            this.promiseResolver_!.resolve(resolvedDestination!);
+            this.promiseResolver_!.resolve(resolvedDestination);
             this.promiseResolver_ = null;
             this.$.dialog.close();
           } else {

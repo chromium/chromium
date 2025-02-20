@@ -43,10 +43,6 @@
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-#include "remoting/host/linux/wayland_utils.h"
-#endif
-
 namespace remoting {
 
 LegacyInteractionStrategy::~LegacyInteractionStrategy() {
@@ -88,16 +84,6 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
 #if BUILDFLAG(IS_CHROMEOS)
   capture_task_runner = ui_task_runner_;
-#elif BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    // Each capturer instance should get its own thread so the capturers don't
-    // compete with each other in multistream mode.
-    capture_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskPriority::HIGHEST},
-        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  } else {
-    capture_task_runner = video_capture_task_runner_;
-  }
 #else
   // The mouse cursor monitor runs on the |video_capture_task_runner_| so the
   // desktop capturer also needs to run on that task_runner for certain
@@ -107,14 +93,12 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 
 #if defined(REMOTING_USE_X11)
-  if (!IsRunningWayland()) {
-    // Workaround for http://crbug.com/1361502: Run each capturer (and
-    // mouse-cursor-monitor) on a separate X11 Display.
-    auto new_options = webrtc::DesktopCaptureOptions::CreateDefault();
-    options_.desktop_capture_options()->set_x_display(
-        std::move(new_options.x_display()));
-    options_.desktop_capture_options()->x_display()->IgnoreXServerGrabs();
-  }
+  // Workaround for http://crbug.com/1361502: Run each capturer (and
+  // mouse-cursor-monitor) on a separate X11 Display.
+  auto new_options = webrtc::DesktopCaptureOptions::CreateDefault();
+  options_.desktop_capture_options()->set_x_display(
+      std::move(new_options.x_display()));
+  options_.desktop_capture_options()->x_display()->IgnoreXServerGrabs();
 #endif  // REMOTING_USE_X11
 
   std::unique_ptr<DesktopCapturer> desktop_capturer;

@@ -1275,7 +1275,6 @@
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" />-ല്‍ നിന്ന് മാത്രമേ ഇത് ചേർക്കാനാവൂ</translation>
 <translation id="1877377290348678128">ലേബൽ (ഓപ്‌ഷണൽ)</translation>
 <translation id="1877377730633446520">ഇത് ഏതാണ്ട് <ph name="REQUIRED_SPACE" /> ഉപയോഗിക്കും. നിലവിൽ നിങ്ങൾക്ക് <ph name="FREE_SPACE" /> ലഭ്യമാണ്.</translation>
-<translation id="1877520246462554164">വിശ്വാസ്യത ഉറപ്പിക്കൽ ടോക്കൺ സ്വീകരിക്കുന്നത് പരാജയപ്പെട്ടു. വീണ്ടും ശ്രമിക്കുന്നതിന് സൈൻ ഔട്ട് ചെയ്യുക, തുടർന്ന് സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="1877860345998737529">സ്വിച്ച് ആക്ഷൻ മാനേജ്‌മെൻ്റ്</translation>
 <translation id="1878155070920054810">അപ്‌ഡേറ്റ് പൂർത്തിയാകുന്നതിന് മുമ്പ് നിങ്ങളുടെ Chromebook-ലെ ചാർജ് തീരുമെന്ന് തോന്നുന്നു. തടസ്സം ഒഴിവാക്കുന്നതിന്, അത് ശരിയായി ചാർജ് ചെയ്യുന്നുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="1878477879455105085">തുറന്നിരിക്കുന്നു</translation>
@@ -6997,7 +6996,6 @@
 <translation id="5952020381407136867">ടച്ച്പാഡ്</translation>
 <translation id="5953211687820750364"><ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           , <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> എന്നിവ ഈ ലിസ്റ്റിനെ ബാധിക്കുന്നു</translation>
-<translation id="5955282598396714173">നിങ്ങളുടെ പാസ്‌വേഡ് കാലഹരണപ്പെട്ടിരിക്കുന്നു. അത് മാറ്റുന്നതിന്, സൈൻ ഔട്ട് ചെയ്യുക, തുടർന്ന് സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="5955304353782037793">ആപ്പ്</translation>
 <translation id="5955721306465922729">ഒരു വെബ്‌സൈറ്റിന് ഈ ആപ്പ് തുറക്കണമെന്നുണ്ട്.</translation>
 <translation id="5955809630138889698">ഓൺലൈൻ ഡെമോ മോഡിനു മാത്രമേ ഈ ഉപകരണത്തിന് യോഗ്യത ഉണ്ടാകാനിടയുള്ളൂ. കൂടുതൽ വിശദാംശങ്ങൾക്കായി നിങ്ങളുടെ പിന്തുണാ പ്രതിനിധിയുമായി ബന്ധപ്പെടുക.</translation>
@@ -9701,7 +9699,6 @@
 <translation id="7910725946105920830">നിങ്ങളുടെ വ്യക്തിഗത Google Account ഉപയോഗിക്കുക</translation>
 <translation id="7910768399700579500">&amp;പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">സെർവറിൽ നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റിയിരിക്കുന്നു. സൈൻ ഔട്ട് ചെയ്യുക, തുടർന്ന് വീണ്ടും സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="791247712619243506">സജ്ജീകരണം റദ്ദാക്കുക</translation>
 <translation id="7912974581251770345">വിവർത്തനം</translation>
 <translation id="7914399737746719723">ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്തു</translation>

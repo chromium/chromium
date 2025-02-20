@@ -292,7 +292,7 @@ export class SearchPageElement extends SearchPageElementBase {
     if (querySeqNo > this.lastPostedQuerySeqNo) {
       this.lastPostedQuerySeqNo = querySeqNo;
       // TODO(xiangdongkong): Use Mojo to communicate with untrusted page.
-      this.iframe!.contentWindow!.postMessage(
+      this.iframe.contentWindow!.postMessage(
           data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
     }
   }

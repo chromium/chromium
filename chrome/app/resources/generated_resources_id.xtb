@@ -1288,7 +1288,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1875387611427697908">Ini hanya dapat ditambahkan dari <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Label (opsional)</translation>
 <translation id="1877377730633446520">Tindakan ini akan menggunakan sekitar <ph name="REQUIRED_SPACE" />. Saat ini Anda memiliki <ph name="FREE_SPACE" /> yang tersedia.</translation>
-<translation id="1877520246462554164">Gagal mendapatkan token autentikasi. Harap logout, lalu login kembali untuk mencoba lagi.</translation>
 <translation id="1877860345998737529">Penetapan tindakan tombol</translation>
 <translation id="1878155070920054810">Sepertinya daya baterai Chromebook akan habis sebelum update selesai. Pastikan daya Chromebook diisi dengan benar untuk mencegah terhentinya proses.</translation>
 <translation id="1878477879455105085">Dibuka</translation>
@@ -7014,7 +7013,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5952020381407136867">touchpad</translation>
 <translation id="5953211687820750364">Daftar ini dipengaruhi oleh <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           dan <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Sandi Anda sudah tidak berlaku. Harap logout, lalu login kembali untuk mengubahnya.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Sebuah situs ingin membuka aplikasi ini.</translation>
 <translation id="5955809630138889698">Perangkat ini mungkin hanya memenuhi syarat untuk mode demo online. Hubungi perwakilan dukungan Anda untuk detail selengkapnya.</translation>
@@ -9718,7 +9716,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7910725946105920830">Gunakan Akun Google pribadi</translation>
 <translation id="7910768399700579500">&amp;Map baru</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Sandi Anda telah diubah di server. Harap logout, lalu login kembali.</translation>
 <translation id="791247712619243506">Batalkan penyiapan</translation>
 <translation id="7912974581251770345">Terjemahan</translation>
 <translation id="7914399737746719723">Aplikasi diinstal</translation>

@@ -29,9 +29,6 @@ class AddressTest : public testing::Test {
   AddressTest() {
     features_.InitWithFeatures(
         {
-            features::kAutofillUseAUAddressModel,
-            features::kAutofillUseCAAddressModel,
-            features::kAutofillUseDEAddressModel,
             features::kAutofillUseFRAddressModel,
             features::kAutofillUseINAddressModel,
             features::kAutofillUseITAddressModel,

@@ -1286,7 +1286,6 @@
 <translation id="1875387611427697908">၎င်းကို <ph name="CHROME_WEB_STORE" /> မှသာ ထည့်သွင်းနိုင်သည်</translation>
 <translation id="1877377290348678128">အညွှန်း (ချန်လှပ်နိုင်သည်)</translation>
 <translation id="1877377730633446520">၎င်းက <ph name="REQUIRED_SPACE" /> ခန့် သုံးပါမည်။ သင့်တွင် လက်ရှိ <ph name="FREE_SPACE" /> ရနိုင်သည်။</translation>
-<translation id="1877520246462554164">အထောက်အထားစိစစ်ခြင်းတိုကင်နံပါတ် မရရှိခဲ့ပါ။ ထွက်လိုက်ပြီး လက်မှတ်ထိုးပြန်ဝင်ကာ ထပ်လုပ်ကြည့်ပါ။</translation>
 <translation id="1877860345998737529">ခလုတ် လုပ်ဆောင်ချက် သတ်မှတ်မှု</translation>
 <translation id="1878155070920054810">သင့် Chromebook သည် အပ်ဒိတ်မပြီးမီ အားကုန်မည့်အနေအထားရှိသည်။ ရပ်တန့်မသွားစေရန် ၎င်းကို မှန်ကန်စွာအားသွင်းထားကြောင်း သေချာပါစေ။</translation>
 <translation id="1878477879455105085">ဖွင့်ထားသည်</translation>
@@ -7011,7 +7010,6 @@
 <translation id="5952020381407136867">တာ့ချ်ပက်</translation>
 <translation id="5953211687820750364"><ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           နှင့် <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> က ဤစာရင်းကို သက်ရောက်မှုရှိသည်</translation>
-<translation id="5955282598396714173">သင့်စကားဝှက်သည် သက်တမ်းကုန်ဆုံးသွားပါပြီ။ ၎င်းကို ပြောင်းရန်အတွက် ထွက်လိုက်ပြီး လက်မှတ်ထိုးပြန်ဝင်ပါ။</translation>
 <translation id="5955304353782037793">အက်ပ်</translation>
 <translation id="5955721306465922729">ဝဘ်ဆိုက်တစ်ခုက ဤအပလီကေးရှင်းကို ဖွင့်လိုသည်။</translation>
 <translation id="5955809630138889698">ဤစက်ပစ္စည်းသည် အွန်လိုင်းသရုပ်ပြမုဒ်အတွက်သာ သတ်မှတ်ချက်ပြည့်မီနိုင်သည်။ နောက်ထပ်အသေးစိတ်များအတွက် ကူညီရေးရာ ကိုယ်စားလှယ်ထံ ဆက်သွယ်ပါ။</translation>
@@ -9714,7 +9712,6 @@
 <translation id="7910725946105920830">သင့်ကိုယ်ပိုင် Google Account သုံးရန်</translation>
 <translation id="7910768399700579500">ဖိုလ်ဒါ အသစ်</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">ဆာဗာတွင် သင်၏စကားဝှက်ကို ပြောင်းထားပါသည်။ ထွက်လိုက်ပြီး လက်မှတ်ထိုးပြန်ဝင်ကြည့်ပါ။</translation>
 <translation id="791247712619243506">စနစ်ထည့်သွင်းမှု ပယ်ဖျက်ရန်</translation>
 <translation id="7912974581251770345">ဘာသာပြန်ဆိုခြင်း</translation>
 <translation id="7914399737746719723">အက်ပ်ထည့်သွင်းပြီးပြီ</translation>

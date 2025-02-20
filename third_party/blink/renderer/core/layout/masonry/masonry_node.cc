@@ -9,10 +9,14 @@
 namespace blink {
 
 MasonryItemGroups MasonryNode::CollectItemGroups(
-    const GridLineResolver& line_resolver) const {
+    const GridLineResolver& line_resolver,
+    wtf_size_t* start_offset) const {
+  DCHECK(start_offset);
+
+  *start_offset = 0;
+  MasonryItemGroups item_groups;
   const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
 
-  MasonryItemGroups item_groups;
   for (auto child = FirstChild(); child; child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned()) {
       continue;
@@ -21,6 +25,13 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
     const auto item_properties = MasonryItemGroupProperties(
         /*item_span=*/line_resolver.ResolveGridPositionsFromStyle(
             child.Style(), grid_axis_direction));
+
+    const auto& item_span = item_properties.Span();
+    if (!item_span.IsIndefinite()) {
+      DCHECK(item_span.IsUntranslatedDefinite());
+      *start_offset =
+          std::max<int>(*start_offset, -item_span.UntranslatedStartLine());
+    }
 
     const auto group_it = item_groups.find(item_properties);
     if (group_it == item_groups.end()) {

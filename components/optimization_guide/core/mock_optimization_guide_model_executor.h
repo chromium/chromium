@@ -78,11 +78,11 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
                OptimizationGuideModelSizeInTokenCallback callback));
   MOCK_METHOD(void,
               GetExecutionInputSizeInTokens,
-              (const google::protobuf::MessageLite& request_metadata,
+              (MultimodalMessageReadView request_metadata,
                OptimizationGuideModelSizeInTokenCallback callback));
   MOCK_METHOD(void,
               GetContextSizeInTokens,
-              (const google::protobuf::MessageLite& request_metadata,
+              (MultimodalMessageReadView request_metadata,
                OptimizationGuideModelSizeInTokenCallback callback));
   MOCK_METHOD(const optimization_guide::SamplingParams,
               GetSamplingParams,

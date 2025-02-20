@@ -34,6 +34,14 @@ std::string LocalApprovalResultToString(
   }
 }
 
+void MaybeRecordLocalWebApprovalErrorTypeMetric(
+    std::optional<supervised_user::LocalWebApprovalErrorType> error_type) {
+  if (!error_type.has_value()) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, error_type.value());
+}
 }  // namespace
 
 namespace supervised_user {
@@ -51,7 +59,9 @@ void WebContentHandler::OnLocalApprovalRequestCompleted(
     supervised_user::SupervisedUserSettingsService& settings_service,
     const GURL& url,
     base::TimeTicks start_time,
-    LocalApprovalResult approval_result) {
+    LocalApprovalResult approval_result,
+    std::optional<supervised_user::LocalWebApprovalErrorType>
+        local_approval_error_type) {
   VLOG(0) << "Local URL approval final result: "
           << LocalApprovalResultToString(approval_result);
 
@@ -66,7 +76,9 @@ void WebContentHandler::OnLocalApprovalRequestCompleted(
       RecordTimeToApprovalDurationMetric(base::TimeTicks::Now() - start_time);
       break;
     case LocalApprovalResult::kCanceled:
+      break;
     case LocalApprovalResult::kError:
+      MaybeRecordLocalWebApprovalErrorTypeMetric(local_approval_error_type);
       break;
   }
   RecordLocalWebApprovalResultMetric(approval_result);

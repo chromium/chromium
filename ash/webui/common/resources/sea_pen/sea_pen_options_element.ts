@@ -153,7 +153,7 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
         } else if (this.isHiddenChipOptionSelected_()) {
           // If the next option is hidden, select and focus the expand button.
           const expandButton = selector.querySelector('#expandButton');
-          selector.selectIndex(selector.indexOf(expandButton!));
+          selector.selectIndex(selector.indexOf(expandButton));
         }
         break;
       case 'esc':

@@ -8,14 +8,13 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
@@ -29,6 +28,14 @@
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "components/manta/snapper_provider.h"
 #include "ui/display/screen.h"
+
+namespace {
+
+constexpr std::u16string_view kAnnouncementViewName = u"Lobster";
+
+constexpr base::TimeDelta kAnnouncementDelay = base::Milliseconds(200);
+
+}  // namespace
 
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider,
@@ -44,7 +51,9 @@ LobsterService::LobsterService(
               image_provider_.get(),
               &candidate_id_generator_))),
       resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
-      system_state_provider_(profile) {
+      system_state_provider_(profile),
+      announcer_(
+          std::make_unique<LobsterLiveRegionAnnouncer>(kAnnouncementViewName)) {
   if (profile != nullptr) {
     PrefService* pref_service = profile->GetPrefs();
     pref_change_registrar_.Init(pref_service);
@@ -115,14 +124,7 @@ void LobsterService::ShowDisclaimerUI() {
 void LobsterService::LoadUI(std::optional<std::string> query,
                             ash::LobsterMode mode,
                             const gfx::Rect& caret_bounds) {
-  bubble_coordinator_.LoadUI(
-      profile_, query, mode, caret_bounds,
-      /*should_show_feedback=*/
-      profile_->GetPrefs()->GetInteger(
-          ash::prefs::kLobsterEnterprisePolicySettings) ==
-              base::to_underlying(ash::LobsterEnterprisePolicyValue::
-                                      kAllowedWithModelImprovement) &&
-          base::FeatureList::IsEnabled(ash::features::kLobsterFeedback));
+  bubble_coordinator_.LoadUI(profile_, query, mode, caret_bounds);
 }
 
 void LobsterService::ShowUI() {
@@ -145,6 +147,17 @@ void LobsterService::OnFocus(int context_id) {
 
   queued_insertion_->Commit();
   queued_insertion_ = nullptr;
+}
+
+void LobsterService::AnnounceLater(const std::u16string& message) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](LobsterAnnouncer* announcer, const std::u16string& message) {
+            announcer->Announce(message);
+          },
+          announcer_.get(), message),
+      kAnnouncementDelay);
 }
 
 bool LobsterService::OverrideLobsterImageProviderForTesting() {

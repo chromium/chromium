@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.language.settings.LanguageSettings;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
-import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -201,7 +200,6 @@ public class MainSettingsFragmentTest {
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
                 mSigninAndHistorySyncActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);
-        NightModeUtils.setNightModeSupportedForTesting(true);
         Intents.init();
         // Keep render tests consistent by suppressing the "new" label.
         ChromeSharedPreferences.getInstance()
@@ -693,17 +691,8 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     public void testRemoveSettings() {
-        // Disable night mode
-        NightModeUtils.setNightModeSupportedForTesting(false);
-
-        // Disable developer option
         DeveloperSettings.setIsEnabledForTests(false);
-
         startSettings();
-
-        Assert.assertNull(
-                "Preference should be disabled: " + MainSettings.PREF_UI_THEME,
-                mMainSettings.findPreference(MainSettings.PREF_UI_THEME));
         Assert.assertNull(
                 "Preference should be disabled: " + MainSettings.PREF_DEVELOPER,
                 mMainSettings.findPreference(MainSettings.PREF_DEVELOPER));

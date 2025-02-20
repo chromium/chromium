@@ -170,7 +170,7 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/soda/soda_installer_impl_chromeos.h"
 #else
 #include "ui/message_center/message_center.h"
@@ -237,7 +237,7 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif
@@ -271,7 +271,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // How often to check if the persistent instance of Chrome needs to restart
 // to install an update.
 static const int kUpdateCheckIntervalHours = 6;
@@ -308,7 +308,7 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
 }
 
 void BrowserProcessImpl::Init() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Forces creation of |metrics_services_manager_client_| if necessary
   // (typically this call is a no-op as MetricsServicesManager has already been
   // created).
@@ -533,11 +533,11 @@ void BrowserProcessImpl::StartTearDown() {
   {
     TRACE_EVENT0("shutdown",
                  "BrowserProcessImpl::StartTearDown:ProfileManager");
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     // The desktop profile picker needs to be closed before the guest profile
     // can be destroyed.
     ProfilePicker::Hide();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     // `profile_manager_` must be destroyed before `background_mode_manager_`,
     // because the background mode manager does not stop observing profile
     // changes at destruction (notifying the observers would cause a use-after-
@@ -730,7 +730,7 @@ void BrowserProcessImpl::EndSession() {
   metrics::MetricsService* metrics = g_browser_process->metrics_service();
   if (metrics) {
     metrics->LogCleanShutdown();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     // The MetricsService may update Local State prefs in memory without
     // writing the updated prefs to disk, so schedule a Local State write now.
     //
@@ -998,7 +998,7 @@ IntranetRedirectDetector* BrowserProcessImpl::intranet_redirect_detector() {
 #endif
 
 const std::string& BrowserProcessImpl::GetApplicationLocale() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40663419): Remove #if.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif
@@ -1115,17 +1115,17 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kAllowCrossOriginAuthPrompt, false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kEulaAccepted, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
   registry->RegisterStringPref(language::prefs::kApplicationLocale,
                                std::string());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterStringPref(prefs::kOwnerLocale, std::string());
   registry->RegisterStringPref(prefs::kHardwareKeyboardLayout,
                                std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 GoogleUpdateSettings::GetCollectStatsConsent());
@@ -1206,9 +1206,7 @@ StartupData* BrowserProcessImpl::startup_data() {
   return startup_data_;
 }
 
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void BrowserProcessImpl::StartAutoupdateTimer() {
   autoupdate_timer_.Start(FROM_HERE, base::Hours(kUpdateCheckIntervalHours),
                           this, &BrowserProcessImpl::OnAutoupdateTimer);
@@ -1343,9 +1341,9 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   soda_installer_impl_ = std::make_unique<speech::SodaInstallerImpl>();
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
   screen_ai_download_ = screen_ai::ScreenAIInstallState::Create();
@@ -1670,9 +1668,7 @@ void BrowserProcessImpl::Unpin() {
 }
 
 // Mac is currently not supported.
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 bool BrowserProcessImpl::IsRunningInBackground() const {
   // Check if browser is in the background.
@@ -1742,5 +1738,4 @@ void BrowserProcessImpl::OnPendingRestartResult(
     RestartBackgroundInstance();
   }
 }
-#endif  // BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS))
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

@@ -144,11 +144,12 @@ bool FindInspectedBrowserAndTabIndex(
 }
 
 void SetPreferencesFromJson(Profile* profile, const std::string& json) {
-  std::optional<base::Value> parsed = base::JSONReader::Read(json);
-  if (!parsed || !parsed->is_dict())
+  std::optional<base::Value::Dict> parsed = base::JSONReader::ReadDict(json);
+  if (!parsed) {
     return;
+  }
   ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kDevToolsPreferences);
-  for (auto dict_value : parsed->GetDict()) {
+  for (auto dict_value : *parsed) {
     if (!dict_value.second.is_string())
       continue;
     update->Set(dict_value.first, std::move(dict_value.second));

@@ -377,9 +377,9 @@ export class GooglePhotosPhotosByAlbumIdElement extends
     // NOTE: Old clients may not support |dedupKey| when setting Google Photos
     // wallpaper, so use |id| in such cases for backwards compatibility.
     if (isGooglePhotosPhoto(pendingSelected) &&
-        ((pendingSelected!.dedupKey &&
-          isImageAMatchForKey(photo, pendingSelected!.dedupKey)) ||
-         isImageAMatchForKey(photo, pendingSelected!.id))) {
+        ((pendingSelected.dedupKey &&
+          isImageAMatchForKey(photo, pendingSelected.dedupKey)) ||
+         isImageAMatchForKey(photo, pendingSelected.id))) {
       return true;
     }
     if (!pendingSelected && !!currentSelected &&

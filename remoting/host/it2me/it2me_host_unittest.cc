@@ -60,11 +60,6 @@
 #include "base/linux_util.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX)
-#include "remoting/host/linux/wayland_manager.h"
-#include "remoting/host/linux/wayland_utils.h"
-#endif  // BUILDFLAG(IS_LINUX)
-
 namespace remoting {
 
 using protocol::ErrorCode;
@@ -363,11 +358,6 @@ void It2MeHostTest::TearDown() {
   // Shutdown the host if it hasn't been already. Without this, the call to
   // run_loop_->Run() may never return.
   it2me_host_->Disconnect();
-#if BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    WaylandManager::Get()->CleanupRunnerForTest();
-  }
-#endif
   network_task_runner_ = nullptr;
   ui_task_runner_ = nullptr;
   host_context_.reset();

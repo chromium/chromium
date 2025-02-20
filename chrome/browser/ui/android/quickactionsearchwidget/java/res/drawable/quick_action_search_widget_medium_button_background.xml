@@ -9,14 +9,14 @@ found in the LICENSE file.
     android:color="?android:attr/colorControlHighlight">
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
-            <corners android:radius="@dimen/quick_action_search_widget_medium_button_radius" />
             <solid android:color="@color/default_chip_ripple_color" />
+            <corners android:radius="@dimen/quick_action_search_widget_medium_button_radius" />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
+            <solid android:color="@color/widget_button_bg" />
             <corners android:radius="@dimen/quick_action_search_widget_medium_button_radius" />
-            <solid android:color="@color/default_bg_color_secondary" />
         </shape>
     </item>
 </ripple>

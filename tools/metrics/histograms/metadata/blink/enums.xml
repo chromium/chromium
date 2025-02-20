@@ -5925,6 +5925,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5322" label="ColumnPseudoElement"/>
   <int value="5323" label="ScrollButtonPseudoElement"/>
   <int value="5324" label="ScrollMarkerPseudoElement"/>
+  <int value="5325" label="V8AITranslatorFactory_Availability_Method"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
@@ -61,13 +60,10 @@
 #include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/pref_names.h"
 #include "components/prefs/pref_service.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
 #endif
 
 using content::DevToolsAgentHost;
@@ -215,7 +211,7 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
           profile, ProfileKeepAliveOrigin::kRemoteDebugging);
     }
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 ChromeDevToolsManagerDelegate::~ChromeDevToolsManagerDelegate() {

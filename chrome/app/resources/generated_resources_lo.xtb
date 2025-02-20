@@ -1285,7 +1285,6 @@
 <translation id="1875387611427697908">ສາມາດເພີ່ມອັນນີ້ໄດ້ຈາກ <ph name="CHROME_WEB_STORE" /> ເທົ່ານັ້ນ</translation>
 <translation id="1877377290348678128">ປ້າຍກຳກັບ (ບໍ່ບັງຄັບ)</translation>
 <translation id="1877377730633446520">ສິ່ງອາດຈະໃຊ້ປະມານ <ph name="REQUIRED_SPACE" />. ປັດຈຸບັນທ່ານມີ <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">ຮັບເອົາໂທເຄັນການຮັບຮອງຄວາມຖືກຕ້ອງບໍ່ສຳເລັດ. ກະລຸນນາອອກຈາກລະບົບ ແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່ເພື່ອລອງອີກຄັ້ງ.</translation>
 <translation id="1877860345998737529">ການກຳນົດຄຳສັ່ງດ້ວຍສະວິດ</translation>
 <translation id="1878155070920054810">ປາກົດວ່າ Chromebook ຂອງທ່ານຈະໝົດໄຟກ່ອນທີ່ການອັບເດດຈະສຳເລັດ. ກວດໃຫ້ແນ່ໃຈວ່າມັນກຳລັງສາກຢ່າງຖືກຕ້ອງເພື່ອຫຼີກເວັ້ນການຂັດຈັງຫວະ.</translation>
 <translation id="1878477879455105085">ເປີດແລ້ວ</translation>
@@ -7012,7 +7011,6 @@
 <translation id="5952020381407136867">ແຜ່ນສຳຜັດ</translation>
 <translation id="5953211687820750364">ລາຍຊື່ນີ້ແມ່ນໄດ້ຮັບຜົນກະທົບໂດຍ <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           ແລະ <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">ລະຫັດຜ່ານຂອງທ່ານໝົດອາຍຸແລ້ວ. ກະລຸນາອອກຈາກລະບົບ ແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່ເພື່ອປ່ຽນມັນ.</translation>
 <translation id="5955304353782037793">ແອັບ</translation>
 <translation id="5955721306465922729">ເວັບໄຊຕ້ອງການເປີດແອັບພລິເຄຊັນນີ້.</translation>
 <translation id="5955809630138889698">ອຸປະກອນນີ້ອາດຈະມີສິດສຳລັບໂໝດສາທິດອອນລາຍເທົ່ານັ້ນ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ຕາງໜ້າຝ່າຍຊ່ວຍເຫຼືອຂອງທ່ານສຳລັບລາຍລະອຽດເພີ່ມເຕີມ.</translation>
@@ -9714,7 +9712,6 @@
 <translation id="7910725946105920830">ໃຊ້ບັນຊີ Google ສ່ວນຕົວຂອງທ່ານ</translation>
 <translation id="7910768399700579500">ໂຟລເດີ​ໃຫມ່</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">ລະຫັດຜ່ານຂອງທ່ານໄດ້ຖືກປ່ຽນໃນເຊີບເວີແລ້ວ. ກະລຸນາອອກຈາກລະບົບ ແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່.</translation>
 <translation id="791247712619243506">ຍົກເລີກການຕັ້ງຄ່າ</translation>
 <translation id="7912974581251770345">ການແປພາສາ</translation>
 <translation id="7914399737746719723">ຕິດຕັ້ງແອັບແລ້ວ</translation>

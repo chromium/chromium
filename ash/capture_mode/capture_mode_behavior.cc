@@ -126,7 +126,7 @@ class DefaultBehavior : public CaptureModeBehavior {
         // actions buttons should be shown.
         capture_mode_controller->PerformCapture(
             PerformCaptureType::kTextDetection);
-      } else if (features::IsScannerEnabled()) {
+      } else {
         // Show the smart actions button regardless of whether there is text
         // in the selected area or not.
         BaseCaptureModeSession* session =

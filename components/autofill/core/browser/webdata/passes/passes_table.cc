@@ -7,7 +7,7 @@
 #include <optional>
 #include <string_view>
 
-#include "components/autofill/core/browser/data_model/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/database.h"

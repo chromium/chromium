@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 
 namespace content {
@@ -23,7 +24,7 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
   ~EchoAILanguageModel() override;
 
   // `blink::mojom::AILanguageModel` implementation.
-  void Prompt(const std::string& input,
+  void Prompt(on_device_model::mojom::InputPtr input,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
   void Fork(

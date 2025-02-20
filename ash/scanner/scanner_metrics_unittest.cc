@@ -47,9 +47,9 @@ INSTANTIATE_TEST_SUITE_P(
         kConsentDisclaimerAccepted,
         kConsentDisclaimerRejected,
         kSunfishScreenEnteredViaShortcut,
-        kSunfishScreenInitialScreenCaptureSentToScannerServer,
+        kDeprecatedSunfishScreenInitialScreenCaptureSentToScannerServer,
         kScreenCaptureModeScannerButtonShown,
-        kScreenCaptureModeInitialScreenCaptureSentToScannerServer,
+        kDeprecatedScreenCaptureModeInitialScreenCaptureSentToScannerServer,
         kNoActionsDetected,
         kNewCalendarEventActionDetected,
         kNewCalendarEventActionFinishedSuccessfully,
@@ -87,6 +87,10 @@ INSTANTIATE_TEST_SUITE_P(
         kCanShowUiReturnedFalseDueToKioskMode,
         kLauncherShownWithoutSunfishSessionButton,
         kLauncherShownWithSunfishSessionButton,
+        kSunfishSessionImageCapturedAndActionsNotFetched,
+        kSunfishSessionImageCapturedAndActionsFetchStarted,
+        kSmartActionsButtonImageCapturedAndActionsNotFetched,
+        kSmartActionsButtonImageCapturedAndActionsFetchStarted,
     }));
 
 TEST_P(ScannerMetricsParameterisedTest, Record) {

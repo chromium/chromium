@@ -1291,7 +1291,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1875387611427697908">To je mogoče dodati samo z mesta <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Oznaka (neobvezno)</translation>
 <translation id="1877377730633446520">S tem boste porabili približno <ph name="REQUIRED_SPACE" />. Trenutno imate na voljo <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">Ni bilo mogoče dobiti žetona za preverjanje pristnosti. Odjavite se, nato se ponovno prijavite in poskusite znova.</translation>
 <translation id="1877860345998737529">Dodelitev dejanj stikalom</translation>
 <translation id="1878155070920054810">Videti je, da bo bateriji v Chromebooku zmanjkalo energije pred dokončanjem posodobitve. Poskrbite za ustrezno napajanje, da ne bo prišlo do motenj.</translation>
 <translation id="1878477879455105085">Odprto</translation>
@@ -7019,7 +7018,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5952020381407136867">sledilna ploščica</translation>
 <translation id="5953211687820750364">Na ta seznam vplivata <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           in <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Geslo je poteklo. Odjavite se in se nato znova prijavite, da ga spremenite.</translation>
 <translation id="5955304353782037793">prog</translation>
 <translation id="5955721306465922729">Spletno mesto želi odpreti to aplikacijo.</translation>
 <translation id="5955809630138889698">Ta naprava je morda ustrezna samo za spletni predstavitveni način. Če želite več podrobnosti, se obrnite na zastopnika za podporo.</translation>
@@ -9730,7 +9728,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7910725946105920830">Uporabi osebni račun Google</translation>
 <translation id="7910768399700579500">&amp;Nova mapa</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Geslo je bilo spremenjeno v strežniku. Odjavite se in se nato znova prijavite.</translation>
 <translation id="791247712619243506">Prekliči nastavitev</translation>
 <translation id="7912974581251770345">Prevod</translation>
 <translation id="7914399737746719723">Aplikacija je nameščena</translation>

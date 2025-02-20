@@ -43,6 +43,9 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "content/public/common/content_switches.h"
+#if BUILDFLAG(IS_MAC)
+#include "base/apple/foundation_util.h"
+#endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 
 namespace content {
@@ -95,10 +98,16 @@ void GetDataResourceBytesOnWorkerThreadFromDisk(
           base::BindOnce(
               [](std::string filepath,
                  URLDataSource::GotDataCallback callback) {
-                base::FilePath exe_dir;
-                base::PathService::Get(base::DIR_EXE, &exe_dir);
-                base::FilePath file_path =
-                    exe_dir.Append(base::FilePath::FromUTF8Unsafe(filepath))
+                base::FilePath file_path;
+                base::PathService::Get(base::DIR_EXE, &file_path);
+
+#if BUILDFLAG(IS_MAC)
+                if (base::apple::AmIBundled()) {
+                  file_path = file_path.Append(FILE_PATH_LITERAL("../../.."));
+                }
+#endif
+                file_path =
+                    file_path.Append(base::FilePath::FromUTF8Unsafe(filepath))
                         .NormalizePathSeparators();
 
                 if (file_path.ReferencesParent()) {

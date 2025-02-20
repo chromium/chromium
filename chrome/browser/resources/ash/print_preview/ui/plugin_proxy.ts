@@ -86,12 +86,12 @@ export class PluginProxyImpl implements PluginProxy {
     const srcUrl = this.getPreviewUrl_(previewUid, index);
     this.plugin_ = pdfCreateOutOfProcessPlugin(
         srcUrl, 'chrome://print/pdf/index_print.html');
-    this.plugin_!.classList.add('preview-area-plugin');
+    this.plugin_.classList.add('preview-area-plugin');
     // NOTE: The plugin's 'id' field must be set to 'pdf-viewer' since
     // chrome/renderer/printing/print_render_frame_helper.cc actually
     // references it.
-    this.plugin_!.setAttribute('id', 'pdf-viewer');
-    return this.plugin_!;
+    this.plugin_.setAttribute('id', 'pdf-viewer');
+    return this.plugin_;
   }
 
   /**

@@ -1186,6 +1186,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> կայքը չի կարող շարունակել<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ի օգտագործումը</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> ներդիրը հեռարձակվում է</translation>
 <translation id="1813278315230285598">Services</translation>
+<translation id="1813828404076816564">Ընտրեք կարծիք թողնելու կոճակը՝ ընդհանուր ներդիրների խմբերի վերաբերյալ կարծիք ուղարկելու համար</translation>
 <translation id="18139523105317219">EDI կողմի անունը</translation>
 <translation id="1815083418640426271">Տեղադրել որպես պարզ տեքստ</translation>
 <translation id="1815097521077272760">Դուք հրավիրված եք փորձելու կառավարել այս խաղը ստեղնաշարի միջոցով։</translation>
@@ -1279,7 +1280,6 @@
 <translation id="1875387611427697908">Սա կարող է ավելացվել միայն <ph name="CHROME_WEB_STORE" />-ից</translation>
 <translation id="1877377290348678128">Պիտակ (կամընտիր)</translation>
 <translation id="1877377730633446520">Սա կզբաղեցնի մոտ <ph name="REQUIRED_SPACE" /> տարածք։ Այս պահին հասանելի է <ph name="FREE_SPACE" />։</translation>
-<translation id="1877520246462554164">Չհաջողվեց ստանալ նույնականացման թոքենը։ Դուրս եկեք հաշվից ու նորից մուտք գործեք:</translation>
 <translation id="1877860345998737529">Գործողությունների նշանակման փոխանջատիչ</translation>
 <translation id="1878155070920054810">Ձեր Chromebook-ի մարտկոցի լիցքը կսպառվի մինչ թարմացման ավարտը։ Միացրեք լիցքավորումը՝ ընդհատումից խուսափելու համար։</translation>
 <translation id="1878477879455105085">Բաց է</translation>
@@ -4107,6 +4107,7 @@
 <translation id="3857807444929313943">Բարձրացրեք մատը և նորից փորձեք</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="385939467708172187">Օգտագործեք հուսալի գաղտնաբառ</translation>
+<translation id="3859869403161297890">Ուղարկեք ձեր կարծիքը ընդհանուր ներդիրների խմբերի մասին այստեղ</translation>
 <translation id="3859987779882450877">Ավտոմատ առաջարկում և ստեղծում է խմբեր ձեր բաց ներդիրներից</translation>
 <translation id="386009056910366930">Կառավարեք ներդիրների «<ph name="GROUP_NAME" />» խումբը</translation>
 <translation id="3861638017150647085">«<ph name="USERNAME" />» օգտանունը հասանելի չէ</translation>
@@ -6993,7 +6994,6 @@
 <translation id="5951624318208955736">Մոնիտոր</translation>
 <translation id="5952020381407136867">հպահարթակ</translation>
 <translation id="5953211687820750364">Այս ցուցակի նկատմամբ գործում են <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> կանոնները։</translation>
-<translation id="5955282598396714173">Ձեր գաղտնաբառի ժամկետը սպառվել է։ Գաղտնաբառը փոխելու համար դուրս եկեք հաշվից ու նորից մուտք գործեք։</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Կայքին անհրաժեշտ է բացել այս հավելվածը:</translation>
 <translation id="5955809630138889698">Այս սարքն աշխատում է միայն անցանց դեմո ռեժիմում։ Մանրամասներն իմանալու համար դիմեք աջակցման կենտրոնի մասնագետներին։</translation>
@@ -8157,6 +8157,7 @@
 <translation id="6805478749741295868">Սա արհեստական բանականության փորձնական գործառույթ է, և երբեմն կարող է սխալներով աշխատել։</translation>
 <translation id="6805647936811177813">Սպասառուի վկայագիրը <ph name="HOST_NAME" />-ից ներմուծելու համար մուտք գործեք <ph name="TOKEN_NAME" />:</translation>
 <translation id="680572642341004180">Միացնել RLZ հետագծումը <ph name="SHORT_PRODUCT_OS_NAME" />-ում:</translation>
+<translation id="6805817411033102703">Ընդհանուր ներդիրների խմբերի մասին կարծիքներ</translation>
 <translation id="6806089545527108739">Թույլ չտալ, բայց հարցնել ավելի ուշ</translation>
 <translation id="680644983456221885">Իրական ժամանակում արդյունավետ պաշտպանությունը վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից հիմնված է ձեր այցելությունների պատմության վրա, որն ուղարկվում է Google-ին</translation>
 <translation id="6806781719264274042">Միայն Google հաշիվ ունեցող ձեր կոնտակտները։ <ph name="LINK_BEGIN" />Դիտել կոնտակտները<ph name="LINK_END" /></translation>
@@ -9697,7 +9698,6 @@
 <translation id="7910725946105920830">Օգտագործել իմ անձնական Google հաշիվը</translation>
 <translation id="7910768399700579500">&amp;Նոր պանակ</translation>
 <translation id="7911118814695487383">Լինուքս</translation>
-<translation id="7912080627461681647">Ձեր գաղտնաբառը փոխվել է սերվերում։ Դուրս եկեք հաշվից ու նորից մուտք գործեք։</translation>
 <translation id="791247712619243506">Չեղարկել կարգավորումը</translation>
 <translation id="7912974581251770345">Թարգմանություն</translation>
 <translation id="7914399737746719723">Հավելվածը տեղադրվեց</translation>

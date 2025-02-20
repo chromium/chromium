@@ -154,7 +154,7 @@ if (is_android && enable_java_templates &&
     }
   }
 
-  if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+  if (defined(android_app_secondary_abi)) {
     android_assets("v8_snapshot_secondary_abi_assets") {
       # only import asset when v8_use_external_startup_data == true
       # like "v8_snapshot_assets" above

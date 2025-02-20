@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/password_credential_controller.h"
@@ -27,6 +28,7 @@
 #include "url/gurl.h"
 
 class ChallengeUrlFetcher;
+class PasskeyUpgradeRequestController;
 class Profile;
 
 namespace content {
@@ -43,6 +45,8 @@ class AuthenticatorRequestDialogController
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
   using BlePermissionCallback = base::RepeatingCallback<void(
       device::FidoRequestHandlerBase::BlePermissionCallback)>;
+  using EnclaveRequestCallback = base::RepeatingCallback<void(
+      std::unique_ptr<device::enclave::CredentialRequest>)>;
 
   AuthenticatorRequestDialogController(
       AuthenticatorRequestDialogModel* model,
@@ -359,6 +363,9 @@ class AuthenticatorRequestDialogController
       base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
           callback);
 
+  void InitializeEnclaveRequestCallback(
+      device::FidoDiscoveryFactory* discovery_factory);
+
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
  private:
@@ -622,6 +629,10 @@ class AuthenticatorRequestDialogController
   base::ScopedObservation<webauthn::PasskeyModel,
                           webauthn::PasskeyModel::Observer>
       passkey_model_observation_{this};
+
+  EnclaveRequestCallback enclave_request_callback_;
+  std::unique_ptr<PasskeyUpgradeRequestController>
+      passkey_upgrade_request_controller_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogController> weak_factory_{
       this};

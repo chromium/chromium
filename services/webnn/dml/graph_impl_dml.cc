@@ -1535,17 +1535,23 @@ void CreateOperatorNodeForBatchNormalization(
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
   const auto& batch_normalization = operation->get_batch_normalization();
-  const NodeOutput* input = GetNodeOutputForOperand(
-      id_to_node_output_map, batch_normalization->input_operand_id);
+  auto& id_to_operand_map = graph_info->id_to_operand_map;
+
+  uint64_t input_id = batch_normalization->input_operand_id;
+  const OperandPtr& input_operand = id_to_operand_map.at(input_id);
+  CHECK(context_properties.data_type_limits.batch_normalization_input.Supports(
+      input_operand->descriptor));
+
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, input_id);
   const TensorDesc& input_tensor_desc = input->GetTensorDesc();
   const auto input_rank = input_tensor_desc.GetDimensions().size();
 
-  auto& id_to_operand_map = graph_info->id_to_operand_map;
   uint64_t output_id = batch_normalization->output_operand_id;
   const OperandPtr& output_operand = id_to_operand_map.at(output_id);
   OperandDataType data_type = output_operand->descriptor.data_type();
-  CHECK(context_properties.data_type_limits.batch_normalization_input.Has(
-      data_type));
+  CHECK(context_properties.data_type_limits.batch_normalization_input.data_types
+            .Has(data_type));
 
   const TensorDesc output_tensor_desc(GetTensorDataType(data_type),
                                       output_operand->descriptor.shape());

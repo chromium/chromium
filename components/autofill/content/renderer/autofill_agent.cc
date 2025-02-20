@@ -361,28 +361,6 @@ bool ShowPredictions(const WebDocument& document,
   return true;
 }
 
-// Compare the values before and after JavaScript value changes after:
-// - Converting to lower case.
-// - Removing special characters
-// - Removing whitespaces.
-// If values are equal after this comparison, we claim that the modification
-// was not big enough to drop the autofilled state of the field.
-bool JavaScriptOnlyReformattedValue(std::u16string old_value,
-                                    std::u16string new_value) {
-  static constexpr char16_t kSpecialChars[] =
-      uR"(`~!@#$%^&*()-_=+[]{}\|;:'",.<>/?)";
-  static const base::NoDestructor<std::u16string> removable(
-      base::StrCat({kSpecialChars, base::kWhitespaceUTF16}));
-  base::RemoveChars(base::i18n::ToLower(old_value), *removable, &old_value);
-  base::RemoveChars(base::i18n::ToLower(new_value), *removable, &new_value);
-  // This normalization is a best effort approach that might not be prefect
-  // across all use cases of JavaScript formatting a value (e.g. for
-  // normalizing single-byte and double-byte encoding of digits in Japan, an
-  // NKFC normalization may be appropriate).
-  // TODO(crbug.com/40947225): Internationalize this normalization.
-  return old_value == new_value;
-}
-
 gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
   if (auto* frame_widget = frame.GetWebFrame()->LocalRoot()->FrameWidget()) {
     gfx::Rect anchor;
@@ -505,12 +483,12 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void DidEndTextFieldEditing() override {
     DeferMsg(&mojom::AutofillDriver::DidEndTextFieldEditing);
   }
-  void JavaScriptChangedAutofilledValue(const FormData& form,
-                                        FieldRendererId field_id,
-                                        const std::u16string& old_value,
-                                        bool formatting_only) override {
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      FieldRendererId field_id,
+      const std::u16string& old_value) override {
     DeferMsg(&mojom::AutofillDriver::JavaScriptChangedAutofilledValue, form,
-             field_id, old_value, formatting_only);
+             field_id, old_value);
   }
 
   const raw_ref<AutofillAgent> agent_;
@@ -1959,13 +1937,6 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   if (!was_autofilled) {
     return;
   }
-  bool formatting_only = JavaScriptOnlyReformattedValue(
-      old_value.Utf16(), element.Value().Utf16());
-  if (formatting_only &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillFixCachingOnJavaScriptChanges)) {
-    element.SetAutofillState(WebAutofillState::kAutofilled);
-  }
   if (std::optional<FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
@@ -1974,7 +1945,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->JavaScriptChangedAutofilledValue(
-          form, field->renderer_id(), old_value.Utf16(), formatting_only);
+          form, field->renderer_id(), old_value.Utf16());
     }
   }
 }

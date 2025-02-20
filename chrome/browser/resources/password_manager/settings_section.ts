@@ -314,7 +314,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   // <if expr="is_win or is_macosx or is_chromeos">
   private switchBiometricAuthBeforeFillingState_(e: Event) {
     const biometricAuthenticationForFillingToggle =
-        e!.target as PrefToggleButtonElement;
+        e.target as PrefToggleButtonElement;
     assert(biometricAuthenticationForFillingToggle);
     PasswordManagerImpl.getInstance().switchBiometricAuthBeforeFillingState();
   }

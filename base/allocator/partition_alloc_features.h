@@ -210,13 +210,6 @@ BASE_EXPORT int GetThreadCacheMinCachedMemoryForPurgingBytes();
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
 
-// This feature is additionally gated behind a buildflag because
-// pool offset freelists cannot be represented when PartitionAlloc uses
-// 32-bit pointers.
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-BASE_EXPORT BASE_DECLARE_FEATURE(kUsePoolOffsetFreelists);
-#endif
-
 // When set, partitions use a larger ring buffer and free memory less
 // aggressively when in the foreground.
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground);

@@ -1182,6 +1182,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> හට <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> දිගටම භාවිතා කළ නොහැක</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> විකාශය කරමින්</translation>
 <translation id="1813278315230285598">සේවා</translation>
+<translation id="1813828404076816564">බෙදා ගත් පටිති සමූහ විශේෂාංගය සම්බන්ධයෙන් ප්‍රතිපෝෂණ යැවීමට ප්‍රතිපෝෂණ බොත්තම තෝරන්න</translation>
 <translation id="18139523105317219">EDI සාද නාමය</translation>
 <translation id="1815083418640426271">සාමාන්‍ය පෙළ ලෙස අලවන්න</translation>
 <translation id="1815097521077272760">මෙම ක්‍රීඩාව සඳහා යතුරු පුවරු පාලනය උත්සාහ කිරීමට ඔබට ආරාධනා කර ඇත.</translation>
@@ -1276,7 +1277,6 @@
 <translation id="1875387611427697908">මෙය එක් කළ හැක්කේ <ph name="CHROME_WEB_STORE" /> වෙතින් පමණි</translation>
 <translation id="1877377290348678128">ලේබලය (විකල්ප)</translation>
 <translation id="1877377730633446520">මෙය <ph name="REQUIRED_SPACE" /> පමණ භාවිත කරයි. ඔබට දැනට <ph name="FREE_SPACE" /> තිබේ.</translation>
-<translation id="1877520246462554164">සත්‍යාපන ටෝකනය ලබා ගැනීම අසාර්ථක විය. නැවත උත්සාහ කිරීමට වරා අනතුරුව නැවත පුරන්න.</translation>
 <translation id="1877860345998737529">ක්‍රියා පැවරීම මාරු කරන්න</translation>
 <translation id="1878155070920054810">යාවත්කාලීනය සම්පූර්ණ වීමට පෙර ඔබගේ Chromebook හට බලය නැති වනු පෙනේ. බාධා වීම වළක්වා ගැනීමට එය ආරෝපණය වන බව සහතික කර ගන්න.</translation>
 <translation id="1878477879455105085">විවෘත කළ</translation>
@@ -4110,6 +4110,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3857807444929313943">ඔසවා, පසුව නැවත ස්පර්ශ කරන්න</translation>
 <translation id="3858860766373142691">නම</translation>
 <translation id="385939467708172187">ප්‍රබල මුරපදයක් භාවිත කරන්න</translation>
+<translation id="3859869403161297890">බෙදා ගත් පටිති සමූහ පිළිබඳ ඔබේ ප්‍රතිපෝෂණය මෙතැනට එවන්න</translation>
 <translation id="3859987779882450877">ඔබේ විවෘත පටිති වලින් ස්වයංක්‍රීයව කණ්ඩායම් යෝජනා කර නිර්මාණය කරයි</translation>
 <translation id="386009056910366930">“<ph name="GROUP_NAME" />” පටිති සමූහය කළමනාකරණය කරන්න</translation>
 <translation id="3861638017150647085">පරිශීලක නාමය "<ph name="USERNAME" />" නොලැබේ</translation>
@@ -7000,7 +7001,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5952020381407136867">ස්පර්ශ පුවරුව</translation>
 <translation id="5953211687820750364">මෙම ලැයිස්තුව <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           සහ <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> මගින් බලපෑමට ලක් වේ</translation>
-<translation id="5955282598396714173">ඔබගේ මුරපදය කල් ඉකුත් වී ඇත. නැවත උත්සාහ කිරීමට වරා අනතුරුව නැවත පුරන්න.</translation>
 <translation id="5955304353782037793">යෙදුම</translation>
 <translation id="5955721306465922729">වෙබ් අඩවියකට මෙම යෙදුම විවෘත කළ යුතුය.</translation>
 <translation id="5955809630138889698">මෙම උපාංගය සබැඳි ආදර්ශන ප්‍රකාරයට පමණක් සුදුසු විය හැක. වැඩි විස්තර සඳහා ඔබේ සහය නියෝජිතයා සම්බන්ධ කර ගන්න.</translation>
@@ -8162,6 +8162,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6805478749741295868">මෙය පර්යේෂණාත්මක AI විශේෂාංගයක් වන අතර එය සැම විට නිවැරදි නොවේ.</translation>
 <translation id="6805647936811177813">කරුණාකර <ph name="HOST_NAME" /> වෙතින් සහතික ආයාත කිරීමට <ph name="TOKEN_NAME" /> වෙත සයින් ඉන් වන්න .</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> මත RLZ හඹායෑම සක්‍රීය කරන්න.</translation>
+<translation id="6805817411033102703">බෙදා ගත් පටිති සමූහ ප්‍රතිපෝෂණය</translation>
 <translation id="6806089545527108739">ඉඩ නොදී පසුව අසන්න</translation>
 <translation id="680644983456221885">ඔබේ බ්‍රවුස් කිරීමේ දත්ත Google වෙත යැවීම මත පදනම් වූ අනතුරුදායක අඩවි, බාගැනීම්, සහ දිගුවලට එරෙහිව තත්‍ය කාලීන, ක්‍රියාකාරී ආරක්ෂාව</translation>
 <translation id="6806781719264274042">Google ගිණුමක් සහිත ඔබේ සම්බන්ධතා පමණි. <ph name="LINK_BEGIN" />සම්බන්ධතා බලන්න<ph name="LINK_END" /></translation>
@@ -9702,7 +9703,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7910725946105920830">ඔබේ පුද්ගලික Google ගිණුම භාවිතා කරන්න</translation>
 <translation id="7910768399700579500">&amp;නව ෆෝල්ඩරය</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">ඔබගේ මුරපදය සේවාදායකය මත වෙනස් කර ඇත. වරා අනතුරුව නැවත පුරන්න.</translation>
 <translation id="791247712619243506">පිහිටුවීම අවලංගු කරන්න</translation>
 <translation id="7912974581251770345">පරිවර්තනය</translation>
 <translation id="7914399737746719723">යෙදුම ස්ථාපනය කරන ලදි</translation>

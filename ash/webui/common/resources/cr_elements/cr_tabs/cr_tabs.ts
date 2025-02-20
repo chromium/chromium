@@ -105,11 +105,11 @@ export class CrTabsElement extends PolymerElement {
       return;
     }
 
-    const oldTabRect = tabs[oldSelected]!.getBoundingClientRect();
-    const newTabRect = tabs[newSelected]!.getBoundingClientRect();
+    const oldTabRect = tabs[oldSelected].getBoundingClientRect();
+    const newTabRect = tabs[newSelected].getBoundingClientRect();
 
     const newIndicator =
-        tabs[newSelected]!.querySelector<HTMLElement>('.tab-indicator')!;
+        tabs[newSelected].querySelector<HTMLElement>('.tab-indicator')!;
     newIndicator.classList.remove('expand', 'contract');
 
     // Make new indicator look like it is the old indicator.

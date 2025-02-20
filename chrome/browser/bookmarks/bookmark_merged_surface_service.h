@@ -168,6 +168,10 @@ class BookmarkMergedSurfaceService : public KeyedService,
       const BookmarkParentFolder& new_parent,
       size_t index);
 
+  // Returns true if `folder` is a permanent folder with custom order tracked
+  // (default order : account child nodes followed by local child nodes).
+  bool IsNonDefaultOrderingTracked(const BookmarkParentFolder& folder) const;
+
   // Returns true if `parent` is managed.
   bool IsParentFolderManaged(const BookmarkParentFolder& folder) const;
 

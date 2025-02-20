@@ -978,6 +978,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5250371859659394278">Z nieznanego źródła</translation>
 <translation id="5271265092610673171">{count,plural, =1{Wymagane pole jest puste. Wypełnij je przed zapisaniem.}few{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}many{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}other{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}}</translation>
 <translation id="5271549068863921519">Zapisz hasło</translation>
+<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) zaprasza Cię do grupy kart. Każda osoba mająca link może edytować wszystkie karty, więc zachowaj ostrożność. Link wygaśnie za 48 godzin.</translation>
 <translation id="5279214046729249716">Tak, przechowuj je oddzielnie</translation>
 <translation id="5279600392753459966">Blokuj wszystkie</translation>
 <translation id="5282340693022193851">Aby otrzymywać powiadomienia ze śledzenia cen, włącz je w ustawieniach iOS.</translation>
@@ -1405,7 +1406,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7015418667643980944">Widok dzielony</translation>
 <translation id="7016070607649558507">Masz 1 słabe hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
 <translation id="7016958933495968912">Opcje kart Discover</translation>
-<translation id="7026724612456523899">Zawsze śledź przesyłki</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7035825883570480307">Włączyć powiadomienia?</translation>
 <translation id="7039345315346323556">Ostatnie</translation>

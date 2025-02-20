@@ -38,21 +38,23 @@ _allowed_config_options = [
     'compilerOptions',
 ]
 
-# Allowed compilerOptions
-_allowed_compiler_options = [
-    'allowUmdGlobalAccess',
-    'isolatedModules',
-    'lib',
-    'noPropertyAccessFromIndexSignature',
-    'noUncheckedIndexedAccess',
-    'noUncheckedSideEffectImports',
-    'noUnusedLocals',
-    'skipLibCheck',
-    'strictPropertyInitialization',
-    'typeRoots',
-    'types',
-    'useDefineForClassFields',
-]
+# Allowed compilerOptions. A 'None' value indicates that all values are allowed,
+# otherwise only the set of specified values is allowed.
+_allowed_compiler_options = {
+    'allowUmdGlobalAccess': None,
+    'isolatedModules': None,
+    'lib': None,
+    'noPropertyAccessFromIndexSignature': None,
+    'noUncheckedIndexedAccess': None,
+    'noUncheckedSideEffectImports': None,
+    'noUnusedLocals': None,
+    'skipLibCheck': None,
+    'strictPropertyInitialization': None,
+    'target': ['ESNext', 'ES2024'],
+    'typeRoots': None,
+    'types': None,
+    'useDefineForClassFields': None,
+}
 
 
 def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
@@ -88,10 +90,16 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
       return True, None
 
     if not is_base_tsconfig:
-      for input_param in tsconfig['compilerOptions'].keys():
-        if input_param not in _allowed_compiler_options:
-          return False, f'Disallowed |{input_param}| flag detected in '+ \
+      for param, param_value in tsconfig['compilerOptions'].items():
+        if param not in _allowed_compiler_options:
+          return False, f'Disallowed |{param}| flag detected in '+ \
               f'{tsconfig_file}.'
+        else:
+          allowed_values = _allowed_compiler_options[param]
+          if (allowed_values is not None and param_value not in allowed_values):
+            return False, f'Disallowed value |{param_value}| for |{param}| ' + \
+                f'flag detected in {tsconfig_file}. Must be one of ' + \
+                f'{allowed_values}.'
 
   return True, None
 

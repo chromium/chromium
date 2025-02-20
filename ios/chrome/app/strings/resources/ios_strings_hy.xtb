@@ -975,6 +975,7 @@
 <translation id="5238596603078743134">Այժմ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> օգտատերը կարող է օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք է գործում <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> կայքում։</translation>
 <translation id="5242899254250321823">Փոխել գաղտնաբառը կայքում</translation>
 <translation id="5248640482715684545">Այս կայքը փորձում է այլ հավելված բացել։</translation>
+<translation id="5250371859659394278">Անհայտ աղբյուրից</translation>
 <translation id="5271265092610673171">{count,plural, =1{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}one{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}other{Չլրացված պարտադիր դաշտեր կան։ Պահելուց առաջ լրացրեք դրանք։}}</translation>
 <translation id="5271549068863921519">Պահել գաղտնաբառը</translation>
 <translation id="5279214046729249716">Այո, առանձին պահել</translation>
@@ -1404,7 +1405,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7015418667643980944">Տրոհված էկրան</translation>
 <translation id="7016070607649558507">Դուք ունեք 1 թույլ գաղտնաբառ։ Փոխեք այն՝ ձեր տվյալները պաշտպանելու համար։</translation>
 <translation id="7016958933495968912">Discover-ի կարգավորումներ</translation>
-<translation id="7026724612456523899">Միշտ հետագծել առաքանիները</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7035825883570480307">Միացնե՞լ ծանուցումները</translation>
 <translation id="7039345315346323556">Վերջինները</translation>

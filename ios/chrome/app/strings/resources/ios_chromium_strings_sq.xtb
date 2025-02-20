@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium i mban të dhënat e tua delikate të sigurta me Face ID.</translation>
 <translation id="1591119736686995611">Hap rrjetën e skedave të Chromium.</translation>
 <translation id="16001233025397167">"Kontrolli i sigurisë" të mban të sigurt nga nxjerrjet e paautorizuara të të dhënave, uebsajtet e pasigurta etj. Merr sinjalizime për çdo problem të privatësisë ose sigurisë që Chromium zbulon për ty.</translation>
-<translation id="1611584326765829247">Lejo që Chromium të të ndihmojë të gjurmosh pakot e tua</translation>
 <translation id="1617663976202781617">Të dhënat nga "Sinkronizimi i Chromium"</translation>
 <translation id="164952285225495380">Kjo pako është gjurmuar tashmë në Chromium.</translation>
 <translation id="1707458603865303524">Përdor Chromium sa herë që troket te lidhjet në mesazhe ose aplikacione të tjera.</translation>
@@ -305,7 +304,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8826789549860004832">Përfito sa më shumë nga Chromium duke vazhduar konfigurimin e shfletuesit.</translation>
 <translation id="88376265765385899">Hap faqeshënuesit e Chromium.</translation>
 <translation id="8860548555286245440">Hap URL-të në Chromium në modalitetin "I fshehtë"</translation>
-<translation id="8866191443434488382">Chromium do të zbulojë numrat e gjurmimit në sajtet që viziton ti dhe do të të shfaqë përditësime për pakot në faqen e skedës së re. Numri i gjurmimit i pakos dhe emri i uebsajtit do të dërgohen te Chromium për të ofruar këtë veçori dhe për të përmirësuar veçoritë e blerjeve për të gjithë. Mund ta përditësosh këtë në çdo kohë te <ph name="BEGIN_LINK" />Cilësimet e gjurmimit të pakove<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Organizata jote kërkon që të identifikohesh për të përdorur Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Merr sigurinë më të fortë të Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minutë}other{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minuta}}</translation>

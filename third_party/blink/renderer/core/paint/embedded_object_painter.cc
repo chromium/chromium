@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
@@ -69,8 +70,11 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
     return;
 
   TextRun text_run(layout_embedded_object_.UnavailablePluginReplacementText());
-  gfx::SizeF text_geometry(font->Width(text_run),
-                           font_data->GetFontMetrics().Height());
+  gfx::SizeF text_geometry(
+      RuntimeEnabledFeatures::PlainTextPainterEnabled()
+          ? PlainTextPainter::Shared().ComputeInlineSize(text_run, *font)
+          : font->Width(text_run),
+      font_data->GetFontMetrics().Height());
 
   PhysicalRect background_rect(
       LayoutUnit(), LayoutUnit(),

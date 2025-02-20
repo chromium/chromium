@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
-import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -295,6 +294,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                     .removePreference(findPreference(PREF_TOOLBAR_SHORTCUT));
                         });
 
+        findPreference(PREF_UI_THEME)
+                .getExtras()
+                .putInt(
+                        ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                        ThemeSettingsEntry.SETTINGS);
+
         if (BuildInfo.getInstance().isAutomotive) {
             getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
             getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_HUB));
@@ -370,17 +375,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
             addPreferenceIfAbsent(PREF_HOME_MODULES_CONFIG);
         } else {
             removePreferenceIfPresent(PREF_HOME_MODULES_CONFIG);
-        }
-
-        if (NightModeUtils.isNightModeSupported()) {
-            Preference themePref = addPreferenceIfAbsent(PREF_UI_THEME);
-            themePref
-                    .getExtras()
-                    .putInt(
-                            ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                            ThemeSettingsEntry.SETTINGS);
-        } else {
-            removePreferenceIfPresent(PREF_UI_THEME);
         }
 
         if (DeveloperSettings.shouldShowDeveloperSettings()) {

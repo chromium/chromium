@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="1066101356081285416">Chrome ले तपाईं जाने साइटहरूमा ट्र्याकिङ नम्बर पत्ता लगाउने छ र तपाईंलाई नयाँ ट्याब पेजमा प्याकेजसम्बन्धी अद्यावधिक जानकारी देखाउने छ। यो सुविधा प्रदान गर्न र सबैका निम्ति Google Shopping का सुविधाहरूको गुणस्तर सुधार गर्न प्याकेज ट्र्याकिङ नम्बर र वेबसाइटको नाम Google मा पठाइने छन्। तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />प्याकेज ट्र्याकिङसम्बन्धी सेटिङ<ph name="END_LINK" />मा गई यो कुरा परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="1076643793026027628">Chrome ले YouTube इन्कोग्निटो लिंकहरू स्वतः इन्कोग्निटो मोडमा खोल्छ।</translation>
 <translation id="1086486568852410168">Google लेन्समार्फत खोज्नुहोस्</translation>
 <translation id="1143896152279775643">तपाईंको पासवर्ड <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिने छ।</translation>
@@ -68,7 +67,6 @@
 <translation id="2574249610672786438">आफूले Chrome प्रयोग गर्ने सबै डिभाइसमा खोलिएका ट्याबहरू हेर्न ती सबै डिभाइसमा साइन इन गर्नुहोस्</translation>
 <translation id="2576431527583832481">Chrome अब अझ राम्रो भएको छ! एउटा नयाँ संस्करण उपलब्ध छ।</translation>
 <translation id="257708665678654955">तपाइँ Google Chrome लाई अर्को पटक यस साइटबाट <ph name="LANGUAGE_NAME" />को पृष्ठहरू अनुवाद गर्न प्रस्ताव गर्न चाहनुहुन्छ?</translation>
-<translation id="2650286135394207535">Chrome लाई आफ्ना प्याकेजहरू ट्र्याक गर्न दिनुहोस्</translation>
 <translation id="2668242166988961773">Chrome मा आवाज प्रयोग गरी खोज्नुहोस्।</translation>
 <translation id="2671426118752779020">तपाईं आफूले Google पासवर्ड म्यानेजरमा सेभ गरेका पासवर्डहरू आफ्नो iPhone मा भएका अन्य एपमा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="2689064829982324496">सबै वेबसाइटहरूमा आफ्नो Google खाताबाट साइन आउट गर्न <ph name="BEGIN_LINK" />Chrome बाट साइन आउट गर्नुहोस्<ph name="END_LINK" />।</translation>

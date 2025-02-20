@@ -13,7 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,9 +32,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Minimum score of an HTTPS origin to enable HFM on its hostname.
 const base::FeatureParam<int> kHttpsAddThreshold{
@@ -185,14 +185,14 @@ GURL GetHttpsUrlFromHttp(const GURL& http_url) {
 
 std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Explicitly check for ChromeOS sign-in profiles (which would cause
   // double-counting of at-startup metrics for ChromeOS restarts) which are not
   // covered by the `IsRegularProfile()` check.
   if (ash::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<HttpsFirstModeService>(profile, GetClock());
 }
 

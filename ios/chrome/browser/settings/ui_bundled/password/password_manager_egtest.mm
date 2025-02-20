@@ -2724,15 +2724,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that the duplicate credential section alert is shown when the user adds
 // a credential that has the same website as that of an existing credential
 // (does not contain username).
-// TODO(crbug.com/40279461): Fix flaky test & re-enable.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testDuplicatedCredentialWithNoUsername \
-  DISABLED_testDuplicatedCredentialWithNoUsername
-#else
-#define MAYBE_testDuplicatedCredentialWithNoUsername \
-  testDuplicatedCredentialWithNoUsername
-#endif
-- (void)MAYBE_testDuplicatedCredentialWithNoUsername {
+- (void)testDuplicatedCredentialWithNoUsername {
   OpenPasswordManager();
 
   [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]

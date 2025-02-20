@@ -401,7 +401,18 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
     The total elapsed time in milliseconds to complete the local web approval
     verification flow, from the time the supervised user requests to the time
     the webpage is approved or rejected by the parent. Available on Android
-    (M108+) and ChromeOS (M109+).
+    (M108+), ChromeOS (M109+), Linux, Mac, Windows and iOs (M135).
+  </summary>
+</histogram>
+
+<histogram name="FamilyLinkUser.LocalWebApprovalErrorType"
+    enum="LocalWebApprovalErrorType" expires_after="2025-07-13">
+  <owner>anthie@google.com</owner>
+  <owner>ddac@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The different error types that a user may encounter during the local url
+    approval flow. Currently recorded in Linux, Mac and Windows platforms.
   </summary>
 </histogram>
 
