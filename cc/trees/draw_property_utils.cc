@@ -16,10 +16,12 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/stack.h"
-#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/math_util.h"
@@ -1512,13 +1514,17 @@ bool LayerShouldBeSkippedForDrawPropertiesComputation(
   const TransformTree& transform_tree = property_trees->transform_tree();
   const EffectTree& effect_tree = property_trees->effect_tree();
   int effect_tree_index = layer->effect_tree_index();
+  CHECK(effect_tree_index != kInvalidPropertyNodeId);
   const EffectNode* effect_node = effect_tree.Node(effect_tree_index);
+  // TODO(crbug.com/390906639): Remove after bug is fixed.
+  if (!effect_node) {
+    SCOPED_CRASH_KEY_STRING32("cc", "Effect tree index",
+                              base::NumberToString(effect_tree_index));
+    base::debug::DumpWithoutCrashing();
+  }
 
   if (effect_node->HasRenderSurface() && effect_node->subtree_has_copy_request)
     return false;
-
-  // TODO(crbug.com/390906639): Remove after bug is fixed.
-  base::debug::Alias(&effect_tree_index);
 
   // Skip if the node's subtree is hidden and no need to cache, or capture.
   if (effect_node->subtree_hidden && !effect_node->cache_render_surface &&
