@@ -53,6 +53,14 @@ void MantisUntrustedService::InpaintImage(const std::vector<uint8_t>& image,
   processor_->Inpainting(image, mask, seed, std::move(callback));
 }
 
+void MantisUntrustedService::OutpaintImage(const std::vector<uint8_t>& image,
+                                           const std::vector<uint8_t>& mask,
+                                           uint32_t seed,
+                                           OutpaintImageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  processor_->Outpainting(image, mask, seed, std::move(callback));
+}
+
 void MantisUntrustedService::ClassifyImageSafety(
     const std::vector<uint8_t>& image,
     ClassifyImageSafetyCallback callback) {

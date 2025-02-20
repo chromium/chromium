@@ -54,6 +54,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
   void ClassifyImageSafety(const std::vector<uint8_t>& image,
                            ClassifyImageSafetyCallback callback) override;
 
+  void OutpaintImage(const std::vector<uint8_t>& image,
+                     const std::vector<uint8_t>& mask,
+                     uint32_t seed,
+                     OutpaintImageCallback callback) override;
+
  private:
   mojo::Receiver<media_app_ui::mojom::MantisUntrustedService> receiver_;
   mojo::Remote<mantis::mojom::MantisProcessor> processor_;
