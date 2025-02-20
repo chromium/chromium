@@ -18109,7 +18109,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "debouncing-time": "100"
+                        "debouncing-delay-ms": "200"
                     },
                     "enable_features": [
                         "PrivacySandboxNoticeActionDebouncingAndroid"
