@@ -1317,6 +1317,7 @@ if (current_toolchain == default_toolchain) {
       "javatests:chrome_test_java_org.chromium.chrome.browser.signin",
       "javatests:chrome_test_java_org.chromium.chrome.browser.site_settings",
       "javatests:chrome_test_java_org.chromium.chrome.browser.suggestions",
+      "javatests:chrome_test_java_org.chromium.chrome.browser.swiperefresh",
       "javatests:chrome_test_java_org.chromium.chrome.browser.sync",
       "javatests:chrome_test_java_org.chromium.chrome.browser.tab",
       "javatests:chrome_test_java_org.chromium.chrome.browser.tab_group_sync",

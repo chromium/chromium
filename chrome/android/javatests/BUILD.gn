@@ -1205,6 +1205,15 @@ android_library("chrome_test_java_org.chromium.chrome.browser.suggestions") {
   deps = chrome_test_java_deps
 }
 
+android_library("chrome_test_java_org.chromium.chrome.browser.swiperefresh") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "src/org/chromium/chrome/browser/SwipeRefreshHandlerTest.java" ]
+
+  deps = chrome_test_java_deps +
+         [ "//third_party/android_swipe_refresh:android_swipe_refresh_java" ]
+}
+
 android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
   resources_package = "org.chromium.chrome.test"
 
