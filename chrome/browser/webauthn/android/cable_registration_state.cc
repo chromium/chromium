@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "crypto/random.h"
@@ -39,6 +40,10 @@ void RegistrationState::Register() {
       base::BindOnce(&RegistrationState::OnSyncRegistrationReady,
                      base::Unretained(this)),
       base::BindRepeating(&RegistrationState::OnEvent, base::Unretained(this)));
+  StartPrelinkEligibilityChecks();
+}
+
+void RegistrationState::StartPrelinkEligibilityChecks() {
   interface_->CanDeviceSupportCable(base::BindOnce(
       &RegistrationState::OnDeviceSupportResult, base::Unretained(this)));
   interface_->AmInWorkProfile(base::BindOnce(
@@ -48,13 +53,18 @@ void RegistrationState::Register() {
 // have_data_for_sync returns true if this object has loaded enough state to
 // put information into sync's DeviceInfo.
 bool RegistrationState::have_data_for_sync() const {
+  if (base::FeatureList::IsEnabled(device::kWebAuthnRegisterForFcm)) {
+    return device_supports_cable_.has_value() &&
+           am_in_work_profile_.has_value() && sync_registration_ != nullptr &&
+           sync_registration_->contact_id() && have_play_services_data();
+  }
   return device_supports_cable_.has_value() &&
-         am_in_work_profile_.has_value() && sync_registration_ != nullptr &&
-         sync_registration_->contact_id() && have_play_services_data();
+         am_in_work_profile_.has_value() && have_play_services_data();
 }
 
 void RegistrationState::SignalSyncWhenReady() {
-  if (sync_registration_ && !sync_registration_->contact_id()) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthnRegisterForFcm) &&
+      sync_registration_ && !sync_registration_->contact_id()) {
     sync_registration_->PrepareContactID();
   }
   if (!have_play_services_data() && !play_services_query_pending_) {

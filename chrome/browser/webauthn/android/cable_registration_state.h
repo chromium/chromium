@@ -63,6 +63,8 @@ class RegistrationState {
 
   void Register();
 
+  void StartPrelinkEligibilityChecks();
+
   bool is_registered_for_linking() const {
     return linking_registration_ != nullptr;
   }
