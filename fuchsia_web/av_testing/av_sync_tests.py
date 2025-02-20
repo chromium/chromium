@@ -210,7 +210,7 @@ def run_test(proc: subprocess.Popen) -> None:
         # Run extra 1080p tests on sherlock.
         if build_info.board == 'sherlock':
             candidates.update(HIGH_PERF_VIDEOS)
-        for file in random.sample(candidates, 2):
+        for file in random.sample(list(candidates), 2):
             run_video_perf_test(file, driver, host)
 
 
