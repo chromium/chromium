@@ -74,7 +74,6 @@ public class SafetyHubTestRule implements TestRule {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         setUpPasswordManagerBackendForTesting();
         setSignedInState(true);
-        setUPMStatus(true);
     }
 
     private void setUpPasswordManagerBackendForTesting() {
@@ -106,10 +105,17 @@ public class SafetyHubTestRule implements TestRule {
                                 : null);
     }
 
-    public void setUPMStatus(boolean isUPMEnabled) {
-        when(mPasswordManagerUtilBridgeNatives.shouldUseUpmWiring(mSyncService, mPrefService))
-                .thenReturn(isUPMEnabled);
-        when(mPasswordManagerUtilBridgeNatives.areMinUpmRequirementsMet()).thenReturn(isUPMEnabled);
+    public void setPasswordManagerAvailable(
+            boolean isPasswordManagerAvailable, boolean isLoginDbDeprecationEnabled) {
+        if (isLoginDbDeprecationEnabled) {
+            when(mPasswordManagerUtilBridgeNatives.isPasswordManagerAvailable(mPrefService, true))
+                    .thenReturn(isPasswordManagerAvailable);
+        } else {
+            when(mPasswordManagerUtilBridgeNatives.shouldUseUpmWiring(mSyncService, mPrefService))
+                    .thenReturn(isPasswordManagerAvailable);
+            when(mPasswordManagerUtilBridgeNatives.areMinUpmRequirementsMet())
+                    .thenReturn(isPasswordManagerAvailable);
+        }
     }
 
     public PendingIntent getIntentForAccountPasswordCheckup() {

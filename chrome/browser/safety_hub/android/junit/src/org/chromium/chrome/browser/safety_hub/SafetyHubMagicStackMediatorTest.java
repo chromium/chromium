@@ -52,10 +52,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for the Safety Hub Magic Stack mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-// TODO(crbug.com/390442009): Update the tests when the logic starts taking the flag into account
-// explicitly. For now the flag is checked in PasswordManagerHelper which gets indirectly
-// invoked by these tests.
-@Features.DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class SafetyHubMagicStackMediatorTest {
     private static final String DESCRIPTION = "description";
 
@@ -226,7 +222,51 @@ public class SafetyHubMagicStackMediatorTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
+    public void testCompromisedPasswordsDisplayed_preLoginDbDeprecation()
+            throws PendingIntent.CanceledException {
+        mSafetyHubTestRule.setPasswordManagerAvailable(
+                true, ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID));
+        MagicStackEntry entry =
+                MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.PASSWORDS);
+        doReturn(entry).when(mMagicStackBridge).getModuleToShow();
+        mMediator.showModule();
+
+        verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.HEADER),
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.TITLE),
+                mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        assertEquals(DESCRIPTION, mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
+                mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        assertEquals(
+                shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
+                        .getCreatedFromResId(),
+                R.drawable.ic_password_manager_key);
+        verify(mSafetyHubHatsHelper, times(1))
+                .triggerProactiveHatsSurveyWhenCardShown(
+                        mTabModelSelector, MagicStackEntry.ModuleType.PASSWORDS);
+
+        OnClickListener onClickListener =
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER);
+        onClickListener.onClick(mView);
+        verify(mPasswordCheckIntentForAccountCheckup, times(1)).send();
+        verify(mModuleDelegate, times(1)).removeModule(ModuleType.SAFETY_HUB);
+        verify(mMagicStackBridge, times(1)).dismissCompromisedPasswordsModule();
+        verify(mSafetyHubHatsHelper, times(1))
+                .triggerProactiveHatsSurveyWhenCardTapped(
+                        mTabModelSelector, MagicStackEntry.ModuleType.PASSWORDS);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
     public void testCompromisedPasswordsDisplayed() throws PendingIntent.CanceledException {
+        mSafetyHubTestRule.setPasswordManagerAvailable(
+                true, ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID));
         MagicStackEntry entry =
                 MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.PASSWORDS);
         doReturn(entry).when(mMagicStackBridge).getModuleToShow();

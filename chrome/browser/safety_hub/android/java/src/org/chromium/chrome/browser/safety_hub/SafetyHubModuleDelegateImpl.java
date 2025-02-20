@@ -15,7 +15,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -74,11 +76,23 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
 
     @Override
     public int getAccountPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge) {
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         if (passwordStoreBridge == null
-                || !PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                || !passwordManagerHelper.canUseUpm()) return INVALID_PASSWORD_COUNT;
+                || !PasswordManagerHelper.hasChosenToSyncPasswords(syncService)) {
+            return INVALID_PASSWORD_COUNT;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            if (PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+                return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
+            }
+            return INVALID_PASSWORD_COUNT;
+        }
+
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
+        if (!passwordManagerHelper.canUseUpm()) {
+            return INVALID_PASSWORD_COUNT;
+        }
 
         if (usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile))) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
