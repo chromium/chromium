@@ -57,7 +57,7 @@ class LegacyMetricsHistogramFlattener : public base::HistogramFlattener {
     DVLOG(3) << "RecordDelta " << histogram.histogram_name();
 
     fuchsia::legacymetrics::Histogram converted;
-    converted.set_name(histogram.histogram_name());
+    converted.set_name(std::string(histogram.histogram_name()));
     converted.set_sum(snapshot.sum());
 
     for (std::unique_ptr<base::SampleCountIterator> it = snapshot.Iterator();

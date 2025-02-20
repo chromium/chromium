@@ -165,7 +165,7 @@ class MetricsLog {
   void RecordUserAction(const std::string& key, base::TimeTicks action_time);
 
   // Record any changes in a given histogram for transmission.
-  void RecordHistogramDelta(const std::string& histogram_name,
+  void RecordHistogramDelta(std::string_view histogram_name,
                             const base::HistogramSamples& snapshot);
 
   // TODO(rkaplow): I think this can be a little refactored as it currently

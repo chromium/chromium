@@ -686,7 +686,7 @@ TEST_F(PersistentHistogramAllocatorTest, MovePersistentFile) {
   std::unique_ptr<HistogramBase> histogram;
   bool found_histogram = false;
   while ((histogram = it.GetNext()) != nullptr) {
-    if (strcmp(kHistogramName, histogram->histogram_name()) == 0) {
+    if (histogram->histogram_name() == kHistogramName) {
       found_histogram = true;
       break;
     }

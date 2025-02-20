@@ -33,6 +33,11 @@ struct HistogramData {
   const base::HistogramBase::Count32 total_count;
   const int64_t sum;
 
+  HistogramData(std::string_view name,
+                base::HistogramBase::Count32 count,
+                int64_t sum)
+      : histogram_name(name), total_count(count), sum(sum) {}
+
   bool operator==(const HistogramData& other) const {
     return histogram_name == other.histogram_name &&
            total_count == other.total_count && sum == other.sum;

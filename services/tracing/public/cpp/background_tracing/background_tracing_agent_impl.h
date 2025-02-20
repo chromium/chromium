@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
   void OnHistogramChanged(const std::string& rule_id,
                           base::Histogram::Sample32 reference_lower_value,
                           base::Histogram::Sample32 reference_upper_value,
-                          const char* histogram_name,
+                          std::string_view histogram_name,
                           uint64_t name_hash,
                           base::Histogram::Sample32 actual_value);
 
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
   base::Time histogram_last_changed_;
   // Tracks histogram names and corresponding registered callbacks.
   std::map<
-      std::string,
+      std::string /*=rule_id*/,
       std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
       histogram_callback_map_;
 

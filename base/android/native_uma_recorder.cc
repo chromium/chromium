@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/map_util.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -24,25 +27,25 @@ namespace android {
 namespace {
 
 using HistogramsSnapshot =
-    std::map<std::string, std::unique_ptr<HistogramSamples>>;
+    std::map<std::string, std::unique_ptr<HistogramSamples>, std::less<>>;
 
 std::string HistogramConstructionParamsToString(HistogramBase* histogram) {
-  std::string params_str = histogram->histogram_name();
+  std::string_view name = histogram->histogram_name();
   switch (histogram->GetHistogramType()) {
     case HISTOGRAM:
     case LINEAR_HISTOGRAM:
     case BOOLEAN_HISTOGRAM:
     case CUSTOM_HISTOGRAM: {
       Histogram* hist = static_cast<Histogram*>(histogram);
-      params_str += StringPrintf("/%d/%d/%" PRIuS, hist->declared_min(),
-                                 hist->declared_max(), hist->bucket_count());
-      break;
+      return StringPrintf("%.*s/%d/%d/%" PRIuS, name.length(), name.data(),
+                          hist->declared_min(), hist->declared_max(),
+                          hist->bucket_count());
     }
     case SPARSE_HISTOGRAM:
     case DUMMY_HISTOGRAM:
       break;
   }
-  return params_str;
+  return std::string(name);
 }
 
 // Convert a jlong |histogram_hint| from Java to a HistogramBase* via a cast.
@@ -289,7 +292,8 @@ JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(JNIEnv* env,
 jlong JNI_NativeUmaRecorder_CreateHistogramSnapshotForTesting(JNIEnv* env) {
   HistogramsSnapshot* snapshot = new HistogramsSnapshot();
   for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
-    (*snapshot)[histogram->histogram_name()] = histogram->SnapshotSamples();
+    InsertOrAssign(*snapshot, histogram->histogram_name(),
+                   histogram->SnapshotSamples());
   }
   return reinterpret_cast<intptr_t>(snapshot);
 }

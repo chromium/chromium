@@ -80,7 +80,7 @@ void BackgroundTracingAgentImpl::OnHistogramChanged(
     const std::string& rule_id,
     base::Histogram::Sample32 histogram_lower_value,
     base::Histogram::Sample32 histogram_upper_value,
-    const char* histogram_name,
+    std::string_view histogram_name,
     uint64_t name_hash,
     base::Histogram::Sample32 actual_value) {
   if (actual_value < histogram_lower_value ||

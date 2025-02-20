@@ -466,7 +466,7 @@ void MetricsLog::RecordCoreSystemProfile(
 #endif
 }
 
-void MetricsLog::RecordHistogramDelta(const std::string& histogram_name,
+void MetricsLog::RecordHistogramDelta(std::string_view histogram_name,
                                       const base::HistogramSamples& snapshot) {
   DCHECK(!closed_);
   log_metadata_.AddSampleCount(snapshot.TotalCount());

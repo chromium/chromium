@@ -8,7 +8,7 @@
 #ifndef COMPONENTS_METRICS_HISTOGRAM_ENCODER_H_
 #define COMPONENTS_METRICS_HISTOGRAM_ENCODER_H_
 
-#include <string>
+#include <string_view>
 
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -20,7 +20,7 @@ namespace metrics {
 
 // Record any changes (histogram deltas of counts from |snapshot|) into
 // |uma_proto| for the given histogram (|histogram_name|).
-void EncodeHistogramDelta(const std::string& histogram_name,
+void EncodeHistogramDelta(std::string_view histogram_name,
                           const base::HistogramSamples& snapshot,
                           ChromeUserMetricsExtension* uma_proto);
 

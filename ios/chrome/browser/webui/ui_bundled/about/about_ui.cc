@@ -138,8 +138,7 @@ void AboutUIHTMLSource::StartDataRequest(
     // chrome://histograms, this code could likely be moved to //ios/web.
     for (base::HistogramBase* histogram : base::StatisticsRecorder::Sort(
              base::StatisticsRecorder::GetHistograms())) {
-      std::string histogram_name = histogram->histogram_name();
-      if (!base::Contains(histogram_name, path)) {
+      if (!base::Contains(histogram->histogram_name(), path)) {
         continue;
       }
       base::Value::Dict histogram_dict = histogram->ToGraphDict();

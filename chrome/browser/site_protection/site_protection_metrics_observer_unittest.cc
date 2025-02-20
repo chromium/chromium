@@ -153,7 +153,7 @@ class SiteProtectionMetricsObserverTest
     base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
         histogram_name,
         base::BindLambdaForTesting(
-            [&](const char* histogram_name, uint64_t name_hash,
+            [&](std::string_view histogram_name, uint64_t name_hash,
                 base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
     NavigateAndCommit(url);
     run_loop.Run();
@@ -336,7 +336,7 @@ TEST_F(SiteProtectionMetricsObserverTest, IgnoreCurrentNavigationEngagement) {
   base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
       "SafeBrowsing.SiteProtection.FamiliarityHeuristic",
       base::BindLambdaForTesting(
-          [&](const char* histogram_name, uint64_t name_hash,
+          [&](std::string_view histogram_name, uint64_t name_hash,
               base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
 
   NavigateAndCommit(kUrl, ui::PAGE_TRANSITION_TYPED);

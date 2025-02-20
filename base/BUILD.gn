@@ -589,6 +589,7 @@ component("base") {
     "strings/abseil_string_number_conversions.cc",
     "strings/abseil_string_number_conversions.h",
     "strings/cstring_view.h",
+    "strings/durable_string_view.h",
     "strings/escape.cc",
     "strings/escape.h",
     "strings/latin1_string_conversions.cc",

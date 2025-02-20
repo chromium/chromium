@@ -89,10 +89,11 @@ HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
 // static
 std::unique_ptr<HistogramBase> SparseHistogram::PersistentCreate(
     PersistentHistogramAllocator* allocator,
-    const char* name,
+    DurableStringView durable_name,
     HistogramSamples::Metadata* meta,
     HistogramSamples::Metadata* logged_meta) {
-  return WrapUnique(new SparseHistogram(allocator, name, meta, logged_meta));
+  return WrapUnique(
+      new SparseHistogram(allocator, durable_name, meta, logged_meta));
 }
 
 SparseHistogram::~SparseHistogram() = default;
@@ -200,16 +201,16 @@ void SparseHistogram::SerializeInfoImpl(Pickle* pickle) const {
   pickle->WriteInt(flags());
 }
 
-SparseHistogram::SparseHistogram(const char* name)
-    : HistogramBase(name),
-      unlogged_samples_(new SampleMap(HashMetricName(name))),
+SparseHistogram::SparseHistogram(DurableStringView durable_name)
+    : HistogramBase(durable_name),
+      unlogged_samples_(new SampleMap(HashMetricName(*durable_name))),
       logged_samples_(new SampleMap(unlogged_samples_->id())) {}
 
 SparseHistogram::SparseHistogram(PersistentHistogramAllocator* allocator,
-                                 const char* name,
+                                 DurableStringView durable_name,
                                  HistogramSamples::Metadata* meta,
                                  HistogramSamples::Metadata* logged_meta)
-    : HistogramBase(name),
+    : HistogramBase(durable_name),
       // While other histogram types maintain a static vector of values with
       // sufficient space for both "active" and "logged" samples, with each
       // SampleVector being given the appropriate half, sparse histograms
@@ -220,8 +221,9 @@ SparseHistogram::SparseHistogram(PersistentHistogramAllocator* allocator,
       // "active" samples use, for convenience purposes, an ID matching
       // that of the histogram while the "logged" samples use that number
       // plus 1.
-      unlogged_samples_(
-          new PersistentSampleMap(HashMetricName(name), allocator, meta)),
+      unlogged_samples_(new PersistentSampleMap(HashMetricName(*durable_name),
+                                                allocator,
+                                                meta)),
       logged_samples_(new PersistentSampleMap(unlogged_samples_->id() + 1,
                                               allocator,
                                               logged_meta)) {}

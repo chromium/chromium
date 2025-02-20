@@ -103,14 +103,14 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
 // times, create multiple instances of this class.
 class HistogramWaiter {
  public:
-  explicit HistogramWaiter(const char* metric_name);
+  explicit HistogramWaiter(std::string_view metric_name);
   ~HistogramWaiter();
   HistogramWaiter(const HistogramWaiter&) = delete;
   HistogramWaiter& operator=(const HistogramWaiter&) = delete;
 
   // Waits for the next update to the observed histogram.
   void Wait();
-  void OnHistogramCallback(const char* metric_name,
+  void OnHistogramCallback(std::string_view metric_name,
                            uint64_t name_hash,
                            base::HistogramBase::Sample32 sample);
 

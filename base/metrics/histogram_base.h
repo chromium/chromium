@@ -16,6 +16,7 @@
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
+#include "base/strings/durable_string_view.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -100,7 +101,7 @@ class BASE_EXPORT HistogramBase {
 
   static const Sample32 kSampleType_MAX;  // INT_MAX
 
-  enum Flags {
+  enum Flags : uint16_t {
     kNoFlags = 0x0,
 
     // Histogram should be UMA uploaded.
@@ -145,14 +146,16 @@ class BASE_EXPORT HistogramBase {
 
   // Construct the base histogram. The name is not copied; it's up to the
   // caller to ensure that it lives at least as long as this object.
-  explicit HistogramBase(const char* name);
+  explicit HistogramBase(DurableStringView name);
 
   HistogramBase(const HistogramBase&) = delete;
   HistogramBase& operator=(const HistogramBase&) = delete;
 
   virtual ~HistogramBase();
 
-  const char* histogram_name() const { return histogram_name_; }
+  std::string_view histogram_name() const {
+    return {histogram_name_, histogram_name_length_};
+  }
 
   // Compares |name| to the histogram name and triggers a DCHECK if they do not
   // match. This is a helper function used by histogram macros, which results in
@@ -339,25 +342,28 @@ class BASE_EXPORT HistogramBase {
   // them passing |sample| as the parameter.
   void FindAndRunCallbacks(Sample32 sample) const;
 
-  // Gets a permanent string that can be used for histogram objects when the
-  // original is not a code constant or held in persistent memory.
-  static const char* GetPermanentName(std::string_view name);
+  // Gets a view to a permanent string that can be used for histogram objects
+  // when the original string is not a code constant or held in persistent
+  // memory.
+  static DurableStringView GetPermanentName(std::string_view name);
 
  private:
   friend class HistogramBaseTest;
+  friend class HistogramThreadsafeTest;
 
   // A pointer to permanent storage where the histogram name is held. This can
   // be code space or the output of GetPermanentName() or any other storage
-  // that is known to never change. This is not std::string_view because (a)
-  // char* is 1/2 the size and (b) std::string_view transparently casts from
-  // std::string which can easily lead to a pointer to non-permanent space. For
-  // persistent histograms, this will simply point into the persistent memory
-  // segment, thus avoiding duplication. For heap histograms, the
-  // GetPermanentName method will create the necessary copy.
+  // that is expected to never be deallocated or modified.
   const char* const histogram_name_;
 
+  // The length of the string pointed to by `histogram_name_`. This is stored
+  // to avoid having to recalculate the length every time `histogram_name_` is
+  // used and to avoid reading beyond the strings alloc in the event of memory
+  // tampering or corruption.
+  const uint16_t histogram_name_length_;
+
   // Additional information about the histogram.
-  std::atomic<int32_t> flags_{0};
+  std::atomic<uint16_t> flags_{0};
 };
 
 }  // namespace base

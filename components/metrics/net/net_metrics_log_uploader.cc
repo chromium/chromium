@@ -405,7 +405,7 @@ void LogUploadingHistograms(const std::string& compressed_log_data) {
   auto get_histogram_name = [&](uint64_t name_hash) -> std::string {
     for (base::HistogramBase* histogram : histograms) {
       if (histogram->name_hash() == name_hash) {
-        return histogram->histogram_name();
+        return std::string(histogram->histogram_name());
       }
     }
     return base::StrCat({"unnamed ", base::NumberToString(name_hash)});

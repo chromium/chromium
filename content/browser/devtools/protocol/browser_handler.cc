@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/map_util.h"
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -677,7 +678,7 @@ std::unique_ptr<Browser::Histogram> BrowserHandler::GetHistogramData(
   }
 
   auto result = Browser::Histogram::Create()
-                    .SetName(histogram.histogram_name())
+                    .SetName(std::string(histogram.histogram_name()))
                     .SetSum(data->sum())
                     .SetCount(data->TotalCount())
                     .SetBuckets(std::move(out_buckets))
@@ -689,7 +690,8 @@ std::unique_ptr<Browser::Histogram> BrowserHandler::GetHistogramData(
       // If we had subtracted previous data, re-add it to get the full snapshot.
       data->Add(*previous_data);
     }
-    histograms_snapshots_[histogram.histogram_name()] = std::move(data);
+    base::InsertOrAssign(histograms_snapshots_, histogram.histogram_name(),
+                         std::move(data));
   }
 
   return result;
