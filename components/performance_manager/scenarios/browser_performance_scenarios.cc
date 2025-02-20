@@ -190,17 +190,10 @@ template <typename Scenario>
 void SetScenarioValueForRenderProcessHost(Scenario scenario,
                                           content::RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](Scenario scenario, base::WeakPtr<ProcessNode> process_node) {
-            if (process_node) {
-              SetScenarioValue(
-                  scenario, GetSharedStateForProcessNode(process_node.get()));
-            }
-          },
-          scenario,
-          PerformanceManager::GetProcessNodeForRenderProcessHost(host)));
+  base::WeakPtr<ProcessNode> process_node =
+      PerformanceManager::GetProcessNodeForRenderProcessHost(host);
+  CHECK(process_node);
+  SetScenarioValue(scenario, GetSharedStateForProcessNode(process_node.get()));
 }
 
 template <typename Scenario>

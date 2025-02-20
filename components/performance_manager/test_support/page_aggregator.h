@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PAGE_AGGREGATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PAGE_AGGREGATOR_H_
 
-#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-
 namespace performance_manager {
 namespace testing {
 
