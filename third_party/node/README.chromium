@@ -463,7 +463,7 @@ Name: Lit
 Short Name: lit
 URL: https://lit.dev
 Version: 3.0.2
-License: BSD 3-Clause
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: no
 Shipped: yes
@@ -487,7 +487,7 @@ Name: Mediapipe Tasks Vision
 Short Name: @mediapipe/tasks-vision
 URL: https://www.npmjs.com/package/@mediapipe/tasks-vision
 Version: 0.10.9
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: yes
