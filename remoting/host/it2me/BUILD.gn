@@ -107,7 +107,6 @@ source_set("common") {
     deps += [
       "//build/config/linux/gtk",
       "//remoting/host/linux:platform_impls",
-      "//remoting/host/linux:wayland",
       "//ui/base:base",
 
       # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
@@ -196,9 +195,6 @@ if (!is_chromeos && enable_remoting_host) {
       "//ui/gfx",
     ]
 
-    if (is_linux) {
-      deps += [ "//remoting/host/linux:wayland" ]
-    }
     if (is_linux && remoting_use_x11) {
       defines = [ "REMOTING_USE_X11" ]
       deps += [

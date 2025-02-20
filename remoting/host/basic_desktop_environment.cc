@@ -49,7 +49,6 @@
 
 #if defined(REMOTING_USE_X11)
 #include "base/threading/watchdog.h"
-#include "remoting/host/linux/wayland_utils.h"
 #endif
 
 namespace remoting {
@@ -213,14 +212,12 @@ BasicDesktopEnvironment::BasicDesktopEnvironment(
       options_(options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 #if defined(REMOTING_USE_X11)
-  if (!IsRunningWayland()) {
-    // TODO(yuweih): The watchdog is just to test the hypothesis.
-    // The IgnoreXServerGrabs() call should probably be moved to whichever
-    // thread that created desktop_capture_options().x_display().
-    IgnoreXServerGrabsWatchdog watchdog;
-    watchdog.Arm();
-    desktop_capture_options().x_display()->IgnoreXServerGrabs();
-  }
+  // TODO(yuweih): The watchdog is just to test the hypothesis.
+  // The IgnoreXServerGrabs() call should probably be moved to whichever
+  // thread that created desktop_capture_options().x_display().
+  IgnoreXServerGrabsWatchdog watchdog;
+  watchdog.Arm();
+  desktop_capture_options().x_display()->IgnoreXServerGrabs();
 #elif BUILDFLAG(IS_WIN)
   // Check whether D3D is available as long as the DirectX capturer wasn't
   // explicitly disabled. This check is necessary because the network process

@@ -7,10 +7,6 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "remoting/host/linux/wayland_utils.h"
-#endif
-
 namespace remoting {
 
 DesktopAndCursorConditionalComposer::DesktopAndCursorConditionalComposer(
@@ -93,14 +89,6 @@ bool DesktopAndCursorConditionalComposer::FocusOnSelectedSource() {
 bool DesktopAndCursorConditionalComposer::IsOccluded(
     const webrtc::DesktopVector& pos) {
   return capturer_->IsOccluded(pos);
-}
-
-bool DesktopAndCursorConditionalComposer::SupportsFrameCallbacks() {
-#if BUILDFLAG(IS_LINUX)
-  return IsRunningWayland();
-#else
-  return false;
-#endif
 }
 
 void DesktopAndCursorConditionalComposer::SetMaxFrameRate(

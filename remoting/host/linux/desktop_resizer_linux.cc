@@ -9,9 +9,7 @@
 #include "base/notreached.h"
 
 #if defined(REMOTING_USE_X11)
-#include "remoting/host/linux/desktop_resizer_wayland.h"
 #include "remoting/host/linux/desktop_resizer_x11.h"
-#include "remoting/host/linux/wayland_utils.h"
 #endif
 
 namespace remoting {
@@ -19,9 +17,6 @@ namespace remoting {
 // static
 std::unique_ptr<DesktopResizer> DesktopResizer::Create() {
 #if defined(REMOTING_USE_X11)
-  if (IsRunningWayland()) {
-    return std::make_unique<DesktopResizerWayland>();
-  }
   return std::make_unique<DesktopResizerX11>();
 #else
 #error "Invalid config detected."

@@ -573,10 +573,6 @@ static_library("common") {
       "utempter",
       "util",
     ]
-
-    if (ozone_platform_wayland) {
-      deps += [ "//ui/events/platform/wayland:wayland_event_watcher" ]
-    }
   }
 
   if (is_linux) {
@@ -599,14 +595,9 @@ static_library("common") {
     defines += [ "REMOTING_USE_X11" ]
     sources -= [ "active_display_monitor.cc" ]
     libs += [ "//third_party/libei/cipd/lib64/libei.a" ]
-    public_deps += [
-      "//third_party/wayland:wayland_client",
-      "//third_party/wayland-protocols:xdg_output_protocol",
-    ]
     deps += [
       "//remoting/host/linux:platform_impls",
       "//remoting/host/linux:utils",
-      "//remoting/host/linux:wayland",
       "//ui/base/x",
       "//ui/events/platform/x11",
       "//ui/gfx/x",
@@ -908,10 +899,7 @@ source_set("unit_tests") {
   }
 
   if (is_linux) {
-    deps += [
-      "//remoting/host/linux:wayland",
-      "//ui/gtk:gtk_config",
-    ]
+    deps += [ "//ui/gtk:gtk_config" ]
   }
 
   if (is_linux) {
@@ -1135,14 +1123,10 @@ if (enable_me2me_host) {
       defines += [ "REMOTING_USE_X11" ]
       deps += [
         "//remoting/host/linux:platform_impls",
-        "//remoting/host/linux:wayland",
         "//ui/events/platform/x11:x11",
       ]
       if (is_linux) {
         deps += [ "//ui/gtk:gtk_config" ]
-      }
-      if (ozone_platform_wayland) {
-        deps += [ "//ui/events/platform/wayland:wayland_event_watcher" ]
       }
     }
 

@@ -159,8 +159,6 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/host/host_utmp_logger.h"
-#include "remoting/host/linux/wayland_manager.h"
-#include "remoting/host/linux/wayland_utils.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if defined(REMOTING_MULTI_PROCESS)
@@ -1029,12 +1027,6 @@ void HostProcess::StartOnUiThread() {
   policy_watcher_->StartWatching(
       base::BindRepeating(&HostProcess::OnPolicyUpdate, base::Unretained(this)),
       base::BindRepeating(&HostProcess::OnPolicyError, base::Unretained(this)));
-
-#if BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    WaylandManager::Get()->Init(context_->ui_task_runner());
-  }
-#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // If an audio pipe is specific on the command-line then initialize

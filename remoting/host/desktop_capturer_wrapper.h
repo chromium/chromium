@@ -38,7 +38,6 @@ class DesktopCapturerWrapper : public DesktopCapturer,
   void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
-  bool SupportsFrameCallbacks() override;
   void SetMaxFrameRate(uint32_t max_frame_rate) override;
 #if defined(WEBRTC_USE_GIO)
   void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
