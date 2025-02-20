@@ -225,6 +225,44 @@ class BookmarkMergedSurfaceServiceTest : public testing::Test {
       mock_service_observer_;
 };
 
+TEST_F(BookmarkMergedSurfaceServiceTest, IsNonDefaultOrderingTracked) {
+  const size_t kManagedBookmarksSize = 5;
+  CreateBookmarkMergedSurfaceServiceWithManaged(kManagedBookmarksSize);
+  EXPECT_FALSE(service().IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::ManagedFolder()));
+
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 ] ");
+
+  // Non permanent node.
+  BookmarkParentFolder non_permanent_folder(
+      BookmarkParentFolder::FromFolderNode(
+          model().bookmark_bar_node()->children()[3].get()));
+  EXPECT_FALSE(service().IsNonDefaultOrderingTracked(non_permanent_folder));
+
+  // No account nodes.
+  EXPECT_FALSE(service().IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::BookmarkBarFolder()));
+
+  // Account nodes with empty child nodes.
+  model().CreateAccountPermanentFolders();
+  EXPECT_FALSE(service().IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::BookmarkBarFolder()));
+
+  // Default order.
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "4 5 ");
+  EXPECT_FALSE(service().IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::BookmarkBarFolder()));
+
+  // Custom order.
+  service().Move(model().bookmark_bar_node()->children()[0].get(),
+                 BookmarkParentFolder::BookmarkBarFolder(), 0u,
+                 /*browser=*/nullptr);
+  EXPECT_TRUE(service().IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::BookmarkBarFolder()));
+}
+
 TEST_F(BookmarkMergedSurfaceServiceTest, GetChildrenCount) {
   const size_t kManagedBookmarksSize = 5;
   CreateBookmarkMergedSurfaceServiceWithManaged(kManagedBookmarksSize);

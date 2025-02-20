@@ -86,6 +86,10 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
   size_t GetIndexAcrossStorage(const bookmarks::BookmarkNode* node,
                                size_t in_storage_index) const;
 
+  // Returns true if `ordering` is not empty and has non-default order.
+  // Default order is all account child nodes then local child nodes.
+  bool IsNonDefaultOrderingTracked() const;
+
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override;
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
@@ -119,6 +123,8 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
   void ResetOrderingToDefault();
   bool ShouldTrackOrdering() const;
   size_t GetExpectedOrderingSize() const;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode>> GetDefaultOrderIfTracked()
+      const;
 
   void RemoveBookmarkNodeIfTracked(const bookmarks::BookmarkNode* parent,
                                    size_t old_index,
