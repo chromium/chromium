@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
@@ -64,6 +65,7 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
 // Tests that -logStartupDuration: and -createStartupTrackingTask are called
 // once and in the right order for a regular startup (no safe mode).
 TEST_F(AppMetricsAppStateAgentTest, LogStartupDuration) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
 
   [[metricsMediator expect] createStartupTrackingTask];
