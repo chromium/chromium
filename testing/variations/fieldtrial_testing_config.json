@@ -449,9 +449,7 @@
                         "AndroidBrowserControlsInViz"
                     ],
                     "disable_features": [
-                        "AndroidBcivBottomControls",
-                        "AndroidBcivWithSimpleScheduler",
-                        "AndroidBcivWithSuppression"
+                        "AndroidBcivBottomControls"
                     ]
                 }
             ]
