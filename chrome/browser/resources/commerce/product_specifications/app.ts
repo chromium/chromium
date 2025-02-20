@@ -34,6 +34,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -606,11 +607,13 @@ export class ProductSpecificationsElement extends CrLitElement {
 
   private async getProductInfoForUrls_(urls: string[]):
       Promise<Map<string, ProductInfo>> {
+    const urlList: Url[] = urls.map((url) => ({url}));
+    const {productInfos} =
+        await this.shoppingApi_.getProductInfoForUrls(urlList);
     const infoMap: Map<string, ProductInfo> = new Map();
-    for (const url of urls) {
-      const {productInfo} = await this.shoppingApi_.getProductInfoForUrl({url});
-      if (productInfo && productInfo.clusterId) {
-        infoMap.set(url, productInfo);
+    for (const info of productInfos) {
+      if (info && info.clusterId) {
+        infoMap.set(info.productUrl.url, info);
       }
     }
     return infoMap;

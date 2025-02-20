@@ -408,6 +408,26 @@ void ShoppingServiceHandler::GetProductInfoForUrl(
                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ShoppingServiceHandler::GetProductInfoForUrls(
+    const std::vector<GURL>& urls,
+    GetProductInfoForUrlsCallback callback) {
+  shopping_service_->GetProductInfoForUrls(
+      urls,
+      base::BindOnce(
+          [](base::WeakPtr<ShoppingServiceHandler> handler,
+             std::vector<GURL> urls, GetProductInfoForUrlsCallback callback,
+             const std::map<GURL, std::optional<ProductInfo>> info_map) {
+            std::vector<shared::mojom::ProductInfoPtr> info_list;
+            // Provide the URLs/info in the same order they were requested.
+            for (GURL& url : urls) {
+              info_list.push_back(ProductInfoToMojoProduct(
+                  url, info_map.at(url), handler->locale_));
+            }
+            std::move(callback).Run(std::move(info_list));
+          },
+          weak_ptr_factory_.GetWeakPtr(), urls, std::move(callback)));
+}
+
 void ShoppingServiceHandler::IsShoppingListEligible(
     IsShoppingListEligibleCallback callback) {
   std::move(callback).Run(shopping_service_->IsShoppingListEligible());

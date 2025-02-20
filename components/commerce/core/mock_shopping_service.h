@@ -41,6 +41,10 @@ class MockShoppingService : public commerce::ShoppingService {
               (const GURL& url, commerce::ProductInfoCallback callback),
               (override));
   MOCK_METHOD(void,
+              GetProductInfoForUrls,
+              (const std::vector<GURL>& url, ProductInfoBatchCallback callback),
+              (override));
+  MOCK_METHOD(void,
               GetPriceInsightsInfoForUrl,
               (const GURL& url, commerce::PriceInsightsInfoCallback callback),
               (override));

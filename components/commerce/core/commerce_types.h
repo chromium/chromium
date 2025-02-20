@@ -288,6 +288,8 @@ using PriceInsightsInfoCallback =
 using ProductInfoCallback =
     base::OnceCallback<void(const GURL&,
                             const std::optional<const ProductInfo>&)>;
+using ProductInfoBatchCallback =
+    base::OnceCallback<void(const std::map<GURL, std::optional<ProductInfo>>)>;
 using ProductSpecificationsCallback =
     base::OnceCallback<void(std::vector<uint64_t>,
                             std::optional<ProductSpecifications>)>;

@@ -167,6 +167,18 @@ suite('AppTest', () => {
           const emptyInfo = createProductInfo();
           return Promise.resolve({productInfo: emptyInfo});
         });
+    shoppingServiceApi.setResultMapperFor(
+        'getProductInfoForUrls', (urls: Url[]) => {
+          const productInfos: ProductInfo[] = [];
+          for (const url of urls) {
+            const info = promiseValues.productInfos.find(
+                (curInfo) => curInfo.productUrl.url === url.url);
+            if (info) {
+              productInfos.push(info);
+            }
+          }
+          return Promise.resolve({productInfos: productInfos});
+        });
     productSpecificationsProxy.setResultMapperFor(
         'getPageTitleFromHistory', (url: Url) => {
           return Promise.resolve({
@@ -1786,7 +1798,7 @@ suite('AppTest', () => {
     assertEquals(1, table.columns.length);
     assertEquals(
         1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
-    assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrl'));
+    assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrls'));
 
     table.dispatchEvent(new CustomEvent('url-remove', {
       detail: {
@@ -1802,7 +1814,7 @@ suite('AppTest', () => {
     // Should not get called on an empty url list.
     assertEquals(
         1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
-    assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrl'));
+    assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrls'));
   });
 
   test('deletes product specification set', async () => {
