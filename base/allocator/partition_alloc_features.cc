@@ -466,12 +466,6 @@ BASE_FEATURE(kPartitionAllocDisableBRPInBufferPartition,
              "PartitionAllocDisableBRPInBufferPartition",
              FEATURE_DISABLED_BY_DEFAULT);
 
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-BASE_FEATURE(kUsePoolOffsetFreelists,
-             "PartitionAllocUsePoolOffsetFreelists",
-             FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
              "PartitionAllocAdjustSizeWhenInForeground",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
