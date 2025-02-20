@@ -33,9 +33,15 @@ constexpr char kUkmSamplingTrialName[] = "UkmSamplingRate";
 // associated with a variation param for reporting sampling |rate| in per mille.
 void AppendSamplingTrialGroup(const std::string& group_name,
                               int rate,
+                              bool disable_crashes,
                               base::FieldTrial* trial) {
   std::map<std::string, std::string> params = {
       {metrics::internal::kRateParamName, base::NumberToString(rate)}};
+
+  if (disable_crashes) {
+    params.insert({"disable_crashes", "true"});
+  }
+
   base::AssociateFieldTrialParams(trial->trial_name(), group_name, params);
   trial->AppendGroup(group_name, rate);
 }
@@ -73,15 +79,16 @@ void CreateFallbackSamplingTrial(
   const int sampled_out_rate_per_mille =
       1000 - sampled_in_rate_per_mille - reporting_full_rate_per_mille;
   AppendSamplingTrialGroup(kSampledOutGroup, sampled_out_rate_per_mille,
-                           trial.get());
+                           /*disable_crashes=*/false, trial.get());
 
+  // This group uploads to UMA but does not upload crashes.
   const char kReportingFullGroup[] = "ReportingFull";
   AppendSamplingTrialGroup(kReportingFullGroup, reporting_full_rate_per_mille,
-                           trial.get());
+                           /*disable_crashes=*/true, trial.get());
 
   const char kInSampleGroup[] = "InReportingSample";
   AppendSamplingTrialGroup(kInSampleGroup, sampled_in_rate_per_mille,
-                           trial.get());
+                           /*disable_crashes=*/false, trial.get());
 
   // Set up the feature. This must be done after all groups are added since
   // GetGroupNameWithoutActivation() will finalize the group choice.
@@ -149,8 +156,7 @@ void CreateFallbackSamplingTrialsIfNeeded(
     base::FeatureList* feature_list) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
-  const bool is_stable =
-      chrome::GetChannel() == version_info::Channel::STABLE;
+  const bool is_stable = chrome::GetChannel() == version_info::Channel::STABLE;
 
   if (!base::FieldTrialList::TrialExists(kSamplingTrialName)) {
 #if BUILDFLAG(IS_WIN)
