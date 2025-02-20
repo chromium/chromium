@@ -17,7 +17,7 @@ class ScrollMarkerPseudoElement : public PseudoElement {
 
   bool IsScrollMarkerPseudoElement() const final { return true; }
 
-  void SetSelected(bool value);
+  void SetSelected(bool value, bool apply_snap_alignment = true);
   bool IsSelected() const { return is_selected_; }
   int DefaultTabIndex() const override { return 0; }
   void DefaultEventHandler(Event&) override;
