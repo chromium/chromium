@@ -373,8 +373,14 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly microphoneManager = useMicrophoneManager();
 
+  private readonly transcriptionAvailable = computed(
+    () => this.platformHandler.isSodaAvailable(),
+  );
+
+  // Shows transcription panel by default if transcription is available.
   // TODO: b/336963138 - Handle when transcription isn't available.
-  private readonly transcriptionShown = signal(false);
+  private readonly transcriptionShown =
+    signal(this.transcriptionAvailable.value);
 
   private readonly transcriptionEnabled = computed(
     () =>
@@ -390,10 +396,6 @@ export class RecordPage extends ReactiveLitElement {
   // Speaker label state per-recording.
   private readonly speakerLabelEnabled = signal(
     this.globalSpeakerLabelEnabled.value,
-  );
-
-  private readonly transcriptionAvailable = computed(
-    () => this.platformHandler.isSodaAvailable(),
   );
 
   private readonly selectedLanguage = computed(
@@ -981,6 +983,7 @@ export class RecordPage extends ReactiveLitElement {
         @click=${this.toggleTranscriptionShown}
         aria-expanded=${this.transcriptionShown.value}
         aria-label=${transcriptButtonTooltip}
+        ?selected=${this.transcriptionShown.value}
         ${withTooltip()}
       >
         <cra-icon slot="icon" name="notes"></cra-icon>
