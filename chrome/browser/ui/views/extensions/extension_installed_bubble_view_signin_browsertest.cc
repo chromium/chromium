@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/extensions/extension_install_ui.h"
+#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -44,7 +44,7 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
     views::Widget::Widgets old_widgets =
         views::test::WidgetTest::GetAllWidgets();
 
-    ExtensionInstallUI::ShowBubble(extension, browser(), SkBitmap());
+    ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
 
     views::Widget::Widgets new_widgets =
         views::test::WidgetTest::GetAllWidgets();
