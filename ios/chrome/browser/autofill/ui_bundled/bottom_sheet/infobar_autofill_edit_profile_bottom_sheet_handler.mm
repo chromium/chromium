@@ -16,6 +16,11 @@
   // TODO(crbug.com/394653508): Implement method.
 }
 
+- (BOOL)isMigrationToAccount {
+  // TODO(crbug.com/394653508): Implement method.
+  return NO;
+}
+
 - (std::unique_ptr<autofill::AutofillProfile>)autofillProfile {
   // TODO(crbug.com/394653508): Implement method.
   return nullptr;

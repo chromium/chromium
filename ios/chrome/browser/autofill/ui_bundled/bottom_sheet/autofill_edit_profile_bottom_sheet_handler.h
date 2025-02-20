@@ -24,6 +24,10 @@
 // Called when the user taps the bottom sheet's 'Save' button.
 - (void)didSaveProfile;
 
+// Returns if the autofill profile associated with the current bottom sheet will
+// be migrated to the Google Account.
+- (BOOL)isMigrationToAccount;
+
 // Returns the autofill profile associated with the current bottom
 // sheet.
 - (std::unique_ptr<autofill::AutofillProfile>)autofillProfile;
