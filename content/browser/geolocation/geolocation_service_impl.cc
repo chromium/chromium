@@ -104,8 +104,9 @@ void GeolocationServiceImpl::CreateGeolocation(
 
   receiver_set_.current_context()->RequestPermission(
       render_frame_host_, user_gesture,
-      // There is an assumption here that the GeolocationServiceImplContext will
-      // outlive the GeolocationServiceImpl.
+      // The owning RenderFrameHost might be destroyed before the permission
+      // request finishes. To avoid calling a callback on a destroyed object,
+      // use a WeakPtr and skip the callback if the object is invalid.
       base::BindOnce(
           &GeolocationServiceImpl::CreateGeolocationWithPermissionStatus,
           weak_factory_.GetWeakPtr(), std::move(receiver),
