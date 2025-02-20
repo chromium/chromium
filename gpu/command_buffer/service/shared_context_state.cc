@@ -9,8 +9,6 @@
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 
-#include <atomic>
-
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
@@ -152,44 +150,6 @@ std::unique_ptr<skgpu::graphite::Recorder> MakeGraphiteRecorder(
   options.fImageProvider =
       sk_make_sp<gpu::GraphiteImageProvider>(max_image_provider_cache_bytes);
   return context->makeRecorder(options);
-}
-
-SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
-  switch (context->gr_context_type()) {
-    case gpu::GrContextType::kNone:
-      return SkiaBackendType::kNone;
-    case gpu::GrContextType::kGL:
-      return SkiaBackendType::kGaneshGL;
-    case gpu::GrContextType::kVulkan:
-      return SkiaBackendType::kGaneshVulkan;
-    case gpu::GrContextType::kGraphiteMetal:
-      // Graphite/Metal isn't expected to be used outside tests.
-      return SkiaBackendType::kUnknown;
-    case gpu::GrContextType::kGraphiteDawn: {
-#if BUILDFLAG(SKIA_USE_DAWN)
-      if (!context->dawn_context_provider()) {
-        // TODO(kylechar): Bail out of GPU process earlier if
-        // DawnContextProvider initialization fails.
-        return SkiaBackendType::kUnknown;
-      }
-      switch (context->dawn_context_provider()->backend_type()) {
-        case wgpu::BackendType::Vulkan:
-          return SkiaBackendType::kGraphiteDawnVulkan;
-        case wgpu::BackendType::D3D11:
-          return SkiaBackendType::kGraphiteDawnD3D11;
-        case wgpu::BackendType::D3D12:
-          return SkiaBackendType::kGraphiteDawnD3D12;
-        case wgpu::BackendType::Metal:
-          return SkiaBackendType::kGraphiteDawnMetal;
-        default:
-          break;
-      }
-#else
-      break;
-#endif
-    }
-  }
-  return SkiaBackendType::kUnknown;
 }
 
 GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,
@@ -511,19 +471,6 @@ bool SharedContextState::InitializeSkia(
     gpu::raster::GrShaderCache* cache,
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
-  // Record the Skia backend type the first time Skia/SharedContextState is
-  // initialized. This can happen more than once and on different threads, as we
-  // can have SharedContextState which uses GL that can be created later but
-  // isn't the primary Skia context type.
-  static std::atomic<bool> once(true);
-  if (once.exchange(false, std::memory_order_relaxed)) {
-    SkiaBackendType context_enum = FindSkiaBackendType(this);
-    base::UmaHistogramEnumeration("GPU.SkiaBackendType", context_enum);
-    // Record SkiaBackendType as gr-context-type crash key.
-    static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
-    crash_key.Set(SkiaBackendTypeToString(context_enum));
-  }
-
   is_drdc_enabled_ = features::IsDrDcEnabled() && !workarounds.disable_drdc;
 
   if (gr_context_type_ == GrContextType::kNone) {
