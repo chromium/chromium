@@ -247,6 +247,10 @@
     mask-image: url('copy.svg');
   }
 
+  .menu-item-icon.copy-image {
+    mask-image: url('copy_image.svg');
+  }
+
   .menu-item-icon.download {
     mask-image: url('download.svg');
   }
@@ -405,7 +409,7 @@
       </div>
       <div class="context-menu-item copy-as-image-context-menu-item"
           role="menuitem" on-pointerup="handleCopyAsImage">
-        <span class="menu-item-icon copy"></span>
+        <span class="menu-item-icon copy-image"></span>
         <span class="menu-item-label">$i18n{copyAsImage}</span>
       </div>
       <div class="context-menu-item save-as-image-context-menu-item"
