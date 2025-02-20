@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//components/sync/base/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 declare_args() {
   # Controls the product part of the user agent calculated in sync_util.cc.
@@ -101,4 +102,9 @@ static_library("base") {
   ]
 
   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
+}
+
+fuzzer_test("unique_position_fuzzer") {
+  sources = [ "unique_position_fuzzer.cc" ]
+  deps = [ ":base" ]
 }
