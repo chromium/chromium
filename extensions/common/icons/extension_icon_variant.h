@@ -31,9 +31,7 @@ class ExtensionIconVariant {
   };
 
   // Parse the base::value argument and return an instance of this class.
-  // TODO(crbug.com/344639840): Remove `issue` and rely on `diagnostics_`?
-  static std::unique_ptr<ExtensionIconVariant> Parse(const base::Value& dict,
-                                                     std::string* issue);
+  static std::unique_ptr<ExtensionIconVariant> Parse(const base::Value& dict);
 
   std::vector<diagnostics::icon_variants::Diagnostic>& get_diagnostics() {
     return diagnostics_;
