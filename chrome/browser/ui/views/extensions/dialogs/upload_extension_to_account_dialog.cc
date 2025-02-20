@@ -65,9 +65,10 @@ void ShowUploadExtensionToAccountDialog(Browser* browser,
           account_info.account_image, 16, 16, profiles::SHAPE_CIRCLE))));
   avatar_and_email_view->AddChildView(
       std::make_unique<views::Label>(base::UTF8ToUTF16(account_info.email)));
+  int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL);
   avatar_and_email_view->SetLayoutManager(std::make_unique<views::BoxLayout>())
-      ->set_between_child_spacing(
-          ChromeDistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+      ->set_between_child_spacing(horizontal_spacing);
   builder.AddCustomField(
       std::make_unique<views::BubbleDialogModelHost::CustomView>(
           std::move(avatar_and_email_view),

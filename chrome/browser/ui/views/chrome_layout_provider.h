@@ -178,6 +178,8 @@ enum ChromeDistanceMetric {
   // Size to use for the radius of activity containers in the Recent
   // Activity dialog.
   DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS,
+  // Distance between the avatar icon and the email in the account info row.
+  DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {
