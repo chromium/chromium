@@ -5514,6 +5514,25 @@ chromium-metrics-reviews@google.com.
   <summary>Size of HTML5 media (when known), in MB.</summary>
 </histogram>
 
+<histogram name="Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.{Type}"
+    enum="GetDisplayMediaAudioToggleStatus" expires_after="2026-02-16">
+  <owner>eladalon@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <summary>
+    Recorded after a Web application calls getDisplayMedia(), after the user
+    chooses to share a display surface of type {Type}. (Not recorded if the user
+    rejects the prompt.) Tracks the state of the audio toggle at the time when
+    the user approved the capture. If the audio toggle is not present, this
+    histogram distinguishes the reason for its absence.
+  </summary>
+  <token key="Type">
+    <variant name="Screens"/>
+    <variant name="Tabs"/>
+    <variant name="Windows"/>
+  </token>
+</histogram>
+
 <histogram
     name="Media.Ui.GetDisplayMedia.BasicFlow.HighlightedTabDiscardStatus"
     enum="HighlightedTabDiscardStatus" expires_after="2025-06-22">
@@ -5557,9 +5576,9 @@ chromium-metrics-reviews@google.com.
     or closed the tab that owns the dialog).
   </summary>
   <token key="Type">
-    <variant name="Screens" summary=""/>
-    <variant name="Tabs" summary=""/>
-    <variant name="Windows" summary=""/>
+    <variant name="Screens"/>
+    <variant name="Tabs"/>
+    <variant name="Windows"/>
   </token>
 </histogram>
 

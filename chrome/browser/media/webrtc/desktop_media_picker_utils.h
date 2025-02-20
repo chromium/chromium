@@ -31,6 +31,10 @@ void RecordUma(GDMPreferCurrentTabResult result,
 
 gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size);
 
+// Convert between content DesktopMediaID::Type and DesktopMediaList::Type.
+// (Note that these functions are not mutual inverses.)
 content::DesktopMediaID::Type AsDesktopMediaIdType(DesktopMediaList::Type type);
+DesktopMediaList::Type AsDesktopMediaListType(
+    content::DesktopMediaID::Type type);
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_UTILS_H_

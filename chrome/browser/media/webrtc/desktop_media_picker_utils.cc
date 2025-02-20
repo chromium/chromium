@@ -10,6 +10,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 
 #include "base/notreached.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -68,6 +69,21 @@ content::DesktopMediaID::Type AsDesktopMediaIdType(
       return content::DesktopMediaID::Type::TYPE_WEB_CONTENTS;
     case DesktopMediaList::Type::kNone:
       return content::DesktopMediaID::Type::TYPE_NONE;
+  }
+  NOTREACHED();
+}
+
+DesktopMediaList::Type AsDesktopMediaListType(
+    content::DesktopMediaID::Type type) {
+  switch (type) {
+    case content::DesktopMediaID::Type::TYPE_SCREEN:
+      return DesktopMediaList::Type::kScreen;
+    case content::DesktopMediaID::Type::TYPE_WINDOW:
+      return DesktopMediaList::Type::kWindow;
+    case content::DesktopMediaID::Type::TYPE_WEB_CONTENTS:
+      return DesktopMediaList::Type::kWebContents;
+    case content::DesktopMediaID::Type::TYPE_NONE:
+      return DesktopMediaList::Type::kNone;
   }
   NOTREACHED();
 }

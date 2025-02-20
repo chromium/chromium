@@ -84,6 +84,16 @@ using DialogType = DesktopMediaPickerDialogView::DialogType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class AudioToggleStatus {
+  kAudioNotRequested = 0,
+  kAudioRequestedButNotSupported = 1,
+  kAudioRequestedButUserDidNotApprove = 2,
+  kAudioRequestedAndUserApproved = 3,
+  kMaxValue = kAudioRequestedAndUserApproved
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SelectedTabDiscardStatus {
   kNonDiscarded = 0,
   kDiscarded = 1,
@@ -323,7 +333,8 @@ std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
 
 }  // namespace
 
-bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
+bool DesktopMediaPickerDialogView::AudioSupported(
+    DesktopMediaList::Type type) const {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
       return DesktopMediaPickerController::IsSystemAudioCaptureSupported(
@@ -337,6 +348,18 @@ bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
       break;
   }
   NOTREACHED();
+}
+
+bool DesktopMediaPickerDialogView::AudioRequestedForType(
+    DesktopMediaList::Type type) const {
+  // TODO(crbug.com/397167331): Instead of special-casing kScreen, iterate
+  // over the `categories_`, find the one with the relevant `type` and
+  // return `category.audio_offered`.
+  if (type == DesktopMediaList::Type::kScreen) {
+    return audio_requested_ && !exclude_system_audio_requested_;
+  } else {
+    return audio_requested_;
+  }
 }
 
 DesktopMediaPickerDialogView::DisplaySurfaceCategory::DisplaySurfaceCategory(
@@ -371,18 +394,19 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       request_source_(params.request_source),
       app_name_(params.app_name),
       audio_requested_(params.request_audio),
-      suppress_local_audio_playback_(params.suppress_local_audio_playback),
+      exclude_system_audio_requested_(params.exclude_system_audio),
       is_system_audio_offered_(audio_requested_ &&
                                !params.exclude_system_audio &&
                                AudioSupported(DesktopMediaList::Type::kScreen)),
+      suppress_local_audio_playback_(params.suppress_local_audio_playback),
       capturer_global_id_(
           params.web_contents
               ? params.web_contents->GetPrimaryMainFrame()->GetGlobalId()
               : content::GlobalRenderFrameHostId()),
       parent_(parent),
       dialog_open_time_(base::TimeTicks::Now()) {
-  DCHECK(!params.force_audio_checkboxes_to_default_checked ||
-         !params.exclude_system_audio);
+  CHECK(!params.force_audio_checkboxes_to_default_checked ||
+        !params.exclude_system_audio);
   RecordAction(base::UserMetricsAction("GetDisplayMedia.ShowDialog"));
 
 #if BUILDFLAG(IS_MAC)
@@ -867,6 +891,49 @@ void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
   }
 }
 
+void DesktopMediaPickerDialogView::RecordAudioToggleUma(
+    const content::DesktopMediaID& source) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (request_source_ != RequestSource::kGetDisplayMedia ||
+      dialog_type_ != DialogType::kStandard) {
+    return;
+  }
+
+  const char* display_surface = nullptr;
+  switch (source.type) {
+    case DesktopMediaID::Type::TYPE_WEB_CONTENTS:
+      display_surface = "Tabs";
+      break;
+    case DesktopMediaID::Type::TYPE_WINDOW:
+      display_surface = "Windows";
+      break;
+    case DesktopMediaID::Type::TYPE_SCREEN:
+      display_surface = "Screens";
+      break;
+    case DesktopMediaID::Type::TYPE_NONE:
+      break;  // Should not happen - subsequent CHECK failure.
+  }
+  CHECK_NE(display_surface, nullptr);
+  const std::string name =
+      base::StrCat({"Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.",
+                    display_surface});
+
+  const DesktopMediaList::Type type = AsDesktopMediaListType(source.type);
+  AudioToggleStatus status;
+  if (!AudioRequestedForType(type)) {
+    status = AudioToggleStatus::kAudioNotRequested;
+  } else if (!AudioSupported(type)) {
+    status = AudioToggleStatus::kAudioRequestedButNotSupported;
+  } else {
+    status = source.audio_share
+                 ? AudioToggleStatus::kAudioRequestedAndUserApproved
+                 : AudioToggleStatus::kAudioRequestedButUserDidNotApprove;
+  }
+
+  base::UmaHistogramEnumeration(name, status);
+}
+
 void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
     const DesktopMediaID& source) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -976,6 +1043,7 @@ bool DesktopMediaPickerDialogView::Accept() {
                        GetSelectedSourceListType(), dialog_open_time_);
   }
   RecordSourceCountsUma();
+  RecordAudioToggleUma(source);
   RecordTabDiscardedStatusUma(source);
 
   if (parent_) {

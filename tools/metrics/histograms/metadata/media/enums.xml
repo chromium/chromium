@@ -979,6 +979,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FailureAfterRetry"/>
 </enum>
 
+<enum name="GetDisplayMediaAudioToggleStatus">
+  <int value="0" label="AudioNotRequested"/>
+  <int value="1" label="AudioRequestedButNotSupported"/>
+  <int value="2" label="AudioRequestedButUserDidNotApprove"/>
+  <int value="3" label="AudioRequestedAndUserApproved"/>
+</enum>
+
 <enum name="GetDisplayMediaBooleanConstraint">
   <int value="0" label="Not specified"/>
   <int value="1" label="True"/>
