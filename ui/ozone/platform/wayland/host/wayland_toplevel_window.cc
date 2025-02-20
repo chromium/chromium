@@ -500,7 +500,6 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   }
 
   if (did_active_change) {
-    frame_manager()->OnWindowActivationChanged();
     if (active_bubble()) {
       ActivateBubble(is_active_ ? active_bubble() : nullptr);
     } else {

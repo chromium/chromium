@@ -45,12 +45,17 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     WaylandTestSimple::SetUp();
     frame_manager_ =
         std::make_unique<WaylandFrameManager>(window_.get(), connection_.get());
+    // Frame callbacks get reset on the client side when they are skipped. So
+    // make MockSurface aware of that.
+    PostToServerAndWait([id = window_->root_surface()->get_surface_id()](
+                            wl::TestWaylandServerThread* server) {
+      auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+      mock_surface->AllowResettingFrameCallback();
+    });
   }
 
  protected:
-  void ApplySurfaceConfigureAndCheckFrameCallback(bool expect_frame_callback) {
-    constexpr uint32_t kBufferId = 1;
-    // Setup wl_buffers.
+  void InitBufferManager() {
     EXPECT_TRUE(connection_->buffer_manager_host());
     auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
     buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
@@ -59,39 +64,32 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
                                     /*supports_single_pixel_buffer=*/true);
-    buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
-                                              kBufferId);
-    base::RunLoop().RunUntilIdle();
-
-    wl::WaylandOverlayConfig config;
-    config.buffer_id = kBufferId;
-    config.bounds_rect = {0, 0, kWidth, kHeight};
-
-    auto* surface = window_->root_surface();
-    WaylandFrame frame(surface, std::move(config));
-
-    frame_manager_->ApplySurfaceConfigure(&frame, surface, frame.root_config,
-                                          false);
-    EXPECT_EQ(!!frame.wl_frame_callback, expect_frame_callback);
   }
 
-  void RecordFrameAndCheckSurfaceCommits(bool expect_surface_commits) {
-    constexpr uint32_t kBufferId = 1;
-    // Setup wl_buffers.
-    EXPECT_TRUE(connection_->buffer_manager_host());
-    auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
-                                    /*supports_dma_buf=*/false,
-                                    /*supports_viewporter=*/true,
-                                    /*supports_acquire_fence=*/false,
-                                    /*supports_overlays=*/true,
-                                    /*supports_single_pixel_buffer=*/true);
+  void RecordFrame() {
     buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
-                                              kBufferId);
+                                              buffer_id_);
     base::RunLoop().RunUntilIdle();
 
     wl::WaylandOverlayConfig config;
-    config.buffer_id = kBufferId;
+    config.buffer_id = buffer_id_;
+    config.bounds_rect = {0, 0, kWidth, kHeight};
+    auto* surface = window_->root_surface();
+    std::unique_ptr<WaylandFrame> frame =
+        std::make_unique<WaylandFrame>(surface, std::move(config));
+    frame_manager_->RecordFrame(std::move(frame));
+    ++buffer_id_;
+  }
+
+  void TestSurfaceCommits(bool expect_surface_commits) {
+    // Setup wl_buffers.
+    InitBufferManager();
+    buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
+                                              buffer_id_);
+    base::RunLoop().RunUntilIdle();
+
+    wl::WaylandOverlayConfig config;
+    config.buffer_id = buffer_id_;
     config.bounds_rect = {0, 0, kWidth, kHeight};
 
     auto* surface = window_->root_surface();
@@ -145,98 +143,119 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     });
   }
 
+  void SendFrameCallback() {
+    PostToServerAndWait([id = window_->root_surface()->get_surface_id()](
+                            wl::TestWaylandServerThread* server) {
+      auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+      mock_surface->SendFrameCallback();
+    });
+  }
+
   std::unique_ptr<WaylandFrameManager> frame_manager_;
+  size_t buffer_id_ = 1;
 };
 
-// Tests video capture should not affect frame callbaks if window is active.
-TEST_F(WaylandFrameManagerTest, FrameCallbackSet_WindowActive) {
-  WaylandWindow::WindowStates window_states;
-  window_states.is_activated = true;
-  window_->HandleToplevelConfigure(kWidth, kHeight, window_states);
+// Tests that frame callbacks are waited on during video capture if there is no
+// frame callback timeout.
+TEST_F(WaylandFrameManagerTest, WaitForFrameCallbacks_VideoCapturingNoTimeout) {
+  InitBufferManager();
 
   frame_manager_->SetVideoCapture();
 
-  ApplySurfaceConfigureAndCheckFrameCallback(true);
+  // The first frame should be submitted.
+  RecordFrame();
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(1u, NumSubmittedFrames());
+
+  // The second frame should be pending until frame callback is received from
+  // the previous frame.
+  RecordFrame();
+  EXPECT_EQ(1u, NumPendingFrames());
+  EXPECT_EQ(1u, NumSubmittedFrames());
 }
 
-// Tests frame callbacks are set when window is inactive and video is not being
-// captured.
+// Tests frame callbacks are waited on when there is a timeout and video is not
+// being captured.
 TEST_F(WaylandFrameManagerTest,
-       FrameCallbackSet_WindowInactiveVideoNotCapturing) {
-  WaylandWindow::WindowStates window_states;
-  // Make window inactive
-  window_states.is_activated = false;
-  window_->HandleToplevelConfigure(kWidth, kHeight, window_states);
+       WaitForFrameCallbacks_TimeoutVideoNotCapturing) {
+  InitBufferManager();
 
-  // Capture count should be zero.
   frame_manager_->SetVideoCapture();
   frame_manager_->SetVideoCapture();
   frame_manager_->ReleaseVideoCapture();
   frame_manager_->ReleaseVideoCapture();
+  frame_manager_->FrameCallbackTimeout();
 
-  ApplySurfaceConfigureAndCheckFrameCallback(true);
+  // The first frame should be submitted.
+  RecordFrame();
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(1u, NumSubmittedFrames());
+
+  // The second frame should be pending until frame callback is received from
+  // the previous frame.
+  RecordFrame();
+  EXPECT_EQ(1u, NumPendingFrames());
+  EXPECT_EQ(1u, NumSubmittedFrames());
 }
 
-// Tests that frame callbacks are not set when window is inactive during video
+// Tests frame callbacks are NOT waited on when there is a timeout during video
 // capture.
-TEST_F(WaylandFrameManagerTest,
-       FrameCallbackNotSet_WindowInactiveVideoCapturing) {
-  // Make window inactive
-  WaylandWindow::WindowStates window_states;
-  window_states.is_activated = false;
-  window_->HandleToplevelConfigure(kWidth, kHeight, window_states);
+TEST_F(WaylandFrameManagerTest, FrameCallbacksSkipped_TimeoutVideoCapturing) {
+  InitBufferManager();
 
-  // Ensure at least one video capture is active.
+  // Ensure at least one video capture exists.
   frame_manager_->SetVideoCapture();
   frame_manager_->SetVideoCapture();
   frame_manager_->ReleaseVideoCapture();
+  // Trigger frame callback timeout, to detect the freeze.
+  frame_manager_->FrameCallbackTimeout();
 
-  ApplySurfaceConfigureAndCheckFrameCallback(false);
+  // The first frame should be submitted.
+  RecordFrame();
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(1u, NumSubmittedFrames());
+
+  // The second frame should be submitted without waiting for frame callback
+  // from the first one to be received.
+  RecordFrame();
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(2u, NumSubmittedFrames());
+
+  // Send last frame callback, which removes the freeze.
+  SendFrameCallback();
+
+  // Now this frame should be submitted as the frame callback for the last
+  // submitted frame was received.
+  RecordFrame();
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(3u, NumSubmittedFrames());
+
+  // Now it should go back to waiting as there is no longer a freeze.
+  RecordFrame();
+  EXPECT_EQ(1u, NumPendingFrames());
+  EXPECT_EQ(3u, NumSubmittedFrames());
 }
 
-// Tests that frames are unblocked when both video capture state and window
-// inactive state become true.
+// Tests that frames are unblocked when both video capture state and frame
+// callback frozen state become true and we transition to fallback rendering.
 TEST_F(WaylandFrameManagerTest,
-       UnblockFrames_BothInactiveAndVideoCaptureBecomeTrue) {
-  constexpr uint32_t kBufferId = 1;
+       UnblockFrames_OnTransitionToSkipFrameCallbacks) {
   // Setup wl_buffers.
-  EXPECT_TRUE(connection_->buffer_manager_host());
-  auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
-                                  /*supports_dma_buf=*/false,
-                                  /*supports_viewporter=*/true,
-                                  /*supports_acquire_fence=*/false,
-                                  /*supports_overlays=*/true,
-                                  /*supports_single_pixel_buffer=*/true);
-  buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
-                                            kBufferId);
-  base::RunLoop().RunUntilIdle();
-
-  wl::WaylandOverlayConfig config;
-  config.buffer_id = kBufferId;
-  config.bounds_rect = {0, 0, kWidth, kHeight};
-
-  auto* surface = window_->root_surface();
-  auto frame = std::make_unique<WaylandFrame>(surface, std::move(config));
-
-  frame_manager_->RecordFrame(std::move(frame));
+  InitBufferManager();
+  RecordFrame();
   EXPECT_EQ(1u, NumSubmittedFrames());
   EXPECT_TRUE(LastSubmittedFrameHasFrameCallback());
   EXPECT_TRUE(LastSubmittedFrameHasSubmittedBuffers());
   EXPECT_EQ(0u, NumPendingFrames());
   EXPECT_TRUE(LastSubmittedFrameHasFrameCallback());
 
-  auto frame2 = std::make_unique<WaylandFrame>(surface, std::move(config));
-
   // Ensure pending frame
-  frame_manager_->RecordFrame(std::move(frame2));
+  RecordFrame();
   EXPECT_EQ(1u, NumSubmittedFrames());
   EXPECT_EQ(1u, NumPendingFrames());
 
-  // Make window inactive
-  WaylandWindow::WindowStates window_states;
-  window_states.is_activated = false;
-  window_->HandleToplevelConfigure(kWidth, kHeight, window_states);
+  // Trigger timeout
+  frame_manager_->FrameCallbackTimeout();
 
   // Ensure at least one video capture is active.
   frame_manager_->SetVideoCapture();
@@ -244,11 +263,9 @@ TEST_F(WaylandFrameManagerTest,
   // The empty pending frame should be cleared.
   EXPECT_EQ(0u, NumPendingFrames());
 
-  // The existing submitted frame should be there still until buffer release.
-  // But it should not longer have a frame callback.
-  EXPECT_EQ(1u, NumSubmittedFrames());
-  EXPECT_FALSE(LastSubmittedFrameHasFrameCallback());
-  EXPECT_TRUE(LastSubmittedFrameHasSubmittedBuffers());
+  // The second frame should be submitted without waiting for a frame callback
+  // from the first one.
+  EXPECT_EQ(2u, NumSubmittedFrames());
 }
 
 // Tests video capture should not affect surface commit if window is not
@@ -261,7 +278,7 @@ TEST_F(WaylandFrameManagerTest, SurfaceCommitted_WindowActiveNotSuspended) {
 
   frame_manager_->SetVideoCapture();
 
-  RecordFrameAndCheckSurfaceCommits(/*expect_surface_commits=*/true);
+  TestSurfaceCommits(/*expect_surface_commits=*/true);
 }
 
 // Tests surface commits are sent as usual when window is suspended but video is
@@ -279,7 +296,7 @@ TEST_F(WaylandFrameManagerTest,
   frame_manager_->ReleaseVideoCapture();
   frame_manager_->ReleaseVideoCapture();
 
-  RecordFrameAndCheckSurfaceCommits(/*expect_surface_commits=*/true);
+  TestSurfaceCommits(/*expect_surface_commits=*/true);
 }
 
 // Tests that swaps are ACKed immediately without involving the compositor when
@@ -297,7 +314,7 @@ TEST_F(WaylandFrameManagerTest,
   frame_manager_->SetVideoCapture();
   frame_manager_->ReleaseVideoCapture();
 
-  RecordFrameAndCheckSurfaceCommits(/*expect_surface_commits=*/false);
+  TestSurfaceCommits(/*expect_surface_commits=*/false);
 
   constexpr uint32_t kBufferId2 = 2;
   buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
@@ -328,39 +345,24 @@ TEST_F(WaylandFrameManagerTest,
   EXPECT_TRUE(LastSubmittedFrameAcked());
 }
 
-TEST_F(WaylandFrameManagerTest,
-       UnblockFrames_BothSuspendedAndVideoCaptureBecomeTrue) {
-  constexpr uint32_t kBufferId = 1;
+TEST_F(WaylandFrameManagerTest, UnblockFrames_OnTransitionToSwapWithoutCommit) {
   // Setup wl_buffers.
-  EXPECT_TRUE(connection_->buffer_manager_host());
-  auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
-                                  /*supports_dma_buf=*/false,
-                                  /*supports_viewporter=*/true,
-                                  /*supports_acquire_fence=*/false,
-                                  /*supports_overlays=*/true,
-                                  /*supports_single_pixel_buffer=*/true);
-  buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
-                                            kBufferId);
-  base::RunLoop().RunUntilIdle();
-
-  wl::WaylandOverlayConfig config;
-  config.buffer_id = kBufferId;
-  config.bounds_rect = {0, 0, kWidth, kHeight};
-
-  auto* surface = window_->root_surface();
-  auto frame = std::make_unique<WaylandFrame>(surface, std::move(config));
-
-  frame_manager_->RecordFrame(std::move(frame));
+  InitBufferManager();
+  RecordFrame();
   EXPECT_EQ(1u, NumSubmittedFrames());
   EXPECT_EQ(0u, NumPendingFrames());
   EXPECT_TRUE(LastSubmittedFrameHasFrameCallback());
 
-  auto frame2 = std::make_unique<WaylandFrame>(surface, std::move(config));
-
   // Ensure pending frame
-  frame_manager_->RecordFrame(std::move(frame2));
+  RecordFrame();
   EXPECT_EQ(1u, NumSubmittedFrames());
+  EXPECT_EQ(1u, NumPendingFrames());
+
+  // Send frame callback and record another frame to end up with 2 submitted
+  // frames and one pending.
+  SendFrameCallback();
+  RecordFrame();
+  EXPECT_EQ(2u, NumSubmittedFrames());
   EXPECT_EQ(1u, NumPendingFrames());
 
   // Make window suspended
@@ -371,10 +373,11 @@ TEST_F(WaylandFrameManagerTest,
   // Ensure at least one video capture is active.
   frame_manager_->SetVideoCapture();
 
-  // The empty pending frame should be cleared.
+  // There should be no more pending frames.
   EXPECT_EQ(0u, NumPendingFrames());
 
-  // The first frame should be removed, leaving the second frame
+  // 2 submitted frames should be cleared and one pending frame should be
+  // submitted.
   EXPECT_EQ(1u, NumSubmittedFrames());
   EXPECT_FALSE(LastSubmittedFrameHasFrameCallback());
   EXPECT_FALSE(LastSubmittedFrameHasSubmittedBuffers());
