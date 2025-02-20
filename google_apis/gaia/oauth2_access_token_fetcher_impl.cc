@@ -312,11 +312,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       // persistent errors.
       // HTTP_BAD_REQUEST errors usually contains errors as per
       // http://tools.ietf.org/html/rfc6749#section-5.2.
-      if (response == kInvalidGrant) {
-        error = CreateErrorForInvalidGrant(error_subtype, error_description);
-      } else {
-        error = GoogleServiceAuthError::FromServiceError(response_str);
-      }
+      error = GoogleServiceAuthError::FromServiceError(response_str);
     }
   }
 
