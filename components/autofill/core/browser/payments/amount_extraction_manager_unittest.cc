@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +30,19 @@ class MockAutofillDriver : public TestAutofillDriver {
                uint32_t,
                base::OnceCallback<void(const std::string&)>),
               (override));
+};
+
+class MockAmountExtractionManager : public AmountExtractionManager {
+ public:
+  explicit MockAmountExtractionManager(BrowserAutofillManager* autofill_manager)
+      : AmountExtractionManager(autofill_manager) {}
+
+  MOCK_METHOD(void,
+              OnCheckoutAmountReceived,
+              (base::TimeTicks search_request_start_timestamp,
+               const std::string& extracted_amount),
+              (override));
+  MOCK_METHOD(void, OnTimeoutReached, (), (override));
 };
 
 class AmountExtractionManagerTest : public testing::Test {
@@ -69,6 +83,7 @@ class AmountExtractionManagerTest : public testing::Test {
       mock_autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<AmountExtractionManager> amount_extraction_manager_;
+  std::unique_ptr<MockAmountExtractionManager> mock_amount_extraction_manager_;
 };
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -444,6 +459,50 @@ TEST_F(AmountExtractionManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.AmountExtraction.Result",
       autofill::autofill_metrics::AmountExtractionResult::kAmountNotFound, 1);
+}
+
+TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {
+  mock_amount_extraction_manager_ =
+      std::make_unique<MockAmountExtractionManager>(autofill_manager_.get());
+  EXPECT_FALSE(
+      mock_amount_extraction_manager_->GetSearchRequestPendingForTesting());
+  EXPECT_CALL(*mock_autofill_driver_, ExtractLabeledTextNodeValue)
+      .WillOnce(
+          [this](const std::u16string&, const std::u16string&, uint32_t,
+                 base::OnceCallback<void(const std::string&)>&& callback) {
+            task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
+                FROM_HERE, base::BindOnce(std::move(callback), "123"),
+                AmountExtractionManager::kAmountExtractionWaitTime +
+                    base::Milliseconds(100));
+          });
+  EXPECT_CALL(*mock_amount_extraction_manager_, OnCheckoutAmountReceived)
+      .Times(0);
+  EXPECT_CALL(*mock_amount_extraction_manager_, OnTimeoutReached()).Times(1);
+  mock_amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(
+      AmountExtractionManager::kAmountExtractionWaitTime);
+}
+
+TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
+  mock_amount_extraction_manager_ =
+      std::make_unique<MockAmountExtractionManager>(autofill_manager_.get());
+  EXPECT_FALSE(
+      mock_amount_extraction_manager_->GetSearchRequestPendingForTesting());
+  EXPECT_CALL(*mock_autofill_driver_, ExtractLabeledTextNodeValue)
+      .WillOnce(
+          [this](const std::u16string&, const std::u16string&, uint32_t,
+                 base::OnceCallback<void(const std::string&)>&& callback) {
+            task_environment_.FastForwardBy(
+                AmountExtractionManager::kAmountExtractionWaitTime / 2);
+            std::move(callback).Run("123");
+          });
+  EXPECT_CALL(*mock_amount_extraction_manager_,
+              OnCheckoutAmountReceived(testing::_, testing::Eq("123")))
+      .Times(1);
+  EXPECT_CALL(*mock_amount_extraction_manager_, OnTimeoutReached()).Times(0);
+  mock_amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  task_environment_.RunUntilIdle();
 }
 
 #endif

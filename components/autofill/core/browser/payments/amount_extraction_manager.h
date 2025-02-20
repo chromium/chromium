@@ -40,6 +40,10 @@ class AmountExtractionManager {
       delete;
   virtual ~AmountExtractionManager();
 
+  // Timeout limit for the amount extraction in millisecond.
+  static constexpr base::TimeDelta kAmountExtractionWaitTime =
+      base::Milliseconds(150);
+
   // This function attempts to convert a string representation of a monetary
   // value in dollars into a uint64_t by parsing it as a double and multiplying
   // the result by 1,000,000. It assumes the input uses a decimal point ('.') as
@@ -62,17 +66,24 @@ class AmountExtractionManager {
 
   void SetSearchRequestPendingForTesting(bool search_request_pending);
 
- private:
-  // Check whether the host of the checkout webpage exists in the amount
-  // extraction allowlists.
-  bool IsUrlEligibleForAmountExtraction() const;
+  bool GetSearchRequestPendingForTesting();
 
   // Invoked after the amount extraction process completes.
   // `extracted_amount` provides the extracted amount upon success and an
   // empty string upon failure. `search_request_start_timestamp` is the time
   // when TriggerCheckoutAmountExtraction is called.
-  void OnCheckoutAmountReceived(base::TimeTicks search_request_start_timestamp,
-                                const std::string& extracted_amount);
+  virtual void OnCheckoutAmountReceived(
+      base::TimeTicks search_request_start_timestamp,
+      const std::string& extracted_amount);
+
+  // Check whether the current amount search has reached the timeout or not. If
+  // so, cancel the ongoing search.
+  virtual void OnTimeoutReached();
+
+ private:
+  // Check whether the host of the checkout webpage exists in the amount
+  // extraction allowlist.
+  bool IsUrlEligibleForAmountExtraction() const;
 
   // Get the driver associated with the main frame as the final checkout amount
   // is on the main frame.
