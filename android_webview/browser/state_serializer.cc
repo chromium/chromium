@@ -117,9 +117,11 @@ bool RestoreFromPickleLegacy_VersionDataUrl(
 
 }  // namespace
 
-std::optional<base::Pickle> WriteToPickle(content::WebContents& web_contents) {
+std::optional<base::Pickle> WriteToPickle(content::WebContents& web_contents,
+                                          size_t max_size,
+                                          bool include_forward_state) {
   NavigationControllerWrapper wrapper(&web_contents.GetController());
-  return internal::WriteToPickle(wrapper);
+  return internal::WriteToPickle(wrapper, max_size, include_forward_state);
 }
 
 bool RestoreFromPickle(base::PickleIterator* iterator,

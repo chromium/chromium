@@ -310,4 +310,7 @@ public class Features {
 
     // Profile.setSpeculativeLoadingConfig
     public static final String SPECULATIVE_LOADING_CONFIG = "SPECULATIVE_LOADING_CONFIG_V2";
+
+    // WebViewCompat.saveState
+    public static final String SAVE_STATE = "SAVE_STATE";
 }

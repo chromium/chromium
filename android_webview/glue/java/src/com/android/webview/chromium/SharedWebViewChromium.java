@@ -4,6 +4,7 @@
 
 package com.android.webview.chromium;
 
+import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
@@ -212,5 +213,16 @@ public class SharedWebViewChromium {
 
     public AwContents getAwContents() {
         return mAwContents;
+    }
+
+    public void saveState(Bundle outState, int maxSize, boolean includeForwardState) {
+        if (checkNeedsPost()) {
+            mRunQueue.runVoidTaskOnUiThreadBlocking(() -> {
+                saveState(outState, maxSize, includeForwardState);
+            });
+            return;
+        }
+
+        mAwContents.saveState(outState, maxSize, includeForwardState);
     }
 }

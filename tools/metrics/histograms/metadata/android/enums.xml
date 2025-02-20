@@ -621,6 +621,7 @@ chromium-metrics-reviews@google.com.
   <int value="117" label="WebStorageCompat.deleteBrowsingData"/>
   <int value="118" label="WebStorageCompat.deleteBrowsingDataForSite"/>
   <int value="119" label="Profile.setSpeculativeLoadingConfig"/>
+  <int value="120" label="WebViewCompat.saveState"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

@@ -28,8 +28,14 @@ class WebContents;
 
 namespace android_webview {
 
-// Write and restore a WebContents to and from a pickle.
-std::optional<base::Pickle> WriteToPickle(content::WebContents& web_contents);
+// Writes the navigation history to a Pickle. If `max_size` is provided, older
+// entries will be dropped to ensure the returned Pickle is within the limit.
+// If `include_forward_state` is false, only entries before the selected entry
+// are saved. This is useful for embedders who only have a Back button (not
+// a Forward one).
+std::optional<base::Pickle> WriteToPickle(content::WebContents& web_contents,
+                                          size_t max_size,
+                                          bool include_forward_state);
 
 // |web_contents| will not be modified if function returns false.
 [[nodiscard]] bool RestoreFromPickle(base::PickleIterator* iterator,
@@ -63,11 +69,6 @@ class NavigationHistorySink {
 // They are broken up for unit testing, and should not be called out side of
 // tests.
 
-// Writes the navigation history to a Pickle. If max_size is provided, older
-// entries will be dropped to ensure the returned Pickle is within the limit.
-// If save_forward_history is false, only entries before the selected entry
-// are saved. This is useful for embedders who only have a Back button (not
-// a Forward one).
 std::optional<base::Pickle> WriteToPickle(
     NavigationHistory& history,
     size_t max_size = std::numeric_limits<size_t>::max(),
