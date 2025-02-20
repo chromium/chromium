@@ -1611,6 +1611,8 @@ svg element a
     property href
     property interestTargetElement
     property nearestViewportElement
+    property rel
+    property relList
     property requiredExtensions
     property systemLanguage
     property target

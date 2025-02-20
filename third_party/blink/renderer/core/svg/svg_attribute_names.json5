@@ -147,6 +147,7 @@
     "radius",
     "refX",
     "refY",
+    "rel",
     "repeatCount",
     "repeatDur",
     "requiredExtensions",

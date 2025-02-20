@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -774,6 +775,20 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
             selected_frame->GetAttributionSrcLoader()) {
       data.impression = attribution_src_loader->PrepareContextMenuNavigation(
           result.AbsoluteLinkURL(), anchor);
+    }
+  }
+
+  if (RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled()) {
+    if (auto* anchor = DynamicTo<SVGAElement>(result.URLElement())) {
+      // TODO(dmangal): Add support for `download` attribute
+
+      // If the anchor wants to suppress the referrer, update the referrerPolicy
+      // accordingly.
+      if (anchor->HasRel(kRelationNoReferrer)) {
+        data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
+      }
+
+      data.link_text = anchor->innerText().Utf8();
     }
   }
 

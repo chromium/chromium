@@ -8231,9 +8231,13 @@ interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
     getter interestTargetElement
+    getter rel
+    getter relList
     getter target
     method constructor
     setter interestTargetElement
+    setter rel
+    setter relList
 interface SVGAngle
     attribute @@toStringTag
     attribute SVG_ANGLETYPE_DEG

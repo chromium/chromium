@@ -4199,6 +4199,10 @@
       base_feature: "none",
     },
     {
+      name: "SvgAnchorElementRelAttributes",
+      status: "experimental",
+    },
+    {
       name: "SvgContextPaint",
       status: "stable",
     },
