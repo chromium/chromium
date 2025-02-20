@@ -449,6 +449,9 @@ class WebAppRegistrar {
   // its scope. This returns false for apps that aren't installed.
   bool CanCaptureLinksInScope(const webapps::AppId& app_id) const;
 
+  // ChromeOS stores the per-app capturing setting in PreferredAppsImpl, not
+  // here.
+#if !BUILDFLAG(IS_CHROMEOS)
   // Returns true if a web app is set to be the default app to
   // capture links by the user. If an app is not locally installed, this returns
   // false.
@@ -476,13 +479,14 @@ class WebAppRegistrar {
   bool AppScopesMatchForUserLinkCapturing(const webapps::AppId& app_id1,
                                           const webapps::AppId& app_id2) const;
 
+  bool IsPreferredAppForCapturingUrl(const GURL& url,
+                                     const webapps::AppId& app_id);
+#endif
+
   // Returns information about apps that controls the input url, i.e. the app's
   // scope is a substring of the url passed to the API.
   base::flat_map<webapps::AppId, std::string> GetAllAppsControllingUrl(
       const GURL& url) const;
-
-  bool IsPreferredAppForCapturingUrl(const GURL& url,
-                                     const webapps::AppId& app_id);
 
   bool IsDiyApp(const webapps::AppId& app_id) const;
 

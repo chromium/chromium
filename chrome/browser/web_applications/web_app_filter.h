@@ -53,7 +53,12 @@ class WebAppFilter {
 
   bool opens_in_browser_tab_ = false;
   bool opens_in_dedicated_window_ = false;
+
+// ChromeOS stores the per-app capturing setting in PreferredAppsImpl, not here.
+#if !defined(IS_CHROMEOS)
   bool captures_links_in_scope_ = false;
+#endif
+
   bool is_isolated_app_ = false;
   bool is_crafted_app_ = false;
   bool is_suggested_app_ = false;
