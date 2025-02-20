@@ -149,6 +149,8 @@ class CONTENT_EXPORT WebContentsViewAura
                            Drop_DropZone_DelegateBlocks);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, StartDragging);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Run);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           DragInProgressFinishesAfterDrop);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Cancelled);
   FRIEND_TEST_ALL_PREFIXES(
       WebContentsViewAuraTest,
