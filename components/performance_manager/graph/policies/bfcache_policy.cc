@@ -15,7 +15,6 @@
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/back_forward_cache.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
@@ -77,12 +76,10 @@ bool PageMightHaveFramesInBFCache(const PageNode* page_node) {
 
 using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
-void MaybeFlushBFCacheOnUIThread(base::WeakPtr<content::WebContents> contents,
-                                 MemoryPressureLevel memory_pressure_level) {
+void MaybeFlushBFCacheImpl(content::WebContents* contents,
+                           MemoryPressureLevel memory_pressure_level) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!contents) {
-    return;
-  }
+  CHECK(contents);
 
   int cache_size = -1;
   bool foregrounded =
@@ -117,10 +114,8 @@ void BFCachePolicy::MaybeFlushBFCache(
     const PageNode* page_node,
     MemoryPressureLevel memory_pressure_level) {
   DCHECK(page_node);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MaybeFlushBFCacheOnUIThread, page_node->GetWebContents(),
-                     memory_pressure_level));
+  MaybeFlushBFCacheImpl(page_node->GetWebContents().get(),
+                        memory_pressure_level);
 }
 
 void BFCachePolicy::OnPassedToGraph(Graph* graph) {
