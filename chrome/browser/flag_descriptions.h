@@ -3293,6 +3293,9 @@ extern const char kUseAngleDescriptionAndroid[];
 extern const char kUseAngleGLES[];
 extern const char kUseAngleVulkan[];
 
+extern const char kAndroidMinimalUiLargeScreenName[];
+extern const char kAndroidMinimalUiLargeScreenDescription[];
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------

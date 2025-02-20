@@ -5633,6 +5633,11 @@ const char kUseAngleDescriptionAndroid[] =
 const char kUseAngleGLES[] = "OpenGL ES";
 const char kUseAngleVulkan[] = "Vulkan";
 
+const char kAndroidMinimalUiLargeScreenName[] =
+    "Enable new minimal ui in desktop windowing";
+const char kAndroidMinimalUiLargeScreenDescription[] =
+    "Display new minimal ui for PWAs on devices that support "
+    "desktop windowing.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------
