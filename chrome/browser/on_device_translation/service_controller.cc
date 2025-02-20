@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-shared.h"
 
 using blink::mojom::CanCreateTranslatorResult;
@@ -157,10 +158,11 @@ void OnDeviceTranslationServiceController::CreateTranslator(
                                       to_be_registered_packs);
 
     if (!to_be_registered_packs.empty()) {
-      if (kTranslationAPILimitLanguagePackCount.Get() &&
-          to_be_registered_packs.size() >
-              GetInstallablePackageCount(
-                  ComponentManager::GetRegisteredLanguagePacks().size())) {
+      if (base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) ||
+          (kTranslationAPILimitLanguagePackCount.Get() &&
+           to_be_registered_packs.size() >
+               GetInstallablePackageCount(
+                   ComponentManager::GetRegisteredLanguagePacks().size()))) {
         RecordLanguagePairUma(
             "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
             source_lang, target_lang);
@@ -315,6 +317,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   }
 
   if (!to_be_registered_packs.empty() &&
+      !base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
       kTranslationAPILimitLanguagePackCount.Get() &&
       to_be_registered_packs.size() >
           GetInstallablePackageCount(
