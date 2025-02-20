@@ -1416,6 +1416,8 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   net::SchemefulSite associated3(GURL("https://associated3.test"));
 
   // The following sets are disjoint iff aaaa.test is on the Public Suffix List.
+  // If aaaa.test is not on the PSL, then two of the sets become singletons and
+  // should be deleted.
   base::Value policy_value = base::JSONReader::Read(R"(
                 {
                 "replacements": [
@@ -1429,7 +1431,6 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                   {
                     "primary": "https://primary2.test",
                     "associatedSites": [
-                      "https://associated2.test",
                       "https://subdomain2.aaaa.test"
                     ]
                   }
@@ -1438,7 +1439,6 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                   {
                     "primary": "https://primary3.test",
                     "associatedSites": [
-                      "https://associated3.test",
                       "https://subdomain3.aaaa.test"
                     ]
                   }
@@ -1451,26 +1451,13 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
           .first.value(),
       FirstPartySetsOverridesPolicy(net::SetsMutation(
           {{
-               {primary1, net::FirstPartySetEntry(
-                              primary1, net::SiteType::kPrimary, std::nullopt)},
-               {associated1,
-                net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                        std::nullopt)},
-           },
-           {
-               {primary2, net::FirstPartySetEntry(
-                              primary2, net::SiteType::kPrimary, std::nullopt)},
-               {associated2,
-                net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
-                                        std::nullopt)},
-           }},
-          {{
-              {primary3, net::FirstPartySetEntry(
-                             primary3, net::SiteType::kPrimary, std::nullopt)},
-              {associated3,
-               net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
+              {primary1, net::FirstPartySetEntry(
+                             primary1, net::SiteType::kPrimary, std::nullopt)},
+              {associated1,
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
                                        std::nullopt)},
-          }})));
+          }},
+          {})));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .second,
