@@ -338,14 +338,14 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
 
       // Step 2 in V1: Status area.
       If([&] { return !ash::features::IsWelcomeTourV3Enabled(); },
-         InAnyContext(
+         Then(InAnyContext(
              Steps(WaitForHelpBubble(),
                    CheckHelpBubbleAnchor(ash::kUnifiedSystemTrayElementId),
                    CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
                        IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)),
                    CheckHelpBubbleDefaultButtonFocus(true),
                    CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                   PressHelpBubbleDefaultButton()))),
+                   PressHelpBubbleDefaultButton())))),
 
       // Step 3 in V1 and step 2 in V3: Home button.
       InAnyContext(WaitForHelpBubble()),
@@ -373,14 +373,14 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
 
       // Step 4 in V3: Files app.
       If([&] { return ash::features::IsWelcomeTourV3Enabled(); },
-         InAnyContext(
+         Then(InAnyContext(
              Steps(WaitForHelpBubble(), CheckAppListBubbleVisibility(true),
                    CheckHelpBubbleAnchor(ash::kFilesAppElementId),
                    CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
                        IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT)),
                    CheckHelpBubbleDefaultButtonFocus(true),
                    CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                   PressHelpBubbleDefaultButton()))),
+                   PressHelpBubbleDefaultButton())))),
 
       // Step 5: Settings app.
       InAnyContext(WaitForHelpBubble()),

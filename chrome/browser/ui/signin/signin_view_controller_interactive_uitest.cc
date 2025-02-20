@@ -222,20 +222,21 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
 
           // Verify that the correct action was selected in confirming the
           // dialog.
-          Steps(WaitForEvent(kConstrainedDialogWebViewElementId,
-                             kEmailConfirmationCompleted),
-                CheckResult([&] { return chosen_action; },
-                            SigninEmailConfirmationDialog::CREATE_NEW_USER)),
+          RunSubsequence(
+              WaitForEvent(kConstrainedDialogWebViewElementId,
+                           kEmailConfirmationCompleted),
+              CheckResult([&] { return chosen_action; },
+                          SigninEmailConfirmationDialog::CREATE_NEW_USER)),
 
           // Verify that the dialog closes correctly.
-          Steps(WaitForHide(kConstrainedDialogWebViewElementId),
-                CheckResult(
-                    [&] {
-                      return browser()
-                          ->signin_view_controller()
-                          ->ShowsModalDialog();
-                    },
-                    false))));
+          RunSubsequence(WaitForHide(kConstrainedDialogWebViewElementId),
+                         CheckResult(
+                             [&] {
+                               return browser()
+                                   ->signin_view_controller()
+                                   ->ShowsModalDialog();
+                             },
+                             false))));
 }
 
 // Tests that the confirm button is focused by default in the signin error

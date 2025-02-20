@@ -863,8 +863,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
             return SyncButtonsFeatureConfig() !=
                    SyncButtonsFeatureConfig::kButtonsStillLoading;
           },
-          /* then_steps= */ Steps(
-              WaitForButtonVisible(kWebContentsId, kOptInSyncButton))),
+          Then(WaitForButtonVisible(kWebContentsId, kOptInSyncButton))),
 
       // Click "Settings" to proceed to the browser.
       EnsurePresent(kWebContentsId, kSettingsButton),

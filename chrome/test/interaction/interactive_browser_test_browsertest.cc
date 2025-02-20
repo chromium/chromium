@@ -832,9 +832,9 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
 
   RunTestSequence(
       InstrumentTab(kTabId),
-      InParallel(Steps(NavigateWebContents(kTabId, url1),
-                       NavigateWebContents(kTabId, url2)),
-                 WaitForStateChange(kTabId, state_change)));
+      InParallel(RunSubsequence(NavigateWebContents(kTabId, url1),
+                                NavigateWebContents(kTabId, url2)),
+                 RunSubsequence(WaitForStateChange(kTabId, state_change))));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
@@ -853,9 +853,9 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
 
   RunTestSequence(
       InstrumentTab(kTabId),
-      InParallel(Steps(NavigateWebContents(kTabId, url1),
-                       NavigateWebContents(kTabId, url2)),
-                 WaitForStateChange(kTabId, state_change)));
+      InParallel(RunSubsequence(NavigateWebContents(kTabId, url1),
+                                NavigateWebContents(kTabId, url2)),
+                 RunSubsequence(WaitForStateChange(kTabId, state_change))));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,

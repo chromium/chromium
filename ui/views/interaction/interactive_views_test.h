@@ -371,33 +371,28 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // As IfElement(), but `condition` takes a single argument that is a const
   // View pointer. If `element` is not a view of type V, then the test will
   // fail.
-  template <typename C,
-            typename T,
-            typename U = MultiStep,
-            typename V = internal::ViewArgType<0, C>>
+  template <typename C, typename V = internal::ViewArgType<0, C>>
     requires ui::test::internal::HasSignature<
         C,
         bool(const V*)>  // NOLINT(readability/casting)
   [[nodiscard]] static StepBuilder IfView(ElementSpecifier element,
                                           C&& condition,
-                                          T&& then_steps,
-                                          U&& else_steps = MultiStep());
+                                          ThenBlock then_steps,
+                                          ElseBlock else_steps = Else());
 
   // As IfElementMatches(), but `function` takes a single argument that is a
   // const View pointer. If `element` is not a view of type V, then the test
   // will fail.
   template <typename F,
             typename M,
-            typename T,
-            typename U = MultiStep,
             typename R = ui::test::internal::ReturnTypeOf<F>,
             typename V = internal::ViewArgType<0, F>>
     requires ui::test::internal::HasSignature<F, R(const V*)>
   [[nodiscard]] static StepBuilder IfViewMatches(ElementSpecifier element,
                                                  F&& function,
                                                  M&& matcher,
-                                                 T&& then_steps,
-                                                 U&& else_steps = MultiStep());
+                                                 ThenBlock then_steps,
+                                                 ElseBlock else_steps = Else());
 
   // Executes `then_steps` if `property` of the view `element` (which must be of
   // the correct View type) matches `matcher`, otherwise executes `else_steps`.
@@ -405,18 +400,14 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // Note that bare literal strings cannot be passed as `matcher` for properties
   // with string values, you will need to either explicitly pass a
   // std::[u16]string or explicitly construct a testing::Eq matcher.
-  template <typename R,
-            typename M,
-            typename V,
-            typename T,
-            typename U = MultiStep>
+  template <typename R, typename M, typename V>
     requires internal::IsView<V>
   [[nodiscard]] static StepBuilder IfViewPropertyMatches(
       ElementSpecifier element,
       R (V::*property)() const,
       M&& matcher,
-      T&& then_steps,
-      U&& else_steps = MultiStep());
+      ThenBlock then_steps,
+      ElseBlock else_steps = Else());
 
   // Sets the context widget. Must be called before RunTestSequence() or any of
   // the mouse functions.
@@ -596,15 +587,15 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::WithView(
 }
 
 // static
-template <typename C, typename T, typename U, typename V>
+template <typename C, typename V>
   requires ui::test::internal::HasSignature<
       C,
       bool(const V*)>  // NOLINT(readability/casting)
 ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfView(
     ElementSpecifier element,
     C&& condition,
-    T&& then_steps,
-    U&& else_steps) {
+    ThenBlock then_steps,
+    ElseBlock else_steps) {
   return std::move(
       IfElement(element,
                 base::BindOnce(
@@ -615,24 +606,19 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfView(
                       return std::move(condition).Run(view);
                     },
                     ui::test::internal::MaybeBind(std::forward<C>(condition))),
-                std::forward<T>(then_steps), std::forward<U>(else_steps))
+                std::move(then_steps), std::move(else_steps))
           .SetDescription("IfView()"));
 }
 
 // static
-template <typename F,
-          typename M,
-          typename T,
-          typename U,
-          typename R,
-          typename V>
+template <typename F, typename M, typename R, typename V>
   requires ui::test::internal::HasSignature<F, R(const V*)>
 ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfViewMatches(
     ElementSpecifier element,
     F&& function,
     M&& matcher,
-    T&& then_steps,
-    U&& else_steps) {
+    ThenBlock then_steps,
+    ElseBlock else_steps) {
   return std::move(
       IfElementMatches(
           element,
@@ -646,29 +632,29 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfViewMatches(
               ui::test::internal::MaybeBind(std::forward<F>(function))),
           testing::Matcher<ui::test::internal::MatcherTypeFor<R>>(
               std::forward<M>(matcher)),
-          std::forward<T>(then_steps), std::forward<U>(else_steps))
+          std::move(then_steps), std::move(else_steps))
           .SetDescription("IfViewMatches()"));
 }
 
 // static
-template <typename R, typename M, typename V, typename T, typename U>
+template <typename R, typename M, typename V>
   requires internal::IsView<V>
 ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::IfViewPropertyMatches(ElementSpecifier element,
                                                R (V::*property)() const,
                                                M&& matcher,
-                                               T&& then_steps,
-                                               U&& else_steps) {
+                                               ThenBlock then_steps,
+                                               ElseBlock else_steps) {
   using Return = std::remove_cvref_t<R>;
   base::OnceCallback<Return(const V*)> function = base::BindOnce(
       [](R (V::*property)() const, const V* view) -> Return {
         return (view->*property)();
       },
       std::move(property));
-  return std::move(
-      IfViewMatches(element, std::move(function), std::forward<M>(matcher),
-                    std::forward<T>(then_steps), std::forward<U>(else_steps))
-          .SetDescription("IfViewPropertyMatches()"));
+  return std::move(IfViewMatches(element, std::move(function),
+                                 std::forward<M>(matcher),
+                                 std::move(then_steps), std::move(else_steps))
+                       .SetDescription("IfViewPropertyMatches()"));
 }
 
 // static

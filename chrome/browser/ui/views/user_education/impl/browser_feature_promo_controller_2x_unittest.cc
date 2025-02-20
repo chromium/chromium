@@ -2560,9 +2560,9 @@ TEST_P(BrowserFeaturePromoController2xPriorityTest,
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
 
       CheckPromoStatus(kSnoozeIPHFeature, FeaturePromoStatus::kBubbleShowing),
-      InParallel(
-          MaybeShowPromo(kLegalNoticeFeature),
-          WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting, true)),
+      InParallel(RunSubsequence(MaybeShowPromo(kLegalNoticeFeature)),
+                 RunSubsequence(WaitForShow(
+                     HelpBubbleView::kHelpBubbleElementIdForTesting, true))),
 
       CheckPromoStatus(kLegalNoticeFeature, FeaturePromoStatus::kBubbleShowing),
       CheckPromoStatus(kSnoozeIPHFeature, FeaturePromoStatus::kNotRunning),
