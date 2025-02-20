@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -42,7 +43,20 @@ void KioskIwaLauncher::Initialize() {
 void KioskIwaLauncher::ContinueWithNetworkReady() {
   KioskWebAppLauncherBase::ContinueWithNetworkReady();
   KioskIwaManager::Get()->StartObservingAppUpdate(profile(), account_id());
-  InstallIsolatedWebApp();
+
+  if (IsIsolatedWebAppInstalled()) {
+    NotifyAppPrepared();
+  } else {
+    InstallIsolatedWebApp();
+  }
+}
+
+bool KioskIwaLauncher::IsIsolatedWebAppInstalled() const {
+  const web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile());
+  const web_app::WebAppRegistrar& web_app_registrar =
+      CHECK_DEREF(provider).registrar_unsafe();
+  return web_app_registrar.GetInstallState(iwa_data().app_id()).has_value();
 }
 
 void KioskIwaLauncher::InstallIsolatedWebApp() {
@@ -76,22 +90,14 @@ void KioskIwaLauncher::OnInstallComplete(web_app::IwaInstallerResult result) {
 }
 
 void KioskIwaLauncher::CheckAppInstallState() {
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile());
-  CHECK(provider);
-  auto& web_app_registrar = provider->registrar_unsafe();
-
-  // TODO(crbug.com/372848695): is "kKioskWebAppOfflineEnabled" needed for IWA?
-  if (!web_app_registrar.IsInstallState(
-          iwa_data().app_id(),
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
-    delegate_->InitializeNetwork();
+  const bool offlineLaunchAllowed =
+      profile()->GetPrefs()->GetBoolean(::prefs::kKioskWebAppOfflineEnabled);
+  if (IsIsolatedWebAppInstalled() && offlineLaunchAllowed) {
+    NotifyAppPrepared();
     return;
   }
 
-  NotifyAppPrepared();
+  delegate_->InitializeNetwork();
 }
 
 const webapps::AppId& KioskIwaLauncher::GetInstalledWebAppId() {
