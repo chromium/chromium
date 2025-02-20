@@ -13,6 +13,9 @@
 <translation id="3512634283363927263">Šie puslapiai skirti naudoti „Chrome“ kūrėjams ir gali nebūti aktyviai tvarkomi ar išbandomi. Jei norite juos įgalinti, eikite adresu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, spustelėkite mygtuką, kad įgalintumėte derinimo puslapius, ir tada grįžkite į šį puslapį.</translation>
 <translation id="3875312571075912821">Leiskite „Chrome“ pasiekti tinklą užkardos arba antivirusinės
           programos nustatymuose.</translation>
+<translation id="4949828774841497663">Eikite į skiltį „Programos“ &gt; „Sistemos nustatymai“ &gt; „Tinklas“, pasirinkite
+          aktyvų tinklą, spustelėkite mygtuką „Išsami informacija...“ ir panaikinkite visų tarpinių serverių,
+          kurie galėjo būti pasirinkti, pasirinkimą.</translation>
 <translation id="5005121315113832363">Šį puslapį užblokavo „Chrome“</translation>
 <translation id="6011049234605203654">Eikite į
           „Chrome“ meniu &gt;

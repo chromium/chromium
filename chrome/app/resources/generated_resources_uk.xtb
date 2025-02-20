@@ -1291,7 +1291,6 @@
 <translation id="1875387611427697908">Можна додавати лише із сайту <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Мітка (необов'язково)</translation>
 <translation id="1877377730633446520">Для цього знадобиться приблизно <ph name="REQUIRED_SPACE" />. Зараз доступно <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">Не вдалось отримати маркер автентифікації. Щоб повторити спробу, вийдіть і знову ввійдіть в обліковий запис.</translation>
 <translation id="1877860345998737529">Призначення перемикача для дії</translation>
 <translation id="1878155070920054810">Пристрій Chromebook може розрядитись до того, як завершиться оновлення. Підключіть його до живлення, щоб уникнути переривання процесу.</translation>
 <translation id="1878477879455105085">Відкрито</translation>
@@ -7012,7 +7011,6 @@
 <translation id="5951624318208955736">Монітор</translation>
 <translation id="5952020381407136867">сенсорна панель</translation>
 <translation id="5953211687820750364">До цього списку застосовуються правила <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Термін дії пароля минув. Щоб змінити пароль, вийдіть і знову ввійдіть в обліковий запис.</translation>
 <translation id="5955304353782037793">додаток</translation>
 <translation id="5955721306465922729">Веб-сайт просить дозвіл відкрити цей додаток.</translation>
 <translation id="5955809630138889698">Цей пристрій доступний лише для демо-режиму онлайн. Щоб дізнатися більше, зв’яжіться з представником служби підтримки.</translation>
@@ -9722,7 +9720,6 @@
 <translation id="7910725946105920830">Використовувати особистий обліковий запис Google</translation>
 <translation id="7910768399700579500">&amp;Нова папка</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Ваш пароль змінено на сервері. Вийдіть і знову ввійдіть в обліковий запис.</translation>
 <translation id="791247712619243506">Скасувати налаштування</translation>
 <translation id="7912974581251770345">Переклад</translation>
 <translation id="7914399737746719723">Додаток установлено</translation>

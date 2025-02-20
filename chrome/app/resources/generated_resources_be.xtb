@@ -1281,7 +1281,6 @@
 <translation id="1875387611427697908">Гэта можна дадаць толькі з <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Метка (неабавязкова)</translation>
 <translation id="1877377730633446520">У гэтым выпадку будзе выкарыстоўвацца прыкладна <ph name="REQUIRED_SPACE" />. Цяпер у вас свабодна <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">Не ўдалося атрымаць маркер аўтэнтыфікацыі. Выйдзіце і ўвайдзіце зноў, каб паўтарыць спробу.</translation>
 <translation id="1877860345998737529">Прызначэнне дзеянняў пераключальнікам</translation>
 <translation id="1878155070920054810">Chromebook можа разрадзіцца да таго, як абнаўленне завершыцца. Каб спампоўванне не перапынілася, упэўніцеся, што прылада зараджаецца належным чынам.</translation>
 <translation id="1878477879455105085">Адкрытая</translation>
@@ -6999,7 +6998,6 @@
 <translation id="5952020381407136867">сэнсарная панэль</translation>
 <translation id="5953211687820750364">На гэты спіс распаўсюджваюцца наступныя палітыкі: <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           і <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">Тэрмін дзеяння пароля скончыўся. Для змянення пароля выйдзіце і зноў увайдзіце ва ўліковы запіс.</translation>
 <translation id="5955304353782037793">праграма</translation>
 <translation id="5955721306465922729">Вэб-сайт запытвае адкрыццё гэтай праграмы.</translation>
 <translation id="5955809630138889698">Магчыма, прылада можа выкарыстоўвацца толькі для дэманстрацыйнага інтэрнэт-рэжыму. Па дадатковыя звесткі звярніцеся да гандлёвага прадстаўніка.</translation>
@@ -9709,7 +9707,6 @@
 <translation id="7910725946105920830">Выкарыстаць асабісты Уліковы запіс Google</translation>
 <translation id="7910768399700579500">&amp;Новая папка</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Ваш пароль зменены на серверы. Выйдзіце і зноў увайдзіце ва ўліковы запіс.</translation>
 <translation id="791247712619243506">Скасаваць наладжванне</translation>
 <translation id="7912974581251770345">Пераклад</translation>
 <translation id="7914399737746719723">Праграма ўсталявана</translation>

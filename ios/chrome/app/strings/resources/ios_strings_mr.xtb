@@ -975,6 +975,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> हे <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात.</translation>
 <translation id="5242899254250321823">वेबसाइटवर पासवर्ड बदला</translation>
 <translation id="5248640482715684545">ही साइट दुसरे अ‍ॅप्लिकेशन उघडण्याचा प्रयत्न करत आहे.</translation>
+<translation id="5250371859659394278">अज्ञात स्रोताकडून</translation>
 <translation id="5271265092610673171">{count,plural, =1{भरणे आवश्यक असलेले फील्ड रिकामे आहे. सेव्ह करण्याआधी भरा.}other{भरणे आवश्यक असलेली फील्ड रिकामी आहेत. सेव्ह करण्याआधी ती भरा.}}</translation>
 <translation id="5271549068863921519">पासवर्ड सेव्ह करा</translation>
 <translation id="5279214046729249716">होय, तो वेगळा ठेवा</translation>
@@ -1405,7 +1406,6 @@
 <translation id="7015418667643980944">विभाजित दृश्य</translation>
 <translation id="7016070607649558507">तुमच्याकडे १ कमकुवत पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.</translation>
 <translation id="7016958933495968912">Discover फीडसाठी पर्याय</translation>
-<translation id="7026724612456523899">पॅकेजचा नेहमी माग ठेवा</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7035825883570480307">नोटिफिकेशन सुरू करायची आहेत का?</translation>
 <translation id="7039345315346323556">अलीकडील</translation>

@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium protege tus datos sensibles con Face ID.</translation>
 <translation id="1591119736686995611">Abre la cuadrícula de pestañas de Chromium.</translation>
 <translation id="16001233025397167">La Verificación de seguridad te protege de violaciones de la seguridad de los datos, sitios web inseguros y mucho más. Recibe alertas sobre cualquier problema de privacidad o seguridad que Chromium detecte.</translation>
-<translation id="1611584326765829247">Permite que Chromium te ayude a realizar el seguimiento de tus paquetes</translation>
 <translation id="1617663976202781617">Datos de la sincronización de Chromium</translation>
 <translation id="164952285225495380">Ya se realizó un seguimiento de este paquete en Chromium.</translation>
 <translation id="1707458603865303524">Usa Chromium cada vez que presiones vínculos en mensajes o demás apps.</translation>
@@ -306,7 +305,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8826789549860004832">Continúa configurando tu navegador para aprovechar Chromium al máximo.</translation>
 <translation id="88376265765385899">Abre los favoritos de Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs en Chromium en modo Incógnito</translation>
-<translation id="8866191443434488382">Chromium detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. El número de seguimiento del paquete y el nombre del sitio web se enviarán a Chromium para proporcionar esta función y mejorar las funciones de compras para todos los usuarios. Puedes actualizar esta opción en cualquier momento en la <ph name="BEGIN_LINK" />configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Tu organización requiere que accedas para usar Chromium. <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Obtén la seguridad más sólida de Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos.}}</translation>

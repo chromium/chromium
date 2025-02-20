@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium protège vos données sensibles avec Face ID.</translation>
 <translation id="1591119736686995611">Ouvre la grille d'onglets de Chromium.</translation>
 <translation id="16001233025397167">Le contrôle de sécurité vous protège contre les violations de données, les sites Web dangereux et plus encore. Recevez des alertes concernant les problèmes de confidentialité ou de sécurité que Chromium détecte pour vous.</translation>
-<translation id="1611584326765829247">Laisser Chromium vous aider à suivre vos colis</translation>
 <translation id="1617663976202781617">Données issues de la synchronisation Chromium</translation>
 <translation id="164952285225495380">Ce colis a déjà fait l'objet d'un suivi dans Chromium.</translation>
 <translation id="1707458603865303524">Utiliser Chromium chaque fois que vous appuyez sur un lien dans un message ou une autre appli.</translation>
@@ -306,7 +305,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="8826789549860004832">Profitez pleinement de Chromium en continuant à configurer votre navigateur.</translation>
 <translation id="88376265765385899">Ouvre les favoris Chromium.</translation>
 <translation id="8860548555286245440">Ouvrir les URL dans Chromium en navigation privée</translation>
-<translation id="8866191443434488382">Chromium détectera le numéro de suivi sur les sites que vous consulterez et vous présentera les notifications concernant les colis sur la page "Nouvel onglet". Le numéro de suivi du colis et le nom du site Web seront envoyés à Chromium afin de fournir cette fonctionnalité et d'améliorer les fonctionnalités de shopping pour tous. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Votre organisation exige que vous vous connectiez pour utiliser Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Renforcez la sécurité de Chromium</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minute}one{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minute}other{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minutes}}</translation>

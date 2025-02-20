@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium pitää arkaluontoiset tietosi turvassa Face ID:n avulla.</translation>
 <translation id="1591119736686995611">Avaa Chromiumin välilehtiruudukon.</translation>
 <translation id="16001233025397167">Turvatarkistus suojaa sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Saat ilmoituksia kaikista yksityisyys- tai tietoturvaongelmista, jotka Chromium havaitsee puolestasi.</translation>
-<translation id="1611584326765829247">Anna Chromiumin auttaa pakettien seuraamisessa</translation>
 <translation id="1617663976202781617">Chromiumin synkronointidata</translation>
 <translation id="164952285225495380">Tätä pakettia seurataan jo Chromiumissa.</translation>
 <translation id="1707458603865303524">Käytä Chromiumia, kun napautat linkkejä viesteissä tai muissa sovelluksissa.</translation>
@@ -306,7 +305,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8826789549860004832">Saat parhaan hyödyn Chromiumista jatkamalla selaimen käyttöönottoa.</translation>
 <translation id="88376265765385899">Avaa Chromium-kirjanmerkit.</translation>
 <translation id="8860548555286245440">Avaa URL-osoitteet Chromiumin incognito-tilassa</translation>
-<translation id="8866191443434488382">Chromium tunnistaa seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Paketin seurantanumero ja verkkosivuston nimi lähetetään Chromiumille tämän ominaisuuden tarjoamista ja ostosominaisuuksien parantamista varten. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />lähetyksen seuranta-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromiumia. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Ota Chromiumin tehokkain suojaus käyttöön</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin.}}</translation>

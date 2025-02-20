@@ -196,7 +196,7 @@
 <translation id="1129348283834595293">კიბერპანკი</translation>
 <translation id="1129420403709586868">ნახეთ თქვენი ტელეფონის ფოტოები და მედია</translation>
 <translation id="1129850422003387628">აპების მართვა</translation>
-<translation id="1130430615924359526">{0,plural, =1{ინკოგნიტო ფანჯრის დახურვა}other{ინკოგნიტო ფანჯრების დახურვა (# ფანჯარა)}}</translation>
+<translation id="1130430615924359526">{0,plural, =1{ინკოგნიტო ფანჯრის დახურვა}other{ინკოგნიტო ფანჯრის დახურვა (# ფანჯარა)}}</translation>
 <translation id="113050636487300043">აირჩიეთ სახელი და ფერთა თემა, პროფილები რომ განასხვავოთ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> — ჯგუფის „<ph name="GROUP_NAME" />“ ნაწილი</translation>
 <translation id="1130676589211693127">მარჯვენა ბატარეის დონეა <ph name="PERCENTAGE" />%.</translation>
@@ -1278,7 +1278,6 @@
 <translation id="1875387611427697908">ამის დამატება შესაძლებელია მხოლოდ <ph name="CHROME_WEB_STORE" />-დან</translation>
 <translation id="1877377290348678128">ლეიბლი (არასავალდებულო)</translation>
 <translation id="1877377730633446520">აღნიშნულს დასჭირდება დაახლოებით <ph name="REQUIRED_SPACE" />. ამჟამად გაქვთ <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">ავტორიზაციის ჟეტონის მიღება ვერ მოხერხდა. ხელახლა საცდელად, გთხოვთ, გახვიდეთ და ხელახლა შეხვიდეთ სისტემაში.</translation>
 <translation id="1877860345998737529">გადამრთველებისთვის ქმედებების მინიჭება</translation>
 <translation id="1878155070920054810">როგორც ჩანს, განახლების დასრულებამდე Chromebook-ის ბატარეა ამოიწურება. თავიდან ასაცილებლად დარწმუნდით, რომ ის სწორად იტენება.</translation>
 <translation id="1878477879455105085">გახსნილი</translation>
@@ -1515,7 +1514,7 @@
 <translation id="2042279886444479655">აქტიური პროფილები</translation>
 <translation id="2042427131767688936">ამ მოწყობილობის უსაფრთხო გამოყენების უზრუნველსაყოფად თქვენს ორგანიზაციას, შესაძლოა, დასჭირდეს ინფორმაციის ნახვა მისი ოპერაციული სისტემის, ბრაუზერისა და პარამეტრების, ასევე, მოწყობილობაზე დაინსტალირებული პროგრამული უზრუნველყოფის შესახებ.</translation>
 <translation id="2044014337866019681">სესიის განსაბლოკად დარწმუნდით, რომ <ph name="ACCOUNT" />-ის დადასტურებას ცდილობთ.</translation>
-<translation id="2044750031738659219">{0,plural, =1{სტუმრის ფანჯრის დახურვა}other{სტუმრის ფანჯრების დახურვა (# ფანჯარა)}}</translation>
+<translation id="2044750031738659219">{0,plural, =1{სტუმრის ფანჯრის დახურვა}other{სტუმრის ფანჯრის დახურვა (# ფანჯარა)}}</translation>
 <translation id="204497730941176055">Microsoft-ის სერტიფიკატის შაბლონის სახელი</translation>
 <translation id="2045211794962848221">ამ კონკრეტულ შეტყობინებას აღარ დაინახავთ</translation>
 <translation id="2045838962742066664">შემოკლებული აკრეფა</translation>
@@ -7001,7 +7000,6 @@
 <translation id="5952020381407136867">სენსორული პანელი</translation>
 <translation id="5953211687820750364">ამ სიაზე აისახება <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           და <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
-<translation id="5955282598396714173">თქვენი პაროლის მოქმედების ვადა ამოიწურა. მის შესაცვლელად გადით და ხელახლა შედით სისტემაში.</translation>
 <translation id="5955304353782037793">პროგრამა</translation>
 <translation id="5955721306465922729">ვებსაიტი ითხოვს ამ აპლიკაციის გახსნას.</translation>
 <translation id="5955809630138889698">შესაძლოა ეს მოწყობილობა შესაფერისი იყოს მხოლოდ ონლაინ დემო-რეჟიმისთვის. დეტალური ინფორმაციისთვის დაუკავშირდეთ მხარდაჭერის გუნდის წარმომადგენელს.</translation>
@@ -9704,7 +9702,6 @@
 <translation id="7910725946105920830">თქვენი პირადი Google ანგარიშის გამოყენება</translation>
 <translation id="7910768399700579500">&amp;ახალი საქაღალდე</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">თქვენი პაროლი შეიცვალა სერვერზე. გთხოვთ, გახვიდეთ და ხელახლა შეხვიდეთ სისტემაში.</translation>
 <translation id="791247712619243506">დაყენების გაუქმება</translation>
 <translation id="7912974581251770345">თარგმნა</translation>
 <translation id="7914399737746719723">აპი დაინსტალირებულია</translation>

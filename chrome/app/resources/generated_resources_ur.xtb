@@ -1278,7 +1278,6 @@
 <translation id="1875387611427697908">اس کو صرف <ph name="CHROME_WEB_STORE" /> سے شامل کیا جا سکتا ہے</translation>
 <translation id="1877377290348678128">لیبل (اختیاری)</translation>
 <translation id="1877377730633446520">اس میں تقریباً <ph name="REQUIRED_SPACE" /> کا استعمال ہوگا۔ فی الحال آپ کے پاس <ph name="FREE_SPACE" /> دستیاب ہے۔</translation>
-<translation id="1877520246462554164">تصدیقی ٹوکن حاصل نہیں ہو سکا۔ براہ کرم سائن آؤٹ کر کے دوبارہ کوشش کرنے کیلئے پھر سے  سائن ان کریں۔</translation>
 <translation id="1877860345998737529">سوئچ کی کارروائی کی تفویض</translation>
 <translation id="1878155070920054810">‏ایسا لگتا ہے کہ اپ ڈیٹ مکمل ہونے سے پہلے آپ کے Chromebook کی پاور ختم ہو جائے گی۔ یقینی بنائیں کہ مداخلت سے بچنے کے لئے یہ درست طریقے سے چارج کر رہا ہے۔</translation>
 <translation id="1878477879455105085">کھلا ہے</translation>
@@ -6998,7 +6997,6 @@
 <translation id="5952020381407136867">ٹچ پیڈ</translation>
 <translation id="5953211687820750364">‏یہ فہرست <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           اور <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> سے متاثر ہے</translation>
-<translation id="5955282598396714173">آپ کے پاس ورڈ کی میعاد ختم ہو گئی ہے۔ براہ کرم اس کو تبدیل کرنے کیلئے سائن آؤٹ کر کے دوبارہ سائن ان کریں۔</translation>
 <translation id="5955304353782037793">ایپ</translation>
 <translation id="5955721306465922729">ایک ویب سائٹ یہ ایپلیکیشن کھولنا چاہتی ہے۔</translation>
 <translation id="5955809630138889698">ہو سکتا ہے کہ یہ آلہ صرف آن لائن ڈیمو موڈ کیلئے ہی اہل ہو۔ براہ کرم مزید تفصیلات کیلئے اپنے معاون نمائندے سے رابطہ کریں۔</translation>
@@ -9702,7 +9700,6 @@
 <translation id="7910725946105920830">‏اپنا ذاتی Google اکاؤنٹ استعمال کریں</translation>
 <translation id="7910768399700579500">&amp;نیا فولڈر</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">سرور پر آپ کا پاس ورڈ تبدیل ہو گیا ہے۔ براہ کرم سائن آؤٹ کر کے پھر دوبارہ سائن ان کریں۔</translation>
 <translation id="791247712619243506">سیٹ اپ منسوخ کریں</translation>
 <translation id="7912974581251770345">ترجمہ</translation>
 <translation id="7914399737746719723">ایپ انسٹال ہو گئی</translation>

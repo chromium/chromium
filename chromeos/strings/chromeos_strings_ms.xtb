@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">Menu tindakan reka letak</translation>
 <translation id="3227186760713762082">Bahagikan nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
+<translation id="3248791727258378769">Tiada transkrip akan dibuat</translation>
 <translation id="324961752321393509">Pentadbir anda tidak membenarkan apl ini ditutup</translation>
 <translation id="3263941347294171263">Cabut dan palamkan semula <ph name="DEVICE_NAME" /> untuk meneruskan proses kemaskinian</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">Matikan penyelamat skrin</translation>
 <translation id="4210636113897977670">Simpan dan keluar</translation>
 <translation id="4210659479607886331">sungai glasier</translation>
+<translation id="4212169537710712814">Muat turun model transkripsi <ph name="LANGUAGE_NAME" /> selesai</translation>
 <translation id="42126664696688958">Eksport</translation>
 <translation id="4213104098953699324">Papan kekunci USB</translation>
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">Warna</translation>
 <translation id="5457599981699367932">Semak Imbas sebagai Tetamu</translation>
 <translation id="54609108002486618">Diuruskan</translation>
+<translation id="5461608756903394951">Muat turun model transkripsi <ph name="LANGUAGE_NAME" /> sedang berlangsung</translation>
 <translation id="5470776029649730099">burlap</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} percubaan lagi}other{{0} percubaan lagi}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">Hidupkan transkripsi dan muat turun model transkripsi?</translation>
 <translation id="6596816719288285829">Alamat IP</translation>
 <translation id="6599673642868607614">Terima kasih atas maklum balas anda. Maklum balas anda membantu kami meningkatkan pengalaman Chromebook dan akan disemak oleh pasukan kami. Oleh sebab kami menerima jumlah laporan yang banyak, kami tidak akan dapat menghantar balasan.</translation>
+<translation id="6608043585557830684">Transkripsi dimatikan. Hidupkan transkripsi dalam Tetapan atau dalam menu <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Kekunci tetikus</translation>
 <translation id="6618744767048954150">Berjalan</translation>
 <translation id="6620487321149975369">Tugas cetak akan dipaparkan dalam sejarah melainkan dialih keluar secara manual</translation>

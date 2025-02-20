@@ -176,6 +176,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1546492247443594934">Biurko 2</translation>
 <translation id="1546930421365146760">Poproś administratora o skonfigurowanie tego urządzenia w konsoli administracyjnej Google</translation>
 <translation id="1549512626801247439">zarządzanie pamięcią</translation>
+<translation id="1549721333775633305">Pokaż ustawienia szybkiego udostępniania. Szybkie udostępnianie wyłączone</translation>
 <translation id="1550406609415860283">Dostępne urządzenia</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
 <translation id="1555130319947370107">Niebieski</translation>
@@ -1474,6 +1475,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5856638668464565213">Sieć <ph name="NETWORK_NAME" /> nie została aktywowana.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
+<translation id="5864691701242730005">Pokaż ustawienia szybkiego udostępniania. Wybrano widoczność: <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Zbieram informacje o sieci</translation>
 <translation id="5867606971598166637">Administrator systemu monitoruje Twoje ekrany</translation>
@@ -2261,6 +2263,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="851660987304951246">Użyj funkcji Pomóż mi czytać, aby szybko podsumować treść lub zadać pytania</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> nie może się ładować, gdy jest włączony.</translation>
 <translation id="8535393432370007982">Cofnij sortowanie według koloru</translation>
+<translation id="8536886494750559755">Pokaż ustawienia szybkiego udostępniania. Widoczne dla wszystkich przez <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Tekst został skopiowany do schowka</translation>
 <translation id="8541078764854166027">Kadrowanie</translation>
 <translation id="8542053257095774575">Nie ma zapisanych biurek ani szablonów</translation>

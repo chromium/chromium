@@ -30,7 +30,6 @@
 <translation id="159029779861043703">Chromium memastikan data sensitif anda selamat dengan Face ID.</translation>
 <translation id="1591119736686995611">Membuka Tab Grid Chromium.</translation>
 <translation id="16001233025397167">Semakan Keselamatan memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi. Terima makluman tentang sebarang masalah privasi atau keselamatan yang dikesan oleh Chromium untuk anda.</translation>
-<translation id="1611584326765829247">Benarkan Chromium membantu anda menjejaki bungkusan anda</translation>
 <translation id="1617663976202781617">Data daripada penyegerakan Chromium</translation>
 <translation id="164952285225495380">Pakej ini sudah dijejaki pada Chromium.</translation>
 <translation id="1707458603865303524">Gunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej dan apl lain.</translation>
@@ -306,7 +305,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="8826789549860004832">Manfaatkan Chromium sepenuhnya dengan meneruskan persediaan penyemak imbas anda.</translation>
 <translation id="88376265765385899">Membuka penanda halaman Chromium.</translation>
 <translation id="8860548555286245440">Buka URL pada Chromium dalam Inkognito</translation>
-<translation id="8866191443434488382">Chromium akan mengesan nombor penjejakan pada laman yang anda lawati dan menunjukkan kepada anda kemaskinian pakej pada halaman Tab Baharu. Nombor penjejakan bungkusan dan nama laman web akan dihantar kepada Chromium untuk menyediakan ciri ini dan untuk meningkatkan ciri beli-belah untuk semua. Anda boleh mengemaskinikan tetapan ini pada bila-bila masa dalam <ph name="BEGIN_LINK" />Tetapan Penjejakan Bungkusan<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Organisasi anda menghendaki anda log masuk untuk menggunakan Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Dapatkan Keselamatan Chromium Yang Paling Kukuh</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit}}</translation>

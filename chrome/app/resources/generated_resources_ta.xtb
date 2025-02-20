@@ -1288,7 +1288,6 @@
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> இலிருந்து மட்டுமே இதைச் சேர்க்க முடியும்</translation>
 <translation id="1877377290348678128">லேபிள் (விருப்பத்திற்குரியது)</translation>
 <translation id="1877377730633446520">இதற்கு <ph name="REQUIRED_SPACE" /> தேவைப்படும். உங்களிடம் தற்போது <ph name="FREE_SPACE" /> உள்ளது.</translation>
-<translation id="1877520246462554164">அங்கீகரிப்பு டோக்கனைப் பெற முடியவில்லை. மீண்டும் முயல, வெளியேறி மீண்டும் உள்நுழையவும்.</translation>
 <translation id="1877860345998737529">ஸ்விட்ச் செயலை நியமித்தல்</translation>
 <translation id="1878155070920054810">புதுப்பிப்பு நிறைவடைவதற்கு முன்னரே உங்கள் Chromebookகில் பவர் இல்லாமல் போகலாம். இடையூறுகள் ஏற்படுவதைத் தவிர்க்க, அது சரியாகச் சார்ஜ் செய்யப்படுவதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="1878477879455105085">திறக்கப்பட்டுள்ளது</translation>
@@ -7015,7 +7014,6 @@
 <translation id="5952020381407136867">டச்பேட்</translation>
 <translation id="5953211687820750364"><ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />,
            <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> ஆகியவற்றினால் இந்தப் பட்டியல் பாதிக்கப்பட்டுள்ளது</translation>
-<translation id="5955282598396714173">உங்கள் கடவுச்சொல் காலாவதியாகிவிட்டது. அதை மாற்ற, வெளியேறி, மீண்டும் உள்நுழையவும்.</translation>
 <translation id="5955304353782037793">ஆப்ஸ்</translation>
 <translation id="5955721306465922729">ஓர் இணையதளம் இந்த ஆப்ஸைத் திறக்க விரும்புகிறது.</translation>
 <translation id="5955809630138889698">ஆன்லைன் டெமோ பயன்முறைக்கு மட்டும் இந்தச் சாதனம் தகுதியுடையதாக இருக்கலாம். மேலும் விவரங்களை அறிய, உங்கள் உதவி மையப் பிரதிநிதியைத் தொடர்புகொள்ளவும்.</translation>
@@ -9720,7 +9718,6 @@
 <translation id="7910725946105920830">உங்கள் தனிப்பட்ட Google கணக்கைப் பயன்படுத்தும்</translation>
 <translation id="7910768399700579500">&amp;புதிய ஃபோல்டர்</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">சேவையகத்தில் உங்கள் கடவுச்சொல் மாற்றப்பட்டது. வெளியேறி, மீண்டும் உள்நுழையவும்.</translation>
 <translation id="791247712619243506">அமைவை ரத்துசெய்</translation>
 <translation id="7912974581251770345">மொழிபெயர்ப்பு</translation>
 <translation id="7914399737746719723">ஆப்ஸ் நிறுவப்பட்டது</translation>

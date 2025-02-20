@@ -1280,7 +1280,6 @@
 <translation id="1875387611427697908">Это приложение или расширение можно установить только из сервиса "<ph name="CHROME_WEB_STORE" />".</translation>
 <translation id="1877377290348678128">Ярлык (необязательно)</translation>
 <translation id="1877377730633446520">Для этого потребуется <ph name="REQUIRED_SPACE" /> свободного места. Сейчас на вашем диске доступно <ph name="FREE_SPACE" />.</translation>
-<translation id="1877520246462554164">Не удалось получить токен аутентификации. Чтобы повторить попытку, выйдите из аккаунта и войдите снова.</translation>
 <translation id="1877860345998737529">Назначение действий для функции Switch Access</translation>
 <translation id="1878155070920054810">Ваше устройство Chromebook может разрядиться до того, как обновление будет завершено. Убедитесь, что оно подключено к электросети.</translation>
 <translation id="1878477879455105085">Открытая</translation>
@@ -7002,7 +7001,6 @@
 <translation id="5952020381407136867">сенсорная панель</translation>
 <translation id="5953211687820750364">Этот список формируется с учетом <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           и <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" />.</translation>
-<translation id="5955282598396714173">Срок действия пароля истек. Чтобы изменить пароль, выйдите из аккаунта и войдите снова.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Один из сайтов собирается открыть это приложение.</translation>
 <translation id="5955809630138889698">Это устройство работает только в демонстрационном офлайн-режиме. Чтобы узнать подробности, обратитесь в службу поддержки.</translation>
@@ -9712,7 +9710,6 @@
 <translation id="7910725946105920830">Использовать личный аккаунт Google</translation>
 <translation id="7910768399700579500">&amp;Новая папка</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">Пароль был изменен на сервере. Выйдите из аккаунта и войдите снова.</translation>
 <translation id="791247712619243506">Отменить настройку</translation>
 <translation id="7912974581251770345">Перевод</translation>
 <translation id="7914399737746719723">Приложение установлено</translation>

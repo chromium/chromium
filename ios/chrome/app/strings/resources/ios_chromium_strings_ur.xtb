@@ -30,7 +30,6 @@
 <translation id="159029779861043703">‏Chromium آپ کے حساس ڈیٹا کو Face ID کے ساتھ محفوظ رکھتا ہے۔</translation>
 <translation id="1591119736686995611">‏Chromium میں ٹیب گرِڈ کھلتا ہے۔</translation>
 <translation id="16001233025397167">‏سیفٹی چیک آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹس وغیرہ سے محفوظ رکھتی ہے۔ کسی بھی رازداری یا سیکیورٹی کے مسئلے پر الرٹس موصول کریں جس کا Chromium آپ کے لیے پتا لگاتا ہے۔</translation>
-<translation id="1611584326765829247">‏آپ کے پیکیجز ٹریک کرنے میں Chromium کو آپ کی مدد کرنے دیں</translation>
 <translation id="1617663976202781617">‏Chromium مطابقت پذیری کا ڈیٹا</translation>
 <translation id="164952285225495380">‏یہ پیکیج پہلے ہی Chromium پر ٹریک کیا جا چکا ہے۔</translation>
 <translation id="1707458603865303524">‏جب بھی آپ پیغامات یا دیگر ایپس میں لنکس پر تھپتھپاتے ہیں تو Chromium استعمال کریں۔</translation>
@@ -306,7 +305,6 @@
 <translation id="8826789549860004832">‏اپنا براؤزر سیٹ اپ کرنا جاری رکھ کر Chromium سے زیادہ سے زیادہ فائدہ اٹھائیں۔</translation>
 <translation id="88376265765385899">‏Chromium بُک مارکس کھولتا ہے۔</translation>
 <translation id="8860548555286245440">‏URLs کو Chromium میں پوشیدگی میں کھولیں</translation>
-<translation id="8866191443434488382">‏Chromium ان سائٹس پر ٹریکنگ نمبرز کا پتہ لگائے گا جو آپ ملاحظہ کرتے ہیں اور نئے ٹیب کے صفحہ پر آپ کو پیکیج کی اپ ڈیٹس دکھائے گا۔ پیکج ٹریکنگ نمبر اور ویب سائٹ کا نام Chromium کو بھیجا جائے گا تاکہ یہ خصوصیت فراہم کی جا سکے اور ہر کسی کے لیے خریداری کی خصوصیات کو بہتر بنایا جا سکے۔ آپ اسے کسی بھی وقت <ph name="BEGIN_LINK" />پیکیج ٹریکنگ کی ترتیبات<ph name="END_LINK" /> میں اپ ڈیٹ کر سکتے ہیں۔</translation>
 <translation id="8880024619507699923">‏آپ کی تنظیم چاہتی ہے کہ آپ Chromium استعمال کرنے کیلئے سائن ان کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">‏‫Chromium کی مضبوط ترین سیکیورٹی حاصل کریں</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ تک استعمال نہیں ہوتا ہے۔}other{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ تک استعمال نہیں ہوتا ہے۔}}</translation>

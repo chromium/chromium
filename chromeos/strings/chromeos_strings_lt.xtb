@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">Išdėstymo veiksmų meniu</translation>
 <translation id="3227186760713762082">Reikia padalyti kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
+<translation id="3248791727258378769">Transkribuotas tekstas nebus sukurtas</translation>
 <translation id="324961752321393509">Administratorius neleidžia uždaryti šios programos</translation>
 <translation id="3263941347294171263">Jei norite tęsti atnaujinimo procesą, atjunkite ir iš naujo prijunkite „<ph name="DEVICE_NAME" />“</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">Išjungti ekrano užsklandą</translation>
 <translation id="4210636113897977670">Išsaugoti ir išeiti</translation>
 <translation id="4210659479607886331">ledyninė upė</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> k. transkribavimo modelio atsisiuntimas baigtas</translation>
 <translation id="42126664696688958">Eksportuoti</translation>
 <translation id="4213104098953699324">USB klaviatūra</translation>
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">Spalva</translation>
 <translation id="5457599981699367932">Naršyti kaip svečiui</translation>
 <translation id="54609108002486618">Valdoma</translation>
+<translation id="5461608756903394951">Atsisiunčiamas <ph name="LANGUAGE_NAME" /> k. transkribavimo modelis</translation>
 <translation id="5470776029649730099">burlapo</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Liko {0} bandymas}one{Liko {0} bandymas}few{Liko {0} bandymai}many{Liko {0} bandymo}other{Liko {0} bandymų}}</translation>
 <translation id="5488280942828718790">purpurinės spalvos</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">Įjungti transkribavimą ir atsisiųsti transkribavimo modelį?</translation>
 <translation id="6596816719288285829">IP adresas</translation>
 <translation id="6599673642868607614">Dėkojame už atsiliepimus. Jūsų atsiliepimai padeda mums tobulinti „Chromebook“ funkcijas, todėl juos peržiūrės mūsų komanda. Dėl didelio pranešimų skaičiaus atsakyti negalėsime.</translation>
+<translation id="6608043585557830684">Transkribavimas išjungtas. Įjunkite skiltyje „Nustatymai“ arba meniu <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Pelės klavišai</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
 <translation id="6620487321149975369">Spausdinimo užduotys bus rodomos istorijoje, nebent bus pašalintos neautomatiškai</translation>

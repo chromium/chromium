@@ -1275,7 +1275,6 @@
 <translation id="1875387611427697908">यसलाई <ph name="CHROME_WEB_STORE" /> बाट मात्रै थप्न सकिन्छ</translation>
 <translation id="1877377290348678128">लेबल (ऐच्छिक)</translation>
 <translation id="1877377730633446520">फाइलहरू सिंक गर्न लगभग <ph name="REQUIRED_SPACE" /> प्रयोग गरिन्छ। तपाईंको भण्डारणमा हाल <ph name="FREE_SPACE" /> खाली ठाउँ छ।</translation>
-<translation id="1877520246462554164">प्रमाणीकरणको टोकन प्राप्त गर्न सकिएन। कृपया फेरि प्रयास गर्न साइन आउट गर्नुहोस्, त्यसपछि फेरि साइन इन गर्नुहोस्।</translation>
 <translation id="1877860345998737529">स्विचको कारबाही तोक्ने कार्य</translation>
 <translation id="1878155070920054810">अपडेट पूरा हुनुअगावै तपाईंको Chromebook को ब्याट्री सकिएला जस्तो छ। अपडेट प्रक्रिया अवरुद्ध हुन नदिन तपाईंको Chromebook सही तरिकाले चार्ज भइरहेको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="1878477879455105085">खोलिएको</translation>
@@ -6995,7 +6994,6 @@
 <translation id="5952020381407136867">टचप्याड</translation>
 <translation id="5953211687820750364"><ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           र <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> ले यो सूचीमा प्रभाव पार्छ</translation>
-<translation id="5955282598396714173">तपाईंको पासवर्डको म्याद समाप्त भएको छ। यसलाई परिवर्तन गर्न कृपया साइन आउट गर्नुहोस्, त्यसपछि फेरि साइन इन गर्नुहोस्।</translation>
 <translation id="5955304353782037793">एप</translation>
 <translation id="5955721306465922729">कुनै वेबसाइटले यो एप खोल्न चाहन्छ।</translation>
 <translation id="5955809630138889698">यो डिभाइस अनलाइन डेमो मोडका लागि मात्र योग्य हुन सक्छ। थप विवरणका लागि कृपया सहायता प्रतिनिधिलाई सम्पर्क गर्नुहोस्।</translation>
@@ -9699,7 +9697,6 @@
 <translation id="7910725946105920830">आफ्नो व्यक्तिगत Google खाता प्रयोग गर्नुहोस्</translation>
 <translation id="7910768399700579500">&amp;नयाँ फोल्डर</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7912080627461681647">सर्भरमा तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया साइन आउट गर्नुहोस्, त्यसपछि फेरि साइन इन गर्नुहोस्।</translation>
 <translation id="791247712619243506">सेटअप गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="7912974581251770345">अनुवाद</translation>
 <translation id="7914399737746719723">एप इन्स्टल गरिएको छ</translation>
