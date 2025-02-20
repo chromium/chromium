@@ -1538,6 +1538,8 @@ void PaymentsDataManager::ClearAllServerDataForTesting() {
   credit_card_art_images_.clear();
   masked_bank_accounts_.clear();
   ewallet_accounts_.clear();
+  linked_bnpl_issuers_.clear();
+  unlinked_bnpl_issuers_.clear();
 }
 
 void PaymentsDataManager::SetCreditCards(

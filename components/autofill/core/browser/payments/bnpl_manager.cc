@@ -186,6 +186,12 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
   // suggestion list.
   std::get<1>(*suggestions_shown_response)
       .Run(update_suggestions_result.suggestions, trigger_source);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  payments_autofill_client_->GetPaymentsDataManager().SetAutofillHasSeenBnpl();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 
 std::set<std::string> BnplManager::GetBnplSupportedCountries() {
@@ -193,10 +199,24 @@ std::set<std::string> BnplManager::GetBnplSupportedCountries() {
 }
 
 bool BnplManager::ShouldShowBnplSettingsToggle() const {
-  return !payments_autofill_client_->GetPaymentsDataManager()
-              .GetBnplIssuers()
-              .empty() &&
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  const PaymentsDataManager& payments_data_manager =
+      payments_autofill_client_->GetPaymentsDataManager();
+
+  // Call `GetBnplIssuers()` only if `IsAutofillHasSeenBnplPrefEnabled()` is
+  // true and a BNPL issuer is present to avoid unnecessary feature flag
+  // checks. Ensures that only relevant sessions are included in BNPL related
+  // A/B experiments. Otherwise, users that navigate to the settings page can
+  // enroll in the experiment, with very little guarantee they will actually use
+  // the BNPL feature.
+  return payments_data_manager.IsAutofillHasSeenBnplPrefEnabled() &&
+         !payments_data_manager.GetBnplIssuers().empty() &&
          base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace autofill::payments

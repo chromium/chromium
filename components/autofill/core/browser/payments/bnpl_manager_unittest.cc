@@ -96,6 +96,22 @@ class BnplManagerTest : public Test {
                                   std::move(eligible_price_ranges)));
   }
 
+  void TriggerBnplUpdateSuggestionsFlow(
+      bool expect_suggestions_are_updated,
+      std::optional<uint64_t> extracted_amount) {
+    std::vector<Suggestion> suggestions = {
+        Suggestion(SuggestionType::kCreditCardEntry),
+        Suggestion(SuggestionType::kManageCreditCard)};
+    base::MockCallback<UpdateSuggestionsCallback> callback;
+    expect_suggestions_are_updated ? EXPECT_CALL(callback, Run).Times(1)
+                                   : EXPECT_CALL(callback, Run).Times(0);
+
+    bnpl_manager_->NotifyOfSuggestionGeneration(
+        AutofillSuggestionTriggerSource::kUnspecified);
+    bnpl_manager_->OnAmountExtractionReturned(extracted_amount);
+    bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
@@ -188,17 +204,9 @@ TEST_F(BnplManagerTest,
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kCreditCardEntry),
-      Suggestion(SuggestionType::kManageCreditCard)};
-  base::MockCallback<UpdateSuggestionsCallback> callback;
-  EXPECT_CALL(callback, Run).Times(1);
-
-  bnpl_manager_->NotifyOfSuggestionGeneration(
-      AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{1'234'560'000ULL});
-  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/true,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
 }
 
 // Tests that update suggestions callback will not be called if the amount
@@ -214,16 +222,8 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_NoAmountPassedIn) {
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kCreditCardEntry),
-      Suggestion(SuggestionType::kManageCreditCard)};
-  base::MockCallback<UpdateSuggestionsCallback> callback;
-  EXPECT_CALL(callback, Run).Times(0);
-
-  bnpl_manager_->NotifyOfSuggestionGeneration(
-      AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned(std::nullopt);
-  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
+                                   /*extracted_amount=*/std::nullopt);
 }
 
 // Tests that update suggestions callback will not be called if the extracted
@@ -239,17 +239,9 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kCreditCardEntry),
-      Suggestion(SuggestionType::kManageCreditCard)};
-  base::MockCallback<UpdateSuggestionsCallback> callback;
-  EXPECT_CALL(callback, Run).Times(0);
-
-  bnpl_manager_->NotifyOfSuggestionGeneration(
-      AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{30'000'000ULL});
-  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/false,
+      /*extracted_amount=*/std::optional<uint64_t>{30'000'000ULL});
 }
 
 // Tests that update suggestions callback will not be called if the BNPL
@@ -264,17 +256,9 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplFeatureDisabled) {
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kCreditCardEntry),
-      Suggestion(SuggestionType::kManageCreditCard)};
-  base::MockCallback<UpdateSuggestionsCallback> callback;
-  EXPECT_CALL(callback, Run).Times(0);
-
-  bnpl_manager_->NotifyOfSuggestionGeneration(
-      AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{1'234'560'000ULL});
-  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/false,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
 }
 
 // Tests that update suggestions callback will not be called if the BNPL
@@ -289,17 +273,9 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplSyncFeatureDisabled) {
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kCreditCardEntry),
-      Suggestion(SuggestionType::kManageCreditCard)};
-  base::MockCallback<UpdateSuggestionsCallback> callback;
-  EXPECT_CALL(callback, Run).Times(0);
-
-  bnpl_manager_->NotifyOfSuggestionGeneration(
-      AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{1'234'560'000ULL});
-  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/false,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
 }
 
 // Tests that update suggestions callback will be called if the extracted
@@ -316,17 +292,9 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByAffirm) {
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kCreditCardEntry),
-      Suggestion(SuggestionType::kManageCreditCard)};
-  base::MockCallback<UpdateSuggestionsCallback> callback;
-  EXPECT_CALL(callback, Run).Times(1);
-
-  bnpl_manager_->NotifyOfSuggestionGeneration(
-      AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{50'000'000ULL});
-  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/true,
+      /*extracted_amount=*/std::optional<uint64_t>{50'000'000ULL});
 }
 
 // Tests that update suggestions callback will be called if the extracted
@@ -342,17 +310,9 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByZip) {
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kCreditCardEntry),
-      Suggestion(SuggestionType::kManageCreditCard)};
-  base::MockCallback<UpdateSuggestionsCallback> callback;
-  EXPECT_CALL(callback, Run).Times(1);
-
-  bnpl_manager_->NotifyOfSuggestionGeneration(
-      AutofillSuggestionTriggerSource::kUnspecified);
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{1'234'560'000ULL});
-  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/true,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
 }
 
 // Tests that BNPL settings toggle should not be shown if all BNPL
@@ -367,6 +327,11 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/true,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
 
   EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
 
@@ -392,6 +357,11 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplSyncFeatureDisabled) {
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
+  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/true,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+
   EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
 
   scoped_feature_list.Reset();
@@ -415,6 +385,11 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
   SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
   SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
 
+  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/true,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+
   EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
 
   scoped_feature_list.Reset();
@@ -433,7 +408,52 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_NoSyncedIssuers) {
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLater},
       /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/true,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+
+  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+
+  autofill_client_->GetPersonalDataManager()
+      .payments_data_manager()
+      .ClearAllServerDataForTesting();
+
   EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+}
+
+// Tests that BNPL settings toggle should be shown only after BNPL suggestions
+// have been generated before.
+TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_HasSeenBnpl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  EXPECT_FALSE(autofill_client_->GetPersonalDataManager()
+                   .payments_data_manager()
+                   .IsAutofillHasSeenBnplPrefEnabled());
+  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+
+  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/true,
+      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+
+  EXPECT_TRUE(autofill_client_->GetPersonalDataManager()
+                  .payments_data_manager()
+                  .IsAutofillHasSeenBnplPrefEnabled());
+  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
