@@ -42,7 +42,7 @@ namespace gpu {
 
 namespace {
 const char* kDXGISwapChainImageBackingLabel = "DXGISwapChainImageBacking";
-}  // namespace
+}  // anonymous namespace
 
 // static
 std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
@@ -270,7 +270,7 @@ bool DXGISwapChainImageBacking::Present(
                       : 1;
   UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
-  TRACE_EVENT2("gpu", "IDXGISwapChain1::Present1", "has_alpha",
+  TRACE_EVENT2("gpu", "DXGISwapChainImageBacking::Present", "has_alpha",
                !SkAlphaTypeIsOpaque(alpha_type()), "dirty_rect",
                pending_swap_rect_->ToString());
   DXGI_PRESENT_PARAMETERS params = {};
