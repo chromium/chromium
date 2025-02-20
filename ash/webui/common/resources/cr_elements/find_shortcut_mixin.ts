@@ -51,7 +51,7 @@ export const FindShortcutManager = (() => {
     // should be called is the right before it in |listeners| such that the
     // goes from inner-most to outer-most.
     const index = focusIndex <= 0 ? listeners.length - 1 : focusIndex - 1;
-    if (listeners[index]!.handleFindShortcut(modalContextOpen)) {
+    if (listeners[index].handleFindShortcut(modalContextOpen)) {
       e.preventDefault();
     }
   });

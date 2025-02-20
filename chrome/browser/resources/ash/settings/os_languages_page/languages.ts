@@ -1117,7 +1117,7 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
     const result = languageCode.match(/^([^-]+)-?/)!;
     // Safety: The regex above has one non-optional capturing group.
     assert(result.length === 2);
-    return result[1]!;
+    return result[1];
   }
 
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language

@@ -224,7 +224,7 @@ export class OsSyncControlsSubpageElement extends
    * Whether the sync data type toggles should be disabled.
    */
   private computeDataTypeTogglesDisabled_(): boolean {
-    return this.osSyncPrefs !== undefined && this.osSyncPrefs!.syncAllOsTypes;
+    return this.osSyncPrefs !== undefined && this.osSyncPrefs.syncAllOsTypes;
   }
 
   /**

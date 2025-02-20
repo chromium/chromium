@@ -2229,10 +2229,10 @@ export class DebuggerUi {
   private preProcessScreens(): void {
     KNOWN_SCREENS.forEach((screen, index) => {
       // Screen ordering
-      screen!.index = index;
+      screen.index = index;
       // Create a default state
       if (!('states' in screen)) {
-        screen!.states = [{
+        screen.states = [{
           id: 'default',
         }];
       }
@@ -2240,11 +2240,11 @@ export class DebuggerUi {
       if (!screen.defaultState && screen.states) {
         screen.defaultState = screen.states[0].id;
       }
-      screen!.stateMap = {};
+      screen.stateMap = {};
       // For each state fall back to screen data if state data is not defined.
       for (const state of screen.states || []) {
         if (!('data' in state)) {
-          state!.data = screen.data;
+          state.data = screen.data;
         }
         screen.stateMap[state.id] = state;
       }
@@ -2369,7 +2369,7 @@ export class DebuggerUi {
 
   private createScreensList(): void {
     for (const screen of KNOWN_SCREENS) {
-      this.screenMap[screen.id] = screen as ScreenDefType;
+      this.screenMap[screen.id] = screen;
     }
     this.knownScreens = [];
     this.screenButtons = {};
@@ -2400,8 +2400,8 @@ export class DebuggerUi {
                 screen.setUIStep(step);
               },
             };
-            screenDef!.states!.push(state);
-            screenDef!.stateMap![state.id] = state;
+            screenDef.states!.push(state);
+            screenDef.stateMap![state.id] = state;
           }
           if (screenDef.defaultState === 'default' &&
               'defaultUIStep' in screenElement &&

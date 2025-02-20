@@ -535,7 +535,7 @@ export function generateOptions(
             // `options.length`, and `options` is immediately pushed to, so the
             // values of `pushedOptions` must always be valid indices into
             // `options`.
-            options[optionsIndex]!.optionNames.push(...optionNames);
+            options[optionsIndex].optionNames.push(...optionNames);
           }
         }
       }

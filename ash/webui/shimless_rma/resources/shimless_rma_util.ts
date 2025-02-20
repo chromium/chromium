@@ -90,7 +90,7 @@ export function modifyTabbableElement(
  */
 export function focusPageTitle(element: HTMLElement): void {
   const pageTitle: HTMLHeadingElement|null =
-      element!.shadowRoot!.querySelector('h1');
+      element.shadowRoot!.querySelector('h1');
   assert(pageTitle);
   afterNextRender(element, () => {
     pageTitle.focus();

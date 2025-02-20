@@ -534,7 +534,7 @@ export class SettingsInternetPageElement extends
     afterNextRender(this, () => {
       const networkRow =
           this.shadowRoot!.querySelector('network-summary')!.getNetworkRow(
-              networkType!);
+              networkType);
       if (networkRow) {
         const toggleEl = networkRow.getDeviceEnabledToggle();
         if (toggleEl) {

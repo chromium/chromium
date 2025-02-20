@@ -106,8 +106,8 @@ export class OsSettingsAppLanguagesPageElement extends
    */
   private getSelectedLocale_(app: App): string {
     if (app.selectedLocale?.localeTag) {
-      const displayName = app.selectedLocale!.displayName;
-      return displayName || app.selectedLocale!.localeTag;
+      const displayName = app.selectedLocale.displayName;
+      return displayName || app.selectedLocale.localeTag;
     }
     return this.i18n('appLanguageDeviceLanguageLabel');
   }
@@ -181,8 +181,8 @@ export class OsSettingsAppLanguagesPageElement extends
     });
 
     return filteredApps.sort((a, b) => {
-      assert(a!.title);
-      assert(b!.title);
+      assert(a.title);
+      assert(b.title);
       return alphabeticalSort(a.title, b.title);
     });
   }

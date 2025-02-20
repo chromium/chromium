@@ -334,7 +334,7 @@ export class CrDialogElement extends CrDialogElementBase {
     // Only show pulse animation if user left-clicked outside of the dialog
     // contents.
     if (e.button !== 0 ||
-        (e.composedPath()[0]! as HTMLElement).tagName !== 'DIALOG') {
+        (e.composedPath()[0] as HTMLElement).tagName !== 'DIALOG') {
       return;
     }
 

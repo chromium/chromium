@@ -144,7 +144,7 @@ export class CellularRoamingToggleButtonElement extends
 
   private managedPropertiesChanged_(): void {
     if (!this.managedProperties ||
-        !this.managedProperties!.typeProperties.cellular!.allowRoaming) {
+        !this.managedProperties.typeProperties.cellular!.allowRoaming) {
       return;
     }
 

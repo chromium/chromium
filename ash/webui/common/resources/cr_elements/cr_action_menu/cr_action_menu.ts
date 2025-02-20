@@ -289,7 +289,7 @@ export class CrActionMenuElement extends PolymerElement {
       const delta = next ? 1 : -1;
       index = (numOptions + focusedIndex + delta) % numOptions;
     }
-    options[index]!.focus();
+    options[index].focus();
   }
 
   close() {
@@ -316,7 +316,7 @@ export class CrActionMenuElement extends PolymerElement {
     // accurate for where the menu should be shown.
     this.anchorElement_.scrollIntoViewIfNeeded();
 
-    const rect = this.anchorElement_!.getBoundingClientRect();
+    const rect = this.anchorElement_.getBoundingClientRect();
 
     let height = rect.height;
     if (config && !config.noOffset &&

@@ -399,8 +399,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
     if (this.cameraFeed_) {
       // Attached cameraFeed_ to the selected image.
-      const item = ((event.target as Element)!.shadowRoot as
-                    ShadowRoot)!.querySelector<HTMLElement>('.item')!;
+      const item = ((event.target as Element).shadowRoot as ShadowRoot)
+                       .querySelector<HTMLElement>('.item')!;
       this.cameraFeed_.remove();
       item.appendChild(this.cameraFeed_);
       this.cameraFeed_.width = item.clientWidth;

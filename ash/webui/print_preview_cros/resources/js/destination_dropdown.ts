@@ -99,7 +99,7 @@ export class DestinationDropdownElement extends PolymerElement {
     }
 
     const destinationUpdated =
-        this.controller.updateActiveDestination(row.destination!.id);
+        this.controller.updateActiveDestination(row.destination.id);
     if (destinationUpdated) {
       // Immediately update UI to display selected destination.
       this.selectedDestination = row.destination;

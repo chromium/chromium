@@ -102,7 +102,7 @@ export class AcceleratorSubsectionElement extends
     // individual subsections. An atomic replacement makes ensures each
     // subsection's accelerators are kept distinct from each other.
     const tempAccelRowData: AcceleratorRowData[] = [];
-    layoutInfos!.forEach((layoutInfo) => {
+    layoutInfos.forEach((layoutInfo) => {
       if (this.lookupManager.isStandardAccelerator(layoutInfo.style)) {
         const acceleratorInfos =
             this.lookupManager

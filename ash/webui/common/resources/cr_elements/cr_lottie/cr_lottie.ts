@@ -279,10 +279,10 @@ export class CrLottieElement extends PolymerElement {
     assert(!this.xhr_);
 
     this.xhr_ = new XMLHttpRequest();
-    this.xhr_!.open('GET', url, true);
-    this.xhr_!.responseType = responseType;
-    this.xhr_!.send();
-    this.xhr_!.onreadystatechange = () => {
+    this.xhr_.open('GET', url, true);
+    this.xhr_.responseType = responseType;
+    this.xhr_.send();
+    this.xhr_.onreadystatechange = () => {
       assert(this.xhr_);
       if (this.xhr_.readyState === 4 && this.xhr_.status === 200) {
         // |successCallback| might trigger another xhr, so we set to null before

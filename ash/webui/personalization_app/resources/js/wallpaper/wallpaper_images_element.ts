@@ -63,7 +63,7 @@ export function getImageTiles(
     isDarkModeActive: boolean, images: WallpaperImage[]): ImageTile[] {
   const tileMap = images.reduce((result, next) => {
     if (result.has(next.unitId)) {
-      const tile = result.get(next.unitId)! as ImageTile;
+      const tile = result.get(next.unitId)!;
       if (!tile.hasPreviewImage) {
         tile.preview.push(next.url);
       }
@@ -75,7 +75,7 @@ export function getImageTiles(
     }
     // Populate the assetId and attribution based on image type and system's
     // color mode.
-    const tile = result.get(next.unitId)! as ImageTile;
+    const tile = result.get(next.unitId)!;
     switch (next.type) {
       case OnlineImageType.kLight:
         if (!isDarkModeActive) {
@@ -277,7 +277,7 @@ export class WallpaperImagesElement extends WithPersonalizationStore {
       return getLoadingPlaceholders(() => 1);
     }
 
-    const imageArr = images[collectionId]!;
+    const imageArr = images[collectionId];
     return getImageTiles(isDarkModeActive, imageArr);
   }
 

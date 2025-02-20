@@ -43,7 +43,7 @@ import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import type {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, SixPackKeyInfo} from './input_device_settings_types.js';
+import type {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings} from './input_device_settings_types.js';
 import {CompanionAppState, MetaKey, ModifierKey, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
@@ -392,8 +392,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       return 0;
     }
 
-    return Object
-        .values(this.keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo)
+    return Object.values(this.keyboard.settings.sixPackKeyRemappings)
         .filter(
             (modifier: SixPackShortcutModifier) =>
                 modifier !== SixPackShortcutModifier.kSearch)

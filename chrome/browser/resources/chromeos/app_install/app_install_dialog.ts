@@ -276,7 +276,7 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private onScreenshotLoad(): void {
-    this.$<HTMLImageElement>('#screenshot')!.style.display = 'block';
+    this.$<HTMLImageElement>('#screenshot').style.display = 'block';
   }
 
   private onCancelButtonClick(): void {
@@ -314,7 +314,7 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private changeDialogState(state: DialogState) {
-    const data = this.dialogStateDataMap![state];
+    const data = this.dialogStateDataMap[state];
     assert(data);
 
     for (const icon of this.$$('.title-icon')) {
@@ -324,17 +324,17 @@ class AppInstallDialogElement extends HTMLElement {
     this.$<HTMLElement>('#title').textContent =
         loadTimeData.getString(data.title.labelId);
 
-    const contentCard = this.$<HTMLElement>('#content-card')!;
+    const contentCard = this.$<HTMLElement>('#content-card');
     contentCard.style.display = data.content?.hidden ? 'none' : 'block';
 
-    const errorMessage = this.$<HTMLElement>('#error-message')!;
+    const errorMessage = this.$<HTMLElement>('#error-message');
     errorMessage.style.display = data.errorMessage?.visible ? 'block' : 'none';
     if (data.errorMessage) {
       errorMessage.textContent =
           loadTimeData.getString(data.errorMessage.textId);
     }
 
-    const actionButton = this.$<Button>('.action-button')!;
+    const actionButton = this.$<Button>('.action-button');
     assert(actionButton);
     actionButton.style.display = data.actionButton.hidden ? 'none' : 'block';
     actionButton.disabled = Boolean(data.actionButton.disabled);

@@ -292,7 +292,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
     switch (path) {
       // Hide button when viewing a different collection.
       case Paths.COLLECTION_IMAGES:
-        if (!imagesByCollectionId![collectionId!]) {
+        if (!imagesByCollectionId[collectionId]) {
           return false;
         }
         const imageIsInCollection = imagesByCollectionId[collectionId]?.find(

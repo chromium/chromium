@@ -127,14 +127,14 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
     const messageData =
         MESSAGE_TYPE_LOCALIZED_STRINGS_MAP.get(this.messageType);
     assert(messageData);
-    return this.i18n(messageData!.detailKey);
+    return this.i18n(messageData.detailKey);
   }
 
   private getMessageHeading(): string {
     const messageData =
         MESSAGE_TYPE_LOCALIZED_STRINGS_MAP.get(this.messageType);
     assert(messageData);
-    return this.i18n(messageData!.headingKey);
+    return this.i18n(messageData.headingKey);
   }
 
   private onManagePrintersClicked(): void {
@@ -172,7 +172,7 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
     const parentShadowRoot = this.shadowRoot!.host.getRootNode() as ShadowRoot;
     assert(parentShadowRoot);
     const previewContainer =
-        parentShadowRoot!.querySelector<HTMLElement>('.preview-area-message');
+        parentShadowRoot.querySelector<HTMLElement>('.preview-area-message');
     assert(previewContainer);
     return previewContainer;
   }

@@ -386,12 +386,12 @@ export class SearchableDropDownCrosElement extends PolymerElement {
     } else {
       const delta = moveDown ? 1 : -1;
       nextIndex = (numItems + currentIndex + delta) % numItems;
-      items[currentIndex]!.removeAttribute('selected_');
+      items[currentIndex].removeAttribute('selected_');
     }
-    items[nextIndex]!.setAttribute('selected_', '');
+    items[nextIndex].setAttribute('selected_', '');
     // The newly selected item might not be visible because the dropdown needs
     // to be scrolled. So scroll the dropdown if necessary.
-    items[nextIndex]!.scrollIntoViewIfNeeded();
+    items[nextIndex].scrollIntoViewIfNeeded();
   }
 
   private onInput_() {

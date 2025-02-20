@@ -791,7 +791,7 @@ export class DestinationStore extends EventTarget {
     let inserted = false;
     destinations.forEach(destination => {
       if (destination) {
-        inserted = this.insertIntoStore_(destination!) || inserted;
+        inserted = this.insertIntoStore_(destination) || inserted;
       }
     });
     if (inserted) {

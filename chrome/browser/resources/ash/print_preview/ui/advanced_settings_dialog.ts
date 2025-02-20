@@ -75,7 +75,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   override ready() {
     super.ready();
 
-    this.addEventListener('keydown', e => this.onKeydown_(e as KeyboardEvent));
+    this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 
   override connectedCallback() {
@@ -127,7 +127,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     this.highlights_ = [];
     this.bubbles_.clear();
 
-    const listItems = this.shadowRoot!.querySelectorAll(
+    const listItems = this.shadowRoot.querySelectorAll(
         'print-preview-advanced-settings-item');
     let hasMatch = false;
     listItems.forEach(item => {

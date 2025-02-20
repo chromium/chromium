@@ -33,7 +33,7 @@ function getTemplateIdForMetrics(templateId: SeaPenTemplateId|Query): number {
   if (templateId === QUERY) {
     return isPersonalizationApp() ? WALLPAPER_FREEFORM : VC_BACKGROUND_FREEFORM;
   }
-  return templateId as SeaPenTemplateId;
+  return templateId;
 }
 
 // Numerical values are used for metrics; do not change or reuse values.

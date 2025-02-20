@@ -249,7 +249,7 @@ export class SettingsCupsEditPrinterDialogElement extends
 
   private onProtocolChange_(event: Event): void {
     const selectEl = cast(event.target, HTMLSelectElement);
-    this.set('pendingPrinter_.printerProtocol', selectEl!.value);
+    this.set('pendingPrinter_.printerProtocol', selectEl.value);
     this.onPrinterInfoChange_();
   }
 

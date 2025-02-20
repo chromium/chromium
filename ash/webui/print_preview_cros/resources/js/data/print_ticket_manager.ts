@@ -129,7 +129,7 @@ export class PrintTicketManager extends EventTarget {
 
     // TODO(b/323421684): Handle result from page handler and update UI if error
     // occurred.
-    this.printPreviewPageHandler!.print(this.printTicket).finally(() => {
+    this.printPreviewPageHandler.print(this.printTicket).finally(() => {
       this.printRequestInProgress = false;
       this.dispatchEvent(createCustomEvent(PRINT_REQUEST_FINISHED_EVENT));
     });
@@ -138,7 +138,7 @@ export class PrintTicketManager extends EventTarget {
   // Does cleanup for print request.
   cancelPrintRequest(): void {
     assert(this.printPreviewPageHandler);
-    this.printPreviewPageHandler!.cancel();
+    this.printPreviewPageHandler.cancel();
   }
 
   // Returns current print ticket.
@@ -169,7 +169,7 @@ export class PrintTicketManager extends EventTarget {
       return;
     }
 
-    if (this.printTicket!.destinationId === '') {
+    if (this.printTicket.destinationId === '') {
       this.updateDestinationFields(activeDest.id, /*manuallySelected=*/ false);
     }
 
@@ -212,7 +212,7 @@ export class PrintTicketManager extends EventTarget {
     this.printTicket.printerType = source.printerType;
     this.printTicket.printerStatusReason =
         source.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
-    this.printTicket!.printerManuallySelected = manuallySelected;
+    this.printTicket.printerManuallySelected = manuallySelected;
   }
 }
 

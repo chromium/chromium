@@ -74,7 +74,7 @@ export class HealthdInternalsConfigSliderElement extends PolymerElement {
   }
 
   getTickValue(): number {
-    return this.ticks[this.tickedIndex]!.value;
+    return this.ticks[this.tickedIndex].value;
   }
 
   private onTickedValueChanged() {

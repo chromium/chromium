@@ -134,7 +134,7 @@ export class InputCardElement extends InputCardElementBase {
   private getDeviceTestability(device: KeyboardInfo|TouchDeviceInfo): boolean {
     // If the device has the key 'testable', we check its testable state.
     if ('testable' in device) {
-      return (device as TouchDeviceInfo).testable;
+      return (device).testable;
     }
 
     if (this.isInternalKeyboard(device)) {

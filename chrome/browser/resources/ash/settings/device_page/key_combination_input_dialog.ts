@@ -170,8 +170,7 @@ export class KeyCombinationInputDialogElement extends
     }
     const prevKeyEvent: KeyEvent|undefined =
         this.buttonRemapping_.remappingAction?.keyEvent;
-    if (!prevKeyEvent ||
-        !keyEventsAreEqual(this.inputKeyEvent, prevKeyEvent!)) {
+    if (!prevKeyEvent || !keyEventsAreEqual(this.inputKeyEvent, prevKeyEvent)) {
       this.set(
           `buttonRemappingList.${this.remappingIndex}`,
           this.getUpdatedButtonRemapping_());

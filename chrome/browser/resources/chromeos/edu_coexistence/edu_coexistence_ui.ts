@@ -117,19 +117,19 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
     e.stopPropagation();
     const backButton = this.shadowRoot!.querySelector<EduCoexistenceButton>(
         '#gaia-back-button')!;
-    if (backButton!.disabled) {
+    if (backButton.disabled) {
       // This is a safeguard against this method getting called somehow
       // despite the button being disabled.
       return;
     }
-    backButton!.disabled = true;
+    backButton.disabled = true;
 
     this.webview.back(() => {
       // Wait a full second after the callback fires before processing another
       // click on the back button.  This delay is needed because the callback
       // fires before the content finishes navigating to the previous page.
       setTimeout(() => {
-        backButton!.disabled = false;
+        backButton.disabled = false;
       }, 1000 /* 1 second */);
       this.webview.focus();
     });
@@ -167,7 +167,7 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
       contentContainer.style.height = '100%';
     }
 
-    template!.updateButtonFooterVisibility(this.showGaiaButtons);
+    template.updateButtonFooterVisibility(this.showGaiaButtons);
   }
 }
 

@@ -59,7 +59,7 @@ export class FileHandlerPageElement extends HTMLElement {
 
   // Initialises the scrollable content styles and add document event listeners.
   connectedCallback(): void {
-    const contentElement = this.$<HTMLElement>('#content')!;
+    const contentElement = this.$<HTMLElement>('#content');
     window.requestAnimationFrame(() => {
       this.updateContentFade(contentElement);
     });
@@ -142,7 +142,7 @@ export class FileHandlerPageElement extends HTMLElement {
 
       // For each local file task, create a clickable label.
       for (let i = 0; i < localTasks.length; ++i) {
-        const task = localTasks[i]!;
+        const task = localTasks[i];
         assert(task);
         const localHandlerCard = new LocalHandlerCardElement();
         localHandlerCard.setParameters(task.position, task.title);
@@ -150,7 +150,7 @@ export class FileHandlerPageElement extends HTMLElement {
         localHandlerCard.id = this.toStringId(task.position);
         if (i === localTasks.length - 1) {
           // Round bottom for last card.
-          localHandlerCard.$('#container')!.classList.add('round-bottom');
+          localHandlerCard.$('#container').classList.add('round-bottom');
         }
         this.addLocalHandlerCard(localHandlerCard);
       }
@@ -187,7 +187,7 @@ export class FileHandlerPageElement extends HTMLElement {
           }
         }
       }
-      const contentElement = this.$<HTMLElement>('#content')!;
+      const contentElement = this.$<HTMLElement>('#content');
       if (expanded) {
         window.requestAnimationFrame(() => {
           // Scroll so that the top of the accordion aligns to where the top of
@@ -292,7 +292,7 @@ export class FileHandlerPageElement extends HTMLElement {
 
     // If no card is focused, select the first one.
     if (selectedIndex === -1) {
-      this.cards[0]!.focus();
+      this.cards[0].focus();
       return;
     }
 
@@ -301,7 +301,7 @@ export class FileHandlerPageElement extends HTMLElement {
         this.cards[newSelectedIndex]?.style.display === 'none') {
       return;
     }
-    this.cards[newSelectedIndex]!.focus();
+    this.cards[newSelectedIndex].focus();
   }
 
   // Invoked when the open file button is clicked. If the user previously

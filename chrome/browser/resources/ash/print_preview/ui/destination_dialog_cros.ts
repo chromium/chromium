@@ -198,7 +198,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
   override ready() {
     super.ready();
 
-    this.addEventListener('keydown', e => this.onKeydown_(e as KeyboardEvent));
+    this.addEventListener('keydown', e => this.onKeydown_(e));
     this.printServerStore_ = new PrintServerStore(
         (eventName: string, callback: (p: any) => void) =>
             this.addWebUiListener(eventName, callback));

@@ -686,7 +686,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         if (!activationCodePage) {
           return false;
         }
-        return activationCodePage!.attemptToFocusOnPageContent();
+        return activationCodePage.attemptToFocusOnPageContent();
       case EsimUiState.PROFILE_SELECTION:
         const profileDiscoveryPage =
             this.shadowRoot!.querySelector<ProfileDiscoveryListPageElement>(

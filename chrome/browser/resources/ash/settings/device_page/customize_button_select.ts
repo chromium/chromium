@@ -546,7 +546,7 @@ export class CustomizeButtonSelectElement extends
     dropdownMenuOptions[indexOfNewRow]?.scrollIntoViewIfNeeded();
 
     // Update the highlighted value.
-    this.highlightedValue_ = this.menu[indexOfNewRow]!.value as string;
+    this.highlightedValue_ = this.menu[indexOfNewRow].value as string;
   }
 
   private updateDropdownSelection_(): void {
