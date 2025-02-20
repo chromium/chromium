@@ -51,4 +51,9 @@ const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay(
     "PdfPageCountCaptureDelay",
     base::Seconds(4));
 
+const base::FeatureParam<bool> kEnablePageContentExtraction(
+    &kContextualCueing,
+    "EnablePageContentExtraction",
+    true);
+
 }  // namespace contextual_cueing
