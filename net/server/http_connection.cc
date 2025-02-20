@@ -11,7 +11,9 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "net/server/web_socket.h"
 #include "net/socket/stream_socket.h"
 
@@ -23,7 +25,8 @@ HttpConnection::ReadIOBuffer::ReadIOBuffer()
 }
 
 HttpConnection::ReadIOBuffer::~ReadIOBuffer() {
-  data_ = nullptr;  // Avoid dangling ptr when `base_` is destroyed.
+  // Avoid dangling ptr when `base_` is destroyed.
+  ClearSpan();
 }
 
 int HttpConnection::ReadIOBuffer::GetCapacity() const {
@@ -32,9 +35,11 @@ int HttpConnection::ReadIOBuffer::GetCapacity() const {
 
 void HttpConnection::ReadIOBuffer::SetCapacity(int capacity) {
   DCHECK_LE(GetSize(), capacity);
-  data_ = nullptr;
+  // Clear current span to avoid warning about dangling pointer, as
+  // SetCapacity() may destroy the old buffer.
+  ClearSpan();
   base_->SetCapacity(capacity);
-  data_ = base_->data();
+  SetSpan(base_->span());
 }
 
 bool HttpConnection::ReadIOBuffer::IncreaseCapacity() {
@@ -63,7 +68,7 @@ int HttpConnection::ReadIOBuffer::GetSize() const {
 void HttpConnection::ReadIOBuffer::DidRead(int bytes) {
   DCHECK_GE(RemainingCapacity(), bytes);
   base_->set_offset(base_->offset() + bytes);
-  data_ = base_->data();
+  SetSpan(base_->span());
 }
 
 int HttpConnection::ReadIOBuffer::RemainingCapacity() const {
@@ -79,7 +84,7 @@ void HttpConnection::ReadIOBuffer::DidConsume(int bytes) {
     memmove(StartOfBuffer(), StartOfBuffer() + bytes, unconsumed_size);
   }
   base_->set_offset(unconsumed_size);
-  data_ = base_->data();
+  SetSpan(base_->span());
 
   // If capacity is too big, reduce it.
   if (GetCapacity() > kMinimumBufSize &&
@@ -88,7 +93,7 @@ void HttpConnection::ReadIOBuffer::DidConsume(int bytes) {
     if (new_capacity < kMinimumBufSize)
       new_capacity = kMinimumBufSize;
     // this avoids the pointer to dangle until `SetCapacity` gets called.
-    data_ = nullptr;
+    ClearSpan();
     // realloc() within GrowableIOBuffer::SetCapacity() could move data even
     // when size is reduced. If unconsumed_size == 0, i.e. no data exists in
     // the buffer, free internal buffer first to guarantee no data move.
@@ -101,7 +106,8 @@ void HttpConnection::ReadIOBuffer::DidConsume(int bytes) {
 HttpConnection::QueuedWriteIOBuffer::QueuedWriteIOBuffer() = default;
 
 HttpConnection::QueuedWriteIOBuffer::~QueuedWriteIOBuffer() {
-  data_ = nullptr;  // pending_data_ owns data_.
+  // `pending_data_` owns the underlying data.
+  ClearSpan();
 }
 
 bool HttpConnection::QueuedWriteIOBuffer::IsEmpty() const {
@@ -123,8 +129,10 @@ bool HttpConnection::QueuedWriteIOBuffer::Append(const std::string& data) {
   total_size_ += data.size();
 
   // If new data is the first pending data, updates data_.
-  if (pending_data_.size() == 1)
+  if (pending_data_.size() == 1) {
     data_ = const_cast<char*>(pending_data_.front()->data());
+    SetSpan(base::as_writable_bytes(base::span(*pending_data_.front())));
+  }
   return true;
 }
 
@@ -135,12 +143,14 @@ void HttpConnection::QueuedWriteIOBuffer::DidConsume(int size) {
     return;
 
   if (size < GetSizeToWrite()) {
-    data_ += size;
-  } else {  // size == GetSizeToWrite(). Updates data_ to next pending data.
-    data_ = nullptr;
+    SetSpan(span().subspan(base::checked_cast<size_t>(size)));
+  } else {
+    // size == GetSizeToWrite(). Updates data_ to next pending data.
+    ClearSpan();
     pending_data_.pop();
-    data_ =
-        IsEmpty() ? nullptr : const_cast<char*>(pending_data_.front()->data());
+    if (!IsEmpty()) {
+      SetSpan(base::as_writable_bytes(base::span(*pending_data_.front())));
+    }
   }
   total_size_ -= size;
 }
@@ -150,10 +160,8 @@ int HttpConnection::QueuedWriteIOBuffer::GetSizeToWrite() const {
     DCHECK_EQ(0, total_size_);
     return 0;
   }
-  DCHECK_GE(data_, pending_data_.front()->data());
-  int consumed = static_cast<int>(data_ - pending_data_.front()->data());
-  DCHECK_GT(static_cast<int>(pending_data_.front()->size()), consumed);
-  return pending_data_.front()->size() - consumed;
+  // Return the unconsumed size of the current pending write.
+  return size();
 }
 
 HttpConnection::HttpConnection(int id, std::unique_ptr<StreamSocket> socket)
