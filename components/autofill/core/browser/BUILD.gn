@@ -60,12 +60,12 @@ action("regex_patterns_inl_h") {
 action("entity_schema_enums_and_functions") {
   visibility = [ ":*" ]
 
-  sources = [ "data_model/entity_schema.json" ]
+  sources = [ "data_model/autofill_ai/entity_schema.json" ]
 
-  script = "data_model/transpile_entity_schema.py"
+  script = "data_model/autofill_ai/transpile_entity_schema.py"
   outputs = [
-    "$target_gen_dir/data_model/entity_type_names.h",
-    "$target_gen_dir/data_model/entity_type_funcs.cc",
+    "$target_gen_dir/data_model/autofill_ai/entity_type_names.h",
+    "$target_gen_dir/data_model/autofill_ai/entity_type_funcs.cc",
   ]
   args = [ "--input" ] + rebase_path(sources, root_build_dir) + [ "--output" ] +
          rebase_path(outputs, root_build_dir)
@@ -113,6 +113,10 @@ static_library("browser") {
     "data_manager/personal_data_manager_observer.h",
     "data_model/address.cc",
     "data_model/address.h",
+    "data_model/autofill_ai/entity_instance.cc",
+    "data_model/autofill_ai/entity_instance.h",
+    "data_model/autofill_ai/entity_type.cc",
+    "data_model/autofill_ai/entity_type.h",
     "data_model/autofill_feature_guarded_address_component.cc",
     "data_model/autofill_feature_guarded_address_component.h",
     "data_model/autofill_i18n_api.cc",
@@ -164,10 +168,6 @@ static_library("browser") {
     "data_model/credit_card_cloud_token_data.h",
     "data_model/data_model_utils.cc",
     "data_model/data_model_utils.h",
-    "data_model/entity_instance.cc",
-    "data_model/entity_instance.h",
-    "data_model/entity_type.cc",
-    "data_model/entity_type.h",
     "data_model/ewallet.cc",
     "data_model/ewallet.h",
     "data_model/form_group.cc",
@@ -1198,6 +1198,8 @@ source_set("unit_tests") {
     "data_manager/payments/payments_data_manager_test_base.h",
     "data_manager/payments/payments_data_manager_unittest.cc",
     "data_model/address_unittest.cc",
+    "data_model/autofill_ai/entity_instance_unittest.cc",
+    "data_model/autofill_ai/entity_type_unittest.cc",
     "data_model/autofill_i18n_api_unittest.cc",
     "data_model/autofill_i18n_parsing_expression_components_unittest.cc",
     "data_model/autofill_profile_comparator_unittest.cc",
@@ -1213,8 +1215,6 @@ source_set("unit_tests") {
     "data_model/contact_info_unittest.cc",
     "data_model/credit_card_benefit_unittest.cc",
     "data_model/credit_card_unittest.cc",
-    "data_model/entity_instance_unittest.cc",
-    "data_model/entity_type_unittest.cc",
     "data_model/ewallet_unittest.cc",
     "data_model/iban_unittest.cc",
     "data_model/payment_instrument_unittest.cc",

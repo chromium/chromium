@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_model/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
-#include "components/autofill/core/browser/data_model/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

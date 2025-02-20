@@ -480,7 +480,7 @@ enum FieldType {
   NAME_LAST_CORE = 167,
 
   // Types corresponding to the "Passport" entity from
-  // components/autofill/core/browser/data_model/entity_schema.json.
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
   // *TAG field types are merely placeholder tagging that the type belongs to
   // the passport entity, but that the existing Autofill classification or logic
   // should be used.
@@ -491,13 +491,13 @@ enum FieldType {
   PASSPORT_ISSUE_DATE_TAG = 172,
 
   // Types corresponding to the "Loyalty card" entity from
-  // components/autofill/core/browser/data_model/entity_schema.json.
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
   LOYALTY_MEMBERSHIP_PROGRAM = 173,
   LOYALTY_MEMBERSHIP_PROVIDER = 174,
   // The member ID is represented by LOYALTY_MEMBERSHIP_ID.
 
   // Types corresponding to the "Car" entity from
-  // components/autofill/core/browser/data_model/entity_schema.json.
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
   VEHICLE_OWNER_TAG = 175,
   VEHICLE_LICENSE_PLATE = 176,
   VEHICLE_VIN = 177,
@@ -505,7 +505,7 @@ enum FieldType {
   VEHICLE_MODEL = 179,
 
   // Types corresponding to the "Drivers license" entity from
-  // components/autofill/core/browser/data_model/entity_schema.json.
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
   DRIVERS_LICENSE_NAME_TAG = 180,
   DRIVERS_LICENSE_REGION = 181,
   DRIVERS_LICENSE_NUMBER = 182,

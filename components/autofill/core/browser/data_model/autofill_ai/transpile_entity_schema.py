@@ -207,7 +207,7 @@ def generate_cpp_functions_header(schema, include_guard):
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/pass_key.h"
-#include "components/autofill/core/browser/data_model/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {{

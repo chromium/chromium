@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ENTITY_INSTANCE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ENTITY_INSTANCE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_
 
 #include <ostream>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/data_model/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -253,4 +253,4 @@ struct EntityInstance::CompareByGuid {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ENTITY_INSTANCE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_

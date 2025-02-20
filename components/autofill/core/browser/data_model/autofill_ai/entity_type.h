@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ENTITY_TYPE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ENTITY_TYPE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_TYPE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_TYPE_H_
 
 #include <ostream>
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "components/autofill/core/browser/data_model/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
 
@@ -294,4 +294,4 @@ std::ostream& operator<<(std::ostream& os, EntityType t);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ENTITY_TYPE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_TYPE_H_
