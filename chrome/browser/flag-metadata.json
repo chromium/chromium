@@ -318,7 +318,7 @@
   {
     "name": "arc-aaudio-mmap-low-latency",
     "owners": [ "pteerapong@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "arc-arc-on-demand",
