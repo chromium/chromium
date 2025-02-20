@@ -40,8 +40,8 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-namespace media {
-namespace test {
+namespace media::test {
+
 namespace {
 constexpr uint16_t kIvfFileHeaderSize = 32;
 constexpr size_t kIvfFrameHeaderSize = 12;
@@ -70,7 +70,8 @@ uint32_t GetReadFrameIndex(uint32_t frame_index,
   frame_index -= num_frames;
   return num_frames - 2 - frame_index;
 }
-}  // namespace
+
+}  // anonymous namespace
 
 IvfFileHeader GetIvfFileHeader(base::span<const uint8_t> data) {
   LOG_ASSERT(data.size_bytes() == 32u);
@@ -634,8 +635,9 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
 
   video_frame_data_.resize(num_frames_);
   for (size_t i = 0; i < num_frames_; i++) {
-    video_frame_data_[i] = CreateVideoFrameData(
-        storage_type_, video->GetFrame(i), video_->FrameLayout(), *layout_);
+    video_frame_data_[i] =
+        CreateVideoFrameData(storage_type_, video->GetFrame(i),
+                             video_->FrameLayout(), *layout_, test_sii_.get());
   }
 
   LOG_ASSERT(video_frame_data_.size() == num_frames_)
@@ -679,8 +681,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
       GetReadFrameIndex(frame_index_++, reverse_, num_frames_);
   if (create_frame_mode_ == CreateFrameMode::kOnDemand) {
     auto frame_data = video_->GetFrame(read_frame_index);
-    VideoFrameData video_frame_data = CreateVideoFrameData(
-        storage_type_, frame_data, video_->FrameLayout(), *layout_);
+    VideoFrameData video_frame_data =
+        CreateVideoFrameData(storage_type_, frame_data, video_->FrameLayout(),
+                             *layout_, test_sii_.get());
     return CreateVideoFrameFromVideoFrameData(video_frame_data,
                                               frame_timestamp);
   } else {
@@ -750,7 +753,8 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
     VideoFrame::StorageType storage_type,
     const RawVideo::FrameData& src_frame,
     const VideoFrameLayout& src_layout,
-    const VideoFrameLayout& dst_layout) {
+    const VideoFrameLayout& dst_layout,
+    gpu::TestSharedImageInterface* test_sii) {
   LOG_ASSERT(gfx::Rect(dst_layout.coded_size())
                  .Contains(gfx::Rect(src_layout.coded_size())))
       << "The destination buffer resolution must not be smaller than the "
@@ -772,9 +776,10 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
           VideoFrame::Rows(i, pixel_format, resolution.height()));
     }
     // Create GpuMemoryBuffer VideoFrame from the on-memory VideoFrame.
-    auto frame = CloneVideoFrame(
-        memory_frame.get(), dst_layout, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+    auto frame =
+        CloneVideoFrame(memory_frame.get(), dst_layout, test_sii,
+                        VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
 
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
@@ -834,5 +839,4 @@ scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
   return video_frame;
 }
 
-}  // namespace test
-}  // namespace media
+}  // namespace media::test

@@ -22,6 +22,10 @@
 #include "media/gpu/test/video_frame_helpers.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace gpu {
+class TestSharedImageInterface;
+}  // namespace gpu
+
 namespace media {
 
 class VideoFrame;
@@ -119,6 +123,8 @@ class VideoFrameValidator : public VideoFrameProcessor {
   // An optional video frame processor that all corrupted frames will be
   // forwarded to. This can be used to e.g. write corrupted frames to disk.
   std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor_;
+
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 
   // If |crop_helper_| is runnable, then ShouldCrop() will return true and
   // CloneAndCropFrame() can be used.
