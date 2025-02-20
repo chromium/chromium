@@ -65,6 +65,16 @@ class GlicSettingsUtilUiTest
             kSettingsTab, chrome::GetSettingsUrl(chrome::kChromeUIGlicHost)));
   }
 
+  auto ClickGlicUiButton(const DeepQuery& query) {
+    MultiStep steps =
+        Steps(InAnyContext(WaitForElementVisible(
+                  glic::test::kGlicContentsElementId, query)),
+              InAnyContext(ExecuteJsAt(glic::test::kGlicContentsElementId,
+                                       query, "(el)=>el.click()")));
+    AddDescriptionPrefix(steps, "ClickGlicUiButton");
+    return steps;
+  }
+
   const DeepQuery kOsToggleHelpBubbleQuery{"settings-ui",
                                            "settings-main",
                                            "settings-basic-page",
@@ -76,6 +86,8 @@ class GlicSettingsUtilUiTest
   const DeepQuery kKeyboardShortcutHelpBubbleQuery{
       "settings-ui",        "settings-main", "settings-basic-page",
       "settings-glic-page", "help-bubble",   "#close"};
+
+  const DeepQuery kOpenSettingsButton = {"#openSettings"};
 };
 
 IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettings) {
@@ -129,4 +141,13 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
       WaitForStateChange(kSettingsTab, ElementIsHiddenStateChange(
                                            kBubbleIsHidden,
                                            kKeyboardShortcutHelpBubbleQuery)));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached,
+                     GlicInstrumentMode::kHostAndContents),
+      InstrumentNextTab(kSettingsTab), ClickGlicUiButton(kOpenSettingsButton),
+      WaitForWebContentsReady(
+          kSettingsTab, chrome::GetSettingsUrl(chrome::kChromeUIGlicHost)));
 }
