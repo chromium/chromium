@@ -53,7 +53,7 @@ class ContextualCueingHelper
 
   void OnCueingDecision(
       std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
-      std::string cue_label);
+      const std::string& cue_label);
 
   bool IsBrowserBlockingNudges(ScopedNudgeDecisionRecorder* recorder);
 
