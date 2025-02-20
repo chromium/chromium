@@ -44,8 +44,12 @@ using mojom::blink::FormControlType;
 namespace {
 
 HTMLInputElement* NextInputElement(const HTMLInputElement& element,
-                                   const HTMLFormElement* stay_within,
+                                   const HTMLFormElement* form,
                                    bool forward) {
+  const Node* stay_within =
+      form && RuntimeEnabledFeatures::RadioInputNextButtonInScopeEnabled()
+          ? form->GetListedElementsScope()
+          : form;
   return forward ? Traversal<HTMLInputElement>::Next(element, stay_within)
                  : Traversal<HTMLInputElement>::Previous(element, stay_within);
 }
@@ -274,9 +278,6 @@ bool RadioInputType::ShouldAppearIndeterminate() const {
 HTMLInputElement* RadioInputType::NextRadioButtonInGroup(
     HTMLInputElement* current,
     bool forward) {
-  // TODO(https://crbug.com/323953913): Staying within form() is
-  // incorrect.  This code ignore input elements associated by |form|
-  // content attribute.
   // TODO(tkent): Comparing name() with == is incorrect.  It should be
   // case-insensitive.
   for (HTMLInputElement* input_element =

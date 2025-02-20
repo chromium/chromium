@@ -121,6 +121,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     return radio_button_group_scope_;
   }
 
+  const Node* GetListedElementsScope() const;
+
   // Returns the listed elements (form controls) associated with `this`.
   const ListedElement::List& ListedElements() const {
     return CollectAndCacheListedElements(/*include_shadow_trees*/ false);

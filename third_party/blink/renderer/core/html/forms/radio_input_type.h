@@ -38,6 +38,8 @@ namespace blink {
 
 class RadioInputType final : public BaseCheckableInputType {
  public:
+  // This function finds the next radio button to navigate to using the keyboard
+  // arrow keys or for the accessibility screen reader.
   CORE_EXPORT static HTMLInputElement* NextRadioButtonInGroup(HTMLInputElement*,
                                                               bool forward);
 
