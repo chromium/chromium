@@ -267,6 +267,9 @@ interface SellerWorklet {
   //  browser is under lockout or the seller's origin is under cooldown for
   //  sending forDebuggingOnly reports.
   //
+  // `browser_signal_for_debugging_only_sampling` Whether the browser has fDO
+  //  sampling enabled.
+  //
   // `seller_timeout` Restrict the runtime of the seller's scoring script. Any
   //  timeout higher than 500 ms will be clamped to 500 ms before passing in as
   //  `seller_timeout`. Null if not provided by the publisher page. Null will be
@@ -296,6 +299,7 @@ interface SellerWorklet {
           string? browser_signal_buyer_and_seller_reporting_id,
           uint32 browser_signal_bidding_duration_msecs,
           bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
+          bool browser_signal_for_debugging_only_sampling,
           mojo_base.mojom.TimeDelta? seller_timeout,
           uint64 trace_id,
           url.mojom.Origin bidder_joining_origin,
