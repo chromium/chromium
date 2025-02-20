@@ -81,6 +81,7 @@ class PixManager {
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, LogInitiatePurchaseActionAttempt);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
                            LogInitiatePurchaseActionResultAndLatency);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerTest, LogTransactionResultAndLatency);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
                            NoPaymentsDataManager_NoApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, NoPixAccounts_NoApiClientTriggered);

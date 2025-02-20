@@ -395,6 +395,29 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.Transaction.{Result}.Latency"
+    units="ms" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the overall latency for the Pix transaction as experienced by the user
+    and breaks it down by the result of the transaction. The timer starts when
+    the user copies the Pix code, and ends when Chrome receives the result of
+    the transaction (which also coincides with all Chrome and platform UIs
+    closing). The result is {Result}. [Frequency] Logged at most once per Pix
+    payflow. Pix payflow is triggered at most once per page load. [Trigger] User
+    copies the Pix code, goes through the steps to complete the transaction, and
+    at the end Chrome receives the result of the transaction.
+
+    Note: A `Succeeded` result doesn't indicate that the transaction was
+    successful. It only means that the payments backend was contacted, and a
+    response was received.
+  </summary>
+  <token key="Result" variants="PurchaseActionResult"/>
+</histogram>
+
 <histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
     expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
