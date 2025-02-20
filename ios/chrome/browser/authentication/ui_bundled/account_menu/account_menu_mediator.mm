@@ -557,11 +557,10 @@
     }
   }
 
-  if ([gaiaIDsToAdd count] > 0 || [gaiaIDsToRemove count] > 0) {
-    [self.consumer updateAccountListWithGaiaIDsToAdd:gaiaIDsToAdd
-                                     gaiaIDsToRemove:gaiaIDsToRemove
-                                       gaiaIDsToKeep:gaiaIDsToKeep];
-  }
+  [self.consumer updateAccountListWithGaiaIDsToAdd:gaiaIDsToAdd
+                                   gaiaIDsToRemove:gaiaIDsToRemove
+                                     gaiaIDsToKeep:gaiaIDsToKeep];
+
   // In case the primary account information changed.
   if ([self primaryAccountInfoChanged]) {
     [self.consumer updatePrimaryAccount];

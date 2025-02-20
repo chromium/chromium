@@ -37,6 +37,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMArg.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -142,6 +143,15 @@ class AccountMenuMediatorTest
   syncer::TestSyncService* SyncService() { return test_sync_service_.get(); }
 
  protected:
+  // Ignores any `updateAccountListWithGaiaIDsToAdd` calls on `mock_consumer_`
+  // where no accounts were added or removed (i.e. just account details were
+  // updated, or it was just a no-op update).
+  void IgnoreAccountListUpdatesWithNoAdditionsOrRemovals() {
+    OCMStub([consumer_mock_ updateAccountListWithGaiaIDsToAdd:@[]
+                                              gaiaIDsToRemove:@[]
+                                                gaiaIDsToKeep:[OCMArg any]]);
+  }
+
   // Verify that all mocks expectation are fulfilled.
   void VerifyMock() {
     EXPECT_OCMOCK_VERIFY(delegate_mock_);
@@ -223,12 +233,38 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
       return;
     }
   }
-  const FakeSystemIdentity* thirdIdentity = [FakeSystemIdentity fakeIdentity3];
+  FakeSystemIdentity* thirdIdentity = [FakeSystemIdentity fakeIdentity3];
+  // Initially, the user's name isn't known.
+  thirdIdentity.userFullName = nil;
+  thirdIdentity.userGivenName = nil;
+  switch (GetParam()) {
+    case kOldApiWithoutSeparateProfiles:
+    case kNewApiWithSeparateProfiles:
+      break;
+    case kNewApiWithoutSeparateProfiles:
+      OCMExpect([consumer_mock_
+          updateAccountListWithGaiaIDsToAdd:@[]
+                            gaiaIDsToRemove:@[]
+                              gaiaIDsToKeep:[OCMArg any]]);
+      break;
+  }
   OCMExpect([consumer_mock_
       updateAccountListWithGaiaIDsToAdd:@[ thirdIdentity.gaiaID ]
                         gaiaIDsToRemove:@[]
                           gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   fake_system_identity_manager_->AddIdentity(thirdIdentity);
+
+  // Simulate that the identity gets updated (e.g. the username became known).
+  // This should result in another notification, even though the list of
+  // identities is unchanged.
+  thirdIdentity.userFullName = @"First Last";
+  thirdIdentity.userGivenName = @"First";
+  NSArray<NSString*>* gaiaIDsToKeep =
+      @[ kSecondaryIdentity.gaiaID, thirdIdentity.gaiaID ];
+  OCMExpect([consumer_mock_ updateAccountListWithGaiaIDsToAdd:@[]
+                                              gaiaIDsToRemove:@[]
+                                                gaiaIDsToKeep:gaiaIDsToKeep]);
+  fake_system_identity_manager_->FireIdentityUpdatedNotification(thirdIdentity);
 }
 
 // Checks that removing a secondary identity lead to updating the
@@ -240,6 +276,8 @@ TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
       return;
     }
   }
+  IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
+
   OCMExpect([consumer_mock_ updatePrimaryAccount]);
 
   OCMExpect([consumer_mock_
@@ -414,6 +452,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
       return;
     }
   }
+  IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   // Given that the method  `triggerSignoutWithTargetRect:completion` creates a
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
@@ -479,6 +518,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
       return;
     }
   }
+  IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   // Given that the method  `signOutFromTargetRect:forSwitch:completion` create
   // a callback in a callback, this tests has three parts.  One part by
   // callback, and one part for the initial part of the run.
@@ -674,6 +714,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
       return;
     }
   }
+  IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   __block SigninCoordinatorCompletionCallback completion = nil;
   OCMExpect([delegate_mock_
       didTapAddAccountWithCompletion:[OCMArg checkWithBlock:^BOOL(id value) {
