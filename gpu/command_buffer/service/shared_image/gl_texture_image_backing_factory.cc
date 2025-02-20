@@ -20,19 +20,6 @@
 namespace gpu {
 namespace {
 
-// Serves as reverse-killswitch for rolling out elimination of SCANOUT support.
-// TODO(crbug.com/330865436): Eliminate post safe-rollout.
-BASE_FEATURE(kSupportScanoutInGLTextureImageBacking,
-             "SupportScanoutInGLTextureImageBacking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Determines whether to support SCANOUT.
-// TODO(crbug.com/330865436): Eliminate once killswitches checked within this
-// function roll out safely.
-bool SupportScanout() {
-  return base::FeatureList::IsEnabled(kSupportScanoutInGLTextureImageBacking);
-}
-
 constexpr SharedImageUsageSet kWebGPUUsages =
     SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
@@ -127,34 +114,13 @@ bool GLTextureImageBackingFactory::IsSupported(
   if (gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }
-  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT) && !SupportScanout()) {
+  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
     return false;
   }
 
   if (usage.Has(SHARED_IMAGE_USAGE_CPU_UPLOAD)) {
     if (!supports_cpu_upload_ ||
         !GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
-      return false;
-    }
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
-    // GLTextureImageBacking can't actually support scanout on any platform.
-    // Historically GLImageBacking did accept scanout usage for shared memory
-    // GpuMemoryBuffers which is still replied upon for the following:
-    // - Linux and Chrome OS on X11 have no real scanout support but clients add
-    //   the usage.
-    // - Windows can upload pixels directly from shared memory to a D3D swap
-    //   chain for overlays.
-    // TODO(crbug.com/330865436): Eliminate this code once the above
-    // unconditional rejection of SCANOUT usage rolls out definitively.
-    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-      return false;
-    }
-#endif
-  } else {
-    // TODO(crbug.com/330865436): Eliminate this code once the above
-    // unconditional rejection of SCANOUT usage rolls out definitively.
-    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       return false;
     }
   }
