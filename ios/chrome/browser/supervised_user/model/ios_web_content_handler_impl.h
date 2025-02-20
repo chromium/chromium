@@ -46,6 +46,7 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
 
  private:
   friend class ParentAccessTabHelperTest;
+  friend class ParentAccessMediatorTest;
 
   // Processes the outcome of the local approval request.
   void OnLocalApprovalRequestCompleted(
