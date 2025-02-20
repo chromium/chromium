@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -751,9 +750,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
   EXPECT_EQ("\"child3-focused-input1\"", press_tab_and_wait_for_message(false));
 }
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 // Ensures that renderers know to advance focus to sibling frames and parent
 // frames in the presence of mouse click initiated focus changes.
 // Verifies against regression of https://crbug.com/702330

@@ -23,7 +23,6 @@
 #include "base/time/default_clock.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/core/app/client_upload_info.h"
 #include "components/crash/core/app/crashpad.h"
@@ -36,10 +35,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/build_time.h"
-#endif
 
 namespace {
 

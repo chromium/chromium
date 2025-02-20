@@ -25,7 +25,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -902,8 +901,7 @@ void BackgroundModeManager::CreateStatusTrayIcon() {
 
   // Since there are multiple profiles which share the status tray, we now
   // use the browser process to keep track of it.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
   if (!status_tray_)
     status_tray_ = g_browser_process->status_tray();
 #endif

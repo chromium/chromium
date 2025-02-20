@@ -12,7 +12,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"

@@ -39,7 +39,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #endif
 
@@ -376,7 +376,7 @@ class WebAppOfflineDarkModeTest
 
   void SetUpOnMainThread() override {
     WebAppOfflineTest::SetUpOnMainThread();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Explicitly set dark mode in ChromeOS or we can't get light mode after
     // sunset (due to dark mode auto-scheduling).
     ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(
@@ -396,8 +396,8 @@ class WebAppOfflineDarkModeTest
 
 // Testing offline page in dark mode for a web app with a manifest and no
 // service worker.
-// TODO(crbug.com/40871921): tests are flaky on Lacros and Linux.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40871921): tests are flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_WebAppOfflineDarkModeNoServiceWorker \
   DISABLED_WebAppOfflineDarkModeNoServiceWorker
 #else
@@ -457,8 +457,8 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
 // Testing offline page in dark mode for a web app with a manifest and service
 // worker that does not handle offline error.
-// TODO(crbug.com/40871921): tests are flaky on Lacros and Linux.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40871921): tests are flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_WebAppOfflineDarkModeEmptyServiceWorker \
   DISABLED_WebAppOfflineDarkModeEmptyServiceWorker
 #else

@@ -829,7 +829,7 @@ TEST_F(ChromePasswordManagerClientTest,
       GURL("https://passwords.google.com/path?query=1")));
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Test that authentication is not possible if the `authenticator` is `nullptr`.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoAuthenticator) {
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(
@@ -859,7 +859,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingDisabled) {
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Test that authentication is possible if both the biometric authentication
@@ -875,7 +875,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingEnabled) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that authentication is possible if biometric authentication
 // hardware is available, the user configured the corresponding setting and the
 // feature flag is enabled.

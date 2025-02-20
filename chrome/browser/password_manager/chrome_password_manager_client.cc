@@ -23,7 +23,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
@@ -859,7 +858,7 @@ void ChromePasswordManagerClient::PasswordWasAutofilled(
   manage_passwords_ui_controller->OnPasswordAutofilled(best_matches, origin,
                                                        federated_matches);
 #endif
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   if (was_autofilled_on_pageload &&
       !IsAuthenticatorRequestWindowUrl(GetLastCommittedURL()) &&
       password_manager_util::

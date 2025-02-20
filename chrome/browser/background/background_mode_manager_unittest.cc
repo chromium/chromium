@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -46,7 +45,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -309,7 +308,7 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
   // We aren't interested in if the keep alive works correctly in this test.
   std::unique_ptr<ScopedKeepAlive> test_keep_alive_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS needs extra services to run in the following order.
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{

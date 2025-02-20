@@ -1378,9 +1378,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // TODO(https://cubug.com/1282624): This test should run on Android after we're
 // able to interact with Android UI.
-// TODO(crbug.com/40231021): On LacrOS, the window's bound changes
-// unexpectedly, and it stops auto completing.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
@@ -1526,7 +1524,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests prerender is not cancelled after SearchPrefetchService cancels prefetch
 // requests.

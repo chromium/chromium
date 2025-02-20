@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
