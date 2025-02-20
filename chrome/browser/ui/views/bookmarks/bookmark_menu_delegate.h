@@ -222,6 +222,9 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   views::MenuItemView* CreateMenu(const BookmarkParentFolder& parent,
                                   size_t start_child_index);
 
+  // Returns true if `folder` has child nodes.
+  bool ShouldBuildPermanentNode(const BookmarkParentFolder& folder) const;
+
   // Builds menus for the 'other' and 'mobile' nodes if they're not empty,
   // adding them to `parent_menu_item_`.
   void BuildMenusForPermanentNodes();
