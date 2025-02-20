@@ -2316,6 +2316,10 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
             "https://w3c.github.io/aria/#aria-hidden.\n"
             "Element with focus: %s\nAncestor with aria-hidden: ",
             focused_element.TagQName().ToString().Ascii().c_str()));
+#if AX_FAIL_FAST_BUILD()
+    LOG(ERROR) << "Parent chain for focused node's AXObject:\n"
+               << ParentChainToStringHelper(&obj);
+#endif
   }
 
   Node* bad_aria_hidden_ancestor_node = bad_aria_hidden_ancestor->GetNode();
@@ -2338,6 +2342,7 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   if (bad_aria_hidden_ancestor) {
     CHECK(!bad_aria_hidden_ancestor->IsAriaHiddenRoot());
     CHECK(!bad_aria_hidden_ancestor->IsAriaHidden());
+    MarkAXSubtreeDirtyWithCleanLayout(bad_aria_hidden_ancestor);
   }
   if (AXObject* new_focused_obj = Get(&focused_element)) {
     CHECK(!new_focused_obj->IsAriaHidden());
