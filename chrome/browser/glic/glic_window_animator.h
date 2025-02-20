@@ -59,6 +59,10 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // GlicWindowResizeAnimation.
   void ResizeFinished();
 
+  // Called when the opacity fading animation has finished. Public for use by
+  // GlicWindowOpacityAnimation.
+  void FadeComplete();
+
  private:
   // Sets target bounds for the widget (must exist) and creates a
   // GlicWindowResizeAnimation instance to begin a new animation. If a bounds
@@ -68,6 +72,12 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
                      base::TimeDelta duration,
                      base::OnceClosure callback);
 
+  // Sets target opacity for the widget (must exist) and creates a
+  // GlicWindowOpacityAnimation instance to begin a new opacity animation.
+  void AnimateOpacity(float start_opacity,
+                      float target_opacity,
+                      base::TimeDelta duration);
+
   // Gets the bounds for the widget's resize animation. If there is an animation
   // already ongoing, use the target bounds for that animation. Otherwise, use
   // the widget's current bounds.
@@ -76,6 +86,10 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // GlicWindowController owns GlicWindowAnimator and will outlive it
   const raw_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
+
+  class GlicWindowOpacityAnimation;
+  std::unique_ptr<GlicWindowOpacityAnimation> opacity_animation_;
+
   base::WeakPtrFactory<GlicWindowAnimator> weak_ptr_factory_{this};
 };
 
