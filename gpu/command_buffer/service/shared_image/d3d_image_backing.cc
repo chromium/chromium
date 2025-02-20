@@ -708,8 +708,8 @@ D3DImageBacking::GetPendingWaitFences(
     }
     // The presence of a DComp texture fence is considered an outstanding read
     // that must be waited on.
-    if (auto fence = GetDCompTextureAvailabilityFenceForCurrentFrame()) {
-      wait_fences.push_back(std::move(fence));
+    if (dcomp_texture_available_fence_) {
+      wait_fences.push_back(std::move(dcomp_texture_available_fence_));
     }
   }
   return wait_fences;
@@ -926,7 +926,8 @@ wgpu::SharedTextureMemory D3DImageBacking::GetSharedTextureMemory(
 
 bool D3DImageBacking::BeginAccessD3D11(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    bool write_access) {
+    bool write_access,
+    bool is_overlay_access) {
   AutoLock auto_lock(this);
   if (!ValidateBeginAccess(write_access)) {
     return false;
@@ -950,13 +951,19 @@ bool D3DImageBacking::BeginAccessD3D11(
     return false;
   }
 
+  if (is_overlay_access && dcomp_texture_) {
+    CHECK(!write_access);
+    BeginDCompTextureAccess();
+  }
+
   // Clear fences and update state iff D3D11 BeginAccess succeeds.
   BeginAccessCommon(write_access);
   return true;
 }
 
 void D3DImageBacking::EndAccessD3D11(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    bool is_overlay_access) {
   const bool is_texture_device = d3d11_device == texture_d3d11_device_;
   // If shared handle is not present, we can only access on the same device.
   AutoLock auto_lock(this);
@@ -980,14 +987,42 @@ void D3DImageBacking::EndAccessD3D11(
     dxgi_shared_handle_state_->ReleaseKeyedMutex(d3d11_device);
   }
 
+  if (is_overlay_access && dcomp_texture_) {
+    EndDCompTextureAccess();
+  }
+
   EndAccessCommon(signaled_fence);
 }
 
-scoped_refptr<gfx::D3DSharedFence>
-D3DImageBacking::GetDCompTextureAvailabilityFenceForCurrentFrame() const {
-  if (!dcomp_texture_) {
-    // No |dcomp_texture_| means no waiting is needed.
-    return nullptr;
+void D3DImageBacking::BeginDCompTextureAccess() {
+  CHECK(dcomp_texture_);
+  num_dcomp_texture_readers_++;
+
+  if (num_dcomp_texture_readers_ > 0) {
+    // If the DComp texture is already in a visual tree, the available fence is
+    // invalid and should not be stored.
+    CHECK(!dcomp_texture_available_fence_);
+  }
+
+  if (dcomp_texture_available_fence_) {
+    // When we are putting the DComp texture back into a visual tree, we expect
+    // no other holders of the available fence (which can only be outstanding
+    // writers).
+    CHECK(dcomp_texture_available_fence_->HasOneRef());
+    // A new overlay access invalidates the available fence because it implies
+    // that `dcomp_texture_` is going back into the visual tree.
+    dcomp_texture_available_fence_.reset();
+  }
+}
+
+void D3DImageBacking::EndDCompTextureAccess() {
+  CHECK(dcomp_texture_);
+  CHECK_GT(num_dcomp_texture_readers_, 0);
+  num_dcomp_texture_readers_--;
+
+  if (num_dcomp_texture_readers_ > 0) {
+    // This DComp texture is in another tree.
+    return;
   }
 
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
@@ -1009,28 +1044,15 @@ D3DImageBacking::GetDCompTextureAvailabilityFenceForCurrentFrame() const {
 
   // If the fence is already passed the wait value, we don't need to wait on it.
   if (d3d11_fence->GetCompletedValue() >= fence_value) {
-    return nullptr;
+    return;
   }
 
   // Note we're passing a null device since the DWM internal device will signal
   // this fence.
-  return gfx::D3DSharedFence::CreateFromD3D11Fence(
+  CHECK(!dcomp_texture_available_fence_);
+  dcomp_texture_available_fence_ = gfx::D3DSharedFence::CreateFromD3D11Fence(
       /*d3d11_signal_device=*/nullptr, std::move(d3d11_fence), fence_value);
 }
-
-#if DCHECK_IS_ON()
-void D3DImageBacking::CheckDCompTextureIsAvailableIfNoReaders() const {
-  AutoLock auto_lock(this);
-
-  if (num_readers_ == 0) {
-    // Sanity check that we can get the availability fence, meaning that the
-    // texture is either immediately available or soon-to-be available. We
-    // should not cache this since the eventual wait may be one or more frames
-    // later and the fence becomes invalidated by DComp commit.
-    std::ignore = GetDCompTextureAvailabilityFenceForCurrentFrame();
-  }
-}
-#endif
 
 std::unique_ptr<DawnBufferRepresentation> D3DImageBacking::ProduceDawnBuffer(
     SharedImageManager* manager,

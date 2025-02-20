@@ -208,18 +208,14 @@ OverlayD3DImageRepresentation::~OverlayD3DImageRepresentation() = default;
 bool OverlayD3DImageRepresentation::BeginReadAccess(
     gfx::GpuFenceHandle& acquire_fence) {
   return static_cast<D3DImageBacking*>(backing())->BeginAccessD3D11(
-      d3d11_device_, /*write_access=*/false);
+      d3d11_device_, /*write_access=*/false, /*is_overlay=*/true);
 }
 
 void OverlayD3DImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
-  static_cast<D3DImageBacking*>(backing())->EndAccessD3D11(d3d11_device_);
-
-#if DCHECK_IS_ON()
-  static_cast<D3DImageBacking*>(backing())
-      ->CheckDCompTextureIsAvailableIfNoReaders();
-#endif
+  static_cast<D3DImageBacking*>(backing())->EndAccessD3D11(d3d11_device_,
+                                                           /*is_overlay=*/true);
 }
 
 std::optional<gl::DCLayerOverlayImage>
