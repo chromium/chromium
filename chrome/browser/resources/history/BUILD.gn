@@ -48,7 +48,9 @@ build_webui("build") {
   css_files = [
     "history_embeddings_promo.css",
     "shared_style.css",
+    "shared_style_lit.css",
     "shared_vars.css",
+    "synced_device_card.css",
   ]
 
   icons_html_files = [ "shared_icons.html" ]

@@ -11,6 +11,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks, navigateTo} from './test_util.js';
@@ -211,14 +212,14 @@ suite('Metrics', function() {
 
     const menuButton = cards[0].$['menu-button'];
     menuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     syncedDeviceManager.shadowRoot!
         .querySelector<HTMLElement>('#menuOpenButton')!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.OPEN_ALL]);
 
     menuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     syncedDeviceManager!.shadowRoot!
         .querySelector<HTMLElement>('#menuDeleteButton')!.click();
