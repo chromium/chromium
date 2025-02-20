@@ -163,15 +163,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="(Obsolete) Notification's button clicked"/>
 </enum>
 
-<enum name="AshNightLightDisplayCrtcCtmSupportType">
-  <summary>
-    Defines the possible displays' color transform matrix support types
-  </summary>
-  <int value="0" label="No display support"/>
-  <int value="1" label="Mixed display support"/>
-  <int value="2" label="All displays support"/>
-</enum>
-
 <enum name="AshNightLightScheduleType">
   <summary>Defines the possible Night Light schedule types</summary>
   <int value="0" label="None"/>

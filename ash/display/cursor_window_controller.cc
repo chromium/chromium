@@ -259,19 +259,13 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
   }
 
   if (prefs->GetBoolean(prefs::kNightLightEnabled)) {
-    // All or some displays don't support setting a CRTC matrix, which means
-    // Night Light is using the composited color matrix, and hence software
+    // If the current display doesn't support setting a CRTC matrix,
+    // Night Light will be using the composited color matrix, and hence software
     // cursor should be used.
-    // TODO(afakhry): Instead of switching to the composited cursor on all
-    // displays if any of them don't support a CRTC matrix, we should provide
-    // the functionality to turn on the composited cursor on a per-display basis
-    // (i.e. use it only on the displays that don't support CRTC matrices).
-    const DisplayColorManager::DisplayCtmSupport displays_ctm_support =
-        shell->display_color_manager()->displays_ctm_support();
-    UMA_HISTOGRAM_ENUMERATION("Ash.NightLight.DisplayCrtcCtmSupport",
-                              displays_ctm_support);
-    if (displays_ctm_support != DisplayColorManager::DisplayCtmSupport::kAll)
+    if (!shell->display_color_manager()->HasColorCorrectionMatrix(
+            display_.id())) {
       return true;
+    }
   }
 
   if (prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled)) {

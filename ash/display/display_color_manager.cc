@@ -70,19 +70,6 @@ std::unique_ptr<display::ColorCalibration> ParseVpdEntry(
   return nullptr;
 }
 
-bool HasColorCorrectionMatrix(display::DisplayConfigurator* configurator,
-                              int64_t display_id) {
-  for (const display::DisplaySnapshot* display_snapshot :
-       configurator->cached_displays()) {
-    if (display_snapshot->display_id() != display_id)
-      continue;
-
-    return display_snapshot->has_color_correction_matrix();
-  }
-
-  return false;
-}
-
 }  // namespace
 
 DisplayColorManager::DisplayColorManager(
@@ -100,10 +87,21 @@ DisplayColorManager::~DisplayColorManager() {
   configurator_->RemoveObserver(this);
 }
 
+bool DisplayColorManager::HasColorCorrectionMatrix(int64_t display_id) {
+  for (const display::DisplaySnapshot* display_snapshot :
+       configurator_->cached_displays()) {
+    if (display_snapshot->display_id() == display_id) {
+      return display_snapshot->has_color_correction_matrix();
+    }
+  }
+
+  return false;
+}
+
 bool DisplayColorManager::SetDisplayColorTemperatureAdjustment(
     int64_t display_id,
     const display::ColorTemperatureAdjustment& cta) {
-  if (!HasColorCorrectionMatrix(configurator_, display_id)) {
+  if (!HasColorCorrectionMatrix(display_id)) {
     // This display doesn't support setting a CRTC matrix.
     return false;
   }
