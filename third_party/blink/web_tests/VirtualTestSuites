@@ -2132,7 +2132,7 @@
     "bases": ["external/wpt/html/semantics/permission-element"],
     "args": ["--enable-blink-features=PermissionElement"],
     "owners": ["permissions-core@google.com"],
-    "expires": "Feb 1, 2025"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "permission-element-disabled",
@@ -2140,7 +2140,7 @@
     "bases": [],
     "args": ["--disable-blink-features=PermissionElement"],
     "owners": ["permissions-core@google.com"],
-    "expires": "Feb 1, 2025"
+    "expires": "Jul 1, 2025"
   },
   "The GenericSensorExtraClasses feature is controlled by a flag, which has ",
   "an expiration date. |expires| below is set to 'never' to avoid having to ",
