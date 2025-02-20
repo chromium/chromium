@@ -67,11 +67,8 @@ void RenderProcessUserData::SetDestructionObserver(
 
 void RenderProcessUserData::OnProcessLaunched() {
   DCHECK(host_->GetProcess().IsValid());
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcess,
-                                base::Unretained(process_node_.get()),
-                                host_->GetProcess().Duplicate(),
-                                /* launch_time=*/base::TimeTicks::Now()));
+  process_node_->SetProcess(host_->GetProcess().Duplicate(),
+                            /*launch_time=*/base::TimeTicks::Now());
 }
 
 // static
@@ -88,10 +85,7 @@ RenderProcessUserData* RenderProcessUserData::CreateForRenderProcessHost(
 void RenderProcessUserData::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&ProcessNodeImpl::SetProcessExitStatus,
-                     base::Unretained(process_node_.get()), info.exit_code));
+  process_node_->SetProcessExitStatus(info.exit_code);
 }
 
 void RenderProcessUserData::RenderProcessHostDestroyed(
