@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -64,7 +65,7 @@ public class SafetyHubAccountPasswordsDataSource
     private final SigninManager mSigninManager;
     private final SafetyHubModuleDelegate mModuleDelegate;
 
-    private PasswordStoreBridge mPasswordStoreBridge;
+    @Nullable private PasswordStoreBridge mPasswordStoreBridge;
     private Observer mObserver;
 
     private int mCompromisedPasswordCount;

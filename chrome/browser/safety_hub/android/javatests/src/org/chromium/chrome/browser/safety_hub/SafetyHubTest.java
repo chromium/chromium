@@ -210,7 +210,7 @@ public final class SafetyHubTest {
 
         // Reset state to the default of the compromised passwords count and the browsing data
         // state.
-        clearCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
     }
 
@@ -681,7 +681,7 @@ public final class SafetyHubTest {
         // Set a module with an unmanaged warning state.
         int compromisedPasswordsCount = 5;
         addCredentialToAccountStore();
-        setCompromisedPasswordsCount(compromisedPasswordsCount);
+        setAccountCompromisedPasswordsCount(compromisedPasswordsCount);
 
         // Set a module with info state.
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
@@ -718,7 +718,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(notificationsTitle, false);
 
         // Fix the warning state
-        setCompromisedPasswordsCount(0);
+        setAccountCompromisedPasswordsCount(0);
         mSafetyHubFragmentTestRule.recreateActivity();
         safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -735,7 +735,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(notificationsTitle, true);
 
         // Make sure the compromised passwords count is reset at the end of the test.
-        clearCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
     }
 
     @Test
@@ -743,14 +743,13 @@ public final class SafetyHubTest {
     @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
-    @RequiresRestart
-    public void testPasswordModule_WeakPasswords() {
+    public void testAccountPasswordModule_WeakPasswords() {
         // Set the passwords module to the information state.
         int weakPasswordsCount = 5;
         addCredentialToAccountStore();
-        setCompromisedPasswordsCount(0);
-        setReusedPasswordsCount(0);
-        setWeakPasswordsCount(weakPasswordsCount);
+        setAccountCompromisedPasswordsCount(0);
+        setAccountReusedPasswordsCount(0);
+        setAccountWeakPasswordsCount(weakPasswordsCount);
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
@@ -774,7 +773,7 @@ public final class SafetyHubTest {
 
         // Make the password module state be warning.
         int compromisedPasswordsCount = 5;
-        setCompromisedPasswordsCount(compromisedPasswordsCount);
+        setAccountCompromisedPasswordsCount(compromisedPasswordsCount);
         mSafetyHubFragmentTestRule.recreateActivity();
         safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -794,7 +793,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
 
         // Make sure the compromised passwords count is reset at the end of the test.
-        clearCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
     }
 
     @Test
@@ -802,13 +801,12 @@ public final class SafetyHubTest {
     @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
-    @RequiresRestart
-    public void testPasswordModule_CompromisedCountUnavailable_WeakAndReusedPasswords() {
+    public void testAccountPasswordModule_CompromisedCountUnavailable_WeakAndReusedPasswords() {
         // Set the passwords module to the unavailable state.
         addCredentialToAccountStore();
-        setCompromisedPasswordsCount(-1);
-        setWeakPasswordsCount(0);
-        setReusedPasswordsCount(0);
+        setAccountCompromisedPasswordsCount(-1);
+        setAccountWeakPasswordsCount(0);
+        setAccountReusedPasswordsCount(0);
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
@@ -827,8 +825,8 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         // Set weak and reused passwords to unavailable.
-        setWeakPasswordsCount(-1);
-        setReusedPasswordsCount(-1);
+        setAccountWeakPasswordsCount(-1);
+        setAccountReusedPasswordsCount(-1);
         mSafetyHubFragmentTestRule.recreateActivity();
         safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -848,15 +846,14 @@ public final class SafetyHubTest {
     @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
-    @RequiresRestart
-    public void testPasswordModule_WeakAndReusedPasswords() {
+    public void testAccountPasswordModule_WeakAndReusedPasswords() {
         // Set the passwords module to the information state.
         int weakPasswordsCount = 5;
         int reusedPasswordsCount = 4;
         addCredentialToAccountStore();
-        setCompromisedPasswordsCount(0);
-        setWeakPasswordsCount(weakPasswordsCount);
-        setReusedPasswordsCount(reusedPasswordsCount);
+        setAccountCompromisedPasswordsCount(0);
+        setAccountWeakPasswordsCount(weakPasswordsCount);
+        setAccountReusedPasswordsCount(reusedPasswordsCount);
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
@@ -881,7 +878,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         // Set reused passwords to 0.
-        setReusedPasswordsCount(0);
+        setAccountReusedPasswordsCount(0);
         mSafetyHubFragmentTestRule.recreateActivity();
         safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -1411,7 +1408,7 @@ public final class SafetyHubTest {
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
     }
 
-    private void setCompromisedPasswordsCount(int count) {
+    private void setAccountCompromisedPasswordsCount(int count) {
         // TODO(crbug.com/324562205): Add more integration tests for password module.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1419,21 +1416,21 @@ public final class SafetyHubTest {
                 });
     }
 
-    private void clearCompromisedPasswordsCount() {
+    private void clearAccountCompromisedPasswordsCount() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
                 });
     }
 
-    private void setWeakPasswordsCount(int count) {
+    private void setAccountWeakPasswordsCount(int count) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).setInteger(Pref.WEAK_CREDENTIALS_COUNT, count);
                 });
     }
 
-    private void setReusedPasswordsCount(int count) {
+    private void setAccountReusedPasswordsCount(int count) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).setInteger(Pref.REUSED_CREDENTIALS_COUNT, count);

@@ -138,6 +138,10 @@ public class SafetyHubAccountPasswordsModuleMediator
 
     @Override
     public @ModuleState int getModuleState() {
+        if (mModuleHelper == null) {
+            return ModuleState.UNAVAILABLE;
+        }
+
         return mModuleHelper.getModuleState();
     }
 
