@@ -20,10 +20,7 @@ class AddressFieldParserTest : public FormFieldParserTestBase,
                                public ::testing::Test {
  public:
   AddressFieldParserTest() {
-    default_features.InitWithFeatures({features::kAutofillUseAUAddressModel,
-                                       features::kAutofillUseCAAddressModel,
-                                       features::kAutofillUseDEAddressModel,
-                                       features::kAutofillUseFRAddressModel,
+    default_features.InitWithFeatures({features::kAutofillUseFRAddressModel,
                                        features::kAutofillUsePLAddressModel,
                                        features::kAutofillUseINAddressModel,
                                        features::kAutofillUseITAddressModel,
@@ -249,7 +246,6 @@ TEST_F(AddressFieldParserTest, ParseOverflow) {
       {"complemento", "Complemento", "BR", "pt"},
       {"adresszusatz", "Adresszusatz", "DE", "de"},
   };
-  base::test::ScopedFeatureList enabled{features::kAutofillUseDEAddressModel};
 
   for (const TestCase& test : testcases) {
     SCOPED_TRACE(testing::Message() << "field_name=" << test.field_name

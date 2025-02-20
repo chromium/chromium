@@ -418,21 +418,6 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
-  if (country_code == AddressCountryCode("AU") &&
-      !base::FeatureList::IsEnabled(features::kAutofillUseAUAddressModel)) {
-    return false;
-  }
-
-  if (country_code == AddressCountryCode("CA") &&
-      !base::FeatureList::IsEnabled(features::kAutofillUseCAAddressModel)) {
-    return false;
-  }
-
-  if (country_code == AddressCountryCode("DE") &&
-      !base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
-    return false;
-  }
-
   if (country_code == AddressCountryCode("FR") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseFRAddressModel)) {
     return false;

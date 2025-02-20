@@ -1408,10 +1408,7 @@ TEST_F(AutofillProfileTest, Compare) {
 // TODO(crbug.com/40275657): Extend this test to cover i18n profiles.
 TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillUseAUAddressModel,
-                                 features::kAutofillUseCAAddressModel,
-                                 features::kAutofillUseDEAddressModel,
-                                 features::kAutofillUseFRAddressModel,
+  feature_list.InitWithFeatures({features::kAutofillUseFRAddressModel,
                                  features::kAutofillUseINAddressModel,
                                  features::kAutofillUseNLAddressModel,
                                  features::kAutofillUseITAddressModel},
@@ -1666,10 +1663,8 @@ TEST_F(AutofillProfileTest, ConvertToAccountProfile) {
 }
 
 TEST_F(AutofillProfileTest, RemoveInaccessibleProfileValues) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillUseDEAddressModel,
-                                 features::kAutofillUseINAddressModel},
-                                {});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillUseINAddressModel};
   // Returns true if at least one field was removed.
   auto RemoveInaccessibleProfileValues = [](AutofillProfile& profile) {
     const FieldTypeSet inaccessible_fields =

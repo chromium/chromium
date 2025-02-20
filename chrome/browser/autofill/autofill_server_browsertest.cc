@@ -120,11 +120,9 @@ class AutofillServerTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         // Enabled.
         {features::test::kAutofillServerCommunication,
-         features::kAutofillUseCAAddressModel,
          features::kAutofillUseFRAddressModel,
          features::kAutofillUseITAddressModel,
-         features::kAutofillUseNLAddressModel
-        },
+         features::kAutofillUseNLAddressModel},
         // Disabled.
         {});
   }
