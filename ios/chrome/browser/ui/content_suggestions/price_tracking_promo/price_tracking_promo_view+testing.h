@@ -16,6 +16,8 @@
 
 - (NSString*)allowLabelTextForTesting;
 
+- (void)addConstraintsForProductImageForTesting;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_PRICE_TRACKING_PROMO_VIEW_TESTING_H_

@@ -44,3 +44,9 @@ TEST_F(PriceTrackingPromoViewTest, TestAllow) {
   EXPECT_TRUE([view.allowLabelTextForTesting
       containsString:@"Allow price tracking notifications"]);
 }
+
+TEST_F(PriceTrackingPromoViewTest, TestFaviconWhenNoProductImage) {
+  PriceTrackingPromoModuleView* view =
+      GetConfiguredPriceTrackingPromoModuleView();
+  [view addConstraintsForProductImageForTesting];
+}
