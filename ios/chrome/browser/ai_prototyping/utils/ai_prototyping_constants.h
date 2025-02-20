@@ -26,6 +26,8 @@ enum class AIPrototypingFeature : NSInteger {
   kFreeform,
   // Represents the tab organization/grouping feature.
   kTabOrganization,
+  // Represents the enhanced calendar feature.
+  kEnhancedCalendar,
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_AI_PROTOTYPING_CONSTANTS_H_

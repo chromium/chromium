@@ -13,8 +13,6 @@
 
 // View controller that displays a debug UI menu for AI prototyping.
 // This wraps multiple pages, each representing an AI feature.
-// Functionality in this view are noop when compile flag
-// `BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE` is disabled.
 @interface AIPrototypingViewController
     : UIViewController <AIPrototypingConsumer>
 
