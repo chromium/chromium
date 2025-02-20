@@ -445,6 +445,14 @@ void FakeConciergeClient::AggressiveBalloon(
       base::BindOnce(std::move(callback), aggressive_balloon_response_));
 }
 
+void FakeConciergeClient::MuteVmAudio(
+    const vm_tools::concierge::MuteVmAudioRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+        callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), mute_vm_audio_response_));
+}
+
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
   // Now GetVmInfo can return success.
