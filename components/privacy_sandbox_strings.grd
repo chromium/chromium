@@ -818,14 +818,13 @@
     </message>
 
     <!-- NTP - Settings P1 -->
-    <!-- TODO(b:370008370): Make strings translateable when content is finalized -->
-    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER" desc="This text is for the header of the emphasized detail, “Third-party cookies are blocked” section." translateable="true" formatter_data="android_java">
       Third-party cookies are blocked
     </message>
-    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP" desc="" translateable="false">
+    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP" desc="This text is for the body of the “Third-party cookies are blocked” section. It specifies the scope of blocking third-party cookies and informs the user of possible functional impacts, a means of addressing it, and a link to learn how to do so." translateable="true">
       When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
-    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_ANDROID" desc="This text is for the body of the “Third-party cookies are blocked” section. It specifies the scope of blocking third-party cookies and informs the user of possible functional impacts, a means of addressing it, and a link to learn how to do so." translateable="true" formatter_data="android_java">
       When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;link&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
 

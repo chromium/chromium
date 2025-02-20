@@ -208,7 +208,7 @@ public class IncognitoNewTabPageTest {
                                 .getResources()
                                 .getString(
                                         R.string
-                                                .incognito_ntp_block_third_party_cookies_description));
+                                                .incognito_ntp_block_third_party_cookies_description_android));
 
         onView(withText(R.string.incognito_ntp_block_third_party_cookies_header))
                 .check(matches(isDisplayed()));
