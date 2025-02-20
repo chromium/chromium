@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic_button_controller_delegate.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -18,13 +18,15 @@ namespace glic {
 
 // GlicButton should leverage the look and feel of the existing
 // TabSearchButton for sizing and appropriate theming.
-class GlicButton : public TabStripControlButton,
+
+class GlicButton : public TabStripNudgeButton,
                    public GlicButtonControllerDelegate {
-  METADATA_HEADER(GlicButton, TabStripControlButton)
+  METADATA_HEADER(GlicButton, TabStripNudgeButton)
 
  public:
   explicit GlicButton(TabStripController* tab_strip_controller,
-                      PressedCallback callback,
+                      PressedCallback pressed_callback,
+                      PressedCallback close_pressed_callback,
                       const gfx::VectorIcon& icon,
                       const std::u16string& tooltip);
   GlicButton(const GlicButton&) = delete;
@@ -42,6 +44,10 @@ class GlicButton : public TabStripControlButton,
   // visible edges of the button. This function returns a rect without that
   // padding.
   gfx::Rect GetBoundsWithInset() const;
+
+  // TabStripControlButton:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   // Tab strip that contains this button.

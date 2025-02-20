@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/buildflags.h"
@@ -17,15 +18,27 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+constexpr int kIconSizePadding = 24;
+}  // namespace
 
 namespace glic {
 
 GlicButton::GlicButton(TabStripController* tab_strip_controller,
-                       PressedCallback callback,
+                       PressedCallback pressed_callback,
+                       PressedCallback close_pressed_callback,
                        const gfx::VectorIcon& icon,
                        const std::u16string& tooltip)
-    : TabStripControlButton(tab_strip_controller, std::move(callback), icon),
+    : TabStripNudgeButton(tab_strip_controller,
+                          std::move(pressed_callback),
+                          std::move(close_pressed_callback),
+                          tooltip,
+                          kGlicNudgeButtonElementId,
+                          Edge::kNone,
+                          icon),
       tab_strip_controller_(tab_strip_controller) {
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
 
@@ -33,12 +46,20 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   GetViewAccessibility().SetName(tooltip);
 
   SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+
   SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
   SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
 
   UpdateColors();
+
+  SetVisible(true);
+
+  auto* const layout_manager =
+      SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout_manager->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
 }
 
 GlicButton::~GlicButton() = default;
@@ -50,8 +71,8 @@ void GlicButton::SetShowState(bool show) {
   if (is_showing_nudge_) {
     return;
   }
-
   SetVisible(show_state_);
+
   PreferredSizeChanged();
 }
 
@@ -60,17 +81,24 @@ void GlicButton::SetIcon(const gfx::VectorIcon& icon) {
 }
 
 void GlicButton::SetIsShowingNudge(bool is_showing) {
-  // Don't show the button while the nudge is showing and restore
-  // to original show state when the nudge is no longer showing.
   is_showing_nudge_ = is_showing;
-
-  if (is_showing_nudge_) {
-    SetVisible(false);
-  } else {
-    SetVisible(show_state_);
-  }
-
   PreferredSizeChanged();
+}
+
+gfx::Size GlicButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int full_width =
+      GetLayoutManager()->GetPreferredSize(this, available_size).width();
+
+  int icon_width =
+      GetImage(views::Button::STATE_NORMAL).size().width() + kIconSizePadding;
+  const int width = (full_width - icon_width) * GetWidthFactor() + icon_width;
+
+  const int height = TabStripControlButton::CalculatePreferredSize(
+                         views::SizeBounds(width, available_size.height()))
+                         .height();
+
+  return gfx::Size(width, height);
 }
 
 void GlicButton::SetDropToAttachIndicator(bool indicate) {

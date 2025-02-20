@@ -40,11 +40,11 @@ class TabStripActionContainer : public views::View,
    public:
     enum class AnimationSessionType { SHOW, HIDE };
 
-    TabStripNudgeAnimationSession(
-        TabStripNudgeButton* button,
-        TabStripActionContainer* container,
-        AnimationSessionType session_type,
-        base::OnceCallback<void()> on_animation_ended);
+    TabStripNudgeAnimationSession(TabStripNudgeButton* button,
+                                  TabStripActionContainer* container,
+                                  AnimationSessionType session_type,
+                                  base::OnceCallback<void()> on_animation_ended,
+                                  bool animate_opacity = true);
     ~TabStripNudgeAnimationSession();
     void ApplyAnimationValue(const gfx::Animation* animation);
     void MarkAnimationDone(const gfx::Animation* animation);
@@ -76,6 +76,9 @@ class TabStripActionContainer : public views::View,
 
     // Callback to container after animation has ended.
     base::OnceCallback<void()> on_animation_ended_;
+
+    // Adding boolean since the glic nudge is always opaque.
+    bool is_opacity_animated_;
   };
   explicit TabStripActionContainer(
       TabStripController* tab_strip_controller,
@@ -86,7 +89,6 @@ class TabStripActionContainer : public views::View,
   TabStripActionContainer& operator=(const TabStripActionContainer&) = delete;
   ~TabStripActionContainer() override;
 
-  TabStripNudgeButton* glic_nudge_button() { return glic_nudge_button_; }
   TabStripNudgeButton* tab_declutter_button() { return tab_declutter_button_; }
   TabStripNudgeButton* auto_tab_group_button() {
     return auto_tab_group_button_;
@@ -131,15 +133,15 @@ class TabStripActionContainer : public views::View,
                               TabStripNudgeButton* button);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicButton> CreateGlicButton();
+  std::unique_ptr<glic::GlicButton> CreateGlicButton(
+      TabStripController* tab_strip_controller);
   void OnGlicButtonClicked();
+  void OnGlicButtonDismissed();
+
 #endif
 
   void OnTabDeclutterButtonClicked();
   void OnTabDeclutterButtonDismissed();
-
-  void OnGlicNudgeButtonClicked();
-  void OnGlicNudgeButtonDismissed();
 
   void OnAutoTabGroupButtonClicked();
   void OnAutoTabGroupButtonDismissed();
@@ -168,10 +170,6 @@ class TabStripActionContainer : public views::View,
 
   void OnAnimationSessionEnded();
 
-#if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<TabStripNudgeButton> CreateGlicNudgeButton(
-      TabStripController* tab_strip_controller);
-#endif  // BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton(
       TabStripController* tab_strip_controller);
   std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton(
@@ -183,7 +181,6 @@ class TabStripActionContainer : public views::View,
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
   // The button currently holding the lock to be shown/hidden.
   raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
-  raw_ptr<TabStripNudgeButton> glic_nudge_button_ = nullptr;
   raw_ptr<TabStripNudgeButton> tab_declutter_button_ = nullptr;
   raw_ptr<TabStripNudgeButton> auto_tab_group_button_ = nullptr;
   raw_ptr<TabOrganizationService> tab_organization_service_ = nullptr;
