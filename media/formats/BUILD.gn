@@ -221,6 +221,7 @@ source_set("formats") {
     "hls/playlist.h",
     "hls/playlist_common.cc",
     "hls/playlist_common.h",
+    "hls/quirks.h",
     "hls/rendition_manager.cc",
     "hls/rendition_manager.h",
     "hls/segment_stream.cc",

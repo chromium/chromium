@@ -15,6 +15,7 @@
 #include "media/base/media_serializers.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/test_util.h"
 #include "media/formats/hls/variable_dictionary.h"
@@ -1316,12 +1317,15 @@ TEST(HlsTagsTest, ParseInfTag) {
   EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(12.0)));
   EXPECT_EQ(result.tag.title.Str(), "asdfsdf   ");
 
-  // By Spec, this should be an error, but alas, feral manifests exists and
-  // often lack the trailing comma emblematic of their domesticated brethren.
-  // ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
-  result = OkTest<InfTag>("123");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123)));
-  EXPECT_EQ(result.tag.title.Str(), "");
+  if (HLSQuirks::AllowMissingSegmentInfCommas()) {
+    result = OkTest<InfTag>("123");
+    EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123)));
+    EXPECT_EQ(result.tag.title.Str(), "");
+  } else {
+    // By Spec, this should be an error, but alas, feral manifests exist and
+    // often lack the trailing comma emblematic of their domesticated brethren.
+    ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
+  }
 
   // Test some invalid tags
   ErrorTest<InfTag>(std::nullopt, ParseStatusCode::kMalformedTag);

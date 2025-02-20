@@ -6,6 +6,7 @@
 
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/playlist_common.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
@@ -80,11 +81,9 @@ ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
           break;
         case TagKind::kMediaPlaylistTag:
           if (playlist_kind == Kind::kMultivariantPlaylist) {
-            // TODO(crbug.com/395950145): It's really common for multivariant
-            // playlists to incorrectly add an "EXT-X-ENDLIST" tag at the end,
-            // which, while disallowed by spec, is accepted by most other HLS
-            // implementations. We can't fail parsing and thus playback as a
-            // result, in order to maintain compatibility.
+            if (!HLSQuirks::AllowMediaTagsInMultivariantPlaylists()) {
+              return ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag;
+            }
             break;
           }
           playlist_kind = Kind::kMediaPlaylist;

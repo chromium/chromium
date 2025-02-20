@@ -14,6 +14,7 @@
 #include "media/base/mime_util.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/variable_dictionary.h"
 
 namespace media::hls {
@@ -1005,6 +1006,9 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   SourceString duration_str = content;
   SourceString title_str = content;
   if (comma == std::string_view::npos) {
+    if (!HLSQuirks::AllowMissingSegmentInfCommas()) {
+      return ParseStatusCode::kMalformedTag;
+    }
     // While the HLS spec does require commas at the end of inf tags, it's
     // incredibly common for sites to elide the comma if there is no title
     // attribute present. In this case, we should assert that there is at least

@@ -8,6 +8,7 @@
 
 #include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/tags.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -61,6 +62,11 @@ ParseStatus::Or<absl::monostate> AudioRenditionGroup::AddRendition(
   }
 
   auto name = std::string(tag.name.Str());
+  if (!HLSQuirks::DeduplicateRenditionNamesInGroup() &&
+      renditions_map_.contains(name)) {
+    return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
+  }
+
   while (renditions_map_.contains(name)) {
     // TODO(crbug.com/395949828): According to the spec:
     // "All EXT-X-MEDIA tags in the same Group MUST have different NAME
