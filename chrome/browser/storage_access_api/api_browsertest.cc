@@ -323,6 +323,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
           observed_request_headers_.emplace_back(request.relative_url,
                                                  request.headers);
         }));
+    net::test_server::InstallDefaultWebSocketHandlers(&https_server_);
     ASSERT_TRUE(https_server_.Start());
 
     // All the sites used during these tests should have a cookie.
@@ -573,12 +574,11 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
         browser_ptr->tab_strip_model()->GetActiveWebContents(), ""));
   }
 
-  void OpenConnectToPage(content::RenderFrameHost* frame,
-                         const net::EmbeddedTestServer& wss_server) {
-    std::string query =
-        base::StrCat({"url=", net::test_server::GetWebSocketURL(
-                                  wss_server, kHostB, "/echo-request-headers")
-                                  .spec()});
+  void OpenConnectToPage(content::RenderFrameHost* frame) {
+    std::string query = base::StrCat(
+        {"url=", net::test_server::GetWebSocketURL(https_server_, kHostB,
+                                                   "/echo-request-headers")
+                     .spec()});
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
 
@@ -1808,12 +1808,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        WebsocketRequestsUseStorageAccessGrants) {
-  net::EmbeddedTestServer wss_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  wss_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::InstallDefaultWebSocketHandlers(&wss_server);
-
-  ASSERT_TRUE(wss_server.Start());
-
   SetBlockThirdPartyCookies(true);
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1824,7 +1818,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Before the document opts into Storage Access, the WebSocket should not send
   // unpartitioned cookies during the connection.
   {
-    OpenConnectToPage(GetFrame(), wss_server);
+    OpenConnectToPage(GetFrame());
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
@@ -1840,7 +1834,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // After the document opts into Storage Access, the WebSocket *should* send
   // unpartitioned cookies during the connection.
   {
-    OpenConnectToPage(GetFrame(), wss_server);
+    OpenConnectToPage(GetFrame());
     ASSERT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
     std::string message;
