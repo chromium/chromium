@@ -118,4 +118,43 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
         assertNull(mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
     }
+
+    @Test
+    public void noPasswords() {
+        mockManaged(false);
+
+        mModuleMediator.stateChanged(ModuleType.NO_SAVED_PASSWORDS);
+        verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
+
+        String expectedTitle = mActivity.getString(R.string.safety_hub_no_local_passwords_title);
+        String expectedSummary = mActivity.getString(R.string.safety_hub_no_passwords_summary);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+        assertNull(mPreference.getPrimaryButtonText());
+    }
+
+    @Test
+    public void noPasswords_managed() {
+        mockManaged(true);
+
+        mModuleMediator.stateChanged(ModuleType.NO_SAVED_PASSWORDS);
+        verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
+
+        String expectedTitle = mActivity.getString(R.string.safety_hub_no_local_passwords_title);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPreference.getSummary().toString());
+        assertEquals(MANAGED_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+    }
 }

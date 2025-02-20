@@ -79,6 +79,8 @@ public class SafetyHubLocalPasswordsModuleMediator
             case ModuleType.UNAVAILABLE_PASSWORDS:
                 return new SafetyHubLocalPasswordsUnavailableAllPasswordsModuleHelper(
                         context, mModuleDelegate);
+            case ModuleType.NO_SAVED_PASSWORDS:
+                return new SafetyHubLocalPasswordsNoPasswordsModuleHelper(context, mModuleDelegate);
             default:
                 throw new IllegalArgumentException();
         }
