@@ -2886,7 +2886,7 @@ if (current_toolchain == default_toolchain) {
                 "${_symbol_dir_for_size}/libmonochrome__combined.so",
               ]
           to_resource_sizes_py = {
-            apk_name = "apks/resource_size_config_trichrome"
+            apk_name = "apks/$target_name"
             trichrome_library = "apks/$_trichrome_library_basename_for_size"
             trichrome_chrome = "apks/$_trichrome_chrome_basename_for_size"
             trichrome_webview = "apks/$_trichrome_webview_basename_for_size"
@@ -2895,6 +2895,19 @@ if (current_toolchain == default_toolchain) {
             apk_name = "apks/TrichromeLibrary64.apk"
           }
           supersize_input_file = "apks/$_ssargs_filename_for_size"
+        }
+
+        # This one is used when arm32 shows no regression, but arm64 does. In
+        # this case supersize is run a second time with this config.
+        android_size_bot_config("arm64_resource_size_config_trichrome") {
+          name = "TrichromeLibrary64"
+          mapping_files = []
+
+          archive_files = [
+            "apks/TrichromeLibrary64.apk",
+            "lib.unstripped/libmonochrome_64__combined.so",
+          ]
+          supersize_input_file = "apks/TrichromeLibrary64.apk"
         }
       }
     }

@@ -529,18 +529,20 @@ def main():
   size_deltas.update(_CreateUncompressedPakSizeDeltas(changed_symbols))
 
   # Normalized APK Size is the main metric we use to monitor binary size.
-  logging.info('Creating sizes diff')
-  resource_sizes_lines, resource_sizes_delta = (_CreateResourceSizesDelta(
-      args.before_dir, args.after_dir, max_size_increase))
-  size_deltas.add(resource_sizes_delta)
-  metrics.add((resource_sizes_delta, _RESOURCE_SIZES_LOG))
+  config_32 = config.get('to_resource_sizes_py')
+  if config_32:
+    logging.info('Creating sizes diff')
+    resource_sizes_lines, resource_sizes_delta = (_CreateResourceSizesDelta(
+        args.before_dir, args.after_dir, max_size_increase))
+    size_deltas.add(resource_sizes_delta)
+    metrics.add((resource_sizes_delta, _RESOURCE_SIZES_LOG))
 
-  logging.info('Creating base module sizes diff')
-  base_resource_sizes_lines, base_resource_sizes_delta = (
-      _CreateBaseModuleResourceSizesDelta(args.before_dir, args.after_dir,
-                                          max_size_increase))
-  size_deltas.add(base_resource_sizes_delta)
-  metrics.add((base_resource_sizes_delta, _BASE_RESOURCE_SIZES_LOG))
+    logging.info('Creating base module sizes diff')
+    base_resource_sizes_lines, base_resource_sizes_delta = (
+        _CreateBaseModuleResourceSizesDelta(args.before_dir, args.after_dir,
+                                            max_size_increase))
+    size_deltas.add(base_resource_sizes_delta)
+    metrics.add((base_resource_sizes_delta, _BASE_RESOURCE_SIZES_LOG))
 
   config_64 = config.get('to_resource_sizes_py_64')
   if config_64:
@@ -586,16 +588,6 @@ To understand what those checks are and how to pass them, see:
   summary = '<br>' + checks_text.replace('\n', '<br>')
   links_json = [
       {
-          'name': 'Binary Size Details (arm32)',
-          'lines': resource_sizes_lines + see_docs_lines,
-          'log_name': _RESOURCE_SIZES_LOG,
-      },
-      {
-          'name': 'Base Module Binary Size Details',
-          'lines': base_resource_sizes_lines + see_docs_lines,
-          'log_name': _BASE_RESOURCE_SIZES_LOG,
-      },
-      {
           'name': 'Mutable Constants Diff',
           'lines': mutable_constants_lines + see_docs_lines,
           'log_name': _MUTABLE_CONSTANTS_LOG,
@@ -623,6 +615,20 @@ To understand what those checks are and how to pass them, see:
           'url': _HTML_REPORT_URL,
       },
   ]
+  if config_32:
+    links_json[0:0] = [
+        {
+            'name': 'Binary Size Details (arm32)',
+            'lines': resource_sizes_lines + see_docs_lines,
+            'log_name': _RESOURCE_SIZES_LOG,
+        },
+        {
+            'name': 'Base Module Binary Size Details',
+            'lines': base_resource_sizes_lines + see_docs_lines,
+            'log_name': _BASE_RESOURCE_SIZES_LOG,
+        },
+    ]
+
   if config_64:
     links_json[2:2] = [
         {
