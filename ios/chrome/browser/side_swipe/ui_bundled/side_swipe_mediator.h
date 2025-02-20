@@ -20,11 +20,6 @@ namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
 
-// Notification sent when the user starts a side swipe (on tablet).
-extern NSString* const kSideSwipeWillStartNotification;
-// Notification sent when the user finishes a side swipe (on tablet).
-extern NSString* const kSideSwipeDidStopNotification;
-
 enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 
 @protocol SideSwipeMediatorDelegate

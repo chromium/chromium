@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/card_side_swipe_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_constants.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator+Testing.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_navigation_view.h"
@@ -39,11 +40,6 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
-
-NSString* const kSideSwipeWillStartNotification =
-    @"kSideSwipeWillStartNotification";
-NSString* const kSideSwipeDidStopNotification =
-    @"kSideSwipeDidStopNotification";
 
 namespace {
 
