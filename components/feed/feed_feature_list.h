@@ -114,10 +114,6 @@ BASE_DECLARE_FEATURE(kFeedContainment);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedKillSwitch);
 
-// Feature that enables feed low-memory improvement.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kFeedLowMemoryImprovement);
-
 // Feature that unmount RecyclerBinder on view detach to fix a memory leak.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedRecyclerBinderUnmountOnDetach);
