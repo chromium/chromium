@@ -389,7 +389,6 @@ void AutofillAiManager::OnSavePromptAcceptance(
 
 void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
                                        autofill::FieldGlobalId field_global_id,
-                                       bool is_manual_fallback,
                                        GetSuggestionsCallback callback) {
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
@@ -414,16 +413,6 @@ void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
       form_structure->GetFieldById(field_global_id);
   if (!autofill_field) {
     std::move(callback).Run({});
-    return;
-  }
-
-  if (is_manual_fallback &&
-      !autofill_field->GetAutofillAiServerTypePredictions()) {
-    // TODO(crbug.com/389629573): Store `form`, `field` and trigger LLM.
-    // Once we have LLM responses we need to rebuild the suggestions and
-    // reshow the popup, either via `AutofillClient` or exposing the
-    // update method from `AutofillExternalDelegate.
-    std::move(callback).Run({CreateLoadingSuggestions()});
     return;
   }
 

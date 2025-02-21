@@ -1181,15 +1181,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // annotations. IMPORTANT NOTE: If there's no data stored in user annotations,
   // `GenerateSuggestionsAndMaybeShowUI()` will be called and Autofill's regular
   // flow will continue.
-  AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-
-  if (delegate && form_structure && autofill_field &&
+  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
+      delegate && form_structure && autofill_field &&
       delegate->IsFormAndFieldEligibleForAutofillAi(*form_structure,
                                                     *autofill_field)) {
     delegate->GetSuggestions(
         form.global_id(), field.global_id(),
-        /*is_manual_fallback=*/trigger_source ==
-            AutofillSuggestionTriggerSource::kAutofillAi,
         base::BindOnce(
             &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
             weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,

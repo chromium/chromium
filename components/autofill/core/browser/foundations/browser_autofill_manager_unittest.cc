@@ -6747,7 +6747,7 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kFillAutofillAi)};
   EXPECT_CALL(delegate, GetSuggestions)
-      .WillOnce(RunOnceCallback<3>(suggestions));
+      .WillOnce(RunOnceCallback<2>(suggestions));
 
   OnAskForValuesToFill(form, form.fields().front(),
                        AutofillSuggestionTriggerSource::kAutofillAi);
