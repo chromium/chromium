@@ -226,7 +226,7 @@
 <translation id="3997429360543082038">За Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Преведи го екранот</translation>
-<translation id="4023601594785368013">Јазик на оригиналот: <ph name="LANGUAGE" /></translation>
+<translation id="4023601594785368013">Изворен јазик: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681">Помогнете да го подобриме Chromium со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Во најновата верзија се достапни значајни безбедносни подобрувања и нови карактеристики.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
