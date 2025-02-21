@@ -575,6 +575,47 @@ TEST_F(FormFillerTest, FillCreditCardForm_StripCardNumber) {
   EXPECT_THAT(filled_fields[0], AutofilledWith(u"4234567890123456"));
 }
 
+// Tests that when payment form fields are autofilled and payment swapping is
+// enabled, the autofilled values can be replaced with empty values.
+TEST_F(FormFillerTest, PaymentsSwappingWithPartiallyEmptyData) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePaymentsFieldSwapping);
+
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                     /*use_month_type=*/false);
+  FormsSeen({form});
+
+  CreditCard credit_card_full;
+  test::SetCreditCardInfo(&credit_card_full, "Elvis Presley",
+                          "4234 5678 9012 3456",  // Visa
+                          "04", "2999", "1");
+
+  CreditCard credit_card_with_empty_data;
+  test::SetCreditCardInfo(&credit_card_with_empty_data, "Elvis Presley New",
+                          "4234-5678-9012-3456",  // Visa
+                          "04", "", "1");
+
+  std::vector<FormFieldData> filled_fields =
+      FillAutofillFormData(form, form.fields().front(), &credit_card_full)
+          .fields();
+
+  EXPECT_THAT(filled_fields[0], AutofilledWith(credit_card_full.GetInfo(
+                                    CREDIT_CARD_NAME_FULL, kAppLocale)));
+  EXPECT_THAT(filled_fields[3], AutofilledWith(credit_card_full.GetInfo(
+                                    CREDIT_CARD_EXP_4_DIGIT_YEAR, kAppLocale)));
+  EXPECT_TRUE(filled_fields[3].is_autofilled());
+
+  filled_fields = FillAutofillFormData(form, form.fields().front(),
+                                       &credit_card_with_empty_data)
+                      .fields();
+  EXPECT_THAT(filled_fields[0],
+              AutofilledWith(credit_card_with_empty_data.GetInfo(
+                  CREDIT_CARD_NAME_FULL, kAppLocale)));
+  EXPECT_EQ(filled_fields[3].value(), u"");
+  EXPECT_FALSE(filled_fields[3].is_autofilled());
+}
+
 struct PartialCreditCardDateParams {
   const char* cc_month = "";
   const char* cc_year = "";

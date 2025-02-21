@@ -2605,9 +2605,7 @@ std::vector<std::pair<FieldRendererId, WebAutofillState>> ApplyFieldsAction(
       continue;
     }
     if ((action_type == mojom::FormActionType::kFill &&
-         ShouldSkipFillField(field, element)) ||
-        (action_type == mojom::FormActionType::kUndo &&
-         !element.IsAutofilled())) {
+         ShouldSkipFillField(field, element))) {
       continue;
     }
     if (element.Focused()) {

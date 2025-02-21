@@ -242,6 +242,8 @@ class FormFiller {
   // Fills `field_data` and modifies `autofill_field` given all other states.
   // Returns true if the field has been filled, false otherwise. This is
   // independent of whether the field was filled or autofilled before.
+  // When `allow_suggestion_swapping` is true, the method still returns true if
+  // the `autofill_field` is emptied.
   // TODO(crbug.com/40227071): Cleanup API and logic.
   bool FillField(
       AutofillField& autofill_field,
@@ -249,6 +251,7 @@ class FormFiller {
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
+      bool allow_suggestion_swapping,
       std::string* failure_to_fill);
 
   LogManager* log_manager();
