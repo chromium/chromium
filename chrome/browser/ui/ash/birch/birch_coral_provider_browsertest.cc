@@ -105,8 +105,10 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(tabs_and_apps.apps,
               testing::UnorderedElementsAre(
-                  AppEq("Gmail", "gdkbjbkdgeggmfkjbfohmimchmkikbid"),
-                  AppEq("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
+                  // URL will be used when app tab title is empty, which happens
+                  // in this test setup.
+                  AppEq("www.gmail.com", "gdkbjbkdgeggmfkjbfohmimchmkikbid"),
+                  AppEq("www.youtube.com", "adnlfjpnmidfimlkaohpidplnoimahfh"),
                   AppEq("Explore", "nbljnnecbjbmifnoehiemkgefbnpoeak"),
                   AppEq("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
                   AppEq("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
@@ -154,7 +156,9 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, NoDupInSessionData) {
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(tabs_and_apps.apps,
               testing::UnorderedElementsAre(
-                  AppEq("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
+                  // URL will be used when app tab title is empty, which happens
+                  // in this test setup.
+                  AppEq("www.youtube.com", "adnlfjpnmidfimlkaohpidplnoimahfh"),
                   AppEq("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
                   AppEq("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
 }

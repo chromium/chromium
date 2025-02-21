@@ -191,7 +191,9 @@ std::unordered_set<coral::mojom::EntityPtr> GetInSessionTabAndWebAppData() {
                IsWebAppWindow(item_info.browser_window)) {
       coral::mojom::AppPtr app_mojom =
           GetBasicAppInfoFromWindow(item_info.browser_window);
-      // TODO(zxdan|hcyang): write tab title as the filename to the app info.
+      // Use the tab title as the app title for web apps, since they are more
+      // descriptive.
+      app_mojom->title = item_info.title;
       entities.emplace(coral::mojom::Entity::NewApp(std::move(app_mojom)));
     }
   }
