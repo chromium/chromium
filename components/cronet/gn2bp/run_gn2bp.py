@@ -16,6 +16,7 @@ and pass Cronet tests in Android infra. The CL will not be submitted.
 import argparse
 import contextlib
 import hashlib
+import multiprocessing.dummy
 import os
 import pathlib
 import subprocess
@@ -169,6 +170,25 @@ def _run_copybara_to_aosp(config: str = _COPYBARA_CONFIG_PATH,
   ])
 
 
+def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):
+  # gn desc behaves completely differently when the output
+  # directory is outside of chromium/src, some paths will
+  # stop having // in the beginning of their labels
+  # eg (//A/B will become A/B), this mostly apply to files
+  # that are generated through actions and not targets.
+  #
+  # This is why the temporary directory has to be generated
+  # beneath the repository root until gn2bp is tweaked to
+  # deal with this small differences.
+  with _OptionalExit(tempfile.TemporaryDirectory(dir=_OUT_DIR),
+                     exit=delete_temporary_files) as gn_out_dir:
+    cronet_utils.gn(gn_out_dir,
+                    ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
+    if _write_desc_json(gn_out_dir, desc_file) != 0:
+      # Exit if we failed to generate any of the desc.json files.
+      print(f"Failed to generate desc file for arch: {arch}")
+      sys.exit(-1)
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--stamp', type=str, help='Path to touch on success')
@@ -219,35 +239,25 @@ def main():
   delete_temporary_files = not args.keep_temporary_files
 
   try:
-    # Create empty temp file for each architecture.
-    arch_to_temp_desc_file = {
+    arch_to_desc_file = {
         arch:
         tempfile.NamedTemporaryFile(mode="w+",
                                     encoding='utf-8',
                                     delete=delete_temporary_files)
         for arch in cronet_utils.ARCHS
     }
-
-    for (arch, temp_file) in arch_to_temp_desc_file.items():
-      # gn desc behaves completely differently when the output
-      # directory is outside of chromium/src, some paths will
-      # stop having // in the beginning of their labels
-      # eg (//A/B will become A/B), this mostly apply to files
-      # that are generated through actions and not targets.
-      #
-      # This is why the temporary directory has to be generated
-      # beneath the repository root until gn2bp is tweaked to
-      # deal with this small differences.
-      with _OptionalExit(tempfile.TemporaryDirectory(dir=_OUT_DIR),
-                         exit=delete_temporary_files) as gn_out_dir:
-        cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
-        if _write_desc_json(gn_out_dir, temp_file) != 0:
-          # Exit if we failed to generate any of the desc.json files.
-          print(f"Failed to generate desc file for arch: {arch}")
-          sys.exit(-1)
+    with multiprocessing.dummy.Pool(len(arch_to_desc_file.items())) as pool:
+      # The "result" is desc files being filled. So, we only need to wait for all tasks to complete.
+      _ = [
+          pool.apply_async(_fill_desc_file_for_arch,
+                           (arch, desc_file, delete_temporary_files))
+          for (arch, desc_file) in arch_to_desc_file.items()
+      ]
+      pool.close()
+      pool.join()
 
     res_license_generation = _run_license_generation()
-    res_gn2bp = _run_gn2bp(desc_files=arch_to_temp_desc_file.values(),
+    res_gn2bp = _run_gn2bp(desc_files=arch_to_desc_file.values(),
                            skip_build_scripts=args.skip_build_scripts,
                            delete_temporary_files=delete_temporary_files)
     res_boringssl = _gen_boringssl()
@@ -262,7 +272,7 @@ def main():
           regenerate_consistency_file=args.regenerate_consistency_file)
 
   finally:
-    for file in arch_to_temp_desc_file.values():
+    for file in arch_to_desc_file.values():
       # Close the temporary files so they can be deleted.
       file.close()
 

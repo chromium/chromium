@@ -6,6 +6,7 @@ import os
 import sys
 import glob
 import constants
+import multiprocessing.dummy
 import tempfile
 from typing import Dict, Callable, List, Set
 from pathlib import Path
@@ -141,14 +142,17 @@ def get_all_readme_through_gn(repo_path: str, targets: Set[str]):
 
   return readme_files | constants.INCLUDED_README
 
+def _get_build_files_paths(repo_path, targets, arch):
+  with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
+    cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
+    return cronet_utils.get_transitive_deps_build_files(repo_path, gn_out_dir, targets)
+
 def _get_all_build_files_path(repo_path: str, targets: Set[str]) -> Set[str]:
   all_build_files_path = set()
-  for arch in cronet_utils.ARCHS:
-    with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
-        cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
-        all_build_files_path.update(
-            cronet_utils.get_transitive_deps_build_files(repo_path, gn_out_dir, targets))
-
+  with multiprocessing.dummy.Pool(len(cronet_utils.ARCHS)) as pool:
+    results = [pool.apply_async(_get_build_files_paths, (repo_path, targets, arch)) for arch in cronet_utils.ARCHS]
+    for result in results:
+      all_build_files_path.update(result.get())
   return all_build_files_path
 
 def should_skip_readme_file(readme_path: str) -> bool:
