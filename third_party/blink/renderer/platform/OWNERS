@@ -27,3 +27,6 @@ per-file runtime_enabled_features.json5=file://third_party/blink/API_OWNERS
 
 # Anyone can update the unit test bundle data filelist.
 per-file blink_platform_unittests_bundle_data.filelist=*
+
+# For WebGPU Features
+per-file runtime_enabled_features.json5=cwallez@chromium.org
