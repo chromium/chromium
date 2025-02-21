@@ -58,7 +58,8 @@ ChromeAutofillAiClient::ChromeAutofillAiClient(
           this,
           autofill::StrikeDatabaseFactory::GetForProfile(profile),
       } {
-  DCHECK(autofill_ai::IsAutofillAiSupported(&*prefs_));
+  DCHECK(
+      autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(&*prefs_));
 }
 
 ChromeAutofillAiClient::~ChromeAutofillAiClient() = default;
@@ -68,7 +69,8 @@ std::unique_ptr<ChromeAutofillAiClient>
 ChromeAutofillAiClient::MaybeCreateForWebContents(
     content::WebContents* web_contents,
     Profile* profile) {
-  if (!autofill_ai::IsAutofillAiSupported(profile->GetPrefs())) {
+  if (!autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
+          profile->GetPrefs())) {
     return nullptr;
   }
   return base::WrapUnique<ChromeAutofillAiClient>(

@@ -1471,7 +1471,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean(
       "autofillAiEnabled",
-      autofill_ai::IsAutofillAiSupported(profile->GetPrefs()));
+      autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
+          profile->GetPrefs()));
 
   html_source->AddString(
       "autofillAiToggleSubLabel",

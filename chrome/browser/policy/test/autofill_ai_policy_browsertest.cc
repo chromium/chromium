@@ -125,9 +125,9 @@ IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsDisabledByPolicy) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GURL(base::StrCat({"chrome://settings/", chrome::kAutofillAiSubPage}))));
-  EXPECT_EQ(
-      autofill_ai::IsAutofillAiSupported(browser()->profile()->GetPrefs()),
-      !disabled_by_policy());
+  EXPECT_EQ(autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
+                browser()->profile()->GetPrefs()),
+            !disabled_by_policy());
   EXPECT_EQ(GetWebContents()->GetURL().path(),
             base::StrCat(
                 {"/", disabled_by_policy() ? "" : chrome::kAutofillAiSubPage}));

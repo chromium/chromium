@@ -25,10 +25,10 @@ class AutofillAiManager;
 // An interface for embedder actions, e.g. Chrome on Desktop.
 //
 // A client should be created only if
-// `IsAutofillAiSupported()`. However,
-// `IsAutofillAiSupported()` is not necessarily a constant
-// over the lifetime of the client. For example, the user may disable Autofill
-// in the settings while the client is alive.
+// `AutofillAiIsPlatformAndEnterprisePolicyEligible()`. However,
+// `AutofillAiIsPlatformAndEnterprisePolicyEligible()` is not necessarily a
+// constant over the lifetime of the client. For example, the user may disable
+// Autofill in the settings while the client is alive.
 class AutofillAiClient {
  public:
   // Contains the result of a user interaction with the save/update AutofillAi
@@ -80,9 +80,9 @@ class AutofillAiClient {
   // Returns whether the feature is enabled in the prefs
   // (`autofill::prefs::kAutofillAisEnabled`).
   //
-  // This is different from `IsAutofillAiSupported()`, which
-  // checks if the user could enable the feature in the first case (if not, the
-  // client is not instantiated in the first place).
+  // This is different from `AutofillAiIsPlatformAndEnterprisePolicyEligible()`,
+  // which checks if the platform and enterprise policy allow the feature (if
+  // not, the client is not instantiated in the first place).
   virtual bool IsAutofillAiEnabledPref() const = 0;
 
   // Returns whether the current user is eligible for Autofill AI.

@@ -30,8 +30,8 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   ~ChromeAutofillAiClient() override;
 
   // Creates a `ChromeAutofillAiClient` for `web_contents`
-  // if it is supported, i.e., `autofill_ai::
-  // IsAutofillAiSupported()` is true.
+  // if the platform and enterprise policy allow it, i.e., `autofill_ai::
+  // AutofillAiIsPlatformAndEnterprisePolicyEligible()` is true.
   [[nodiscard]] static std::unique_ptr<ChromeAutofillAiClient>
   MaybeCreateForWebContents(content::WebContents* web_contents,
                             Profile* profile);

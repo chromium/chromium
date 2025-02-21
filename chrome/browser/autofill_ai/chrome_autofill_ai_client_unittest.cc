@@ -72,7 +72,8 @@ class ChromeAutofillAiClientTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    ASSERT_TRUE(autofill_ai::IsAutofillAiSupported(profile()->GetPrefs()));
+    ASSERT_TRUE(autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
+        profile()->GetPrefs()));
     client_ = ChromeAutofillAiClient::MaybeCreateForWebContents(web_contents(),
                                                                 profile());
     ASSERT_TRUE(client_);
@@ -175,15 +176,17 @@ TEST_F(ChromeAutofillAiClientTest, GetModelExecutor) {
 }
 
 // Tests that no ChromeAutofillAiClient is created if
-// IsAutofillAiSupported() is false.
+// `AutofillAiIsPlatformAndEnterprisePolicyEligible()` is false.
 TEST_F(ChromeAutofillAiClientTest, MaybeCreateForWebContents) {
-  ASSERT_TRUE(autofill_ai::IsAutofillAiSupported(profile()->GetPrefs()));
+  ASSERT_TRUE(autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
+      profile()->GetPrefs()));
   EXPECT_TRUE(ChromeAutofillAiClient::MaybeCreateForWebContents(web_contents(),
                                                                 profile()));
 
   profile()->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
                                     false);
-  ASSERT_FALSE(autofill_ai::IsAutofillAiSupported(profile()->GetPrefs()));
+  ASSERT_FALSE(autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
+      profile()->GetPrefs()));
   EXPECT_FALSE(ChromeAutofillAiClient::MaybeCreateForWebContents(web_contents(),
                                                                  profile()));
 }

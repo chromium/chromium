@@ -70,7 +70,8 @@ INSTANTIATE_TEST_SUITE_P(
             .autofill_enabled = false,
             .expectation = false}));
 
-TEST_P(AutofillPredictionSettingsPolicyTest, IsAutofillAiSupported) {
+TEST_P(AutofillPredictionSettingsPolicyTest,
+       AutofillAiIsPlatformAndEnterprisePolicyEligible) {
   const char* kEnterprisePref = optimization_guide::prefs::
       kAutofillPredictionImprovementsEnterprisePolicyAllowed;
   const char* kAutofillPref = autofill::prefs::kAutofillProfileEnabled;
@@ -82,7 +83,8 @@ TEST_P(AutofillPredictionSettingsPolicyTest, IsAutofillAiSupported) {
                          base::Value(base::to_underlying(GetParam().policy)));
   prefs().SetUserPref(kAutofillPref, base::Value(GetParam().autofill_enabled));
 
-  EXPECT_EQ(IsAutofillAiSupported(&prefs()), GetParam().expectation);
+  EXPECT_EQ(AutofillAiIsPlatformAndEnterprisePolicyEligible(&prefs()),
+            GetParam().expectation);
 }
 #endif
 
