@@ -22922,6 +22922,20 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not sent"/>
 </enum>
 
+<!-- LINT.IfChange(PrivacySandboxPrivateAggregationTruncationResult) -->
+
+<enum name="PrivacySandboxPrivateAggregationTruncationResult">
+  <int value="0" label="No truncation occurred"/>
+  <int value="1"
+      label="Truncation occurred with the unconditional contributions alone
+             exceeding the limit"/>
+  <int value="2"
+      label="Truncation occurred but the unconditional contributions alone
+             did not exceed the limit"/>
+</enum>
+
+<!-- LINT.ThenChange(/content/browser/private_aggregation/private_aggregation_pending_contributions.h:TruncationResult) -->
+
 <!-- LINT.IfChange(PrivacySandboxPromptSuppressionReason) -->
 
 <enum name="PrivacySandboxPromptSuppressionReason">
