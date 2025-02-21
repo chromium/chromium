@@ -106,11 +106,6 @@ extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 
-// Title and description for the flag to enable loading and confirmation
-// for virtual card enrollment.
-extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[];
-extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
-
 // Title and description for flag to enable Verve card support for autofill.
 extern const char kAutofillEnableVerveCardSupportName[];
 extern const char kAutofillEnableVerveCardSupportDescription[];

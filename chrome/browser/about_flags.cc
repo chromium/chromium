@@ -10210,14 +10210,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableLoyaltyCardsFilling)},
 
-    {"autofill-enable-vcn-enroll-loading-and-confirmation",
-     flag_descriptions::kAutofillEnableVcnEnrollLoadingAndConfirmationName,
-     flag_descriptions::
-         kAutofillEnableVcnEnrollLoadingAndConfirmationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"boarding-pass-detector", flag_descriptions::kBoardingPassDetectorName,
      flag_descriptions::kBoardingPassDetectorDescription, kOsAndroid,

@@ -2028,13 +2028,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSaveCardLocalSaveFallback)},
-    {"autofill-enable-vcn-enroll-loading-and-confirmation",
-     flag_descriptions::kAutofillEnableVcnEnrollLoadingAndConfirmationName,
-     flag_descriptions::
-         kAutofillEnableVcnEnrollLoadingAndConfirmationDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)},
     {"omnibox-suggestion-answer-migration",
      flag_descriptions::kOmniboxSuggestionAnswerMigrationName,
      flag_descriptions::kOmniboxSuggestionAnswerMigrationDescription,

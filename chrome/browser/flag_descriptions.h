@@ -446,9 +446,6 @@ extern const char kAutofillEnableVcn3dsAuthenticationDescription[];
 extern const char kAutofillEnableVcnGrayOutForMerchantOptOutName[];
 extern const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[];
 
-extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[];
-extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
-
 extern const char kAutofillEnableVerveCardSupportName[];
 extern const char kAutofillEnableVerveCardSupportDescription[];
 

@@ -249,8 +249,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithSucess) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   std::unique_ptr<VirtualCardEnrollUiModel> ui_model =
       ShowVirtualCardEnrollDialog();
 
@@ -263,8 +261,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithFailureSetsEnrollmentProgress) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   std::unique_ptr<VirtualCardEnrollUiModel> ui_model =
       ShowVirtualCardEnrollDialog();
 
@@ -332,8 +328,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithFailureShowsErrorDialog) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   ShowVirtualCardEnrollDialog();
 
   payments_client()->VirtualCardEnrollCompleted(
@@ -348,8 +342,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithSuccessDoesNotShowAlert) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   ShowVirtualCardEnrollDialog();
 
   payments_client()->VirtualCardEnrollCompleted(
@@ -361,8 +353,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithClientSideTimeoutDoesNotShowAlert) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   ShowVirtualCardEnrollDialog();
 
   payments_client()->VirtualCardEnrollCompleted(

@@ -745,14 +745,6 @@ const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[] =
     "When enabled, Chrome will display grayed out virtual card suggestions on "
     "merchant websites where the merchant has opted-out of virtual cards.";
 
-const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[] =
-    "Enable showing loading and confirmation screens for virtual card "
-    "enrollment";
-const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[] =
-    "When enabled, the virtual card enrollment screen will present a loading "
-    "spinner while enrolling the card to the server and present a confirmation "
-    "screen with the result when completed.";
-
 const char kAutofillEnableVerveCardSupportName[] =
     "Enable autofill support for Verve cards";
 const char kAutofillEnableVerveCardSupportDescription[] =

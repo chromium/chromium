@@ -9,7 +9,6 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -106,22 +105,6 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 
 @implementation VirtualCardEnrollmentBottomSheetEgTest
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self
-          isRunningTest:@selector
-          (testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed
-              )]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
-  } else if ([self isRunningTest:@selector
-                   (testVirtualCardEnrollmentDismissesAfterAcceptPushed)]) {
-    config.features_disabled.push_back(
-        autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface clearCreditCardStore];
@@ -216,18 +199,6 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
       selectElementWithMatcher:
           testing::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
               IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP))]
-      performAction:grey_tap()];
-
-  // Assert the virtual card enrollment bottom sheet has been dismissed.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:VirtualCardEnrollmentTitle()];
-}
-
-- (void)testVirtualCardEnrollmentDismissesAfterAcceptPushed {
-  [self showVirtualCardEnrollmentBottomSheet];
-
-  // Push the accept button on the virtual card enrollment bottom sheet.
-  [[EarlGrey selectElementWithMatcher:VirtualCardEnrollmentAcceptButton()]
       performAction:grey_tap()];
 
   // Assert the virtual card enrollment bottom sheet has been dismissed.
