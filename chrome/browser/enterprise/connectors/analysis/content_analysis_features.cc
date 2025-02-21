@@ -14,6 +14,10 @@ BASE_FEATURE(kEnableAsyncUploadAfterVerdict,
              "EnableAsyncUploadAfterVerdict",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableResumableUploadOnConsumerScan,
+             "EnableResumableUploadOnConsumerScan",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsStopRegisterFcmEnabled() {
   return base::FeatureList::IsEnabled(kStopRegisterFcmEnabled);
 }
