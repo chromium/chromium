@@ -8095,6 +8095,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"element-capture", flag_descriptions::kElementCaptureName,
      flag_descriptions::kElementCaptureDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kElementCapture)},
+
+    {"element-capture-cross-tab",
+     flag_descriptions::kCrossTabElementCaptureName,
+     flag_descriptions::kCrossTabElementCaptureDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kElementCaptureOfOtherTabs)},
 #endif
 
     {"device-posture", flag_descriptions::kDevicePostureName,
@@ -9097,13 +9102,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"canvas-oop-rasterization", flag_descriptions::kCanvasOopRasterizationName,
      flag_descriptions::kCanvasOopRasterizationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kCanvasOopRasterization)},
-#endif
 
-#if !BUILDFLAG(IS_ANDROID)
     {"captured-surface-control", flag_descriptions::kCapturedSurfaceControlName,
      flag_descriptions::kCapturedSurfaceControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kCapturedSurfaceControl)},
-#endif
+
+    {"region-capture-cross-tab", flag_descriptions::kCrossTabRegionCaptureName,
+     flag_descriptions::kCrossTabRegionCaptureDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kRegionCaptureOfOtherTabs)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"skia-graphite", flag_descriptions::kSkiaGraphiteName,
      flag_descriptions::kSkiaGraphiteDescription, kOsAll,

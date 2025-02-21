@@ -2296,6 +2296,15 @@
     "expiry_milestone": 140
   },
   {
+    "name": "element-capture-cross-tab",
+    "owners": [
+      "eladalon@chromium.org",
+      "jophba@chromium.org",
+      "mfoltz@chromium.org"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-accessibility-accelerator",
     "owners": [ "zork@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 143
@@ -7558,6 +7567,15 @@
     "name": "refresh-feed-on-start",
     "owners": ["//chrome/android/feed/OWNERS", "jianli@chromium.org"],
     "expiry_milestone": 140
+  },
+  {
+    "name": "region-capture-cross-tab",
+    "owners": [
+      "eladalon@chromium.org",
+      "jophba@chromium.org",
+      "mfoltz@chromium.org"
+    ],
+    "expiry_milestone": 160
   },
   {
     "name": "related-searches-all-language",

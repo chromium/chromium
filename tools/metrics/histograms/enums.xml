@@ -10252,6 +10252,7 @@ from previous Chrome versions.
   <int value="-1570760081" label="FocusFollowsCursor:disabled"/>
   <int value="-1569571629"
       label="AutofillEnableOffersInClankKeyboardAccessory:disabled"/>
+  <int value="-1569484090" label="ElementCaptureOfOtherTabs:disabled"/>
   <int value="-1569426427" label="CaptureModeEducation:enabled"/>
   <int value="-1568737447" label="InsecureFormSubmissionInterstitial:enabled"/>
   <int value="-1568559155" label="WebSocketHandshakeReuseConnection:enabled"/>
@@ -12968,6 +12969,7 @@ from previous Chrome versions.
   <int value="-500044371" label="ShowFeaturedEnterpriseSiteSearchIPH:enabled"/>
   <int value="-499923792" label="MigrateSyncingUserToSignedIn:disabled"/>
   <int value="-499723386" label="EnableFilesAppCopyImage:disabled"/>
+  <int value="-499672058" label="RegionCaptureOfOtherTabs:disabled"/>
   <int value="-499186481"
       label="OmniboxGroupSuggestionsBySearchVsUrl:disabled"/>
   <int value="-498883807" label="AutofillParsingPatternProvider:disabled"/>
@@ -15031,6 +15033,7 @@ from previous Chrome versions.
   <int value="316778089" label="OmniboxConsumesImeInsets:disabled"/>
   <int value="317128092"
       label="kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration:enabled"/>
+  <int value="317328599" label="RegionCaptureOfOtherTabs:enabled"/>
   <int value="317432596" label="DisplayLocking:disabled"/>
   <int value="317880711" label="extensions-toolbar-zero-state-variation"/>
   <int value="317889969" label="AutofillAddressProfileSavePrompt:disabled"/>
@@ -17863,6 +17866,7 @@ from previous Chrome versions.
   <int value="1431934725" label="OmniboxAutocompleteTitles:disabled"/>
   <int value="1432263468" label="SpeculationRulesPrefetchProxy:disabled"/>
   <int value="1433119211" label="ShowSuggestionsOnAutofocus:enabled"/>
+  <int value="1433200410" label="ElementCaptureOfOtherTabs:enabled"/>
   <int value="1433706192" label="FileSystemObserver:disabled"/>
   <int value="1434502662" label="NtpDummyModules:enabled"/>
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>

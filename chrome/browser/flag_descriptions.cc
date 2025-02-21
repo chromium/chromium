@@ -40,10 +40,22 @@ const char kCanvasOopRasterizationDescription[] =
     "The rasterization of 2d canvas contents is performed in the GPU process. "
     "Requires that out-of-process rasterization be enabled.";
 
+#if !BUILDFLAG(IS_ANDROID)
 const char kCapturedSurfaceControlName[] = "Captured Surface Control";
 const char kCapturedSurfaceControlDescription[] =
     "Enables an API that allows an application to control scroll and zoom on "
     "the tab which it is capturing.";
+
+const char kCrossTabElementCaptureName[] = "Element Capture cross-tab";
+const char kCrossTabElementCaptureDescription[] =
+    "Allows the Element Capture API to be used cross-tab. (Only has an effect "
+    "if Element Capture is generally enabled.)";
+
+const char kCrossTabRegionCaptureName[] = "Region Capture cross-tab";
+const char kCrossTabRegionCaptureDescription[] =
+    "Allows the Region Capture API to be used cross-tab. (Only has an effect "
+    "if Region Capture is generally enabled.)";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 const char kAcceleratedVideoDecodeName[] = "Hardware-accelerated video decode";
 const char kAcceleratedVideoDecodeDescription[] =
