@@ -30,6 +30,7 @@ class IfConditionNot : public IfCondition {
   explicit IfConditionNot(const IfCondition* operand) : operand_(operand) {}
   void Trace(Visitor* visitor) const override;
   Type GetType() const override { return Type::kNot; }
+  const IfCondition& Operand() const { return *operand_; }
 
  private:
   Member<const IfCondition> operand_;
@@ -41,6 +42,8 @@ class IfConditionAnd : public IfCondition {
       : left_(left), right_(right) {}
   void Trace(Visitor*) const override;
   Type GetType() const override { return Type::kAnd; }
+  const IfCondition& Left() const { return *left_; }
+  const IfCondition& Right() const { return *right_; }
 
  private:
   Member<const IfCondition> left_;
@@ -53,6 +56,8 @@ class IfConditionOr : public IfCondition {
       : left_(left), right_(right) {}
   void Trace(Visitor*) const override;
   Type GetType() const override { return Type::kOr; }
+  const IfCondition& Left() const { return *left_; }
+  const IfCondition& Right() const { return *right_; }
 
  private:
   Member<const IfCondition> left_;
@@ -83,9 +88,9 @@ class CORE_EXPORT IfTestMedia : public IfCondition {
   Member<const MediaQuery> media_test_;
 };
 
-class CORE_EXPORT IfTestUnknown : public IfCondition {
+class CORE_EXPORT IfConditionUnknown : public IfCondition {
  public:
-  explicit IfTestUnknown(String string) : string_(string) {}
+  explicit IfConditionUnknown(String string) : string_(string) {}
   void Trace(Visitor*) const override;
   Type GetType() const override { return Type::kUnknown; }
   String GetString() const { return string_; }
@@ -137,7 +142,7 @@ struct DowncastTraits<IfTestMedia> {
 };
 
 template <>
-struct DowncastTraits<IfTestUnknown> {
+struct DowncastTraits<IfConditionUnknown> {
   static bool AllowFrom(const IfCondition& node) {
     return node.GetType() == IfCondition::Type::kUnknown;
   }

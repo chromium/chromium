@@ -161,6 +161,7 @@ blink_core_sources_css = [
   "css_grouping_rule.h",
   "css_identifier_value.cc",
   "css_identifier_value.h",
+  "css_if_eval.h",
   "css_image_generator_value.cc",
   "css_image_generator_value.h",
   "css_image_set_option_value.cc",

@@ -56,7 +56,7 @@ void IfTestMedia::Trace(Visitor* visitor) const {
   IfCondition::Trace(visitor);
 }
 
-void IfTestUnknown::Trace(Visitor* visitor) const {
+void IfConditionUnknown::Trace(Visitor* visitor) const {
   IfCondition::Trace(visitor);
 }
 

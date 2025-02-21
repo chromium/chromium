@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/css_if_eval.h"
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -2200,23 +2201,26 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
   DCHECK_EQ(stream.Peek().GetType(), kColonToken);
   stream.ConsumeIncludingWhitespace();
 
-  if (DynamicTo<IfConditionElse>(if_condition)) {
-    return true;
-  }
-
-  if (auto* style_test = DynamicTo<IfTestStyle>(if_condition)) {
-    return MediaEval(
-               *style_test->GetMediaQueryExpNode(),
-               [this, &resolver, &context, &function_context,
-                &is_attr_tainted](const MediaQueryFeatureExpNode& feature) {
-                 return EvalIfStyleFeature(feature, resolver, context,
-                                           function_context, is_attr_tainted);
-               }) == KleeneValue::kTrue;
-  }
-
-  // TODO(crbug.com/346977961): Support media(), supports() and
-  // <boolean-expr[ <if-test> ]> queries in if() condition.
-  return false;
+  return IfEval(*if_condition, [this, &resolver, &context, &function_context,
+                                &is_attr_tainted](const IfCondition& node) {
+           if (auto* n = DynamicTo<IfTestStyle>(node)) {
+             return MediaEval(
+                 *n->GetMediaQueryExpNode(),
+                 [this, &resolver, &context, &function_context,
+                  &is_attr_tainted](const MediaQueryFeatureExpNode& feature) {
+                   return EvalIfStyleFeature(feature, resolver, context,
+                                             function_context, is_attr_tainted);
+                 });
+           }
+           if (RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled() &&
+               DynamicTo<IfTestMedia>(node)) {
+             // TODO(crbug.com/346977961): Support media() queries.
+             return KleeneValue::kFalse;
+           }
+           // Should be either style() or media() query, supports() queries are
+           // invalidated during parse time.
+           NOTREACHED();
+         }) == KleeneValue::kTrue;
 }
 
 bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,

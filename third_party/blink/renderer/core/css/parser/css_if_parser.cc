@@ -77,7 +77,7 @@ const IfCondition* CSSIfParser::ConsumeBooleanExprGroup(
   // <general-enclosed>
   if (const MediaQueryExpNode* general_enclosed =
           media_query_parser_.ConsumeGeneralEnclosed(stream)) {
-    return MakeGarbageCollected<IfTestUnknown>(
+    return MakeGarbageCollected<IfConditionUnknown>(
         To<MediaQueryUnknownExpNode>(general_enclosed)->ToString());
   }
 
