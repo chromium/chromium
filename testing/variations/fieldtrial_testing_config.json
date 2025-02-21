@@ -23534,24 +23534,6 @@
             ]
         }
     ],
-    "TaskManagerDesktopRefresh": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "linux",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "TaskManagerDesktopRefresh",
-                    "enable_features": [
-                        "TaskManagerDesktopRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "TcpSocketIoCompletionPortWin": [
         {
             "platforms": [

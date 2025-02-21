@@ -154,21 +154,14 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AllColumnsHaveSortable) {
 // In the case of no settings stored in the user preferences local store, test
 // that the task manager table starts with the default columns visibility as
 // stored in |kColumns|.
-IN_PROC_BROWSER_TEST_F(TaskManagerViewTest,
-                       TableStartsWithDefaultSortAndColumns) {
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, TableStartsWithDefaultColumns) {
   ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
 
   chrome::ShowTaskManager(browser());
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
-  // Table should be sorted on the CPU column by default in descending order.
-  EXPECT_TRUE(table->GetIsSorted());
-  EXPECT_EQ(table->sort_descriptors().size(), 1u);
-  EXPECT_EQ(table->sort_descriptors()[0].column_id,
-            IDS_TASK_MANAGER_CPU_COLUMN);
-  EXPECT_FALSE(table->sort_descriptors()[0].ascending);
-
+  EXPECT_FALSE(table->GetIsSorted());
   for (size_t i = 0; i < kColumnsSize; ++i) {
     EXPECT_EQ(kColumns[i].default_visibility,
               table->IsColumnVisible(kColumns[i].id));
@@ -186,9 +179,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, ColumnsSettingsAreRestored) {
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
-  // Table should be sorted on the CPU column by default in descending order.
-  EXPECT_TRUE(table->GetIsSorted());
   // Toggle the visibility of all columns.
+  EXPECT_FALSE(table->GetIsSorted());
   for (size_t i = 0; i < kColumnsSize; ++i) {
     EXPECT_EQ(kColumns[i].default_visibility,
               table->IsColumnVisible(kColumns[i].id));
@@ -248,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, HideAllColumnsAndRestored) {
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
-  EXPECT_TRUE(table->GetIsSorted());
+  EXPECT_FALSE(table->GetIsSorted());
 
   // hide all visible columns except IDS_TASK_MANAGER_TASK_COLUMN
   int task_column_index = -1;
