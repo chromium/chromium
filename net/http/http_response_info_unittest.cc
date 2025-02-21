@@ -28,10 +28,10 @@ class HttpResponseInfoTest : public testing::Test {
 
   void PickleAndRestore(const HttpResponseInfo& response_info,
                         HttpResponseInfo* restored_response_info) const {
-    base::Pickle pickle;
-    response_info.Persist(&pickle, false, false);
+    std::unique_ptr<base::Pickle> pickle = response_info.MakePickle(
+        /*skip_transient_headers=*/false, /*response_truncated=*/false);
     bool truncated = false;
-    EXPECT_TRUE(restored_response_info->InitFromPickle(pickle, &truncated));
+    EXPECT_TRUE(restored_response_info->InitFromPickle(*pickle, &truncated));
   }
 
   HttpResponseInfo response_info_;
@@ -254,12 +254,12 @@ TEST_F(HttpResponseInfoTest, FailsInitFromPickleWithSSLV3) {
   // Non-SSLv3 versions should succeed.
   SSLConnectionStatusSetVersion(SSL_CONNECTION_VERSION_TLS1_2,
                                 &response_info_.ssl_info.connection_status);
-  base::Pickle tls12_pickle;
-  response_info_.Persist(&tls12_pickle, false, false);
+  std::unique_ptr<base::Pickle> tls12_pickle = response_info_.MakePickle(
+      /*skip_transient_headers=*/false, /*response_truncated=*/false);
   bool truncated = false;
   HttpResponseInfo restored_tls12_response_info;
   EXPECT_TRUE(
-      restored_tls12_response_info.InitFromPickle(tls12_pickle, &truncated));
+      restored_tls12_response_info.InitFromPickle(*tls12_pickle, &truncated));
   EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_2,
             SSLConnectionStatusToVersion(
                 restored_tls12_response_info.ssl_info.connection_status));
@@ -268,11 +268,11 @@ TEST_F(HttpResponseInfoTest, FailsInitFromPickleWithSSLV3) {
   // SSLv3 should fail.
   SSLConnectionStatusSetVersion(SSL_CONNECTION_VERSION_SSL3,
                                 &response_info_.ssl_info.connection_status);
-  base::Pickle ssl3_pickle;
-  response_info_.Persist(&ssl3_pickle, false, false);
+  std::unique_ptr<base::Pickle> ssl3_pickle = response_info_.MakePickle(
+      /*skip_transient_headers=*/false, /*response_truncated=*/false);
   HttpResponseInfo restored_ssl3_response_info;
   EXPECT_FALSE(
-      restored_ssl3_response_info.InitFromPickle(ssl3_pickle, &truncated));
+      restored_ssl3_response_info.InitFromPickle(*ssl3_pickle, &truncated));
 }
 
 // Test that `dns_aliases` is preserved.

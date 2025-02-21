@@ -17,8 +17,11 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/pickle.h"
 #include "net/base/net_export.h"
+
+namespace base {
+class Pickle;
+}
 
 namespace net {
 
@@ -277,22 +280,16 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   int offset_ = 0;
 };
 
-// This versions allows a pickle to be used as the storage for a write-style
+// This version allows a Pickle to be used as the storage for a write-style
 // operation, avoiding an extra data copy.
 class NET_EXPORT PickledIOBuffer : public IOBuffer {
  public:
-  PickledIOBuffer();
-
-  base::Pickle* pickle() { return &pickle_; }
-
-  // Signals that we are done writing to the pickle and we can use it for a
-  // write-style IO operation.
-  void Done();
+  explicit PickledIOBuffer(std::unique_ptr<const base::Pickle> pickle);
 
  private:
   ~PickledIOBuffer() override;
 
-  base::Pickle pickle_;
+  const std::unique_ptr<const base::Pickle> pickle_;
 };
 
 // This class allows the creation of a temporary IOBuffer that doesn't really

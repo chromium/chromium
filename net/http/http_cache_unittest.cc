@@ -24,6 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -10113,13 +10114,13 @@ TEST_F(HttpCacheTest, PersistHttpResponseInfo) {
       base::MakeRefCounted<HttpResponseHeaders>("HTTP/1.1 200 OK");
 
   // Pickle.
-  base::Pickle pickle;
-  response1.Persist(&pickle, false, false);
+  std::unique_ptr<base::Pickle> pickle = response1.MakePickle(
+      /*skip_transient_headers=*/false, /*response_truncated=*/false);
 
   // Unpickle.
   HttpResponseInfo response2;
   bool response_truncated;
-  EXPECT_TRUE(response2.InitFromPickle(pickle, &response_truncated));
+  EXPECT_TRUE(response2.InitFromPickle(*pickle, &response_truncated));
   EXPECT_FALSE(response_truncated);
 
   // Verify fields.
