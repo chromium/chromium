@@ -159,7 +159,8 @@ inline constexpr char kSafeBrowsingSurveysEnabled[] =
     "safebrowsing.surveys_enabled";
 
 // A timestamp indicating the last time the account tailored security boolean
-// was updated.
+// was updated. The value is owned by the Account and is updated by the sync
+// system.
 inline constexpr char kAccountTailoredSecurityUpdateTimestamp[] =
     "safebrowsing.aesb_update_time_windows_epoch_micros";
 
