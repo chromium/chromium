@@ -101,7 +101,6 @@ class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
 class SuggestionServiceAsh;
-class TimeZoneServiceAsh;
 class VpnServiceAsh;
 class WebKioskServiceAsh;
 class VirtualKeyboardAsh;
@@ -289,8 +288,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindTelemetryProbeService(
       mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) override;
-  void BindTimeZoneService(
-      mojo::PendingReceiver<mojom::TimeZoneService> receiver) override;
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
@@ -532,7 +529,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
-  std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;
