@@ -86,6 +86,7 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                  bool& has_font_units,
                                  bool& has_root_font_units,
                                  bool& has_line_height_units,
+                                 bool& has_dashed_functions,
                                  const CSSParserContext& context);
 
 static bool ConsumeVariableReference(CSSParserTokenStream& stream,
@@ -93,6 +94,7 @@ static bool ConsumeVariableReference(CSSParserTokenStream& stream,
                                      bool& has_font_units,
                                      bool& has_root_font_units,
                                      bool& has_line_height_units,
+                                     bool& has_dashed_functions,
                                      const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
@@ -114,7 +116,8 @@ static bool ConsumeVariableReference(CSSParserTokenStream& stream,
   if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
                             /*comma_ends_declaration=*/false, has_references,
                             has_font_units, has_root_font_units,
-                            has_line_height_units, context)) {
+                            has_line_height_units, has_dashed_functions,
+                            context)) {
     return false;
   }
   return stream.AtEnd();
@@ -125,6 +128,7 @@ static bool ConsumeEnvVariableReference(CSSParserTokenStream& stream,
                                         bool& has_font_units,
                                         bool& has_root_font_units,
                                         bool& has_line_height_units,
+                                        bool& has_dashed_functions,
                                         const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
@@ -167,7 +171,8 @@ static bool ConsumeEnvVariableReference(CSSParserTokenStream& stream,
   if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
                             /*comma_ends_declaration=*/false, has_references,
                             has_font_units, has_root_font_units,
-                            has_line_height_units, context)) {
+                            has_line_height_units, has_dashed_functions,
+                            context)) {
     return false;
   }
   return stream.AtEnd();
@@ -180,6 +185,7 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
                                       bool& has_font_units,
                                       bool& has_root_font_units,
                                       bool& has_line_height_units,
+                                      bool& has_dashed_functions,
                                       const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
@@ -214,7 +220,8 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
                             /*comma_ends_declaration=*/false, has_references,
                             has_font_units, has_root_font_units,
-                            has_line_height_units, context)) {
+                            has_line_height_units, has_dashed_functions,
+                            context)) {
     return false;
   }
   return stream.AtEnd();
@@ -260,6 +267,7 @@ static bool ConsumeIfReference(CSSParserTokenStream& stream,
                                bool& has_font_units,
                                bool& has_root_font_units,
                                bool& has_line_height_units,
+                               bool& has_dashed_functions,
                                const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
 
@@ -273,7 +281,8 @@ static bool ConsumeIfReference(CSSParserTokenStream& stream,
     if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
                               /*comma_ends_declaration=*/false, has_references,
                               has_font_units, has_root_font_units,
-                              has_line_height_units, context)) {
+                              has_line_height_units, has_dashed_functions,
+                              context)) {
       return false;
     }
     if (stream.AtEnd()) {
@@ -290,20 +299,21 @@ static bool ConsumeIfReference(CSSParserTokenStream& stream,
   return false;
 }
 
-static bool ConsumeInternalAutoBase(
-    CSSParserTokenStream& stream,
-    bool& has_references,
-    bool& has_font_units,
-    bool& has_root_font_units,
-    bool& has_line_height_units,
-    const CSSParserContext& context) {
+static bool ConsumeInternalAutoBase(CSSParserTokenStream& stream,
+                                    bool& has_references,
+                                    bool& has_font_units,
+                                    bool& has_root_font_units,
+                                    bool& has_line_height_units,
+                                    bool& has_dashed_functions,
+                                    const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
 
   if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
                             /*comma_ends_declaration=*/true, has_references,
                             has_font_units, has_root_font_units,
-                            has_line_height_units, context)) {
+                            has_line_height_units, has_line_height_units,
+                            context)) {
     return false;
   }
 
@@ -315,7 +325,8 @@ static bool ConsumeInternalAutoBase(
   if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
                             /*comma_ends_declaration=*/true, has_references,
                             has_font_units, has_root_font_units,
-                            has_line_height_units, context)) {
+                            has_line_height_units, has_line_height_units,
+                            context)) {
     return false;
   }
   return stream.AtEnd();
@@ -323,8 +334,7 @@ static bool ConsumeInternalAutoBase(
 
 static bool IsCustomFunction(const CSSParserToken& token) {
   return RuntimeEnabledFeatures::CSSFunctionsEnabled() &&
-         token.GetType() == kFunctionToken &&
-         CSSVariableParser::IsValidVariableName(token.Value());
+         css_parsing_utils::IsDashedFunctionName(token);
 }
 
 static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
@@ -332,6 +342,7 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
                                   bool& has_font_units,
                                   bool& has_root_font_units,
                                   bool& has_line_height_units,
+                                  bool& has_dashed_functions,
                                   const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
@@ -350,10 +361,11 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
         // of the value.)
         return false;
       }
-      if (!ConsumeUnparsedValue(
-              stream, /*restricted_value=*/false,
-              /*comma_ends_declaration=*/false, has_references, has_font_units,
-              has_root_font_units, has_line_height_units, context)) {
+      if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                                /*comma_ends_declaration=*/false,
+                                has_references, has_font_units,
+                                has_root_font_units, has_line_height_units,
+                                has_dashed_functions, context)) {
         return false;
       }
     } else {
@@ -361,7 +373,8 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
       if (!ConsumeUnparsedValue(stream, /*restricted_value=*/true,
                                 /*comma_ends_declaration=*/true, has_references,
                                 has_font_units, has_root_font_units,
-                                has_line_height_units, context)) {
+                                has_line_height_units, has_dashed_functions,
+                                context)) {
         return false;
       }
     }
@@ -426,6 +439,7 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                  bool& has_font_units,
                                  bool& has_root_font_units,
                                  bool& has_line_height_units,
+                                 bool& has_dashed_functions,
                                  const CSSParserContext& context) {
   size_t block_stack_size = 0;
 
@@ -439,6 +453,10 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
     if (token.IsEOF()) {
       break;
     }
+
+    CSSVariableData::ExtractFeatures(token, has_font_units, has_root_font_units,
+                                     has_line_height_units,
+                                     has_dashed_functions);
 
     // Save this, since we'll change it below.
     const bool at_top_level = block_stack_size == 0;
@@ -457,23 +475,23 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           }
           if (!ConsumeCustomFunction(stream, has_references, has_font_units,
                                      has_root_font_units, has_line_height_units,
-                                     context)) {
+                                     has_dashed_functions, context)) {
             error = true;
           }
           has_references = true;
           continue;
         case CSSValueID::kVar:
-          if (!ConsumeVariableReference(stream, has_references, has_font_units,
-                                        has_root_font_units,
-                                        has_line_height_units, context)) {
+          if (!ConsumeVariableReference(
+                  stream, has_references, has_font_units, has_root_font_units,
+                  has_line_height_units, has_dashed_functions, context)) {
             error = true;
           }
           has_references = true;
           continue;
         case CSSValueID::kEnv:
-          if (!ConsumeEnvVariableReference(stream, has_references,
-                                           has_font_units, has_root_font_units,
-                                           has_line_height_units, context)) {
+          if (!ConsumeEnvVariableReference(
+                  stream, has_references, has_font_units, has_root_font_units,
+                  has_line_height_units, has_dashed_functions, context)) {
             error = true;
           }
           has_references = true;
@@ -482,9 +500,9 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           if (!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
             break;
           }
-          if (!ConsumeAttributeReference(stream, has_references, has_font_units,
-                                         has_root_font_units,
-                                         has_line_height_units, context)) {
+          if (!ConsumeAttributeReference(
+                  stream, has_references, has_font_units, has_root_font_units,
+                  has_line_height_units, has_dashed_functions, context)) {
             error = true;
           }
           has_references = true;
@@ -495,7 +513,7 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           }
           if (!ConsumeInternalAutoBase(
                   stream, has_references, has_font_units, has_root_font_units,
-                  has_line_height_units, context)) {
+                  has_line_height_units, has_dashed_functions, context)) {
             error = true;
           }
           has_references = true;
@@ -506,7 +524,7 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           }
           if (!ConsumeIfReference(stream, has_references, has_font_units,
                                   has_root_font_units, has_line_height_units,
-                                  context)) {
+                                  has_dashed_functions, context)) {
             error = true;
           }
           has_references = true;
@@ -574,8 +592,6 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
       }
     }
 
-    CSSVariableData::ExtractFeatures(token, has_font_units, has_root_font_units,
-                                     has_line_height_units);
     stream.ConsumeRaw();
   }
 
@@ -600,9 +616,11 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
+  bool has_dashed_functions = false;
   if (!ConsumeUnparsedValue(stream, restricted_value, comma_ends_declaration,
                             has_references, has_font_units, has_root_font_units,
-                            has_line_height_units, context)) {
+                            has_line_height_units, has_dashed_functions,
+                            context)) {
     return nullptr;
   }
 
@@ -632,7 +650,7 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
   return CSSVariableData::Create(original_text, is_animation_tainted, false,
                                  /*needs_variable_resolution=*/has_references,
                                  has_font_units, has_root_font_units,
-                                 has_line_height_units);
+                                 has_line_height_units, has_dashed_functions);
 }
 
 CSSUnparsedDeclarationValue* CSSVariableParser::ParseUniversalSyntaxValue(

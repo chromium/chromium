@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -384,6 +385,26 @@ TEST_P(InvalidIfTest, ContainsInvalidIf) {
       /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
       /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
       *context));
+}
+
+TEST(CSSVariableParserTest, ParseDeclarationValueWithDashedFunctions) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSUnparsedDeclarationValue* value = CSSVariableParser::ParseDeclarationValue(
+      "--foo()",
+      /*is_animation_tainted=*/false, *context);
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->VariableDataValue()->HasDashedFunctions());
+}
+
+TEST(CSSVariableParserTest, ParseDeclarationValueWithoutDashedFunctions) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSUnparsedDeclarationValue* value = CSSVariableParser::ParseDeclarationValue(
+      "--foo",
+      /*is_animation_tainted=*/false, *context);
+  ASSERT_TRUE(value);
+  EXPECT_FALSE(value->VariableDataValue()->HasDashedFunctions());
 }
 
 }  // namespace blink

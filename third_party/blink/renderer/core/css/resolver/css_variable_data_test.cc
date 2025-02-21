@@ -36,6 +36,22 @@ TEST(CSSVariableDataTest, RootFontUnitsDetected) {
   EXPECT_TRUE(CreateVariableData("calc(10rem + 10%)")->HasRootFontUnits());
 }
 
+TEST(CSSVariableDataTest, DashedFunctionDetected) {
+  EXPECT_FALSE(CreateVariableData("100px")->HasDashedFunctions());
+  EXPECT_FALSE(CreateVariableData("10%")->HasDashedFunctions());
+  EXPECT_FALSE(CreateVariableData("var(--foo)")->HasDashedFunctions());
+  EXPECT_FALSE(CreateVariableData("--foo")->HasDashedFunctions());
+  EXPECT_FALSE(CreateVariableData("-foo")->HasDashedFunctions());
+  EXPECT_FALSE(CreateVariableData("--")->HasDashedFunctions());
+
+  EXPECT_TRUE(CreateVariableData("--foo()")->HasDashedFunctions());
+  EXPECT_TRUE(CreateVariableData("abc --foo()")->HasDashedFunctions());
+  EXPECT_TRUE(CreateVariableData("--foo() abc")->HasDashedFunctions());
+  EXPECT_TRUE(CreateVariableData("--foo(42px) abc")->HasDashedFunctions());
+  EXPECT_TRUE(CreateVariableData("--foo(42px")->HasDashedFunctions());
+  EXPECT_TRUE(CreateVariableData("[{ --foo(42px) }]")->HasDashedFunctions());
+}
+
 TEST(CSSVariableDataTest, Serialize) {
   const String test_cases[] = {
       " /*hello*/", " url(test.svg#a)",
