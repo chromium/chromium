@@ -1154,6 +1154,11 @@ class CONTENT_EXPORT NavigationRequest
     keep_alive_url_loader_factory_context_ = factory_context;
   }
 
+  base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+  fetch_later_loader_factory_context() {
+    return fetch_later_loader_factory_context_;
+  }
+
   void set_fetch_later_loader_factory_context(
       base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
           factory_context) {

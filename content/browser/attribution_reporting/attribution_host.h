@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
 namespace content {
@@ -61,6 +62,12 @@ class CONTENT_EXPORT AttributionHost
   }
 #endif
 
+  ukm::SourceId GetPageUkmSourceId() const {
+    return primary_main_frame_data_.has_value()
+               ? primary_main_frame_data_->ukm_source_id
+               : ukm::kInvalidSourceId;
+  }
+
  private:
   friend class AttributionHostTestPeer;
   friend class WebContentsUserData<AttributionHost>;
@@ -69,6 +76,7 @@ class CONTENT_EXPORT AttributionHost
     int num_data_hosts_registered = 0;
     bool has_user_activation = false;
     bool has_user_interaction = false;
+    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   };
 
   // blink::mojom::AttributionHost:

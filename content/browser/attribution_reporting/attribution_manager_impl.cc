@@ -89,6 +89,9 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/schemeful_site.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -227,6 +230,13 @@ bool IsStorageKeySessionOnly(
 void RecordStoreSourceStatus(const StoreSourceResult& result) {
   base::UmaHistogramEnumeration("Conversions.SourceStoredStatus8",
                                 result.status());
+
+  if (ukm::SourceId ukm_source_id = result.source().ukm_source_id();
+      ukm_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::Conversions_SourceRegistration(ukm_source_id)
+        .SetStoreSourceResult(static_cast<int64_t>(result.status()))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void RecordCreateReportStatus(const CreateReportResult& result) {
@@ -241,6 +251,16 @@ void RecordCreateReportStatus(const CreateReportResult& result) {
       .SetEventLevelStatus(static_cast<int64_t>(result.event_level_status()))
       .SetAggregatableStatus(static_cast<int64_t>(result.aggregatable_status()))
       .Record(metrics::dwa::DwaRecorder::Get());
+
+  if (ukm::SourceId ukm_source_id = result.trigger().ukm_source_id();
+      ukm_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::Conversions_TriggerRegistration(ukm_source_id)
+        .SetCreateEventLevelReportStatus(
+            static_cast<int64_t>(result.event_level_status()))
+        .SetCreateAggregatableReportStatus(
+            static_cast<int64_t>(result.aggregatable_status()))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 // If `retry_attempts` <= 2, represents the number of retries before success.

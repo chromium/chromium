@@ -98,4 +98,14 @@ void DocumentAssociatedData::RemoveService(
   std::erase(services_, service);
 }
 
+void DocumentAssociatedData::OnDidCommitPrerenderedPageActivation() {
+  if (keep_alive_url_loader_factory_context_) {
+    keep_alive_url_loader_factory_context_
+        ->OnDidCommitPrerenderedPageActivation();
+  }
+  if (fetch_later_loader_factory_context_) {
+    fetch_later_loader_factory_context_->OnDidCommitPrerenderedPageActivation();
+  }
+}
+
 }  // namespace content

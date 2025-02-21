@@ -6049,6 +6049,8 @@ void RenderFrameHostImpl::DidCommitPageActivation(
     // TODO - can we check main frame replication state?
     DCHECK(prerender_main_frame_replication_state ==
            frame_tree()->root()->current_replication_state());
+
+    document_associated_data_->OnDidCommitPrerenderedPageActivation();
   } else if (auto* view = GetView()) {
     view->ActivatedOrEvictedFromBackForwardCache();
   }
@@ -15207,11 +15209,14 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     document_associated_data_->set_devtools_navigation_token(
         navigation_request->devtools_navigation_token());
 
-    // Stores fetch keepalive FactoryContext created before committing into
-    // document-associated data, such that it can be referenced later when
-    // DevTools tries to intercepts requests.
+    // Stores fetch keepalive and fetch later FactoryContexts created before
+    // committing into document-associated data, such that it can be referenced
+    // later when DevTools tries to intercepts requests, or when the prerendered
+    // page is activated.
     document_associated_data_->set_keep_alive_url_loader_factory_context(
         navigation_request->keep_alive_url_loader_factory_context());
+    document_associated_data_->set_fetch_later_loader_factory_context(
+        navigation_request->fetch_later_loader_factory_context());
 
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
         navigation_request->ComputeFencedFrameProperties();

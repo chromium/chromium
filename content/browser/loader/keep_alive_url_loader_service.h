@@ -23,6 +23,7 @@
 namespace content {
 
 class BrowserContext;
+class NavigationHandle;
 class PolicyContainerHost;
 
 // A service that stores bound SharedURLLoaderFactory mojo pipes from renderers
@@ -74,7 +75,11 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     FactoryContext& operator=(const FactoryContext&) = delete;
 
     // Updates `weak_document_ptr` and other document-related fields.
-    void OnDidCommitNavigation(WeakDocumentPtr committed_document);
+    void OnDidCommitNavigation(NavigationHandle* navigation_handle);
+
+    // Updates `attribution_context` for fields relied on prerendered page
+    // activation, e.g. UKM source ID.
+    void OnDidCommitPrerenderedPageActivation();
 
     // Updates `factory` using the given `new_factory`.
     //

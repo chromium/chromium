@@ -21,6 +21,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/test_utils.h"
+#include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -346,10 +347,17 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
         }));
     RenderViewHostTestHarness::SetUp();
 
+    test_web_contents()->NavigateAndCommit(GURL("https://example.com"));
+
+    pending_navigation_ = NavigationSimulator::CreateBrowserInitiated(
+        GURL("https://example.com"), web_contents());
+    pending_navigation_->ReadyToCommit();
+
     AddConnectSrcCSPToRFH(kTestRedirectRequestUrl);
   }
 
   void TearDown() override {
+    pending_navigation_.reset();
     network_url_loader_factory_ = nullptr;
     loader_service_ = nullptr;
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
@@ -359,6 +367,10 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
 
   void ExpectMojoBadMessage(const std::string& message) {
     EXPECT_EQ(mojo_bad_message_, message);
+  }
+
+  NavigationHandle* GetNavigationHandle() {
+    return pending_navigation_->GetNavigationHandle();
   }
 
   // Asks KeepAliveURLLoaderService to bind a KeepAliveURLLoaderFactory to the
@@ -380,8 +392,7 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
-    context->OnDidCommitNavigation(
-        static_cast<RenderFrameHostImpl*>(main_rfh())->GetWeakDocumentPtr());
+    context->OnDidCommitNavigation(GetNavigationHandle());
   }
 
   network::TestURLLoaderFactory::PendingRequest* GetLastPendingRequest() {
@@ -428,6 +439,7 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   // The test target.
   std::unique_ptr<KeepAliveURLLoaderService> loader_service_ = nullptr;
   std::optional<std::string> mojo_bad_message_;
+  std::unique_ptr<NavigationSimulator> pending_navigation_;
 };
 
 class KeepAliveURLLoaderServiceTest : public KeepAliveURLLoaderServiceTestBase {
@@ -556,8 +568,7 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterUpdateFactory) {
       static_cast<RenderFrameHostImpl*>(main_rfh())
           ->policy_container_host()
           ->Clone());
-  context->OnDidCommitNavigation(
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetWeakDocumentPtr());
+  context->OnDidCommitNavigation(GetNavigationHandle());
   {
     // Load a keepalive request. There should be no network loader created.
     MockReceiverURLLoaderClient renderer_loader_client;
@@ -625,7 +636,6 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   // Set up the Attribution Manager.
-  test_web_contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto mock_manager = std::make_unique<MockAttributionManager>();
   mock_manager->SetDataHostManager(
       std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get()));
@@ -667,7 +677,6 @@ TEST_F(KeepAliveURLLoaderServiceTest,
 
 TEST_F(KeepAliveURLLoaderServiceTest, ForwardErrorToAttributionRequestHelper) {
   // Set up the Attribution Manager.
-  test_web_contents()->NavigateAndCommit(GURL("https://example.com"));
   auto mock_manager = std::make_unique<MockAttributionManager>();
   auto mock_data_host_manager =
       std::make_unique<MockAttributionDataHostManager>();
@@ -702,7 +711,6 @@ TEST_F(
     KeepAliveURLLoaderServiceTest,
     OnReceiveRedirectWithErrorRedirectMode_NotForwardedToAttributionRequestHelper) {
   // Set up the Attribution Manager.
-  test_web_contents()->NavigateAndCommit(GURL("https://example.com"));
   auto mock_manager = std::make_unique<MockAttributionManager>();
   auto mock_data_host_manager =
       std::make_unique<MockAttributionDataHostManager>();
@@ -1322,8 +1330,7 @@ class FetchLaterKeepAliveURLLoaderServiceTest
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
-    context->OnDidCommitNavigation(
-        static_cast<RenderFrameHostImpl*>(main_rfh())->GetWeakDocumentPtr());
+    context->OnDidCommitNavigation(GetNavigationHandle());
   }
 };
 
@@ -1476,7 +1483,6 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   // Set up the Attribution Manager.
-  test_web_contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto mock_manager = std::make_unique<MockAttributionManager>();
   mock_manager->SetDataHostManager(
       std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get()));

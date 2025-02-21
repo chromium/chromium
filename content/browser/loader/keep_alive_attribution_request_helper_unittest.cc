@@ -135,7 +135,7 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
         eligibility, reporting_url, attribution_src_token,
         "devtools-request-id",
         *AttributionSuitableContext::Create(
-            test_web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+            test_web_contents()->GetPrimaryMainFrame()));
 
     CHECK(helper);
 
@@ -402,7 +402,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     test_web_contents()->NavigateAndCommit(source_url);
 
     auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        test_web_contents()->GetPrimaryMainFrame());
     EXPECT_FALSE(context.has_value());
   }
 
@@ -410,7 +410,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     const GURL source_url("https://secure.test");
     test_web_contents()->NavigateAndCommit(source_url);
     auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        test_web_contents()->GetPrimaryMainFrame());
     ASSERT_TRUE(context.has_value());
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEmpty, reporting_url,
@@ -427,7 +427,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     test_web_contents()->NavigateAndCommit(source_url);
 
     auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        test_web_contents()->GetPrimaryMainFrame());
     ASSERT_TRUE(context.has_value());
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEventSourceOrTrigger, reporting_url,
@@ -666,7 +666,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, CreateIfNeeded_MetricRecorded) {
 
     test_web_contents()->NavigateAndCommit(test_case.context_url);
     auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        test_web_contents()->GetPrimaryMainFrame());
 
     base::HistogramTester histograms;
 

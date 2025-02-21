@@ -8044,14 +8044,12 @@ void NavigationRequest::DidCommitNavigation(
   if (keep_alive_url_loader_factory_context_) {
     DCHECK(!IsSameDocument());
 
-    keep_alive_url_loader_factory_context_->OnDidCommitNavigation(
-        GetRenderFrameHost()->GetWeakDocumentPtr());
+    keep_alive_url_loader_factory_context_->OnDidCommitNavigation(this);
   }
   if (fetch_later_loader_factory_context_) {
     DCHECK(!IsSameDocument());
 
-    fetch_later_loader_factory_context_->OnDidCommitNavigation(
-        GetRenderFrameHost()->GetWeakDocumentPtr());
+    fetch_later_loader_factory_context_->OnDidCommitNavigation(this);
   }
 
   // Network status of the entire frame tree needs to be updated once a

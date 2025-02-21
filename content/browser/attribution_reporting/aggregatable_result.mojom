@@ -28,4 +28,4 @@ enum AggregatableResult {
   kExcessiveReports = 13,
   kInsufficientNamedBudget = 14,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionCreateAggregatableReportStatus)
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionCreateAggregatableReportStatus)

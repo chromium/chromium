@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -48,16 +49,30 @@ KeepAliveURLLoaderService::FactoryContext::FactoryContext(
 KeepAliveURLLoaderService::FactoryContext::~FactoryContext() = default;
 
 void KeepAliveURLLoaderService::FactoryContext::OnDidCommitNavigation(
-    WeakDocumentPtr committed_document) {
-  weak_document_ptr = committed_document;
+    NavigationHandle* navigation_handle) {
+  CHECK(navigation_handle);
+  weak_document_ptr =
+      navigation_handle->GetRenderFrameHost()->GetWeakDocumentPtr();
 
-  CHECK(weak_document_ptr.AsRenderFrameHostIfValid());
   auto* rfh = static_cast<RenderFrameHostImpl*>(
       weak_document_ptr.AsRenderFrameHostIfValid());
+  CHECK(rfh);
   policy_container_host = rfh->policy_container_host();
-  attribution_context = AttributionSuitableContext::Create(rfh->GetGlobalId());
+
+  // `attribution_context` is needed for all kinds of keepalive requests, as
+  // trigger registrations are allowed for all subresource requests.
+  attribution_context = AttributionSuitableContext::Create(navigation_handle);
 
   CHECK(policy_container_host);
+}
+
+void KeepAliveURLLoaderService::FactoryContext::
+    OnDidCommitPrerenderedPageActivation() {
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      weak_document_ptr.AsRenderFrameHostIfValid());
+  CHECK(rfh);
+
+  attribution_context = AttributionSuitableContext::Create(rfh);
 }
 
 void KeepAliveURLLoaderService::FactoryContext::UpdateFactory(
