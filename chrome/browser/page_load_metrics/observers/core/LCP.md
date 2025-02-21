@@ -43,7 +43,7 @@ text.
   reports each candidate (the largest contentful paint *so far*) as it is
   painted.
 
-  [`LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulPaintIfNeeded()](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.cc;l=62;drc=cdc3dd63349f3838a7680090d097ffc895612684)
+  [`LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulPaintIfNeeded()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.cc;l=62;drc=cdc3dd63349f3838a7680090d097ffc895612684)
   is called from the paint timing detector each time a new largest text
   or image candidate is found. If the candidate is larger than the previous
   largest candidate of either type, either `UpdateWebExposedLargestContentfulImage()` or
