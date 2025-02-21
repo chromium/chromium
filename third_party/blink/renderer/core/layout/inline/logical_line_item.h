@@ -146,6 +146,12 @@ struct LogicalLineItem {
         bfc_offset(bfc_offset),
         bidi_level(bidi_level) {}
 
+  bool IsItemType(InlineItem::InlineItemType type) const {
+    return inline_item && inline_item->Type() == type;
+  }
+  bool IsNotItemType(InlineItem::InlineItemType type) const {
+    return inline_item && inline_item->Type() != type;
+  }
   bool IsFloating() const {
     return layout_result && layout_result->GetPhysicalFragment().IsFloating();
   }
@@ -157,15 +163,13 @@ struct LogicalLineItem {
     return layout_result && layout_result->GetPhysicalFragment().IsInlineBox();
   }
   bool HasInFlowFragment() const {
-    return (inline_item &&
-            inline_item->Type() != InlineItem::kRubyLinePlaceholder) ||
+    return IsNotItemType(InlineItem::kRubyLinePlaceholder) ||
            (layout_result &&
             !layout_result->GetPhysicalFragment().IsFloating());
   }
   bool HasInFlowOrFloatingFragment() const {
-    return (inline_item &&
-            inline_item->Type() != InlineItem::kRubyLinePlaceholder) ||
-           layout_result || layout_object;
+    return IsNotItemType(InlineItem::kRubyLinePlaceholder) || layout_result ||
+           layout_object;
   }
   bool HasOutOfFlowFragment() const {
     return out_of_flow_positioned_box != nullptr;
@@ -173,9 +177,7 @@ struct LogicalLineItem {
   bool HasFragment() const {
     return HasInFlowOrFloatingFragment() || HasOutOfFlowFragment();
   }
-  bool IsControl() const {
-    return inline_item && inline_item->Type() == InlineItem::kControl;
-  }
+  bool IsControl() const { return IsItemType(InlineItem::kControl); }
   bool CanCreateFragmentItem() const { return HasInFlowOrFloatingFragment(); }
   bool HasBidiLevel() const { return bidi_level != 0xff; }
   bool IsPlaceholder() const { return !HasFragment() && !HasBidiLevel(); }
@@ -195,8 +197,7 @@ struct LogicalLineItem {
     return false;
   }
   bool IsRubyLinePlaceholder() const {
-    return inline_item &&
-           inline_item->Type() == InlineItem::kRubyLinePlaceholder;
+    return IsItemType(InlineItem::kRubyLinePlaceholder);
   }
 
   const LogicalOffset& Offset() const { return rect.offset; }
