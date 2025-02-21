@@ -46,7 +46,7 @@ class TabStripViewBinder {
             return;
         }
         if (TabProperties.IS_SELECTED == propertyKey) {
-            ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
+            ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
             int selectedDrawableId =
                     model.get(TabProperties.IS_INCOGNITO)
                             ? R.drawable.tab_strip_selected_ring_incognito
@@ -94,8 +94,7 @@ class TabStripViewBinder {
                         model.set(TabProperties.FAVICON_FETCHED, true);
                     });
         } else if (TabProperties.HAS_NOTIFICATION_BUBBLE == propertyKey) {
-            ImageView notificationView =
-                    (ImageView) view.fastFindViewById(R.id.tab_strip_notification_bubble);
+            ImageView notificationView = view.fastFindViewById(R.id.tab_strip_notification_bubble);
 
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
                 int visibility =
@@ -135,8 +134,7 @@ class TabStripViewBinder {
     /** Returns true if the favicon was successfully set. */
     private static boolean setFavicon(
             ViewLookupCachingFrameLayout view, PropertyModel model, Drawable faviconDrawable) {
-        @Nullable
-        ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
+        @Nullable ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
         if (button == null) return false;
 
         button.setBackgroundResource(
@@ -161,7 +159,7 @@ class TabStripViewBinder {
     private static void setContentDescription(
             ViewLookupCachingFrameLayout view, PropertyModel model) {
         Context context = view.getContext();
-        ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
+        ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
         String title = model.get(TabProperties.TITLE);
         @StringRes int contentDescRes;
 
