@@ -188,8 +188,12 @@ export class WindowBidiTransport implements BidiTransport {
 
 export class WindowCdpTransport implements Transport {
   #onMessage: ((message: string) => void) | null = null;
+  #cdpSend: typeof window.cdp.send;
 
   constructor() {
+    this.#cdpSend = window.cdp.send;
+    // @ts-expect-error removing cdp
+    window.cdp.send = undefined;
     window.cdp.onmessage = (message: string) => {
       this.#onMessage?.call(null, message);
     };
@@ -200,7 +204,7 @@ export class WindowCdpTransport implements Transport {
   }
 
   sendMessage(message: string) {
-    window.cdp.send(message);
+    this.#cdpSend(message);
   }
 
   close() {
