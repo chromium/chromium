@@ -4,6 +4,7 @@
 
 #include "components/metrics/dwa/dwa_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time_override.h"
@@ -17,6 +18,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics::dwa {
+
+const char kDwaInitSequenceHistogramName[] = "DWA.InitSequence";
+
 class DwaServiceTest : public testing::Test {
  public:
   DwaServiceTest() {
@@ -75,6 +79,7 @@ class DwaServiceEnvironmentTest : public DwaServiceTest {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DwaServiceTest, RecordCoarseSystemInformation) {
@@ -161,6 +166,8 @@ TEST_F(DwaServiceTest, ClientIdOnlyChangesBetweenDays) {
 
 TEST_F(DwaServiceEnvironmentTest, Flush) {
   DwaService service(&client_, &prefs_);
+  histogram_tester_.ExpectTotalCount(kDwaInitSequenceHistogramName,
+                                     /*expected_count=*/1);
   DwaRecorder::Get()->EnableRecording();
 
   // Tests Flush() when there are no page load events.
@@ -185,6 +192,8 @@ TEST_F(DwaServiceEnvironmentTest, Flush) {
 
 TEST_F(DwaServiceEnvironmentTest, Purge) {
   DwaService service(&client_, &prefs_);
+  histogram_tester_.ExpectTotalCount(kDwaInitSequenceHistogramName,
+                                     /*expected_count=*/1);
   DwaRecorder::Get()->EnableRecording();
 
   // Test that Purge() removes all metrics (entries and page load events).
@@ -215,6 +224,8 @@ TEST_F(DwaServiceEnvironmentTest, Purge) {
 
 TEST_F(DwaServiceEnvironmentTest, EnableDisableRecordingAndReporting) {
   DwaService service(&client_, &prefs_);
+  histogram_tester_.ExpectTotalCount(kDwaInitSequenceHistogramName,
+                                     /*expected_count=*/1);
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
 
   // When the reporting is enabled, the scheduler starts and creates tasks to
@@ -277,6 +288,8 @@ TEST_F(DwaServiceEnvironmentTest, EnableDisableRecordingAndReporting) {
 
 TEST_F(DwaServiceEnvironmentTest, LogsRotatedPeriodically) {
   DwaService service(&client_, &prefs_);
+  histogram_tester_.ExpectTotalCount(kDwaInitSequenceHistogramName,
+                                     /*expected_count=*/1);
   DwaRecorder::Get()->EnableRecording();
   service.EnableReporting();
 
