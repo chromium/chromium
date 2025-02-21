@@ -730,4 +730,31 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
   return ret;
 }
 
+void CSSVariableParser::CollectDashedFunctions(CSSParserTokenStream& stream,
+                                               HashSet<AtomicString>& result) {
+  // Look for "--foo(", also within blocks.
+  while (!stream.AtEnd()) {
+    stream.SkipUntilPeekedTypeIs<kFunctionToken, kLeftParenthesisToken,
+                                 kLeftBraceToken, kLeftBracketToken>();
+    const CSSParserToken& token = stream.Peek();
+    switch (token.GetType()) {
+      case kFunctionToken:
+        if (css_parsing_utils::IsDashedFunctionName(token)) {
+          result.insert(AtomicString(token.Value()));
+        }
+        [[fallthrough]];
+      case kLeftParenthesisToken:
+      case kLeftBraceToken:
+      case kLeftBracketToken: {
+        CSSParserTokenStream::BlockGuard guard(stream);
+        CollectDashedFunctions(stream, result);
+      }
+        continue;
+      default:
+        DCHECK(stream.AtEnd());
+        return;
+    }
+  }
+}
+
 }  // namespace blink
