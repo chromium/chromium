@@ -88,7 +88,11 @@ std::vector<tab_groups::SavedTabGroupTab> GetUpdatedTabs(
 
     // This tab has potentially been updated.
     if (IsTabConsideredUpdated(old_tab, *new_tab)) {
-      updated_tabs.emplace_back(*new_tab);
+      // Copy the tab title from the old tab to new tab as it will be used to
+      // show instant message about which tab has updated.
+      tab_groups::SavedTabGroupTab updated_tab(*new_tab);
+      updated_tab.SetTitle(old_tab.title());
+      updated_tabs.emplace_back(updated_tab);
     }
   }
   return updated_tabs;
