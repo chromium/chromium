@@ -15,6 +15,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationControllerDelegateImpl.java" ]
 
     deps = [
+      ":factory_java",
       ":java_resources",
       "//base:base_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",

@@ -32,12 +32,12 @@ import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordi
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
+import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.collaboration.SigninStatus;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -64,6 +64,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     // Will become null once used in the prepareFlowUI().
     private @Nullable Callback<Runnable> mSwitchToTabSwitcherCallback;
 
+    private Callback<Callback<Boolean>> mStartAccountRefreshCallback;
+
     // Stores the runnable to close the current showing UI. Is null when there's no UI showing.
     private Runnable mCloseScreenRunnable;
 
@@ -83,7 +85,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
             DataSharingTabManager tabManager,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             LoadingFullscreenCoordinator loadingFullscreenCoordinator,
-            @Nullable Callback<Runnable> switchToTabSwitcherCallback) {
+            @Nullable Callback<Runnable> switchToTabSwitcherCallback,
+            Callback<Callback<Boolean>> startAccountRefreshCallback) {
         mNativePtr = CollaborationControllerDelegateImplJni.get().createNativeObject(this);
 
         mActivity = activity;
@@ -92,6 +95,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
         mLoadingFullscreenCoordinator = loadingFullscreenCoordinator;
         mSwitchToTabSwitcherCallback = switchToTabSwitcherCallback;
+        mStartAccountRefreshCallback = startAccountRefreshCallback;
 
         if (mFlowType == FlowType.JOIN) {
             loadingFullscreenCoordinator.startLoading(
@@ -206,13 +210,26 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         assert profile != null;
 
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        ServiceStatus serviceStatus =
+                CollaborationServiceFactory.getForProfile(profile).getServiceStatus();
 
-        IdentityManager identityManager = signinManager.getIdentityManager();
-
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+        if (serviceStatus.signinStatus == SigninStatus.NOT_SIGNED_IN
                 && !signinManager.isSigninAllowed()) {
             // The signin option is disabled manually by the user in settings.
             openSigninSettingsModel(resultCallback);
+            return;
+        }
+
+        if (serviceStatus.signinStatus == SigninStatus.SIGNED_IN_PAUSED) {
+            // Need to redirect to verify account activity.
+            Callback<Boolean> successCallback =
+                    (success) -> {
+                        @Outcome int outcome = success ? Outcome.SUCCESS : Outcome.FAILURE;
+
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultCallback(outcome, resultCallback);
+                    };
+            mStartAccountRefreshCallback.onResult(successCallback);
             return;
         }
 

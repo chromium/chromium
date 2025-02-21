@@ -40,13 +40,15 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfi
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
+import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.collaboration.SigninStatus;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -82,7 +84,8 @@ public class CollaborationControllerDelegateImplUnitTest {
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private Callback<Runnable> mSwitchToTabSwitcherCallback;
-    @Mock private IdentityManager mIdentityManager;
+    @Mock private Callback<Callback<Boolean>> mStartAccountRefreshCallback;
+    @Mock private CollaborationService mCollaborationService;
 
     @Mock
     private CollaborationControllerDelegateImpl.Natives
@@ -98,10 +101,16 @@ public class CollaborationControllerDelegateImplUnitTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
 
+        doReturn(
+                        new ServiceStatus(
+                                /* signinStatus= */ 0,
+                                /* syncStatus= */ 0,
+                                /* collaborationStatus= */ 0))
+                .when(mCollaborationService)
+                .getServiceStatus();
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
-        doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
         doReturn(true).when(mSigninManager).isSigninAllowed();
         doReturn((long) 0)
                 .when(mCollaborationControllerDelegateImplNativeMock)
@@ -124,7 +133,8 @@ public class CollaborationControllerDelegateImplUnitTest {
                         mDataSharingTabManager,
                         mSigninAndHistorySyncActivityLauncher,
                         mLoadingFullscreenCoordinator,
-                        mSwitchToTabSwitcherCallback);
+                        mSwitchToTabSwitcherCallback,
+                        mStartAccountRefreshCallback);
 
         if (type == FlowType.JOIN) {
             verify(mLoadingFullscreenCoordinator).startLoading(any());
@@ -140,7 +150,8 @@ public class CollaborationControllerDelegateImplUnitTest {
                         mDataSharingTabManager,
                         mSigninAndHistorySyncActivityLauncher,
                         mLoadingFullscreenCoordinator,
-                        mSwitchToTabSwitcherCallback);
+                        mSwitchToTabSwitcherCallback,
+                        mStartAccountRefreshCallback);
         verify(mLoadingFullscreenCoordinator).startLoading(any());
 
         long resultCallback = 1;
@@ -177,6 +188,27 @@ public class CollaborationControllerDelegateImplUnitTest {
         verify(mWindowAndroid)
                 .showCancelableIntent(eq(intent), intentCallbackCaptor.capture(), eq(null));
         intentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
+    }
+
+    @Test
+    public void testShowAuthenticationSigninPaused() {
+        doReturn(
+                        new ServiceStatus(
+                                SigninStatus.SIGNED_IN_PAUSED,
+                                /* syncStatus= */ 0,
+                                /* collaborationStatus= */ 0))
+                .when(mCollaborationService)
+                .getServiceStatus();
+        createDelegate(FlowType.JOIN);
+        long resultCallback = 1;
+        mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
+
+        ArgumentCaptor<Callback<Boolean>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        verify(mStartAccountRefreshCallback).onResult(successCallback.capture());
+
+        successCallback.getValue().onResult(true);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
