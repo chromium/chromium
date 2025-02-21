@@ -50,6 +50,8 @@ source_set("extensions") {
     "api/developer_private/developer_private_event_router_shared.cc",
     "api/developer_private/developer_private_event_router_shared.h",
     "api/developer_private/developer_private_functions.h",
+    "api/developer_private/developer_private_functions_shared.cc",
+    "api/developer_private/developer_private_functions_shared.h",
     "api/tabs/windows_util.cc",
     "api/tabs/windows_util.h",
     "chrome_extensions_browser_api_provider.cc",

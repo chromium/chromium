@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_functions_shared.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
@@ -36,19 +37,6 @@ class Profile;
 namespace extensions {
 
 namespace api {
-
-class DeveloperPrivateAPIFunction : public ExtensionFunction {
- protected:
-  ~DeveloperPrivateAPIFunction() override;
-
-  // Returns the extension with the given |id| from the registry, including
-  // all possible extensions (enabled, disabled, terminated, etc).
-  const Extension* GetExtensionById(const ExtensionId& id);
-
-  // Returns the extension with the given |id| from the registry, only checking
-  // enabled extensions.
-  const Extension* GetEnabledExtensionById(const ExtensionId& id);
-};
 
 class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {
  public:
@@ -137,17 +125,6 @@ class DeveloperPrivateGetProfileConfigurationFunction
 
  private:
   ~DeveloperPrivateGetProfileConfigurationFunction() override;
-  ResponseAction Run() override;
-};
-
-class DeveloperPrivateUpdateProfileConfigurationFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.updateProfileConfiguration",
-                             DEVELOPERPRIVATE_UPDATEPROFILECONFIGURATION)
-
- private:
-  ~DeveloperPrivateUpdateProfileConfigurationFunction() override;
   ResponseAction Run() override;
 };
 

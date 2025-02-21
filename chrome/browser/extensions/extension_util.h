@@ -75,11 +75,11 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
 std::vector<content::BrowserContext*> GetAllRelatedProfiles(
     Profile* profile,
     const Extension& extension);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Sets whether the given `profile` is in developer mode and notifies
 // relevant subsystems.
 void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns the extension name to be used in UI surfaces. Name will be truncated
 // if its very long, preventing extension name to spoof or break UI surfaces

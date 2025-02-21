@@ -347,6 +347,7 @@ std::vector<content::BrowserContext*> GetAllRelatedProfiles(
 
   return related_contexts;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
   profile->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode,
@@ -369,7 +370,6 @@ void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
   user_script_manager->SetUserScriptSourceEnabledForExtensions(
       UserScript::Source::kDynamicUserScript, in_developer_mode);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::u16string GetFixupExtensionNameForUIDisplay(
     const std::u16string& extension_name) {
