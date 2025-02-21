@@ -2453,7 +2453,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.History.VisitedLinks.IsLinkStyledAsVisited"
     enum="Boolean" expires_after="2025-06-24">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     Each time we determine an anchor element's VisitedLinkState, we record
     whether the link will be styled as visited. :visited is true and :unvisited
@@ -2464,7 +2464,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.History.VisitedLinks.IsSaltFromNavigationThrottle"
     enum="Boolean" expires_after="2025-06-24">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     Each time we add an origin, salt pair to VisitedLinkReader, this histogram
     records whether the salt came from the VisitedLinkNavigationThrottle or the
