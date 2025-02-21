@@ -7362,21 +7362,6 @@
             ]
         }
     ],
-    "DTCAntivirusSignalEnabled": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DTCAntivirusSignalEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "DTCKeyRotationUploadedBySharedAPIEnabled": [
         {
             "platforms": [
