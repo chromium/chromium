@@ -1058,6 +1058,7 @@ public class NavigationTransitionsTest {
             "BackForwardTransitions"
                     + ":transition_from_native_pages/true"
                     + "/transition_to_native_pages/true")
+    @DisabledTest(message = "crbug.com/398140569")
     public void testSwipeBackToNativeBookmarksPageWithTransition() throws InterruptedException {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl("chrome-native://bookmarks/folder/0");
