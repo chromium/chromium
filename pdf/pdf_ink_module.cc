@@ -62,6 +62,19 @@ namespace {
 
 constexpr ink::AffineTransform kIdentityTransform;
 
+base::Value::Dict CreateUpdateThumbnailMessage(
+    int page_index,
+    std::vector<uint8_t> image_data,
+    const gfx::Size& thumbnail_size) {
+  base::Value::Dict message;
+  message.Set("type", "updateInk2Thumbnail");
+  message.Set("pageNumber", page_index + 1);
+  message.Set("imageData", std::move(image_data));
+  message.Set("width", thumbnail_size.width());
+  message.Set("height", thumbnail_size.height());
+  return message;
+}
+
 ink::StrokeInput::ToolType GetToolTypeFromTouchEvent(
     const blink::WebTouchEvent& event) {
   // Assumes the caller already handled multi-touch events.
@@ -189,13 +202,8 @@ void PdfInkModule::GenerateAndSendInkThumbnail(
     return;
   }
 
-  base::Value::Dict message;
-  message.Set("type", "updateInk2Thumbnail");
-  message.Set("pageNumber", page_index + 1);
-  message.Set("imageData", std::move(image_data));
-  message.Set("width", thumbnail_size.width());
-  message.Set("height", thumbnail_size.height());
-  client_->PostMessage(std::move(message));
+  client_->PostMessage(CreateUpdateThumbnailMessage(
+      page_index, std::move(image_data), thumbnail_size));
 }
 
 void PdfInkModule::GenerateAndSendInkThumbnailInternal(int page_index) {
