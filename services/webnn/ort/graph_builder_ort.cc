@@ -70,6 +70,7 @@ constexpr char kOpTypeClamp[] = "Clip";
 constexpr char kOpTypeConcat[] = "Concat";
 constexpr char kOpTypeConv2d[] = "Conv";
 constexpr char kOpTypeConvTranspose2d[] = "ConvTranspose";
+constexpr char kOpTypeCumulativeSum[] = "CumSum";
 constexpr char kOpTypeDequantizeLinear[] = "DequantizeLinear";
 constexpr char kOpTypeElu[] = "Elu";
 constexpr char kOpTypeExpand[] = "Expand";
@@ -1059,6 +1060,37 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
                              output_names, attributes);
       break;
   }
+
+  return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddCumulativeSumOperation(
+    const mojom::CumulativeSum& cumulative_sum) {
+  const std::string node_name = GenerateNextOperationName(cumulative_sum.label);
+  const std::string input_name =
+      GetOperandNameById(cumulative_sum.input_operand_id);
+  const std::string output_name =
+      GetOperandNameById(cumulative_sum.output_operand_id);
+
+  std::string axis_name;
+  ASSIGN_OR_RETURN(axis_name,
+                   CreateScalarInitializer<int64_t>(
+                       base::checked_cast<int64_t>(cumulative_sum.axis)));
+
+  ScopedOrtOpAttrPtr attr_exclusive = model_builder_.CreateAttribute(
+      /*name=*/"exclusive",
+      base::checked_cast<int64_t>(cumulative_sum.exclusive));
+  ScopedOrtOpAttrPtr attr_reverse = model_builder_.CreateAttribute(
+      /*name=*/"reverse", base::checked_cast<int64_t>(cumulative_sum.reversed));
+  std::array<OrtOpAttr*, 2> attributes = {attr_exclusive.Release(),
+                                          attr_reverse.Release()};
+
+  std::array<const char*, 2> input_names = {input_name.c_str(),
+                                            axis_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+  model_builder_.AddNode(kOpTypeCumulativeSum, node_name, input_names,
+                         output_names, attributes);
 
   return base::ok();
 }
@@ -2332,6 +2364,11 @@ GraphBuilderOrt::BuildModel() {
         RETURN_IF_ERROR(AddConv2dOperation(*operation->get_conv2d()));
         break;
       }
+      case mojom::Operation::Tag::kCumulativeSum: {
+        RETURN_IF_ERROR(
+            AddCumulativeSumOperation(*operation->get_cumulative_sum()));
+        break;
+      }
       case mojom::Operation::Tag::kDequantizeLinear: {
         RETURN_IF_ERROR(
             AddDequantizeLinearOperation(*operation->get_dequantize_linear()));
@@ -2475,7 +2512,6 @@ GraphBuilderOrt::BuildModel() {
         AddWhereOperation(*operation->get_where());
         break;
       }
-      case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kLstm:
