@@ -14,7 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/scoped_path_override.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -29,10 +29,6 @@ class TestingBrowserProcess;
 namespace sync_preferences {
 class PrefServiceSyncable;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class AccountProfileMapper;
-#endif
 
 // The TestingProfileManager is a TestingProfile factory for a multi-profile
 // environment. It will bring up a full ProfileManager and attach it to the
@@ -117,14 +113,14 @@ class TestingProfileManager : public ProfileObserver {
   TestingProfile* CreateGuestProfile(
       std::optional<TestingProfile::Builder> builder = std::nullopt);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   // Creates a new system TestingProfile whose data lives in the system profile
   // test environment directory, as specified by the profile manager.
   // This profile will not be added to the ProfileAttributesStorage. This will
   // register the TestingProfile with the profile subsystem as well.
   // The subsystem owns the Profile and returns a weak pointer.
   TestingProfile* CreateSystemProfile();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
   // Deletes a TestingProfile from the profile subsystem.
   void DeleteTestingProfile(const std::string& profile_name);
@@ -136,10 +132,10 @@ class TestingProfileManager : public ProfileObserver {
   // Deletes a guest TestingProfile from the profile manager.
   void DeleteGuestProfile();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   // Deletes a system TestingProfile from the profile manager.
   void DeleteSystemProfile();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
   // Deletes the storage instance. This is useful for testing that the storage
   // is properly persisting data.
@@ -147,10 +143,6 @@ class TestingProfileManager : public ProfileObserver {
 
   // Get the full profile path from the profile name.
   base::FilePath GetProfilePath(const std::string& profile_name);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetAccountProfileMapper(std::unique_ptr<AccountProfileMapper> mapper);
-#endif
 
   // Helper accessors.
   const base::FilePath& profiles_dir();

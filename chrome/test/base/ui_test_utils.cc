@@ -537,12 +537,6 @@ void FullscreenWaiter::Wait() {
 }
 
 void FullscreenWaiter::OnFullscreenStateChanged() {
-  // Note: In Lacros, when full screen mode changes, FullscreenController
-  // triggers WindowFullscreenStateChanged twice for the same change
-  // asynchronously. If the test code toggles fullscreen mode on and off, there
-  // is a race between the second notification of fullscreen mode on and test
-  // code toggle fullscreen mode off. Wait until the fullscreen state changes to
-  // the expected mode. See details in crbug.com/1481727.
   if (!IsSatisfied()) {
     return;
   }

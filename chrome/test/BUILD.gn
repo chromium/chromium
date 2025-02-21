@@ -394,7 +394,6 @@ static_library("test_support") {
     ]
 
     deps += [
-      "//build:chromeos_buildflags",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -459,7 +458,6 @@ static_library("test_support") {
   configs += [ "//build/config:precompiled_headers" ]
 
   deps += [
-    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser/autofill",
     "//chrome/browser/content_settings:content_settings_factory",
@@ -1331,7 +1329,6 @@ source_set("platform_browser_tests") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
@@ -1599,7 +1596,6 @@ if (is_android) {
       ":test_support_java",
       ":test_support_jni_headers",
       ":test_support_ui_android",
-      "//build:chromeos_buildflags",
       "//chrome:chrome_android_core",
       "//chrome/android:delegate_public_impl_java",
       "//chrome/browser/autofill",
@@ -2027,7 +2023,6 @@ if (!is_android) {
       "//base/test:test_proto",
       "//base/test:test_support",
       "//build:branding_buildflags",
-      "//build:chromeos_buildflags",
       "//build/config/coverage:buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
@@ -4498,7 +4493,6 @@ if (!is_android) {
 
       deps += [
         "../browser/enterprise/connectors/test:test_support",
-        "//build:chromeos_buildflags",
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",
@@ -6397,7 +6391,6 @@ test("unit_tests") {
     ":test_support_unit",
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome:dependencies",
     "//chrome:resources",
     "//chrome:strings",
@@ -10334,7 +10327,6 @@ if (!is_android) {
     ]
 
     deps = [
-      "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:browser_process",
@@ -10583,7 +10575,6 @@ if (!is_android) {
         ":chrome_test_launcher",
         ":test_support",
         ":test_support_ui",
-        "//build:chromeos_buildflags",
         "//chrome:packed_resources",
         "//chrome:resources",
         "//chrome:strings",
@@ -10781,7 +10772,6 @@ if (!is_android && !is_chromeos_device) {
       ":test_support",
       ":test_support_ui",
       ":webrtc_browser_tests_base",
-      "//build:chromeos_buildflags",
       "//build/config/linux/dbus:buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
@@ -11796,7 +11786,6 @@ source_set("sync_integration_test_support") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/autofill",
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
@@ -11907,7 +11896,6 @@ if (!is_android) {
       ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
-      "//build:chromeos_buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
       "//chrome:strings",

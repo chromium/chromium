@@ -8,6 +8,8 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
+static_assert(BUILDFLAG(IS_CHROMEOS));
+
 class PrintPreviewBrowserTest : public WebUIMochaBrowserTest {
  protected:
   PrintPreviewBrowserTest() {
@@ -25,12 +27,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ColorSettings) {
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, CopiesSettings) {
   RunTest("chromeos/print_preview/copies_settings_test.js", "mocha.run()");
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DestinationSelect) {
-  RunTest("chromeos/print_preview/destination_select_test.js", "mocha.run()");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DpiSettings) {
   RunTest("chromeos/print_preview/dpi_settings_test.js", "mocha.run()");
@@ -65,12 +61,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsAvailability) {
           "mocha.run()");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsPolicy) {
   RunTest("chromeos/print_preview/model_settings_policy_test.js",
           "mocha.run()");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, OtherOptionsSettings) {
   RunTest("chromeos/print_preview/other_options_settings_test.js",
@@ -82,19 +76,14 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PagesPerSheetSettings) {
           "mocha.run()");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettings) {
   RunTest("chromeos/print_preview/pin_settings_test.js", "mocha.run()");
 }
-#endif
 
-// Test is flaky on LaCros, see crbug.com/328690296
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SearchableDropDownCros) {
   RunTest("chromeos/print_preview/searchable_drop_down_cros_test.js",
           "mocha.run()");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixin) {
   RunTest("chromeos/print_preview/select_mixin_test.js", "mocha.run()");
@@ -130,11 +119,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, CssBackgroundManaged) {
   RunTestCase("CssBackgroundManaged");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, SheetsManaged) {
   RunTestCase("SheetsManaged");
 }
-#endif
 
 class PrintPreviewSidebarTest : public PrintPreviewBrowserTest {
  protected:
@@ -280,7 +267,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, MediaSizePolicy) {
   RunTestCase("MediaSizePolicy");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, SheetsPolicy) {
   RunTestCase("SheetsPolicy");
 }
@@ -296,7 +282,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, DuplexPolicy) {
 IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, PinPolicy) {
   RunTestCase("PinPolicy");
 }
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, PrintPdfAsImageAvailability) {

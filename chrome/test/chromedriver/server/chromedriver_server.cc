@@ -41,7 +41,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
 #include "chrome/test/chromedriver/logging.h"
@@ -55,9 +54,7 @@
 
 namespace {
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Ensure that there is a writable shared memory directory. We use
 // network::SimpleURLLoader to connect to Chrome, and it calls
 // base::subtle::PlatformSharedMemoryRegion::Create to get a shared memory
@@ -352,9 +349,7 @@ int main(int argc, char *argv[]) {
         "show logs from the browser (overrides other logging options)",
         "bidi-mapper-path",
         "custom bidi mapper path",
-    // TODO(crbug.com/40118868): Revisit the macro expression once build flag
-    // switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
         "disable-dev-shm-usage",
         "do not use /dev/shm "
         "(add this switch if seeing errors related to shared memory)",
@@ -491,9 +486,7 @@ int main(int argc, char *argv[]) {
     VLOG(0) << GetPortProtectionMessage();
   }
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   EnsureSharedMemory(cmd_line);
 #endif
 

@@ -7,7 +7,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -89,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
 }
 
 // TODO(crbug.com/380369297): Flaky in Chromium waterfall.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
@@ -139,7 +138,7 @@ class MediaRouterIntegrationOneUANoReceiverBrowserTest
 };  // namespace media_router
 
 // TODO(crbug.com/380369297): Flaky in Chromium waterfall.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Basic MANUAL_Basic
 #else
 #define MAYBE_Basic Basic
@@ -151,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 #undef MAYBE_Basic
 
 // TODO(crbug.com/380369297): Flaky in Chromium waterfall.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
@@ -163,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 #undef MAYBE_Fail_SendMessage
 
 // TODO(crbug.com/380369297): Flaky in Chromium waterfall.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReconnectSession MANUAL_ReconnectSession
 #else
 #define MAYBE_ReconnectSession ReconnectSession
@@ -174,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 }
 
 // TODO(crbug.com/380369297): Flaky in Chromium waterfall.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReconnectSessionSameTab MANUAL_ReconnectSessionSameTab
 #else
 #define MAYBE_ReconnectSessionSameTab ReconnectSessionSameTab
