@@ -1208,7 +1208,7 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
 
   scoped_refptr<Gradient> gradient =
       Gradient::CreateLinear(desc.p0, desc.p1, desc.spread_method,
-                             Gradient::ColorInterpolation::kPremultiplied);
+                             Gradient::PremultipliedAlpha::kPremultiplied);
 
   gradient->SetColorInterpolationSpace(color_interpolation_space_,
                                        hue_interpolation_method_);
@@ -1680,7 +1680,7 @@ scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
   scoped_refptr<Gradient> gradient = Gradient::CreateRadial(
       desc.p0, desc.r0, desc.p1, desc.r1,
       is_degenerate ? 1 : second_radius.AspectRatio(), desc.spread_method,
-      Gradient::ColorInterpolation::kPremultiplied);
+      Gradient::PremultipliedAlpha::kPremultiplied);
 
   gradient->SetColorInterpolationSpace(color_interpolation_space_,
                                        hue_interpolation_method_);
@@ -1842,7 +1842,7 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
 
   scoped_refptr<Gradient> gradient = Gradient::CreateConic(
       position, angle, desc.start_angle, desc.end_angle, desc.spread_method,
-      Gradient::ColorInterpolation::kPremultiplied);
+      Gradient::PremultipliedAlpha::kPremultiplied);
 
   gradient->SetColorInterpolationSpace(color_interpolation_space_,
                                        hue_interpolation_method_);
@@ -1922,7 +1922,7 @@ scoped_refptr<Gradient> CSSConstantGradientValue::CreateGradient(
 
   scoped_refptr<Gradient> gradient =
       Gradient::CreateLinear(desc.p0, desc.p1, desc.spread_method,
-                             Gradient::ColorInterpolation::kPremultiplied);
+                             Gradient::PremultipliedAlpha::kPremultiplied);
 
   gradient->SetColorInterpolationSpace(color_interpolation_space_,
                                        hue_interpolation_method_);

@@ -718,6 +718,11 @@
       status: "experimental",
     },
     {
+      // https://crbug.com/394052224
+      name: "CanvasGradientCSSColor4",
+      status: "experimental",
+    },
+    {
       name: "CanvasHDR",
       status: "experimental",
     },
