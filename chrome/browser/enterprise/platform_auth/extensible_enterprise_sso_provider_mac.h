@@ -13,12 +13,40 @@
 
 namespace enterprise_auth {
 
+extern const char kAllIdentityProviders[];
+
 // Class that provides authentication functionalities from Extensible Enterprise
 // SSO. This class does not support origin filtering because call to a platform
 // API is required to know if a URL is supported. This class relies on the
 // SSO extensions installed on the device.
 class ExtensibleEnterpriseSSOProvider : public PlatformAuthProvider {
  public:
+  struct Metrics {
+    explicit Metrics(const std::string& host);
+    ~Metrics();
+    Metrics(const Metrics&) = delete;
+    Metrics& operator=(const Metrics&) = delete;
+
+    std::string host;
+    base::Time start_time;
+    base::Time end_time;
+    bool url_is_supported = false;
+    bool success = false;
+  };
+
+  struct DelegateResult {
+    DelegateResult(const std::string& name,
+                   bool success,
+                   net::HttpRequestHeaders headers = net::HttpRequestHeaders());
+    ~DelegateResult();
+    DelegateResult(const DelegateResult&) = delete;
+    DelegateResult& operator=(const DelegateResult&) = delete;
+
+    std::string name;
+    bool success;
+    net::HttpRequestHeaders headers;
+  };
+
   ExtensibleEnterpriseSSOProvider();
   ~ExtensibleEnterpriseSSOProvider() override;
   ExtensibleEnterpriseSSOProvider(const ExtensibleEnterpriseSSOProvider&) =
