@@ -779,7 +779,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   SourceImageStatus status = kInvalidSourceImageStatus;
   auto image = image_source->GetSourceImageForCanvas(
-      FlushReason::kCreateVideoFrame, &status, source_size, kPremultiplyAlpha);
+      FlushReason::kCreateVideoFrame, &status, source_size, kDontChangeAlpha);
   if (!image || status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid source state");
@@ -809,10 +809,15 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size coded_size(sk_image_info.width(), sk_image_info.height());
   const gfx::Rect default_visible_rect(coded_size);
   const gfx::Size default_display_size(coded_size);
+  const bool has_undiscarded_unpremultiplied_alpha =
+      sk_image_info.alphaType() == kUnpremul_SkAlphaType &&
+      !image->CurrentFrameKnownToBeOpaque() &&
+      !(init && init->alpha() == kAlphaDiscard);
 
   sk_sp<SkImage> sk_image;
   scoped_refptr<media::VideoFrame> frame;
-  if (image->IsTextureBacked() && SharedGpuContext::IsGpuCompositingEnabled()) {
+  if (image->IsTextureBacked() && SharedGpuContext::IsGpuCompositingEnabled() &&
+      !has_undiscarded_unpremultiplied_alpha) {
     DCHECK(image->IsStaticBitmapImage());
     const auto format = media::VideoPixelFormatFromSkColorType(
         paint_image.GetColorType(),
@@ -855,20 +860,29 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     // <img> creation, but probably such users should be using ImageDecoder
     // directly.
     sk_image = paint_image.GetSwSkImage();
+    if (sk_image && sk_image->isLazyGenerated()) {
+      sk_image = sk_image->makeRasterImage();
+    }
+    if (sk_image && has_undiscarded_unpremultiplied_alpha) {
+      // Historically `sk_image` has always been premultiplied. Preserve this
+      // behavior.
+      SkBitmap bm;
+      if (bm.tryAllocPixels(
+              sk_image->imageInfo().makeAlphaType(kUnpremul_SkAlphaType)) &&
+          sk_image->readPixels(nullptr, bm.pixmap(), 0, 0)) {
+        bm.setImmutable();
+        sk_image = bm.asImage();
+      } else {
+        sk_image = nullptr;
+      }
+    }
     if (!sk_image) {
-      // Can happen if, for example, |paint_image| is texture-backed and the
-      // context was lost.
+      // This can happen if, for example, `paint_image` is texture-backed and
+      // the context was lost, or if there was an out-of-memory allocating the
+      // SkBitmap for alpha multiplication.
       exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                         "Failed to create video frame");
       return nullptr;
-    }
-    if (sk_image->isLazyGenerated()) {
-      sk_image = sk_image->makeRasterImage();
-      if (!sk_image) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                          "Failed to create video frame");
-        return nullptr;
-      }
     }
 
     const bool force_opaque =
