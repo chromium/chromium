@@ -1,0 +1,68 @@
+[
+  {
+    "os": [
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+        },
+        "prefs": {
+          "extensible_enterprise_sso.enabled": {
+            "location": "local_state",
+            "default_value": 1
+          },
+          "extensible_enterprise_sso.enabled_idps": {
+            "location": "local_state",
+            "default_value": ["microsoft"]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensibleEnterpriseSSOBlocklist": []
+        },
+        "prefs": {
+          "extensible_enterprise_sso.enabled": {
+            "location": "local_state",
+            "value": 1
+          },
+          "extensible_enterprise_sso.enabled_idps": {
+            "location": "local_state",
+            "value": ["microsoft"]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensibleEnterpriseSSOBlocklist": ["all"]
+        },
+        "prefs": {
+          "extensible_enterprise_sso.enabled": {
+            "location": "local_state",
+            "value": 0
+          },
+          "extensible_enterprise_sso.enabled_idps": {
+            "location": "local_state",
+            "value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensibleEnterpriseSSOBlocklist": ["microsoft"]
+        },
+        "prefs": {
+          "extensible_enterprise_sso.enabled": {
+            "location": "local_state",
+            "value": 0
+          },
+          "extensible_enterprise_sso.enabled_idps": {
+            "location": "local_state",
+            "value": []
+          }
+        }
+      }
+    ]
+  }
+]

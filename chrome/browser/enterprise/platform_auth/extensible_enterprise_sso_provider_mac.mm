@@ -14,8 +14,12 @@
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
+#import "chrome/browser/browser_process.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_entra.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
+#import "chrome/common/pref_names.h"
 #import "components/policy/core/common/policy_logger.h"
+#import "components/prefs/pref_service.h"
 #import "net/base/apple/http_response_headers_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/http/http_request_headers.h"
@@ -27,6 +31,10 @@
 namespace enterprise_auth {
 
 namespace {
+
+constexpr std::array<const char*, 1> kSupportedIdps{
+    kMicrosoftIdentityProvider,
+};
 
 // Empty function used to ensure SSOServiceEntraAuthControllerDelegate does not
 // get destroyed until the data is fetched.
@@ -62,14 +70,39 @@ void ExtensibleEnterpriseSSOProvider::GetData(
     std::move(callback).Run(net::HttpRequestHeaders());
     return;
   }
-  SSOServiceEntraAuthControllerDelegate* delegate =
-      [[SSOServiceEntraAuthControllerDelegate alloc]
-          initWithAuthorizationSingleSignOnProvider:auth_provider];
-  // Pass `delegate` as a callback parameter so that it lives beyond the scope
-  // of this function and until the callback is called.
-  auto final_callback = base::BindPostTaskToCurrentDefault(
-      std::move(callback).Then(base::BindOnce(&OnDataFetched, delegate)));
-  [delegate getAuthHeaders:nativeUrl withCallback:std::move(final_callback)];
+
+  for (const base::Value& idp_value : g_browser_process->local_state()->GetList(
+           prefs::kExtensibleEnterpriseSSOEnabledIdps)) {
+    if (const std::string* idp = idp_value.GetIfString();
+        idp && *idp == kMicrosoftIdentityProvider) {
+      SSOServiceEntraAuthControllerDelegate* delegate =
+          [[SSOServiceEntraAuthControllerDelegate alloc]
+              initWithAuthorizationSingleSignOnProvider:auth_provider];
+
+      // Pass `delegate` as a callback parameter so that it lives beyond the
+      // scope of this function and until the callback is called.
+      auto final_callback = base::BindPostTaskToCurrentDefault(
+          std::move(callback).Then(base::BindOnce(&OnDataFetched, delegate)));
+      [delegate getAuthHeaders:nativeUrl
+                  withCallback:std::move(final_callback)];
+    }
+  }
+}
+
+// static
+std::set<std::string>
+ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProviders() {
+  return {kSupportedIdps.begin(), kSupportedIdps.end()};
+}
+
+// static
+base::Value::List
+ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProvidersList() {
+  base::Value::List idps;
+  for (const char* idp : kSupportedIdps) {
+    idps.Append(idp);
+  }
+  return idps;
 }
 
 }  // namespace enterprise_auth

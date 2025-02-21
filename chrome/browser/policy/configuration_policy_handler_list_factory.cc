@@ -167,6 +167,10 @@
 #include "components/media_router/common/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/side_search/side_search_prefs.h"
 #endif  // BUILDFLAG(TOOLKIT_VIEWS)
@@ -2190,9 +2194,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCreatePasskeysInICloudKeychain,
     prefs::kCreatePasskeysInICloudKeychain,
     base::Value::Type::BOOLEAN },
-  { key::kExtensibleEnterpriseSSOEnabled,
-    prefs::kExtensibleEnterpriseSSOEnabled,
-    base::Value::Type::INTEGER},
 #endif
   { key::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
     prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
@@ -3139,6 +3140,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
+  handlers->AddHandler(
+      std::make_unique<enterprise_auth::ExtensibleEnterpriseSSOPolicyHandler>(
+          chrome_schema));
+#endif  // BUILDFLAG(IS_MAC)
 
 // On most platforms, there is a legacy policy
 // kUnsafelyTreatInsecureOriginAsSecure which has been replaced by

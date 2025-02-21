@@ -18,6 +18,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #endif  //  BUILFLAG(IS_MAC)
@@ -40,6 +41,10 @@ void PlatformAuthPolicyObserver::RegisterPrefs(
   pref_registry->RegisterIntegerPref(GetPrefName(), 0);
 #elif BUILDFLAG(IS_MAC)
   pref_registry->RegisterIntegerPref(GetPrefName(), 1);
+  pref_registry->RegisterListPref(
+      prefs::kExtensibleEnterpriseSSOEnabledIdps,
+      enterprise_auth::ExtensibleEnterpriseSSOProvider::
+          GetSupportedIdentityProvidersList());
 #else
 #error Unsupported platform
 #endif

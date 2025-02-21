@@ -4205,9 +4205,16 @@ inline constexpr char kBreachedCredentialsCount[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-// The integer value of the ExtensibleEnterpriseSSOEnabled policy.
+// The integer value of the ExtensibleEnterpriseSSO of whether we should enable
+// extensible enterprise SSO. This is based on the value of the
+// ExtensibleEnterpriseSSOBlocklist.
 inline constexpr char kExtensibleEnterpriseSSOEnabled[] =
     "extensible_enterprise_sso.enabled";
+
+// The list value of the enabled handlers for extensible enterprise SSO.
+// This is based on the ExtensibleEnterpriseSSOBlocklist policy.
+inline constexpr char kExtensibleEnterpriseSSOEnabledIdps[] =
+    "extensible_enterprise_sso.enabled_idps";
 #endif  //  BUILDFLAG(IS_MAC)
 
 // Allow or don't allow bypassing WebAudio output buffering

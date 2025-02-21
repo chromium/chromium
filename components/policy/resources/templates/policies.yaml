@@ -1257,7 +1257,7 @@ policies:
   1256: PdfViewerOutOfProcessIframeEnabled
   1257: LockScreenAutoStartOnlineReauth
   1258: KeyboardFocusableScrollersEnabled
-  1259: ExtensibleEnterpriseSSOEnabled
+  1259: ExtensibleEnterpriseSSOBlocklist
   1260: CSSCustomStateDeprecatedSyntaxEnabled
   1261: MemorySaverModeSavings
   1262: KioskVisionTelemetryEnabled

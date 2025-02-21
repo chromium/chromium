@@ -6353,6 +6353,8 @@ static_library("browser") {
       "download/drag_download_item_mac.mm",
       "enterprise/platform_auth/extensible_enterprise_sso_entra.h",
       "enterprise/platform_auth/extensible_enterprise_sso_entra.mm",
+      "enterprise/platform_auth/extensible_enterprise_sso_policy_handler.cc",
+      "enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h",
       "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h",
       "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.mm",
       "enterprise/signals/device_info_fetcher_mac.h",
