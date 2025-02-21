@@ -1335,12 +1335,6 @@ BASE_FEATURE(kAccessibilityPageZoomV2,
              "AccessibilityPageZoomV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the addition of text formatting information to the Android
-// AccessibilityNodeInfo accessibility tree.
-BASE_FEATURE(kAccessibilityTextFormatting,
-             "AccessibilityTextFormatting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the use of a unified code path for AXTree snapshots.
 BASE_FEATURE(kAccessibilityUnifiedSnapshots,
              "AccessibilityUnifiedSnapshots",
