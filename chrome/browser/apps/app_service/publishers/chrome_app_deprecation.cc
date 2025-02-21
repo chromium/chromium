@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation_controller.h"
+#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 
 #include "ash/public/cpp/system_notification_builder.h"
 #include "base/containers/fixed_flat_set.h"
@@ -13,12 +13,13 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace apps::chrome_app_deprecation {
 
 namespace {
-constexpr auto user_installed_and_kiosk = base::MakeFixedFlatSet<
+constexpr auto kUserInstalledAndKiosk = base::MakeFixedFlatSet<
     std::string_view>(
     {"aakfkoilmhehmmadlkedfbcelkbamdkj", "aepgaekjheajlcifmpjcnpbjcencoefn",
      "afoipjmffplafpbfjopglheidddioiai", "afpnehpifljbjjplppeplamalioanmio",
@@ -99,22 +100,19 @@ constexpr auto user_installed_and_kiosk = base::MakeFixedFlatSet<
 // running and avoid multi-thread race conditions. We do not risk memory leaks
 // because the allowlist are always valid while Chrome is running.
 static base::NoDestructor<std::unordered_set<std::string_view>>
-    test_allowlisted_apps;
+    kTestAllowlistedApps;
 
 bool IsAllowlisted(std::string_view app_id) {
-  if (test_allowlisted_apps->contains(app_id)) {
-    return true;
-  }
-
-  return user_installed_and_kiosk.contains(app_id);
+  return kUserInstalledAndKiosk.contains(app_id) ||
+         kTestAllowlistedApps->contains(app_id);
 }
 
-void ShowNotification(const std::string& app_name, Profile* profile) {
+void ShowNotification(const extensions::Extension& app, Profile* profile) {
   message_center::Notification notification =
       ash::SystemNotificationBuilder()
-          .SetId("Chrome Apps Deprecation")
+          .SetId(app.id() + "-deprecation-notification")
           .SetCatalogName(ash::NotificationCatalogName::kChromeAppDeprecation)
-          .SetTitle(base::ASCIIToUTF16(app_name))
+          .SetTitle(base::ASCIIToUTF16(app.name()))
           .SetMessage(l10n_util::GetStringUTF16(
               IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_NOTIFICATION_MESSAGE))
           .SetWarningLevel(
@@ -145,28 +143,27 @@ bool IsUserInstalled(std::string_view app_id, Profile* profile) {
 }
 }  // namespace
 
-bool IsLaunchAllowed(std::string_view app_id, Profile* profile) {
+DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
   const extensions::Extension* app =
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id.data());
 
   if (!app || !app->is_app()) {
-    return true;
+    return DeprecationStatus::kLaunchAllowed;
   }
 
   if (IsUserInstalled(app_id, profile)) {
-    if (IsAllowlisted(app_id)) {
-      return true;
+    // TODO(crbug.com/379264039): Block the execution in M139.
+    if (!IsAllowlisted(app_id)) {
+      ShowNotification(*app, profile);
     }
-
-    ShowNotification(app->name(), profile);
   }
 
-  return true;
+  return DeprecationStatus::kLaunchAllowed;
 }
 
 void AddAppToAllowlistForTesting(std::string_view app_id) {
-  test_allowlisted_apps->emplace(app_id);
+  kTestAllowlistedApps->emplace(app_id);
 }
 
 }  // namespace apps::chrome_app_deprecation

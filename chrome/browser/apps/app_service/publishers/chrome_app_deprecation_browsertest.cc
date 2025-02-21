@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation_controller.h"
+#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -17,7 +17,7 @@ namespace apps {
 
 using extensions::Extension;
 
-class DeprecationControllerBrowserTest1
+class DeprecationControllerBrowserTest
     : public extensions::PlatformAppBrowserTest {
  protected:
   const Extension* LoadPlatformApp() {
@@ -39,7 +39,7 @@ class DeprecationControllerBrowserTest1
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DeprecationControllerBrowserTest1,
+IN_PROC_BROWSER_TEST_F(DeprecationControllerBrowserTest,
                        UserInstalledAppNotAllowlisted) {
   auto* center = message_center::MessageCenter::Get();
   auto notifications_count = center->GetNotifications().size();
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(DeprecationControllerBrowserTest1,
   ASSERT_TRUE(center->GetNotifications().size() == notifications_count + 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DeprecationControllerBrowserTest1,
+IN_PROC_BROWSER_TEST_F(DeprecationControllerBrowserTest,
                        AllowlistedUserInstalledApp) {
   auto* center = message_center::MessageCenter::Get();
   auto notifications_count = center->GetNotifications().size();
