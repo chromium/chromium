@@ -173,12 +173,6 @@ BASE_FEATURE(kAutofillEnableSaveAndFill,
              "AutofillEnableSaveAndFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, save card will fallback to a local save if the server upload of
-// a card encounters a failure.
-BASE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback,
-             "AutofillEnableSaveCardLocalSaveFallback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, Pix bank accounts are synced from Chrome Sync backend and
 // stored in the local db.

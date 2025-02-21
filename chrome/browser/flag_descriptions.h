@@ -429,9 +429,6 @@ extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 extern const char kAutofillEnableSaveAndFillName[];
 extern const char kAutofillEnableSaveAndFillDescription[];
 
-extern const char kAutofillEnableSaveCardLocalSaveFallbackName[];
-extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillEnableSyncingOfPixBankAccountsName[];
 extern const char kAutofillEnableSyncingOfPixBankAccountsDescription[];

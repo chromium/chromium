@@ -6006,22 +6006,8 @@ TEST_F(CreditCardSaveManagerTest, InitVirtualCardEnroll) {
       std::move(get_details_for_enrollment_response_details));
 }
 
-class CreditCardSaveManagerWithLocalSaveFallbackTest
-    : public CreditCardSaveManagerTest {
- public:
-  CreditCardSaveManagerWithLocalSaveFallbackTest() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    feature_list_.InitWithFeatureState(
-        features::kAutofillEnableSaveCardLocalSaveFallback, true);
-#endif
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that if server card upload fails, we fallback to a local card save.
-TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
+TEST_F(CreditCardSaveManagerTest,
        OnDidUploadCard_FallbackToLocalSaveOnServerUploadFailure) {
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
 
@@ -6034,7 +6020,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
 
 // Tests that the local card save is skipped if the card is missing the
 // expiration date.
-TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
+TEST_F(CreditCardSaveManagerTest,
        OnDidUploadCard_SkipLocalSaveIfMissingExpirationDate) {
   auto card = test::GetCreditCard();
   card.SetExpirationMonth(0);
@@ -6050,7 +6036,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
 // Tests that the `RanLocalSaveFallback` metric records that a new local card
 // was saved when a new local card is added during the local card save fallback
 // for a server upload failure.
-TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
+TEST_F(CreditCardSaveManagerTest,
        Metrics_OnDidUploadCard_FallbackToLocalSave_CardAdded) {
   base::HistogramTester histogram_tester;
 
@@ -6069,7 +6055,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
 // Tests that the `RanLocalSaveFallback` metric records that a new local card
 // was not saved when the local card already exists during the local card save
 // fallback for a server upload failure.
-TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
+TEST_F(CreditCardSaveManagerTest,
        Metrics_OnDidUploadCard_FallbackToLocalSave_CardExists) {
   base::HistogramTester histogram_tester;
 
@@ -6084,7 +6070,6 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.RanLocalSaveFallback", false, 1);
 }
-
 
 class CreditCardSaveManagerWithVirtualCardEnrollTestParameterized
     : public CreditCardSaveManagerTest,

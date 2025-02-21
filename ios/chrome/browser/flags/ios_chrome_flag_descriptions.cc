@@ -108,15 +108,6 @@ const char kAutofillEnableRankingFormulaCreditCardsDescription[] =
     "When enabled, Autofill will use a new ranking formula to rank Autofill "
     "data model credit card suggestions.";
 
-const char kAutofillEnableSaveCardLocalSaveFallbackName[] =
-    "Enable save card local save fallback";
-const char kAutofillEnableSaveCardLocalSaveFallbackDescription[] =
-    "When enabled, if a card fails to be uploaded to the server, the card "
-    "details will be saved locally instead. If a card with the same card "
-    "number and expiration date already exists in the local database, this "
-    "will be a no-op and the existing card will not be updated with any card "
-    "details from the form.";
-
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =

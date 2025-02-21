@@ -91,11 +91,6 @@ extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];
 extern const char kAutofillEnableRankingFormulaCreditCardsName[];
 extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 
-// Title and description for the flag to enable fallback for save card failure
-// to upload and saves the card locally instead.
-extern const char kAutofillEnableSaveCardLocalSaveFallbackName[];
-extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
-
 // Title and description for flag to enable showing card product name (instead
 // of issuer network) in Payments UI.
 extern const char kAutofillEnableCardProductNameName[];
