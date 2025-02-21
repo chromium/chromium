@@ -548,7 +548,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
       Promise<{payload: any, transfer: Transferable[]}|undefined> {
     const handlerFunction = (this.messageHandler as any)[type];
     if (typeof handlerFunction !== 'function') {
-      console.error(`GlicApiHost: Unknown message type ${type}`);
+      console.warn(`GlicApiHost: Unknown message type ${type}`);
       return;
     }
 

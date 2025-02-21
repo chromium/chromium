@@ -23,7 +23,7 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
       await webClient.initialize(host);
       success = true;
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
     host.webClientInitialized(success);
   }
@@ -66,7 +66,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
         openPanelInfo = result;
       }
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
     return {openPanelInfo};
   }
@@ -81,7 +81,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     try {
       await this.webClient.notifyPanelWasClosed?.();
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   }
 

@@ -201,7 +201,7 @@ export class PostMessageRequestReceiver {
     try {
       response = await this.handler.handleRawRequest(type, requestPayload);
     } catch (error) {
-      console.error('Unexpected error', error);
+      console.warn('Unexpected error', error);
       if (error instanceof Error) {
         exception = error;
         const [reasonType, reason] =
