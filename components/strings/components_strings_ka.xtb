@@ -2255,6 +2255,7 @@
 <translation id="4989809363548539747">ეს დანამატი მხარდაუჭერელია</translation>
 <translation id="4990241977441916452">კონვერტი A2</translation>
 <translation id="4992066212339426712">დადუმების მოხსნა</translation>
+<translation id="4994095017621319069">ჩანართების 1 ჯგუფი აღარ არის ხელმისაწვდომი</translation>
 <translation id="4994348767896109801">რეკლამის პერსონალიზების საკითხი ზოგჯერ დამოკიდებულია მრავალ ფაქტორზე, მათ შორის, ამ პარამეტრზე, <ph name="BEGIN_LINK_1" />სარეკლამო თემებზე<ph name="END_LINK_1" />, თქვენს <ph name="BEGIN_LINK_2" />ქუქი-ჩანაწერების პარამეტრებსა<ph name="END_LINK_2" /> და იმაზე, ზოგადად მხარდაჭერილია თუ არა რეკლამის პერსონალიზება იმ საიტის მიერ, რომელსაც სტუმრობთ. შეიტყვეთ მეტი <ph name="BEGIN_LINK_3" />რეკლამის კუთხით თქვენი კონფიდენციალურობის მართვის<ph name="END_LINK_3" /> შესახებ.</translation>
 <translation id="4995474875135717171">შეცვლილია:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, საიტების ძიებისა და ნაგულისხმევი საძიებო სისტემის სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -3468,6 +3469,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> სხვა}other{<ph name="PAYMENT_METHOD_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> სხვა}}</translation>
 <translation id="7153618581592392745">ლავანდისფერი</translation>
 <translation id="7156870133441232244">საჭიროა სერვერის გადაყვანა TLS 1.2-ზე ან უფრო ახალ ვერსიაზე.</translation>
+<translation id="7156885531105222428">თქვენ მიერ მოთხოვნილი გვერდი ვერ მოიძებნა აპში</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{ამ ფაილის გასაგზავნად <ph name="FEATURE_NAME" /> რომ გამოიყენოთ, გაათავისუფლეთ მეხსიერება (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}other{ამ ფაილების გასაგზავნად <ph name="FEATURE_NAME" /> რომ გამოიყენოთ, გაათავისუფლეთ მეხსიერება (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}}</translation>
 <translation id="7160999678034985039">შეინახეთ თქვენი ნამუშევარი და დაიწყეთ განახლება, როცა მზად იქნებით.</translation>
 <translation id="7162277662076933695">ბარათის გონიერი წამკითხველი</translation>
@@ -4255,6 +4257,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ეწვიეთ გვერდს &lt;strong&gt;chrome://policy&lt;/strong&gt; დაბლოკილი URL-ების სანახავად და ადმინისტრატორის მიერ გააქტიურებული სხვა წესების დასათვალიერებლად.</translation>
 <translation id="8536234749087605613">კონვერტი (ფანჯრიანი)</translation>
+<translation id="8538228968820006247">თქვენი ჩანართების ჯგუფი შევსებულია და ახალი წევრები ბმულის მეშვეობით შეერთებას ვერ შეძლებენ</translation>
 <translation id="8539500321752640291">გსურთ 2 ნებართვის მინიჭება?</translation>
 <translation id="8541158209346794904">Bluetooth მოწყობილობა</translation>
 <translation id="8541410041357371550">ეს საიტი Chrome-იდან იღებს სარეკლამო თემებს, უფრო შესაფერისი რეკლამა რომ შემოგთავაზოთ</translation>

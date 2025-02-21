@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Espera...</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2744221223678373668">Compartidas</translation>
+<translation id="2749164457515831917">Sugerencias mezcladas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
 <translation id="2754757901767760034">lámpara</translation>
 <translation id="2780756493585863768">Fondos recientes potenciados por la IA de Google</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3227186760713762082">Divide el valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
+<translation id="3248791727258378769">No se creará ninguna transcripción</translation>
 <translation id="324961752321393509">Tu administrador no permite cerrar esta app</translation>
 <translation id="3263941347294171263">Desconecta y vuelve a conectar el dispositivo <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
 <translation id="3268178239013324452">Error: La tapa está abierta</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Selecciona una unidad de temperatura</translation>
 <translation id="3661106764436337772">Escribe más rápido y con más confianza</translation>
 <translation id="3662461537616691585">borgoña y granate</translation>
+<translation id="3664755900672940272">Instrucciones de ejemplo mezcladas</translation>
 <translation id="3668449597372804501">Fondo de pantalla Flujo de nubes</translation>
 <translation id="3668570675727296296">Configuración de idiomas</translation>
 <translation id="3675132884790542448">cerdos</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Desactivar el protector de pantalla</translation>
 <translation id="4210636113897977670">Guardar y salir</translation>
 <translation id="4210659479607886331">río glacial</translation>
+<translation id="4212169537710712814">Se completó la descarga del modelo de transcripción de <ph name="LANGUAGE_NAME" /></translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Color</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Gestionado</translation>
+<translation id="5461608756903394951">Descarga del modelo de transcripción de <ph name="LANGUAGE_NAME" /> en curso</translation>
 <translation id="5470776029649730099">arpillera</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento.}other{Quedan {0} intentos.}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">¿Quieres activar la transcripción y descargar el modelo de transcripción?</translation>
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6599673642868607614">Gracias por tus comentarios. Nuestro equipo revisará tus comentarios, que nos ayudan a mejorar la experiencia con las Chromebooks. Debido a la gran cantidad de informes, no podremos enviarte una respuesta.</translation>
+<translation id="6608043585557830684">La transcripción está desactivada. Actívala en Configuración o en el menú <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Teclas del mouse</translation>
 <translation id="6618744767048954150">En ejecución</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial, a menos que se quiten manualmente</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104">Un <ph name="GLOWSCAPES_LANDSCAPE" /> con un <ph name="GLOWSCAPES_FEATURE" /> brillante</translation>
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Revisión de firmware</translation>
+<translation id="6978396562261420054">Imagen generada</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="6982462588253070448">dunas de arena</translation>
 <translation id="7005833343836210400">Dispositivo sin conexión</translation>

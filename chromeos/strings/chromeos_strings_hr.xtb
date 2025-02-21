@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">Izbornik aktivnosti izgleda</translation>
 <translation id="3227186760713762082">Podijelite vrijednost <ph name="CATEGORY_TEXT" /> s <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Uklonit će se zadaci ispisa stariji od jednog dana</translation>
+<translation id="3248791727258378769">Prijepis se neće izraditi</translation>
 <translation id="324961752321393509">Vaš administrator ne dopušta zatvaranje te aplikacije</translation>
 <translation id="3263941347294171263">Iskopčajte i ponovo ukopčajte uređaj <ph name="DEVICE_NAME" /> da biste nastavili s postupkom ažuriranja</translation>
 <translation id="3268178239013324452">Nije uspjelo – vratašca su otvorena</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">Isključivanje čuvara zaslona</translation>
 <translation id="4210636113897977670">Spremi i izađi</translation>
 <translation id="4210659479607886331">ledenjačka rijeka</translation>
+<translation id="4212169537710712814">Dovršeno je preuzimanje modela prijepisa za jezik: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="42126664696688958">Izvezi</translation>
 <translation id="4213104098953699324">USB tipkovnica</translation>
 <translation id="4227825898293920515">Zaporka istječe za <ph name="TIME" /></translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">Boja</translation>
 <translation id="5457599981699367932">Pregledavaj kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
+<translation id="5461608756903394951">U tijeku je preuzimanje modela prijepisa za jezik: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">jute</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostao je {0} pokušaj.}one{Preostao je {0} pokušaj.}few{Preostala su {0} pokušaja.}other{Preostalo je {0} pokušaja.}}</translation>
 <translation id="5488280942828718790">grimizne boje</translation>
@@ -1193,6 +1196,7 @@
 <translation id="6595046262780525922">Želite li uključiti prijepis i preuzeti model prijepisa?</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6599673642868607614">Zahvaljujemo na povratnim informacijama. Vaše povratne informacije pomažu nam da poboljšamo doživljaj Chromebooka i pregledat će ih naš tim. Zbog velikog broja izvješća nećemo moći poslati odgovor.</translation>
+<translation id="6608043585557830684">Prijepis je isključen. Uključite ga u postavkama ili na izborniku <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Tipke miša</translation>
 <translation id="6618744767048954150">U tijeku</translation>
 <translation id="6620487321149975369">Zadaci ispisa prikazivat će se u povijesti ako se ne uklone ručno</translation>

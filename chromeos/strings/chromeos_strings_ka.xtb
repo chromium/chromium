@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">დაელოდეთ…</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2744221223678373668">გაზიარებული</translation>
+<translation id="2749164457515831917">შემოთავაზებები არეულად უკრავს</translation>
 <translation id="2751739896257479635">EAP ავტორიზაციის მე-2 ფაზა</translation>
 <translation id="2754757901767760034">სანათი</translation>
 <translation id="2780756493585863768">ბოლო ფონები უზრუნველყოფილია Google-ის ხელოვნური ინტელექტის მიერ</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">განლაგებასთან დაკავშირებული მოქმედებების მენიუ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-ის მნიშვნელობის გაყოფა <ph name="CONVERSION_RATE" />-ზე</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
+<translation id="3248791727258378769">ტრანსკრიპტი არ შეიქმნება</translation>
 <translation id="324961752321393509">ამ აპის დახურვა არ არის დაშვებული თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="3263941347294171263">გამოაერთეთ და ისევ შეაერთეთ <ph name="DEVICE_NAME" />, რომ განახლება განაგრძოთ</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">აირჩიეთ ტემპერატურის ერთეული</translation>
 <translation id="3661106764436337772">წერეთ უფრო სწრაფად და თავდაჯერებულად</translation>
 <translation id="3662461537616691585">ღვინისფერი და წაბლისფერი</translation>
+<translation id="3664755900672940272">სანიმუშო მოთხოვნები არეულად უკრავს</translation>
 <translation id="3668449597372804501">ღრუბლების ნაკადის ფონი</translation>
 <translation id="3668570675727296296">ენის პარამეტრები</translation>
 <translation id="3675132884790542448">ღორები</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">ეკრანმზოგის გამორთვა</translation>
 <translation id="4210636113897977670">შენახვა და გასვლა</translation>
 <translation id="4210659479607886331">ყინულოვანი მდინარე</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> ტრანსკრიფციის მოდელის ჩამოტვირთვა დასრულდა</translation>
 <translation id="42126664696688958">ექსპორტი</translation>
 <translation id="4213104098953699324">USB კლავიატურა</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">ფერი</translation>
 <translation id="5457599981699367932">დათვალიერება სტუმრის სტატუსით</translation>
 <translation id="54609108002486618">მართული</translation>
+<translation id="5461608756903394951">მიმდინარეობს <ph name="LANGUAGE_NAME" /> ტრანსკრიფციის მოდელის ჩამოტვირთვა</translation>
 <translation id="5470776029649730099">უხეში ტილო</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{დარჩენილია {0} მცდელობა}other{დარჩენილია {0} მცდელობა}}</translation>
 <translation id="5488280942828718790">მოვარდისფრო იისფერი</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">გსურთ ტრანსკრიფციის ჩართვა და ტრანსკრიფციის მოდელის ჩამოტვირთვა?</translation>
 <translation id="6596816719288285829">IP მისამართი</translation>
 <translation id="6599673642868607614">გმადლობთ გამოხმაურებისთვის. თქვენი გამოხმაურება გვეხმარება Chromebook-ის ფუნქციების გაუმჯობესებაში. მას ჩვენი გუნდი გაეცნობა. მომართვების რაოდენობიდან გამომდინარე, ყველას ინდივიდუალურად ვერ ვუპასუხებთ.</translation>
+<translation id="6608043585557830684">ტრანსკრიფცია გამორთულია. ჩართეთ პარამეტრებიდან ან <ph name="THREE_DOTS_MENU_ICON" /> მენიუდან.</translation>
 <translation id="660846213831377756">მაუსის კლავიშები</translation>
 <translation id="6618744767048954150">მიმდინარეობს</translation>
 <translation id="6620487321149975369">ბეჭდვის დავალებები გამოჩნდება ისტორიაში, თუ მათ ხელით არ ამოშლით</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> და გაბრწყინებული <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">კოალები</translation>
 <translation id="6977381486153291903">მიკროპროგრამის ვერსია</translation>
+<translation id="6978396562261420054">გენერირებული სურათი</translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="6982462588253070448">ქვიშის დიუნები</translation>
 <translation id="7005833343836210400">მოწყობილობა ხაზგარეშე რეჟიმშია</translation>

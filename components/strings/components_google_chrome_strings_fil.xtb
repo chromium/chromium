@@ -13,6 +13,9 @@
 <translation id="3512634283363927263">Nakalaan ang mga page na ito para sa paggamit ng mga developer ng Chrome, at posibleng hindi ito aktibong pinapanatili o sinusubukan. Para i-enable ang mga ito, mag-navigate papunta sa <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, i-click ang button para i-enable ang mga page sa pag-debug, at pagkatapos ay mag-navigate ulit papunta sa page na ito.</translation>
 <translation id="3875312571075912821">Pahintulutan ang Chrome na i-access ang network
           sa mga setting ng iyong firewall o antivirus.</translation>
+<translation id="4949828774841497663">Pumunta sa Applications &gt; System Settings &gt; Network, piliin ang
+          aktibong network, i-click ang button na Details... at i-deselect ang anumang proxy
+          na posibleng napili.</translation>
 <translation id="5005121315113832363">Na-block ng Chrome ang page na ito</translation>
 <translation id="6011049234605203654">Pumunta sa
           menu ng Chrome &gt;

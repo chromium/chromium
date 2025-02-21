@@ -176,6 +176,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1546930421365146760">Hilingin sa iyong administrator na i-set up ang device na ito sa Google Admin console</translation>
 <translation id="1549512626801247439">pamamahala sa storage</translation>
+<translation id="1549721333775633305">Ipakita ang mga setting ng Quick Share. Naka-disable ang Quick Share</translation>
 <translation id="1550406609415860283">Mga device na available</translation>
 <translation id="1550523713251050646">Mag-click para sa higit pang mga opsyon</translation>
 <translation id="1555130319947370107">Asul</translation>
@@ -1474,6 +1475,7 @@ Walang nakakonektang device.</translation>
 <translation id="5856638668464565213">Hindi na-activate ang <ph name="NETWORK_NAME" />.</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
+<translation id="5864691701242730005">Ipakita ang mga setting ng Quick Share. Napili ang visibility na <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" />% ng baterya</translation>
 <translation id="5867217927013474703">Kinokolekta ang impormasyon ng network</translation>
 <translation id="5867606971598166637">Sinusubaybayan ng iyong system administrator ang mga screen mo</translation>
@@ -2261,6 +2263,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="851660987304951246">Gamitin ang Tulungan akong magbasa para mabilis na magbuod ng content o magtanong</translation>
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>
 <translation id="8535393432370007982">I-undo ang ayos ng pagkakasunod-sunod ayon sa kulay</translation>
+<translation id="8536886494750559755">Ipakita ang mga setting ng Quick Share. Nakikita ng lahat sa loob ng <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Nakopya ang text sa Clipboard</translation>
 <translation id="8541078764854166027">Camera framing</translation>
 <translation id="8542053257095774575">Walang naka-save na desk o template</translation>

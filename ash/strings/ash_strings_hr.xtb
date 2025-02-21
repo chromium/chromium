@@ -176,6 +176,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1546492247443594934">Radna površina 2</translation>
 <translation id="1546930421365146760">Zamolite administratora da postavi ovaj uređaj na Googleovoj administratorskoj konzoli</translation>
 <translation id="1549512626801247439">upravljanje pohranom</translation>
+<translation id="1549721333775633305">Prikažite postavke brzog dijeljenja. Brzo dijeljenje je onemogućeno</translation>
 <translation id="1550406609415860283">Dostupni uređaji</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
 <translation id="1555130319947370107">Plava</translation>
@@ -1474,6 +1475,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5856638668464565213">Mreža <ph name="NETWORK_NAME" /> nije aktivirana.</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
+<translation id="5864691701242730005">Prikažite postavke brzog dijeljenja. Odabrana je vidljivost: <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Baterija <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Prikupljanje podataka o mreži</translation>
 <translation id="5867606971598166637">Administrator sustava nadzire vaše zaslone</translation>
@@ -2262,6 +2264,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="851660987304951246">Upotrijebite značajku Pomozi mi čitati da biste brzo saželi sadržaj ili postavili pitanja</translation>
 <translation id="8517041960877371778">Uređaj <ph name="DEVICE_TYPE" /> možda se neće puniti dok je uključen.</translation>
 <translation id="8535393432370007982">Poništavanje poretka po boji</translation>
+<translation id="8536886494750559755">Prikažite postavke brzog dijeljenja. Vidljivo svima <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Tekst je kopiran u međuspremnik</translation>
 <translation id="8541078764854166027">Okvir kamere</translation>
 <translation id="8542053257095774575">Nema nijedne spremljene radne površine ili predloška</translation>

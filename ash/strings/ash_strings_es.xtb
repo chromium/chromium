@@ -176,6 +176,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1546492247443594934">Escritorio 2</translation>
 <translation id="1546930421365146760">Pide a tu administrador que configure este dispositivo en la consola de administración de Google</translation>
 <translation id="1549512626801247439">gestión de almacenamiento</translation>
+<translation id="1549721333775633305">Muestra la configuración de Quick Share. Quick Share inhabilitado.</translation>
 <translation id="1550406609415860283">Dispositivos disponibles</translation>
 <translation id="1550523713251050646">Haz clic aquí para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
@@ -1475,6 +1476,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> no está activada.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5864691701242730005">Muestra la configuración de Quick Share. Visibilidad seleccionada: <ph name="VISIBILITY" />.</translation>
 <translation id="5864748620896638071">Batería: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Recogiendo información de red</translation>
 <translation id="5867606971598166637">El administrador del sistema está monitorizando tus pantallas</translation>
@@ -2263,6 +2265,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="851660987304951246">Usa Ayúdame a leer para resumir rápidamente el contenido o hacer preguntas</translation>
 <translation id="8517041960877371778">Es posible que tu <ph name="DEVICE_TYPE" /> no se cargue mientras esté encendido.</translation>
 <translation id="8535393432370007982">Deshacer orden por color</translation>
+<translation id="8536886494750559755">Muestra la configuración de Quick Share. Visible para todos durante <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Texto copiado en el portapapeles</translation>
 <translation id="8541078764854166027">Encuadre</translation>
 <translation id="8542053257095774575">No hay escritorios ni plantillas guardados</translation>

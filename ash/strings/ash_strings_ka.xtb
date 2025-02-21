@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">დესკტოპი 2</translation>
 <translation id="1546930421365146760">სთხოვეთ თქვენს ადმინისტრატორს, დააყენოს ეს მოწყობილობა Google ადმინისტრატორის კონსოლიდან</translation>
 <translation id="1549512626801247439">მეხსიერების მართვა</translation>
+<translation id="1549721333775633305">სწრაფი გაზიარების პარამეტრების ჩვენება. სწრაფი გაზიარება გათიშულია</translation>
 <translation id="1550406609415860283">ხელმისაწვდომი მოწყობილობები</translation>
 <translation id="1550523713251050646">დააწკაპუნეთ დამატებითი ვარიანტების სანახავად</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> არ არის გააქტიურებული.</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5860491529813859533">ჩართვა</translation>
+<translation id="5864691701242730005">სწრაფი გაზიარების პარამეტრების ჩვენება. არჩეული ხილვადობა: <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">ბატარეა <ph name="BATTERY_PERCENTAGE" />%-ზეა</translation>
 <translation id="5867217927013474703">გროვდება ინფორმაცია ქსელის შესახებ</translation>
 <translation id="5867606971598166637">თქვენი სისტემის ადმინისტრატორი ახორციელებს თქვენი ეკრანების მონიტორინგს</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">გამოიყენეთ წაკითხვაში დახმარება, რომ სწრაფად შეაჯამოთ კონტენტი ან შეკითხვები დასვათ</translation>
 <translation id="8517041960877371778">თქვენი <ph name="DEVICE_TYPE" /> შეიძლება არ დაიტენოს, როცა ის ჩართულია.</translation>
 <translation id="8535393432370007982">ფერის მიხედვით დალაგების გაუქმება</translation>
+<translation id="8536886494750559755">სწრაფი გაზიარების პარამეტრების ჩვენება. ხილულია ყველასთვის <ph name="TIME_REMAINING" />-ით</translation>
 <translation id="8539803091108018926">ტექსტი დაკოპირებულია გაცვლის ბუფერში</translation>
 <translation id="8541078764854166027">კამერის კადრირება</translation>
 <translation id="8542053257095774575">სამუშაო მაგიდები ან შაბლონები არ არის შენახული</translation>
